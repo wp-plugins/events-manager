@@ -2,7 +2,7 @@
 Contributors: nutsmuggler  
 Tags: events  
 Requires at least: 2.5.1   
-Tested up to: 2.5.1   
+Tested up to: 2.6   
 Stable tag: 1.0   
 Donate link: http://davidebenini.it/wordpress-plugins/
 
