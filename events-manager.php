@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 1.0
+Version: 1.0.1b1
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Venue, Town, Province, etc).
 Author: Davide Benini
@@ -562,8 +562,10 @@ function dbem_filter_events_page($data) {
 	
 	// $table_name = $wpdb->prefix .TBNAME;
 	// 	$start = strpos($data, DBEM_PAGE);
-	$events_page_id = get_option('dbem_events_page');      
-    if (is_page($events_page_id) ) { 
+	
+	$is_events_post = (get_the_ID() == get_option('dbem_events_page'));
+ 	$events_page_id = get_option('dbem_events_page');      
+    if (is_page($events_page_id) && $is_events_post) { 
 	    return dbem_events_page_content();
 	} else {
 		return $data;
@@ -707,6 +709,19 @@ function dbem_get_events_page($justurl=false) {
 		echo "<a href='$page_link' title='$page_title'>$page_title</a>";
 	}
 	
+}
+// Returns true if the page in question is the events page
+function dbem_is_events_page() {
+	$events_page_id = get_option('dbem_events_page');
+	return is_page($events_page_id);
+}    
+
+function dbem_is_single_event_page() {
+	return  (dbem_is_events_page() && (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '')) ;
+}
+
+function dbem_is_multiple_events_page() {
+	return  (dbem_is_events_page() && !(isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '')) ;
 }
 
 function dbem_replace_placeholders($format, $event, $target="html") {

@@ -66,9 +66,17 @@ Prints the current month calendar, highlighting any event and linking to it. Acc
 
 Prints a link to the events page. If you set the optional `justurl` property to `true`, the function only prints the URL of the events page. 
 
-`<? dbem_rss_link(justurl) ?>`
+`<?php dbem_rss_link(justurl) ?>`
 Prints a the link to the events RSS. If you set the optional `justurl` property to `true`, the function only prints the RSS URL. 
 
+`<?php dbem_is_events_page() ?>`
+Conditional tag. Returns true if the page loaded corresponds to the events page.
+                                                                                 
+`<?php dbem_is_single_event_page() ?>`
+Conditional tag. Returns true if the page loaded corresponds to a single event page. 
+
+`<?php dbem_is_multiple_events_page() ?>`
+Conditional tag. Returns true if the page loaded corresponds the multiple events page.   
 
 == Formatting the events ==
 
@@ -165,3 +173,7 @@ Fixed a bug that caused trouble in the new post page javascript
 
 1.0
 No changes, only made this plugin officially out of beta after weeks without any bug popping out.
+      
+1.0.1
+Added the `dbem_is_events_page`  `dbem_is_single_event_page`, `dbem_is_multiple_events_page()` conditional template tags    
+Fixed a bug that filtered `the_content` even in unrelated lists
