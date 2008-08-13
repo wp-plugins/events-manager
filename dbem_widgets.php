@@ -32,7 +32,7 @@ function dbem_list_control()
   if (!is_array( $options ))
 	{
 		$options = array(
-    'title' => _('Events', 'dbem'),
+     'title' => __('Events', 'dbem'),
 	  'limit' => '5',
 	  'scope' => 'future',
 	 	'order' => 'ASC', 

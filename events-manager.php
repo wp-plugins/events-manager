@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 1.0.1b1
+Version: 1.0.1
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Venue, Town, Province, etc).
 Author: Davide Benini
@@ -42,7 +42,8 @@ define('DEFAULT_EVENT_PAGE_TITLE_FORMAT', '	#_NAME');
 define('DEFAULT_RSS_DESCRIPTION_FORMAT',"#j #M #y - #H:#i <br/>#_VENUE <br/>#_ADDRESS <br/>#_TOWN");
 define('DEFAULT_RSS_TITLE_FORMAT',"#_NAME");
 define('DEFAULT_MAP_TEXT_FORMAT', '<strong>#_VENUE</strong><p>#_ADDRESS</p><p>#_TOWN</p>');     
-define('DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT','#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul></li>');
+define('DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT','<li>#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul></li>');
+define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem')); 
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, alog will show in admin pages
 define('DEBUG', false);     
@@ -164,6 +165,10 @@ function dbem_install() {
 	$events_page_title = get_option('dbem_events_page_title'); 
 	if (empty($events_page_title))
 		update_option('dbem_events_page_title', DEFAULT_EVENTS_PAGE_TITLE);
+	
+	$no_events_message = get_option('dbem_no_events_message'); 
+	if (empty($no_events_message))
+		update_option('dbem_no_events_message', __('No events','dbem'));
 	
 	$map_text_format = get_option('dbem_map_text_format');
 	if (empty($map_text_format)) 
@@ -432,15 +437,7 @@ function dbem_options_subpanel() {
 						</td>
 				   	</tr>
 					
-					
-					
-					
-					
-					
-					
-					
-					
-					
+					  				
 					
 					
 					<tr valign="top">
@@ -450,7 +447,13 @@ function dbem_options_subpanel() {
 							<?php _e('The title on the multiple events page.','dbem')?>
 						</td>
 					</tr>
-					
+					<tr valign="top">
+						<th scope="row"><?php _e('No events message','dbem');?></th>
+						<td>
+							<input name="dbem_no_events_message" type="text" id="dbem_no_events_message" style="width: 95%" value="<?php echo get_option('dbem_no_events_message'); ?>" size="45" /><br />
+							<?php _e('The message displayed when no events are available.','dbem')?><br/>
+						 </td>
+					</tr>
 					
 					
 					
@@ -524,7 +527,7 @@ function dbem_options_subpanel() {
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format" />
+				<input type="hidden" name="page_options" value="dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message,  dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format" />
 				
 				
 			</form>
@@ -692,7 +695,7 @@ function dbem_get_events_list($limit="3", $scope="future", $order="ASC", $format
 		$output .= dbem_replace_placeholders($format, $event);
 	}
 	} else {
-		$output = __('No events', 'dbem');
+		$output = "<li class='dbem-no-events'>".get_option('dbem_no_events_message')."</li>";
 	}
 	if ($display)
 		echo $output;
@@ -709,7 +712,21 @@ function dbem_get_events_page($justurl=false) {
 		echo "<a href='$page_link' title='$page_title'>$page_title</a>";
 	}
 	
+}       
+
+// TEMPLATE TAGS
+
+function dbem_are_events_available($scope="future") {
+	if ($scope == "") 
+		$scope = "future";
+	$events = dbem_get_events(1, $scope);    
+	
+  	if (empty($events))
+		return FALSE;
+  	else 
+		return TRUE  ;
 }
+	
 // Returns true if the page in question is the events page
 function dbem_is_events_page() {
 	$events_page_id = get_option('dbem_events_page');
@@ -732,7 +749,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		if (preg_match('/#_MAP/', $result)) {
 		 	$gmap_is_active = get_option('dbem_gmap_is_active'); 
 			if ($gmap_is_active) {
-			   $map_div = "<div id='event-map' style='width: 450px; height: 300px; background: green;'></div>" ;
+			   $map_div = "<div id='event-map' style=' background: green;'></div>" ;
 			} else {
 				$map_div = "";
 			}
@@ -1184,7 +1201,16 @@ function dbem_map_script() {
 						}
 			   });
 			//]]>
-			</script>
+			</script> 
+			<style type="text/css">
+			#event-map {
+				width: 450px; 
+				height: 300px;
+			}
+			#event-map img {
+				background: transparent;
+			}
+			</style>
 		<?php
 		 		}
 			} 
@@ -1194,113 +1220,109 @@ function dbem_map_script() {
 add_action ('wp_head', 'dbem_map_script');   
 
 function dbem_admin_map_script() { 
-	?>   
-
-
-   
-	
-	<?php
 	if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
-		// single event page
-		$event_ID=$_REQUEST['event_id'];
-	    $event = dbem_get_event($event_ID);
-		if ($event->event_town != '') {
-			$gmap_key = get_option('dbem_gmap_key');
-	        if($event->event_address != "") {
-		    	$search_key = "$event->event_address, $event->event_town";
-			} else {
-				$search_key = "$event->event_venue, $event->event_town";
-			}
-	
-	?>
-	<style type="text/css">
-	   div#event_town, div#event_address, div#event_venue {
-		width: 480px;
-	}
-	</style>
-	<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $gmap_key;?>" type="text/javascript"></script>         
-	<script type="text/javascript">
-		//<![CDATA[
-	   	$j=jQuery.noConflict();
-		
-		function loadMap(venue, town, address) {
-      		if (GBrowserIsCompatible()) {
-        		var map = new GMap2(document.getElementById("event-map"));
-        	//	map.addControl(new GScaleControl()); 
-						//map.setCenter(new GLatLng(37.4419, -122.1419), 13);   
-				var geocoder = new GClientGeocoder();
-				if (address !="") {
-					searchKey = address + ", " + town;
+		if (!(isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_event')) {    
+			// single event page
+			$event_ID=$_REQUEST['event_id'];
+		    $event = dbem_get_event($event_ID);
+			if ($event->event_town != '') {
+				$gmap_key = get_option('dbem_gmap_key');
+		        if($event->event_address != "") {
+			    	$search_key = "$event->event_address, $event->event_town";
 				} else {
-					searchKey =  venue + ", " * town;
+					$search_key = "$event->event_venue, $event->event_town";
 				}
+	
+		?>
+		<style type="text/css">
+		   div#event_town, div#event_address, div#event_venue {
+			width: 480px;
+		}
+		</style>
+		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $gmap_key;?>" type="text/javascript"></script>         
+		<script type="text/javascript">
+			//<![CDATA[
+		   	$j=jQuery.noConflict();
+		
+			function loadMap(venue, town, address) {
+	      		if (GBrowserIsCompatible()) {
+	        		var map = new GMap2(document.getElementById("event-map"));
+	        	//	map.addControl(new GScaleControl()); 
+							//map.setCenter(new GLatLng(37.4419, -122.1419), 13);   
+					var geocoder = new GClientGeocoder();
+					if (address !="") {
+						searchKey = address + ", " + town;
+					} else {
+						searchKey =  venue + ", " * town;
+					}
 					
-				var search = "<?php echo $search_key ?>" ;
-				geocoder.getLatLng(
-				    searchKey,
-				    function(point) {
-				      if (!point) {
-				       	$j("#event-map").hide();
-						$j('#map-not-found').show();
-				      } else {
-						mapCenter= new GLatLng(point.lat()+0.01, point.lng()+0.005);
-					    map.setCenter(mapCenter, 13);
-				        var marker = new GMarker(point);
-				        map.addOverlay(marker);
-				        marker.openInfoWindowHtml('<strong>' + venue +'</strong><p>' + address + '</p><p>' + town + '</p>');
-				        $j("#event-map").show();
-						$j('#map-not-found').hide();
-						}
-				    }
-				  );   
-      	 //	map.addControl(new GSmallMapControl());
-				 // map.addControl(new GMapTypeControl());
+					var search = "<?php echo $search_key ?>" ;
+					geocoder.getLatLng(
+					    searchKey,
+					    function(point) {
+					      if (!point) {
+					       	$j("#event-map").hide();
+							$j('#map-not-found').show();
+					      } else {
+							mapCenter= new GLatLng(point.lat()+0.01, point.lng()+0.005);
+						    map.setCenter(mapCenter, 13);
+					        var marker = new GMarker(point);
+					        map.addOverlay(marker);
+					        marker.openInfoWindowHtml('<strong>' + venue +'</strong><p>' + address + '</p><p>' + town + '</p>');
+					        $j("#event-map").show();
+							$j('#map-not-found').hide();
+							}
+					    }
+					  );   
+	      	 //	map.addControl(new GSmallMapControl());
+					 // map.addControl(new GMapTypeControl());
 					
-				 }
-    	}
+					 }
+	    	}
    
-		$j(document).ready(function() {
-  			eventVenue = $j("#venue-input").val(); 
+			$j(document).ready(function() {
+	  			eventVenue = $j("#venue-input").val(); 
 			
- 			eventTown = $j("#town-input").val(); 
-			eventAddress = $j("#address-input").val();
+	 			eventTown = $j("#town-input").val(); 
+				eventAddress = $j("#address-input").val();
 		   
-			loadMap(eventVenue, eventTown, eventAddress);
+				loadMap(eventVenue, eventTown, eventAddress);
 			
-			$j("#venue-input").blur(function(){
-					newEventVenue = $j("#venue-input").val();  
-					if (newEventVenue !=eventVenue) {                
-						loadMap(newEventVenue, eventTown, eventAddress); 
-						eventVenue = newEventVenue;
+				$j("#venue-input").blur(function(){
+						newEventVenue = $j("#venue-input").val();  
+						if (newEventVenue !=eventVenue) {                
+							loadMap(newEventVenue, eventTown, eventAddress); 
+							eventVenue = newEventVenue;
 					   
-					}
-			});
-			$j("#town-input").blur(function(){
-					newEventTown = $j("#town-input").val(); 
-					if (newEventTown !=eventTown) {  
-						loadMap(eventVenue, newEventTown, eventAddress); 
-						eventTown = newEventTown;
-						} 
-			});
-			$j("#address-input").blur(function(){
-					newEventAddress = $j("#address-input").val(); 
-					if (newEventAddress != eventAddress) {
-						loadMap(eventVenue, eventTown, newEventAddress);
-					 	eventAddress = newEventAddress; 
-					}
-			});
+						}
+				});
+				$j("#town-input").blur(function(){
+						newEventTown = $j("#town-input").val(); 
+						if (newEventTown !=eventTown) {  
+							loadMap(eventVenue, newEventTown, eventAddress); 
+							eventTown = newEventTown;
+							} 
+				});
+				$j("#address-input").blur(function(){
+						newEventAddress = $j("#address-input").val(); 
+						if (newEventAddress != eventAddress) {
+							loadMap(eventVenue, eventTown, newEventAddress);
+						 	eventAddress = newEventAddress; 
+						}
+				});
 			  
 			
 		 
-	   }); 
-	   $j(document).unload(function() {
-			GUnload();
-	   });
-	    //]]>
-	</script>
-<?php
- 		}
-	}
+		   }); 
+		   $j(document).unload(function() {
+				GUnload();
+		   });
+		    //]]>
+		</script>
+	<?php
+	 		}
+		}
+}    
 }
 $gmap_is_active = get_option('dbem_gmap_is_active'); 
 if ($gmap_is_active)        
