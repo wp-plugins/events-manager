@@ -1,6 +1,6 @@
 === Events Manager ===  
 Contributors: nutsmuggler  
-Tags: events  
+Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.5.1   
 Tested up to: 2.6   
 Stable tag: 1.0.1   
@@ -210,3 +210,5 @@ Fixed CSS bug: enclosed list in Events page in "ul" elements, as it should be.
 Fixed a bug loaded the Google Maps Api when deleting events.      
 Fixed a bug that prevented validation in the default widget list item format.     
 
+1.1b
+Added a javascript datepicker

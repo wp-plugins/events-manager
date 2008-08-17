@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: events-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-13 16:01+0100\n"
+"POT-Creation-Date: 2008-08-17 16:34+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Davide Benini <cno@cnomania.it>\n"
 "Language-Team: \n"
@@ -47,16 +47,16 @@ msgstr "D"
 #: dbem_widgets.php:10
 #: dbem_widgets.php:35
 #: events-manager.php:40
-#: events-manager.php:179
-#: events-manager.php:185
-#: events-manager.php:211
-#: events-manager.php:222
+#: events-manager.php:183
+#: events-manager.php:189
+#: events-manager.php:215
+#: events-manager.php:226
 msgid "Events"
 msgstr "Eventi"
 
 #: dbem_widgets.php:19
 #: events-manager.php:46
-#: events-manager.php:171
+#: events-manager.php:175
 msgid "No events"
 msgstr "Nessun evento"
 
@@ -74,17 +74,17 @@ msgid "Scope of the events"
 msgstr "Ambito degli eventi"
 
 #: dbem_widgets.php:88
-#: events-manager.php:909
+#: events-manager.php:911
 msgid "Future events"
 msgstr "Eventi futuri"
 
 #: dbem_widgets.php:89
-#: events-manager.php:908
+#: events-manager.php:910
 msgid "All events"
 msgstr "Tutti gli eventi"
 
 #: dbem_widgets.php:90
-#: events-manager.php:907
+#: events-manager.php:909
 msgid "Past events"
 msgstr "Eventi passati"
 
@@ -118,288 +118,296 @@ msgstr "Lista eventi"
 msgid "Events Calendar"
 msgstr "Calendario eventi"
 
-#: events-manager.php:291
+#: events-manager.php:292
 msgid "New event successfully inserted!"
 msgstr "Nuovo evento inserito!"
 
-#: events-manager.php:305
+#: events-manager.php:306
 msgid "Event"
 msgstr "Evento"
 
-#: events-manager.php:305
+#: events-manager.php:306
 msgid "updated"
 msgstr "aggiornato"
 
-#: events-manager.php:335
+#: events-manager.php:336
 msgid "Insert New Event"
 msgstr "Inserisci un nuovo evento"
 
-#: events-manager.php:337
+#: events-manager.php:338
 msgid "Edit Event"
 msgstr "Modifica l'evento"
 
-#: events-manager.php:374
+#: events-manager.php:376
 msgid "Past Events"
 msgstr "Eventi passati"
 
-#: events-manager.php:377
+#: events-manager.php:379
 msgid "All Events"
 msgstr "Tutti gli eventi"
 
-#: events-manager.php:380
+#: events-manager.php:382
 msgid "Future Events"
 msgstr "Eventi futuri"
 
-#: events-manager.php:398
+#: events-manager.php:400
 msgid "Event Manager Options"
 msgstr "Opzioni di Events Manager"
 
-#: events-manager.php:403
+#: events-manager.php:405
 msgid "Default event list format"
 msgstr "Formato predefinito della lista eventi"
 
-#: events-manager.php:405
+#: events-manager.php:407
 msgid "The format of any events in a list."
 msgstr "Il formato di ciascun evento della lista."
 
-#: events-manager.php:406
+#: events-manager.php:408
 msgid "Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_VENUE</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page. Use #_URL to print the event URL and make your own customised links."
 msgstr "Inserire uno o più dei seguenti segnaposto: <code>#_NAME</code>, <code>#_VENUE</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Utilizzare <code>#_LINKEDNAME</code> per il nome dell'evento con un link alla pagina corrispondente. Utilizzare #_URL per visualizzare l'URL dell'evento e creare link personalizzati."
 
-#: events-manager.php:407
+#: events-manager.php:409
 msgid "To insert date and time values, use <a href=\"http://www.php.net/manual/en/function.date.php\">PHP time format characters</a>  with a # symbol before them, i.e. #m. #M, #j, etc. "
 msgstr "Per inserire valori di data e ora, utilizzare i <a href=\"http://www.php.net/manual/it/function.date.php\">caratteri di stringa formato PHP</a>  anteponendo ad essi un #, ad esempio #m. #M, #j, etc. "
 
-#: events-manager.php:408
+#: events-manager.php:410
 msgid "Use HTML tags as <code>li</code>, <code>br</code>, etc."
 msgstr "Utilizzare liberamente tag HTML come <code>li</code>, <code>br</code>, ecc."
 
-#: events-manager.php:411
+#: events-manager.php:413
 msgid "Single event page title format"
 msgstr "Formato del titolo della pagina eventi"
 
-#: events-manager.php:414
+#: events-manager.php:416
 msgid "The format of a single event page title."
 msgstr "Il formato del titolo della pagina di un singolo evento."
 
-#: events-manager.php:415
-#: events-manager.php:423
-#: events-manager.php:492
-#: events-manager.php:523
+#: events-manager.php:417
+#: events-manager.php:425
+#: events-manager.php:494
+#: events-manager.php:525
 msgid "Follow the previous formatting instructions."
 msgstr "Seguire le istruzioni di formattazione precedenti."
 
-#: events-manager.php:419
+#: events-manager.php:421
 msgid "Default single event format"
 msgstr "Fomato predefinito di un singolo evento"
 
-#: events-manager.php:422
+#: events-manager.php:424
 msgid "The format of a single eventy page."
 msgstr "Il formati della pagina di un singolo evento."
 
-#: events-manager.php:424
+#: events-manager.php:426
 msgid "Use <code>#_MAP</code> to insert a map."
 msgstr "Utilizzare <code>#_MAP</code> per inserire una mappa."
 
-#: events-manager.php:432
+#: events-manager.php:434
 msgid "Show events page in lists?"
 msgstr "Mostrare la pagina degli eventi nelle liste?"
 
-#: events-manager.php:434
-#: events-manager.php:506
+#: events-manager.php:436
+#: events-manager.php:508
 msgid "Yes"
 msgstr "Sì"
 
-#: events-manager.php:435
-#: events-manager.php:507
+#: events-manager.php:437
+#: events-manager.php:509
 msgid "No"
 msgstr "No"
 
-#: events-manager.php:436
+#: events-manager.php:438
 msgid "Check this option if you want the events page to appear together with other pages in pages lists."
 msgstr "Selezionare questa opzione se si vuole che  la pagina degli eventi compaia nelle liste delle pagine."
 
-#: events-manager.php:444
+#: events-manager.php:446
 msgid "Events page title"
 msgstr "Titolo della pagina degli eventi"
 
-#: events-manager.php:447
+#: events-manager.php:449
 msgid "The title on the multiple events page."
 msgstr "Il titolo della pagina che contiene più eventi."
 
-#: events-manager.php:451
+#: events-manager.php:453
 msgid "No events message"
 msgstr "Messaggio Nessun evento"
 
-#: events-manager.php:454
+#: events-manager.php:456
 msgid "The message displayed when no events are available."
 msgstr "Il messaggio visualizzato quando non ci sono eventi disponibili."
 
-#: events-manager.php:465
+#: events-manager.php:467
 msgid "RSS main title"
 msgstr "Titolo principale dell'RSS"
 
-#: events-manager.php:468
+#: events-manager.php:470
 msgid "The main title of your RSS events feed."
 msgstr "Il titolo principale del feed RSS degli eventi."
 
-#: events-manager.php:472
+#: events-manager.php:474
 msgid "RSS main description"
 msgstr "Descrizione principale dell'RSS"
 
-#: events-manager.php:475
+#: events-manager.php:477
 msgid "The main description of your RSS events feed."
 msgstr "La descrizione principale del feed RSS degli eventi."
 
-#: events-manager.php:480
+#: events-manager.php:482
 msgid "RSS title format"
 msgstr "Formato del titolo dell'RSS"
 
-#: events-manager.php:483
+#: events-manager.php:485
 msgid "The format of the title of each item in the events RSS feed."
 msgstr "Il formato del titolo di ciascun elemento nel feed RSS."
 
-#: events-manager.php:488
+#: events-manager.php:490
 msgid "RSS description format"
 msgstr "Formato della descrizione nell'RSS"
 
-#: events-manager.php:491
+#: events-manager.php:493
 msgid "The format of the description of each item in the events RSS feed."
 msgstr "Il formato della descrizione di ciascun elemento nel feed RSS."
 
-#: events-manager.php:504
+#: events-manager.php:506
 msgid "Enable Google Maps integration?"
 msgstr "Abilitare l'integrazione con Google Maps?"
 
-#: events-manager.php:508
+#: events-manager.php:510
 msgid "Check this option to enable Goggle Map integration."
 msgstr "Selezionare questa opzione per abilitare l'integrazione con Google Maps."
 
-#: events-manager.php:513
+#: events-manager.php:515
 msgid "Google Maps API Key"
 msgstr "Chiave API di Google Maps"
 
-#: events-manager.php:516
+#: events-manager.php:518
 msgid "To display Google Maps you need a Google Maps API key. Don't worry, it's free, you can get one"
 msgstr "Per visualizzare una mappa di Google Maps è necessaria una chiave API di Google Maps. Non preoccupatevi, è gratuita,  è sufficiente andare su"
 
-#: events-manager.php:516
+#: events-manager.php:518
 msgid "here"
 msgstr "questa pagina"
 
-#: events-manager.php:520
+#: events-manager.php:522
 msgid "Map text format"
 msgstr "Formato del testo della mappa"
 
-#: events-manager.php:522
+#: events-manager.php:524
 msgid "The format the text appearing in the map cloud."
 msgstr "Il fomato del testo del fumetto che appare sulla mappa."
 
-#: events-manager.php:527
+#: events-manager.php:529
 msgid "Save Changes"
 msgstr "Salva le modifiche"
 
-#: events-manager.php:903
+#: events-manager.php:905
 msgid "New Event ..."
 msgstr "Nuovo evento..."
 
-#: events-manager.php:919
+#: events-manager.php:921
 msgid "ID"
 msgstr "ID"
 
-#: events-manager.php:920
-#: events-manager.php:1027
+#: events-manager.php:922
+#: events-manager.php:1035
 msgid "Name"
 msgstr "Nome"
 
-#: events-manager.php:921
-#: events-manager.php:1058
+#: events-manager.php:923
+#: events-manager.php:1069
 msgid "Venue"
 msgstr "Locale"
 
-#: events-manager.php:922
-#: events-manager.php:1051
+#: events-manager.php:924
+#: events-manager.php:1062
 msgid "Town"
 msgstr "Città"
 
-#: events-manager.php:923
-#: events-manager.php:1065
+#: events-manager.php:925
+#: events-manager.php:1076
 msgid "Address"
 msgstr "Indirizzo"
 
-#: events-manager.php:924
+#: events-manager.php:926
 msgid "Date"
 msgstr "Data"
 
-#: events-manager.php:925
+#: events-manager.php:927
 msgid "Time"
 msgstr "Ora"
 
-#: events-manager.php:927
+#: events-manager.php:929
 msgid "Latitude"
 msgstr "Latitudine"
 
-#: events-manager.php:928
+#: events-manager.php:930
 msgid "Longitude"
 msgstr "Longitudine"
 
-#: events-manager.php:930
+#: events-manager.php:932
 msgid "Actions"
 msgstr "Azioni"
 
-#: events-manager.php:991
+#: events-manager.php:993
 msgid "Edit"
 msgstr "Modifica"
 
-#: events-manager.php:992
+#: events-manager.php:994
 msgid "Are you sure?"
 msgstr "Sei sicuro?"
 
-#: events-manager.php:992
+#: events-manager.php:994
 msgid "Delete"
 msgstr "Elimina"
 
-#: events-manager.php:1030
+#: events-manager.php:1038
 msgid "The event name. Example: Birthday party"
 msgstr "Il nome dell'evento. Esempio: festa di compleanno."
 
-#: events-manager.php:1034
+#: events-manager.php:1044
 msgid "Day and Time"
 msgstr "Giorno e ora."
 
-#: events-manager.php:1040
-msgid "The event day and time. Example: 21/11/2009 - 21:30"
-msgstr "Giorno e ora dell'evento. Esempio: 21/11/2009 - 21:30"
+#: events-manager.php:1047
+msgid "The event day and time"
+msgstr "Giorno e ora dell'evento"
 
-#: events-manager.php:1046
+#: events-manager.php:1047
+msgid "Example:"
+msgstr "Esempio: "
+
+#: events-manager.php:1047
+msgid "Example: 2008-11-27"
+msgstr "Esempio: 2008-11-27"
+
+#: events-manager.php:1057
 msgid "Map not found"
 msgstr "Mappa non trovata"
 
-#: events-manager.php:1054
-msgid "The event town. Example: Verona. If you' using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy"
+#: events-manager.php:1065
+msgid "The event town. Example: Verona. If you're using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy"
 msgstr "La città dell'evento. Esempio: Verona. Se si utilizza Google Map e si vogliono evitare ambiguità, inserire anche lo stato. Esempio: Verona, Italy"
 
-#: events-manager.php:1061
+#: events-manager.php:1072
 msgid "The venue where the event takes place. Example: Arena"
 msgstr "Il locale dove avviene l'evento. Esempio: Arena"
 
-#: events-manager.php:1068
+#: events-manager.php:1079
 msgid "The address of the venue. Example: Via Mazzini 22"
 msgstr "L'indirizzo del locale. Esempio: Via Mazzini 22"
 
-#: events-manager.php:1072
+#: events-manager.php:1083
 msgid "Notes"
 msgstr "Note"
 
-#: events-manager.php:1075
+#: events-manager.php:1086
 msgid "Notes about the event"
 msgstr "Note sull'evento"
 
-#: events-manager.php:1080
+#: events-manager.php:1091
 msgid "Submit Event"
 msgstr "Invia evento"
 
-#: events-manager.php:1345
+#: events-manager.php:1400
 msgid "You cannot enable Google Maps integration without setting an appropriate API key."
 msgstr "Non è possibile abilitare l'integrazione con Google Maps senza impostare una chiave API."
 

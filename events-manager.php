@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 1.0.1
+Version: 1.1b
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Venue, Town, Province, etc).
 Author: Davide Benini
@@ -44,9 +44,13 @@ define('DEFAULT_RSS_TITLE_FORMAT',"#_NAME");
 define('DEFAULT_MAP_TEXT_FORMAT', '<strong>#_VENUE</strong><p>#_ADDRESS</p><p>#_TOWN</p>');     
 define('DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT','<li>#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul></li>');
 define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem')); 
+define('DEBUG', false);     
+// Localised date formats as in the jquery UI datepicker plugin
+$localised_date_formats = array("am" => "dd.mm.yy","ar" => "dd/mm/yy", "bg" => "dd.mm.yy", "ca" => "mm/dd/yy", "cs" => "dd.mm.yy", "da" => "dd-mm-yy", "de" =>"dd.mm.yy", "es" => "dd/mm/yy", "fi" => "dd.mm.yy", "fr" => "dd/mm/yy", "he" => "dd/mm/yy", "hu" => "yy-mm-dd", "hy" => "dd.mm.yy", "id" => "dd/mm/yy", "is" => "dd/mm/yy", "it" => "dd/mm/yy", "ja" => "yy/mm/dd", "ko" => "yy-mm-dd", "lt" => "yy-mm-dd", "lv" => "dd-mm-yy", "nl" => "dd.mm.yy", "no" => "yy-mm-dd", "pl" => "yy-mm-dd", "pt" => "dd/mm/yy", "ro" => "mm/dd/yy", "ru" => "dd.mm.yy", "sk" => "dd.mm.yy", "sv" => "yy-mm-dd", "th" => "dd/mm/yy", "tr" => "dd.mm.yy", "ua" => "dd.mm.yy", "uk" => "dd.mm.yy", "CN" => "yy-mm-dd", "TW" => "yy/mm/dd");
+
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, alog will show in admin pages
-define('DEBUG', false);     
+
 
 load_plugin_textdomain('dbem', "/wp-content/plugins/events-manager/");
 // To enable activation through the activate function
@@ -228,10 +232,7 @@ function dbem_create_events_submenu () {
 
 // Events manager page
 function dbem_events_subpanel() {
-	
-	
-	  
-	global $wpdb;
+   global $wpdb;
 	$action=$_GET['action'];
 	$element=$_GET['event_id'];
 	$scope=$_GET['scope']; 
@@ -264,12 +265,12 @@ function dbem_events_subpanel() {
 	}
 	// UPDATE or CREATE action
 	if ($action == 'update_event') {
+		$event = array();
+		$event['event_date']= $_POST[event_date];
+		
 		// This script gets executed whenever has inserted a new event or updated an old one
-	   	$event = array();
+	   
 		$event['event_name']=$_POST[event_name];
-		$event['event_day']=$_POST[event_day];
-		$event['event_month']=$_POST[event_month];
-		$event['event_year']=$_POST[event_year];
 		$event['event_hh']=$_POST[event_hh];
 		$event['event_mm']=$_POST[event_mm];
 		$event['event_venue']=$_POST[event_venue];
@@ -279,7 +280,7 @@ function dbem_events_subpanel() {
 		$event['event_latitude']=$_POST[event_latitude];
 		$event['event_longitude']=$_POST[event_longitude];
 		$event['event_notes']=$_POST[event_notes];
-		$datetime="'{$event['event_year']}-{$event['event_month']}-{$event['event_day']} {$event['event_hh']}:{$event['event_mm']}:00'";
+		$datetime="'{$event['event_date']} {$event['event_hh']}:{$event['event_mm']}:00'";
 		// $datetime="$event_day-$event_month-$event_year $event_hh:$event_mm:00";
 		$validation_result = dbem_validate_event($event);
 		if ( $validation_result == "OK") {  
@@ -343,8 +344,9 @@ function dbem_events_subpanel() {
 							event_address,
 							event_town, 
 							event_province, 
+							DATE_FORMAT(event_time, "%Y-%m-%e") AS "event_date",
 							DATE_FORMAT(event_time, "%e") AS "event_day",
-							DATE_FORMAT(event_time, "%c") AS "event_month",
+							DATE_FORMAT(event_time, "%m") AS "event_month",
 							DATE_FORMAT(event_time, "%Y") AS "event_year",
 							DATE_FORMAT(event_time, "%k") AS "event_hh",
 							DATE_FORMAT(event_time, "%i") AS "event_mm",
@@ -814,7 +816,7 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 	
 	$timestamp = time();
 	$date_time_array = getdate($timestamp);
-  $hours = $date_time_array['hours'];
+   $hours = $date_time_array['hours'];
 	$minutes = $date_time_array['minutes'];
 	$seconds = $date_time_array['seconds'];
 	$month = $date_time_array['mon'];
@@ -833,7 +835,7 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 		$temporal_condition = "";
 	
 	$sql = "SELECT event_id, 
-			   	event_name, 
+			   event_name, 
 			  	event_venue, 
 			  	event_address,
 			  	event_town, 
@@ -845,7 +847,7 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 			  	event_time,
 			  	event_latitude,
 			  	event_longitude,
-					event_notes 
+				event_notes 
 				FROM ".$wpdb->prefix."events  
 				$temporal_condition
 				ORDER BY event_time $order
@@ -1017,6 +1019,12 @@ function dbem_events_table($events, $limit, $title) {
 <?php
 }
 function dbem_event_form($event, $title, $element) { 
+	global $localised_date_formats;
+	$locale_code = substr(get_locale(), 0, 2); 
+	
+	$localised_date_format = $localised_date_formats[$locale_code];  
+	$localised_date = str_replace("yy", $event['event_year'], str_replace("mm", $event['event_month'], str_replace("dd", $event['event_day'], $localised_date_format)));  
+	$localised_example = str_replace("yy", "2008", str_replace("mm", "11", str_replace("dd", "27", $localised_date_format))); 
 	?> 
 <form id="eventForm" method="post" action="edit.php?page=eventmanager.php&amp;action=update_event&amp;event_id=<?php echo "$element"?>">
     <div class="wrap">
@@ -1030,16 +1038,19 @@ function dbem_event_form($event, $title, $element) {
 						<?php _e('The event name. Example: Birthday party', 'dbem') ?>
 					</div>
 				</div>
+				
+				
 				<div id="event_day" class="stuffbox">
-					<h3><?php _e('Day and Time','dbem'); ?></h3>
+					<h3><?php _e('Day and Time','dbem'); ?></h3>  
 					<div class="inside">
-						<input type="text" size="3" maxlength="2" name="event_day" value="<?php echo $event['event_day']?>" /> / 
-					      <input type="text" size="3" maxlength="2" name="event_month" value="<?php echo $event['event_month']?>" /> / 
-					   <input type="text" size="5" maxlength="4" name="event_year" value="<?php echo $event['event_year'] ?>" /> -  <input type="text" size="3" maxlength="2" name="event_hh" value="<?php echo $event['event_hh'] ?>" /> : <input type="text" size="3" maxlength="2" name="event_mm" value="<?php echo $event['event_mm'] ?>" /><br/>
-						<!-- <input id="event_date" type="text" name="event_date" value="<?php //echo $event['event_date'] ?>" /><br/> -->
-						<?php _e('The event day and time. Example: 21/11/2009 - 21:30', 'dbem') ?>
+						<input id="localised-date" type="text" name="localised_event_date" value="<?php echo $localised_date ?>" style ="display: none;" /><input id="date-to-submit" type="text" name="event_date" value="<?php echo $event['event_date'] ?>" /> - <input type="text" size="3" maxlength="2" name="event_hh" value="<?php echo $event['event_hh'] ?>" /> : <input type="text" size="3" maxlength="2" name="event_mm" value="<?php echo $event['event_mm'] ?>" /><br/>
+						<?php _e('The event day and time', 'dbem') ?>. <span id="localised_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_example"; ?></span><span id="no-javascript-example"><?php _e("Example: 2008-11-27", "dbem")?></span> - 20:30
+						
 					</div>
 				</div>
+				
+				
+						
 			    <?php
 				$gmap_is_active = get_option('dbem_gmap_is_active'); 
 				if ($gmap_is_active) {
@@ -1051,7 +1062,7 @@ function dbem_event_form($event, $title, $element) {
 					<h3><?php _e('Town','dbem'); ?></h3>
 					<div class="inside">
 						<input id="town-input" type="text" name="event_town" value="<?php echo $event['event_town']?>" /><br/>
-						<?php _e('The event town. Example: Verona. If you\' using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy', 'dbem') ?>
+						<?php _e('The event town. Example: Verona. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy', 'dbem') ?>
 					</div>
 				</div>
 				<div id="event_venue" class="stuffbox">
@@ -1092,7 +1103,12 @@ function dbem_validate_event($event) {
 		return "$field missing!";
 		}       
 	}
-	if (checkdate ((int)$event['event_month'], (int)$event['event_day'], (int)$event['event_year']) == FALSE) {
+	
+	$event_year = substr($event['event_date'],0,4);
+	$event_month = substr($event['event_date'],5,2);
+	$event_day = substr($event['event_date'],8,2);
+	
+	if (checkdate ($event_month, $event_day, $event_year) == FALSE) {
 		return "invalid date!"  ;
 	}                                                         
 	$time = $event['event_hh'].":".$event['event_mm'];
@@ -1106,17 +1122,56 @@ function dbem_validate_event($event) {
 
 // Enqueing jQuery script to make sure it's loaded
 function dbem_enque_scripts(){ 
-	wp_enqueue_script( 'jquery' );
+	wp_enqueue_script( 'jquery' );     
+	// wp_enqueue_script('datepicker','/wp-content/plugins/events-manager/jquery-ui-datepicker/jquery-ui-personalized-1.6b.js', array('jquery') );
 }
 add_action ('template_redirect', 'dbem_enque_scripts');
 
+function url_exists($url) {
+     if ((strpos($url, "http")) === false) $url = "http://" . $url;
+     if (is_array(@get_headers($url)))
+          return true;
+     else
+          return false;
+}
+
 // General script to make sure hidden fields are shown when containing data
 function dbem_admin_general_script(){  ?>
+	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/ui.datepicker.js" type="text/javascript"></script>
+   
+	<?php
+	// Check if the locale is there and loads it
+	$locale_code = substr(get_locale(), 0, 2);   
+	$locale_file = get_bloginfo('url')."/wp-content/plugins/events-manager/js/i18n/ui.datepicker-$locale_code.js";
+	// echo $locale_file;
+	if(url_exists($locale_file)) {   ?>
+	  <script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/i18n/ui.datepicker-<?php echo $locale_code;?>.js" type="text/javascript"></script>   
+	<?php } ?>                 
 	
-  	<script type="text/javascript">
- 	//<![CDATA[ 
-	// TODO: make more general, to support also latitude and longitude (when added)
-		jQuery(document).ready( function() {
+	
+	<style type='text/css' media='all'>
+		@import "<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/ui.datepicker.css";
+	</style>
+	<script type="text/javascript">
+ 	//<![CDATA[        
+   // TODO: make more general, to support also latitude and longitude (when added)
+		$j=jQuery.noConflict();   
+		$j(document).ready( function() {
+			locale_format = "ciao";
+			$j("#localised_example").show();
+			$j("#no-javascript-example").hide();
+			$j("#localised-date").show();
+			$j("#date-to-submit").hide();
+			$j("#localised-date").datepicker($j.extend({},
+		  		($j.datepicker.regional["it"], 
+				{altField: "#date-to-submit", 
+				altFormat: "yy-mm-dd"})));
+			
+			
+			
+			
+			
+			
 	    	jQuery('.postbox h3').prepend('<a class="togbox">+</a> ');
 	    	if(jQuery("textarea[@name=event_notes]").val()!="") {
 			   jQuery("textarea[@name=event_notes]").parent().parent().removeClass('closed');
