@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 1.1b
+Version: 1.1b2
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Venue, Town, Province, etc).
 Author: Davide Benini
@@ -47,7 +47,8 @@ define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));
 define('DEBUG', false);     
 // Localised date formats as in the jquery UI datepicker plugin
 $localised_date_formats = array("am" => "dd.mm.yy","ar" => "dd/mm/yy", "bg" => "dd.mm.yy", "ca" => "mm/dd/yy", "cs" => "dd.mm.yy", "da" => "dd-mm-yy", "de" =>"dd.mm.yy", "es" => "dd/mm/yy", "fi" => "dd.mm.yy", "fr" => "dd/mm/yy", "he" => "dd/mm/yy", "hu" => "yy-mm-dd", "hy" => "dd.mm.yy", "id" => "dd/mm/yy", "is" => "dd/mm/yy", "it" => "dd/mm/yy", "ja" => "yy/mm/dd", "ko" => "yy-mm-dd", "lt" => "yy-mm-dd", "lv" => "dd-mm-yy", "nl" => "dd.mm.yy", "no" => "yy-mm-dd", "pl" => "yy-mm-dd", "pt" => "dd/mm/yy", "ro" => "mm/dd/yy", "ru" => "dd.mm.yy", "sk" => "dd.mm.yy", "sv" => "yy-mm-dd", "th" => "dd/mm/yy", "tr" => "dd.mm.yy", "ua" => "dd.mm.yy", "uk" => "dd.mm.yy", "CN" => "yy-mm-dd", "TW" => "yy/mm/dd");
-
+//required fiealds
+$required_fields = array('event_name'); 
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, alog will show in admin pages
 
@@ -83,6 +84,7 @@ add_filter('dbem_notes_map', 'js_escape');
 /* Creating the wp_events table to store event data*/
 function dbem_install() {
 	global  $wpdb, $user_level;
+	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');  
 	$table_name = $wpdb->prefix.TBNAME;
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		// check the user is allowed to make changes
@@ -95,6 +97,7 @@ function dbem_install() {
 			event_author mediumint(9) NOT NULL,
 			event_name tinytext NOT NULL,
 			event_time datetime NOT NULL,
+			event_end_time datetime NOT NULL, 
 			event_venue tinytext NOT NULL,
 			event_address tinytext NOT NULL,
 			event_town tinytext NOT NULL,
@@ -104,7 +107,7 @@ function dbem_install() {
 			event_longitude float DEFAULT NULL,
 			UNIQUE KEY (event_id)
 			);";
-		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		
 		dbDelta($sql);
 		//--------------  DEBUG CODE to insert a few events n the new table
 		// get the current timestamp into an array
@@ -124,13 +127,16 @@ function dbem_install() {
 		$in_four_weeks = strftime('%Y-%m-%d 16:00:00',mktime($hours,$minutes,$seconds,$month,$day+28,$year)); 
 		$in_one_year = strftime('%Y-%m-%d 22:00:00',mktime($hours,$minutes,$seconds,$month,$day,$year+1)); 
 		
-		$wpdb->query("INSERT INTO ".$wpdb->prefix."events (event_name, event_venue, event_address, event_time, event_town)
-				VALUES ('Monster gig','Wembley stadium', 'Wembley', '$in_one_week','London')");
-		$wpdb->query("INSERT INTO ".$wpdb->prefix."events (event_name, event_venue,event_address, event_time, event_town)
-				VALUES ('Fiesta Mexicana','Hard Rock Cafe', '1501 Broadway', '$in_four_weeks','New York')");
-	  $wpdb->query("INSERT INTO ".$wpdb->prefix."events (event_name, event_venue,event_address, event_time, event_town)
-					VALUES ('Gladiators fight','Arena', 'Piazza Bra', '$in_one_year','Verona')");
-	}
+		$wpdb->query("INSERT INTO ".$wpdb->prefix."events (event_name, event_venue, event_address, event_time, event_end_time, event_town)
+				VALUES ('Monster gig','Wembley stadium', 'Wembley', '$in_one_week', '$in_one_week', 'London')");
+		$wpdb->query("INSERT INTO ".$wpdb->prefix."events (event_name, event_venue,event_address, event_time, event_end_time, event_town)
+				VALUES ('Fiesta Mexicana','Hard Rock Cafe', '1501 Broadway', '$in_four_weeks','$in_four_weeks','New York')");
+	  $wpdb->query("INSERT INTO ".$wpdb->prefix."events (event_name, event_venue,event_address, event_time,event_end_time, event_town)
+					VALUES ('Gladiators fight','Arena', 'Piazza Bra', '$in_one_year','$in_one_year','Verona')");
+	}  else {
+		// If the plugin was at a version earlier than 1.1b1, adds the event_end_time column
+		maybe_add_column($table_name, 'event_end_time', "alter table $table_name add event_end_time datetime NOT NULL;");
+	}    
 
 
    
@@ -146,10 +152,12 @@ function dbem_install() {
   } else {
 	  dbem_create_events_page(); 
 	}
-    //if (get_option('dbem_events_page'))
-			//$event_page_id = get_option('dbem_events_page'); 
-		//dbem_create_events_page();
+   
 	// Adding plugin options
+	$use_event_end = get_option('dbem_use_event_end');
+	if (empty($use_event_end))
+		update_option('dbem_use_event_end', 0);
+		
 	$event_list_item_format = get_option('dbem_event_list_item_format');
 	if (empty($event_list_item_format))
 		update_option('dbem_event_list_item_format', DEFAULT_EVENT_LIST_ITEM_FORMAT); 
@@ -206,6 +214,7 @@ function dbem_install() {
 	if (empty($gmap_key))
 		update_option('dbem_gmap_key', '');
 	
+	
 }
       
 function dbem_create_events_page(){
@@ -242,7 +251,7 @@ function dbem_events_subpanel() {
 	 $order = "ASC";
 	if ($offset=="")
 	 $offset = "0";
-	
+		
 	// Debug code, to make sure I get the correct page
 	//$event_page_id=get_option('dbem_event_page');
 	if (DEBUG) {
@@ -265,14 +274,27 @@ function dbem_events_subpanel() {
 	}
 	// UPDATE or CREATE action
 	if ($action == 'update_event') {
+
 		$event = array();
 		$event['event_date']= $_POST[event_date];
-		
-		// This script gets executed whenever has inserted a new event or updated an old one
+		$event['event_end_date'] = $_POST[event_end_date]; 
+		// Set event end time to event time if not valid
+		if (!_dbem_is_date_valid($event['event_end_date']))
+			$event['event_end_date'] = $event['event-date'];
 	   
 		$event['event_name']=$_POST[event_name];
-		$event['event_hh']=$_POST[event_hh];
-		$event['event_mm']=$_POST[event_mm];
+		$event['event_hh'] = $_POST[event_hh];
+		$event['event_mm'] = $_POST[event_mm];
+		$event_time = $event['event_hh'].":".$event['event_mm'];
+				
+		$event['event_end_hh']=$_POST[event_end_hh];
+		$event['event_end_mm']=$_POST[event_end_mm];  
+		$event_end_time = $event['event_end_hh'].":".$event['event_end_mm'];        
+		// Set event end time to event time if not valid
+
+		if(!_dbem_is_time_valid($event_end_time))
+			$event_end_time = $event_time;
+		
 		$event['event_venue']=$_POST[event_venue];
 		$event['event_address']=$_POST[event_address];
 		$event['event_town']=$_POST[event_town];
@@ -280,15 +302,16 @@ function dbem_events_subpanel() {
 		$event['event_latitude']=$_POST[event_latitude];
 		$event['event_longitude']=$_POST[event_longitude];
 		$event['event_notes']=$_POST[event_notes];
-		$datetime="'{$event['event_date']} {$event['event_hh']}:{$event['event_mm']}:00'";
+		$datetime="'{$event['event_date']} $event_time:00'";
+		$end_datetime="'{$event['event_end_date']} $event_end_time:00'"; 
 		// $datetime="$event_day-$event_month-$event_year $event_hh:$event_mm:00";
 		$validation_result = dbem_validate_event($event);
 		if ( $validation_result == "OK") {  
 		  	// validation successful
 		  	if(!$element) {
 				// INSERT new event
-				$sql="INSERT INTO ".$wpdb->prefix."events (event_name, event_venue, event_town, event_address, event_province, event_time, event_latitude, event_longitude, event_notes)
-						VALUES ('".$event['event_name']."','".$event['event_venue']."','".$event['event_town']."','".$event['event_address']."','".$event['event_province']."',".$datetime.",'".$event['event_latitude']."','".$event['event_longitude']."','".$event['event_notes']."');";
+				$sql="INSERT INTO ".$wpdb->prefix."events (event_name, event_venue, event_town, event_address, event_province, event_time, event_end_time, event_latitude, event_longitude, event_notes)
+						VALUES ('".$event['event_name']."','".$event['event_venue']."','".$event['event_town']."','".$event['event_address']."','".$event['event_province']."',".$datetime.",".$end_datetime.",'".$event['event_latitude']."','".$event['event_longitude']."','".$event['event_notes']."');";
 			$feedback_message = __('New event successfully inserted!','dbem');   
 			} else {
 				// UPDATE old event
@@ -301,7 +324,8 @@ function dbem_events_subpanel() {
 					"event_latitude='".$event['event_latitude']."',".
 					"event_longitude='".$event['event_longitude']."',".
 					"event_notes='".$event['event_notes']."',".
-					"event_time=$datetime ".
+					"event_time=$datetime ".",".
+					"event_end_time=$end_datetime ".  
 					"WHERE event_id="."$element";
 				$feedback_message = __('Event','dbem')." $element ".__('updated','dbem')."!";
 				}
@@ -325,7 +349,7 @@ function dbem_events_subpanel() {
 				if (DEBUG) 
 					echo "</div>"; // end of debug
 				echo "<div id='message' class='error '>
-						<p>Ach, there's a problem here: $validation_result</p>
+						<p>".__("Ach, there's a problem here:","dbem")." $validation_result</p>
 					  </div>";	
 				dbem_event_form($event,"Edit event $element" ,$element);
 				 
@@ -349,7 +373,13 @@ function dbem_events_subpanel() {
 							DATE_FORMAT(event_time, "%m") AS "event_month",
 							DATE_FORMAT(event_time, "%Y") AS "event_year",
 							DATE_FORMAT(event_time, "%k") AS "event_hh",
-							DATE_FORMAT(event_time, "%i") AS "event_mm",
+							DATE_FORMAT(event_time, "%i") AS "event_mm", 
+							DATE_FORMAT(event_end_time, "%Y-%m-%e") AS "event_end_date",
+						  	DATE_FORMAT(event_end_time, "%e") AS "event_end_day",
+						  	DATE_FORMAT(event_end_time, "%m") AS "event_end_month",
+						  	DATE_FORMAT(event_end_time, "%Y") AS "event_end_year",
+						  	DATE_FORMAT(event_end_time, "%k") AS "event_end_hh",
+						  	DATE_FORMAT(event_end_time, "%i") AS "event_end_mm",
 							event_latitude,
 							event_longitude,
 							event_notes
@@ -383,9 +413,9 @@ function dbem_events_subpanel() {
 					$scope = "future";   
 			}
 		  $limit = 10;
-			$events = dbem_get_events($limit, $scope, $order,$offset);  
+		  $events = dbem_get_events($limit, $scope, $order,$offset);  
 			
-			dbem_events_table($events, $limit, $title);
+		  dbem_events_table($events, $limit, $title);
 			
 	}
 	
@@ -400,7 +430,19 @@ function dbem_options_subpanel() {
 		<h2><?php _e('Event Manager Options','dbem'); ?></h2>
 			<form id="dbem_options_form" method="post" action="options.php">
 				<?php wp_nonce_field('update-options'); ?>
-            	<table class="form-table">
+            <table class="form-table">
+					<?php $use_event_end = get_option('dbem_use_event_end'); ?>   
+				 
+					<tr valign="top">
+						<th scope="row"><?php _e('Use events end?','dbem'); ?></th>
+					  	<td>  
+							<input id="dbem_use_event_end_yes" name="dbem_use_event_end" type="radio" value="1" <?php if($use_event_end) echo "checked='checked'"; ?> /><?php _e('Yes'); ?> <br />
+							<input name="dbem_use_event_end" type="radio" value="0" <?php if(!$use_event_end) echo "checked='checked'"; ?> /> <?php _e('No'); ?>  <br />
+							<?php _e('Check this option if you want to set and end date/time for your events.','dbem')?>
+						</td>
+					</tr>     
+					
+				    
 					<tr valign="top">
 						<th scope="row"><?php _e('Default event list format','dbem')?></th>
 						<td><textarea name="dbem_event_list_item_format" id="dbem_event_list_item_format" rows="6" cols="60"><?php echo (get_option('dbem_event_list_item_format'));?></textarea><br/>
@@ -529,7 +571,7 @@ function dbem_options_subpanel() {
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message,  dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format" />
+				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message,  dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format" />
 				
 				
 			</form>
@@ -745,8 +787,9 @@ function dbem_is_multiple_events_page() {
 
 function dbem_replace_placeholders($format, $event, $target="html") {
 	$event_string = $format;
-	preg_match_all("/#_?[A-Za-z]+/", $format, $placeholders);
+	preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
 	foreach($placeholders[0] as $result) {    
+		// echo "RESULT: $result <br>";
 		// matches alla fields placeholder
 		if (preg_match('/#_MAP/', $result)) {
 		 	$gmap_is_active = get_option('dbem_gmap_is_active'); 
@@ -793,11 +836,24 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 					$field_value = apply_filters('dbem_general_rss', $field_value); 
 			}
 			$event_string = str_replace($result, $field_value , $event_string ); 
-	 	}
+	 	}   
+		// matches all PHP time placeholders for endtime
+		if (preg_match('/^#@[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $event->event_end_time), $event_string ); 
+			
+			// echo "_fine_, infatti result = $result e ".mysql2date(ltrim($result, "#"), $event->event_end_time);
+			// 			echo "STRINGA: $event_string";
+			// 		               
+	 
+		} 
+		    
+		
 		// matches all PHP time placeholders
-		if (preg_match('/#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]/', $result)) {
+		if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
+			// echo "-inizio-";
 			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $event->event_time),$event_string );  
-		}
+			// echo $event_string;  
+		}       
 	}
 	return $event_string;	
 	
@@ -844,7 +900,12 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 			  	DATE_FORMAT(event_time, '%Y') AS 'event_year',
 			  	DATE_FORMAT(event_time, '%k') AS 'event_hh',
 			  	DATE_FORMAT(event_time, '%i') AS 'event_mm',
+				DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',
+			  	DATE_FORMAT(event_end_time, '%Y') AS 'event_end_year',
+			  	DATE_FORMAT(event_end_time, '%k') AS 'event_end_hh',
+			  	DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',
 			  	event_time,
+				event_end_time,
 			  	event_latitude,
 			  	event_longitude,
 				event_notes 
@@ -870,11 +931,16 @@ function dbem_get_event($event_id) {
 			  	DATE_FORMAT(event_time, '%e') AS 'event_day',
 			  	DATE_FORMAT(event_time, '%Y') AS 'event_year',
 			  	DATE_FORMAT(event_time, '%k') AS 'event_hh',
-			  	DATE_FORMAT(event_time, '%i') AS 'event_mm',
+			  	DATE_FORMAT(event_time, '%i') AS 'event_mm', 
+			   DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',
+		  		DATE_FORMAT(event_end_time, '%Y') AS 'event_end_year',
+		  		DATE_FORMAT(event_end_time, '%k') AS 'event_end_hh',
+		  		DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',
 			  	event_time,
-			  	event_latitude,
+			  	event_end_time,
+				event_latitude,
 			  	event_longitude,
-					event_notes
+				event_notes
 				FROM ".$wpdb->prefix."events  
 			    WHERE event_id = $event_id";   
 	     
@@ -897,8 +963,10 @@ function dbem_events_table($events, $limit, $title) {
 	if (isset($_GET['offset'])) 
 		$offset = $_GET['offset'];
 	
+	$use_events_end = get_option('dbem_use_event_end');
 		
-	?> 
+	?>
+	 
 	<div class="wrap">
 		  
 		 <h2><?php echo $title; ?></h2>   
@@ -916,15 +984,20 @@ function dbem_events_table($events, $limit, $title) {
 		
   	
 	<table class="widefat">
-  	  <thead>
-				<tr>
+  		<thead>
+			<tr>
   				<th><?php _e('ID', 'dbem');?></th>
-  	  		<th><?php _e('Name', 'dbem');?></th>
+  	  			<th><?php _e('Name', 'dbem');?></th>
   	   		<th><?php _e('Venue', 'dbem');?></th>
   	   		<th><?php _e('Town', 'dbem');?></th>
-	   			<th><?php _e('Address', 'dbem');?></th>
-  	   		<th><?php _e('Date', 'dbem');?></th>
-  	   		<th><?php _e('Time', 'dbem');?></th>
+	   		<th><?php _e('Address', 'dbem');?></th>
+  	    <?php if (!$use_events_end) {?>
+				<th colspan="2"><?php _e('Date and time', 'dbem');?></th>
+  	    <?php } else {?>
+				<th colspan="2"><?php _e('Beginning', 'dbem');?></th>
+				<th colspan="2"><?php _e('End', 'dbem');?></th>
+		 <?php } ?>
+				<th><?php _e('Time', 'dbem');?></th>
 	   		 	<?php if (false) { ?>
 						<th><?php _e('Latitude', 'dbem');?></th>
 	   				<th><?php _e('Longitude', 'dbem');?></th> 
@@ -939,11 +1012,12 @@ function dbem_events_table($events, $limit, $title) {
   			$class = ($i % 2) ? ' class="alternate"' : '';
 				$month = mysql2date('M', $event->event_time);
 				$weekday = mysql2date('D', $event->event_time); 
+				$end_month = mysql2date('M', $event->event_end_time);
+				$end_weekday = mysql2date('D', $event->event_end_time);
 				$style = "";
-			  
-				$timestamp = time();
+			   $timestamp = time();
 				$date_time_array = getdate($timestamp);
-			  $this_hours = $date_time_array['hours'];
+			  	$this_hours = $date_time_array['hours'];
 				$this_minutes = $date_time_array['minutes'];
 				$this_seconds = $date_time_array['seconds'];
 				$this_month = $date_time_array['mon'];
@@ -982,6 +1056,14 @@ function dbem_events_table($events, $limit, $title) {
   	    <td>
   	     <?php echo "$event->event_hh : $event->event_mm"; ?>
   	    </td>
+		 <?php if ($use_events_end) { ?>
+		  <td>
+			<?php echo "$end_weekday $event->event_end_day  $end_month $event->event_end_year"; ?> 
+		  </td>
+		  <td>   
+			<?php echo "$event->event_end_hh : $event->event_end_mm"; ?>   
+			</td>
+		 <?php } ?>
 		  <?php if (false) { ?> 
 			<td>
 	  	    <?php echo "$event->event_latitude"; ?>
@@ -1021,10 +1103,29 @@ function dbem_events_table($events, $limit, $title) {
 function dbem_event_form($event, $title, $element) { 
 	global $localised_date_formats;
 	$locale_code = substr(get_locale(), 0, 2); 
-	
-	$localised_date_format = $localised_date_formats[$locale_code];  
-	$localised_date = str_replace("yy", $event['event_year'], str_replace("mm", $event['event_month'], str_replace("dd", $event['event_day'], $localised_date_format)));  
+	$localised_date_format = $localised_date_formats[$locale_code];
 	$localised_example = str_replace("yy", "2008", str_replace("mm", "11", str_replace("dd", "27", $localised_date_format))); 
+	$localised_end_example = str_replace("yy", "2008", str_replace("mm", "11", str_replace("dd", "28", $localised_date_format)));
+	
+	if ($event['event_date'] != "") {
+		preg_match("/(\d{4})-(\d{2})-(\d{2})/",$event['event_date'], $matches );
+		$year = $matches[1];
+		$month = $matches[2];
+		$day = $matches[3]; 
+		$localised_date = str_replace("yy", $year, str_replace("mm", $month, str_replace("dd", $day, $localised_date_format)));  
+	} else {
+		$localised_date = "";
+	}
+	if ($event['event_end_date'] != "") {  
+		preg_match("/(\d{4})-(\d{2})-(\d{2})/",$event['event_end_date'], $matches );
+		$end_year = $matches[1];
+		$end_month = $matches[2];
+		$end_day = $matches[3];
+	   $localised_end_date = str_replace("yy", $end_year, str_replace("mm", $end_month, str_replace("dd", $end_day, $localised_date_format)));
+	} else {
+		$localised_end_date = "";
+	}    
+	 
 	?> 
 <form id="eventForm" method="post" action="edit.php?page=eventmanager.php&amp;action=update_event&amp;event_id=<?php echo "$element"?>">
     <div class="wrap">
@@ -1043,13 +1144,27 @@ function dbem_event_form($event, $title, $element) {
 				<div id="event_day" class="stuffbox">
 					<h3><?php _e('Day and Time','dbem'); ?></h3>  
 					<div class="inside">
-						<input id="localised-date" type="text" name="localised_event_date" value="<?php echo $localised_date ?>" style ="display: none;" /><input id="date-to-submit" type="text" name="event_date" value="<?php echo $event['event_date'] ?>" /> - <input type="text" size="3" maxlength="2" name="event_hh" value="<?php echo $event['event_hh'] ?>" /> : <input type="text" size="3" maxlength="2" name="event_mm" value="<?php echo $event['event_mm'] ?>" /><br/>
-						<?php _e('The event day and time', 'dbem') ?>. <span id="localised_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_example"; ?></span><span id="no-javascript-example"><?php _e("Example: 2008-11-27", "dbem")?></span> - 20:30
+						<input id="localised-date" type="text" name="localised_event_date" value="<?php echo $localised_date ?>" style ="display: none;" />
+			  			<input id="date-to-submit" type="text" name="event_date" value="<?php echo $event['event_date'] ?>" style="background: #FCFFAA" /> - <input type="text" size="3" maxlength="2" name="event_hh" value="<?php echo $event['event_hh'] ?>" /> : <input type="text" size="3" maxlength="2" name="event_mm" value="<?php echo $event['event_mm'] ?>" /><br/>
+						<?php _e('The event day and time', 'dbem') ?>. <span id="localised_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_end_example"; ?></span><span id="no-javascript-example"><?php _e("Example: 2008-11-28", "dbem")?></span> - 20:30
 						
 					</div>
-				</div>
+				</div>   
+				
+				<?php $use_events_end = get_option('dbem_use_event_end'); ?>
+				<?php if($use_events_end) { ?>
+					 <div id="event_end_day" class="stuffbox">
+							<h3><?php _e('End day and Time','dbem'); ?></h3>  
+							<div class="inside">
+								<input id="localised-end-date" type="text" name="localised_event_end_date" value="<?php echo $localised_end_date ?>" style ="display: none; " /><input id="end-date-to-submit" type="text" name="event_end_date" value="<?php echo $event['event_end_date'] ?>" style="background: #FCFFAA" /> - <input type="text" size="3" maxlength="2" name="event_end_hh" value="<?php echo $event['event_end_hh'] ?>" /> : <input type="text" size="3" maxlength="2" name="event_end_mm" value="<?php echo $event['event_end_mm'] ?>" /><br/>
+								<?php _e('The day and time of the event end', 'dbem') ?>. <span id="localised_end_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_example"; ?></span><span id="no-javascript-example"><?php _e("Example: 2008-11-27", "dbem")?></span> - 20:30
+
+							</div>
+					 </div>
 				
 				
+				
+				<?php } ?>
 						
 			    <?php
 				$gmap_is_active = get_option('dbem_gmap_is_active'); 
@@ -1097,10 +1212,11 @@ function dbem_event_form($event, $title, $element) {
 function dbem_validate_event($event) {
 	// TODO decide which fields are required
 	// Implement type check for dates, etc
-	$required_fields = array('event_name');
+	global $required_fields;
+	
 	foreach ($required_fields as $field) {
 		if ($event[$field] == "" ) {
-		return "$field missing!";
+		return $field.__(" is missing!", "dbem");
 		}       
 	}
 	
@@ -1108,18 +1224,32 @@ function dbem_validate_event($event) {
 	$event_month = substr($event['event_date'],5,2);
 	$event_day = substr($event['event_date'],8,2);
 	
-	if (checkdate ($event_month, $event_day, $event_year) == FALSE) {
-		return "invalid date!"  ;
+	if (!_dbem_is_date_valid($event['event_date'])) {
+		return __("invalid date!", "dbem");
 	}                                                         
 	$time = $event['event_hh'].":".$event['event_mm'];
-	if ($required_fields['event_hh'] && !preg_match ("/([01]\d|2[0-3])(:[0-5]\d){0,2}/", $time )) {
-		//TODO sistema validate time
-	}
+	$end_time = $event['event_end_hh'].":".$event['event_end_mm']; 
+	if ( !_dbem_is_time_valid($time) ) {
+		return _("invalid time","dbem");
+	} 
+	if ($event['event_date']." ".$time  > $event['event_end_date']." ".$end_time)
+		return __("end date before begin date", "dbem");
 	return "OK";
 	
 }
 
-
+function _dbem_is_date_valid($date) {
+	$year = substr($date,0,4);
+	$month = substr($date,5,2);
+	$day = substr($date,8,2);
+	return (checkdate($month, $day, $year));
+}  
+function _dbem_is_time_valid($time) {  
+	echo "Time validation: _".$time."_<br/>";
+  	$result = preg_match ("/([01]\d|2[0-3])(:[0-5]\d)/", $time);
+	echo "$result<br/>";
+	return ($result);
+}
 // Enqueing jQuery script to make sure it's loaded
 function dbem_enque_scripts(){ 
 	wp_enqueue_script( 'jquery' );     
@@ -1161,11 +1291,17 @@ function dbem_admin_general_script(){  ?>
 			$j("#localised_example").show();
 			$j("#no-javascript-example").hide();
 			$j("#localised-date").show();
+			$j("#localised-end-date").show(); 
 			$j("#date-to-submit").hide();
+			$j("#end-date-to-submit").hide(); 
 			$j("#localised-date").datepicker($j.extend({},
 		  		($j.datepicker.regional["it"], 
 				{altField: "#date-to-submit", 
 				altFormat: "yy-mm-dd"})));
+	 	  $j("#localised-end-date").datepicker($j.extend({},
+		  		($j.datepicker.regional["it"], 
+		  		{altField: "#end-date-to-submit", 
+		  		altFormat: "yy-mm-dd"})));
 			
 			
 			

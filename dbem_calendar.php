@@ -112,13 +112,15 @@ function dbem_get_calendar($month="") {
 
 	$calendar="<div id='dbem-calendar'>";
 	
+	$days_initials = "<td>".dbem_translate_and_trim("Monday")."</td><td>".dbem_translate_and_trim("Tuesday")."</td><td>".dbem_translate_and_trim("Wednesday")."</td><td>".dbem_translate_and_trim("Thursday")."</td><td>".dbem_translate_and_trim("Friday")."</td><td>".dbem_translate_and_trim("Saturday")."</td><td>".dbem_translate_and_trim("Sunday")."</td>\n";
+	
 	// Build the heading portion of the calendar table 
 	$calendar .=  "<table id='dbem-calendar-table'>\n". 
 	   	"<thead>\n<tr>\n".
 		"<td colspan='7'>$month_name $year</td>\n". 
 		"</tr>\n</thead>\n".	
 	    "<tr class='days-names'>\n". 
-	    "<td>".__('M_Monday_initial')."</td><td>".__('T_Tuesday_initial')."</td><td>".__('W_Wednesday_initial')."</td><td>".__('T_Thursday_initial')."</td><td>".__('F_Friday_initial')."</td><td>".__('S_Saturday_initial')."</td><td>".__('S_Sunday_initial')."</td>\n". 
+	    $days_initials. 
 	    "</tr>\n"; 
 
 	// Now we break each key of the array  
@@ -275,5 +277,7 @@ function dbem_calendar_style() {
 }
 add_action('wp_head', 'dbem_calendar_style');
  
-
+function dbem_translate_and_trim($string, $length = 1) {
+	return substr(__($string), 0, $length);
+}
 ?>
