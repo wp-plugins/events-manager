@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 1.1b2
+Version: 1.5a
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Venue, Town, Province, etc).
 Author: Davide Benini
@@ -27,10 +27,10 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 /*************************************************/ 
-include("dbem_calendar.php");      
-include("dbem_widgets.php"); 
+
 // Setting constants
-define('TBNAME','events'); //TABLE NAME
+define('EVENTS_TBNAME','events'); //TABLE NAME
+define('VENUES_TBNAME','venues'); //TABLE NAME 
 define('DEFAULT_EVENT_PAGE_NAME', 'Events');   
 define('DBEM_PAGE','<!--DBEM_EVENTS_PAGE-->'); //EVENTS PAGE
 define('MIN_CAPABILITY', 'edit_posts');	// Minimum user level to access calendars
@@ -44,7 +44,22 @@ define('DEFAULT_RSS_TITLE_FORMAT',"#_NAME");
 define('DEFAULT_MAP_TEXT_FORMAT', '<strong>#_VENUE</strong><p>#_ADDRESS</p><p>#_TOWN</p>');     
 define('DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT','<li>#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul></li>');
 define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem')); 
-define('DEBUG', false);     
+
+// DEBUG constant for developing
+// if you are hacking this plugin, set to TRUE, alog will show in admin pages
+define('DEBUG', true);     
+
+if (DEBUG)  {
+	require('FirePHPCore/fb.php');  
+	ob_start();
+	fb('FirePHP activated');
+} 
+
+dbem_log('Dbem-log working');
+// INCLUDES
+include("dbem_calendar.php");      
+include("dbem_widgets.php");
+  
 // Localised date formats as in the jquery UI datepicker plugin
 $localised_date_formats = array("am" => "dd.mm.yy","ar" => "dd/mm/yy", "bg" => "dd.mm.yy", "ca" => "mm/dd/yy", "cs" => "dd.mm.yy", "da" => "dd-mm-yy", "de" =>"dd.mm.yy", "es" => "dd/mm/yy", "fi" => "dd.mm.yy", "fr" => "dd/mm/yy", "he" => "dd/mm/yy", "hu" => "yy-mm-dd", "hy" => "dd.mm.yy", "id" => "dd/mm/yy", "is" => "dd/mm/yy", "it" => "dd/mm/yy", "ja" => "yy/mm/dd", "ko" => "yy-mm-dd", "lt" => "yy-mm-dd", "lv" => "dd-mm-yy", "nl" => "dd.mm.yy", "no" => "yy-mm-dd", "pl" => "yy-mm-dd", "pt" => "dd/mm/yy", "ro" => "mm/dd/yy", "ru" => "dd.mm.yy", "sk" => "dd.mm.yy", "sv" => "yy-mm-dd", "th" => "dd/mm/yy", "tr" => "dd.mm.yy", "ua" => "dd.mm.yy", "uk" => "dd.mm.yy", "CN" => "yy-mm-dd", "TW" => "yy/mm/dd");
 //required fiealds
@@ -80,12 +95,49 @@ add_filter('dbem_notes_rss', 'ent2ncr', 8);
 
 add_filter('dbem_notes_map', 'convert_chars', 8);
 add_filter('dbem_notes_map', 'js_escape');
+      
+// Custom log function
+function dbem_log($text) {
+	if (DEBUG)
+		fb($text,FirePHP::LOG);
+}
+
 
 /* Creating the wp_events table to store event data*/
 function dbem_install() {
+   dbem_log('install function called');
+ 	// Creates the events table if necessary
+	dbem_create_events_table();  
+	
+	dbem_create_venues_table();
+  	
+   dbem_add_options();
+   
+	// Create events page if necessary
+ 	$events_page_id = get_option('dbem_events_page')  ;
+	if ($events_page_id != "" ) {
+		query_posts("page_id=$events_page_id");
+		$count = 0;
+		while(have_posts()) { the_post();
+	 		$count++;
+		}
+		if ($count == 0)
+			dbem_create_events_page(); 
+  } else {
+	  dbem_create_events_page(); 
+  }
+    //if (get_option('dbem_events_page'))
+			//$event_page_id = get_option('dbem_events_page'); 
+		//dbem_create_events_page();
+
+	
+}
+
+function dbem_create_events_table() {
+	
 	global  $wpdb, $user_level;
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');  
-	$table_name = $wpdb->prefix.TBNAME;
+	$table_name = $wpdb->prefix.EVENTS_TBNAME;
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		// check the user is allowed to make changes
 		// get_currentuserinfo();
@@ -136,28 +188,54 @@ function dbem_install() {
 	}  else {
 		// If the plugin was at a version earlier than 1.1b1, adds the event_end_time column
 		maybe_add_column($table_name, 'event_end_time', "alter table $table_name add event_end_time datetime NOT NULL;");
-	}    
-
-
-   
- 	$events_page_id = get_option('dbem_events_page')  ;
-	if ($events_page_id != "" ) {
-		query_posts("page_id=$events_page_id");
-		$count = 0;
-		while(have_posts()) { the_post();
-	 		$count++;
-		}
-		if ($count == 0)
-			dbem_create_events_page(); 
-  } else {
-	  dbem_create_events_page(); 
 	}
-   
-	// Adding plugin options
-	$use_event_end = get_option('dbem_use_event_end');
-	if (empty($use_event_end))
-		update_option('dbem_use_event_end', 0);
+}
+
+
+function dbem_create_venues_table() {
+	
+	global  $wpdb, $user_level;
+	$table_name = $wpdb->prefix.VENUES_TBNAME;
+
+	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		
+		dbem_log('Creating the venues table'); 
+		// check the user is allowed to make changes
+		// get_currentuserinfo();
+		// if ($user_level < 8) { return; }
+
+		// Creating the events table
+		$sql = "CREATE TABLE ".$table_name." (
+			venue_id mediumint(9) NOT NULL AUTO_INCREMENT,
+			venue_name tinytext NOT NULL,
+			venue_address tinytext NOT NULL,
+			venue_town tinytext NOT NULL,
+			venue_province tinytext,
+			venue_latitude float DEFAULT NULL,
+			venue_longitude float DEFAULT NULL,
+			UNIQUE KEY (venue_id)
+			);";
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
+		
+		$wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+					VALUES ('Arena', 'Piazza Bra','Verona')");
+      $wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+							VALUES ('Hardrock Cafe', '1501 Broadway','New York')");
+		$wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+				VALUES ('Wembley Stadium', 'Wembley','London')");
+		$wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+					VALUES ('Harp Pub', 'Via Cantarane','Verona')");
+      $wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+							VALUES ('Silverstar Pub', 'Via Bentegodi','Verona')");
+		$wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+				VALUES ('Hartigan pub', 'Vicolo cieco disciplina','Verona')");		
+	}
+}
+ 
+function dbem_add_options() {
+	dbem_log('Adding options, if necessary'); 
+	// Adding plugin options
 	$event_list_item_format = get_option('dbem_event_list_item_format');
 	if (empty($event_list_item_format))
 		update_option('dbem_event_list_item_format', DEFAULT_EVENT_LIST_ITEM_FORMAT); 
@@ -213,8 +291,6 @@ function dbem_install() {
 	$gmap_key = get_option('dbem_gmap_key');
 	if (empty($gmap_key))
 		update_option('dbem_gmap_key', '');
-	
-	
 }
       
 function dbem_create_events_page(){
@@ -312,7 +388,8 @@ function dbem_events_subpanel() {
 				// INSERT new event
 				$sql="INSERT INTO ".$wpdb->prefix."events (event_name, event_venue, event_town, event_address, event_province, event_time, event_end_time, event_latitude, event_longitude, event_notes)
 						VALUES ('".$event['event_name']."','".$event['event_venue']."','".$event['event_town']."','".$event['event_address']."','".$event['event_province']."',".$datetime.",".$end_datetime.",'".$event['event_latitude']."','".$event['event_longitude']."','".$event['event_notes']."');";
-			$feedback_message = __('New event successfully inserted!','dbem');   
+			$feedback_message = __('New event successfully inserted!','dbem');  
+			dbem_cache_venue($event); 
 			} else {
 				// UPDATE old event
 				$sql="UPDATE ".$wpdb->prefix."events 
@@ -607,7 +684,7 @@ function dbem_events_page_content() {
 // filter function to call the event page when appropriate
 function dbem_filter_events_page($data) {
 	
-	// $table_name = $wpdb->prefix .TBNAME;
+	// $table_name = $wpdb->prefix .EVENTS_TBNAME;
 	// 	$start = strpos($data, DBEM_PAGE);
 	
 	$is_events_post = (get_the_ID() == get_option('dbem_events_page'));
@@ -915,7 +992,7 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 				$limit 
 				$offset";   
 	     
-	
+ ;
 	$events = $wpdb->get_results($sql);	
 	   
 	return $events;
@@ -1173,13 +1250,6 @@ function dbem_event_form($event, $title, $element) {
 				echo "<div id='event-map' style='width: 450px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";   
 			}
 				?>
-				<div id="event_town" class="stuffbox">
-					<h3><?php _e('Town','dbem'); ?></h3>
-					<div class="inside">
-						<input id="town-input" type="text" name="event_town" value="<?php echo $event['event_town']?>" /><br/>
-						<?php _e('The event town. Example: Verona. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy', 'dbem') ?>
-					</div>
-				</div>
 				<div id="event_venue" class="stuffbox">
 					<h3><?php _e('Venue','dbem'); ?></h3>
 					<div class="inside">
@@ -1192,6 +1262,13 @@ function dbem_event_form($event, $title, $element) {
 					<div class="inside">
 						<input id="address-input" type="text" name="event_address" value="<?php echo $event['event_address']; ?>" /><br/>
 						<?php _e('The address of the venue. Example: Via Mazzini 22', 'dbem') ?>
+					</div>
+				</div>
+				<div id="event_town" class="stuffbox">
+					<h3><?php _e('Town','dbem'); ?></h3>
+					<div class="inside">
+						<input id="town-input" type="text" name="event_town" value="<?php echo $event['event_town']?>" /><br/>
+						<?php _e('The event town. Example: Verona. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy', 'dbem') ?>
 					</div>
 				</div>
 				<div id="event_notes" class="postbox closed">
@@ -1231,8 +1308,9 @@ function dbem_validate_event($event) {
 	$end_time = $event['event_end_hh'].":".$event['event_end_mm']; 
 	if ( !_dbem_is_time_valid($time) ) {
 		return _("invalid time","dbem");
-	} 
-	if ($event['event_date']." ".$time  > $event['event_end_date']." ".$end_time)
+	}
+	$use_event_end = get_option('dbem_use_event_end'); 
+	if ($use_event_end && $event['event_date']." ".$time  > $event['event_end_date']." ".$end_time)
 		return __("end date before begin date", "dbem");
 	return "OK";
 	
@@ -1620,4 +1698,5 @@ function substitute_rss($data) {
 		return $data;
 }
 //add_filter('feed_link','substitute_rss')
+include("dbem_venues_autocomplete.php"); 
 ?>
