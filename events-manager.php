@@ -29,8 +29,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 /*************************************************/ 
 
 // Setting constants
-define('EVENTS_TBNAME','events'); //TABLE NAME
-define('VENUES_TBNAME','venues'); //TABLE NAME 
+define('EVENTS_TBNAME','dbem_events'); //TABLE NAME
+define('VENUES_TBNAME','dbem_venues'); //TABLE NAME 
 define('DEFAULT_EVENT_PAGE_NAME', 'Events');   
 define('DBEM_PAGE','<!--DBEM_EVENTS_PAGE-->'); //EVENTS PAGE
 define('MIN_CAPABILITY', 'edit_posts');	// Minimum user level to access calendars
@@ -136,8 +136,18 @@ function dbem_install() {
 function dbem_create_events_table() {
 	
 	global  $wpdb, $user_level;
-	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');  
+	require_once(ABSPATH . 'wp-admin/includes/upgrade.php'); 
+	
+	$old_table_name = $wpdb->prefix."events";
 	$table_name = $wpdb->prefix.EVENTS_TBNAME;
+	
+	if($wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) { 
+		// upgrading from previous versions
+		dbDelta("RENAME TABLE $old_table_name TO $table_name;");
+		maybe_add_column($table_name, 'event_end_time', "alter table $table_name add event_end_time datetime NOT NULL;"); 
+	}
+	 
+ 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		// check the user is allowed to make changes
 		// get_currentuserinfo();
@@ -179,16 +189,13 @@ function dbem_create_events_table() {
 		$in_four_weeks = strftime('%Y-%m-%d 16:00:00',mktime($hours,$minutes,$seconds,$month,$day+28,$year)); 
 		$in_one_year = strftime('%Y-%m-%d 22:00:00',mktime($hours,$minutes,$seconds,$month,$day,$year+1)); 
 		
-		$wpdb->query("INSERT INTO ".$wpdb->prefix."events (event_name, event_venue, event_address, event_time, event_end_time, event_town)
+		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_venue, event_address, event_time, event_end_time, event_town)
 				VALUES ('Monster gig','Wembley stadium', 'Wembley', '$in_one_week', '$in_one_week', 'London')");
-		$wpdb->query("INSERT INTO ".$wpdb->prefix."events (event_name, event_venue,event_address, event_time, event_end_time, event_town)
+		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_venue,event_address, event_time, event_end_time, event_town)
 				VALUES ('Fiesta Mexicana','Hard Rock Cafe', '1501 Broadway', '$in_four_weeks','$in_four_weeks','New York')");
-	  $wpdb->query("INSERT INTO ".$wpdb->prefix."events (event_name, event_venue,event_address, event_time,event_end_time, event_town)
+	  $wpdb->query("INSERT INTO ".$table_name." (event_name, event_venue,event_address, event_time,event_end_time, event_town)
 					VALUES ('Gladiators fight','Arena', 'Piazza Bra', '$in_one_year','$in_one_year','Verona')");
-	}  else {
-		// If the plugin was at a version earlier than 1.1b1, adds the event_end_time column
-		maybe_add_column($table_name, 'event_end_time', "alter table $table_name add event_end_time datetime NOT NULL;");
-	}
+	}  
 }
 
 
@@ -317,7 +324,7 @@ function dbem_create_events_submenu () {
 
 // Events manager page
 function dbem_events_subpanel() {
-   global $wpdb;
+  global $wpdb;
 	$action=$_GET['action'];
 	$element=$_GET['event_id'];
 	$scope=$_GET['scope']; 
@@ -327,7 +334,7 @@ function dbem_events_subpanel() {
 	 $order = "ASC";
 	if ($offset=="")
 	 $offset = "0";
-		
+	$event_table_name = $wpdb->prefix.EVENTS_TBNAME;
 	// Debug code, to make sure I get the correct page
 	//$event_page_id=get_option('dbem_event_page');
 	if (DEBUG) {
@@ -338,7 +345,7 @@ function dbem_events_subpanel() {
 		}
 		// DELETE action
 	if ($action == 'delete_event') {
-	    $sql="DELETE FROM ".$wpdb->prefix."events WHERE event_id='"."$element"."'";
+	    $sql="DELETE FROM ".$event_table_name." WHERE event_id='"."$element"."'";
 		if (DEBUG)
 			echo $sql;      
 		// TODO eventual error if ID in non-existant
@@ -369,7 +376,7 @@ function dbem_events_subpanel() {
 		// Set event end time to event time if not valid
 
 		if(!_dbem_is_time_valid($event_end_time))
-			$event_end_time = $event_time;
+	 		$event_end_time = $event_time;
 		
 		$event['event_venue']=$_POST[event_venue];
 		$event['event_address']=$_POST[event_address];
@@ -386,14 +393,14 @@ function dbem_events_subpanel() {
 		  	// validation successful
 		  	if(!$element) {
 				// INSERT new event
-				$sql="INSERT INTO ".$wpdb->prefix."events (event_name, event_venue, event_town, event_address, event_province, event_time, event_end_time, event_latitude, event_longitude, event_notes)
+				$sql="INSERT INTO ".$event_table_name." (event_name, event_venue, event_town, event_address, event_province, event_time, event_end_time, event_latitude, event_longitude, event_notes)
 						VALUES ('".$event['event_name']."','".$event['event_venue']."','".$event['event_town']."','".$event['event_address']."','".$event['event_province']."',".$datetime.",".$end_datetime.",'".$event['event_latitude']."','".$event['event_longitude']."','".$event['event_notes']."');";
 			$feedback_message = __('New event successfully inserted!','dbem');  
-			dbem_cache_venue($event); 
+			
 			} else {
 				// UPDATE old event
-				$sql="UPDATE ".$wpdb->prefix."events 
-				SET event_name='".$event['event_name']."', ".
+				$sql="UPDATE ".$event_table_name. 
+				" SET event_name='".$event['event_name']."', ".
 					"event_venue='".$event['event_venue']."',".
 					"event_town='".$event['event_town']."',".
 					"event_address='".$event['event_address']."',".
@@ -406,7 +413,8 @@ function dbem_events_subpanel() {
 					"WHERE event_id="."$element";
 				$feedback_message = __('Event','dbem')." $element ".__('updated','dbem')."!";
 				}
-			    if (DEBUG) 
+			  dbem_cache_venue($event);  
+				if (DEBUG) 
 					echo "SQL = $sql";
 				if (DEBUG) 
 					echo "</div>"; // end of debug  
@@ -460,7 +468,7 @@ function dbem_events_subpanel() {
 							event_latitude,
 							event_longitude,
 							event_notes
-					FROM '.$wpdb->prefix.'events WHERE event_id="'.$element.'";';
+					FROM '.$event_table_name.' WHERE event_id="'.$element.'";';
 					$event=$wpdb->get_row($sql, ARRAY_A);
 					// Enter new events and updates old ones
 					// DEBUG: echo"Nome: $event->event_name";
@@ -938,7 +946,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 // main function querying the database event table
 function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 	global $wpdb;
-	
+ 	$events_table = $wpdb->prefix.EVENTS_TBNAME;
 	if ($limit != "")
 		$limit = "LIMIT $limit";
 	if ($offset != "")
@@ -968,7 +976,7 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 		$temporal_condition = "";
 	
 	$sql = "SELECT event_id, 
-			   event_name, 
+			    event_name, 
 			  	event_venue, 
 			  	event_address,
 			  	event_town, 
@@ -977,28 +985,29 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 			  	DATE_FORMAT(event_time, '%Y') AS 'event_year',
 			  	DATE_FORMAT(event_time, '%k') AS 'event_hh',
 			  	DATE_FORMAT(event_time, '%i') AS 'event_mm',
-				DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',
+					DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',
 			  	DATE_FORMAT(event_end_time, '%Y') AS 'event_end_year',
 			  	DATE_FORMAT(event_end_time, '%k') AS 'event_end_hh',
 			  	DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',
 			  	event_time,
-				event_end_time,
+					event_end_time,
 			  	event_latitude,
 			  	event_longitude,
-				event_notes 
-				FROM ".$wpdb->prefix."events  
-				$temporal_condition
-				ORDER BY event_time $order
-				$limit 
-				$offset";   
+					event_notes 
+					FROM $events_table   
+					$temporal_condition
+					ORDER BY event_time $order
+					$limit 
+					$offset";   
 	     
- ;
+ 
 	$events = $wpdb->get_results($sql);	
 	   
 	return $events;
 }    
 function dbem_get_event($event_id) {
-	global $wpdb;	
+	global $wpdb;
+	$events_table = $wpdb->prefix.EVENTS_TBNAME; 	
 	$sql = "SELECT event_id, 
 			   	event_name, 
 			  	event_venue, 
@@ -1009,7 +1018,7 @@ function dbem_get_event($event_id) {
 			  	DATE_FORMAT(event_time, '%Y') AS 'event_year',
 			  	DATE_FORMAT(event_time, '%k') AS 'event_hh',
 			  	DATE_FORMAT(event_time, '%i') AS 'event_mm', 
-			   DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',
+			    DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',
 		  		DATE_FORMAT(event_end_time, '%Y') AS 'event_end_year',
 		  		DATE_FORMAT(event_end_time, '%k') AS 'event_end_hh',
 		  		DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',
@@ -1018,7 +1027,7 @@ function dbem_get_event($event_id) {
 				event_latitude,
 			  	event_longitude,
 				event_notes
-				FROM ".$wpdb->prefix."events  
+				FROM $events_table   
 			    WHERE event_id = $event_id";   
 	     
 	

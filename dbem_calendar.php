@@ -183,6 +183,7 @@ function dbem_get_calendar($month="") {
 	}
 	$limit_pre=mktime(0,0,0,$month_pre, 1 , $year_pre);
 	$limit_post=mktime(0,0,0,$month_post, 30 , $year_post);
+	$events_table = $wpdb->prefix.EVENTS_TBNAME; 
 	$events=$wpdb->get_results("SELECT event_id, 
 									event_name, 
 									event_venue, 
@@ -195,7 +196,7 @@ function dbem_get_calendar($month="") {
 									DATE_FORMAT(event_time, '%Y') AS 'event_year',
 									DATE_FORMAT(event_time, '%k') AS 'event_hh',
 									DATE_FORMAT(event_time, '%i') AS 'event_mm'
-		FROM ".$wpdb->prefix."events WHERE UNIX_TIMESTAMP(event_time) > $limit_pre AND UNIX_TIMESTAMP(event_time) < $limit_post ORDER BY event_time");
+		FROM $events_table WHERE UNIX_TIMESTAMP(event_time) > $limit_pre AND UNIX_TIMESTAMP(event_time) < $limit_post ORDER BY event_time");
 //----- DEBUG ------------
 //foreach($events as $event) { //DEBUG
 //	$calendar .= ("$event->event_day / $event->event_month_n - $event->event_name<br/>");
