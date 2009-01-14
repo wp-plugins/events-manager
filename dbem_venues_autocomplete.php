@@ -1,10 +1,10 @@
 <?php 
-dbem_log('venues script loaded');
+//dbem_log('venues script loaded');
 function dbem_venues_autocomplete() {      
 	if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_event') { 
 		?>
 		<link rel="stylesheet" href="../wp-content/plugins/events-manager/jquery-autocomplete/jquery.autocomplete.css" type="text/css"/>
-
+    
 
 		<script src="../wp-content/plugins/events-manager/jquery-autocomplete/lib/jquery.bgiframe.min.js" type="text/javascript"></script>
 		<script src="../wp-content/plugins/events-manager/jquery-autocomplete/lib/jquery.ajaxQueue.js" type="text/javascript"></script> 

@@ -30,7 +30,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Setting constants
 define('EVENTS_TBNAME','dbem_events'); //TABLE NAME
-define('VENUES_TBNAME','dbem_venues'); //TABLE NAME 
+define('VENUES_TBNAME','dbem_venues'); //TABLE NAME  
+define('BOOKINGS_TBNAME','dbem_bookings'); //TABLE NAME
+define('PEOPLE_TBNAME','dbem_people'); //TABLE NAME  
+define('BOOKING_PEOPLE_TBNAME','dbem_bookings_people'); //TABLE NAME  
+
 define('DEFAULT_EVENT_PAGE_NAME', 'Events');   
 define('DBEM_PAGE','<!--DBEM_EVENTS_PAGE-->'); //EVENTS PAGE
 define('MIN_CAPABILITY', 'edit_posts');	// Minimum user level to access calendars
@@ -47,12 +51,15 @@ define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));
 
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, alog will show in admin pages
+define('USE_FIREPHP', true);
 define('DEBUG', true);     
 
-if (DEBUG)  {
-	require('FirePHPCore/fb.php');  
-	ob_start();
-	fb('FirePHP activated');
+if (DEBUG)  { 
+	if (USE_FIREPHP) {
+ 		require('FirePHPCore/fb.php');  
+		ob_start();
+		fb('FirePHP activated');   
+}
 } 
 
 dbem_log('Dbem-log working');
@@ -99,7 +106,7 @@ add_filter('dbem_notes_map', 'js_escape');
 // Custom log function
 function dbem_log($text) {
 	if (DEBUG)
-		fb($text,FirePHP::LOG);
+  	fb($text,FirePHP::LOG);
 }
 
 
@@ -108,10 +115,10 @@ function dbem_install() {
    dbem_log('install function called');
  	// Creates the events table if necessary
 	dbem_create_events_table();  
-	
 	dbem_create_venues_table();
-  	
-   dbem_add_options();
+  dbem_create_bookings_table();
+  dbem_create_people_table();
+ 	dbem_add_options();
    
 	// Create events page if necessary
  	$events_page_id = get_option('dbem_events_page')  ;
@@ -141,10 +148,13 @@ function dbem_create_events_table() {
 	$old_table_name = $wpdb->prefix."events";
 	$table_name = $wpdb->prefix.EVENTS_TBNAME;
 	
-	if($wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) { 
-		// upgrading from previous versions
-		dbDelta("RENAME TABLE $old_table_name TO $table_name;");
-		maybe_add_column($table_name, 'event_end_time', "alter table $table_name add event_end_time datetime NOT NULL;"); 
+	if(!($wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name)) { 
+		// upgrading from previous versions             
+		    
+		$sql = "ALTER TABLE $old_table_name RENAME $table_name;";
+		dbem_log("sql rename: $sql");
+		$wpdb->query($sql); 
+		  
 	}
 	 
  
@@ -167,6 +177,8 @@ function dbem_create_events_table() {
 			event_notes text NOT NULL,
 			event_latitude float DEFAULT NULL,
 			event_longitude float DEFAULT NULL,
+			event_rsvp bool NOT NULL DEFAULT 0,
+			event_seats tinyint,
 			UNIQUE KEY (event_id)
 			);";
 		
@@ -195,7 +207,12 @@ function dbem_create_events_table() {
 				VALUES ('Fiesta Mexicana','Hard Rock Cafe', '1501 Broadway', '$in_four_weeks','$in_four_weeks','New York')");
 	  $wpdb->query("INSERT INTO ".$table_name." (event_name, event_venue,event_address, event_time,event_end_time, event_town)
 					VALUES ('Gladiators fight','Arena', 'Piazza Bra', '$in_one_year','$in_one_year','Verona')");
-	}  
+	} else {  
+		// eventual maybe_add_column() for later versions
+	  maybe_add_column($table_name, 'event_end_time', "alter table $table_name add event_end_time datetime NOT NULL;"); 
+		maybe_add_column($table_name, 'event_rsvp', "alter table $table_name add event_rsvp BOOL NOT NULL;");
+		maybe_add_column($table_name, 'event_seats', "alter table $table_name add event_seats tinyint NULL;");
+	}
 }
 
 
@@ -239,6 +256,53 @@ function dbem_create_venues_table() {
 				VALUES ('Hartigan pub', 'Vicolo cieco disciplina','Verona')");		
 	}
 }
+
+function dbem_create_bookings_table() {
+	
+	global  $wpdb, $user_level;
+	$table_name = $wpdb->prefix.BOOKINGS_TBNAME;
+
+	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+		
+		dbem_log('Creating the bookings table'); 
+
+		$sql = "CREATE TABLE ".$table_name." (
+			booking_id mediumint(9) NOT NULL AUTO_INCREMENT,
+			event_id tinyint NOT NULL,
+			person_id tinyint NOT NULL, 
+			booking_seats tinyint NOT NULL,
+			UNIQUE KEY (booking_id)
+			);";
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
+		
+	}
+}
+
+function dbem_create_people_table() {
+	
+	global  $wpdb, $user_level;
+	$table_name = $wpdb->prefix.PEOPLE_TBNAME;
+
+	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+		
+		dbem_log('Creating the people table'); 
+
+
+		$sql = "CREATE TABLE ".$table_name." (
+			person_id mediumint(9) NOT NULL AUTO_INCREMENT,
+			person_name tinytext NOT NULL, 
+			person_email tinytext NOT NULL,
+			person_phone tinytext NOT NULL,
+			UNIQUE KEY (person_id)
+			);";
+		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+		dbDelta($sql);
+		
+	}
+} 
+
+
  
 function dbem_add_options() {
 	dbem_log('Adding options, if necessary'); 
@@ -677,9 +741,9 @@ function dbem_events_page_content() {
 		// single event page
 		$event_ID=$_REQUEST['event_id'];
 		$event= dbem_get_event($event_ID);
-		$single_event_format = get_option('dbem_single_event_format');
-		$page_body = dbem_replace_placeholders($single_event_format, $event);
-	   	return $page_body;
+		$single_event_format = get_option('dbem_single_event_format');  
+		$page_body = dbem_replace_placeholders($single_event_format."seats: "."#_SEATS"."<br/>Available seats: "."#_AVAILABLESEATS"."<br/>"."#_RSVP", $event);
+	  return $page_body;
 	} else { 
 		// Multiple events page
 		$stored_format = get_option('dbem_event_list_item_format');
@@ -884,6 +948,24 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				$map_div = "";
 			}
 		 	$event_string = str_replace($result, $map_div , $event_string );
+		}
+		if (preg_match('/#_RSVP/', $result)) {
+		 	$rsvp_is_active = get_option('dbem_gmap_is_active'); 
+			if (true) {
+			   $rsvp_module .= dbem_rsvp_form();
+			} else {
+				$rsvp_module .= "";
+			}
+		 	$event_string = str_replace($result, $rsvp_module , $event_string );
+		}
+		if (preg_match('/#_AVAILABLESEATS/', $result)) {
+		 	$rsvp_is_active = get_option('dbem_gmap_is_active'); 
+			if (true) {
+			   $availble_seats .= dbem_get_available_seats($event->event_id);
+			} else {
+				$availble_seats .= "";
+			}
+		 	$event_string = str_replace($result, $availble_seats , $event_string );
 		} 
 		if (preg_match('/#_LINKEDNAME/', $result)) {
 			$events_page_id = get_option('dbem_events_page');
@@ -903,7 +985,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				$joiner = "?";
 			$event_string = str_replace($result, get_permalink($events_page_id).$joiner."event_id=$event->event_id" , $event_string );
 		}
-	 	if (preg_match('/#_(NAME|VENUE|ADDRESS|TOWN|PROVINCE|NOTES)/', $result)) {
+	 	if (preg_match('/#_(NAME|VENUE|ADDRESS|TOWN|PROVINCE|NOTES|SEATS)/', $result)) {
 		 	$field = "event_".ltrim(strtolower($result), "#_");
 		 	$field_value = $event->{$field};
 			if ($field == "event_notes") {
@@ -993,7 +1075,8 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 					event_end_time,
 			  	event_latitude,
 			  	event_longitude,
-					event_notes 
+					event_notes, 
+					event_rsvp 
 					FROM $events_table   
 					$temporal_condition
 					ORDER BY event_time $order
@@ -1024,9 +1107,11 @@ function dbem_get_event($event_id) {
 		  		DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',
 			  	event_time,
 			  	event_end_time,
-				event_latitude,
+					event_latitude,
 			  	event_longitude,
-				event_notes
+					event_notes,
+					event_rsvp,
+					event_seats
 				FROM $events_table   
 			    WHERE event_id = $event_id";   
 	     
@@ -1034,7 +1119,9 @@ function dbem_get_event($event_id) {
 	$event = $wpdb->get_row($sql);	
 	   
 	return $event;
-}
+}        
+
+
 function dbem_events_table($events, $limit, $title) {
  
 		
@@ -1211,7 +1298,7 @@ function dbem_event_form($event, $title, $element) {
 	} else {
 		$localised_end_date = "";
 	}    
-	 
+	echo (dbem_bookings_table($event['event_id']));   
 	?> 
 <form id="eventForm" method="post" action="edit.php?page=eventmanager.php&amp;action=update_event&amp;event_id=<?php echo "$element"?>">
     <div class="wrap">
@@ -1705,7 +1792,15 @@ function substitute_rss($data) {
 		return get_bloginfo('url')."/?dbem_rss=main";
 	else
 		return $data;
+}           
+function dbem_general_css() {  
+	$base_url = get_bloginfo('url');
+	echo "<link rel='stylesheet' href='$base_url/wp-content/plugins/events-manager/events_manager.css' type='text/css'/>";
+	
 }
+add_action('wp_head','dbem_general_css');
+add_action('admin_head','dbem_general_css');
 //add_filter('feed_link','substitute_rss')
 include("dbem_venues_autocomplete.php"); 
+include("dbem_rsvp.php");   
 ?>
