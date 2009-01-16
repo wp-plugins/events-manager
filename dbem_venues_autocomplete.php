@@ -1,5 +1,4 @@
 <?php 
-//dbem_log('venues script loaded');
 function dbem_venues_autocomplete() {      
 	if (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_event') { 
 		?>

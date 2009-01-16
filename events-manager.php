@@ -112,7 +112,6 @@ function dbem_log($text) {
 
 /* Creating the wp_events table to store event data*/
 function dbem_install() {
-   dbem_log('install function called');
  	// Creates the events table if necessary
 	dbem_create_events_table();  
 	dbem_create_venues_table();
@@ -379,11 +378,53 @@ function dbem_create_events_page(){
 add_action('admin_menu','dbem_create_events_submenu');     
 function dbem_create_events_submenu () {
 	  if(function_exists('add_submenu_page')) {
-	  	add_submenu_page('edit.php',__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,'eventmanager.php',dbem_events_subpanel);
-	   //   add_options_page('Events Manager','Events Manager',MIN_LEVEL,'eventmanager.php',dbem_options_subpanel);
+	  	add_menu_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel);
+	   	// Add a submenu to the custom top-level menu:                
+			add_submenu_page(__FILE__, "Venues", "Venues", MIN_CAPABILITY, 'venues', "dbem_venues_page");
+			add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
+		 // add_submenu_page(__FILE__, 'Test ', 'Test Sublevel', 8, 'venues', );
+	//   add_options_page('Events Manager','Events Manager',MIN_LEVEL,'eventmanager.php',dbem_options_subpanel);
 		 	add_options_page('Events manager', 'Events Manager', SETTING_CAPABILITY, __FILE__, dbem_options_subpanel);
+		     
+		
+		
 		
 		}
+}
+add_action('init', 'dbem_intercept_url');
+function dbem_intercept_url() {  
+	// TODO move here most actions
+	
+	global $wpdb;
+	$action=$_GET['action'];
+	$event_id=$_GET['event_id'];
+	$scope=$_GET['scope']; 
+	$offset=$_GET['offset'];
+	$order=$_GET['order'];
+	if ($order == "")
+	 $order = "ASC";
+	if ($offset=="")
+	 $offset = "0";
+	$event_table_name = $wpdb->prefix.EVENTS_TBNAME;
+	
+	if ($action == 'dbem_delete') {   
+		if ($event_id)
+			$sql="DELETE FROM ".$event_table_name." WHERE event_id='"."$event_id"."'";
+    
+		// TODO eventual error if ID in non-existant
+		$wpdb->query($sql);
+
+		//$events = dbem_get_events("", "future");   
+	}  
+	if ($_GET['secondaryAction'] == "delete_bookings") {
+		$bookings = $_GET['bookings'];
+		if ($bookings) {
+			foreach($bookings as $booking_id) {
+				dbem_log($booking_id);    
+				dbem_delete_booking($booking_id);
+			}
+		}
+	}
 }
 
 // Events manager page
@@ -400,22 +441,15 @@ function dbem_events_subpanel() {
 	 $offset = "0";
 	$event_table_name = $wpdb->prefix.EVENTS_TBNAME;
 	// Debug code, to make sure I get the correct page
-	//$event_page_id=get_option('dbem_event_page');
-	if (DEBUG) {
-		echo "<div class='debug'>\n
-		  \t<h3>Debug log</h3>\n";
-		echo "<p>action = $action $element</p>\n";
-    
-		}
+
+
 		// DELETE action
-	if ($action == 'delete_event') {
-	    $sql="DELETE FROM ".$event_table_name." WHERE event_id='"."$element"."'";
-		if (DEBUG)
-			echo $sql;      
+	if ($action == 'dbem_delete') {
+	  //  $sql="DELETE FROM ".$event_table_name." WHERE event_id='"."$element"."'";
+    
 		// TODO eventual error if ID in non-existant
-		$wpdb->query($sql);
-    	if (DEBUG)
-			echo "</div>"; // end of debug div
+		//$wpdb->query($sql);
+
 		$events = dbem_get_events("", "future");
 		dbem_events_table($events, 10,"Future events");
 	}
@@ -478,10 +512,7 @@ function dbem_events_subpanel() {
 				$feedback_message = __('Event','dbem')." $element ".__('updated','dbem')."!";
 				}
 			  dbem_cache_venue($event);  
-				if (DEBUG) 
-					echo "SQL = $sql";
-				if (DEBUG) 
-					echo "</div>"; // end of debug  
+
 					
 				$wpdb->query($sql); 
 				echo "<div id='message' class='updated fade'>
@@ -493,10 +524,7 @@ function dbem_events_subpanel() {
 			  	// validation unsuccessful
 			
 				echo $event['name'];
-				if (DEBUG) 
-					echo "<p>NON VALIDO: $validation_result</p>";
-				if (DEBUG) 
-					echo "</div>"; // end of debug
+
 				echo "<div id='message' class='error '>
 						<p>".__("Ach, there's a problem here:","dbem")." $validation_result</p>
 					  </div>";	
@@ -536,18 +564,14 @@ function dbem_events_subpanel() {
 					$event=$wpdb->get_row($sql, ARRAY_A);
 					// Enter new events and updates old ones
 					// DEBUG: echo"Nome: $event->event_name";
-					if (DEBUG) {
-						echo "</div>";
-					}
+
 					
 					dbem_event_form($event, $title, $element);
 				    
 	  } 
 	 if ($action == ""){
 			// No action, only showing the events list
-			if (DEBUG)
-				echo "\t<p>No UPDATE, INSERT or DELETE action performed</p>\n
-					</div>";
+
 				
 			 
 			switch ($scope) {
@@ -1245,8 +1269,8 @@ function dbem_events_table($events, $limit, $title) {
 	  	    <?php echo "$event->event_longitude"; ?>
 	  	</td>
 			<?php } ?> 
-	    <td><a class="edit" href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=eventmanager.php&amp;action=edit_event&amp;event_id=<?php echo "$event->event_id"?>"><?php _e('Edit'); ?></a></td>
-	    <td><a class="delete" href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=eventmanager.php&amp;action=delete_event&amp;event_id=<?php echo "$event->event_id" ?>" onclick="return confirm('<?php _e('Are you sure?','dbem'); ?>');"><?php _e('Delete'); ?></a></td>
+	    <td><a class="edit" href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo "$event->event_id"?>"><?php _e('Edit'); ?></a></td>
+	    <td><a class="delete" href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=eventmanager.php&amp;action=dbem_delete&amp;event_id=<?php echo "$event->event_id" ?>" onclick="return confirm('<?php _e('Are you sure?','dbem'); ?>');"><?php _e('Delete'); ?></a></td>
 	<?php
   	    	   echo'</tr>'; 
   	   $i++;
@@ -1586,7 +1610,7 @@ add_action ('wp_head', 'dbem_map_script');
 
 function dbem_admin_map_script() { 
 	if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
-		if (!(isset($_REQUEST['action']) && $_REQUEST['action'] == 'delete_event')) {    
+		if (!(isset($_REQUEST['action']) && $_REQUEST['action'] == 'dbem_delete')) {    
 			// single event page
 			$event_ID=$_REQUEST['event_id'];
 		    $event = dbem_get_event($event_ID);
@@ -1802,5 +1826,8 @@ add_action('wp_head','dbem_general_css');
 add_action('admin_head','dbem_general_css');
 //add_filter('feed_link','substitute_rss')
 include("dbem_venues_autocomplete.php"); 
-include("dbem_rsvp.php");   
+include("dbem_rsvp.php");     
+include("dbem_venues.php");     
+
+
 ?>

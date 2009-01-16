@@ -20,27 +20,68 @@ function dbem_rsvp_form() {
 			}
 	 	$module .= "</select></td></tr>
 		</table>
-		<input type='submit' value='Send your booking'/>
+		<input type='submit' value='Send your booking'/>   
+		 <input type='hidden' name='eventAction' value='add_booking'/>  
 	</form>";   
 	// $module .= "dati inviati: ";
 	//  	$module .= $_POST['bookerName'];  
 	//print_r($_SERVER);
-	$event_id = $_GET['event_id'];
+ 
+	$module .= dbem_delete_booking_form();
+	 
+	return $module;
+	
+}
+
+function dbem_delete_booking_form() {                
+	
+	
+	$destination = "?".$_SERVER['QUERY_STRING'];
+	$module = "<h3>Delete module</h3><br/>";
+	
+
+	
+	$module  .= "<form name='booking-delete-form' method='post' action='$destination'>
+			<table class='dbem-rsvp-form'>
+				<tr><th scope='row'>Name:</th><td><input type='text' name='bookerName' value='John Doe'/></td></tr>
+		  	<tr><th scope='row'>E-mail:</th><td><input type='text' name='bookerEmail' value='jondoe@donjoe.com'/></td></tr>
+		  	<input type='hidden' name='eventAction' value='delete_booking'/>
+		</table>
+		<input type='submit' value='Delete your booking'/>
+	</form>";   
+	// $module .= "dati inviati: ";
+	//  	$module .= $_POST['bookerName'];  
+
 	
 	
 	return $module;
 	
 }
 
+
 function dbem_catch_rsvp() {
 
-	if (isset($_POST['bookerName'])) { 
+	if (isset($_POST['eventAction']) && $_POST['eventAction'] == 'add_booking') { 
 		dbem_book_seats();
 	//	dbem_email_rsvp_booking();
 	  
 		
   } 
-	dbem_log($_GET['bookings']);
+
+	if (isset($_POST['eventAction']) && $_POST['eventAction'] == 'delete_booking') { 
+		
+		$bookerName = $_POST['bookerName'];
+		$bookerEmail = $_POST['bookerEmail'];
+		$booker = dbem_get_person_by_name_and_email($bookerName, $bookerEmail); 
+	  if ($booker) {
+			$booker_id = $booker['person_id'];
+			dbem_log("cancellare: ".$booker_id);  
+			$booking = dbem_get_booking_by_person_id($booker_id);
+			dbem_log($booking);
+			dbem_delete_booking($booking['booking_id']);
+		}
+		
+  }
 	
 }   
 add_action('init','dbem_catch_rsvp');  
@@ -107,6 +148,7 @@ function dbem_get_person($person_id) {
 }
 
 function dbem_add_person($name, $email, $phone = "") {
+	dbem_log("add!!!");
 	global $wpdb; 
 	$people_table = $wpdb->prefix.PEOPLE_TBNAME;
 	$sql = "INSERT INTO $people_table (person_name, person_email, person_phone) VALUES ('$name', '$email', '$phone');";
@@ -114,6 +156,14 @@ function dbem_add_person($name, $email, $phone = "") {
 	$new_person = dbem_get_person_by_name_and_email($name, $email);  
 	return ($new_person);
 }             
+
+function dbem_get_booking_by_person_id($person_id) {
+	global $wpdb; 
+	$bookings_table = $wpdb->prefix.BOOKINGS_TBNAME;
+	$sql = "SELECT * FROM $bookings_table WHERE person_id = '$person_id';" ;
+	$result = $wpdb->get_row($sql, ARRAY_A);
+	return $result;
+}
 
 function dbem_record_booking($event_id, $person_id, $seats) {
 	global $wpdb; 
@@ -123,6 +173,12 @@ function dbem_record_booking($event_id, $person_id, $seats) {
 		$wpdb->query($sql);
 	}
 } 
+function dbem_delete_booking($booking_id) {
+	global $wpdb;
+	$bookings_table = $wpdb->prefix.BOOKINGS_TBNAME; 
+	$sql = "DELETE FROM $bookings_table WHERE booking_id = $booking_id";
+	$wpdb->query($sql); 
+}
 
 function dbem_get_available_seats($event_id) {
 	global $wpdb; 
@@ -151,8 +207,12 @@ function dbem_are_seats_available_for($event_id) {
 function dbem_bookings_table($event_id) {
 
 	$bookings =  dbem_get_bookings_for($event_id);
-	
-	$table = "<form id='bookings-filter' method='get' action=''>
+	$destination = get_bloginfo('url')."/wp-admin/edit.php"; 
+	$table = "<form id='bookings-filter' method='get' action='$destination'>
+						<input type='hidden' name='page' value='eventmanager.php'/>
+						<input type='hidden' name='action' value='edit_event'/>
+						<input type='hidden' name='event_id' value='$event_id'/>
+						<input type='hidden' name='secondaryAction' value='delete_bookings'/>
 						<div class='wrap'>
 							<h2>Bookings</h2>\n
 						<table id='dbem-bookings-table' class='widefat post fixed'>\n";
@@ -178,9 +238,9 @@ function dbem_bookings_table($event_id) {
 								</div>
 								<br class='clear'/>
 						 	</div>
+
 						</form>";    
-	dbem_log($table);
-	return $table;
+  return $table;
 }
 
 function dbem_get_bookings_for($event_id) {  
@@ -192,15 +252,22 @@ function dbem_get_bookings_for($event_id) {
 	foreach ($bookings as $booking) {  
 		 $booking;
 		$person = dbem_get_person($booking['person_id']);
-		dbem_log($person);
 		$booking['person_name'] = $person['person_name']; 
 		$booking['person_email'] = $person['person_email'];   
 		$booking['person_phone'] = $person['person_phone'];
 		array_push($booking_data, $booking);
 	}
-	dbem_log($booking_data); 
+
 	return $booking_data;
 
 } 
-
+function dbem_intercept_bookings_delete() {
+	$bookings = $_GET['bookings'];
+	if ($bookings) {
+		foreach($bookings as $booking_id) {
+			dbem_log($booking);
+		}
+	}
+}
+//add_action('init', 'dbem_intercept_bookings_delete');
 ?>

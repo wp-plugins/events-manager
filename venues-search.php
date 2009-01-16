@@ -37,15 +37,5 @@ foreach($return as $row) {
 // 	}
 // }
 
-function dbem_get_venues() { 
-	global $wpdb;
-  $venues_table = $wpdb->prefix.VENUES_TBNAME; 
-	$sql = "SELECT venue_id, venue_address, venue_name, venue_town 
-				FROM $venues_table ORDER BY venue_name";   
-	     
-	
-	$venues = $wpdb->get_results($sql); 
-	return $venues;  
 
-}
 ?>
