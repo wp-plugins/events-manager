@@ -21,4 +21,11 @@ table.dbem-rsvp-form th {
 table.dbem-rsvp-form td { 
 	padding-left: 1em;
 	text-align: left;
+}      
+
+div.dbem-rsvp-message {     
+	margin-bottom: 1em;
+	background-color: #FDDD73;
+	padding: 5px;
+	border: 2px solid #FF9100;
 }

@@ -1,15 +1,19 @@
 <?php
-function dbem_rsvp_form() {                
-	
-	
-	$destination = "?".$_SERVER['QUERY_STRING'];
+$form_add_message = "";        
+$form_delete_message = "";
+function dbem_add_booking_form() {                
+	global $form_add_message;
+	//$message = dbem_catch_rsvp();
+ 
+	$destination = "?".$_SERVER['QUERY_STRING']."#dbem-rsvp-form";
 	$module = "<h3>RSVP module</h3><br/>";
-	
+	if(!empty($form_add_message))
+		$module .= "<div class='dbem-rsvp-message'>$form_add_message</div>";
 	$booked_places_options = array();
 	for ( $i = 1; $i <= 10; $i++) 
 		array_push($booked_places_options, "<option value='$i'>$i</option>");
 	
-	$module  .= "<form name='booking-form' method='post' action='$destination'>
+	$module  .= "<form id='dbem-rsvp-form' name='booking-form' method='post' action='$destination'>
 			<table class='dbem-rsvp-form'>
 				<tr><th scope='row'>Name:</th><td><input type='text' name='bookerName' value='John Doe'/></td></tr>
 		  	<tr><th scope='row'>E-mail:</th><td><input type='text' name='bookerEmail' value='jondoe@donjoe.com'/></td></tr>
@@ -27,18 +31,20 @@ function dbem_rsvp_form() {
 	//  	$module .= $_POST['bookerName'];  
 	//print_r($_SERVER);
  
-	$module .= dbem_delete_booking_form();
+	//$module .= dbem_delete_booking_form();
 	 
 	return $module;
 	
 }
 
 function dbem_delete_booking_form() {                
-	
+	global $form_delete_message;
 	
 	$destination = "?".$_SERVER['QUERY_STRING'];
-	$module = "<h3>Delete module</h3><br/>";
+	$module = "<h3>Delete module</h3><br/>";       
 	
+	if(!empty($form_delete_message))
+		$module .= "<div class='dbem-rsvp-message'>$form_delete_message</div>";
 
 	
 	$module  .= "<form name='booking-delete-form' method='post' action='$destination'>
@@ -60,10 +66,11 @@ function dbem_delete_booking_form() {
 
 
 function dbem_catch_rsvp() {
-
+  global $form_add_message;   
+	global $form_delete_message;
 	if (isset($_POST['eventAction']) && $_POST['eventAction'] == 'add_booking') { 
-		dbem_book_seats();
-	//	dbem_email_rsvp_booking();
+		$result = dbem_book_seats();
+		$form_add_message = $result;
 	  
 		
   } 
@@ -78,44 +85,19 @@ function dbem_catch_rsvp() {
 			dbem_log("cancellare: ".$booker_id);  
 			$booking = dbem_get_booking_by_person_id($booker_id);
 			dbem_log($booking);
-			dbem_delete_booking($booking['booking_id']);
+			$result = dbem_delete_booking($booking['booking_id']);
+		} else {
+			$result = __('There are no bookings associated to this name and e-mail', 'dbem');
 		}
-		
-  }
+		$form_delete_message = $result; 
+  } 
+	
+	return $result;
 	
 }   
 add_action('init','dbem_catch_rsvp');  
 
-function dbem_email_rsvp_booking(){
-	$booker = array();
-	$bookerName = $_POST['bookerName'];
-	$bookerEmail = $_POST['bookerEmail'];    
-	$bookedSeart = $_POST['bookedSeats'];
-	require("phpmailer/class.phpmailer.php") ;
-  require("phpmailer/language/phpmailer.lang-en.php") ;
-	$mailer = new PHPMailer();
-	$mailer->IsSMTP();
-	$mailer->Host = 'ssl://smtp.gmail.com:465';
-	$mailer->SMTPAuth = TRUE;
-	$mailer->Username = 'benini.davide@gmail.com';  
-	// Change this to your gmail adress
-	$mailer->Password = 'eicdoals';  
-	// Change this to your gmail password
-	$mailer->From = 'benini.davide@gmail.com';  
-	// This HAVE TO be your gmail adress
-	$mailer->FromName = 'Dave Abuzzese'; // This is the from name in the email, you can put anything you like here
-	$mailer->Body = "$bookerName ($bookerEmail) will attend this event.";
-	$mailer->Subject = 'This is the subject of the email';
-	$mailer->AddAddress('cno@cnomania.it');  
-	// This is where you put the email adress of the person you want to mail
-	if(!$mailer->Send()){   
-		echo "Message was not sent<br/ >";   
-		echo "Mailer Error: " . $mailer->ErrorInfo;
-	} else {   
-		echo "Message has been sent";
-	
-	}
-}
+
  
 function dbem_book_seats() {
 	$bookerName = $_POST['bookerName'];
@@ -127,8 +109,20 @@ function dbem_book_seats() {
 	if (!$booker) {
    	$booker = dbem_add_person($bookerName, $bookerEmail, $bookerPhone);
 	}
-	if (dbem_are_seats_available_for($event_id))
+	if (dbem_are_seats_available_for($event_id, $bookedSeats)) {
 		dbem_record_booking($event_id, $booker['person_id'], $bookedSeats);
+		
+		$result = __('Your booking has been recorded','dbem');  
+		$mailing_is_active = get_option('dbem_rsvp_mail_notify_is_active');
+		if($mailing_is_active) {
+			dbem_log("Ecco, mail in  fase di invio"); 
+			//dbem_email_rsvp_booking();
+		} 
+		
+	}	else {
+		 $result = __('Sorry, there aren\'t so many seats available!', 'dbem');
+	}  
+	return $result;
 }
 
 function dbem_get_person_by_name_and_email($name, $email) {
@@ -166,18 +160,34 @@ function dbem_get_booking_by_person_id($person_id) {
 }
 
 function dbem_record_booking($event_id, $person_id, $seats) {
-	global $wpdb; 
+	global $wpdb;        
 	$bookings_table = $wpdb->prefix.BOOKINGS_TBNAME;
-	if(true) {
-		$sql = "INSERT INTO $bookings_table (event_id, person_id, booking_seats) VALUES ($event_id, $person_id, $seats)";
-		$wpdb->query($sql);
+	// checking whether the booker has already booked places
+	$sql = "SELECT * FROM $bookings_table WHERE event_id = '$event_id' and person_id = '$person_id'; ";       
+	echo $sql;
+	$previously_booked = $wpdb->get_row($sql);
+	if ($previously_booked) {  
+		  
+		$total_booked_seats = $previously_booked->booking_seats + $seats;
+		$where = array();
+		$where['booking_id'] =$previously_booked->booking_id;
+		$fields['booking_seats'] = $total_booked_seats;
+	 	$wpdb->update($bookings_table, $fields, $where);
+		
+	} else {
+		if(true) {
+			$sql = "INSERT INTO $bookings_table (event_id, person_id, booking_seats) VALUES ($event_id, $person_id, $seats)";
+			$wpdb->query($sql);
+			echo $sql;
+		}  
 	}
 } 
 function dbem_delete_booking($booking_id) {
 	global $wpdb;
 	$bookings_table = $wpdb->prefix.BOOKINGS_TBNAME; 
 	$sql = "DELETE FROM $bookings_table WHERE booking_id = $booking_id";
-	$wpdb->query($sql); 
+	$wpdb->query($sql);       
+	return __('Booking deleted', 'dbem');
 }
 
 function dbem_get_available_seats($event_id) {
@@ -187,7 +197,7 @@ function dbem_get_available_seats($event_id) {
 	$seats_row = $wpdb->get_row($sql, ARRAY_A);  
 	$booked_seats = $seats_row['booked_seats'];
 	$event = dbem_get_event($event_id);
-	$available_seats = $event->event_seats -$booked_seats;
+	$available_seats = $event['event_seats'] - $booked_seats;
 	return ($available_seats);  
 }  
 function dbem_get_booked_seats($event_id) {
@@ -198,10 +208,11 @@ function dbem_get_booked_seats($event_id) {
 	$booked_seats = $seats_row['booked_seats'];
 	return $booked_seats;  
 }  
-function dbem_are_seats_available_for($event_id) {     
+function dbem_are_seats_available_for($event_id, $seats) {     
 	$event = dbem_get_event($event_id);   
-	$available_seats = dbem_get_available_seats($event_id);
-	return ($available_seats > 0);
+	$available_seats = dbem_get_available_seats($event_id);  
+	$remaning_seats = $available_seats - $seats;
+	return ($remaning_seats >= 0);
 } 
       
 function dbem_bookings_table($event_id) {
@@ -209,7 +220,7 @@ function dbem_bookings_table($event_id) {
 	$bookings =  dbem_get_bookings_for($event_id);
 	$destination = get_bloginfo('url')."/wp-admin/edit.php"; 
 	$table = "<form id='bookings-filter' method='get' action='$destination'>
-						<input type='hidden' name='page' value='eventmanager.php'/>
+						<input type='hidden' name='page' value='events-manager/events-manager.php'/>
 						<input type='hidden' name='action' value='edit_event'/>
 						<input type='hidden' name='event_id' value='$event_id'/>
 						<input type='hidden' name='secondaryAction' value='delete_bookings'/>
@@ -250,7 +261,7 @@ function dbem_get_bookings_for($event_id) {
 	$bookings = $wpdb->get_results($sql, ARRAY_A);  
 	$booking_data = array();
 	foreach ($bookings as $booking) {  
-		 $booking;
+		$booking;
 		$person = dbem_get_person($booking['person_id']);
 		$booking['person_name'] = $person['person_name']; 
 		$booking['person_email'] = $person['person_email'];   
@@ -262,12 +273,46 @@ function dbem_get_bookings_for($event_id) {
 
 } 
 function dbem_intercept_bookings_delete() {
-	$bookings = $_GET['bookings'];
+	//dbem_email_rsvp_booking();
+	$bookings = $_GET['bookings'];  
+	
 	if ($bookings) {
 		foreach($bookings as $booking_id) {
-			dbem_log($booking);
+			dbem_delete_booking($booking_id);
 		}
 	}
 }
-//add_action('init', 'dbem_intercept_bookings_delete');
+add_action('init', 'dbem_intercept_bookings_delete');   
+
+function dbem_email_rsvp_booking(){
+	$booker = array();
+	$bookerName = $_POST['bookerName'];
+	$bookerEmail = $_POST['bookerEmail'];    
+	$bookedSeats = $_POST['bookedSeats'];
+	require("phpmailer/class.phpmailer.php") ;
+  require("phpmailer/language/phpmailer.lang-en.php") ;
+	$mailer = new PHPMailer();
+	$mailer->IsSMTP();
+	$mailer->Host = 'ssl://smtp.gmail.com:465';
+	$mailer->SMTPAuth = TRUE;
+	$mailer->Username = get_option('dbem_smtp_username');  
+	// Change this to your gmail adress
+	$mailer->Password = get_option('dbem_smtp_password');  
+	// Change this to your gmail password
+	$mailer->From = get_option('dbem_mail_sender_address');  
+	// This HAVE TO be your gmail adress
+	$mailer->FromName = 'Events Manager Abuzzese'; // This is the from name in the email, you can put anything you like here
+	$mailer->Body = "$bookerName ($bookerEmail) will attend this event.";
+	$mailer->Subject = 'Hey hey, people\'s booking!';
+	$mailer->AddAddress(get_option('dbem_mail_receiver_address'));  
+	// This is where you put the email adress of the person you want to mail
+	if(!$mailer->Send()){   
+		echo "Message was not sent<br/ >";   
+		echo "Mailer Error: " . $mailer->ErrorInfo;
+	 // print_r($mailer);
+	} else {   
+		echo "Message has been sent";
+	
+	}
+}
 ?>

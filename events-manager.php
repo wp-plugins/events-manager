@@ -51,8 +51,8 @@ define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));
 
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, alog will show in admin pages
-define('USE_FIREPHP', true);
-define('DEBUG', true);     
+define('USE_FIREPHP', false);
+define('DEBUG', false);     
 
 if (DEBUG)  { 
 	if (USE_FIREPHP) {
@@ -117,8 +117,10 @@ function dbem_install() {
 	dbem_create_venues_table();
   dbem_create_bookings_table();
   dbem_create_people_table();
- 	dbem_add_options();
-   
+	dbem_add_options();
+  dbem_migrate_old_events();
+	update_option('dbem_version', 2);   
+ 
 	// Create events page if necessary
  	$events_page_id = get_option('dbem_events_page')  ;
 	if ($events_page_id != "" ) {
@@ -169,15 +171,10 @@ function dbem_create_events_table() {
 			event_name tinytext NOT NULL,
 			event_time datetime NOT NULL,
 			event_end_time datetime NOT NULL, 
-			event_venue tinytext NOT NULL,
-			event_address tinytext NOT NULL,
-			event_town tinytext NOT NULL,
-			event_province tinytext,
 			event_notes text NOT NULL,
-			event_latitude float DEFAULT NULL,
-			event_longitude float DEFAULT NULL,
 			event_rsvp bool NOT NULL DEFAULT 0,
-			event_seats tinyint,
+			event_seats tinyint,  
+			venue_id mediumint(9) NOT NULL,
 			UNIQUE KEY (event_id)
 			);";
 		
@@ -200,17 +197,18 @@ function dbem_create_events_table() {
 		$in_four_weeks = strftime('%Y-%m-%d 16:00:00',mktime($hours,$minutes,$seconds,$month,$day+28,$year)); 
 		$in_one_year = strftime('%Y-%m-%d 22:00:00',mktime($hours,$minutes,$seconds,$month,$day,$year+1)); 
 		
-		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_venue, event_address, event_time, event_end_time, event_town)
-				VALUES ('Monster gig','Wembley stadium', 'Wembley', '$in_one_week', '$in_one_week', 'London')");
-		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_venue,event_address, event_time, event_end_time, event_town)
-				VALUES ('Fiesta Mexicana','Hard Rock Cafe', '1501 Broadway', '$in_four_weeks','$in_four_weeks','New York')");
-	  $wpdb->query("INSERT INTO ".$table_name." (event_name, event_venue,event_address, event_time,event_end_time, event_town)
-					VALUES ('Gladiators fight','Arena', 'Piazza Bra', '$in_one_year','$in_one_year','Verona')");
+		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_time, event_end_time, venue_id)
+				VALUES ('Monster gig', '$in_one_week', '$in_one_week', 1)");
+		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_time, event_end_time, venue_id)
+				VALUES ('Fiesta Mexicana', '$in_four_weeks','$in_four_weeks', 2)");
+	  $wpdb->query("INSERT INTO ".$table_name." (event_name, event_time,event_end_time, venue_id)
+					VALUES ('Gladiators fight', '$in_one_year','$in_one_year', 2)");
 	} else {  
 		// eventual maybe_add_column() for later versions
 	  maybe_add_column($table_name, 'event_end_time', "alter table $table_name add event_end_time datetime NOT NULL;"); 
 		maybe_add_column($table_name, 'event_rsvp', "alter table $table_name add event_rsvp BOOL NOT NULL;");
-		maybe_add_column($table_name, 'event_seats', "alter table $table_name add event_seats tinyint NULL;");
+		maybe_add_column($table_name, 'event_seats', "alter table $table_name add event_seats tinyint NULL;"); 
+		maybe_add_column($table_name, 'venue_id', "alter table $table_name add venue_id mediumint(9) NOT NULL;");
 	}
 }
 
@@ -301,7 +299,35 @@ function dbem_create_people_table() {
 	}
 } 
 
-
+function dbem_migrate_old_events() {         
+	$version = get_option('dbem_version');
+	if ($version < 2)  {
+		global $wpdb; 
+		$events_table = $wpdb->prefix.EVENTS_TBNAME;
+		$sql = "SELECT event_id, event_venue, event_address, event_town FROM $events_table";
+		$events = $wpdb->get_results($sql, ARRAY_A);
+		foreach($events as $event) {
+			//dbem_log($event);
+			$venue = array('venue_name' => $event['event_venue'], 'venue_address' => $event['event_address'], 'venue_town' => $event['event_town']);
+		 // dbem_log($venue); 
+			$related_venue = dbem_get_identical_venue($venue); 
+				//print_r($related_venue); 
+				if ($related_venue)  {
+					$event['venue_id'] = $related_venue['venue_id'];     
+				}
+				else {
+			   	$new_venue = dbem_insert_venue($venue);
+				  $event['venue_id']= $new_venue['venue_id'];
+				}                                 
+		 $where = array('event_id' => $event['event_id']); 
+	 
+   
+		 $wpdb->update($events_table, $event, $where); 	
+ 
+		}
+		 
+	}
+}
  
 function dbem_add_options() {
 	dbem_log('Adding options, if necessary'); 
@@ -360,7 +386,20 @@ function dbem_add_options() {
 	
 	$gmap_key = get_option('dbem_gmap_key');
 	if (empty($gmap_key))
-		update_option('dbem_gmap_key', '');
+		update_option('dbem_gmap_key', ''); 
+	
+	$rsvp_is_active = get_option('dbem_rsvp_is_active');
+	if (empty($rsvp_is_active))
+		update_option('dbem_rsvp_is_active', 0);
+	
+	$rsvp_mail_notify_is_active = get_option('dbem_rsvp_mail_notify_is_active');
+	if (empty($rsvp_mail_notify_is_active))
+		update_option('dbem_rsvp_mail_notify_is_active', 0);
+	
+	$version = get_option('dbem_version');
+	if (empty($version))
+		update_option('dbem_version', 1);	
+		
 }
       
 function dbem_create_events_page(){
@@ -371,70 +410,83 @@ function dbem_create_events_page(){
   // echo($sql);
 	$wpdb->query($sql);
     
-    update_option('dbem_events_page', mysql_insert_id());
+   update_option('dbem_events_page', mysql_insert_id());
 }   
 
 // Create the Manage Events and the Options submenus 
 add_action('admin_menu','dbem_create_events_submenu');     
 function dbem_create_events_submenu () {
 	  if(function_exists('add_submenu_page')) {
-	  	add_menu_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel);
-	   	// Add a submenu to the custom top-level menu:                
+	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel);
+	   	add_submenu_page(__FILE__, __('Add new'), __('Add new'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page"); 
+	// Add a submenu to the custom top-level menu:                
 			add_submenu_page(__FILE__, "Venues", "Venues", MIN_CAPABILITY, 'venues', "dbem_venues_page");
 			add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
 		 // add_submenu_page(__FILE__, 'Test ', 'Test Sublevel', 8, 'venues', );
 	//   add_options_page('Events Manager','Events Manager',MIN_LEVEL,'eventmanager.php',dbem_options_subpanel);
-		 	add_options_page('Events manager', 'Events Manager', SETTING_CAPABILITY, __FILE__, dbem_options_subpanel);
+		 	add_options_page('Events manager', 'Events Manager', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
 		     
 		
 		
 		
 		}
 }
-add_action('init', 'dbem_intercept_url');
-function dbem_intercept_url() {  
-	// TODO move here most actions
-	
-	global $wpdb;
-	$action=$_GET['action'];
-	$event_id=$_GET['event_id'];
-	$scope=$_GET['scope']; 
-	$offset=$_GET['offset'];
-	$order=$_GET['order'];
-	if ($order == "")
-	 $order = "ASC";
-	if ($offset=="")
-	 $offset = "0";
-	$event_table_name = $wpdb->prefix.EVENTS_TBNAME;
-	
-	if ($action == 'dbem_delete') {   
-		if ($event_id)
-			$sql="DELETE FROM ".$event_table_name." WHERE event_id='"."$event_id"."'";
-    
-		// TODO eventual error if ID in non-existant
-		$wpdb->query($sql);
+// add_action('init', 'dbem_intercept_url');
+// function dbem_intercept_url() {  
+// 	// TODO move here most actions
+// 	
+// 	global $wpdb;
+// 	$action=$_GET['action'];
+// 	$event_id=$_GET['event_id'];
+// 	$scope=$_GET['scope']; 
+// 	$offset=$_GET['offset'];
+// 	$order=$_GET['order'];
+// 	if ($order == "")
+// 	 $order = "ASC";
+// 	if ($offset=="")
+// 	 $offset = "0";
+// 	$event_table_name = $wpdb->prefix.EVENTS_TBNAME;
+// 	
+// 	if ($action == 'dbem_delete') {   
+// 		if ($event_id)
+// 			$sql="DELETE FROM ".$event_table_name." WHERE event_id='"."$event_id"."'";
+//     
+// 		// TODO eventual error if ID in non-existant
+// 		$wpdb->query($sql);
+// 
+// 		//$events = dbem_get_events("", "future");   
+// 	}  
+// 	if ($_GET['secondaryAction'] == "delete_bookings") {
+// 		$bookings = $_GET['bookings'];
+// 		if ($bookings) {
+// 			foreach($bookings as $booking_id) {
+// 				dbem_log($booking_id);    
+// 				dbem_delete_booking($booking_id);
+// 			}
+// 		}
+// 	}
+// }
+//     
+// Events manager page   
+function dbem_new_event_page() {
 
-		//$events = dbem_get_events("", "future");   
-	}  
-	if ($_GET['secondaryAction'] == "delete_bookings") {
-		$bookings = $_GET['bookings'];
-		if ($bookings) {
-			foreach($bookings as $booking_id) {
-				dbem_log($booking_id);    
-				dbem_delete_booking($booking_id);
-			}
-		}
-	}
+	$title=__("Insert New Event", 'dbem');
+	$event = dbem_get_event($element);
+	dbem_event_form($event, $title, $element);
+	
 }
 
-// Events manager page
-function dbem_events_subpanel() {
+function dbem_events_subpanel() {         
+	
   global $wpdb;
-	$action=$_GET['action'];
+	$action=$_GET['action']; 
+	$action2 =$_GET['action2'];
 	$element=$_GET['event_id'];
 	$scope=$_GET['scope']; 
 	$offset=$_GET['offset'];
 	$order=$_GET['order'];
+	$selectedEvents = $_GET['events'];
+	
 	if ($order == "")
 	 $order = "ASC";
 	if ($offset=="")
@@ -444,11 +496,14 @@ function dbem_events_subpanel() {
 
 
 		// DELETE action
-	if ($action == 'dbem_delete') {
+	if ($action == 'deleteEvents') {
 	  //  $sql="DELETE FROM ".$event_table_name." WHERE event_id='"."$element"."'";
-    
+    	
 		// TODO eventual error if ID in non-existant
 		//$wpdb->query($sql);
+    foreach($selectedEvents as $event_ID) {
+		 	dbem_delete_event($event_ID);
+		}
 
 		$events = dbem_get_events("", "future");
 		dbem_events_table($events, 10,"Future events");
@@ -456,72 +511,80 @@ function dbem_events_subpanel() {
 	// UPDATE or CREATE action
 	if ($action == 'update_event') {
 
-		$event = array();
-		$event['event_date']= $_POST[event_date];
-		$event['event_end_date'] = $_POST[event_end_date]; 
+		$event = array();   
+		$venue = array();                        
+		
+		$event['event_name']=$_POST[event_name]; 
 		// Set event end time to event time if not valid
-		if (!_dbem_is_date_valid($event['event_end_date']))
-			$event['event_end_date'] = $event['event-date'];
+		// if (!_dbem_is_date_valid($event['event_end_date']))
+		// 	$event['event_end_date'] = $event['event-date'];  
 	   
-		$event['event_name']=$_POST[event_name];
-		$event['event_hh'] = $_POST[event_hh];
-		$event['event_mm'] = $_POST[event_mm];
-		$event_time = $event['event_hh'].":".$event['event_mm'];
-				
-		$event['event_end_hh']=$_POST[event_end_hh];
-		$event['event_end_mm']=$_POST[event_end_mm];  
-		$event_end_time = $event['event_end_hh'].":".$event['event_end_mm'];        
-		// Set event end time to event time if not valid
+		$event_time = $_POST[event_hh].":".$_POST[event_mm];
+		$event_end_time = $_POST[event_end_hh].":".$_POST[event_end_mm];         
+		$datetime=$_POST[event_date]." $event_time:00";    
+ 		$end_datetime=$_POST[event_end_date]." $event_end_time:00";
+		$event['event_time'] = $datetime;
+		$event['event_end_time'] = $end_datetime;
+		
+		$event['event_rsvp'] = $_POST['event_rsvp'];
+    $event['event_seats'] = $_POST['event_seats']; 
 
 		if(!_dbem_is_time_valid($event_end_time))
 	 		$event_end_time = $event_time;
 		
-		$event['event_venue']=$_POST[event_venue];
-		$event['event_address']=$_POST[event_address];
-		$event['event_town']=$_POST[event_town];
-		$event['event_province']=$_POST[event_province];
-		$event['event_latitude']=$_POST[event_latitude];
-		$event['event_longitude']=$_POST[event_longitude];
-		$event['event_notes']=$_POST[event_notes];
-		$datetime="'{$event['event_date']} $event_time:00'";
-		$end_datetime="'{$event['event_end_date']} $event_end_time:00'"; 
+		$venue['venue_name']=$_POST[venue_name];
+		$venue['venue_address']=$_POST[venue_address];
+		$venue['venue_town']=$_POST[venue_town];
+		// $event['event_province']=$_POST[event_province];
+		// $event['event_latitude']=$_POST[event_latitude];
+		// $event['event_longitude']=$_POST[event_longitude];
+		// $event['event_notes']=$_POST[event_notes];
+		
 		// $datetime="$event_day-$event_month-$event_year $event_hh:$event_mm:00";
 		$validation_result = dbem_validate_event($event);
-		if ( $validation_result == "OK") {  
-		  	// validation successful
-		  	if(!$element) {
-				// INSERT new event
-				$sql="INSERT INTO ".$event_table_name." (event_name, event_venue, event_town, event_address, event_province, event_time, event_end_time, event_latitude, event_longitude, event_notes)
-						VALUES ('".$event['event_name']."','".$event['event_venue']."','".$event['event_town']."','".$event['event_address']."','".$event['event_province']."',".$datetime.",".$end_datetime.",'".$event['event_latitude']."','".$event['event_longitude']."','".$event['event_notes']."');";
+		
+		
+		if ( $validation_result == "OK") { 
+				// validation successful
+				
+				$related_venue = dbem_get_identical_venue($venue); 
+				//print_r($related_venue); 
+				if ($related_venue)  {
+					$event['venue_id'] = $related_venue['venue_id'];     
+				}
+				else {
+			    $new_venue = dbem_insert_venue($venue);
+					$event['venue_id']= $new_venue['venue_id'];
+				}
+		  	
+		  	if(!$element) { 
+			  // INSERT new event 
+			
+				echo($wpdb->insert($event_table_name, $event)); 
+			
+				
+			 
 			$feedback_message = __('New event successfully inserted!','dbem');  
 			
 			} else {
 				// UPDATE old event
-				$sql="UPDATE ".$event_table_name. 
-				" SET event_name='".$event['event_name']."', ".
-					"event_venue='".$event['event_venue']."',".
-					"event_town='".$event['event_town']."',".
-					"event_address='".$event['event_address']."',".
-					"event_province='".$event['event_province']."',".
-					"event_latitude='".$event['event_latitude']."',".
-					"event_longitude='".$event['event_longitude']."',".
-					"event_notes='".$event['event_notes']."',".
-					"event_time=$datetime ".",".
-					"event_end_time=$end_datetime ".  
-					"WHERE event_id="."$element";
+	  
+				$where['event_id'] = $element;
+				     
+				$wpdb->update($event_table_name, $event, $where); 
 				$feedback_message = __('Event','dbem')." $element ".__('updated','dbem')."!";
-				}
-			  dbem_cache_venue($event);  
+		  }
+			  //dbem_cache_venue($event);  
 
 					
-				$wpdb->query($sql); 
+				//$wpdb->query($sql); 
 				echo "<div id='message' class='updated fade'>
 						<p>$feedback_message</p>
 					  </div>";
 				$events = dbem_get_events("", "future");  
 				dbem_events_table($events, 10, "Future events"); 
 			} else {
-			  	// validation unsuccessful
+			  // validation unsuccessful
 			
 				echo $event['name'];
 
@@ -538,38 +601,16 @@ function dbem_events_subpanel() {
 				} else {
 				$title=__("Edit Event", 'dbem')." $element";
 				}
-				// If a edit operation was requested queries the event table
-				$sql='SELECT event_id, 
-							event_name, 
-							event_venue, 
-							event_address,
-							event_town, 
-							event_province, 
-							DATE_FORMAT(event_time, "%Y-%m-%e") AS "event_date",
-							DATE_FORMAT(event_time, "%e") AS "event_day",
-							DATE_FORMAT(event_time, "%m") AS "event_month",
-							DATE_FORMAT(event_time, "%Y") AS "event_year",
-							DATE_FORMAT(event_time, "%k") AS "event_hh",
-							DATE_FORMAT(event_time, "%i") AS "event_mm", 
-							DATE_FORMAT(event_end_time, "%Y-%m-%e") AS "event_end_date",
-						  	DATE_FORMAT(event_end_time, "%e") AS "event_end_day",
-						  	DATE_FORMAT(event_end_time, "%m") AS "event_end_month",
-						  	DATE_FORMAT(event_end_time, "%Y") AS "event_end_year",
-						  	DATE_FORMAT(event_end_time, "%k") AS "event_end_hh",
-						  	DATE_FORMAT(event_end_time, "%i") AS "event_end_mm",
-							event_latitude,
-							event_longitude,
-							event_notes
-					FROM '.$event_table_name.' WHERE event_id="'.$element.'";';
-					$event=$wpdb->get_row($sql, ARRAY_A);
+		 
+					//$event=$wpdb->get_row($sql, ARRAY_A);
 					// Enter new events and updates old ones
 					// DEBUG: echo"Nome: $event->event_name";
 
-					
+					$event = dbem_get_event($element);
 					dbem_event_form($event, $title, $element);
 				    
 	  } 
-	 if ($action == ""){
+	 if ($action == "-1" || $action ==""){
 			// No action, only showing the events list
 
 				
@@ -603,7 +644,8 @@ function dbem_options_subpanel() {
 		<h2><?php _e('Event Manager Options','dbem'); ?></h2>
 			<form id="dbem_options_form" method="post" action="options.php">
 				<?php wp_nonce_field('update-options'); ?>
-            <table class="form-table">
+        <h3><?php _e('Events format', 'dbem');?></h3>   
+				<table class="form-table">
 					<?php $use_event_end = get_option('dbem_use_event_end'); ?>   
 				 
 					<tr valign="top">
@@ -653,10 +695,7 @@ function dbem_options_subpanel() {
 							<?php _e('Check this option if you want the events page to appear together with other pages in pages lists.','dbem')?>
 						</td>
 				   	</tr>
-					
-					  				
-					
-					
+					 
 					<tr valign="top">
 						<th scope="row"><?php _e('Events page title','dbem'); ?></th>
 						<td>
@@ -672,12 +711,6 @@ function dbem_options_subpanel() {
 						 </td>
 					</tr>
 					
-					
-					
-					
-					
-					
-					
 					<tr valign="top">
 						<th scope="row"><?php _e('RSS main title','dbem'); ?></th>
 						<td>
@@ -692,7 +725,7 @@ function dbem_options_subpanel() {
 								<?php _e('The main description of your RSS events feed.','dbem')?>
 
 							</td>
-						</tr>
+					</tr>
 					<tr valign="top">
 						<th scope="row"><?php _e('RSS title format','dbem'); ?></th>
 						<td>
@@ -709,13 +742,12 @@ function dbem_options_subpanel() {
 							<?php _e('Follow the previous formatting instructions.','dbem')?><br/> 
 						</td>
 					</tr>
-					
-					
-					
-					
-					
-					
-					<?php $gmap_is_active = get_option('dbem_gmap_is_active'); ?>
+			</table>    
+			
+				
+			<h3><?php _e('Maps and geotagging', 'dbem');?></h3>
+				<table class='form-table'> 
+				    <?php $gmap_is_active = get_option('dbem_gmap_is_active'); ?>
 					 
 				   	<tr valign="top">
 				   		<th scope="row"><?php _e('Enable Google Maps integration?','dbem'); ?></th>
@@ -738,13 +770,66 @@ function dbem_options_subpanel() {
 						<td><textarea name="dbem_map_text_format" id="dbem_map_text_format" rows="6" cols="60"><?php echo (get_option('dbem_map_text_format'));?></textarea><br/>
 							<?php _e('The format the text appearing in the map cloud.','dbem')?><br/>
 							<?php _e('Follow the previous formatting instructions.','dbem')?></td>
-					</tr>
+					</tr>                    
 				</table>
+				
+				<h3><?php _e('RSVP and bookings', 'dbem');?></h3>
+					<?php $rsvp_is_active = get_option('dbem_rsvp_is_active'); ?>   
+					<?php $rsvp_mail_notify_is_active = get_option('dbem_rsvp_mail_notify_is_active'); ?> 
+					<table class='form-table'> 
+          	<tr valign="top">
+					  	<th scope="row"><?php _e('Enable the RSVP feature?','dbem'); ?></th>
+					   	<td>
+								<input id="dbem_rsvp_is_active_yes" name="dbem_rsvp_is_active" type="radio" value="1" <?php if($rsvp_is_active) echo "checked='checked'"; ?> /><?php _e('Yes'); ?> <br />
+								<input name="dbem_rsvp_is_active" type="radio" value="0" <?php if(!$rsvp_is_active) echo "checked='checked'"; ?> /> <?php _e('No'); ?>  <br />
+								<?php _e('Check this option to enable the RSVP feature.','dbem')?>
+							</td>
+					  </tr> 
+						<tr valign="top">
+					  	<th scope="row"><?php _e('Enable the RSVP e-mail notifications?','dbem'); ?></th>
+					   	<td>
+								<input id="dbem_rsvp_mail_notify_is_active_yes" name="dbem_rsvp_mail_notify_is_active" type="radio" value="1" <?php if($rsvp_mail_notify_is_active) echo "checked='checked'"; ?> /><?php _e('Yes'); ?> <br />
+								<input name="dbem_rsvp_mail_notify_is_active" type="radio" value="0" <?php if(!$rsvp_mail_notify_is_active) echo "checked='checked'"; ?> /> <?php _e('No'); ?>  <br />
+								<?php _e('Check this option if you want to receive an email when someone books places for your events.','dbem')?>
+							</td>
+					  </tr>
+            <tr valign="top">
+							<th scope="row"><?php _e('SMTP username','dbem'); ?></th>
+							<td>
+								<input name="dbem_smtp_username" type="text" id="dbem_smtp_username" style="width: 95%" value="<?php echo get_option('dbem_smtp_username'); ?>" size="45" /><br />
+										<?php _e("Insert the username to be used to access your SMTP server",'dbem')?></a>.
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row"><?php _e('SMTP password','dbem'); ?></th>
+							<td>
+								<input name="dbem_smtp_password" type="password" id="dbem_smtp_password" style="width: 95%" value="<?php echo get_option('dbem_smtp_password'); ?>" size="45" /><br />
+										<?php _e("Insert the password to be used to access your SMTP server",'dbem')?></a>.
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row"><?php _e('Notification sender address','dbem'); ?></th>
+							<td>
+								<input name="dbem_mail_sender_address" type="text" id="dbem_mail_sender_address" style="width: 95%" value="<?php echo get_option('dbem_mail_sender_address'); ?>" size="45" /><br />
+										<?php _e("Insert the address of the notification sender. It must corresponds with your gmail account user",'dbem')?></a>.
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row"><?php _e('Notification receiver address','dbem'); ?></th>
+							<td>
+								<input name="dbem_mail_receiver_address" type="text" id="dbem_mail_receiver_address" style="width: 95%" value="<?php echo get_option('dbem_mail_receiver_address'); ?>" size="45" /><br />
+										<?php _e("Insert the address of the receiver of your notifications",'dbem')?></a>.
+							</td>
+						</tr>   
+					</table>
+				
+				
+				
 				<p class="submit">
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message,  dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format" />
+				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message,  dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_is_active, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address" />
 				
 				
 			</form>
@@ -766,7 +851,7 @@ function dbem_events_page_content() {
 		$event_ID=$_REQUEST['event_id'];
 		$event= dbem_get_event($event_ID);
 		$single_event_format = get_option('dbem_single_event_format');  
-		$page_body = dbem_replace_placeholders($single_event_format."seats: "."#_SEATS"."<br/>Available seats: "."#_AVAILABLESEATS"."<br/>"."#_RSVP", $event);
+		$page_body = dbem_replace_placeholders($single_event_format, $event);
 	  return $page_body;
 	} else { 
 		// Multiple events page
@@ -959,33 +1044,46 @@ function dbem_is_multiple_events_page() {
 }
 
 function dbem_replace_placeholders($format, $event, $target="html") {
+	
 	$event_string = $format;
 	preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
 	foreach($placeholders[0] as $result) {    
 		// echo "RESULT: $result <br>";
 		// matches alla fields placeholder
 		if (preg_match('/#_MAP/', $result)) {
+		
 		 	$gmap_is_active = get_option('dbem_gmap_is_active'); 
-			if ($gmap_is_active) {
-			   $map_div = "<div id='event-map' style=' background: green;'></div>" ;
+			if ($gmap_is_active) {  
+		 
+			   $map_div = "<div id='event-map' style=' background: green; width: 200px; height: 100px'></div>" ;
 			} else {
 				$map_div = "";
 			}
-		 	$event_string = str_replace($result, $map_div , $event_string );
+		 	$event_string = str_replace($result, $map_div , $event_string ); 
+		 
 		}
-		if (preg_match('/#_RSVP/', $result)) {
+		if (preg_match('/#_ADDBOOKINGFORM/', $result)) {
 		 	$rsvp_is_active = get_option('dbem_gmap_is_active'); 
 			if (true) {
-			   $rsvp_module .= dbem_rsvp_form();
+			   $rsvp_add_module .= dbem_add_booking_form();
 			} else {
-				$rsvp_module .= "";
+				$rsvp_add_module .= "";
 			}
-		 	$event_string = str_replace($result, $rsvp_module , $event_string );
+		 	$event_string = str_replace($result, $rsvp_add_module , $event_string );
+		}
+		if (preg_match('/#_REMOVEBOOKINGFORM/', $result)) {
+		 	$rsvp_is_active = get_option('dbem_gmap_is_active'); 
+			if (true) {
+			   $rsvp_delete_module .= dbem_delete_booking_form();
+			} else {
+				$rsvp_delete_module .= "";
+			}
+		 	$event_string = str_replace($result, $rsvp_delete_module , $event_string );
 		}
 		if (preg_match('/#_AVAILABLESEATS/', $result)) {
 		 	$rsvp_is_active = get_option('dbem_gmap_is_active'); 
 			if (true) {
-			   $availble_seats .= dbem_get_available_seats($event->event_id);
+			   $availble_seats .= dbem_get_available_seats($event['event_id']);
 			} else {
 				$availble_seats .= "";
 			}
@@ -998,7 +1096,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				$joiner = "&amp;";
 			else
 				$joiner = "?";
-			$event_string = str_replace($result, "<a href='".get_permalink($events_page_id).$joiner."event_id=$event->event_id'  title='$event->event_name'>$event->event_name</a>" , $event_string );
+			$event_string = str_replace($result, "<a href='".get_permalink($events_page_id).$joiner."event_id=".$event['event_id']."'   title='".$event['event_name']."'>".$event['event_name']."</a>" , $event_string );
 		} 
 		if (preg_match('/#_URL/', $result)) {
 			$events_page_id = get_option('dbem_events_page');
@@ -1007,11 +1105,11 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				$joiner = "&amp;";
 			else
 				$joiner = "?";
-			$event_string = str_replace($result, get_permalink($events_page_id).$joiner."event_id=$event->event_id" , $event_string );
+			$event_string = str_replace($result, get_permalink($events_page_id).$joiner."event_id=".$event['event_id'] , $event_string );
 		}
 	 	if (preg_match('/#_(NAME|VENUE|ADDRESS|TOWN|PROVINCE|NOTES|SEATS)/', $result)) {
-		 	$field = "event_".ltrim(strtolower($result), "#_");
-		 	$field_value = $event->{$field};
+			$field = "event_".ltrim(strtolower($result), "#_");
+		 	$field_value = $event[$field];
 			if ($field == "event_notes") {
 				if ($target == "html")
 					$field_value = apply_filters('dbem_notes', $field_value);
@@ -1030,7 +1128,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 	 	}   
 		// matches all PHP time placeholders for endtime
 		if (preg_match('/^#@[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $event->event_end_time), $event_string ); 
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $event['event_end_time']), $event_string ); 
 			
 			// echo "_fine_, infatti result = $result e ".mysql2date(ltrim($result, "#"), $event->event_end_time);
 			// 			echo "STRINGA: $event_string";
@@ -1042,7 +1140,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		// matches all PHP time placeholders
 		if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
 			// echo "-inizio-";
-			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $event->event_time),$event_string );  
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $event['event_time']),$event_string );  
 			// echo $event_string;  
 		}       
 	}
@@ -1083,10 +1181,6 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 	
 	$sql = "SELECT event_id, 
 			    event_name, 
-			  	event_venue, 
-			  	event_address,
-			  	event_town, 
-			  	event_province, 
 			  	DATE_FORMAT(event_time, '%e') AS 'event_day',
 			  	DATE_FORMAT(event_time, '%Y') AS 'event_year',
 			  	DATE_FORMAT(event_time, '%k') AS 'event_hh',
@@ -1100,55 +1194,70 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 			  	event_latitude,
 			  	event_longitude,
 					event_notes, 
-					event_rsvp 
+					event_rsvp, 
+					venue_id 
 					FROM $events_table   
 					$temporal_condition
 					ORDER BY event_time $order
 					$limit 
 					$offset";   
-	     
- 
-	$events = $wpdb->get_results($sql);	
-	   
-	return $events;
+    
+  $wpdb->show_errors = true;
+	$events = $wpdb->get_results($sql, ARRAY_A); 
+	if (!empty($events)) {
+		//$wpdb->print_error(); 
+		$inflated_events = array();
+		foreach($events as $this_event) {
+		
+			$this_venue = dbem_get_venue($this_event['venue_id']);
+			$this_event['venue_name'] = $this_venue['venue_name'];
+			$this_event['venue_address'] = $this_venue['venue_address'];
+			$this_event['venue_town'] = $this_venue['venue_town'];
+			array_push($inflated_events, $this_event);
+		}
+	  
+		return $inflated_events;
+	} else {
+		return null;
+	}
 }    
 function dbem_get_event($event_id) {
 	global $wpdb;
 	$events_table = $wpdb->prefix.EVENTS_TBNAME; 	
 	$sql = "SELECT event_id, 
 			   	event_name, 
-			  	event_venue, 
-			  	event_address,
-			  	event_town, 
-			  	event_province, 
-			  	DATE_FORMAT(event_time, '%e') AS 'event_day',
-			  	DATE_FORMAT(event_time, '%Y') AS 'event_year',
+		 	  	DATE_FORMAT(event_time, '%Y-%m-%e') AS 'event_date', 
+					DATE_FORMAT(event_time, '%e') AS 'event_day',   
+					DATE_FORMAT(event_time, '%m') AS 'event_month',
+					DATE_FORMAT(event_time, '%Y') AS 'event_year',
 			  	DATE_FORMAT(event_time, '%k') AS 'event_hh',
 			  	DATE_FORMAT(event_time, '%i') AS 'event_mm', 
-			    DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',
+			    DATE_FORMAT(event_end_time, '%Y-%m-%e') AS 'event_end_date', 
+					DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',        
+					DATE_FORMAT(event_end_time, '%m') AS 'event_end_month',  
 		  		DATE_FORMAT(event_end_time, '%Y') AS 'event_end_year',
 		  		DATE_FORMAT(event_end_time, '%k') AS 'event_end_hh',
-		  		DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',
-			  	event_time,
+		  		DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',   
+		      event_time,
 			  	event_end_time,
-					event_latitude,
-			  	event_longitude,
 					event_notes,
 					event_rsvp,
-					event_seats
+					event_seats, 
+					venue_id
 				FROM $events_table   
 			    WHERE event_id = $event_id";   
 	     
 	
-	$event = $wpdb->get_row($sql);	
-	   
+	$event = $wpdb->get_row($sql,ARRAY_A);	
+	$venue = dbem_get_venue($event['venue_id']);
+	$event['venue_name'] = $venue['venue_name'];
+	$event['venue_address'] = $venue['venue_address'];
+	$event['venue_town'] = $venue['venue_town'];   
 	return $event;
 }        
 
 
-function dbem_events_table($events, $limit, $title) {
- 
-		
+function dbem_events_table($events, $limit, $title) {	
 	if (isset($_GET['scope'])) 
 		$scope = $_GET['scope'];
  	else
@@ -1167,39 +1276,78 @@ function dbem_events_table($events, $limit, $title) {
 	<div class="wrap">
 		  
 		 <h2><?php echo $title; ?></h2>   
-  	<div id='new-event' class='switch-tab'><a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=eventmanager.php&amp;action=edit_event"><?php _e('New Event ...', 'dbem');?></a></div>  
+  	<!--<div id='new-event' class='switch-tab'><a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event"><?php _e('New Event ...', 'dbem');?></a></div>-->  
 		<?php
 			
 			$link = array();
-			$link['past'] = "<a href='".get_bloginfo('url')."/wp-admin/edit.php?page=eventmanager.php&amp;scope=past&amp;order=desc'>".__('Past events','dbem')."</a>"; 
-			$link['all'] = " <a href='".get_bloginfo('url')."/wp-admin/edit.php?page=eventmanager.php&amp;scope=all&amp;order=desc'>".__('All events','dbem')."</a>";   
-			$link['future'] = "  <a href='".get_bloginfo('url')."/wp-admin/edit.php?page=eventmanager.php&amp;scope=future'>".__('Future events','dbem')."</a>";
-			foreach ($link as $key => $value) {
-				if ($key != $scope) 
-					echo "<div class='switch-tab'>".$link[$key]."</div>"; 
-			} ?> 
+			$link['past'] = "<a href='".get_bloginfo('url')."/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=past&amp;order=desc'>".__('Past events','dbem')."</a>"; 
+			$link['all'] = " <a href='".get_bloginfo('url')."/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=all&amp;order=desc'>".__('All events','dbem')."</a>";   
+			$link['future'] = "  <a href='".get_bloginfo('url')."/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=future'>".__('Future events','dbem')."</a>";  
+			
+			$scope_names = array();
+			$scope_names['past'] = __('Past events','dbem'); 
+	    $scope_names['all'] = __('All events','dbem');
+			$scope_names['future'] = __('Future events','dbem');
+			
+			 ?> 
 		
-  	
+  			<form id="posts-filter" action="" method="get">
+        <input type='hidden' name='page' value='events-manager/events-manager.php'/>  
+				<ul class="subsubsub">
+				<li><a href='edit.php'  class="current">Totale <span class="count">(<?php echo (count($events));?>)</span></a> |</li>
+				<li><a href='edit.php?post_status=publish' >Pubblicato <span class="count">(1)</span></a></li></ul>
+
+
+				<div class="tablenav">
+
+				<div class="alignleft actions">
+				<select name="action">
+        <option value="-1" selected="selected"><?php _e('Bulk Actions');?></option> 	
+				<option value="deleteEvents" "><?php _e('Delete selected');?></option> 
+				
+				</select>
+				<input type="submit" value="Applica" name="doaction2" id="doaction2" class="button-secondary action" />
+				<select name="scope">
+	
+					<?php
+					foreach ($scope_names as $key => $value) {
+						$selected = "";
+						if ($key == $scope) 
+							$selected = "selected='selected'";
+					  echo "<option value='$key' $selected>$value</option>  ";
+					}       
+					?>
+				</select>	
+				<input id="post-query-submit" class="button-secondary" type="submit" value="<?php _e('Filter')?>"/>
+				</div>
+				<div class="clear"></div>
+				</div>
+				<?php 
+				if (empty($events)) {
+					 // TODO localize
+					echo "no events";
+				} else {
+					?>
+		
 	<table class="widefat">
   		<thead>
 			<tr>
-  				<th><?php _e('ID', 'dbem');?></th>
-  	  			<th><?php _e('Name', 'dbem');?></th>
+  				<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>
+  	  		<th><?php _e('Name', 'dbem');?></th>
   	   		<th><?php _e('Venue', 'dbem');?></th>
-  	   		<th><?php _e('Town', 'dbem');?></th>
-	   		<th><?php _e('Address', 'dbem');?></th>
+  	   	 
   	    <?php if (!$use_events_end) {?>
-				<th colspan="2"><?php _e('Date and time', 'dbem');?></th>
+				<th><?php _e('Date and time', 'dbem');?></th>
   	    <?php } else {?>
-				<th colspan="2"><?php _e('Beginning', 'dbem');?></th>
-				<th colspan="2"><?php _e('End', 'dbem');?></th>
+				<th><?php _e('Beginning', 'dbem');?></th>
+				<th><?php _e('End', 'dbem');?></th>
 		 <?php } ?>
-				<th><?php _e('Time', 'dbem');?></th>
+				
 	   		 	<?php if (false) { ?>
 						<th><?php _e('Latitude', 'dbem');?></th>
 	   				<th><?php _e('Longitude', 'dbem');?></th> 
 					<?php } ?>
-  	   		<th colspan="2"><?php _e('Actions', 'dbem');?></th>
+  	   		
   	  </tr>
 			</thead>
 			<tbody>
@@ -1207,58 +1355,51 @@ function dbem_events_table($events, $limit, $title) {
   		$i =1;
   		foreach ($events as $event){
   			$class = ($i % 2) ? ' class="alternate"' : '';
-				$month = mysql2date('M', $event->event_time);
-				$weekday = mysql2date('D', $event->event_time); 
-				$end_month = mysql2date('M', $event->event_end_time);
-				$end_weekday = mysql2date('D', $event->event_end_time);
+				$month = mysql2date('M', $event['event_time']);
+				$weekday = mysql2date('D',  $event['event_time']); 
+				$end_month = mysql2date('M',  $event['event_end_time']);
+				$end_weekday = mysql2date('D',  $event['event_end_time']);
 				$style = "";
 			   $timestamp = time();
 				$date_time_array = getdate($timestamp);
-			  	$this_hours = $date_time_array['hours'];
+			  $this_hours = $date_time_array['hours'];
 				$this_minutes = $date_time_array['minutes'];
 				$this_seconds = $date_time_array['seconds'];
 				$this_month = $date_time_array['mon'];
 				$this_day = $date_time_array['mday'];
 				$this_year = $date_time_array['year'];
 			 	$today = strftime('%Y-%m-%d 00:00:00', mktime($this_hours,$this_minutes,$this_seconds,$this_month,$this_day,$this_year));
-			
-			
-				if ($event->event_time < $today )
+			  
+			 
+				$venue_summary = "<b>".$event['venue_name']."</b><br/>".$event['venue_address']." - ".$event['venue_town'];
+				
+			  
+				if ($event['event_time'] < $today )
 				$style= "style ='background-color: #FADDB7;'";
 			?>
-	  <tr <?php echo"$class $style"; ?> >
+	  <tr <?php echo"$class $style"; ?> >   
+			 
   	   <td>
- 	    <strong><?php echo "$event->event_id"; ?></strong>
+ 	    		<input type='checkbox' value='<?php echo $event['event_id'];?>' name='events[]'/></td>
   	   </td>
   	   <td>
-  	    <?php echo "$event->event_name"; ?>
+  	    <strong><a class="row-title" href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $event['event_id']; ?>"><?php echo ($event['event_name']); ?></a></strong>
   	   </td>
   	   <td>
-  	    <?php echo "$event->event_venue"; ?>
+  	 
+				 <?php echo $venue_summary; ?>
+				
   	   </td>
-  	   <td>
-  	    <?php 
-  	     	echo "$event->event_town"; 
-  		if (isset($event->event_province)) {
-  		echo " ($event->event_province)";
-  		}
-  	      ?>
-  	    </td>
-  	    <td>
-	  	    <?php echo "$event->event_address"; ?>
-	  	</td>
+  	  
 		<td>
-  	     <?php echo "$weekday $event->event_day  $month $event->event_year"; ?>
-  	    </td>
-  	    <td>
-  	     <?php echo "$event->event_hh : $event->event_mm"; ?>
+  	     <?php echo "$weekday ".$event['event_day']." $month ".$event['event_year'] ; ?><br/>
+  	    
+  	     <?php echo $event['event_hh']." : ".$event['event_mm'] ; ?>
   	    </td>
 		 <?php if ($use_events_end) { ?>
 		  <td>
-			<?php echo "$end_weekday $event->event_end_day  $end_month $event->event_end_year"; ?> 
-		  </td>
-		  <td>   
-			<?php echo "$event->event_end_hh : $event->event_end_mm"; ?>   
+			<?php echo "$end_weekday ".$event['event_end_day']." $end_month ".$event['event_end_year'] ; ?><br/>   
+			   <?php echo $event['event_end_hh']." : ".$event['event_end_mm'] ; ?>
 			</td>
 		 <?php } ?>
 		  <?php if (false) { ?> 
@@ -1269,8 +1410,8 @@ function dbem_events_table($events, $limit, $title) {
 	  	    <?php echo "$event->event_longitude"; ?>
 	  	</td>
 			<?php } ?> 
-	    <td><a class="edit" href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo "$event->event_id"?>"><?php _e('Edit'); ?></a></td>
-	    <td><a class="delete" href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=eventmanager.php&amp;action=dbem_delete&amp;event_id=<?php echo "$event->event_id" ?>" onclick="return confirm('<?php _e('Are you sure?','dbem'); ?>');"><?php _e('Delete'); ?></a></td>
+ 
+	   
 	<?php
   	    	   echo'</tr>'; 
   	   $i++;
@@ -1278,7 +1419,21 @@ function dbem_events_table($events, $limit, $title) {
 	    ?>
 	   
 			</tbody>
-  	  </table>
+  	  </table>  
+  <?php } // end of table?>
+
+			<div class='tablenav'>
+				<div class=alignleft actions>
+				
+			 	 
+					<br class='clear'/> 
+				</div>
+				<br class='clear'/>
+				</div>
+			</form>
+		</div>
+	</div>  
+
  			<?php
  			if ($events_count >  $limit) {
 				$backward = $offset + $limit;
@@ -1322,9 +1477,10 @@ function dbem_event_form($event, $title, $element) {
 	} else {
 		$localised_end_date = "";
 	}    
-	echo (dbem_bookings_table($event['event_id']));   
+	if($event['event_rsvp'])
+		echo (dbem_bookings_table($event['event_id']));   
 	?> 
-<form id="eventForm" method="post" action="edit.php?page=eventmanager.php&amp;action=update_event&amp;event_id=<?php echo "$element"?>">
+<form id="eventForm" method="post" action="edit.php?page=events-manager/events-manager.php&amp;action=update_event&amp;event_id=<?php echo "$element"?>">
     <div class="wrap">
 		<h2><?php echo $title; ?></h2>
    		<div id="poststuff">
@@ -1370,27 +1526,49 @@ function dbem_event_form($event, $title, $element) {
 				echo "<div id='event-map' style='width: 450px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";   
 			}
 				?>
-				<div id="event_venue" class="stuffbox">
+				<div id="venue_name" class="stuffbox">
 					<h3><?php _e('Venue','dbem'); ?></h3>
 					<div class="inside">
-						<input id="venue-input" type="text" name="event_venue" value="<?php echo $event['event_venue']?>" /><br/>
+						<input id="venue-name" type="text" name="venue_name" value="<?php echo $event['venue_name']?>" /><br/>
 						<?php _e('The venue where the event takes place. Example: Arena', 'dbem') ?>
 					</div>
 				</div>
-				<div id="event_address" class="stuffbox">
+				<div id="venue_address" class="stuffbox">
 					<h3><?php _e('Address','dbem'); ?></h3>
 					<div class="inside">
-						<input id="address-input" type="text" name="event_address" value="<?php echo $event['event_address']; ?>" /><br/>
+						<input id="venue-address" type="text" name="venue_address" value="<?php echo $event['venue_address']; ?>" /><br/>
 						<?php _e('The address of the venue. Example: Via Mazzini 22', 'dbem') ?>
 					</div>
 				</div>
-				<div id="event_town" class="stuffbox">
+				<div id="venue_town" class="stuffbox">
 					<h3><?php _e('Town','dbem'); ?></h3>
 					<div class="inside">
-						<input id="town-input" type="text" name="event_town" value="<?php echo $event['event_town']?>" /><br/>
+						<input id="venue-town" type="text" name="venue_town" value="<?php echo $event['venue_town']?>" /><br/>
 						<?php _e('The event town. Example: Verona. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy', 'dbem') ?>
 					</div>
 				</div>
+				<div id="event_rsvp" class="stuffbox">
+					<h3><?php _e('RSVP','dbem'); ?></h3>
+					<div class="inside">
+						<?php if($event['event_rsvp']) 
+										$rsvp_YES = "checked='checked'";
+									else
+						        $rsvp_NO = "checked='checked'";
+							
+						?>
+						<input id="rsvp-input" type="radio" name="event_rsvp" value="1" <?php echo $rsvp_YES;?> /> <?php _e('Activate RSVP', 'dbem');?><br/>
+						<input id="rsvp-input" type="radio" name="event_rsvp" value="0" <?php echo $rsvp_NO;?> /> <?php _e('No RSVP', 'dbem');?><br/>
+						<?php _e('Activate if you want to track bookings for this event', 'dbem') ?>
+					</div>
+				</div>   
+				<div id="event_seats" class="stuffbox">
+					<h3><?php _e('Seats available','dbem'); ?></h3>
+					<div class="inside">
+						<input id="seats-input" type="text" name="event_seats" value="<?php echo $event['event_seats']?>" /><br/>
+						<?php _e('The number of seats available for this event. Example: 12', 'dbem') ?>
+					</div>
+				</div>
+				
 				<div id="event_notes" class="postbox closed">
 					<h3><?php _e('Notes','dbem'); ?></h3>
 					<div class="inside">
@@ -1421,14 +1599,15 @@ function dbem_validate_event($event) {
 	$event_month = substr($event['event_date'],5,2);
 	$event_day = substr($event['event_date'],8,2);
 	
-	if (!_dbem_is_date_valid($event['event_date'])) {
-		return __("invalid date!", "dbem");
-	}                                                         
+	// if (!_dbem_is_date_valid($event['event_date'])) {
+	// 	return __("invalid date!", "dbem");
+	// }                                                         
 	$time = $event['event_hh'].":".$event['event_mm'];
 	$end_time = $event['event_end_hh'].":".$event['event_end_mm']; 
-	if ( !_dbem_is_time_valid($time) ) {
-		return _("invalid time","dbem");
-	}
+	// TODO re-IMPLEMENT TIME VALIDATION
+	// if ( !_dbem_is_time_valid($time) ) {
+	// 	return _("invalid time","dbem");
+	// }   
 	$use_event_end = get_option('dbem_use_event_end'); 
 	if ($use_event_end && $event['event_date']." ".$time  > $event['event_end_date']." ".$end_time)
 		return __("end date before begin date", "dbem");
@@ -1443,9 +1622,8 @@ function _dbem_is_date_valid($date) {
 	return (checkdate($month, $day, $year));
 }  
 function _dbem_is_time_valid($time) {  
-	echo "Time validation: _".$time."_<br/>";
-  	$result = preg_match ("/([01]\d|2[0-3])(:[0-5]\d)/", $time);
-	echo "$result<br/>";
+ 	$result = preg_match ("/([01]\d|2[0-3])(:[0-5]\d)/", $time);
+
 	return ($result);
 }
 // Enqueing jQuery script to make sure it's loaded
@@ -1526,19 +1704,21 @@ add_action ('admin_head', 'dbem_admin_general_script');
 
 // Google maps implementation
 function dbem_map_script() {
-	$gmap_is_active = get_option('dbem_gmap_is_active'); 
-	if ($gmap_is_active) {
-		if (strpos(get_option('dbem_single_event_format'), "#_MAP")) { // loading the script is useless unless #_MAP is in the format
+	$gmap_is_active = get_option('dbem_gmap_is_active');  
+		if ($gmap_is_active) { 
+			if (strpos(get_option('dbem_single_event_format'), "#_MAP")) { // loading the script is useless unless #_MAP is in the format
+			 
 			if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
+				 
 				// single event page
 				$event_ID=$_REQUEST['event_id'];
 			    $event = dbem_get_event($event_ID);
-				if ($event->event_town != '') {
+				if ($event['venue_town'] != '') {
 					$gmap_key = get_option('dbem_gmap_key'); 
-					if($event->event_address != "") {
-				    	$search_key = "$event->event_address, $event->event_town";
+					if($event['venue_address'] != "") {
+				    	$search_key = $event['venue_address'].", ".$event['venue_town'];
 					} else {
-						$search_key = "$event->event_venue, $event->event_town";
+						$search_key = $event['venue_name'].", ".$event['venue_town'];
 					}
 				$map_text_format = get_option('dbem_map_text_format');
 		    	$map_text = dbem_replace_placeholders($map_text_format, $event, "map");   
@@ -1606,27 +1786,33 @@ function dbem_map_script() {
 		}
 	}
 }        
-add_action ('wp_head', 'dbem_map_script');   
+add_action ('wp_head', 'dbem_map_script'); 
 
-function dbem_admin_map_script() { 
-	if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
+function dbem_admin_map_script() {  
+	if ((isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'venues')) {   
 		if (!(isset($_REQUEST['action']) && $_REQUEST['action'] == 'dbem_delete')) {    
-			// single event page
+			// single event page    
+			
+	   	
 			$event_ID=$_REQUEST['event_id'];
 		    $event = dbem_get_event($event_ID);
-			if ($event->event_town != '') {
+			
+			if ($event['venue_town'] != '' || (isset($_REQUEST['page']) && $_REQUEST['page'] = 'venues')) {
 				$gmap_key = get_option('dbem_gmap_key');
-		        if($event->event_address != "") {
-			    	$search_key = "$event->event_address, $event->event_town";
+		        if($event['venue_address'] != "") {
+			    	$search_key = $event['venue_address'].", ".$event['venue_town'];
 				} else {
-					$search_key = "$event->event_venue, $event->event_town";
+					$search_key = $event['venue_name'].", ".$event['venue_town'];
 				}
-	
+	   		
 		?>
 		<style type="text/css">
-		   div#event_town, div#event_address, div#event_venue {
-			width: 480px;
-		}
+		   div#venue_town, div#venue_address, div#venue_name {
+					width: 480px;
+				}
+				table.form-table {
+					width: 50%;
+				}
 		</style>
 		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $gmap_key;?>" type="text/javascript"></script>         
 		<script type="text/javascript">
@@ -1642,7 +1828,7 @@ function dbem_admin_map_script() {
 					if (address !="") {
 						searchKey = address + ", " + town;
 					} else {
-						searchKey =  venue + ", " * town;
+						searchKey =  venue + ", " + town;
 					}
 					
 					var search = "<?php echo $search_key ?>" ;
@@ -1670,30 +1856,29 @@ function dbem_admin_map_script() {
 	    	}
    
 			$j(document).ready(function() {
-	  			eventVenue = $j("#venue-input").val(); 
-			
-	 			eventTown = $j("#town-input").val(); 
-				eventAddress = $j("#address-input").val();
+	  		eventVenue = $j("input#venue-name").val(); 
+			  eventTown = $j("input#venue-town").val(); 
+				eventAddress = $j("input#venue-address").val();
 		   
 				loadMap(eventVenue, eventTown, eventAddress);
 			
-				$j("#venue-input").blur(function(){
-						newEventVenue = $j("#venue-input").val();  
+				$j("input#venue-name").blur(function(){
+						newEventVenue = $j("input#venue-name").val();  
 						if (newEventVenue !=eventVenue) {                
 							loadMap(newEventVenue, eventTown, eventAddress); 
 							eventVenue = newEventVenue;
 					   
 						}
 				});
-				$j("#town-input").blur(function(){
-						newEventTown = $j("#town-input").val(); 
+				$j("input#venue-town").blur(function(){
+						newEventTown = $j("input#venue-town").val(); 
 						if (newEventTown !=eventTown) {  
 							loadMap(eventVenue, newEventTown, eventAddress); 
 							eventTown = newEventTown;
 							} 
 				});
-				$j("#address-input").blur(function(){
-						newEventAddress = $j("#address-input").val(); 
+				$j("input#venue-address").blur(function(){
+						newEventAddress = $j("input#venue-address").val(); 
 						if (newEventAddress != eventAddress) {
 							loadMap(eventVenue, eventTown, newEventAddress);
 						 	eventAddress = newEventAddress; 
@@ -1714,8 +1899,11 @@ function dbem_admin_map_script() {
 }    
 }
 $gmap_is_active = get_option('dbem_gmap_is_active'); 
-if ($gmap_is_active)        
+if ($gmap_is_active) {
+	dbem_log("qui aggiungiamo gmap");     
 	add_action ('admin_head', 'dbem_admin_map_script');
+	  
+}
 
 // Script to validate map options
 function dbem_admin_options_script() { 
@@ -1828,6 +2016,15 @@ add_action('admin_head','dbem_general_css');
 include("dbem_venues_autocomplete.php"); 
 include("dbem_rsvp.php");     
 include("dbem_venues.php");     
+                 
+// TODO roba da mettere nell'ordine giusto
+function dbem_delete_event($event_id) {
+		global $wpdb;	
+		$table_name = $wpdb->prefix.EVENTS_TBNAME;
+		$sql = "DELETE FROM $table_name WHERE event_id = '$event_id';";
+	 	$wpdb->query($sql);
+
+}
 
 
 ?>
