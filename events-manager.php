@@ -424,7 +424,8 @@ function dbem_create_events_submenu () {
 			add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
 		 // add_submenu_page(__FILE__, 'Test ', 'Test Sublevel', 8, 'venues', );
 	//   add_options_page('Events Manager','Events Manager',MIN_LEVEL,'eventmanager.php',dbem_options_subpanel);
-		 	add_options_page('Events manager', 'Events Manager', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
+		 	add_submenu_page(__FILE__, "TEST", "test", MIN_CAPABILITY, 'recurrence', "dbem_recurrence_test");
+			add_options_page('Events manager', 'Events Manager', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
 		     
 		
 		
@@ -2015,7 +2016,8 @@ add_action('admin_head','dbem_general_css');
 //add_filter('feed_link','substitute_rss')
 include("dbem_venues_autocomplete.php"); 
 include("dbem_rsvp.php");     
-include("dbem_venues.php");     
+include("dbem_venues.php"); 
+include("dbem-recurrence.php");    
                  
 // TODO roba da mettere nell'ordine giusto
 function dbem_delete_event($event_id) {
