@@ -705,7 +705,7 @@ function dbem_events_subpanel() {
 					$title = __('Future Events','dbem'); 
 					$scope = "future";   
 			}
-		  $limit = 10;
+		  $limit = 20;
 		  $events = dbem_get_events($limit, $scope, $order,$offset);  
 			
 		  dbem_events_table($events, $limit, $title);
@@ -1186,9 +1186,10 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				$joiner = "?";
 			$event_string = str_replace($result, get_permalink($events_page_id).$joiner."event_id=".$event['event_id'] , $event_string );
 		}
-	 	if (preg_match('/#_(NAME|VENUE|ADDRESS|TOWN|PROVINCE|NOTES|SEATS)/', $result)) {
+	 	if (preg_match('/#_(NAME|NOTES|SEATS)/', $result)) {
 			$field = "event_".ltrim(strtolower($result), "#_");
-		 	$field_value = $event[$field];
+		 	$field_value = $event[$field];      
+			
 			if ($field == "event_notes") {
 				if ($target == "html")
 					$field_value = apply_filters('dbem_notes', $field_value);
@@ -1204,24 +1205,66 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 					$field_value = apply_filters('dbem_general_rss', $field_value); 
 			}
 			$event_string = str_replace($result, $field_value , $event_string ); 
-	 	}   
-		// matches all PHP time placeholders for endtime
-		if (preg_match('/^#@[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $event['event_end_time']), $event_string ); 
+	 	}  
+	  
+		if (preg_match('/#_(ADDRESS|TOWN|PROVINCE)/', $result)) {
+			$field = "venue_".ltrim(strtolower($result), "#_");
+		 	$field_value = $event[$field];      
+		
+			if ($field == "event_notes") {
+				if ($target == "html")
+					$field_value = apply_filters('dbem_notes', $field_value);
+				else
+				  if ($target == "map")
+					$field_value = apply_filters('dbem_notes_map', $field_value);
+				  else
+				 	$field_value = apply_filters('dbem_notes_rss', $field_value);
+		  	} else {
+				if ($target == "html")    
+					$field_value = apply_filters('dbem_general', $field_value); 
+				else 
+					$field_value = apply_filters('dbem_general_rss', $field_value); 
+			}
+			$event_string = str_replace($result, $field_value , $event_string ); 
+	 	}
+	  
+		if (preg_match('/#_(VENUE)/', $result)) {
+			$field = "venue_name";
+		 	$field_value = $event[$field];     
+			if ($target == "html")    
+					$field_value = apply_filters('dbem_general', $field_value); 
+			else 
+				$field_value = apply_filters('dbem_general_rss', $field_value); 
 			
-			// echo "_fine_, infatti result = $result e ".mysql2date(ltrim($result, "#"), $event->event_end_time);
-			// 			echo "STRINGA: $event_string";
-			// 		               
-	 
-		} 
+			$event_string = str_replace($result, $field_value , $event_string ); 
+	 	}
+	
+	
+		// matches all PHP time placeholders for endtime
+		if (preg_match('/^#@[dDjlNSwzWFmMntLoYy]$/', $result)) {
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $event['event_end_date']), $event_string ); 
+	 	} 
 		    
 		
-		// matches all PHP time placeholders
-		if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
+		// matches all PHP date placeholders
+		if (preg_match('/^#[dDjlNSwzWFmMntLoYy]$/', $result)) {
 			// echo "-inizio-";
-			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $event['event_time']),$event_string );  
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $event['event_start_date']),$event_string );  
 			// echo $event_string;  
-		}       
+		}  
+		
+		// matches all PHP time placeholders
+		if (preg_match('/^#@[aABgGhHisueIOPTZcrU]$/', $result)) {
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), "0000-00-00 ".$event['event_end_time']),$event_string );  
+				// echo $event_string;  
+		}
+		
+		if (preg_match('/^#[aABgGhHisueIOPTZcrU]$/', $result)) {
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), "0000-00-00 ".$event['event_start_time']),$event_string );  
+			// echo $event_string;  
+		}
+		
+		     
 	}
 	return $event_string;	
 	
@@ -1421,7 +1464,7 @@ function dbem_events_table($events, $limit, $title) {
   	   		<th><?php _e('Venue', 'dbem');?></th>
   	   	 
   	  
-				<th><?php _e('Date and time', 'dbem');?></th>
+				<th colspan="2"><?php _e('Date and time', 'dbem');?></th>
   	  	
 	
   	   		
@@ -1472,9 +1515,11 @@ function dbem_events_table($events, $limit, $title) {
   	     <?php echo $localised_date ; ?><br/>
   	    
   	     <?php echo substr($event['event_start_time'],0,5)." - ".substr($event['event_end_time'],0,5) ; ?>
+		</td>
+		<td>
 				 <?php if($event['recurrence_id']) {
 								$recurrence = dbem_get_recurrence($event[recurrence_id]);   ?>
-								<br/>
+						
 								<b><a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_recurrence&amp;recurrence_id=<?php echo $recurrence['recurrence_id'];?>"><?php echo $recurrence['recurrence_description'];?></a></b>
 								
 								 
@@ -1556,8 +1601,8 @@ function dbem_event_form($event, $title, $element) {
 	} else {
 		$localised_end_date = "";
 	}    
-	if($event[$pref.'rsvp'])
-		echo (dbem_bookings_table($event[$pref.'id'])); 
+	// if($event[$pref.'rsvp'])
+	// 	echo (dbem_bookings_table($event[$pref.'id']));      
 		
 		
 	$freq_options = array("daily" => __('Daily', 'dbem'), "weekly" => __('Weekly','dbem'),"monthly" => __('Monthly','dbem'));    
@@ -1565,6 +1610,7 @@ function dbem_event_form($event, $title, $element) {
  	$saved_bydays = explode(",", $event['recurrence_byday']);
 	$weekno_options = array("1" => __('first', 'dbem'), '2' => _('second','dbem'),'3'=>__('third','dbem'),'4'=>__('fourth', 'dbem'), '-1'=>__('last','dbem'));
 	
+	$event[$pref.'rsvp'] ? $event_RSVP_checked = "checked='checked'" :  $event_RSVP_checked ='';
 	
 	?> 
 <form id="eventForm" method="post" action="<?php echo $form_destination; ?>">
@@ -1573,29 +1619,76 @@ function dbem_event_form($event, $title, $element) {
    		<div id="poststuff" class="metabox-holder">
         
 
-					
-			 	<div id="side-info-column" class="inner-sidebar">
-       		<div id='side-sortables' class='meta-box-sortables'>
-          	<div id="submitdiv" class="postbox " >
-						<div class="handlediv" title="Fare clic per cambiare."><br /></div>
-						<h3 class='hndle'><span>Pubblica</span></h3>
-						<div class="inside">
-							<div class="submitbox" id="submitpost">
-                <div id="minor-publishing">
-                	<div style="display:none;">
-										<input type="submit" name="save" value="Salva" />
-									</div>
-               		<div id="minor-publishing-actions">
-				<div id="save-action">
-				</div>
+				<!-- SIDEBAR -->	
+			 	<div id="side-info-column" class="inner-sidebar">  
+				  	
+					<div id='side-sortables' class='meta-box-sortables'>
+	          		<div id="submitdiv" class="postbox " >
+							<div class="handlediv" title="Fare clic per cambiare."><br /></div>
+							<h3 class='hndle'><span>Recurrence</span></h3>
+							
+							<div class="inside">     
 
-				<div id="preview-action">
+								<?php if($event['recurrence_id'] != "") 
+												$recurrence_YES = "checked='checked'";
 
-				<a class="preview button" href="http://localhost/~davidebenini/testblog/?p=10" target="wp-preview" id="post-preview" tabindex="4">Anteprima</a>
-				<input type="hidden" name="wp-preview" id="wp-preview" value="" />
+
+								?>
+								<p><input id="event-recurrence" type="checkbox" name="repeated_event" value="1" <?php echo $recurrence_YES;?> /> <?php _e('Repeated event', 'dbem');?></p>  
+								<div id="event_recurrence_pattern">
+								<p>Frequency:
+									 	<select id="recurrence-frequency" name="recurrence_freq">
+									      <?php dbem_option_items($freq_options, $event[$pref.'freq']); ?>
+				          </select></p>
+				 					<p>
+										<?php _e('Every', 'dbem')?> 
+										<input id="recurrence-interval" name='recurrence_interval' size='2' value='<?php echo $event['recurrence_interval'];?>'></input> 
+										<span class='interval-desc' id="interval-daily-singular"><?php _e('day', 'dbem') ?></span>
+										<span class='interval-desc' id="interval-daily-plural"><?php _e('days', 'dbem') ?></span>
+										<span class='interval-desc' id="interval-weekly-singular"><?php _e('week', 'dbem') ?></span>
+										<span class='interval-desc' id="interval-weekly-plural"><?php _e('weeks', 'dbem') ?></span>
+										<span class='interval-desc' id="interval-monthly-singular"><?php _e('month', 'dbem') ?></span>
+										<span class='interval-desc' id="interval-monthly-plural"><?php _e('months', 'dbem') ?></span>  
+									</p>
+
+									<p class="alternate-selector" id="weekly-selector">
+										<?php dbem_checkbox_items('recurrence_bydays[]', $days_names, $saved_bydays); ?>
+									</p>   
+
+									<p class="alternate-selector" id="monthly-selector">
+									<?php _e('Every','dbem')?> 
+									<select id="monthly-modifier" name="recurrence_byweekno">
+										<?php dbem_option_items($weekno_options, $event['recurrence_byweekno']);?>   
+						      </select>
+									<select id="recurrence-weekday" name="recurrence_byday">
+						       	  <?php dbem_option_items($days_names, $event['recurrence_byday']); ?>  
+		              </select>&nbsp;
+								</p>	
+		            </div>
+							 <p id="recurrence-tip"><?php _e('Check if your event happens more than once according to a regular pattern', 'dbem') ?></p>
+							</div>
+							
+							
+							
+						</div>
+					   			
+       	    	   <div id="submitdiv" class="postbox " >
+							<div class="handlediv" title="Fare clic per cambiare."><br /></div>
+							<h3 class='hndle'><span>RSVP</span></h3>
+							<div class="inside">
+								<p><input type='checkbox' <?php echo $event_RSVP_checked ?> /> <? _e('Enable bookings for this event', 'dbem')?></p>
+								<div id='rsvp-data'>
+								<p>	Seats: <input id="seats-input" type="text" name="event_seats" size='5' value="<?php echo $event[$pref.'seats']?>" /><br/>
+								 <?php dbem_bookings_compact_table($event[$pref.'id']);  ?>
+							</div>
+						</div>       
+					</div>
 				</div> 
-				</div></div></div></div></div></div></div>
-			
+			</div>
+					
+					
+			  
+				<!-- END OF SIDEBAR -->	
 			
 			
 
@@ -1615,28 +1708,18 @@ function dbem_event_form($event, $title, $element) {
 					<h3><?php _e('Event dates','dbem'); ?></h3>  
 					<div class="inside">
 					 <input id="localised-date" type="text" name="localised_event_date" value="<?php echo $localised_date ?>" style ="display: none;" />  
-					 <input id="date-to-submit" type="text" name="event_date" value="<?php echo $event[$pref.'start_date'] ?>" style="background: #FCFFAA" />
+					 <input id="date-to-submit" type="text" name="event_date" value="<?php echo $event[$pref.'start_date'] ?>" style="background: #FCFFAA" />              <input id="localised-end-date" type="text" name="localised_event_end_date" value="<?php echo $localised_end_date ?>" style ="display: none; " />
+           
+					 <input id="end-date-to-submit" type="text" name="event_end_date" value="<?php echo $event[$pref.'end_date'] ?>" style="background: #FCFFAA" />
 			
 			
 			<br/>
-						<?php _e('The event beginning and end date', 'dbem') ?>. <span id="localised_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_end_example"; ?></span><span id="no-javascript-example"><?php _e("Example: 2008-11-28", "dbem")?></span> - 20:30
+						<?php _e('The event beginning and end date', 'dbem') ?>. <span id="localised_date_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_end_example"; ?></span><span class="no-javascript-example"><?php _e("Example: 2008-11-28", "dbem")?></span> - 20:30
 						
 					</div>
 				</div>
 				
-					<div id="event_end_date" class="stuffbox">
-						<h3><?php _e('Event end date','dbem'); ?></h3>  
-						<div class="inside">
-						 <input id="localised-end-date" type="text" name="localised_event_end_date" value="<?php echo $localised_end_date ?>" style ="display: none; " />
-             
-						 <input id="end-date-to-submit" type="text" name="event_end_date" value="<?php echo $event[$pref.'end_date'] ?>" style="background: #FCFFAA" />
 
-
-				<br/>
-							<?php _e('The event beginning and end date', 'dbem') ?>. <span id="localised_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_end_example"; ?></span><span id="no-javascript-example"><?php _e("Example: 2008-11-28", "dbem")?></span> - 20:30
-
-						</div>
-					</div>   
 				
 				<?php $use_events_end = get_option('dbem_use_event_end'); ?>
 				<?php if($use_events_end) { ?>
@@ -1646,7 +1729,7 @@ function dbem_event_form($event, $title, $element) {
 							<input type="text" size="3" maxlength="2" name="event_hh" value="<?php echo $event[$pref.'hh'] ?>" /> : <input type="text" size="3" maxlength="2" name="event_mm" value="<?php echo $event[$pref.'mm'] ?>" />
 							- 
 							<input type="text" size="3" maxlength="2" name="event_end_hh" value="<?php echo $event[$pref.'end_hh'] ?>" /> : <input type="text" size="3" maxlength="2" name="event_end_mm" value="<?php echo $event[$pref.'end_mm'] ?>" /><br/>
-								<?php _e('The day and time of the event end', 'dbem') ?>. <span id="localised_end_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_example"; ?></span><span id="no-javascript-example"><?php _e("Example: 2008-11-27", "dbem")?></span> - 20:30
+								<?php _e('The day and time of the event end', 'dbem') ?>. <span id="localised_end_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_example"; ?></span><span class="no-javascript-example"><?php _e("Example: 2008-11-27", "dbem")?></span> - 20:30
 
 							</div>
 					 </div>
@@ -1656,46 +1739,7 @@ function dbem_event_form($event, $title, $element) {
 				<?php } ?>
 				<div id="event_recurrence" class="stuffbox">
 					<h3><?php _e('Recurrence','dbem'); ?></h3>
-					<div class="inside">     
-					 
-						<?php if($event['recurrence_id'] != "") 
-										$recurrence_YES = "checked='checked'";
-									
-							
-						?>
-						<p><input id="event-recurrence" type="checkbox" name="repeated_event" value="1" <?php echo $recurrence_YES;?> /> <?php _e('Repeated event', 'dbem');?></input>  
-						<div id="event_recurrence_pattern">
-						<p>Frequency:
-							 	<select id="recurrence-frequency" name="recurrence_freq">
-							      <?php dbem_option_items($freq_options, $event[$pref.'freq']); ?>
-		          </select><br/>
-		 					<p>
-								<?php _e('Every', 'dbem')?> 
-								<input id="recurrence-interval" name='recurrence_interval' size='2' value='<?php echo $event['recurrence_interval'];?>'></input> 
-								<span class='interval-desc' id="interval-daily-singular"><?php _e('day', 'dbem') ?></span>
-								<span class='interval-desc' id="interval-daily-plural"><?php _e('days', 'dbem') ?></span>
-								<span class='interval-desc' id="interval-weekly-singular"><?php _e('week', 'dbem') ?></span>
-								<span class='interval-desc' id="interval-weekly-plural"><?php _e('weeks', 'dbem') ?></span>
-								<span class='interval-desc' id="interval-monthly-singular"><?php _e('month', 'dbem') ?></span>
-								<span class='interval-desc' id="interval-monthly-plural"><?php _e('months', 'dbem') ?></span>  
-							</p>
-					 		
-							<p class="alternate-selector" id="weekly-selector">
-								<?php dbem_checkbox_items('recurrence_bydays[]', $days_names, $saved_bydays); ?>
-							</p>   
-							
-							<p class="alternate-selector" id="monthly-selector">
-							<?php _e('Every','dbem')?> 
-							<select id="monthly-modifier" name="recurrence_byweekno">
-								<?php dbem_option_items($weekno_options, $event['recurrence_byweekno']);?>   
-				      </select>
-							<select id="recurrence-weekday" name="recurrence_byday">
-				       	  <?php dbem_option_items($days_names, $event['recurrence_byday']); ?>  
-              </select>&nbsp;
-						</p>	
-            </div>
-					 <p id="recurrence-tip"><?php _e('Check if your event happens more than once according to a regular pattern', 'dbem') ?></p>
-					</div>
+					
 				</div>
 				
 				 
@@ -1739,17 +1783,10 @@ function dbem_event_form($event, $title, $element) {
 							
 						?>
 						<input id="rsvp-input" type="radio" name="event_rsvp" value="1" <?php echo $rsvp_YES;?> /> <?php _e('Activate RSVP', 'dbem');?><br/>
-						<input id="rsvp-input" type="radio" name="event_rsvp" value="0" <?php echo $rsvp_NO;?> /> <?php _e('No RSVP', 'dbem');?><br/>
 						<?php _e('Activate if you want to track bookings for this event', 'dbem') ?>
 					</div>
 				</div>   
-				<div id="event_seats" class="stuffbox">
-					<h3><?php _e('Seats available','dbem'); ?></h3>
-					<div class="inside">
-						<input id="seats-input" type="text" name="event_seats" value="<?php echo $event[$pref.'seats']?>" /><br/>
-						<?php _e('The number of seats available for this event. Example: 12', 'dbem') ?>
-					</div>
-				</div>
+
 				
 				<div id="event_notes" class="postbox closed">
 					<h3><?php _e('Notes','dbem'); ?></h3>
@@ -1763,7 +1800,7 @@ function dbem_event_form($event, $title, $element) {
 		</div>
 	   
 	</div>  
-	
+	</div>
 </form>
  <?php
 }            
@@ -1827,6 +1864,7 @@ function url_exists($url) {
 
 // General script to make sure hidden fields are shown when containing data
 function dbem_admin_general_script(){  ?>
+	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/dbem.js" type="text/javascript"></script>  
 	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/ui.datepicker.js" type="text/javascript"></script>
    
 	<?php
@@ -1866,11 +1904,11 @@ function dbem_admin_general_script(){  ?>
 		$j(document).ready( function() {
 			locale_format = "ciao";
 	   		$j("#localised_example").show();
-			$j("#no-javascript-example").hide();
+			$j(".no-javascript-example").hide();
 			$j("#localised-date").show();
-			$j("#localised-end-date").show(); 
-		//	$j("#date-to-submit").hide();
-			//$j("#end-date-to-submit").hide(); 
+		   
+			$j("#date-to-submit").hide();
+			$j("#end-date-to-submit").hide(); 
 			$j("#localised-date").datepicker($j.extend({},
 		  		($j.datepicker.regional["it"], 
 				{altField: "#date-to-submit", 
@@ -1891,10 +1929,10 @@ function dbem_admin_general_script(){  ?>
 		   $j('input#event-recurrence').change( function () {
 		   	if($j(this).attr("checked")) {
 			   $j("#event_recurrence_pattern").fadeIn();
-			   $j("#event_end_date").fadeIn(); 
+				$j("input#localised-end-date").fadeIn();
 			} else {
 			   $j("#event_recurrence_pattern").fadeOut();
-			   $j("#event_end_date").fadeOut();     
+			   $j("input#localised-end-date").fadeOut();  
 			  }
 		 	});  
 			// recurrency elements   
@@ -2236,6 +2274,7 @@ add_action('admin_head','dbem_general_css');
 include("dbem_venues_autocomplete.php"); 
 include("dbem_rsvp.php");     
 include("dbem_venues.php"); 
+include("dbem_people.php");
 include("dbem-recurrence.php");    
 include("dbem_UI_helpers.php");                 
 // TODO roba da mettere nell'ordine giusto

@@ -186,7 +186,8 @@ function dbem_delete_booking($booking_id) {
 	global $wpdb;
 	$bookings_table = $wpdb->prefix.BOOKINGS_TBNAME; 
 	$sql = "DELETE FROM $bookings_table WHERE booking_id = $booking_id";
-	$wpdb->query($sql);       
+	$wpdb->query($sql);   
+	dbem_log('booking deleted!!!');    
 	return __('Booking deleted', 'dbem');
 }
 
@@ -239,8 +240,8 @@ function dbem_bookings_table($event_id) {
 	}
 	$available_seats = dbem_get_available_seats($event_id);
 	$booked_seats = dbem_get_booked_seats($event_id);
-	$table .= "<tfoot><tr><th scope='row' colspan='4'>Booked seats:</th><td class='booking-result'>$booked_seats</td></tr>            
-						 <tr><th scope='row' colspan='4'>Available seats:</th><td class='booking-result'>$available_seats</td></tr></tfoot>
+	$table .= "<tfoot><tr><th scope='row' colspan='4'>Booked seats:</th><td class='booking-result' id='booked-seats'>$booked_seats</td></tr>            
+						 <tr><th scope='row' colspan='4'>Available seats:</th><td class='booking-result' id='available-seats'>$available_seats</td></tr></tfoot>
 							</table></div>
 							<div class='tablenav'>
 								<div class=alignleft actions>
@@ -251,7 +252,65 @@ function dbem_bookings_table($event_id) {
 						 	</div>
 
 						</form>";    
-  return $table;
+  echo $table;
+}
+
+function dbem_bookings_compact_table($event_id) {
+
+	$bookings =  dbem_get_bookings_for($event_id);
+	$destination = get_bloginfo('url')."/wp-admin/edit.php"; 
+	$available_seats = dbem_get_available_seats($event_id);
+	$booked_seats = dbem_get_booked_seats($event_id);   
+	$printable_address = get_bloginfo('url')."/wp-admin/admin.php?page=people&action=printable&event_id=$event_id";
+	if (count($bookings)>0) { 
+		$table = 
+		"<div class='wrap'>
+				<h4>".__('Bookings data')."</h4>\n  
+			  
+				<table id='dbem-bookings-table-$event_id' class='widefat post fixed'>\n
+					<thead>\n
+						<tr>
+							<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>\n
+							<th class='manage-column ' scope='col'>Booker</th>\n
+							<th scope='col'>Seats</th>\n
+					 	</tr>\n
+						</thead>\n
+						<tfoot>
+							<tr>
+								<th scope='row' colspan='2'>Booked seats:</th><td class='booking-result' id='booked-seats'>$booked_seats</td></tr>            
+					 			<tr><th scope='row' colspan='2'>Available seats:</th><td class='booking-result' id='available-seats'>$available_seats</td>
+							</tr>
+						</tfoot>
+						<tbody>" ;
+			foreach ($bookings as $booking) {
+				$table .= 
+				"<tr id='booking-".$booking['booking_id']."'> 
+					<td><a id='booking-check-".$booking['booking_id']."' class='bookingdelbutton'>X</a></td>
+					<td><a title='".$booking['person_email']." - ".$booking['person_phone']."'>".$booking['person_name']."</a></td>
+					<td>".$booking['booking_seats']."</td>
+				 </tr>";
+			}
+	 
+			$table .=  "</tbody>\n
+									
+		 			</table>
+		 		</div>
+		 		
+		 	    <br class='clear'/>
+		 		 	<div id='major-publishing-actions'>  
+					<div id='publishing-action'> 
+					<a id='printable'  target='' href='$printable_address'>".__('Printable view','dbem')."</a>
+					<br class='clear'/>             
+	        
+					 
+		 			</div>
+		<br class='clear'/>    
+		 </div> ";                                                        
+		 } else {
+			$table .= "<p><em>".__('No bookings yet!')."</em></p>";
+		 } 
+		    
+  echo $table;
 }
 
 function dbem_get_bookings_for($event_id) {  
@@ -260,18 +319,21 @@ function dbem_get_bookings_for($event_id) {
 	$sql = "SELECT * FROM $bookings_table WHERE event_id = $event_id";
 	$bookings = $wpdb->get_results($sql, ARRAY_A);  
 	$booking_data = array();
-	foreach ($bookings as $booking) {  
-		$booking;
-		$person = dbem_get_person($booking['person_id']);
-		$booking['person_name'] = $person['person_name']; 
-		$booking['person_email'] = $person['person_email'];   
-		$booking['person_phone'] = $person['person_phone'];
-		array_push($booking_data, $booking);
+	if ($bookings) {
+		foreach ($bookings as $booking) {  
+			$booking;
+			$person = dbem_get_person($booking['person_id']);
+			$booking['person_name'] = $person['person_name']; 
+			$booking['person_email'] = $person['person_email'];   
+			$booking['person_phone'] = $person['person_phone'];
+			array_push($booking_data, $booking);
+		}
+ 		return $booking_data;
+  } else {
+	return null;
 	}
+}       
 
-	return $booking_data;
-
-} 
 function dbem_intercept_bookings_delete() {
 	//dbem_email_rsvp_booking();
 	$bookings = $_GET['bookings'];  

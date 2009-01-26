@@ -209,7 +209,6 @@ function dbem_get_recurrence($recurrence_id) {
 }
 
 function dbem_build_recurrence_description($recurrence) {
-	echo $recurrence['recurrence_start_date'];
 	$weekdays_name = array(__('Monday'),__('Tuesday'),__('Wednesday'),__('Thursday'),__('Friday'),__('Saturday'),__('Sunday'));
 	$monthweek_name = array('1' => __('the first %s of the month', 'dbem'),'2' => __('the second %s of the month', 'dbem'), '3' => __('the third %s of the month', 'dbem'), '4' => __('the fourth %s of the month', 'dbem'), '-1' => __('the last %s of the month', 'dbem'));
 	$output = sprintf (__('From %1$s to %2$s'),  $recurrence['recurrence_start_date'], $recurrence['recurrence_end_date'])."<br/>";

@@ -28,4 +28,57 @@ div.dbem-rsvp-message {
 	background-color: #FDDD73;
 	padding: 5px;
 	border: 2px solid #FF9100;
+}     
+
+a.bookingdelbutton {
+	background: url("../../../wp-admin/images/xit.gif") no-repeat;  
+    font-size: 11px;
+	text-indent: -9999px;
+	height: 10px;   
+	width: 10px;
+	overflow:hidden;
+	position:absolute;
+
+}     
+a.bookingdelbutton:hover {
+	background: url("../../../wp-admin/images/xit.gif") no-repeat -10px;  
+
+}       
+/* Printable stuff */
+body#printable {
+	font-family: Gill Sans, Helvetica, Arial, sans-serif;  
+	text-align: center;
+}  
+body#printable #container { 
+	margin: 0 auto; 
+	width: 780px;
+	text-align: left;
+}                                                                   
+table#bookings-table {
+	width: 600px;     
+	border-spacing: 0px;
+
 }
+table#bookings-table td {
+	padding: 5px 0;
+}
+table#bookings-table td.seats-number {
+	text-align: right;
+	padding-right: 20px;
+}
+table#bookings-table th {
+	text-align: left;
+	margin-left: 5px;
+}   
+table#bookings-table tr#booked-seats td{
+	border-top: 2px solid #999;    
+}      
+
+table#bookings-table td.total-label {
+	text-align: right;
+}                                  
+
+table#bookings-table tr#booked-seats td.seats-number, table#bookings-table tr#available-seats td.seats-number {
+	font-weight: bold;
+}
+
