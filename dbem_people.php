@@ -5,12 +5,16 @@ function dbem_people_page() {
 		if(isset($_POST['booking_id']))
 			dbem_delete_booking($_POST['booking_id']);   
       
-	}
-	  
-	// if(isset($_GET['dbem_ajax_action']) && $_GET['dbem_ajax_action'] == 'booking_data') {
-	// 	if(isset($_GET['event_id']))   
-	//      echo "[ {bookedSeats:".dbem_get_booked_seats($_GET['event_id']).", availableSeats:".dbem_get_available_seats($_GET['event_id'])."}]";   
-	// }   
+	}   
+	?>  
+	
+	<div class='wrap'>
+	<h2>People</h2>
+	<p><?php _e('This table collects the data about the people who responded to your events'); ?>.
+	<?php dbem_people_table(); ?>
+	</div> 
+
+	<?php
 }    
 
 
@@ -26,8 +30,6 @@ function dbem_ajax_actions() {
 		if(isset($_GET['event_id']))
 			dbem_printable_booking_report($_GET['event_id']);
 	}  
-		
-	  
 }   
 
 function dbem_printable_booking_report($event_id) {
@@ -85,5 +87,72 @@ function dbem_printable_booking_report($event_id) {
 		<?php
 		die();
  		
+} 
+
+function dbem_people_table() {
+	$people = dbem_get_people();
+	
+	$table =" <table id='dbem-people-table' class='widefat post fixed'>\n
+							<thead>
+								<tr>
+									<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>\n
+									<th class='manage-column ' scope='col'>Name</th>\n
+									<th scope='col'>E-mail</th>\n
+									<th scope='col'>Phone number</th>\n
+							 </tr>\n
+							</thead>\n
+							<tfoot>
+								<tr>
+									<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>\n
+									<th class='manage-column ' scope='col'>Name</th>\n
+									<th scope='col'>E-mail</th>\n
+									<th scope='col'>Phone number</th>\n
+							 </tr>\n
+							</tfoot>\n
+			" ;
+foreach ($people as $person) {
+$table .= "<tr> <td>&nbsp;</td>
+						<td>".$person['person_name']."</td>
+						<td>".$person['person_email']."</td>
+						<td>".$person['person_phone']."</td></tr>";
+				}
+
+$table .= "</table>";
+	echo $table;
+} 
+
+function dbem_get_person_by_name_and_email($name, $email) {
+	global $wpdb; 
+	$people_table = $wpdb->prefix.PEOPLE_TBNAME;
+	$sql = "SELECT person_id, person_name, person_email, person_phone FROM $people_table WHERE person_name = '$name' AND person_email = '$email' ;" ;
+	$result = $wpdb->get_row($sql, ARRAY_A);
+	return $result;
 }
+
+function dbem_get_person($person_id) {
+	global $wpdb; 
+	$people_table = $wpdb->prefix.PEOPLE_TBNAME;
+	$sql = "SELECT person_id, person_name, person_email, person_phone FROM $people_table WHERE person_id = '$person_id';" ;
+	$result = $wpdb->get_row($sql, ARRAY_A);
+	return $result;
+}
+
+function dbem_get_people() {
+	global $wpdb; 
+	$people_table = $wpdb->prefix.PEOPLE_TBNAME;
+	$sql = "SELECT *  FROM $people_table";    
+	$result = $wpdb->get_results($sql, ARRAY_A);
+	return $result;
+}
+
+function dbem_add_person($name, $email, $phone = "") {
+	dbem_log("add!!!");
+	global $wpdb; 
+	$people_table = $wpdb->prefix.PEOPLE_TBNAME;
+	$sql = "INSERT INTO $people_table (person_name, person_email, person_phone) VALUES ('$name', '$email', '$phone');";
+	$wpdb->query($sql);
+	$new_person = dbem_get_person_by_name_and_email($name, $email);  
+	return ($new_person);
+}
+
 ?>

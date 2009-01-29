@@ -125,31 +125,7 @@ function dbem_book_seats() {
 	return $result;
 }
 
-function dbem_get_person_by_name_and_email($name, $email) {
-	global $wpdb; 
-	$people_table = $wpdb->prefix.PEOPLE_TBNAME;
-	$sql = "SELECT person_id, person_name, person_email, person_phone FROM $people_table WHERE person_name = '$name' AND person_email = '$email' ;" ;
-	$result = $wpdb->get_row($sql, ARRAY_A);
-	return $result;
-}
-
-function dbem_get_person($person_id) {
-	global $wpdb; 
-	$people_table = $wpdb->prefix.PEOPLE_TBNAME;
-	$sql = "SELECT person_id, person_name, person_email, person_phone FROM $people_table WHERE person_id = '$person_id';" ;
-	$result = $wpdb->get_row($sql, ARRAY_A);
-	return $result;
-}
-
-function dbem_add_person($name, $email, $phone = "") {
-	dbem_log("add!!!");
-	global $wpdb; 
-	$people_table = $wpdb->prefix.PEOPLE_TBNAME;
-	$sql = "INSERT INTO $people_table (person_name, person_email, person_phone) VALUES ('$name', '$email', '$phone');";
-	$wpdb->query($sql);
-	$new_person = dbem_get_person_by_name_and_email($name, $email);  
-	return ($new_person);
-}             
+         
 
 function dbem_get_booking_by_person_id($person_id) {
 	global $wpdb; 
@@ -265,13 +241,13 @@ function dbem_bookings_compact_table($event_id) {
 	if (count($bookings)>0) { 
 		$table = 
 		"<div class='wrap'>
-				<h4>".__('Bookings data')."</h4>\n  
+				<h4>".__('Reservations')."</h4>\n  
 			  
 				<table id='dbem-bookings-table-$event_id' class='widefat post fixed'>\n
 					<thead>\n
 						<tr>
 							<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>\n
-							<th class='manage-column ' scope='col'>Booker</th>\n
+							<th class='manage-column ' scope='col'>".__('Responder', 'dbem')."</th>\n
 							<th scope='col'>Seats</th>\n
 					 	</tr>\n
 						</thead>\n
