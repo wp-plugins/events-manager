@@ -116,7 +116,7 @@ function dbem_book_seats() {
 		$mailing_is_active = get_option('dbem_rsvp_mail_notify_is_active');
 		if($mailing_is_active) {
 			dbem_log("Ecco, mail in  fase di invio"); 
-			//dbem_email_rsvp_booking();
+			dbem_email_rsvp_booking();
 		} 
 		
 	}	else {
@@ -322,35 +322,39 @@ function dbem_intercept_bookings_delete() {
 }
 add_action('init', 'dbem_intercept_bookings_delete');   
 
-function dbem_email_rsvp_booking(){
+function dbem_email_rsvp_booking(){  
+	dbem_log("mail...");
 	$booker = array();
 	$bookerName = $_POST['bookerName'];
 	$bookerEmail = $_POST['bookerEmail'];    
-	$bookedSeats = $_POST['bookedSeats'];
-	require("phpmailer/class.phpmailer.php") ;
-  require("phpmailer/language/phpmailer.lang-en.php") ;
-	$mailer = new PHPMailer();
-	$mailer->IsSMTP();
-	$mailer->Host = 'ssl://smtp.gmail.com:465';
-	$mailer->SMTPAuth = TRUE;
-	$mailer->Username = get_option('dbem_smtp_username');  
-	// Change this to your gmail adress
-	$mailer->Password = get_option('dbem_smtp_password');  
-	// Change this to your gmail password
-	$mailer->From = get_option('dbem_mail_sender_address');  
-	// This HAVE TO be your gmail adress
-	$mailer->FromName = 'Events Manager Abuzzese'; // This is the from name in the email, you can put anything you like here
-	$mailer->Body = "$bookerName ($bookerEmail) will attend this event.";
-	$mailer->Subject = 'Hey hey, people\'s booking!';
-	$mailer->AddAddress(get_option('dbem_mail_receiver_address'));  
-	// This is where you put the email adress of the person you want to mail
-	if(!$mailer->Send()){   
-		echo "Message was not sent<br/ >";   
-		echo "Mailer Error: " . $mailer->ErrorInfo;
-	 // print_r($mailer);
-	} else {   
-		echo "Message has been sent";
+	$bookedSeats = $_POST['bookedSeats'];      
 	
-	}
+	$subject = "New booking!";
+ 	$body = "$bookerName ($bookerEmail) will attend this event. He wants to reserve $bookedSeats seats.";
+	dbem_send_mail($subject, $body);
+	// 
+	// $mailer = new PHPMailer();
+	// $mailer->IsSMTP();
+	// $mailer->Host = 'ssl://smtp.gmail.com:465';
+	// $mailer->SMTPAuth = TRUE;
+	// $mailer->Username = get_option('dbem_smtp_username');  
+	// // Change this to your gmail adress
+	// $mailer->Password = get_option('dbem_smtp_password');  
+	// // Change this to your gmail password
+	// $mailer->From = get_option('dbem_mail_sender_address');  
+	// // This HAVE TO be your gmail adress
+	// $mailer->FromName = 'Events Manager Abuzzese'; // This is the from name in the email, you can put anything you like here
+	// $mailer->Body = "$bookerName ($bookerEmail) will attend this event.";
+	// $mailer->Subject = 'Hey hey, people\'s booking!';
+	// $mailer->AddAddress(get_option('dbem_mail_receiver_address'));  
+	// // This is where you put the email adress of the person you want to mail
+	// if(!$mailer->Send()){   
+	// 	echo "Message was not sent<br/ >";   
+	// 	echo "Mailer Error: " . $mailer->ErrorInfo;
+	//  // print_r($mailer);
+	// } else {   
+	// 	echo "Message has been sent";
+	// 
+	// }
 }
 ?>

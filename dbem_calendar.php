@@ -181,39 +181,40 @@ function dbem_get_calendar($month="") {
 			$year_pre=$year;
 			$year_post=$year;
 	}
-	$limit_pre=mktime(0,0,0,$month_pre, 1 , $year_pre);
-	$limit_post=mktime(0,0,0,$month_post, 30 , $year_post);
+	$limit_pre=date("Y-m-d", mktime(0,0,0,$month_pre, 1 , $year_pre));
+	$limit_post=date("Y-m-d", mktime(0,0,0,$month_post, 30 , $year_post));
 	$events_table = $wpdb->prefix.EVENTS_TBNAME; 
-	$events=$wpdb->get_results("SELECT event_id, 
+	$sql = "SELECT event_id, 
 									event_name, 
-									event_venue, 
-									event_town, 
-									event_province,
-									event_time, 
-									DATE_FORMAT(event_time, '%w') AS 'event_weekday_n',
-									DATE_FORMAT(event_time, '%e') AS 'event_day',
-									DATE_FORMAT(event_time, '%c') AS 'event_month_n',
-									DATE_FORMAT(event_time, '%Y') AS 'event_year',
-									DATE_FORMAT(event_time, '%k') AS 'event_hh',
-									DATE_FORMAT(event_time, '%i') AS 'event_mm'
-		FROM $events_table WHERE UNIX_TIMESTAMP(event_time) > $limit_pre AND UNIX_TIMESTAMP(event_time) < $limit_post ORDER BY event_time");
+								 	event_start_date, 
+									DATE_FORMAT(event_start_date, '%w') AS 'event_weekday_n',
+									DATE_FORMAT(event_start_date, '%e') AS 'event_day',
+									DATE_FORMAT(event_start_date, '%c') AS 'event_month_n',
+									DATE_FORMAT(event_start_time, '%Y') AS 'event_year',
+									DATE_FORMAT(event_start_time, '%k') AS 'event_hh',
+									DATE_FORMAT(event_start_time, '%i') AS 'event_mm'
+		FROM $events_table WHERE event_start_date BETWEEN '$limit_pre' AND '$limit_post' ORDER BY event_start_date";               
+
+	$events=$wpdb->get_results($sql);   
+
 //----- DEBUG ------------
 //foreach($events as $event) { //DEBUG
 //	$calendar .= ("$event->event_day / $event->event_month_n - $event->event_name<br/>");
 //}
 // ------------------
-	// inserts the events        
+	// inserts the events 
+     
 $events_page = get_option('dbem_events_page');
 if($events){	
 	foreach($events as $event) { 
 		if ($event->event_month_n == $month_pre) {
-			$calendar=str_replace("<td class='eventless-pre'>$event->event_day</td>","<td class='eventful-pre'><a href='?page_id=$events_page&amp;event_id="."$event->event_id'>$event->event_day</a></td>",$calendar);
+			$calendar=str_replace("<td class='eventless-pre'>$event->event_day</td>","<td class='eventful-pre'><a href='?page_id=$events_page&amp;calendar_day="."$event->event_start_date'>$event->event_day</a></td>",$calendar);
 		} elseif($event->event_month_n == $month_post) {
-			$calendar=str_replace("<td class='eventless-post'>$event->event_day</td>","<td class='eventful-post'><a href='?page_id=$events_page&amp;event_id="."$event->event_id'>$event->event_day</a></td>",$calendar);
+			$calendar=str_replace("<td class='eventless-post'>$event->event_day</td>","<td class='eventful-post'><a href='?page_id=$events_page&amp;calendar_day="."$event->event_start_date'>$event->event_day</a></td>",$calendar);
 		} elseif($event->event_day == $day) {
-			$calendar=str_replace("<td class='eventless-today'>$event->event_day</td>","<td class='eventful-today'><a href='?page_id=$events_page&amp;event_id="."$event->event_id'>$event->event_day</a></td>",$calendar);
+			$calendar=str_replace("<td class='eventless-today'>$event->event_day</td>","<td class='eventful-today'><a href='?page_id=$events_page&amp;calendar_day="."$event->event_start_date'>$event->event_day</a></td>",$calendar);
 		} else{
-			$calendar=str_replace("<td class='eventless'>$event->event_day</td>","<td class='eventful'><a href='?page_id=$events_page&amp;event_id="."$event->event_id'>$event->event_day</a></td>",$calendar);
+			$calendar=str_replace("<td class='eventless'>$event->event_day</td>","<td class='eventful'><a href='?page_id=$events_page&amp;calendar_day="."$event->event_start_date'>$event->event_day</a></td>",$calendar);
 		}
 	}
 }
