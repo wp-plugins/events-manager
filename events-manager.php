@@ -476,7 +476,7 @@ function dbem_create_events_page(){
 add_action('admin_menu','dbem_create_events_submenu');     
 function dbem_create_events_submenu () {
 	  if(function_exists('add_submenu_page')) {
-	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel);
+	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel, '../wp-content/plugins/events-manager/images/calendar-16.png');
 	   	add_submenu_page(__FILE__, __('Add new'), __('Add new'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page"); 
 	// Add a submenu to the custom top-level menu:                
 			add_submenu_page(__FILE__, "Venues", "Venues", MIN_CAPABILITY, 'venues', "dbem_venues_page");
