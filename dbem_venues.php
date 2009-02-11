@@ -37,7 +37,9 @@ function dbem_venues_page() {
 			//$venue['venue_description'] = $_POST['venue_description'];
 			$validation_result = dbem_validate_venue($venue);
 			if ($validation_result == "OK") {   
-				dbem_update_venue($venue);
+				dbem_update_venue($venue);    
+			  if ($_FILES['venue_image']['size'] > 0 )
+					dbem_upload_venue_picture($venue);
 				$message = __('The venue has been updated.', 'dbem'); 
 				$venues = dbem_get_venues();
 				dbem_venues_table_layout($venues, $message);
@@ -51,10 +53,19 @@ function dbem_venues_page() {
 				$venue['venue_address'] = $_POST['venue_address'];
 				$venue['venue_town'] = $_POST['venue_town'];
 				$validation_result = dbem_validate_venue($venue);
-				
 				if ($validation_result == "OK") {   
-					dbem_insert_venue($venue);
-					$message = __('The venue has been added.', 'dbem'); 
+					$new_venue = dbem_insert_venue($venue);   
+					
+					// -------------
+					if ($_FILES['venue_image']['size'] > 0 ) 
+						dbem_upload_venue_picture($new_venue);
+					
+					
+					
+					
+					// -------------
+					
+					//RESETME $message = __('The venue has been added.', 'dbem'); 
 					$venues = dbem_get_venues();
 					dbem_venues_table_layout($venues, null,$message);
 				} else {
@@ -92,20 +103,14 @@ function dbem_venues_edit_layout($venue, $message = "") {
 		$layout .= "
 		<div id='ajax-response'></div>
 
-		<form name='editcat' id='editcat' method='post' action='admin.php?page=venues' class='validate'>
+		<form enctype='multipart/form-data' name='editcat' id='editcat' method='post' action='admin.php?page=venues' class='validate'>
 		<input type='hidden' name='action' value='editedvenue' />
 		<input type='hidden' name='venue_ID' value='".$venue['venue_id']."'/>";
-		
-		$gmap_is_active = get_option('dbem_gmap_is_active'); 
-		if ($gmap_is_active) {
-	 		$layout .= "<div id='map-not-found' style='width: 450px; float: right; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p>".__('Map not found')."</p></div>";
-		$layout .= "<div id='event-map' style='width: 450px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";   
-	}
 		
 		$layout .= "<table class='form-table'>
 				<tr class='form-field form-required'>
 					<th scope='row' valign='top'><label for='venue_name'>".__('Venue name', 'dbem')."</label></th>
-					<td><input name='venue_name' id='venue-name' type='text' value='".$venue['venue_name']."' size='40' aria-required='true' /><br />
+					<td><input name='venue_name' id='venue-name' type='text' value='".$venue['venue_name']."' size='40'  /><br />
 		           ".__('The name of the venue', 'dbem')."</td>
 				</tr>
 
@@ -121,14 +126,37 @@ function dbem_venues_edit_layout($venue, $message = "") {
 					<td><input name='venue_town' id='venue-town' type='text' value='".$venue['venue_town']."' size='40' /><br />
 		            ".__('The town where the venue is located', 'dbem').".</td>
 
-				</tr>
-				
+				</tr>";
+				$gmap_is_active = get_option('dbem_gmap_is_active');
+				if ($gmap_is_active) {  
+			  	$layout .= " <tr>
+			 <th scope='row' valign='top'><label for='venue_map'>".__('Venue map', 'dbem')."</label></th>
+										<td>
+										<div id='map-not-found' style='width: 450px; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p>".__('Map not found')."</p></div>
+						 <div id='event-map' style='width: 450px; height: 300px; background: green; display: hide; margin-right:8px'></div></td></tr>";   
+						}
+			$layout .= "
 				<tr class='form-field'>
 					<th scope='row' valign='top'><label for='venue_description'>".__('Venue description', 'dbem')."</label></th>
 					<td><textarea name='venue_description' id='venue_description' rows='5' cols='50' style='width: 97%;'></textarea><br />
 		            ".__('A description of the Venue. You may include any kind of info here.', 'dbem')."</td>
 
 				</tr>
+				<tr class='form-field'>
+					<th scope='row' valign='top'><label for='venue_picture'>".__('Venue picture', 'dbem')."</label></th>
+					<td>";
+					if ($venue['venue_image_url'] != '') 
+						$layout .= "<img src='".$venue['venue_image_url']."' alt='".$venue['venue_name']."'/>";
+					else 
+						$layout .= __('No image uploaded for this venue yet', 'debm');
+					
+					$layout .= "</td>
+
+				</tr>
+				<tr>
+					<th scope='row' valign='top'><label for='venue_description'>".__('Upload/change picture', 'dbem')."</label></th>
+					<td><input id='venue-image' name='venue_image' id='venue_image' type='file' size='40' /></td>
+			 </tr>\n
 			</table>
 		<p class='submit'><input type='submit' class='button-primary' name='submit' value='".__('Update venue', 'dbem')."' /></p>
 		</form>
@@ -211,7 +239,7 @@ function dbem_venues_table_layout($venues, $new_venue, $message = "") {
 						<div class='form-wrap'>\n 
 							<div id='ajax-response'/>
 					  	<h3>".__('Add venue', 'dbem')."</h3>\n
-							 <form name='addvenue' id='addvenue' method='post' action='admin.php?page=venues' class='add:the-list: validate'>\n
+							 <form enctype='multipart/form-data' name='addvenue' id='addvenue' method='post' action='admin.php?page=venues' class='add:the-list: validate'>\n
 							 		
 									<input type='hidden' name='action' value='addvenue' />\n
 							    <div class='form-field form-required'>\n
@@ -230,6 +258,13 @@ function dbem_venues_table_layout($venues, $new_venue, $message = "") {
 								   <label for='venue_town'>".__('Venue town', 'dbem')."</label>\n
 								 	<input id='venue-town' name='venue_town' id='venue_town' type='text' value='".$new_venue['venue_town']."' size='40'  />\n
 								    <p>".__('The town where the venue is located', 'dbem').".</p>\n
+								 </div>\n
+								
+								
+								 <div class='form-field'>\n
+								   <label for='venue_image'>".__('Venue image', 'dbem')."</label>\n
+								 	<input id='venue-image' name='venue_image' id='venue_image' type='file' size='40' />\n
+								    <p>".__('Select an image to upload', 'dbem').".</p>\n
 								 </div>\n";
 									$gmap_is_active = get_option('dbem_gmap_is_active'); 
 									
@@ -274,12 +309,23 @@ function dbem_get_venue($venue_id) {
 	global $wpdb;
 	$venues_table = $wpdb->prefix.VENUES_TBNAME; 
 	$sql = "SELECT * FROM $venues_table WHERE venue_id ='$venue_id'";   
-
-
-	$venue = $wpdb->get_row($sql, ARRAY_A); 
- 
+  $venue = $wpdb->get_row($sql, ARRAY_A);    
+	$venue['venue_image_url'] = dbem_image_url_for_venue_id($venue['venue_id']);
 	return $venue;  
 
+}
+
+function dbem_image_url_for_venue_id($venue_id) {
+	$file_name= ABSPATH.IMAGE_UPLOAD_DIR."/venue-".$venue_id;
+  $mime_types = array('gif','jpg','png');
+	foreach($mime_types as $type) { 
+		$file_path = "$file_name.$type";
+		if (file_exists($file_path)) {
+			$result = get_bloginfo('url')."/".IMAGE_UPLOAD_DIR."/venue-$venue_id.$type";
+  		return $result;
+		}
+	}
+	return '';
 }
 
 function dbem_get_identical_venue($venue) { 
@@ -332,13 +378,11 @@ function dbem_insert_venue($venue) {
 }
 
 function dbem_delete_venue($venue) {
-		echo "venue = $venue";
 		global $wpdb;	
 		$table_name = $wpdb->prefix.VENUES_TBNAME;
 		$sql = "DELETE FROM $table_name WHERE venue_id = '$venue';";
- 
 		$wpdb->query($sql);
-
+    dbem_delete_image_files_for_venue_id($venue);
 }          
 
 function dbem_venue_has_events($venue_id) {
@@ -349,3 +393,52 @@ function dbem_venue_has_events($venue_id) {
 	return (count($affected_events) > 0);
 }             
 
+function dbem_upload_venue_picture($venue) {
+  dbem_delete_image_files_for_venue_id($venue['venue_id']);
+	do { 
+		$mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
+	  if (is_uploaded_file($_FILES['venue_image']['tmp_name'])) {
+	    // Controllo che il file non superi i 18 KB
+	    $maximum_size = get_option('dbem_image_max_size');
+			if ($_FILES['venue_image']['size'] > $maximum_size) {
+	      $msg = __('The file is too big! Maximum size:', 'dbem')." $maximum_size";
+	      break;
+	    }
+	    // Getting info on the image
+	    list($width, $height, $type, $attr) = getimagesize($_FILES['venue_image']['tmp_name']);
+	    // Checking tyhe size
+			$maximum_width = get_option('dbem_image_max_width'); 
+			$maximum_height = get_option('dbem_image_max_height'); 
+	    if (($width > $maximum_width) || ($height > $maximum_height)) {
+	      $msg = __('The image is too big! Maximum size allowed:')." $maximum_width x $maximum_height";
+	      break;
+	    }
+	    // Checking the file is GIF, JPG or PNG
+	    if (($type!=1) && ($type!=2) && ($type!=3)) {
+	      $msg = "<p>".__('The image is a wrong format!')."</p>";
+	      break;
+	    }
+	    // Verifico che sul sul server non esista già un file con lo stesso nome
+	    // In alternativa potrei dare io un nome che sia funzione della data e dell'ora
+	    // if (file_exists('upload_img/'.$_FILES['venue_image']['name'])) {
+	    //   $msg = "<p>File già esistente sul server. Rinominarlo e riprovare.</p>";
+	    //   break;
+	    // }  
+	    // Sposto il file nella cartella da me desiderata
+	    $image_path = "../".IMAGE_UPLOAD_DIR."/venue-".$venue['venue_id'].".".$mime_types[$type];
+			if (!move_uploaded_file($_FILES['venue_image']['tmp_name'], $image_path)) {
+	      $msg = "<p>Errore nel caricamento dell'immagine!!</p>";
+	      break;
+	    } 
+	 	}
+	} while (false);
+	echo $msg;
+}    
+function dbem_delete_image_files_for_venue_id($venue_id) {
+	$file_name= "../".IMAGE_UPLOAD_DIR."/venue-".$venue_id;
+	$mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
+	foreach($mime_types as $type) { 
+		if (file_exists($file_name.".".$type))
+  		unlink($file_name.".".$type);
+	}
+}

@@ -48,8 +48,12 @@ define('DEFAULT_RSS_DESCRIPTION_FORMAT',"#j #M #y - #H:#i <br/>#_VENUE <br/>#_AD
 define('DEFAULT_RSS_TITLE_FORMAT',"#_NAME");
 define('DEFAULT_MAP_TEXT_FORMAT', '<strong>#_VENUE</strong><p>#_ADDRESS</p><p>#_TOWN</p>');     
 define('DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT','<li>#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul></li>');
-define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem')); 
+define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));  
 
+define("IMAGE_UPLOAD_DIR", "wp-content/uploads/venues-pics");
+define('DEFAULT_IMAGE_MAX_WIDTH', 700);  
+define('DEFAULT_IMAGE_MAX_HEIGHT', 700);  
+define('DEFAULT_IMAGE_MAX_SIZE', 204800);  
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, alog will show in admin pages
 define('USE_FIREPHP', false);
@@ -149,7 +153,8 @@ function dbem_install() {
     //if (get_option('dbem_events_page'))
 			//$event_page_id = get_option('dbem_events_page'); 
 		//dbem_create_events_page();
-
+   if(!file_exists(IMAGE_UPLOAD_DIR))
+			mkdir(IMAGE_UPLOAD_DIR, 0777);
 	
 }
 
@@ -455,6 +460,18 @@ function dbem_add_options() {
 	if (empty($rsvp_mail_notify_is_active))
 		update_option('dbem_rsvp_mail_notify_is_active', 0);
 	
+	$image_max_width = get_option('dbem_image_max_width');
+	if (empty($image_max_width))
+		update_option('dbem_image_max_width', DEFAULT_IMAGE_MAX_WIDTH);
+	
+	$image_max_height = get_option('dbem_image_max_height');
+	if (empty($image_max_height))
+		update_option('dbem_image_max_height', DEFAULT_IMAGE_MAX_HEIGHT);
+		
+	$image_max_size = get_option('dbem_image_max_size');
+	if (empty($image_max_size))
+		update_option('dbem_image_max_size', DEFAULT_IMAGE_MAX_SIZE);
+	
 	$version = get_option('dbem_version');
 	if (empty($version))
 		update_option('dbem_version', 1);	
@@ -608,7 +625,16 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			
 			$event_string = str_replace($result, $field_value , $event_string ); 
 	 	}
-	
+	  
+			
+		if (preg_match('/#_(IMAGE)/', $result)) {
+				
+        if($event['venue_image_url'] != '')
+				  $venue_image = "<img src='".$event['venue_image_url']."' alt='".$event['venue_name']."'/>";
+				else
+					$venue_image = "";
+				$event_string = str_replace($result, $venue_image , $event_string ); 
+		 	}
 	
 		// matches all PHP time placeholders for endtime
 		if (preg_match('/^#@[dDjlNSwzWFmMntLoYy]$/', $result)) {

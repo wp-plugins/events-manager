@@ -370,14 +370,14 @@ function dbem_options_subpanel() {
 							<th scope="row"><?php _e('SMTP username','dbem'); ?></th>
 							<td>
 								<input name="dbem_smtp_username" type="text" id="dbem_smtp_username" style="width: 95%" value="<?php echo get_option('dbem_smtp_username'); ?>" size="45" /><br />
-										<?php _e("Insert the username to be used to access your SMTP server",'dbem')?></a>.
+										<?php _e("Insert the username to be used to access your SMTP server",'dbem')?>.
 							</td>
 						</tr>
 						<tr valign="top">
 							<th scope="row"><?php _e('SMTP password','dbem'); ?></th>
 							<td>
 								<input name="dbem_smtp_password" type="password" id="dbem_smtp_password" style="width: 95%" value="<?php echo get_option('dbem_smtp_password'); ?>" size="45" /><br />
-										<?php _e("Insert the password to be used to access your SMTP server",'dbem')?></a>.
+										<?php _e("Insert the password to be used to access your SMTP server",'dbem')?>.
 							</td>
 						</tr>
 						<tr valign="top">
@@ -391,10 +391,35 @@ function dbem_options_subpanel() {
 							<th scope="row"><?php _e('Notification receiver address','dbem'); ?></th>
 							<td>
 								<input name="dbem_mail_receiver_address" type="text" id="dbem_mail_receiver_address" style="width: 95%" value="<?php echo get_option('dbem_mail_receiver_address'); ?>" size="45" /><br />
-										<?php _e("Insert the address of the receiver of your notifications",'dbem')?></a>.
+										<?php _e("Insert the address of the receiver of your notifications",'dbem')?>.
 							</td>
 						</tr>   
 					</table>
+				
+				 	<h3><?php _e('Images size', 'dbem');?></h3>
+				    <table class='form-table'> 
+	          	<tr valign="top">
+								<th scope="row"><?php _e('Maximum width (px)','dbem'); ?></th>
+								<td>
+									<input name="dbem_image_max_width" type="text" id="dbem_image_max_width" style="width: 95%" value="<?php echo get_option('dbem_image_max_width'); ?>" size="45" /><br />
+											<?php _e("The maximum allowed width for images uploades",'dbem')?>.
+								</td>
+							</tr>
+							<tr valign="top">
+								<th scope="row"><?php _e('Maximum height (px)','dbem'); ?></th>
+								<td>
+									<input name="dbem_image_max_height" type="text" id="dbem_image_max_height" style="width: 95%" value="<?php echo get_option('dbem_image_max_height'); ?>" size="45" /><br />
+											<?php _e("The maximum allowed width for images uploaded, in pixels",'dbem')?>.
+								</td>
+							</tr>
+							<tr valign="top">
+								<th scope="row"><?php _e('Maximum size (bytes)','dbem'); ?></th>
+								<td>
+									<input name="dbem_image_max_size" type="text" id="dbem_image_max_size" style="width: 95%" value="<?php echo get_option('dbem_image_max_size'); ?>" size="45" /><br />
+											<?php _e("Insert the address of the notification sender. It must corresponds with your gmail account user",'dbem')?></a>.
+								</td>
+							</tr>
+					 </table> 
 				
 				
 				
@@ -402,7 +427,7 @@ function dbem_options_subpanel() {
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message,  dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_is_active, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address" />
+				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message,  dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_is_active, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
 				
 				
 			</form>
@@ -755,10 +780,11 @@ function dbem_get_event($event_id) {
 	//$wpdb->show_errors(true);
 	$event = $wpdb->get_row($sql,ARRAY_A);	
 	//$wpdb->print_error();
-	$venue = dbem_get_venue($event['venue_id']);
+	$venue = dbem_get_venue($event['venue_id']); 
 	$event['venue_name'] = $venue['venue_name'];
 	$event['venue_address'] = $venue['venue_address'];
 	$event['venue_town'] = $venue['venue_town'];   
+	$event['venue_image_url'] = $venue['venue_image_url'];
 	return $event;
 }        
 
