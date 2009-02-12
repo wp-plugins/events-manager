@@ -29,8 +29,41 @@ function dbem_ajax_actions() {
 	if(isset($_GET['action']) && $_GET['action'] == 'printable'){
 		if(isset($_GET['event_id']))
 			dbem_printable_booking_report($_GET['event_id']);
-	}  
+	}
+ 	if(isset($_GET['query']) && $_GET['query'] == 'GMapKey') { 
+		dbem_gmap_key_json();		
+	 	die();   
+ 	} 
+	
+	if(isset($_GET['query']) && $_GET['query'] == 'GlobalMapData') { 
+		dbem_global_map_json();		
+	 	die();   
+ 	}
+   
 }   
+
+function dbem_global_map_json() {
+	$json = '{"venues":[';
+	$venues = dbem_get_venues();
+	$json_venues = array();
+	foreach($venues as $venue) {
+
+		$json_venue = array();
+		foreach($venue as $key => $value) {
+		 	$json_venue[] = '"'.$key.'":"'.$value.'"';
+		}
+		$json_venues[] = "{".implode(",",$json_venue)."}";
+	}        
+	$json .= implode(",", $json_venues); 
+	$json .= "]}" ;
+	echo $json;
+}
+
+function dbem_gmap_key_json() {
+ $json = '{"GMapsKey":"'.get_option('dbem_gmap_key').'"}';
+ echo $json;
+} 
+
 
 function dbem_printable_booking_report($event_id) {
 	$event = dbem_get_event($event_id);

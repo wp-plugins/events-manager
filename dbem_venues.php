@@ -32,8 +32,10 @@ function dbem_venues_page() {
 			$venue = array();
 			$venue['venue_id'] = $_POST['venue_ID'];
 			$venue['venue_name'] = $_POST['venue_name'];
-			$venue['venue_address'] = $_POST['venue_address'];
+			$venue['venue_address'] = $_POST['venue_address']; 
 			$venue['venue_town'] = $_POST['venue_town']; 
+			$venue['venue_latitude'] = $_POST['venue_latitude'];
+			$venue['venue_longitude'] = $_POST['venue_longitude'];
 			//$venue['venue_description'] = $_POST['venue_description'];
 			$validation_result = dbem_validate_venue($venue);
 			if ($validation_result == "OK") {   
@@ -51,14 +53,19 @@ function dbem_venues_page() {
 				$venue = array();
 				$venue['venue_name'] = $_POST['venue_name'];
 				$venue['venue_address'] = $_POST['venue_address'];
-				$venue['venue_town'] = $_POST['venue_town'];
+				$venue['venue_town'] = $_POST['venue_town']; 
+				$venue['venue_latitude'] = $_POST['venue_latitude'];
+				$venue['venue_longitude'] = $_POST['venue_longitude'];
 				$validation_result = dbem_validate_venue($venue);
 				if ($validation_result == "OK") {   
 					$new_venue = dbem_insert_venue($venue);   
-					
-					// -------------
-					if ($_FILES['venue_image']['size'] > 0 ) 
+		 			// uploading the image
+				 
+					if ($_FILES['venue_image']['size'] > 0 ) {
 						dbem_upload_venue_picture($new_venue);
+			    }
+					
+					 
 					
 					
 					
@@ -129,7 +136,15 @@ function dbem_venues_edit_layout($venue, $message = "") {
 				</tr>";
 				$gmap_is_active = get_option('dbem_gmap_is_active');
 				if ($gmap_is_active) {  
-			  	$layout .= " <tr>
+			  	$layout .= " 
+			    
+				 <tr>
+				  <td>Coordinates</td>
+					<td><input id='venue-latitude' name='venue_latitude' id='venue_latitude' type='text' value='".$venue['venue_latitude']."' size='15'  />
+					<input id='venue-longitude' name='venue_longitude' id='venue_longitude' type='text' value='".$venue['venue_longitude']."' size='15'  /></td>
+				 </tr>\n
+			
+				<tr>
 			 <th scope='row' valign='top'><label for='venue_map'>".__('Venue map', 'dbem')."</label></th>
 										<td>
 										<div id='map-not-found' style='width: 450px; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p>".__('Map not found')."</p></div>
@@ -258,12 +273,20 @@ function dbem_venues_table_layout($venues, $new_venue, $message = "") {
 								   <label for='venue_town'>".__('Venue town', 'dbem')."</label>\n
 								 	<input id='venue-town' name='venue_town' id='venue_town' type='text' value='".$new_venue['venue_town']."' size='40'  />\n
 								    <p>".__('The town where the venue is located', 'dbem').".</p>\n
-								 </div>\n
+								 </div>\n   
 								
+							     <div class='form-field'>\n
+								   <label for='venue_latitude'>LAT</label>\n
+								 	<input id='venue-latitude' name='venue_latitude' id='venue_latitude' type='text' value='".$new_venue['venue_latitude']."' size='40'  />\n
+								 </div>\n
+								 <div class='form-field'>\n
+								   <label for='venue_longitude'>LONG</label>\n
+								 	<input id='venue-longitude' name='venue_longitude' id='venue_longitude' type='text' value='".$new_venue['venue_longitude']."' size='40'  />\n
+								 </div>\n
 								
 								 <div class='form-field'>\n
 								   <label for='venue_image'>".__('Venue image', 'dbem')."</label>\n
-								 	<input id='venue-image' name='venue_image' id='venue_image' type='file' size='40' />\n
+								 	<input id='venue-image' name='venue_image' id='venue_image' type='file' size='35' />\n
 								    <p>".__('Select an image to upload', 'dbem').".</p>\n
 								 </div>\n";
 									$gmap_is_active = get_option('dbem_gmap_is_active'); 
@@ -296,7 +319,7 @@ function dbem_venues_table_layout($venues, $new_venue, $message = "") {
 function dbem_get_venues() { 
 	global $wpdb;
 	$venues_table = $wpdb->prefix.VENUES_TBNAME; 
-	$sql = "SELECT venue_id, venue_address, venue_name, venue_town 
+	$sql = "SELECT venue_id, venue_address, venue_name, venue_town,venue_latitude, venue_longitude 
 		FROM $venues_table ORDER BY venue_name";   
 
 
@@ -347,8 +370,24 @@ function dbem_validate_venue($venue) {
 		if ($venue[$field] == "" ) {
 		$troubles .= "<li>".$description.__(" is missing!", "dbem")."</li>";
 		}       
-	} 
-	if ($troubles == "")
+	}
+	if ($_FILES['venue_image']['size'] > 0 ) { 
+		if (is_uploaded_file($_FILES['venue_image']['tmp_name'])) {
+ 	 		$mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
+			$maximum_size = get_option('dbem_image_max_size'); 
+			if ($_FILES['venue_image']['size'] > $maximum_size) 
+	     	$troubles = "<li>".__('The image file is too big! Maximum size:', 'dbem')." $maximum_size</li>";
+	  	list($width, $height, $type, $attr) = getimagesize($_FILES['venue_image']['tmp_name']);
+			$maximum_width = get_option('dbem_image_max_width'); 
+			$maximum_height = get_option('dbem_image_max_height'); 
+	  	if (($width > $maximum_width) || ($height > $maximum_height)) 
+	     	$troubles .= "<li>". __('The image is too big! Maximum size allowed:')." $maximum_width x $maximum_height</li>";
+	  	if (($type!=1) && ($type!=2) && ($type!=3)) 
+		      $troubles .= "<li>".__('The image is in a wrong format!')."</li>";
+  	} 
+	}
+
+  if ($troubles == "")
 		return "OK";
 	else {
 		$message = __('Ach, some problems here:', 'dbem')."<ul>\n$troubles</ul>";
@@ -362,16 +401,19 @@ function dbem_update_venue($venue) {
 	$sql="UPDATE ".$venues_table. 
 	" SET venue_name='".$venue['venue_name']."', ".
 		"venue_address='".$venue['venue_address']."',".
-		"venue_town='".$venue['venue_town']."' ".
-		"WHERE venue_id='".$venue['venue_id']."';";     
- $wpdb->query($sql);
+		"venue_town='".$venue['venue_town']."', ".
+		"venue_latitude=".$venue['venue_latitude'].",". 
+		"venue_longitude=".$venue['venue_longitude']." ". 
+		"WHERE venue_id='".$venue['venue_id']."';";  
+	$wpdb->query($sql);
 }   
 
 function dbem_insert_venue($venue) {
 		global $wpdb;	
-		$table_name = $wpdb->prefix.VENUES_TBNAME;
-		$wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
-		VALUES ('".$venue['venue_name']."', '".$venue['venue_address']."','".$venue['venue_town']."')");
+		$table_name = $wpdb->prefix.VENUES_TBNAME; 
+		$sql = "INSERT INTO ".$table_name." (venue_name, venue_address, venue_town, venue_latitude, venue_longitude)
+		VALUES ('".$venue['venue_name']."','".$venue['venue_address']."','".$venue['venue_town']."','".$venue['venue_latitude']."','".$venue['venue_longitude']."')";
+		$wpdb->query($sql);
     $new_venue = dbem_get_identical_venue($venue); 
 		dbem_log($new_venue);
 		return $new_venue;
@@ -395,44 +437,11 @@ function dbem_venue_has_events($venue_id) {
 
 function dbem_upload_venue_picture($venue) {
   dbem_delete_image_files_for_venue_id($venue['venue_id']);
-	do { 
-		$mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
-	  if (is_uploaded_file($_FILES['venue_image']['tmp_name'])) {
-	    // Controllo che il file non superi i 18 KB
-	    $maximum_size = get_option('dbem_image_max_size');
-			if ($_FILES['venue_image']['size'] > $maximum_size) {
-	      $msg = __('The file is too big! Maximum size:', 'dbem')." $maximum_size";
-	      break;
-	    }
-	    // Getting info on the image
-	    list($width, $height, $type, $attr) = getimagesize($_FILES['venue_image']['tmp_name']);
-	    // Checking tyhe size
-			$maximum_width = get_option('dbem_image_max_width'); 
-			$maximum_height = get_option('dbem_image_max_height'); 
-	    if (($width > $maximum_width) || ($height > $maximum_height)) {
-	      $msg = __('The image is too big! Maximum size allowed:')." $maximum_width x $maximum_height";
-	      break;
-	    }
-	    // Checking the file is GIF, JPG or PNG
-	    if (($type!=1) && ($type!=2) && ($type!=3)) {
-	      $msg = "<p>".__('The image is a wrong format!')."</p>";
-	      break;
-	    }
-	    // Verifico che sul sul server non esista già un file con lo stesso nome
-	    // In alternativa potrei dare io un nome che sia funzione della data e dell'ora
-	    // if (file_exists('upload_img/'.$_FILES['venue_image']['name'])) {
-	    //   $msg = "<p>File già esistente sul server. Rinominarlo e riprovare.</p>";
-	    //   break;
-	    // }  
-	    // Sposto il file nella cartella da me desiderata
-	    $image_path = "../".IMAGE_UPLOAD_DIR."/venue-".$venue['venue_id'].".".$mime_types[$type];
-			if (!move_uploaded_file($_FILES['venue_image']['tmp_name'], $image_path)) {
-	      $msg = "<p>Errore nel caricamento dell'immagine!!</p>";
-	      break;
-	    } 
-	 	}
-	} while (false);
-	echo $msg;
+	$mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');    
+	list($width, $height, $type, $attr) = getimagesize($_FILES['venue_image']['tmp_name']);
+	$image_path = "../".IMAGE_UPLOAD_DIR."/venue-".$venue['venue_id'].".".$mime_types[$type];
+	if (!move_uploaded_file($_FILES['venue_image']['tmp_name'], $image_path)) 
+		$msg = "<p>".__('The image could not be loaded','dbem')."</p>";
 }    
 function dbem_delete_image_files_for_venue_id($venue_id) {
 	$file_name= "../".IMAGE_UPLOAD_DIR."/venue-".$venue_id;
@@ -441,4 +450,14 @@ function dbem_delete_image_files_for_venue_id($venue_id) {
 		if (file_exists($file_name.".".$type))
   		unlink($file_name.".".$type);
 	}
+}          
+
+function dbem_global_map() {
+	$result = "<h3>Mappa totale</h3>";
+	$result .= "<p id='provina'>Ecco un test</p>"; 
+	$result .= "<div id='dbem_global_map' style='width: 400px; height: 250px'>map</div>";
+	$result .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_global_map.js' type='text/javascript'></script>";
+	return $result;
 }
+add_shortcode('all_events_map', 'dbem_global_map'); 
+

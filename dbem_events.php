@@ -219,16 +219,7 @@ function dbem_options_subpanel() {
 				<?php wp_nonce_field('update-options'); ?>
         <h3><?php _e('Events format', 'dbem');?></h3>   
 				<table class="form-table">
-					<?php $use_event_end = get_option('dbem_use_event_end'); ?>   
-				 
-					<tr valign="top">
-						<th scope="row"><?php _e('Use events end?','dbem'); ?></th>
-					  	<td>  
-							<input id="dbem_use_event_end_yes" name="dbem_use_event_end" type="radio" value="1" <?php if($use_event_end) echo "checked='checked'"; ?> /><?php _e('Yes'); ?> <br />
-							<input name="dbem_use_event_end" type="radio" value="0" <?php if(!$use_event_end) echo "checked='checked'"; ?> /> <?php _e('No'); ?>  <br />
-							<?php _e('Check this option if you want to set and end date/time for your events.','dbem')?>
-						</td>
-					</tr>     
+ 
 					
 				    
 					<tr valign="top">
@@ -1131,8 +1122,8 @@ function dbem_event_form($event, $title, $element) {
 				
 
 				
-				<?php $use_events_end = get_option('dbem_use_event_end'); ?>
-				<?php if($use_events_end) { ?>
+			
+			 
 					 <div id="event_end_day" class="stuffbox">
 							<h3><?php _e('Event time','dbem'); ?></h3>  
 							<div class="inside">
@@ -1146,7 +1137,7 @@ function dbem_event_form($event, $title, $element) {
 				
 				
 				
-				<?php } ?>
+
 		
 				
 				 
@@ -1502,8 +1493,10 @@ function dbem_admin_map_script() {
 						    map.setCenter(mapCenter, 13);
 					        var marker = new GMarker(point);
 					        map.addOverlay(marker);
-					        marker.openInfoWindowHtml('<strong>' + venue +'</strong><p>' + address + '</p><p>' + town + '</p>');
-					        $j("#event-map").show();
+					        marker.openInfoWindowHtml('<strong>' + venue +'</strong><p>' + address + '</p><p>' + town + '</p>'); 
+							$j('input#venue-latitude').val(point.x);
+					        $j('input#venue-longitude').val(point.y);   
+							$j("#event-map").show();
 							$j('#map-not-found').hide();
 							}
 					    }
