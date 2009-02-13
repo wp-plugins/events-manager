@@ -70,10 +70,19 @@ function loadGMap() {
 			console.log(venuesBound);
 			var venuesZoom = map.getBoundsZoomLevel(venuesBound);
 			map.setCenter(new GLatLng(center_lat + vertical_compensation,center_lon), venuesZoom); 
+			var letters = new Array('A','B','C','D','E','F','G','H');
+			var customIcon = new GIcon(G_DEFAULT_ICON);
 			
 			$j.each(venues, function(i, item){
+				var letter = letters[i];
+	
+				customIcon.image = "http://www.google.com/mapfiles/marker" + letter + ".png";
+			
+				markerOption = { icon:customIcon };
              	var point = new GLatLng(parseFloat(item.venue_latitude), parseFloat(item.venue_longitude));
-				map.addOverlay(new GMarker(point));                                                       
+				var marker = new GMarker(point, markerOption);
+				map.addOverlay(marker);
+			                                                  
 				});
 			
 			
