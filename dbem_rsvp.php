@@ -82,9 +82,7 @@ function dbem_catch_rsvp() {
 		$booker = dbem_get_person_by_name_and_email($bookerName, $bookerEmail); 
 	  if ($booker) {
 			$booker_id = $booker['person_id'];
-			dbem_log("cancellare: ".$booker_id);  
 			$booking = dbem_get_booking_by_person_id($booker_id);
-			dbem_log($booking);
 			$result = dbem_delete_booking($booking['booking_id']);
 		} else {
 			$result = __('There are no bookings associated to this name and e-mail', 'dbem');
@@ -115,7 +113,6 @@ function dbem_book_seats() {
 		$result = __('Your booking has been recorded','dbem');  
 		$mailing_is_active = get_option('dbem_rsvp_mail_notify_is_active');
 		if($mailing_is_active) {
-			dbem_log("Ecco, mail in  fase di invio"); 
 			dbem_email_rsvp_booking();
 		} 
 		
@@ -163,7 +160,6 @@ function dbem_delete_booking($booking_id) {
 	$bookings_table = $wpdb->prefix.BOOKINGS_TBNAME; 
 	$sql = "DELETE FROM $bookings_table WHERE booking_id = $booking_id";
 	$wpdb->query($sql);   
-	dbem_log('booking deleted!!!');    
 	return __('Booking deleted', 'dbem');
 }
 
@@ -323,7 +319,6 @@ function dbem_intercept_bookings_delete() {
 add_action('init', 'dbem_intercept_bookings_delete');   
 
 function dbem_email_rsvp_booking(){  
-	dbem_log("mail...");
 	$booker = array();
 	$bookerName = $_POST['bookerName'];
 	$bookerEmail = $_POST['bookerEmail'];    

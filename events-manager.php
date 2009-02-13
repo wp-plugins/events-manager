@@ -59,15 +59,14 @@ define('DEFAULT_IMAGE_MAX_SIZE', 204800);
 define('USE_FIREPHP', false);
 define('DEBUG', false);     
 
-if (DEBUG)  { 
-	if (USE_FIREPHP) {
- 		require('FirePHPCore/fb.php');  
-		ob_start();
-		fb('FirePHP activated');   
-	}
-} 
+// if (DEBUG)  { 
+// 	if (USE_FIREPHP) {
+//  		require('FirePHPCore/fb.php');  
+// 		ob_start();
+// 		fb('FirePHP activated');   
+// 	}
+// } 
 
-dbem_log('Dbem-log working');
 // INCLUDES        
 include("dbem_events.php");
 include("dbem_calendar.php");      
@@ -118,11 +117,6 @@ add_filter('dbem_notes_rss', 'ent2ncr', 8);
 add_filter('dbem_notes_map', 'convert_chars', 8);
 add_filter('dbem_notes_map', 'js_escape');
       
-// Custom log function
-function dbem_log($text) {
-	if (DEBUG)
-  	fb($text,FirePHP::LOG);
-}
 
 
 /* Creating the wp_events table to store event data*/
@@ -170,7 +164,6 @@ function dbem_create_events_table() {
 		// upgrading from previous versions             
 		    
 		$sql = "ALTER TABLE $old_table_name RENAME $table_name;";
-		dbem_log("sql rename: $sql");
 		$wpdb->query($sql); 
 		  
 	}
@@ -243,9 +236,6 @@ function dbem_create_recurrence_table() {
 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		
-		dbem_log('Creating the recurrence table'); 
-
-
 		$sql = "CREATE TABLE ".$table_name." (
 			recurrence_id mediumint(9) NOT NULL AUTO_INCREMENT,
 			recurrence_name tinytext NOT NULL,
@@ -274,7 +264,6 @@ function dbem_create_venues_table() {
 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		
-		dbem_log('Creating the venues table'); 
 		// check the user is allowed to make changes
 		// get_currentuserinfo();
 		// if ($user_level < 8) { return; }
@@ -315,8 +304,6 @@ function dbem_create_bookings_table() {
 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		
-		dbem_log('Creating the bookings table'); 
-
 		$sql = "CREATE TABLE ".$table_name." (
 			booking_id mediumint(9) NOT NULL AUTO_INCREMENT,
 			event_id tinyint NOT NULL,
@@ -337,9 +324,6 @@ function dbem_create_people_table() {
 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		
-		dbem_log('Creating the people table'); 
-
-
 		$sql = "CREATE TABLE ".$table_name." (
 			person_id mediumint(9) NOT NULL AUTO_INCREMENT,
 			person_name tinytext NOT NULL, 
@@ -364,10 +348,9 @@ function dbem_migrate_old_events() {
 		echo $sql;
 		$events = $wpdb->get_results($sql, ARRAY_A);
 		foreach($events as $event) {
+
 			// Migrating venue data to the venue table
-			//dbem_log($event);
 			$venue = array('venue_name' => $event['event_venue'], 'venue_address' => $event['event_address'], 'venue_town' => $event['event_town']);
-		 // dbem_log($venue); 
 			$related_venue = dbem_get_identical_venue($venue); 
 				 
 				if ($related_venue)  {
@@ -394,7 +377,6 @@ function dbem_migrate_old_events() {
 }
 
 function dbem_add_options() {
-	dbem_log('Adding options, if necessary'); 
 	// Adding plugin options
 	$event_list_item_format = get_option('dbem_event_list_item_format');
 	if (empty($event_list_item_format))

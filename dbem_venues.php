@@ -11,7 +11,6 @@ function dbem_intercept_venues_actions() {
 	  	if(isset($_GET['action2']) && $_GET['action2'] == "delete") {
 				$venues = $_GET['venues'];
 				foreach($venues as $venue_ID) {
-					dbem_log("roba da cancellare: $venue_ID"); 
 				 	dbem_delete_venue($venue_ID);
 				}
 			}
@@ -415,7 +414,6 @@ function dbem_insert_venue($venue) {
 		VALUES ('".$venue['venue_name']."','".$venue['venue_address']."','".$venue['venue_town']."','".$venue['venue_latitude']."','".$venue['venue_longitude']."')";
 		$wpdb->query($sql);
     $new_venue = dbem_get_identical_venue($venue); 
-		dbem_log($new_venue);
 		return $new_venue;
 }
 

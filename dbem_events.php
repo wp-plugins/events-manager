@@ -1241,23 +1241,27 @@ function dbem_enque_scripts(){
 add_action ('template_redirect', 'dbem_enque_scripts');
 
 function url_exists($url) {
-     if ((strpos($url, "http")) === false) $url = "http://" . $url;
-     if (is_array(@get_headers($url)))
-          return true;
-     else
-          return false;
+
+	if ((strpos($url, "http")) === false) $url = "http://" . $url;
+    // FIXME ripristina la linea seguente e VEDI DI SISTEMARE!!!!
+	// if (is_array(@get_headers($url))) {
+	if (true)
+       	return true;
+    else
+		return false;
 }
 
 // General script to make sure hidden fields are shown when containing data
 function dbem_admin_general_script(){  ?>
 	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/dbem.js" type="text/javascript"></script>  
-	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/ui.datepicker.js" type="text/javascript"></script>
-   
+	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/ui.datepicker.js" 	type="text/javascript"></script>
+
 	<?php
+
 	// Check if the locale is there and loads it
-	$locale_code = substr(get_locale(), 0, 2);   
+	$locale_code = substr(get_locale(), 0, 2);  
+
 	$locale_file = get_bloginfo('url')."/wp-content/plugins/events-manager/js/i18n/ui.datepicker-$locale_code.js";
-	// echo $locale_file;
 	if(url_exists($locale_file)) {   ?>
 	  <script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/i18n/ui.datepicker-<?php echo $locale_code;?>.js" type="text/javascript"></script>   
 	<?php } ?>                 
@@ -1552,7 +1556,6 @@ function dbem_admin_map_script() {
 }
 $gmap_is_active = get_option('dbem_gmap_is_active'); 
 if ($gmap_is_active) {
-	dbem_log("qui aggiungiamo gmap");     
 	add_action ('admin_head', 'dbem_admin_map_script');
 	  
 }

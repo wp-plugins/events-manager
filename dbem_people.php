@@ -179,7 +179,6 @@ function dbem_get_people() {
 }
 
 function dbem_add_person($name, $email, $phone = "") {
-	dbem_log("add!!!");
 	global $wpdb; 
 	$people_table = $wpdb->prefix.PEOPLE_TBNAME;
 	$sql = "INSERT INTO $people_table (person_name, person_email, person_phone) VALUES ('$name', '$email', '$phone');";

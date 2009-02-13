@@ -56,11 +56,20 @@ function loadGMap() {
 				
 			console.log("Latitudes: " + latitudes + " MAX: " + max_latitude + " MIN: " + min_latitude);
 			console.log("Longitudes: " + longitudes +  " MAX: " + max_longitude + " MIN: " + min_longitude);    
-			console.log((max_latitude - min_latitude)/2 + parseFloat(min_latitude));
+		
 			center_lat = min_latitude + (max_latitude - min_latitude)/2;
 			center_lon = min_longitude + (max_longitude - min_longitude)/2;
 			console.log("center: " + center_lat + " - " + center_lon) + min_longitude;
-			map.setCenter(new GLatLng(center_lat,center_lon), 4); 
+			
+			lat_interval = max_latitude - min_latitude;
+			
+			//vertical compensation to fit in the markers
+			vertical_compensation = lat_interval * 0.1;
+			
+			var venuesBound = new GLatLngBounds(new GLatLng(max_latitude + vertical_compensation,min_longitude),new GLatLng(min_latitude,max_longitude) );
+			console.log(venuesBound);
+			var venuesZoom = map.getBoundsZoomLevel(venuesBound);
+			map.setCenter(new GLatLng(center_lat + vertical_compensation,center_lon), venuesZoom); 
 			
 			$j.each(venues, function(i, item){
              	var point = new GLatLng(parseFloat(item.venue_latitude), parseFloat(item.venue_longitude));

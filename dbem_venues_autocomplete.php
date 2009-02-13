@@ -56,7 +56,6 @@ function dbem_venues_autocomplete() {
 add_action ('admin_head', 'dbem_venues_autocomplete');  
 
 function dbem_cache_venue($event){
-	dbem_log($event); 
 	$related_venue = dbem_get_venue_by_name($event['venue_name']);  
 	if (!$related_venue) {
 		dbem_insert_venue_from_event($event);
@@ -76,8 +75,6 @@ function dbem_get_venue_by_name($name) {
 	venue_town
 	FROM ".$wpdb->prefix.VENUES_TBNAME.  
 	" WHERE venue_name = '$name'";   
-
-	dbem_log($sql);
 	$event = $wpdb->get_row($sql);	
 
 	return $event;
