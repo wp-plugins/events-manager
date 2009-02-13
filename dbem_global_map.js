@@ -25,58 +25,52 @@ function loadGMap() {
 	  	  	venues = data.venues;    
 			var latitudes = new Array();
 			var longitudes = new Array();
-			var max_latitude = -500;
-			var min_latitude = 500;
-			var max_longitude = -500;
-			var min_longitude = 500;    
+			var max_latitude = -500.1;
+			var min_latitude = 500.1;
+			var max_longitude = -500.1;
+			var min_longitude = 500.1;    
 			
 			
 			var map = new GMap2(document.getElementById("dbem_global_map"));
-			map.setCenter(new GLatLng(10.952397, 45.4213477), 10);
+			map.setCenter(new GLatLng(45.4213477,10.952397), 3);
 
-			// Add 10 markers to the map at random locations
-			var bounds = map.getBounds();
-			var southWest = bounds.getSouthWest();
-			var northEast = bounds.getNorthEast();
-			var lngSpan = northEast.lng() - southWest.lng();
-			var latSpan = northEast.lat() - southWest.lat();
-			for (var i = 0; i < 10; i++) {
-			
-			}
+
 			
 			$j.each(venues, function(i, item){
             	latitudes.push(item.venue_latitude);
   				longitudes.push(item.venue_longitude);
-				if (parseFloat(item.venue_latitude) > parseFloat(max_latitude))
-					max_latitude = item.venue_latitude;
-				if (parseFloat(item.venue_latitude) < parseFloat(min_latitude))
-					min_latitude = item.venue_latitude;
-				if (parseFloat(item.venue_longitude) > parseFloat(max_longitude))
-					max_longitude = item.venue_longitude;
-				if (parseFloat(item.venue_longitude) < parseFloat(min_longitude))
-					min_longitude = item.venue_longitude; 
+				if (parseFloat(item.venue_latitude) > max_latitude)
+					max_latitude = parseFloat(item.venue_latitude);
+				if (parseFloat(item.venue_latitude) < min_latitude)
+					min_latitude = parseFloat(item.venue_latitude);
+				if (parseFloat(item.venue_longitude) > max_longitude)
+					max_longitude = parseFloat(item.venue_longitude);
+				if (parseFloat(item.venue_longitude) < min_longitude)
+					min_longitude = parseFloat(item.venue_longitude); 
 				
-				// var location = new GLatLng(parseFloat(item.venue_latitude), parseFloat(item.venue_longitude));
-				// 			    map.addOverlay(new GMarker(location));	      
+		                                                   
+				});
+			
+			
+			                 
 				
-				var point = new GLatLng(southWest.lat() + latSpan * Math.random(), southWest.lng() + lngSpan * Math.random());
+			console.log("Latitudes: " + latitudes + " MAX: " + max_latitude + " MIN: " + min_latitude);
+			console.log("Longitudes: " + longitudes +  " MAX: " + max_longitude + " MIN: " + min_longitude);    
+			console.log((max_latitude - min_latitude)/2 + parseFloat(min_latitude));
+			center_lat = min_latitude + (max_latitude - min_latitude)/2;
+			center_lon = min_longitude + (max_longitude - min_longitude)/2;
+			console.log("center: " + center_lat + " - " + center_lon) + min_longitude;
+			map.setCenter(new GLatLng(center_lat,center_lon), 4); 
+			
+			$j.each(venues, function(i, item){
+             	var point = new GLatLng(parseFloat(item.venue_latitude), parseFloat(item.venue_longitude));
 				map.addOverlay(new GMarker(point));                                                       
 				});
 			
 			
-			                    
-			positionCACCA = new GLatLng(10.9933,45.4387);  
-			console.log("loaded? " + map.isLoaded());
-			console.log("marker:" + positionCACCA);
-			map.addOverlay(new GMarker(positionCACCA), true);	
-			console.log("Latitudes: " + latitudes + " MAX: " + max_latitude + " MIN: " + min_latitude);
 			
-			console.log("Longitudes: " + longitudes +  " MAX: " + max_longitude + " MIN: " + min_longitude);    
-			center_x = (max_latitude - min_latitude)/2 + min_latitude;
-			center_y = (max_longitude - min_longitude)/2;
-			console.log("center: " + center_x + " - " + center_y) + min_longitude; 
             });
-		
+	   
 	 
       }
     }

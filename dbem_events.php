@@ -1494,8 +1494,8 @@ function dbem_admin_map_script() {
 					        var marker = new GMarker(point);
 					        map.addOverlay(marker);
 					        marker.openInfoWindowHtml('<strong>' + venue +'</strong><p>' + address + '</p><p>' + town + '</p>'); 
-							$j('input#venue-latitude').val(point.x);
-					        $j('input#venue-longitude').val(point.y);   
+							$j('input#venue-latitude').val(point.y);
+					        $j('input#venue-longitude').val(point.x);   
 							$j("#event-map").show();
 							$j('#map-not-found').hide();
 							}
