@@ -36,15 +36,16 @@ function dbem_ajax_actions() {
  	} 
 	
 	if(isset($_GET['query']) && $_GET['query'] == 'GlobalMapData') { 
-		dbem_global_map_json();		
+		dbem_global_map_json($_GET['eventful']);		
 	 	die();   
  	}
    
 }   
 
-function dbem_global_map_json() {
+function dbem_global_map_json($eventful = false) {
+
 	$json = '{"venues":[';
-	$venues = dbem_get_venues();
+	$venues = dbem_get_venues($eventful);
 	$json_venues = array();
 	foreach($venues as $venue) {
 

@@ -315,12 +315,16 @@ function dbem_venues_table_layout($venues, $new_venue, $message = "") {
 
 	 
 
-function dbem_get_venues() { 
+function dbem_get_venues($eventful = false) { 
 	global $wpdb;
 	$venues_table = $wpdb->prefix.VENUES_TBNAME; 
-	$sql = "SELECT venue_id, venue_address, venue_name, venue_town,venue_latitude, venue_longitude 
-		FROM $venues_table ORDER BY venue_name";   
-
+	$events_table = $wpdb->prefix.EVENTS_TBNAME;
+	if ($eventful == 'true') {
+		$sql = "SELECT * from $venues_table JOIN $events_table ON $venues_table.venue_id = $events_table.venue_id";
+	} else {
+		$sql = "SELECT venue_id, venue_address, venue_name, venue_town,venue_latitude, venue_longitude 
+			FROM $venues_table ORDER BY venue_name";   
+	}
 
 	$venues = $wpdb->get_results($sql); 
 	return $venues;  
@@ -450,12 +454,25 @@ function dbem_delete_image_files_for_venue_id($venue_id) {
 	}
 }          
 
-function dbem_global_map() {
+function dbem_global_map($atts) {
+	extract(shortcode_atts(array(
+			'eventful' => "false",
+			'scope' => 'all',
+			'width' => 450,
+			'height' => 300
+		), $atts));
 	$result = "<h3>Mappa totale</h3>";
 	$result .= "<p id='provina'>Ecco un test</p>"; 
-	$result .= "<div id='dbem_global_map' style='width: 400px; height: 250px'>map</div>";
+	$result .= "<div id='dbem_global_map' style='width: {$width}px; height: {$height}px'>map</div>";
+	$result .= "<script type='text/javascript'>
+	<!--// 
+	  eventful = $eventful;
+	  scope = '$scope';
+	//-->
+	</script>";
 	$result .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_global_map.js' type='text/javascript'></script>";
+	$result .= "<ol id='dbem_venues_list'></ol>"; 
 	return $result;
 }
-add_shortcode('all_events_map', 'dbem_global_map'); 
+add_shortcode('venues_map', 'dbem_global_map'); 
 
