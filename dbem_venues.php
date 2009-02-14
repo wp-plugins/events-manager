@@ -454,6 +454,8 @@ function dbem_delete_image_files_for_venue_id($venue_id) {
 	}
 }          
 
+
+
 function dbem_global_map($atts) {
 	extract(shortcode_atts(array(
 			'eventful' => "false",
@@ -461,13 +463,16 @@ function dbem_global_map($atts) {
 			'width' => 450,
 			'height' => 300
 		), $atts));
+	$events_page = dbem_get_events_page(true, false);
+	$gmaps_key = get_option('dbem_gmap_key');
 	$result = "<h3>Mappa totale</h3>";
-	$result .= "<p id='provina'>Ecco un test</p>"; 
 	$result .= "<div id='dbem_global_map' style='width: {$width}px; height: {$height}px'>map</div>";
 	$result .= "<script type='text/javascript'>
 	<!--// 
 	  eventful = $eventful;
 	  scope = '$scope';
+	  events_page = '$events_page';
+	  GMapsKey = '$gmaps_key';
 	//-->
 	</script>";
 	$result .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_global_map.js' type='text/javascript'></script>";
@@ -475,4 +480,61 @@ function dbem_global_map($atts) {
 	return $result;
 }
 add_shortcode('venues_map', 'dbem_global_map'); 
+
+function dbem_replace_venues_placeholders($format, $venue, $target="html") {
+	
+	$venue_string = $format;
+	preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
+	foreach($placeholders[0] as $result) {    
+		// echo "RESULT: $result <br>";
+		// matches alla fields placeholder
+		if (preg_match('/#_MAP/', $result)) {
+		
+		 	$gmap_is_active = get_option('dbem_gmap_is_active'); 
+			if ($gmap_is_active) {  
+		 
+			   $map_div = "<div id='venue-map' style=' background: green; width: 200px; height: 100px'></div>" ;
+			} else {
+				$map_div = "";
+			}
+		 	$venue_string = str_replace($result, $map_div , $venue_string ); 
+		 
+		}
+
+	  
+		if (preg_match('/#_(NAME|ADDRESS|TOWN|PROVINCE)/', $result)) {
+			$field = "venue_".ltrim(strtolower($result), "#_");
+		 	$field_value = $venue[$field];      
+		
+			if ($field == "venue_notes") {
+				if ($target == "html")
+					$field_value = apply_filters('dbem_notes', $field_value);
+				else
+				  if ($target == "map")
+					$field_value = apply_filters('dbem_notes_map', $field_value);
+				  else
+				 	$field_value = apply_filters('dbem_notes_rss', $field_value);
+		  	} else {
+				if ($target == "html")    
+					$field_value = apply_filters('dbem_general', $field_value); 
+				else 
+					$field_value = apply_filters('dbem_general_rss', $field_value); 
+			}
+			$venue_string = str_replace($result, $field_value , $venue_string ); 
+	 	}
+	  
+		if (preg_match('/#_(IMAGE)/', $result)) {
+				
+        	if($venue['venue_image_url'] != '')
+				  $venue_image = "<img src='".$venue['venue_image_url']."' alt='".$venue['venue_name']."'/>";
+				else
+					$venue_image = "";
+			$venue_string = str_replace($result, $venue_image , $venue_string ); 
+		}
+			
+	}
+	return $venue_string;	
+	
+}
+
 

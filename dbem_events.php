@@ -306,8 +306,26 @@ function dbem_options_subpanel() {
 							<?php _e('Follow the previous formatting instructions.','dbem')?><br/> 
 						</td>
 					</tr>
-			</table>    
-			
+			</table> 
+			   
+			<h3><?php _e('Venues format', 'dbem');?></h3>   
+				<table class="form-table">
+						<tr valign="top">
+							<th scope="row"><?php _e('Single venue page title format','dbem');?></th>
+							<td>
+								<input name="dbem_venue_page_title_format" type="text" id="dbem_venue_page_title_format" style="width: 95%" value="<?php echo get_option('dbem_venue_page_title_format'); ?>" size="45" /><br />
+								<?php _e('The format of a single venue page title.','dbem')?><br/>
+								<?php _e('Follow the previous formatting instructions.','dbem')?>
+							</td>
+						</tr>
+						<tr valign="top">
+							<th scope="row"><?php _e('Default single venue page format','dbem')?></th>
+							<td><textarea name="dbem_single_venue_format" id="dbem_single_venue_format" rows="6" cols="60"><?php echo (get_option('dbem_single_venue_format'));?></textarea><br/>
+								<?php _e('The format of a single venue page.','dbem')?><br/>
+								<?php _e('Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_INFO</code>.','dbem')?><br/>  
+								<?php _e('Use HTML tags as <code>li</code>, <code>br</code>, etc.','dbem')?></td>
+						</tr>
+					</table>
 				
 			<h3><?php _e('Maps and geotagging', 'dbem');?></h3>
 				<table class='form-table'> 
@@ -418,7 +436,7 @@ function dbem_options_subpanel() {
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message,  dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_is_active, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
+				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_venue_page_title_format, dbem_single_venue_format, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_is_active, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
 				
 				
 			</form>
@@ -434,13 +452,20 @@ function dbem_options_subpanel() {
 //This is the content of the event page
 function dbem_events_page_content() {
 	global $wpdb;
+	if (isset($_REQUEST['venue_id']) && $_REQUEST['venue_id'] |= '') {
+		$venue= dbem_get_venue($_REQUEST['venue_id']);
+		$single_venue_format = get_option('dbem_single_venue_format');  
+		$page_body = dbem_replace_placeholders($single_venue_format, $venue);
+	  	return $page_body;
+	
+	}
 	if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
 		// single event page
 		$event_ID=$_REQUEST['event_id'];
 		$event= dbem_get_event($event_ID);
 		$single_event_format = get_option('dbem_single_event_format');  
 		$page_body = dbem_replace_placeholders($single_event_format, $event);
-	  return $page_body;
+	  	return $page_body;
 	} elseif (isset($_REQUEST['calendar_day']) && $_REQUEST['calendar_day'] != ''){ 
 			
 			$date = $_REQUEST['calendar_day'];
@@ -497,7 +522,15 @@ function dbem_events_page_title($data) {
 	$events_page_id = get_option('dbem_events_page');
 	$events_page = get_page($events_page_id);
 	$events_page_title = $events_page->post_title;      
-    if (($data == $events_page_title) && (is_page($events_page_id))) {
+
+
+	if (($data == $events_page_title) && (is_page($events_page_id))) {
+		if (isset($_REQUEST['venue_id']) && $_REQUEST['venue_id'] |= '') {
+			$venue= dbem_get_venue($_REQUEST['venue_id']);
+			$stored_page_title_format = get_option('dbem_venue_page_title_format');
+			$page_title = dbem_replace_venues_placeholders($stored_page_title_format, $venue);
+			return $page_title;
+		}
 	   	if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
 			// single event page
 			$event_ID=$_REQUEST['event_id'];
@@ -620,14 +653,18 @@ function dbem_get_events_list($limit="3", $scope="future", $order="ASC", $format
 		return $output;
 }  
 
-function dbem_get_events_page($justurl=false) {
+function dbem_get_events_page($justurl=false, $display=true) {
 	$page_link = get_permalink(get_option("dbem_events_page")) ;
 	if($justurl) {  
-		echo $page_link;
+		$result = $page_link;
 	} else {
 		$page_title = get_option("dbem_events_page_title") ;
-		echo "<a href='$page_link' title='$page_title'>$page_title</a>";
+		$result = "<a href='$page_link' title='$page_title'>$page_title</a>";
 	}
+	if ($display)
+		echo $result;
+	else
+		return $result;
 	
 }       
 

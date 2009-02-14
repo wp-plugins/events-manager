@@ -50,6 +50,9 @@ define('DEFAULT_MAP_TEXT_FORMAT', '<strong>#_VENUE</strong><p>#_ADDRESS</p><p>#_
 define('DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT','<li>#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul></li>');
 define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));  
 
+define('DEFAULT_SINGLE_VENUE_FORMAT', '<p>#_ADDRESS</p><p>#_TOWN</p>'); 
+define('DEFAULT_VENUE_PAGE_TITLE_FORMAT', '	#_NAME'); 
+
 define("IMAGE_UPLOAD_DIR", "wp-content/uploads/venues-pics");
 define('DEFAULT_IMAGE_MAX_WIDTH', 700);  
 define('DEFAULT_IMAGE_MAX_HEIGHT', 700);  
@@ -401,6 +404,14 @@ function dbem_add_options() {
 	$no_events_message = get_option('dbem_no_events_message'); 
 	if (empty($no_events_message))
 		update_option('dbem_no_events_message', __('No events','dbem'));
+	
+	$venue_page_title_format = get_option('dbem_venue_page_title_format');
+	if (empty($venue_page_title_format)) 
+		update_option('dbem_venue_page_title_format', DEFAULT_VENUE_PAGE_TITLE_FORMAT);
+	
+	$single_venue_format = get_option('dbem_single_venue_format');
+	if (empty($single_venue_format)) 
+		update_option('dbem_single_venue_format', DEFAULT_SINGLE_VENUE_FORMAT);
 	
 	$map_text_format = get_option('dbem_map_text_format');
 	if (empty($map_text_format)) 

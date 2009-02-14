@@ -30,10 +30,6 @@ function dbem_ajax_actions() {
 		if(isset($_GET['event_id']))
 			dbem_printable_booking_report($_GET['event_id']);
 	}
- 	if(isset($_GET['query']) && $_GET['query'] == 'GMapKey') { 
-		dbem_gmap_key_json();		
-	 	die();   
- 	} 
 	
 	if(isset($_GET['query']) && $_GET['query'] == 'GlobalMapData') { 
 		dbem_global_map_json($_GET['eventful']);		
@@ -60,10 +56,7 @@ function dbem_global_map_json($eventful = false) {
 	echo $json;
 }
 
-function dbem_gmap_key_json() {
- $json = '{"GMapsKey":"'.get_option('dbem_gmap_key').'"}';
- echo $json;
-} 
+
 
 
 function dbem_printable_booking_report($event_id) {
