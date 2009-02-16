@@ -219,93 +219,18 @@ function dbem_options_subpanel() {
 				<?php wp_nonce_field('update-options'); ?>
         <h3><?php _e('Events format', 'dbem');?></h3>   
 				<table class="form-table">
- 
-					
-				    
-					<tr valign="top">
-						<th scope="row"><?php _e('Default event list format','dbem')?></th>
-						<td><textarea name="dbem_event_list_item_format" id="dbem_event_list_item_format" rows="6" cols="60"><?php echo (get_option('dbem_event_list_item_format'));?></textarea><br/>
-							<?php _e('The format of any events in a list.','dbem')?><br/>
-							<?php _e('Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_VENUE</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page. Use #_URL to print the event URL and make your own customised links.','dbem')?>
-							<?php _e('To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a # symbol before them, i.e. #m. #M, #j, etc. ','dbem')?><br/>  
-							<?php _e('Use HTML tags as <code>li</code>, <code>br</code>, etc.','dbem')?></td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><?php _e('Single event page title format','dbem');?></th>
-						<td>
-							<input name="dbem_event_page_title_format" type="text" id="dbem_event_page_title_format" style="width: 95%" value="<?php echo get_option('dbem_event_page_title_format'); ?>" size="45" /><br />
-							<?php _e('The format of a single event page title.','dbem')?><br/>
-							<?php _e('Follow the previous formatting instructions.','dbem')?>
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><?php _e('Default single event format','dbem')?></th>
-						<td>
-							<textarea name="dbem_single_event_format" id="dbem_single_event_format" rows="6" cols="60"><?php echo (get_option('dbem_single_event_format'));?></textarea><br/>
-							<?php _e('The format of a single eventy page.','dbem')?><br/>
-							<?php _e('Follow the previous formatting instructions.','dbem')?><br/>
-							<?php _e('Use <code>#_MAP</code> to insert a map.','dbem')?>
-					   	</td>
-					</tr>
-					
-					
-					<?php $list_events_page = get_option('dbem_list_events_page'); ?>
-					 
-				   	<tr valign="top">
-				   		<th scope="row"><?php _e('Show events page in lists?','dbem'); ?></th>
-				   		<td>   
-							<input id="dbem_list_events_page" name="dbem_list_events_page" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> /><?php _e('Yes'); ?> <br />
-							<input name="dbem_list_events_page" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> /><?php _e('No'); ?> <br />
-							<?php _e('Check this option if you want the events page to appear together with other pages in pages lists.','dbem')?>
-						</td>
-				   	</tr>
-					 
-					<tr valign="top">
-						<th scope="row"><?php _e('Events page title','dbem'); ?></th>
-						<td>
-							<input name="dbem_events_page_title" type="text" id="dbem_events_page_title" style="width: 95%" value="<?php echo get_option('dbem_events_page_title'); ?>" size="45" /><br />
-							<?php _e('The title on the multiple events page.','dbem')?>
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><?php _e('No events message','dbem');?></th>
-						<td>
-							<input name="dbem_no_events_message" type="text" id="dbem_no_events_message" style="width: 95%" value="<?php echo get_option('dbem_no_events_message'); ?>" size="45" /><br />
-							<?php _e('The message displayed when no events are available.','dbem')?><br/>
-						 </td>
-					</tr>
-					
-					<tr valign="top">
-						<th scope="row"><?php _e('RSS main title','dbem'); ?></th>
-						<td>
-							<input name="dbem_rss_main_title" type="text" id="dbem_rss_main_title" style="width: 95%" value="<?php echo get_option('dbem_rss_main_title'); ?>" size="45" /><br />
-							<?php _e('The main title of your RSS events feed.','dbem')?>
-							
-						</td>
-					</tr>	<tr valign="top">
-							<th scope="row"><?php _e('RSS main description','dbem'); ?></th>
-							<td>
-								<input name="dbem_rss_main_description" type="text" id="dbem_rss_main_description" style="width: 95%" value="<?php echo get_option('dbem_rss_main_description'); ?>" size="45" /><br />
-								<?php _e('The main description of your RSS events feed.','dbem')?>
-
-							</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><?php _e('RSS title format','dbem'); ?></th>
-						<td>
-							<input name="dbem_rss_title_format" type="text" id="dbem_rss_title_format" style="width: 95%" value="<?php echo get_option('dbem_rss_title_format'); ?>" size="45" /><br />
-							<?php _e('The format of the title of each item in the events RSS feed.','dbem')?>
-							
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><?php _e('RSS description format','dbem'); ?></th>
-						<td>
-							<input name="dbem_rss_description_format" type="text" id="dbem_rss_description_format" style="width: 95%" value="<?php echo get_option('dbem_rss_description_format'); ?>" size="45" /><br />
-							<?php _e('The format of the description of each item in the events RSS feed.','dbem')?>
-							<?php _e('Follow the previous formatting instructions.','dbem')?><br/> 
-						</td>
-					</tr>
+ 						<?php
+						dbem_options_textarea('Default event list format', 'dbem_event_list_item_format', 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_VENUE</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page. Use #_URL to print the event URL and make your own customised links. To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a # symbol before them, i.e. #m. #M, #j, etc.  Use HTML tags as <code>li</code>, <code>br</code>, etc.');
+						dbem_options_input_text('Single event page title format', 'dbem_event_page_title_format', 'The format of a single event page title. Follow the previous formatting instructions.');
+						dbem_options_textarea('Default single event format','dbem_single_event_format','The format of a single eventy page.<br/>Follow the previous formatting instructions. Use <code>#_MAP</code> to insert a map.');
+						dbem_options_radio_binary('Show events page in lists?', 'dbem_list_events_page', 'Check this option if you want the events page to appear together with other pages in pages lists.');
+						dbem_options_input_text('Events page title','dbem_events_page_title','The title on the multiple events page.');
+						dbem_options_input_text('No events message', 'dbem_no_events_message','The message displayed when no events are available.');
+						dbem_options_input_text('RSS main title','dbem_rss_main_title','The main title of your RSS events feed.');
+						dbem_options_input_text('RSS main description','dbem_rss_main_description','The main description of your RSS events feed.');
+						dbem_options_input_text('RSS title format','dbem_rss_title_format','The format of the title of each item in the events RSS feed.');
+						dbem_options_input_text('RSS description format','dbem_rss_description_format','The format of the description of each item in the events RSS feed. Follow the previous formatting instructions.');
+						?>
 			</table> 
 			   
 			<h3><?php _e('Venues format', 'dbem');?></h3>   
@@ -402,7 +327,8 @@ function dbem_options_subpanel() {
 								<input name="dbem_mail_receiver_address" type="text" id="dbem_mail_receiver_address" style="width: 95%" value="<?php echo get_option('dbem_mail_receiver_address'); ?>" size="45" /><br />
 										<?php _e("Insert the address of the receiver of your notifications",'dbem')?>.
 							</td>
-						</tr>   
+						</tr>
+						   
 					</table>
 				
 				 	<h3><?php _e('Images size', 'dbem');?></h3>

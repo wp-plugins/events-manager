@@ -380,94 +380,30 @@ function dbem_migrate_old_events() {
 }
 
 function dbem_add_options() {
-	// Adding plugin options
-	$event_list_item_format = get_option('dbem_event_list_item_format');
-	if (empty($event_list_item_format))
-		update_option('dbem_event_list_item_format', DEFAULT_EVENT_LIST_ITEM_FORMAT); 
+	$dbem_options = array('dbem_event_list_item_format' => DEFAULT_EVENT_LIST_ITEM_FORMAT,
+	'dbem_single_event_format' => DEFAULT_SINGLE_EVENT_FORMAT,
+	'dbem_event_page_title_format' => DEFAULT_EVENT_PAGE_TITLE_FORMAT,
+	'dbem_list_events_page' => 0,   
+	'dbem_events_page_title' => DEFAULT_EVENTS_PAGE_TITLE,
+	'dbem_no_events_message' => __('No events','dbem'),
+	'dbem_venue_page_title_format' => DEFAULT_VENUE_PAGE_TITLE_FORMAT,
+	'dbem_single_venue_format' => DEFAULT_SINGLE_VENUE_FORMAT,
+	'dbem_map_text_format' => DEFAULT_MAP_TEXT_FORMAT,
+	'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events'),
+	'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events'),
+	'dbem_rss_description_format' => DEFAULT_RSS_DESCRIPTION_FORMAT,
+	'dbem_rss_title_format' => DEFAULT_RSS_TITLE_FORMAT,
+	'dbem_gmap_is_active'=>0,
+	'dbem_gmap_key' => '',
+	'dbem_rsvp_is_active' => 0,
+	'dbem_rsvp_mail_notify_is_active' => 0 ,
+	'dbem_image_max_width' => DEFAULT_IMAGE_MAX_WIDTH,
+	'dbem_image_max_height' => DEFAULT_IMAGE_MAX_HEIGHT,
+	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE,
+	'dbem_version' => 1);
 	
-	$single_event_format = get_option('dbem_single_event_format');
-	if (empty($single_event_format)) 
-		update_option('dbem_single_event_format', DEFAULT_SINGLE_EVENT_FORMAT);     
-	
-	$event_page_title_format = get_option('dbem_event_page_title_format');
-	if (empty($event_page_title_format)) 
-		update_option('dbem_event_page_title_format', DEFAULT_EVENT_PAGE_TITLE_FORMAT);     
-	
-	$list_events_page = get_option('dbem_list_events_page');
-	if (empty($list_events_page)) 
-		update_option('dbem_list_events_page', 0);   
-	
-	$events_page_title = get_option('dbem_events_page_title'); 
-	if (empty($events_page_title))
-		update_option('dbem_events_page_title', DEFAULT_EVENTS_PAGE_TITLE);
-	
-	$no_events_message = get_option('dbem_no_events_message'); 
-	if (empty($no_events_message))
-		update_option('dbem_no_events_message', __('No events','dbem'));
-	
-	$venue_page_title_format = get_option('dbem_venue_page_title_format');
-	if (empty($venue_page_title_format)) 
-		update_option('dbem_venue_page_title_format', DEFAULT_VENUE_PAGE_TITLE_FORMAT);
-	
-	$single_venue_format = get_option('dbem_single_venue_format');
-	if (empty($single_venue_format)) 
-		update_option('dbem_single_venue_format', DEFAULT_SINGLE_VENUE_FORMAT);
-	
-	$map_text_format = get_option('dbem_map_text_format');
-	if (empty($map_text_format)) 
-		update_option('dbem_map_text_format', DEFAULT_MAP_TEXT_FORMAT);   
-	
-	$rss_main_title = get_option('dbem_rss_main_title');
-	if (empty($rss_main_title)) {
-		$default_rss_main_title = get_bloginfo('title')." - ".__('Events');
-		update_option('dbem_rss_main_title', $default_rss_main_title);
-	}
-	
-	$rss_main_description = get_option('dbem_rss_main_description');
-	if (empty($rss_main_description)) { 
-		$default_rss_main_description = get_bloginfo('description')." - ".__('Events');
-		update_option('dbem_rss_main_description', $default_rss_main_description);
-	}
-	
-	$rss_description_format = get_option('dbem_rss_description_format');
-	if (empty($rss_description_format)) 
-		update_option('dbem_rss_description_format', DEFAULT_RSS_DESCRIPTION_FORMAT);   
-		
-	$rss_title_format = get_option('dbem_rss_title_format');
-	if (empty($rss_title_format)) 
-		update_option('dbem_rss_title_format', DEFAULT_RSS_TITLE_FORMAT);
-	
-	$gmap_is_active = get_option('dbem_gmap_is_active');
-	if(empty($gmap_is_active))
-		update_option('dbem_gmap_is_active', 0);       
-	
-	$gmap_key = get_option('dbem_gmap_key');
-	if (empty($gmap_key))
-		update_option('dbem_gmap_key', ''); 
-	
-	$rsvp_is_active = get_option('dbem_rsvp_is_active');
-	if (empty($rsvp_is_active))
-		update_option('dbem_rsvp_is_active', 0);
-	
-	$rsvp_mail_notify_is_active = get_option('dbem_rsvp_mail_notify_is_active');
-	if (empty($rsvp_mail_notify_is_active))
-		update_option('dbem_rsvp_mail_notify_is_active', 0);
-	
-	$image_max_width = get_option('dbem_image_max_width');
-	if (empty($image_max_width))
-		update_option('dbem_image_max_width', DEFAULT_IMAGE_MAX_WIDTH);
-	
-	$image_max_height = get_option('dbem_image_max_height');
-	if (empty($image_max_height))
-		update_option('dbem_image_max_height', DEFAULT_IMAGE_MAX_HEIGHT);
-		
-	$image_max_size = get_option('dbem_image_max_size');
-	if (empty($image_max_size))
-		update_option('dbem_image_max_size', DEFAULT_IMAGE_MAX_SIZE);
-	
-	$version = get_option('dbem_version');
-	if (empty($version))
-		update_option('dbem_version', 1);	
+	foreach($dbem_options as $key => $value)
+		dbem_add_option($key, $value);
 		
 }
 function dbem_add_option($key, $value) {
