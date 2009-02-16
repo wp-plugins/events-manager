@@ -435,13 +435,11 @@ function dbem_create_events_submenu () {
 	  if(function_exists('add_submenu_page')) {
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel, '../wp-content/plugins/events-manager/images/calendar-16.png');
 	   	add_submenu_page(__FILE__, __('Add new'), __('Add new'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page"); 
-	// Add a submenu to the custom top-level menu:                
-			add_submenu_page(__FILE__, "Locations", "Locations", MIN_CAPABILITY, 'locations', "dbem_locations_page");
-			add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
+		// Add a submenu to the custom top-level menu:                
+		add_submenu_page(__FILE__, "Locations", "Locations", MIN_CAPABILITY, 'locations', "dbem_locations_page");
+		add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
 		 // add_submenu_page(__FILE__, 'Test ', 'Test Sublevel', 8, 'locations', );
-	//   add_options_page('Events Manager','Events Manager',MIN_LEVEL,'eventmanager.php',dbem_options_subpanel);
-		 	//add_submenu_page(__FILE__, "TEST", "test", MIN_CAPABILITY, 'recurrence', "dbem_recurrence_test");
-			add_submenu_page(__FILE__, 'Events Manager Settings','Settings', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
+		add_submenu_page(__FILE__, 'Events Manager Settings','Settings', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
 		     
 		
 		
