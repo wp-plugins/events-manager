@@ -455,7 +455,7 @@ function dbem_events_page_content() {
 	if (isset($_REQUEST['venue_id']) && $_REQUEST['venue_id'] |= '') {
 		$venue= dbem_get_venue($_REQUEST['venue_id']);
 		$single_venue_format = get_option('dbem_single_venue_format');  
-		$page_body = dbem_replace_placeholders($single_venue_format, $venue);
+		$page_body = dbem_replace_venues_placeholders($single_venue_format, $venue);
 	  	return $page_body;
 	
 	}

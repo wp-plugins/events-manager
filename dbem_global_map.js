@@ -10,10 +10,6 @@ $j(document.body).unload(function() {
 
 $j(document).ready(function() {
 	loadMapScript(GMapsKey);
-	// $j.getJSON(document.URL,{ajax: 'true', query:'GMapKey'}, function(data){
-	// 	GMapsKey = data.GMapsKey;
-	// 	loadMapScript(GMapsKey);
-	// });
 });
 
 
@@ -21,7 +17,6 @@ $j(document).ready(function() {
 function loadGMap() {
 	if (GBrowserIsCompatible()) {
 
-		var geocoder = new GClientGeocoder();
 		var venues;
 		$j.getJSON(document.URL,{ajax: 'true', query:'GlobalMapData', eventful:eventful}, function(data){
 			venues = data.venues;    

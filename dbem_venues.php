@@ -482,18 +482,26 @@ function dbem_global_map($atts) {
 add_shortcode('venues_map', 'dbem_global_map'); 
 
 function dbem_replace_venues_placeholders($format, $venue, $target="html") {
-	
 	$venue_string = $format;
 	preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
 	foreach($placeholders[0] as $result) {    
 		// echo "RESULT: $result <br>";
 		// matches alla fields placeholder
 		if (preg_match('/#_MAP/', $result)) {
-		
 		 	$gmap_is_active = get_option('dbem_gmap_is_active'); 
+			$map_text = "ciaso";
 			if ($gmap_is_active) {  
-		 
-			   $map_div = "<div id='venue-map' style=' background: green; width: 200px; height: 100px'></div>" ;
+		 	   $gmaps_key = get_option('dbem_gmap_key');
+			   $map_div = "<div id='dbem-venue-map' style=' background: green; width: 400px; height: 300px'></div>" ;
+			   $map_div .= "<script type='text/javascript'>
+			  	<!--// 
+			  latitude = parseFloat('".$venue['venue_latitude']."');
+			  longitude = parseFloat('".$venue['venue_longitude']."');
+			  GMapsKey = '$gmaps_key';
+			  map_text = '$map_text';
+				//-->
+			</script>";
+			$map_div .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_single_venue_map.js' type='text/javascript'></script>";
 			} else {
 				$map_div = "";
 			}

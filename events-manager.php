@@ -470,7 +470,12 @@ function dbem_add_options() {
 		update_option('dbem_version', 1);	
 		
 }
-      
+function dbem_add_option($key, $value) {
+	$option = get_option($key);
+	if (empty($option))
+		update_option($key, $value);
+}      
+
 function dbem_create_events_page(){
 	echo "inserimento pagina";
 	global $wpdb,$current_user;
