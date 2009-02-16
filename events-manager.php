@@ -54,6 +54,7 @@ define('DEFAULT_SINGLE_VENUE_FORMAT', '<p>#_ADDRESS</p><p>#_TOWN</p>');
 define('DEFAULT_VENUE_PAGE_TITLE_FORMAT', '	#_NAME'); 
 define('DEFAULT_VENUE_BALOON_FORMAT', '<strong>#_NAME</strong><p>#_ADDRESS</p><p>#_TOWN</p>' );
 define('DEFAULT_VENUE_EVENT_LIST_ITEM_FORMAT', "<li>#_NAME - #j #M #Y - #H:#i</li>");
+define('DEFAULT_VENUE_NO_EVENTS_MESSAGE', __('<li>No events in this venue</li>', 'dbem'));
 define("IMAGE_UPLOAD_DIR", "wp-content/uploads/venues-pics");
 define('DEFAULT_IMAGE_MAX_WIDTH', 700);  
 define('DEFAULT_IMAGE_MAX_HEIGHT', 700);  
@@ -391,6 +392,7 @@ function dbem_add_options() {
 	'dbem_venue_page_title_format' => DEFAULT_VENUE_PAGE_TITLE_FORMAT,
 	'dbem_venue_baloon_format' => DEFAULT_VENUE_BALOON_FORMAT,
 	'dbem_venue_event_list_item_format' => DEFAULT_VENUE_EVENT_LIST_ITEM_FORMAT,
+	'dbem_venue_no_events_message' => DEFAULT_VENUE_NO_EVENTS_MESSAGE,
 	'dbem_single_venue_format' => DEFAULT_SINGLE_VENUE_FORMAT,
 	'dbem_map_text_format' => DEFAULT_MAP_TEXT_FORMAT,
 	'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events'),

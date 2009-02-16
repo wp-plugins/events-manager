@@ -566,7 +566,11 @@ function dbem_single_venue_map($venue) {
 function dbem_events_in_venue_list($venue, $scope = "") {
 	$events = dbem_get_events("",$scope,"","",$venue['venue_id']);
 	$list = "";
-	foreach($events as $event)
-		$list .= dbem_replace_placeholders(get_option('dbem_venue_event_list_item_format'), $event);
+	if (count($events) > 0) {
+		foreach($events as $event)
+			$list .= dbem_replace_placeholders(get_option('dbem_venue_event_list_item_format'), $event);
+	} else {
+		$list = get_option('dbem_venue_no_events_message');
+	}
 	return $list;
 }
