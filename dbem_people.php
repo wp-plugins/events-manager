@@ -35,6 +35,7 @@ function dbem_ajax_actions() {
 		dbem_global_map_json($_GET['eventful']);		
 	 	die();   
  	}
+
    
 }   
 

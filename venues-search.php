@@ -4,23 +4,30 @@ $venues = dbem_get_venues();
 $items = array();       
 
 foreach($venues as $item) {
-  $record = array();
-  $record['id']      = $item->venue_id;
-  $record['name']    = $item->venue_name; 
+  	$record = array();
+  	$record['id']      = $item->venue_id;
+  	$record['name']    = $item->venue_name; 
 	$record['address'] = $item->venue_address;   
 	$record['town']    = $item->venue_town; 
-  $return[]  = $record;
+  	$return[]  = $record;
 }
 
 $q = strtolower($_GET["q"]);
 if (!$q) return;
 
 foreach($return as $row) {
-    if (strpos(strtolower($row['name']), $q) !== false) { 
-			echo json_encode($row);
-    	echo "\n";
+	if (strpos(strtolower($row['name']), $q) !== false) { 
+		$venue = array();
+		$rows =array();
+		foreach($row as $key => $value)
+			$venue[] = "'$key' : '$value'";
+		echo ("{".implode(" , ", $venue)." }\n");	    
 		}
-}
+		
+	}
+
+
+
 
 // 
 // foreach ($venues as $venue) {
