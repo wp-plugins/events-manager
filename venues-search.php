@@ -1,14 +1,14 @@
 <?php   
 require_once('../../../wp-load.php');
-$venues = dbem_get_venues();        
+$locations = dbem_get_locations();        
 $items = array();       
 
-foreach($venues as $item) {
+foreach($locations as $item) {
   	$record = array();
-  	$record['id']      = $item->venue_id;
-  	$record['name']    = $item->venue_name; 
-	$record['address'] = $item->venue_address;   
-	$record['town']    = $item->venue_town; 
+  	$record['id']      = $item->location_id;
+  	$record['name']    = $item->location_name; 
+	$record['address'] = $item->location_address;   
+	$record['town']    = $item->location_town; 
   	$return[]  = $record;
 }
 
@@ -17,32 +17,12 @@ if (!$q) return;
 
 foreach($return as $row) {
 	if (strpos(strtolower($row['name']), $q) !== false) { 
-		$venue = array();
+		$location = array();
 		$rows =array();
 		foreach($row as $key => $value)
-			$venue[] = "'$key' : '$value'";
-		echo ("{".implode(" , ", $venue)." }\n");	    
+			$location[] = "'$key' : '$value'";
+		echo ("{".implode(" , ", $location)." }\n");	    
 		}
 		
 	}
-
-
-
-
-// 
-// foreach ($venues as $venue) {
-// // echo $venue->venue_name."<br/>".$venue->venue_address."|".$venue->venue_id."\n"; 
-//   // using <span>-</span> to avoid eventual conflicts with names with dashes in them
-// 	$items[$venue->venue_name."<br/><small>".$venue->venue_address." <span>-</span> ".$venue->venue_town."</small>"]= $venue->venue_name;
-// }   
-// 
-
-// 
-// foreach ($items as $key=>$value) {
-// 	if (strpos(strtolower($key), $q) !== false) {
-// 		echo "$key|$value\n";
-// 	}
-// }
-
-
 ?>

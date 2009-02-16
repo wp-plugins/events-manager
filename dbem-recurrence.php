@@ -161,7 +161,7 @@ function dbem_insert_events_for_recurrence($recurrence) {
 		$new_event['event_end_time'] = $recurrence['recurrence_end_time'];   
 		$new_event['event_rsvp'] = $recurrence['recurrence_rsvp'];
 		$new_event['event_seats'] = $recurrence['recurrence_seats'];
-		$new_event['venue_id'] = $recurrence['venue_id'];
+		$new_event['location_id'] = $recurrence['location_id'];
 		$new_event['recurrence_id'] = $recurrence['recurrence_id'];
 		$new_event['event_start_date'] = date("Y-m-d", $day); 
 		//print_r($new_event);
@@ -200,10 +200,10 @@ function dbem_get_recurrence($recurrence_id) {
 					  		DATE_FORMAT(recurrence_end_time, '%i') AS 'recurrence_end_mm' 	
 	       FROM $recurrence_table WHERE recurrence_id = $recurrence_id;";
 	$recurrence = $wpdb->get_row($sql, ARRAY_A);                       
-	$venue = dbem_get_venue($recurrence['venue_id']);
-	$recurrence['venue_name'] = $venue['venue_name'];
-	$recurrence['venue_address'] = $venue['venue_address'];
-	$recurrence['venue_town'] = $venue['venue_town'];
+	$location = dbem_get_location($recurrence['location_id']);
+	$recurrence['location_name'] = $location['location_name'];
+	$recurrence['location_address'] = $location['location_address'];
+	$recurrence['location_town'] = $location['location_town'];
 	$recurrence['recurrence_description'] = dbem_build_recurrence_description($recurrence);
 	return $recurrence;
 }

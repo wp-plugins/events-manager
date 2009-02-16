@@ -3,7 +3,7 @@
 Plugin Name: Events Manager
 Version: 2.0pb
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
-Description: Manage events specifying precise spatial data (Venue, Town, Province, etc).
+Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini
 Author URI: http://www.davidebenini.it/blog
 */
@@ -31,7 +31,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 // Setting constants
 define('EVENTS_TBNAME','dbem_events'); //TABLE NAME
 define('RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME   
-define('VENUES_TBNAME','dbem_venues'); //TABLE NAME  
+define('LOCATIONS_TBNAME','dbem_locations'); //TABLE NAME  
 define('BOOKINGS_TBNAME','dbem_bookings'); //TABLE NAME
 define('PEOPLE_TBNAME','dbem_people'); //TABLE NAME  
 define('BOOKING_PEOPLE_TBNAME','dbem_bookings_people'); //TABLE NAME  
@@ -44,18 +44,18 @@ define('DEFAULT_EVENT_LIST_ITEM_FORMAT', '<li>#j #M #Y - #H:#i<br/> #_LINKEDNAME
 define('DEFAULT_SINGLE_EVENT_FORMAT', '<p>#j #M #Y - #H:#i</p><p>#_TOWN</p>'); 
 define('DEFAULT_EVENTS_PAGE_TITLE',__('Events','dbem') ) ;
 define('DEFAULT_EVENT_PAGE_TITLE_FORMAT', '	#_NAME'); 
-define('DEFAULT_RSS_DESCRIPTION_FORMAT',"#j #M #y - #H:#i <br/>#_VENUE <br/>#_ADDRESS <br/>#_TOWN");
+define('DEFAULT_RSS_DESCRIPTION_FORMAT',"#j #M #y - #H:#i <br/>#_LOCATION <br/>#_ADDRESS <br/>#_TOWN");
 define('DEFAULT_RSS_TITLE_FORMAT',"#_NAME");
-define('DEFAULT_MAP_TEXT_FORMAT', '<strong>#_VENUE</strong><p>#_ADDRESS</p><p>#_TOWN</p>');     
+define('DEFAULT_MAP_TEXT_FORMAT', '<strong>#_LOCATION</strong><p>#_ADDRESS</p><p>#_TOWN</p>');     
 define('DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT','<li>#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul></li>');
 define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));  
 
-define('DEFAULT_SINGLE_VENUE_FORMAT', '<p>#_ADDRESS</p><p>#_TOWN</p>'); 
-define('DEFAULT_VENUE_PAGE_TITLE_FORMAT', '	#_NAME'); 
-define('DEFAULT_VENUE_BALOON_FORMAT', '<strong>#_NAME</strong><p>#_ADDRESS</p><p>#_TOWN</p>' );
-define('DEFAULT_VENUE_EVENT_LIST_ITEM_FORMAT', "<li>#_NAME - #j #M #Y - #H:#i</li>");
-define('DEFAULT_VENUE_NO_EVENTS_MESSAGE', __('<li>No events in this venue</li>', 'dbem'));
-define("IMAGE_UPLOAD_DIR", "wp-content/uploads/venues-pics");
+define('DEFAULT_SINGLE_LOCATION_FORMAT', '<p>#_ADDRESS</p><p>#_TOWN</p>'); 
+define('DEFAULT_LOCATION_PAGE_TITLE_FORMAT', '	#_NAME'); 
+define('DEFAULT_LOCATION_BALOON_FORMAT', '<strong>#_NAME</strong><p>#_ADDRESS</p><p>#_TOWN</p>' );
+define('DEFAULT_LOCATION_EVENT_LIST_ITEM_FORMAT', "<li>#_NAME - #j #M #Y - #H:#i</li>");
+define('DEFAULT_LOCATION_NO_EVENTS_MESSAGE', __('<li>No events in this location</li>', 'dbem'));
+define("IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
 define('DEFAULT_IMAGE_MAX_WIDTH', 700);  
 define('DEFAULT_IMAGE_MAX_HEIGHT', 700);  
 define('DEFAULT_IMAGE_MAX_SIZE', 204800);  
@@ -76,9 +76,9 @@ define('DEBUG', false);
 include("dbem_events.php");
 include("dbem_calendar.php");      
 include("dbem_widgets.php");
-include("dbem_venues_autocomplete.php"); 
+include("dbem_locations_autocomplete.php"); 
 include("dbem_rsvp.php");     
-include("dbem_venues.php"); 
+include("dbem_locations.php"); 
 include("dbem_people.php");
 include("dbem-recurrence.php");    
 include("dbem_UI_helpers.php");
@@ -129,7 +129,7 @@ function dbem_install() {
  	// Creates the events table if necessary
 	dbem_create_events_table();
 	dbem_create_recurrence_table();  
-	dbem_create_venues_table();
+	dbem_create_locations_table();
   dbem_create_bookings_table();
   dbem_create_people_table();
 	dbem_add_options();
@@ -191,7 +191,7 @@ function dbem_create_events_table() {
 			event_notes text NOT NULL,
 			event_rsvp bool NOT NULL DEFAULT 0,
 			event_seats tinyint,  
-			venue_id mediumint(9) NOT NULL,
+			location_id mediumint(9) NOT NULL,
 			recurrence_id mediumint(9) NULL,
 			UNIQUE KEY (event_id)
 			);";
@@ -215,11 +215,11 @@ function dbem_create_events_table() {
 		$in_four_weeks = strftime('%Y-%m-%d',mktime($hours,$minutes,$seconds,$month,$day+28,$year)); 
 		$in_one_year = strftime('%Y-%m-%d',mktime($hours,$minutes,$seconds,$month,$day,$year+1)); 
 		
-		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, venue_id)
+		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id)
 				VALUES ('Monster gig', '$in_one_week', '16:00:00', '18:00:00', 1)");
-		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, venue_id)
+		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id)
 				VALUES ('Fiesta Mexicana', '$in_four_weeks', '20:00:00', '22:00:00', 2)");
-	  $wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, venue_id)
+	  $wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id)
 					VALUES ('Gladiators fight', '$in_one_year','22:00:00', '24:00:00', 2)");
 	} else {  
 		// eventual maybe_add_column() for later versions
@@ -229,7 +229,7 @@ function dbem_create_events_table() {
 		maybe_add_column($table_name, 'event_end_time', "alter table $table_name add event_end_time time NOT NULL;"); 
 		maybe_add_column($table_name, 'event_rsvp', "alter table $table_name add event_rsvp BOOL NOT NULL;");
 		maybe_add_column($table_name, 'event_seats', "alter table $table_name add event_seats tinyint NULL;"); 
-		maybe_add_column($table_name, 'venue_id', "alter table $table_name add venue_id mediumint(9) NOT NULL;");    
+		maybe_add_column($table_name, 'location_id', "alter table $table_name add location_id mediumint(9) NOT NULL;");    
 		maybe_add_column($table_name, 'recurrence_id', "alter table $table_name add recurrence_id mediumint(9) NULL;");  
 	}
 }
@@ -249,7 +249,7 @@ function dbem_create_recurrence_table() {
 			recurrence_start_time time NOT NULL,
 			recurrence_end_time time NOT NULL,
 			recurrence_notes text NOT NULL,
-			venue_id mediumint(9) NOT NULL,
+			location_id mediumint(9) NOT NULL,
 			recurrence_interval tinyint NOT NULL, 
 			recurrence_freq tinytext NOT NULL,
 			recurrence_byday tinyint NOT NULL,
@@ -262,10 +262,10 @@ function dbem_create_recurrence_table() {
 	}
 }
 
-function dbem_create_venues_table() {
+function dbem_create_locations_table() {
 	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.VENUES_TBNAME;
+	$table_name = $wpdb->prefix.LOCATIONS_TBNAME;
 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
 		
@@ -275,30 +275,30 @@ function dbem_create_venues_table() {
 
 		// Creating the events table
 		$sql = "CREATE TABLE ".$table_name." (
-			venue_id mediumint(9) NOT NULL AUTO_INCREMENT,
-			venue_name tinytext NOT NULL,
-			venue_address tinytext NOT NULL,
-			venue_town tinytext NOT NULL,
-			venue_province tinytext,
-			venue_latitude float DEFAULT NULL,
-			venue_longitude float DEFAULT NULL,
-			venue_description DEFAULT NULL,
-			UNIQUE KEY (venue_id)
+			location_id mediumint(9) NOT NULL AUTO_INCREMENT,
+			location_name tinytext NOT NULL,
+			location_address tinytext NOT NULL,
+			location_town tinytext NOT NULL,
+			location_province tinytext,
+			location_latitude float DEFAULT NULL,
+			location_longitude float DEFAULT NULL,
+			location_description DEFAULT NULL,
+			UNIQUE KEY (location_id)
 			);";
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
 		
-		$wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
 					VALUES ('Arena', 'Piazza Bra','Verona')");
-      $wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+      $wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
 							VALUES ('Hardrock Cafe', '1501 Broadway','New York')");
-		$wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
 				VALUES ('Wembley Stadium', 'Wembley','London')");
-		$wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
 					VALUES ('Harp Pub', 'Via Cantarane','Verona')");
-      $wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+      $wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
 							VALUES ('Silverstar Pub', 'Via Bentegodi','Verona')");
-		$wpdb->query("INSERT INTO ".$table_name." (venue_name, venue_address, venue_town)
+		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
 				VALUES ('Hartigan pub', 'Vicolo cieco disciplina','Verona')");		
 	}
 }
@@ -350,21 +350,21 @@ function dbem_migrate_old_events() {
 		global $wpdb;  
 		
 		$events_table = $wpdb->prefix.EVENTS_TBNAME;
-		$sql = "SELECT event_id, event_time, event_venue, event_address, event_town FROM $events_table";
+		$sql = "SELECT event_id, event_time, event_location, event_address, event_town FROM $events_table";
 		echo $sql;
 		$events = $wpdb->get_results($sql, ARRAY_A);
 		foreach($events as $event) {
 
-			// Migrating venue data to the venue table
-			$venue = array('venue_name' => $event['event_venue'], 'venue_address' => $event['event_address'], 'venue_town' => $event['event_town']);
-			$related_venue = dbem_get_identical_venue($venue); 
+			// Migrating location data to the location table
+			$location = array('location_name' => $event['event_location'], 'location_address' => $event['event_address'], 'location_town' => $event['event_town']);
+			$related_location = dbem_get_identical_location($location); 
 				 
-				if ($related_venue)  {
-					$event['venue_id'] = $related_venue['venue_id'];     
+				if ($related_location)  {
+					$event['location_id'] = $related_location['location_id'];     
 				}
 				else {
-			   	$new_venue = dbem_insert_venue($venue);
-				  $event['venue_id']= $new_venue['venue_id'];
+			   	$new_location = dbem_insert_location($location);
+				  $event['location_id']= $new_location['location_id'];
 				}                                 
 		 		// migrating event_time to event_start_date and event_start_time
 				$event['event_start_date'] = substr($event['event_time'],0,10); 
@@ -389,11 +389,11 @@ function dbem_add_options() {
 	'dbem_list_events_page' => 0,   
 	'dbem_events_page_title' => DEFAULT_EVENTS_PAGE_TITLE,
 	'dbem_no_events_message' => __('No events','dbem'),
-	'dbem_venue_page_title_format' => DEFAULT_VENUE_PAGE_TITLE_FORMAT,
-	'dbem_venue_baloon_format' => DEFAULT_VENUE_BALOON_FORMAT,
-	'dbem_venue_event_list_item_format' => DEFAULT_VENUE_EVENT_LIST_ITEM_FORMAT,
-	'dbem_venue_no_events_message' => DEFAULT_VENUE_NO_EVENTS_MESSAGE,
-	'dbem_single_venue_format' => DEFAULT_SINGLE_VENUE_FORMAT,
+	'dbem_location_page_title_format' => DEFAULT_LOCATION_PAGE_TITLE_FORMAT,
+	'dbem_location_baloon_format' => DEFAULT_LOCATION_BALOON_FORMAT,
+	'dbem_location_event_list_item_format' => DEFAULT_LOCATION_EVENT_LIST_ITEM_FORMAT,
+	'dbem_location_no_events_message' => DEFAULT_LOCATION_NO_EVENTS_MESSAGE,
+	'dbem_single_location_format' => DEFAULT_SINGLE_LOCATION_FORMAT,
 	'dbem_map_text_format' => DEFAULT_MAP_TEXT_FORMAT,
 	'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events'),
 	'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events'),
@@ -436,9 +436,9 @@ function dbem_create_events_submenu () {
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel, '../wp-content/plugins/events-manager/images/calendar-16.png');
 	   	add_submenu_page(__FILE__, __('Add new'), __('Add new'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page"); 
 	// Add a submenu to the custom top-level menu:                
-			add_submenu_page(__FILE__, "Venues", "Venues", MIN_CAPABILITY, 'venues', "dbem_venues_page");
+			add_submenu_page(__FILE__, "Locations", "Locations", MIN_CAPABILITY, 'locations', "dbem_locations_page");
 			add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
-		 // add_submenu_page(__FILE__, 'Test ', 'Test Sublevel', 8, 'venues', );
+		 // add_submenu_page(__FILE__, 'Test ', 'Test Sublevel', 8, 'locations', );
 	//   add_options_page('Events Manager','Events Manager',MIN_LEVEL,'eventmanager.php',dbem_options_subpanel);
 		 	//add_submenu_page(__FILE__, "TEST", "test", MIN_CAPABILITY, 'recurrence', "dbem_recurrence_test");
 			add_submenu_page(__FILE__, 'Events Manager Settings','Settings', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
@@ -457,8 +457,8 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		// echo "RESULT: $result <br>";
 		// matches alla fields placeholder
 		if (preg_match('/#_MAP/', $result)) {
-			$venue = dbem_get_venue($event['venue_id']);
-			$map_div = dbem_single_venue_map($venue);
+			$location = dbem_get_location($event['location_id']);
+			$map_div = dbem_single_location_map($location);
 		  	$event_string = str_replace($result, $map_div , $event_string ); 
 		 
 		}
@@ -529,7 +529,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 	 	}  
 	  
 		if (preg_match('/#_(ADDRESS|TOWN|PROVINCE)/', $result)) {
-			$field = "venue_".ltrim(strtolower($result), "#_");
+			$field = "location_".ltrim(strtolower($result), "#_");
 		 	$field_value = $event[$field];      
 		
 			if ($field == "event_notes") {
@@ -549,8 +549,8 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			$event_string = str_replace($result, $field_value , $event_string ); 
 	 	}
 	  
-		if (preg_match('/#_(VENUE)/', $result)) {
-			$field = "venue_name";
+		if (preg_match('/#_(LOCATION)/', $result)) {
+			$field = "location_name";
 		 	$field_value = $event[$field];     
 			if ($target == "html")    
 					$field_value = apply_filters('dbem_general', $field_value); 
@@ -563,11 +563,11 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			
 		if (preg_match('/#_(IMAGE)/', $result)) {
 				
-        if($event['venue_image_url'] != '')
-				  $venue_image = "<img src='".$event['venue_image_url']."' alt='".$event['venue_name']."'/>";
+        if($event['location_image_url'] != '')
+				  $location_image = "<img src='".$event['location_image_url']."' alt='".$event['location_name']."'/>";
 				else
-					$venue_image = "";
-				$event_string = str_replace($result, $venue_image , $event_string ); 
+					$location_image = "";
+				$event_string = str_replace($result, $location_image , $event_string ); 
 		 	}
 	
 		// matches all PHP time placeholders for endtime

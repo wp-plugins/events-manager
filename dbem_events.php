@@ -46,7 +46,7 @@ function dbem_events_subpanel() {
 	if ($action == 'update_event' || $action == 'update_recurrence') {
 
 		$event = array();   
-		$venue = array();                        
+		$location = array();                        
 		
 		$event['event_name']=$_POST[event_name]; 
 		// Set event end time to event time if not valid
@@ -76,9 +76,9 @@ function dbem_events_subpanel() {
 		if(!_dbem_is_time_valid($event_end_time))
 	 		$event_end_time = $event_time;
 		
-		$venue['venue_name']=$_POST[venue_name];
-		$venue['venue_address']=$_POST[venue_address];
-		$venue['venue_town']=$_POST[venue_town];
+		$location['location_name']=$_POST[location_name];
+		$location['location_address']=$_POST[location_address];
+		$location['location_town']=$_POST[location_town];
 		$event['event_notes']=$_POST[event_notes];
 		$recurrence['recurrence_notes']=$_POST[event_notes]; 
 		$validation_result = dbem_validate_event($event);
@@ -86,15 +86,15 @@ function dbem_events_subpanel() {
 		
 		if (true) { //RESETME( $validation_result == "OK") { 
 			// validation successful
-			$related_venue = dbem_get_identical_venue($venue); 
-			//print_r($related_venue); 
-			if ($related_venue)  {
-				$event['venue_id'] = $related_venue['venue_id'];
-				$recurrence['venue_id'] = $related_venue['venue_id'];      
+			$related_location = dbem_get_identical_location($location); 
+			//print_r($related_location); 
+			if ($related_location)  {
+				$event['location_id'] = $related_location['location_id'];
+				$recurrence['location_id'] = $related_location['location_id'];      
 			}
 			else {
-				$new_venue = dbem_insert_venue($venue);
-				$event['venue_id']= $new_venue['venue_id'];
+				$new_location = dbem_insert_location($location);
+				$event['location_id']= $new_location['location_id'];
 			}     
 			   			 		
 		  if(!$event_ID && !$recurrence_ID ) {
@@ -220,7 +220,7 @@ function dbem_options_subpanel() {
         <h3><?php _e('Events format', 'dbem');?></h3>   
 				<table class="form-table">
  						<?php
-						dbem_options_textarea('Default event list format', 'dbem_event_list_item_format', 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_VENUE</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page. Use #_URL to print the event URL and make your own customised links. To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a # symbol before them, i.e. #m. #M, #j, etc.  Use HTML tags as <code>li</code>, <code>br</code>, etc.');
+						dbem_options_textarea('Default event list format', 'dbem_event_list_item_format', 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page. Use #_URL to print the event URL and make your own customised links. To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a # symbol before them, i.e. #m. #M, #j, etc.  Use HTML tags as <code>li</code>, <code>br</code>, etc.');
 						dbem_options_input_text('Single event page title format', 'dbem_event_page_title_format', 'The format of a single event page title. Follow the previous formatting instructions.');
 						dbem_options_textarea('Default single event format','dbem_single_event_format','The format of a single eventy page.<br/>Follow the previous formatting instructions. Use <code>#_MAP</code> to insert a map.');
 						dbem_options_radio_binary('Show events page in lists?', 'dbem_list_events_page', 'Check this option if you want the events page to appear together with other pages in pages lists.');
@@ -233,27 +233,27 @@ function dbem_options_subpanel() {
 						?>
 			</table> 
 			   
-			<h3><?php _e('Venues format', 'dbem');?></h3>   
+			<h3><?php _e('Locations format', 'dbem');?></h3>   
 				<table class="form-table">
 						<tr valign="top">
-							<th scope="row"><?php _e('Single venue page title format','dbem');?></th>
+							<th scope="row"><?php _e('Single location page title format','dbem');?></th>
 							<td>
-								<input name="dbem_venue_page_title_format" type="text" id="dbem_venue_page_title_format" style="width: 95%" value="<?php echo get_option('dbem_venue_page_title_format'); ?>" size="45" /><br />
-								<?php _e('The format of a single venue page title.','dbem')?><br/>
+								<input name="dbem_location_page_title_format" type="text" id="dbem_location_page_title_format" style="width: 95%" value="<?php echo get_option('dbem_location_page_title_format'); ?>" size="45" /><br />
+								<?php _e('The format of a single location page title.','dbem')?><br/>
 								<?php _e('Follow the previous formatting instructions.','dbem')?>
 							</td>
 						</tr>
 						<tr valign="top">
-							<th scope="row"><?php _e('Default single venue page format','dbem')?></th>
-							<td><textarea name="dbem_single_venue_format" id="dbem_single_venue_format" rows="6" cols="60"><?php echo (get_option('dbem_single_venue_format'));?></textarea><br/>
-								<?php _e('The format of a single venue page.','dbem')?><br/>
-								<?php _e('Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_INFO</code>. Use <code>#_NEXTEVENTS</code> to insert a list of the upcoming events, <code>#_PASTEVENTS</code> for a list of past events, <code>#_ALLEVENTS</code> for a list of all events taking place in tis venue','dbem')?><br/>  
+							<th scope="row"><?php _e('Default single location page format','dbem')?></th>
+							<td><textarea name="dbem_single_location_format" id="dbem_single_location_format" rows="6" cols="60"><?php echo (get_option('dbem_single_location_format'));?></textarea><br/>
+								<?php _e('The format of a single location page.','dbem')?><br/>
+								<?php _e('Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code>. Use <code>#_NEXTEVENTS</code> to insert a list of the upcoming events, <code>#_PASTEVENTS</code> for a list of past events, <code>#_ALLEVENTS</code> for a list of all events taking place in tis location','dbem')?><br/>  
 								<?php _e('Use HTML tags as <code>li</code>, <code>br</code>, etc.','dbem')?></td>
 						</tr>
 						<?php 	
-						dbem_options_textarea('Default venue baloon format', 'dbem_venue_baloon_format', 'The format of of the text appearing in the baloon describing the venue in the map.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_INFO</code>.');
-						dbem_options_textarea('Default venue event list format', 'dbem_venue_event_list_item_format', 'The format of the events the list inserted in the venue page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element.');
-						dbem_options_textarea('Default no events message', 'dbem_venue_no_events_message', 'The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available.');
+						dbem_options_textarea('Default location baloon format', 'dbem_location_baloon_format', 'The format of of the text appearing in the baloon describing the location in the map.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code>.');
+						dbem_options_textarea('Default location event list format', 'dbem_location_event_list_item_format', 'The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element.');
+						dbem_options_textarea('Default no events message', 'dbem_location_no_events_message', 'The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available.');
 						
 						?>
 					</table>
@@ -368,7 +368,7 @@ function dbem_options_subpanel() {
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_venue_page_title_format, dbem_venue_baloon_format, dbem_single_venue_format, dbem_venue_event_list_item_format, dbem_venue_no_events_message, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_is_active, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
+				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_location_page_title_format, dbem_location_baloon_format, dbem_single_location_format, dbem_location_event_list_item_format, dbem_location_no_events_message, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_is_active, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
 				
 				
 			</form>
@@ -384,11 +384,12 @@ function dbem_options_subpanel() {
 //This is the content of the event page
 function dbem_events_page_content() {
 	global $wpdb;
-	if (isset($_REQUEST['venue_id']) && $_REQUEST['venue_id'] |= '') {
-		$venue= dbem_get_venue($_REQUEST['venue_id']);
-		$single_venue_format = get_option('dbem_single_venue_format');  
-		$page_body = dbem_replace_venues_placeholders($single_venue_format, $venue);
-	  	return $page_body;
+	if (isset($_REQUEST['location_id']) && $_REQUEST['location_id'] |= '') {
+		
+		$location= dbem_get_location($_REQUEST['location_id']);
+		$single_location_format = get_option('dbem_single_location_format');  
+		$page_body = dbem_replace_locations_placeholders($single_location_format, $location);
+		return $page_body;
 	
 	}
 	if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
@@ -457,10 +458,10 @@ function dbem_events_page_title($data) {
 
 
 	if (($data == $events_page_title) && (is_page($events_page_id))) {
-		if (isset($_REQUEST['venue_id']) && $_REQUEST['venue_id'] |= '') {
-			$venue= dbem_get_venue($_REQUEST['venue_id']);
-			$stored_page_title_format = get_option('dbem_venue_page_title_format');
-			$page_title = dbem_replace_venues_placeholders($stored_page_title_format, $venue);
+		if (isset($_REQUEST['location_id']) && $_REQUEST['location_id'] |= '') {
+			$location= dbem_get_location($_REQUEST['location_id']);
+			$stored_page_title_format = get_option('dbem_location_page_title_format');
+			$page_title = dbem_replace_locations_placeholders($stored_page_title_format, $location);
 			return $page_title;
 		}
 	   	if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
@@ -629,7 +630,7 @@ function dbem_is_multiple_events_page() {
 
 
 // main function querying the database event table
-function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="", $venue_id = "") {
+function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="", $location_id = "") {
 	global $wpdb;   
 	
  	$events_table = $wpdb->prefix.EVENTS_TBNAME;
@@ -662,8 +663,8 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="", $ve
 			$conditions[] = " event_start_date < '$today'" ;
 	}
  	
-	if($venue_id != "")
-		$conditions[] = " venue_id = $venue_id";
+	if($location_id != "")
+		$conditions[] = " location_id = $location_id";
  	
 	$where = implode(" AND ", $conditions);
 	if ($where != "")
@@ -686,7 +687,7 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="", $ve
 	 				event_notes, 
 					event_rsvp,
 					recurrence_id, 
-					venue_id 
+					location_id 
 					FROM $events_table   
 					$where
 					ORDER BY event_start_date $order
@@ -700,10 +701,10 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="", $ve
 		$inflated_events = array();
 		foreach($events as $this_event) {
 		
-			$this_venue = dbem_get_venue($this_event['venue_id']);
-			$this_event['venue_name'] = $this_venue['venue_name'];
-			$this_event['venue_address'] = $this_venue['venue_address'];
-			$this_event['venue_town'] = $this_venue['venue_town'];
+			$this_location = dbem_get_location($this_event['location_id']);
+			$this_event['location_name'] = $this_location['location_name'];
+			$this_event['location_address'] = $this_location['location_address'];
+			$this_event['location_town'] = $this_location['location_town'];
 			array_push($inflated_events, $this_event);
 		}
 	  
@@ -737,18 +738,18 @@ function dbem_get_event($event_id) {
 					event_rsvp,
 					event_seats,
 					recurrence_id, 
-					venue_id
+					location_id
 				FROM $events_table   
 			    WHERE event_id = $event_id";   
 	     
 	//$wpdb->show_errors(true);
 	$event = $wpdb->get_row($sql,ARRAY_A);	
 	//$wpdb->print_error();
-	$venue = dbem_get_venue($event['venue_id']); 
-	$event['venue_name'] = $venue['venue_name'];
-	$event['venue_address'] = $venue['venue_address'];
-	$event['venue_town'] = $venue['venue_town'];   
-	$event['venue_image_url'] = $venue['venue_image_url'];
+	$location = dbem_get_location($event['location_id']); 
+	$event['location_name'] = $location['location_name'];
+	$event['location_address'] = $location['location_address'];
+	$event['location_town'] = $location['location_town'];   
+	$event['location_image_url'] = $location['location_image_url'];
 	return $event;
 }        
 
@@ -830,7 +831,7 @@ function dbem_events_table($events, $limit, $title) {
 			<tr>
   				<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>
   	  		<th><?php _e('Name', 'dbem');?></th>
-  	   		<th><?php _e('Venue', 'dbem');?></th>
+  	   		<th><?php _e('Location', 'dbem');?></th>
   	   	 
   	  
 				<th colspan="2"><?php _e('Date and time', 'dbem');?></th>
@@ -849,7 +850,7 @@ function dbem_events_table($events, $limit, $title) {
   			$style = "";
   		 	$today = date("Y-m-d");
  
-			  $venue_summary = "<b>".$event['venue_name']."</b><br/>".$event['venue_address']." - ".$event['venue_town'];
+			  $location_summary = "<b>".$event['location_name']."</b><br/>".$event['location_address']." - ".$event['location_town'];
 				
 			  
 				if ($event['event_start_date'] < $today )
@@ -865,7 +866,7 @@ function dbem_events_table($events, $limit, $title) {
   	   </td>
   	   <td>
   	 
-				 <?php echo $venue_summary; ?>
+				 <?php echo $location_summary; ?>
 				
   	   </td>
   	  
@@ -1123,24 +1124,24 @@ function dbem_event_form($event, $title, $element) {
 				echo "<div id='event-map' style='width: 450px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";   
 			}
 				?>
-				<div id="venue_name" class="stuffbox">
-					<h3><?php _e('Venue','dbem'); ?></h3>
+				<div id="location_name" class="stuffbox">
+					<h3><?php _e('Location','dbem'); ?></h3>
 					<div class="inside">
-						<input id="venue-name" type="text" name="venue_name" value="<?php echo $event['venue_name']?>" /><br/>
-						<?php _e('The venue where the event takes place. Example: Arena', 'dbem') ?>
+						<input id="location-name" type="text" name="location_name" value="<?php echo $event['location_name']?>" /><br/>
+						<?php _e('The location where the event takes place. Example: Arena', 'dbem') ?>
 					</div>
 				</div>
-				<div id="venue_address" class="stuffbox">
+				<div id="location_address" class="stuffbox">
 					<h3><?php _e('Address','dbem'); ?></h3>
 					<div class="inside">
-						<input id="venue-address" type="text" name="venue_address" value="<?php echo $event['venue_address']; ?>" /><br/>
-						<?php _e('The address of the venue. Example: Via Mazzini 22', 'dbem') ?>
+						<input id="location-address" type="text" name="location_address" value="<?php echo $event['location_address']; ?>" /><br/>
+						<?php _e('The address of the location. Example: Via Mazzini 22', 'dbem') ?>
 					</div>
 				</div>
-				<div id="venue_town" class="stuffbox">
+				<div id="location_town" class="stuffbox">
 					<h3><?php _e('Town','dbem'); ?></h3>
 					<div class="inside">
-						<input id="venue-town" type="text" name="venue_town" value="<?php echo $event['venue_town']?>" /><br/>
+						<input id="location-town" type="text" name="location_town" value="<?php echo $event['location_town']?>" /><br/>
 						<?php _e('The event town. Example: Verona. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy', 'dbem') ?>
 					</div>
 				</div>
@@ -1332,7 +1333,7 @@ add_action ('admin_head', 'dbem_admin_general_script');
 
 
 function dbem_admin_map_script() {  
-	if ((isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'venues') || ((isset($_REQUEST['page']) && $_REQUEST['page'] == 'new_event') )) {   
+	if ((isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'locations')) {   
 		if (!(isset($_REQUEST['action']) && $_REQUEST['action'] == 'dbem_delete')) {    
 			// single event page    
 			
@@ -1340,18 +1341,18 @@ function dbem_admin_map_script() {
 			$event_ID=$_REQUEST['event_id'];
 		    $event = dbem_get_event($event_ID);
 			
-			if ($event['venue_town'] != '' || (isset($_REQUEST['page']) && $_REQUEST['page'] = 'venues')) {
+			if ($event['location_town'] != '' || (isset($_REQUEST['page']) && $_REQUEST['page'] = 'locations')) {
 				$gmap_key = get_option('dbem_gmap_key');
-		        if($event['venue_address'] != "") {
-			    	$search_key = $event['venue_address'].", ".$event['venue_town'];
+		        if($event['location_address'] != "") {
+			    	$search_key = $event['location_address'].", ".$event['location_town'];
 				} else {
-					$search_key = $event['venue_name'].", ".$event['venue_town'];
+					$search_key = $event['location_name'].", ".$event['location_town'];
 				}
 	   		
 		?>
 		<style type="text/css">
-		   div#venue_town, div#venue_address, div#venue_name {
-					width: 420px;
+		   div#location_town, div#location_address, div#location_name {
+					width: 480px;
 				}
 				table.form-table {
 					width: 50%;
@@ -1362,7 +1363,7 @@ function dbem_admin_map_script() {
 			//<![CDATA[
 		   	$j=jQuery.noConflict();
 		
-			function loadMap(venue, town, address) {
+			function loadMap(location, town, address) {
 	      		if (GBrowserIsCompatible()) {
 	        		var map = new GMap2(document.getElementById("event-map"));
 	        	//	map.addControl(new GScaleControl()); 
@@ -1371,7 +1372,7 @@ function dbem_admin_map_script() {
 					if (address !="") {
 						searchKey = address + ", " + town;
 					} else {
-						searchKey =  venue + ", " + town;
+						searchKey =  location + ", " + town;
 					}
 					
 					var search = "<?php echo $search_key ?>" ;
@@ -1386,9 +1387,9 @@ function dbem_admin_map_script() {
 						    map.setCenter(mapCenter, 13);
 					        var marker = new GMarker(point);
 					        map.addOverlay(marker);
-					        marker.openInfoWindowHtml('<strong>' + venue +'</strong><p>' + address + '</p><p>' + town + '</p>'); 
-							$j('input#venue-latitude').val(point.y);
-					        $j('input#venue-longitude').val(point.x);   
+					        marker.openInfoWindowHtml('<strong>' + location +'</strong><p>' + address + '</p><p>' + town + '</p>'); 
+							$j('input#location-latitude').val(point.y);
+					        $j('input#location-longitude').val(point.x);   
 							$j("#event-map").show();
 							$j('#map-not-found').hide();
 							}
@@ -1401,31 +1402,31 @@ function dbem_admin_map_script() {
 	    	}
    
 			$j(document).ready(function() {
-	  		eventVenue = $j("input#venue-name").val(); 
-			  eventTown = $j("input#venue-town").val(); 
-				eventAddress = $j("input#venue-address").val();
+	  		eventLocation = $j("input#location-name").val(); 
+			  eventTown = $j("input#location-town").val(); 
+				eventAddress = $j("input#location-address").val();
 		   
-				loadMap(eventVenue, eventTown, eventAddress);
+				loadMap(eventLocation, eventTown, eventAddress);
 			
-				$j("input#venue-name").blur(function(){
-						newEventVenue = $j("input#venue-name").val();  
-						if (newEventVenue !=eventVenue) {                
-							loadMap(newEventVenue, eventTown, eventAddress); 
-							eventVenue = newEventVenue;
+				$j("input#location-name").blur(function(){
+						newEventLocation = $j("input#location-name").val();  
+						if (newEventLocation !=eventLocation) {                
+							loadMap(newEventLocation, eventTown, eventAddress); 
+							eventLocation = newEventLocation;
 					   
 						}
 				});
-				$j("input#venue-town").blur(function(){
-						newEventTown = $j("input#venue-town").val(); 
+				$j("input#location-town").blur(function(){
+						newEventTown = $j("input#location-town").val(); 
 						if (newEventTown !=eventTown) {  
-							loadMap(eventVenue, newEventTown, eventAddress); 
+							loadMap(eventLocation, newEventTown, eventAddress); 
 							eventTown = newEventTown;
 							} 
 				});
-				$j("input#venue-address").blur(function(){
-						newEventAddress = $j("input#venue-address").val(); 
+				$j("input#location-address").blur(function(){
+						newEventAddress = $j("input#location-address").val(); 
 						if (newEventAddress != eventAddress) {
-							loadMap(eventVenue, eventTown, newEventAddress);
+							loadMap(eventLocation, eventTown, newEventAddress);
 						 	eventAddress = newEventAddress; 
 						}
 				});

@@ -163,8 +163,8 @@ msgid "The format of any events in a list."
 msgstr "Il formato di ciascun evento della lista."
 
 #: events-manager.php:408
-msgid "Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_VENUE</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page. Use #_URL to print the event URL and make your own customised links."
-msgstr "Inserire uno o più dei seguenti segnaposto: <code>#_NAME</code>, <code>#_VENUE</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Utilizzare <code>#_LINKEDNAME</code> per il nome dell'evento con un link alla pagina corrispondente. Utilizzare #_URL per visualizzare l'URL dell'evento e creare link personalizzati."
+msgid "Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page. Use #_URL to print the event URL and make your own customised links."
+msgstr "Inserire uno o più dei seguenti segnaposto: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Utilizzare <code>#_LINKEDNAME</code> per il nome dell'evento con un link alla pagina corrispondente. Utilizzare #_URL per visualizzare l'URL dell'evento e creare link personalizzati."
 
 #: events-manager.php:409
 msgid "To insert date and time values, use <a href=\"http://www.php.net/manual/en/function.date.php\">PHP time format characters</a>  with a # symbol before them, i.e. #m. #M, #j, etc. "
@@ -314,8 +314,8 @@ msgstr "Nome"
 
 #: events-manager.php:923
 #: events-manager.php:1069
-msgid "Venue"
-msgstr "Locale"
+msgid "Location"
+msgstr "Luogo"
 
 #: events-manager.php:924
 #: events-manager.php:1062
@@ -388,11 +388,11 @@ msgid "The event town. Example: Verona. If you're using the Google Map integrati
 msgstr "La città dell'evento. Esempio: Verona. Se si utilizza Google Map e si vogliono evitare ambiguità, inserire anche lo stato. Esempio: Verona, Italy"
 
 #: events-manager.php:1072
-msgid "The venue where the event takes place. Example: Arena"
+msgid "The location where the event takes place. Example: Arena"
 msgstr "Il locale dove avviene l'evento. Esempio: Arena"
 
 #: events-manager.php:1079
-msgid "The address of the venue. Example: Via Mazzini 22"
+msgid "The address of the location. Example: Via Mazzini 22"
 msgstr "L'indirizzo del locale. Esempio: Via Mazzini 22"
 
 #: events-manager.php:1083

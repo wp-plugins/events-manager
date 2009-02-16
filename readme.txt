@@ -92,7 +92,7 @@ Events Manager lets you choose the format of the events displayed in your list a
 The syntax of events format is quite simple. Basically, just write your html code in the usual way. Then you can add a number of placeholders corresponding to the data of the event. They are:
 
 * `#_NAME` displays the name of the event
-* `#_VENUE` displays the venue (theatre, pub, etc)
+* `#_LOCATION` displays the location (theatre, pub, etc)
 * `#_ADDRESS` displays the address
 * `#_TOWN` displays the town 
 * `#_LINKEDNAME` displays the event name with a link to the event page

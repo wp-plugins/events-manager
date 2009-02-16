@@ -41,18 +41,18 @@ function dbem_ajax_actions() {
 
 function dbem_global_map_json($eventful = false) {
 
-	$json = '{"venues":[';
-	$venues = dbem_get_venues($eventful);
-	$json_venues = array();
-	foreach($venues as $venue) {
+	$json = '{"locations":[';
+	$locations = dbem_get_locations($eventful);
+	$json_locations = array();
+	foreach($locations as $location) {
 
-		$json_venue = array();
-		foreach($venue as $key => $value) {
-		 	$json_venue[] = '"'.$key.'":"'.$value.'"';
+		$json_location = array();
+		foreach($location as $key => $value) {
+		 	$json_location[] = '"'.$key.'":"'.$value.'"';
 		}
-		$json_venues[] = "{".implode(",",$json_venue)."}";
+		$json_locations[] = "{".implode(",",$json_location)."}";
 	}        
-	$json .= implode(",", $json_venues); 
+	$json .= implode(",", $json_locations); 
 	$json .= "]}" ;
 	echo $json;
 }
@@ -80,7 +80,7 @@ function dbem_printable_booking_report($event_id) {
 			<div id="container">
 			<h1>Bookings for <?php echo $event['event_name'];?></h1> 
 			<p><?php echo dbem_replace_placeholders("#d #M #Y", $event)?></p>
-			<p><?php echo dbem_replace_placeholders("#_VENUE, #_ADDRESS, #_TOWN", $event)?></p>   
+			<p><?php echo dbem_replace_placeholders("#_LOCATION, #_ADDRESS, #_TOWN", $event)?></p>   
 			<h2><?php _e('Bookings data', 'dbem');?></h2>
 			<table id="bookings-table">
 				<tr>

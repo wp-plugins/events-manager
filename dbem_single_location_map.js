@@ -1,5 +1,5 @@
 $j=jQuery.noConflict();   
-console.log("single venue map");
+console.log("single location map");
 
 $j(document.body).unload(function() {
 	if (GBrowserIsCompatible()) {
@@ -21,7 +21,7 @@ function loadMapScript(key) {
 
 function loadGMap() {
 	if (GBrowserIsCompatible()) {
-		map = new GMap2(document.getElementById("dbem-venue-map"));
+		map = new GMap2(document.getElementById("dbem-location-map"));
 		point = new GLatLng(latitude, longitude);
 		mapCenter= new GLatLng(point.lat()+0.005, point.lng()-0.003);
         map.setCenter(mapCenter, 14);
