@@ -52,7 +52,8 @@ define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));
 
 define('DEFAULT_SINGLE_VENUE_FORMAT', '<p>#_ADDRESS</p><p>#_TOWN</p>'); 
 define('DEFAULT_VENUE_PAGE_TITLE_FORMAT', '	#_NAME'); 
-
+define('DEFAULT_VENUE_BALOON_FORMAT', '<strong>#_NAME</strong><p>#_ADDRESS</p><p>#_TOWN</p>' );
+define('DEFAULT_VENUE_EVENT_LIST_ITEM_FORMAT', "<li>#_NAME - #j #M #Y - #H:#i</li>");
 define("IMAGE_UPLOAD_DIR", "wp-content/uploads/venues-pics");
 define('DEFAULT_IMAGE_MAX_WIDTH', 700);  
 define('DEFAULT_IMAGE_MAX_HEIGHT', 700);  
@@ -280,6 +281,7 @@ function dbem_create_venues_table() {
 			venue_province tinytext,
 			venue_latitude float DEFAULT NULL,
 			venue_longitude float DEFAULT NULL,
+			venue_description DEFAULT NULL,
 			UNIQUE KEY (venue_id)
 			);";
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -387,6 +389,8 @@ function dbem_add_options() {
 	'dbem_events_page_title' => DEFAULT_EVENTS_PAGE_TITLE,
 	'dbem_no_events_message' => __('No events','dbem'),
 	'dbem_venue_page_title_format' => DEFAULT_VENUE_PAGE_TITLE_FORMAT,
+	'dbem_venue_baloon_format' => DEFAULT_VENUE_BALOON_FORMAT,
+	'dbem_venue_event_list_item_format' => DEFAULT_VENUE_EVENT_LIST_ITEM_FORMAT,
 	'dbem_single_venue_format' => DEFAULT_SINGLE_VENUE_FORMAT,
 	'dbem_map_text_format' => DEFAULT_MAP_TEXT_FORMAT,
 	'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events'),
@@ -451,15 +455,9 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		// echo "RESULT: $result <br>";
 		// matches alla fields placeholder
 		if (preg_match('/#_MAP/', $result)) {
-		
-		 	$gmap_is_active = get_option('dbem_gmap_is_active'); 
-			if ($gmap_is_active) {  
-		 
-			   $map_div = "<div id='event-map' style=' background: green; width: 200px; height: 100px'></div>" ;
-			} else {
-				$map_div = "";
-			}
-		 	$event_string = str_replace($result, $map_div , $event_string ); 
+			$venue = dbem_get_venue($event['venue_id']);
+			$map_div = dbem_single_venue_map($venue);
+		  	$event_string = str_replace($result, $map_div , $event_string ); 
 		 
 		}
 		if (preg_match('/#_ADDBOOKINGFORM/', $result)) {

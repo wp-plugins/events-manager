@@ -35,6 +35,7 @@ function dbem_venues_page() {
 			$venue['venue_town'] = $_POST['venue_town']; 
 			$venue['venue_latitude'] = $_POST['venue_latitude'];
 			$venue['venue_longitude'] = $_POST['venue_longitude'];
+			$venue['venue_description'] = $_POST['venue_description'];
 			//$venue['venue_description'] = $_POST['venue_description'];
 			$validation_result = dbem_validate_venue($venue);
 			if ($validation_result == "OK") {   
@@ -55,6 +56,7 @@ function dbem_venues_page() {
 				$venue['venue_town'] = $_POST['venue_town']; 
 				$venue['venue_latitude'] = $_POST['venue_latitude'];
 				$venue['venue_longitude'] = $_POST['venue_longitude'];
+				$venue['venue_description'] = $_POST['venue_description'];
 				$validation_result = dbem_validate_venue($venue);
 				if ($validation_result == "OK") {   
 					$new_venue = dbem_insert_venue($venue);   
@@ -152,7 +154,7 @@ function dbem_venues_edit_layout($venue, $message = "") {
 			$layout .= "
 				<tr class='form-field'>
 					<th scope='row' valign='top'><label for='venue_description'>".__('Venue description', 'dbem')."</label></th>
-					<td><textarea name='venue_description' id='venue_description' rows='5' cols='50' style='width: 97%;'></textarea><br />
+					<td><textarea name='venue_description' id='venue_description' rows='5' cols='50' style='width: 97%;'>".$venue['venue_description']."</textarea><br />
 		            ".__('A description of the Venue. You may include any kind of info here.', 'dbem')."</td>
 
 				</tr>
@@ -168,7 +170,7 @@ function dbem_venues_edit_layout($venue, $message = "") {
 
 				</tr>
 				<tr>
-					<th scope='row' valign='top'><label for='venue_description'>".__('Upload/change picture', 'dbem')."</label></th>
+					<th scope='row' valign='top'><label for='venue_image'>".__('Upload/change picture', 'dbem')."</label></th>
 					<td><input id='venue-image' name='venue_image' id='venue_image' type='file' size='40' /></td>
 			 </tr>\n
 			</table>
@@ -297,7 +299,7 @@ function dbem_venues_table_layout($venues, $new_venue, $message = "") {
 								$table .= "
 								 	<div class='form-field'>\n
 								 	<label for='venue_description'>".__('Venue description', 'dbem')."</label>\n
-								 	<textarea name='venue_description' id='venue_description' rows='5' cols='40'></textarea>\n
+								 	<textarea name='venue_description' id='venue_description' rows='5' cols='40'>".$new_venue['venue_description']."</textarea>\n
 								    <p>".__('A description of the Venue. You may include any kind of info here.', 'dbem')."</p>\n
 								 </div>\n
                
@@ -406,7 +408,8 @@ function dbem_update_venue($venue) {
 		"venue_address='".$venue['venue_address']."',".
 		"venue_town='".$venue['venue_town']."', ".
 		"venue_latitude=".$venue['venue_latitude'].",". 
-		"venue_longitude=".$venue['venue_longitude']." ". 
+		"venue_longitude=".$venue['venue_longitude'].",".
+		"venue_description='".$venue['venue_description']."' ". 
 		"WHERE venue_id='".$venue['venue_id']."';";  
 	$wpdb->query($sql);
 }   
@@ -414,8 +417,8 @@ function dbem_update_venue($venue) {
 function dbem_insert_venue($venue) {
 		global $wpdb;	
 		$table_name = $wpdb->prefix.VENUES_TBNAME; 
-		$sql = "INSERT INTO ".$table_name." (venue_name, venue_address, venue_town, venue_latitude, venue_longitude)
-		VALUES ('".$venue['venue_name']."','".$venue['venue_address']."','".$venue['venue_town']."','".$venue['venue_latitude']."','".$venue['venue_longitude']."')";
+		$sql = "INSERT INTO ".$table_name." (venue_name, venue_address, venue_town, venue_latitude, venue_longitude, venue_description)
+		VALUES ('".$venue['venue_name']."','".$venue['venue_address']."','".$venue['venue_town']."','".$venue['venue_latitude']."','".$venue['venue_longitude']."','".$venue['venue_description']."')";
 		$wpdb->query($sql);
     $new_venue = dbem_get_identical_venue($venue); 
 		return $new_venue;
@@ -488,33 +491,28 @@ function dbem_replace_venues_placeholders($format, $venue, $target="html") {
 		// echo "RESULT: $result <br>";
 		// matches alla fields placeholder
 		if (preg_match('/#_MAP/', $result)) {
-		 	$gmap_is_active = get_option('dbem_gmap_is_active'); 
-			$map_text = "ciaso";
-			if ($gmap_is_active) {  
-		 	   $gmaps_key = get_option('dbem_gmap_key');
-			   $map_div = "<div id='dbem-venue-map' style=' background: green; width: 400px; height: 300px'></div>" ;
-			   $map_div .= "<script type='text/javascript'>
-			  	<!--// 
-			  latitude = parseFloat('".$venue['venue_latitude']."');
-			  longitude = parseFloat('".$venue['venue_longitude']."');
-			  GMapsKey = '$gmaps_key';
-			  map_text = '$map_text';
-				//-->
-			</script>";
-			$map_div .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_single_venue_map.js' type='text/javascript'></script>";
-			} else {
-				$map_div = "";
-			}
+		 	$map_div = dbem_single_venue_map($venue);
 		 	$venue_string = str_replace($result, $map_div , $venue_string ); 
 		 
 		}
-
+		if (preg_match('/#_PASTEVENTS/', $result)) {
+		 	$list = dbem_events_in_venue_list($venue, "past");
+		 	$venue_string = str_replace($result, $list , $venue_string ); 
+		}
+		if (preg_match('/#_NEXTEVENTS/', $result)) {
+		 	$list = dbem_events_in_venue_list($venue);
+		 	$venue_string = str_replace($result, $list , $venue_string ); 
+		}
+		if (preg_match('/#_ALLEVENTS/', $result)) {
+		 	$list = dbem_events_in_venue_list($venue, "all");
+		 	$venue_string = str_replace($result, $list , $venue_string ); 
+		}
 	  
-		if (preg_match('/#_(NAME|ADDRESS|TOWN|PROVINCE)/', $result)) {
+		if (preg_match('/#_(NAME|ADDRESS|TOWN|PROVINCE|DESCRIPTION)/', $result)) {
 			$field = "venue_".ltrim(strtolower($result), "#_");
 		 	$field_value = $venue[$field];      
 		
-			if ($field == "venue_notes") {
+			if ($field == "venue_description") {
 				if ($target == "html")
 					$field_value = apply_filters('dbem_notes', $field_value);
 				else
@@ -544,5 +542,31 @@ function dbem_replace_venues_placeholders($format, $venue, $target="html") {
 	return $venue_string;	
 	
 }
+function dbem_single_venue_map($venue) {
+	$gmap_is_active = get_option('dbem_gmap_is_active'); 
+	$map_text = dbem_replace_venues_placeholders(get_option('dbem_venue_baloon_format'), $venue);
+	if ($gmap_is_active) {  
+   		$gmaps_key = get_option('dbem_gmap_key');
+   		$map_div = "<div id='dbem-venue-map' style=' background: green; width: 400px; height: 300px'></div>" ;
+   		$map_div .= "<script type='text/javascript'>
+  			<!--// 
+  		latitude = parseFloat('".$venue['venue_latitude']."');
+  		longitude = parseFloat('".$venue['venue_longitude']."');
+  		GMapsKey = '$gmaps_key';
+  		map_text = '$map_text';
+		//-->
+		</script>";
+		$map_div .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_single_venue_map.js' type='text/javascript'></script>";
+	} else {
+		$map_div = "";
+	}
+	return $map_div;
+}
 
-
+function dbem_events_in_venue_list($venue, $scope = "") {
+	$events = dbem_get_events("",$scope,"","",$venue['venue_id']);
+	$list = "";
+	foreach($events as $event)
+		$list .= dbem_replace_placeholders(get_option('dbem_venue_event_list_item_format'), $event);
+	return $list;
+}

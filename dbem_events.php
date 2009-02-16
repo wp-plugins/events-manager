@@ -247,9 +247,13 @@ function dbem_options_subpanel() {
 							<th scope="row"><?php _e('Default single venue page format','dbem')?></th>
 							<td><textarea name="dbem_single_venue_format" id="dbem_single_venue_format" rows="6" cols="60"><?php echo (get_option('dbem_single_venue_format'));?></textarea><br/>
 								<?php _e('The format of a single venue page.','dbem')?><br/>
-								<?php _e('Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_INFO</code>.','dbem')?><br/>  
+								<?php _e('Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_INFO</code>. Use <code>#_NEXTEVENTS</code> to insert a list of the upcoming events, <code>#_PASTEVENTS</code> for a list of past events, <code>#_ALLEVENTS</code> for a list of all events taking place in tis venue','dbem')?><br/>  
 								<?php _e('Use HTML tags as <code>li</code>, <code>br</code>, etc.','dbem')?></td>
 						</tr>
+						<?php 	
+						dbem_options_textarea('Default venue baloon format', 'dbem_venue_baloon_format', 'The format of of the text appearing in the baloon describing the venue in the map.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_INFO</code>.');
+						dbem_options_textarea('Default venue event list format', 'dbem_venue_event_list_item_format', 'The format of the events the list inserted in the venue page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element.');
+						?>
 					</table>
 				
 			<h3><?php _e('Maps and geotagging', 'dbem');?></h3>
@@ -362,7 +366,7 @@ function dbem_options_subpanel() {
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_venue_page_title_format, dbem_single_venue_format, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_is_active, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
+				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_venue_page_title_format, dbem_venue_baloon_format, dbem_single_venue_format, dbem_venue_event_list_item_format, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_is_active, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
 				
 				
 			</form>
@@ -623,7 +627,7 @@ function dbem_is_multiple_events_page() {
 
 
 // main function querying the database event table
-function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
+function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="", $venue_id = "") {
 	global $wpdb;   
 	
  	$events_table = $wpdb->prefix.EVENTS_TBNAME;
@@ -631,7 +635,8 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 		$limit = "LIMIT $limit";
 	if ($offset != "")
 		$offset = "OFFSET $offset";  
-	
+	if($order="")
+		$order="ASC";
 
 	$timestamp = time();
 	$date_time_array = getdate($timestamp);
@@ -643,21 +648,24 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 	$year = $date_time_array['year'];
  	$today = strftime('%Y-%m-%d', mktime($hours,$minutes,$seconds,$month,$day,$year));
 	
+	$conditions = array();
 	if(preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope)) {
-		$temporal_condition = "WHERE event_start_date like '$scope'" ;
+		$conditions[] = " event_start_date like '$scope'" ;
 	}	 else {
 	if (($scope != "past") && ($scope !="all"))
 	 		$scope = "future"; 
 	  if ($scope == "future") 
-			$temporal_condition = "WHERE event_start_date >= '$today'" ;
+			$conditions[] = " event_start_date >= '$today'" ;
 		if ($scope == "past") 
-			$temporal_condition = "WHERE event_start_date < '$today'" ;
-		if ($scope == "all")
-			$temporal_condition = "";
+			$conditions[] = " event_start_date < '$today'" ;
 	}
- 
-	
- 
+ 	
+	if($venue_id != "")
+		$conditions[] = " venue_id = $venue_id";
+ 	
+	$where = implode(" AND ", $conditions);
+	if ($where != "")
+		$where = " WHERE ".$where;
 	
 	$sql = "SELECT event_id, 
 			    event_name, 
@@ -665,7 +673,7 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 			  	DATE_FORMAT(event_start_time, '%Y') AS 'event_year',
 			  	DATE_FORMAT(event_start_time, '%k') AS 'event_hh',
 			  	DATE_FORMAT(event_start_time, '%i') AS 'event_mm',
-					DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',
+				DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',
 			  	DATE_FORMAT(event_end_time, '%Y') AS 'event_end_year',
 			  	DATE_FORMAT(event_end_time, '%k') AS 'event_end_hh',
 			  	DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',
@@ -678,7 +686,7 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="") {
 					recurrence_id, 
 					venue_id 
 					FROM $events_table   
-					$temporal_condition
+					$where
 					ORDER BY event_start_date $order
 					$limit 
 					$offset";   
@@ -1319,91 +1327,7 @@ function dbem_admin_general_script(){  ?>
 add_action ('admin_head', 'dbem_admin_general_script');                
 
 
-// Google maps implementation
-function dbem_map_script() {
-	$gmap_is_active = get_option('dbem_gmap_is_active');  
-		if ($gmap_is_active) { 
-			if (strpos(get_option('dbem_single_event_format'), "#_MAP")) { // loading the script is useless unless #_MAP is in the format
-			 
-			if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
-				 
-				// single event page
-				$event_ID=$_REQUEST['event_id'];
-			    $event = dbem_get_event($event_ID);
-				if ($event['venue_town'] != '') {
-					$gmap_key = get_option('dbem_gmap_key'); 
-					if($event['venue_address'] != "") {
-				    	$search_key = $event['venue_address'].", ".$event['venue_town'];
-					} else {
-						$search_key = $event['venue_name'].", ".$event['venue_town'];
-					}
-				$map_text_format = get_option('dbem_map_text_format');
-		    	$map_text = dbem_replace_placeholders($map_text_format, $event, "map");   
-                
-			?> 
-   
-	
-			<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $gmap_key;?>" type="text/javascript"></script>         
-			<script type="text/javascript">
-			    //<![CDATA[
-				$j=jQuery.noConflict();
-			    function loadMap() {
-		      		if (GBrowserIsCompatible()) {
-		        		var map = new GMap2(document.getElementById("event-map"));
-		        		var mapTypeControl = new GLargeMapControl();
-								var topRight = new GControlPosition(G_ANCHOR_TOP_RIGHT, new GSize(10,10));
-							 	map.addControl(mapTypeControl, topRight);
-								
-							 // map.addControl(new GLargeMapControl()); 
-								//map.setCenter(new GLatLng(37.4419, -122.1419), 13);   
-						var geocoder = new GClientGeocoder();
-						var address = "<?php echo $search_key ?>" ;
-						geocoder.getLatLng(
-						    address,
-						    function(point) {
-						      if (!point) {
-						       	$j("#event-map").hide();
-						      } else {
-								mapCenter= new GLatLng(point.lat()+0.01, point.lng()+0.005);
-						        map.setCenter(mapCenter, 13);
-						        var marker = new GMarker(point);
-						        map.addOverlay(marker);
-						        marker.openInfoWindowHtml('<?php echo $map_text;?>');
-						      }
-						    }
-						  );   
-		      		}
-		    	}
-   
-				$j(document).ready(function() {
-		  		if ($j("#event-map").length > 0 ) {	
-						loadMap();  
-			      }
-		 
-			   }); 
-			   $j(document).unload(function() {
-						if ($j("#event-map").length > 0 ) {	 
-							GUnload();
-						}
-			   });
-			//]]>
-			</script> 
-			<style type="text/css">
-			#event-map {
-				width: 450px; 
-				height: 300px;
-			}
-			#event-map img {
-				background: transparent;
-			}
-			</style>
-		<?php
-		 		}
-			} 
-		}
-	}
-}        
-add_action ('wp_head', 'dbem_map_script'); 
+
 
 function dbem_admin_map_script() {  
 	if ((isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'venues')) {   
