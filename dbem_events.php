@@ -1332,7 +1332,7 @@ add_action ('admin_head', 'dbem_admin_general_script');
 
 
 function dbem_admin_map_script() {  
-	if ((isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'venues')) {   
+	if ((isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'venues') || ((isset($_REQUEST['page']) && $_REQUEST['page'] == 'new_event') )) {   
 		if (!(isset($_REQUEST['action']) && $_REQUEST['action'] == 'dbem_delete')) {    
 			// single event page    
 			
@@ -1351,7 +1351,7 @@ function dbem_admin_map_script() {
 		?>
 		<style type="text/css">
 		   div#venue_town, div#venue_address, div#venue_name {
-					width: 480px;
+					width: 420px;
 				}
 				table.form-table {
 					width: 50%;
