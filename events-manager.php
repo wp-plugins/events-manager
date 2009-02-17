@@ -149,11 +149,9 @@ function dbem_install() {
   } else {
 	  dbem_create_events_page(); 
   }
-    //if (get_option('dbem_events_page'))
-			//$event_page_id = get_option('dbem_events_page'); 
-		//dbem_create_events_page();
-   if(!file_exists(IMAGE_UPLOAD_DIR))
-			mkdir(IMAGE_UPLOAD_DIR, 0777);
+    // wp-content must be chmodded 777. Maybe just wp-content.
+   if(!file_exists("../".IMAGE_UPLOAD_DIR))
+			mkdir("../".IMAGE_UPLOAD_DIR, 0777);
 	
 }
 
@@ -438,7 +436,7 @@ function dbem_create_events_submenu () {
 		// Add a submenu to the custom top-level menu:                
 		add_submenu_page(__FILE__, "Locations", "Locations", MIN_CAPABILITY, 'locations', "dbem_locations_page");
 		add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
-		 // add_submenu_page(__FILE__, 'Test ', 'Test Sublevel', 8, 'locations', );
+		add_submenu_page(__FILE__, 'Test ', 'Test ', 8, 'test', 'dbem_recurrence_test');
 		add_submenu_page(__FILE__, 'Events Manager Settings','Settings', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
 		     
 		

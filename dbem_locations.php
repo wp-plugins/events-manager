@@ -441,7 +441,9 @@ function dbem_location_has_events($location_id) {
 }             
 
 function dbem_upload_location_picture($location) {
-  dbem_delete_image_files_for_location_id($location['location_id']);
+  	if(!file_exists("../".IMAGE_UPLOAD_DIR))
+				mkdir("../".IMAGE_UPLOAD_DIR, 0777);
+	dbem_delete_image_files_for_location_id($location['location_id']);
 	$mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');    
 	list($width, $height, $type, $attr) = getimagesize($_FILES['location_image']['tmp_name']);
 	$image_path = "../".IMAGE_UPLOAD_DIR."/location-".$location['location_id'].".".$mime_types[$type];

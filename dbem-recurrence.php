@@ -19,7 +19,7 @@ function dbem_recurrence_test() {
 	echo "</ul>";
 	
 	echo "<h3>Weekly</h3>";
-	$recurrence = array('recurrence_start_date' => '2009-02-10', 'recurrence_end_date' => '2009-04-24', 'recurrence_freq'=>'weekly', 'recurrence_byday'=>2 , 'recurrence_interval' => 3); 
+	$recurrence = array('recurrence_start_date' => '2009-02-10', 'recurrence_end_date' => '2009-04-24', 'recurrence_freq'=>'weekly', 'recurrence_byday'=>7 , 'recurrence_interval' => 3); 
 	$matching_days = dbem_get_recurrence_events($recurrence);
 	
 	print_r($recurrence);    
@@ -32,7 +32,7 @@ function dbem_recurrence_test() {
 	echo "</ul>";  
 	
 	echo "<h3>Monthly, second week</h3>";
-	$recurrence = array('recurrence_start_date' => '2009-02-10', 'recurrence_end_date' => '2009-04-24', 'recurrence_freq'=>'monthly', 'recurrence_byday' => 2, 'recurrence_byweekno'=>2 , 'recurrence_interval' => 1); 
+	$recurrence = array('recurrence_start_date' => '2009-02-10', 'recurrence_end_date' => '2009-04-24', 'recurrence_freq'=>'monthly', 'recurrence_byday' => 7, 'recurrence_byweekno'=>2 , 'recurrence_interval' => 1); 
 	$matching_days = dbem_get_recurrence_events($recurrence);
 	
 	print_r($recurrence);    
@@ -45,7 +45,7 @@ function dbem_recurrence_test() {
 	echo "</ul>"; 
 	
 	echo "<h3>Last week of the month</h3>";  
-	$recurrence = array('recurrence_start_date' => '2009-02-10', 'recurrence_end_date' => '2009-04-24', 'recurrence_freq'=>'monthly', 'recurrence_byday' => 2, 'recurrence_byweekno'=> -1 , 'recurrence_interval' => 1); 
+	$recurrence = array('recurrence_start_date' => '2009-02-10', 'recurrence_end_date' => '2009-04-24', 'recurrence_freq'=>'monthly', 'recurrence_byday' => 7, 'recurrence_byweekno'=> -1 , 'recurrence_interval' => 1); 
 	$matching_days = dbem_get_recurrence_events($recurrence);
 	
 	print_r($recurrence);    
@@ -59,13 +59,14 @@ function dbem_recurrence_test() {
 }         
 
 function dbem_get_recurrence_events($recurrence){
+	
 	//print_r($recurrence);
 	$start_date = mktime(0, 0, 0, substr($recurrence['recurrence_start_date'],5,2), substr($recurrence['recurrence_start_date'],8,2), substr($recurrence['recurrence_start_date'],0,4));
 	$end_date = mktime(0, 0, 0, substr($recurrence['recurrence_end_date'],5,2), substr($recurrence['recurrence_end_date'],8,2), substr($recurrence['recurrence_end_date'],0,4));     
  
 	$every_keys = array('every' => 1, 'every_second' => 2, 'every_third' => 3, 'every_fourth' => 4);  
 	$every_N = $every_keys[$recurrence['recurrence_modifier']]; 
- 
+ 	
 	$month_position_keys = array('first_of_month'=>1, 'second_of_month' => 2, 'third_of_month' => 3, 'fourth_of_month' => 4);
 	$month_position = $month_position_keys[$recurrence['recurrence_modifier']]; 
 	
@@ -87,24 +88,25 @@ function dbem_get_recurrence_events($recurrence){
 		$style = "";
 		$monthweek =  floor(((date("d", $cycle_date)-1)/7))+1;   
 		 if($recurrence['recurrence_freq'] == 'daily') {
+				
 				if($counter % $recurrence['recurrence_interval'] == 0 )
 					array_push($matching_days, $cycle_date);
 				$counter++;
 		}
 	     
-		if (in_array(date("N", $cycle_date), $weekdays )) {
-			
+		if (in_array(dbem_iso_N_date_value($cycle_date), $weekdays )) {
 			$monthday = date("j", $cycle_date); 
 			$month = date("n", $cycle_date);      
 
 			if($recurrence['recurrence_freq'] == 'weekly') {
+			
 				if($counter % $recurrence['recurrence_interval'] == 0 )
 					array_push($matching_days, $cycle_date);
 				$counter++;
 			}
 			if($recurrence['recurrence_freq'] == 'monthly') { 
-	
-		   	if(($recurrence['recurrence_byweekno'] == -1) && ($monthday >= $last_week_start[$month-1])) {
+			
+		   		if(($recurrence['recurrence_byweekno'] == -1) && ($monthday >= $last_week_start[$month-1])) {
 					if ($counter % $recurrence['recurrence_interval'] == 0)
 						array_push($matching_days, $cycle_date);
 					$counter++;
@@ -117,9 +119,11 @@ function dbem_get_recurrence_events($recurrence){
 			$weekcounter++;
 	  }
 		$daycounter++;
-	  $cycle_date = $cycle_date + $aDay;         //adding a day        
+	  $cycle_date = $cycle_date + $aDay;         //adding a day       
+
 	}   
 	
+	print_r($matching_days);
 	
 	return $matching_days ;
 	
@@ -136,7 +140,8 @@ function dbem_insert_recurrent_event($event, $recurrence ){
 		$recurrence_table = $wpdb->prefix.RECURRENCE_TBNAME;
 		
 		if (true) {//TODO add recurrence validation
-		
+			$wpdb->show_errors(true);
+			
 			$wpdb->insert($recurrence_table, $recurrence);
 		 	$recurrence['recurrence_id'] = mysql_insert_id();
 			$output = "<h2>Recurring</h2>";
@@ -150,7 +155,7 @@ function dbem_insert_events_for_recurrence($recurrence) {
 	global $wpdb;
 	$events_table = $wpdb->prefix.EVENTS_TBNAME;   
 	$matching_days = dbem_get_recurrence_events($recurrence);
-		 
+	print_r($matching_days);	 
 	sort($matching_days);
 		
 	foreach($matching_days as $day) {
@@ -243,5 +248,12 @@ function dbem_build_recurrence_description($recurrence) {
 	}
 	$output .= $freq_desc;
 	return  $output;
+}
+function dbem_iso_N_date_value($date) {
+	// date("N", $cycle_date)
+	$n = date("w", $date);
+	if ($n == 0)
+		$n = 7;
+	return $n;
 }
 ?>

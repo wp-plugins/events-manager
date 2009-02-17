@@ -237,20 +237,20 @@ function dbem_bookings_compact_table($event_id) {
 	if (count($bookings)>0) { 
 		$table = 
 		"<div class='wrap'>
-				<h4>".__('Reservations')."</h4>\n  
+				<h4>$booked_seats ".__('responses so far').":</h4>\n  
 			  
 				<table id='dbem-bookings-table-$event_id' class='widefat post fixed'>\n
 					<thead>\n
 						<tr>
 							<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>\n
 							<th class='manage-column ' scope='col'>".__('Responder', 'dbem')."</th>\n
-							<th scope='col'>Seats</th>\n
+							<th scope='col'>".__('Spaces', 'dbem')."</th>\n
 					 	</tr>\n
 						</thead>\n
 						<tfoot>
 							<tr>
-								<th scope='row' colspan='2'>Booked seats:</th><td class='booking-result' id='booked-seats'>$booked_seats</td></tr>            
-					 			<tr><th scope='row' colspan='2'>Available seats:</th><td class='booking-result' id='available-seats'>$available_seats</td>
+								<th scope='row' colspan='2'>".__('Booked spaces','dbem').":</th><td class='booking-result' id='booked-seats'>$booked_seats</td></tr>            
+					 			<tr><th scope='row' colspan='2'>".__('Available spaces','dbem').":</th><td class='booking-result' id='available-seats'>$available_seats</td>
 							</tr>
 						</tfoot>
 						<tbody>" ;
@@ -279,7 +279,7 @@ function dbem_bookings_compact_table($event_id) {
 		<br class='clear'/>    
 		 </div> ";                                                        
 		 } else {
-			$table .= "<p><em>".__('No bookings yet!')."</em></p>";
+			$table .= "<p><em>".__('No responses yet!')."</em></p>";
 		 } 
 		    
   echo $table;
