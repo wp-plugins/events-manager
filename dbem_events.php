@@ -163,17 +163,11 @@ function dbem_events_subpanel() {
 				    
 	  }
 	 	if ($action == 'edit_recurrence') {
-				
-				$title=__("Edit recurrence", 'dbem');
+			
 				$event_ID = $_GET['recurrence_id'];
-		 
-					//$event=$wpdb->get_row($sql, ARRAY_A);
-					// Enter new events and updates old ones
-					// DEBUG: echo"Nome: $event->event_name";
-
-					$recurrence = dbem_get_recurrence($event_ID);
-					print_r($recurrence);
-					dbem_event_form($recurrence, $title, $event_ID);
+		 		$recurrence = dbem_get_recurrence($event_ID);
+				$title=__("Reschedule", 'dbem'). " '" .$recurrence['recurrence_name']."'";
+				dbem_event_form($recurrence, $title, $event_ID);
 				    
 	  }
 	  
@@ -827,7 +821,7 @@ function dbem_events_table($events, $limit, $title) {
 	<table class="widefat">
   		<thead>
 			<tr>
-  				<th class='manage-column column-cb check-column' scope='col'><input type="checkbox" value='1'></th>
+  				<th class='manage-column column-cb check-column' scope='col'><input class='select-all' type="checkbox" value='1'></th>
   	  		<th><?php _e('Name', 'dbem');?></th>
   	   		<th><?php _e('Location', 'dbem');?></th>
   	   	 
@@ -857,7 +851,7 @@ function dbem_events_table($events, $limit, $title) {
 	  <tr <?php echo"$class $style"; ?> >   
 			 
   	   <td>
- 	    		<input type='checkbox' value='<?php echo $event['event_id'];?>' name='events[]'/></td>
+ 	    		<input type='checkbox' class='row-selector' value='<?php echo $event['event_id'];?>' name='events[]'/></td>
   	   </td>
   	   <td>
   	    <strong><a class="row-title" href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $event['event_id']; ?>"><?php echo ($event['event_name']); ?></a></strong>
@@ -877,7 +871,7 @@ function dbem_events_table($events, $limit, $title) {
 				 <?php if($event['recurrence_id']) {
 								$recurrence = dbem_get_recurrence($event[recurrence_id]);   ?>
 						
-								<b><a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_recurrence&amp;recurrence_id=<?php echo $recurrence['recurrence_id'];?>"><?php echo $recurrence['recurrence_description'];?></a></b>
+								<b><?php echo $recurrence['recurrence_description'];?> <br/> <a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_recurrence&amp;recurrence_id=<?php echo $recurrence['recurrence_id'];?>">Reschedule</a></b>
 								
 								 
 							 <?php } ?>
@@ -973,6 +967,18 @@ function dbem_event_form($event, $title, $element) {
 <form id="eventForm" method="post" action="<?php echo $form_destination; ?>">
     <div class="wrap">
 		<h2><?php echo $title; ?></h2>
+		<?php
+		if($event['recurrence_id']) { ?>
+			<p id='recurrence_warning'>
+			<?php if(isset($_GET['action']) && ($_GET['action'] == 'edit_recurrence')) {
+				_e('WARNING: This is a recurrence.')?><br/>
+			<?php _e('Modifying these data all the events linked to this recurrence will be rescheduled');
+				
+			} else {
+			 _e('WARNING: This is a recurring event.');
+			 _e('If you change these data and save, this will become an independent event.');
+			}?></p>
+	<?php } ?>
    		<div id="poststuff" class="metabox-holder">
         
 
@@ -1033,9 +1039,8 @@ function dbem_event_form($event, $title, $element) {
 										} else {      
 											
 											$recurrence = dbem_get_recurrence($event['recurrence_id']);  ?>
-											<p><a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_recurrence&amp;recurrence_id=<?php echo $recurrence['recurrence_id'];?>"><?php echo $recurrence['recurrence_description'];?></a></p>
-											
-											<p><em><?php _e('If you change event data it will become an independent event') ?></em></p>
+											<p><?php echo $recurrence['recurrence_description'];?><br/><a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_recurrence&amp;recurrence_id=<?php echo $recurrence['recurrence_id'];?>">Reschedule</a></p>
+																						
 									 <?php  } ?>
 								
 						  <?php  } ?>
@@ -1295,7 +1300,14 @@ function dbem_admin_general_script(){  ?>
 		  		($j.datepicker.regional["it"], 
 		  		{altField: "#end-date-to-submit", 
 		  		altFormat: "yy-mm-dd"})));
-		     
+		   
+		   $j('input.select-all').change(function(){
+				console.log('ecco: ' + $j(this).val() );
+				if($j(this).is(':checked'))
+					$j('input.row-selector').attr('checked', true);
+				else
+					$j('input.row-selector').attr('checked', false);
+		});
 
 		   updateIntervalDescriptor(); 
 		   updateIntervalSelectors();
@@ -1331,7 +1343,7 @@ add_action ('admin_head', 'dbem_admin_general_script');
 
 
 function dbem_admin_map_script() {  
-	if ((isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'locations')) {   
+	if ((isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'locations') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'new_event') || (isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_recurrence') ) {   
 		if (!(isset($_REQUEST['action']) && $_REQUEST['action'] == 'dbem_delete')) {    
 			// single event page    
 			

@@ -135,14 +135,12 @@ function dbem_insert_recurrent_event($event, $recurrence ){
 		global $wpdb;
 		$recurrence_table = $wpdb->prefix.RECURRENCE_TBNAME;
 		
-		if (true) {
-			
+		if (true) {//TODO add recurrence validation
+		
 			$wpdb->insert($recurrence_table, $recurrence);
 		 	$recurrence['recurrence_id'] = mysql_insert_id();
 			$output = "<h2>Recurring</h2>";
-			print_r($recurrence); 
 			echo "recurrence_id = $recurrence_id<br/>";  
-
 			dbem_insert_events_for_recurrence($recurrence);
 		 
 			                         
@@ -167,7 +165,8 @@ function dbem_insert_events_for_recurrence($recurrence) {
 		//print_r($new_event);
 		echo "<br/>";          
 		$wpdb->insert($events_table, $new_event);
-		echo date("D d M Y", $day)."<br/>";
+		if(DEBUG) 
+			echo date("D d M Y", $day)."<br/>";
  	}
 }
 function dbem_update_recurrence($recurrence) {
@@ -212,7 +211,7 @@ function dbem_build_recurrence_description($recurrence) {
 
 	$weekdays_name = array(__('Monday'),__('Tuesday'),__('Wednesday'),__('Thursday'),__('Friday'),__('Saturday'),__('Sunday'));
 	$monthweek_name = array('1' => __('the first %s of the month', 'dbem'),'2' => __('the second %s of the month', 'dbem'), '3' => __('the third %s of the month', 'dbem'), '4' => __('the fourth %s of the month', 'dbem'), '-1' => __('the last %s of the month', 'dbem'));
-	$output = sprintf (__('From %1$s to %2$s'),  $recurrence['recurrence_start_date'], $recurrence['recurrence_end_date'])."<br/>";
+	$output = sprintf (__('From %1$s to %2$s'),  $recurrence['recurrence_start_date'], $recurrence['recurrence_end_date']).", ";
 	if ($recurrence['recurrence_freq'] == 'daily')  {
 	  
 		$freq_desc =__('everyday', 'dbem');

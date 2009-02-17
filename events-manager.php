@@ -350,13 +350,13 @@ function dbem_migrate_old_events() {
 		global $wpdb;  
 		
 		$events_table = $wpdb->prefix.EVENTS_TBNAME;
-		$sql = "SELECT event_id, event_time, event_location, event_address, event_town FROM $events_table";
+		$sql = "SELECT event_id, event_time, event_venue, event_address, event_town FROM $events_table";
 		echo $sql;
 		$events = $wpdb->get_results($sql, ARRAY_A);
 		foreach($events as $event) {
 
 			// Migrating location data to the location table
-			$location = array('location_name' => $event['event_location'], 'location_address' => $event['event_address'], 'location_town' => $event['event_town']);
+			$location = array('venue_name' => $event['event_venue'], 'location_address' => $event['event_address'], 'location_town' => $event['event_town']);
 			$related_location = dbem_get_identical_location($location); 
 				 
 				if ($related_location)  {
@@ -368,11 +368,11 @@ function dbem_migrate_old_events() {
 				}                                 
 		 		// migrating event_time to event_start_date and event_start_time
 				$event['event_start_date'] = substr($event['event_time'],0,10); 
-		    $event['event_start_time'] = substr($event['event_time'],11,8);
+		    	$event['event_start_time'] = substr($event['event_time'],11,8);
 				$event['event_end_time'] = substr($event['event_time'],11,8);
 				
 				$where = array('event_id' => $event['event_id']); 
-	   		$wpdb->update($events_table, $event, $where); 	
+	   			$wpdb->update($events_table, $event, $where); 	
         
 
 		

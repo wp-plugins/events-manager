@@ -1,6 +1,8 @@
 <?php 
-function dbem_locations_autocomplete() {      
-	if ((isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_event') || (isset($_REQUEST['page']) && $_REQUEST['page'] == 'new_event')) { 
+add_action ('admin_head', 'dbem_locations_autocomplete');  
+
+function dbem_locations_autocomplete() {     
+	if ((isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_event') || (isset($_GET['page']) && $_GET['page'] == 'new_event')) { 	 
 		?>
 		<link rel="stylesheet" href="../wp-content/plugins/events-manager/jquery-autocomplete/jquery.autocomplete.css" type="text/css"/>
     
@@ -53,7 +55,7 @@ function dbem_locations_autocomplete() {
 
 	}
 }
-add_action ('admin_head', 'dbem_locations_autocomplete');  
+
 
 function dbem_cache_location($event){
 	$related_location = dbem_get_location_by_name($event['location_name']);  

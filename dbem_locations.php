@@ -210,7 +210,7 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 						<table class='widefat'>\n
 							<thead>\n
 								<tr>\n
-									<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>\n
+									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'></th>\n
 									<th>".__('Name', 'dbem')."</th>\n
 									<th>".__('Address', 'dbem')."</th>\n
 									<th>".__('Town', 'dbem')."</th>\n                
@@ -220,7 +220,7 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 						foreach ($locations as $this_location) {
 							$table .= "		
 								<tr>\n
-								<td><input type='checkbox' value='".$this_location->location_id."' name='locations[]'/></td>\n
+								<td><input type='checkbox' class ='row-selector' value='".$this_location->location_id."' name='locations[]'/></td>\n
 								<td><a href='".get_bloginfo('url')."/wp-admin/admin.php?page=locations&action=edit&location_ID=$this_location->location_id'> $this_location->location_name</a></td>\n
 								<td>$this_location->location_address</td>\n
 								<td>$this_location->location_town</td>\n                         
@@ -230,7 +230,7 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 							</tbody>\n
 							<tfoot>\n
 								<tr>\n
-									<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>\n
+									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'></th>\n
 									<th>".__('Name', 'dbem')."</th>\n
 									<th>".__('Address', 'dbem')."</th>\n
 									<th>".__('Town', 'dbem')."</th>\n      

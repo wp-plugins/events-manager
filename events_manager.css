@@ -82,3 +82,10 @@ table#bookings-table tr#booked-seats td.seats-number, table#bookings-table tr#av
 	font-weight: bold;
 }
 
+p#recurrence_warning {
+	border: 2px solid #FD0000;
+	background: #FF7146;
+	color: #fff;
+	font-weight: bold;
+	padding: 5px;
+}
