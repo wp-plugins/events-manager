@@ -8,9 +8,10 @@ function dbem_people_page() {
 	}   
 	?>  
 	
-	<div class='wrap'>
+	<div class='wrap'> 
+	<div id="icon-users" class="icon32"><br/></div>
 	<h2>People</h2>
-	<p><?php _e('This table collects the data about the people who responded to your events'); ?>.
+	
 	<?php dbem_people_table(); ?>
 	</div> 
 
@@ -119,8 +120,11 @@ function dbem_printable_booking_report($event_id) {
 
 function dbem_people_table() {
 	$people = dbem_get_people();
-	
-	$table =" <table id='dbem-people-table' class='widefat post fixed'>\n
+	if (count($people) < 1 ) {
+		_e("No people have responded to your events yet!", 'dbem');
+	} else { 
+	$table = "<p>".__('This table collects the data about the people who responded to your events', 'dbem')."</p>";	
+	$table .=" <table id='dbem-people-table' class='widefat post fixed'>\n
 							<thead>
 								<tr>
 									<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>\n
@@ -146,7 +150,8 @@ $table .= "<tr> <td>&nbsp;</td>
 				}
 
 $table .= "</table>";
-	echo $table;
+	echo $table;   
+}
 } 
 
 function dbem_get_person_by_name_and_email($name, $email) {

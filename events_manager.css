@@ -89,3 +89,6 @@ p#recurrence_warning {
 	font-weight: bold;
 	padding: 5px;
 }
+div#icon-events{
+	background:url('images/calendar-32.png') no-repeat center;
+}

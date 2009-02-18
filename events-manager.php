@@ -399,7 +399,6 @@ function dbem_add_options() {
 	'dbem_rss_title_format' => DEFAULT_RSS_TITLE_FORMAT,
 	'dbem_gmap_is_active'=>0,
 	'dbem_gmap_key' => '',
-	'dbem_rsvp_is_active' => 0,
 	'dbem_rsvp_mail_notify_is_active' => 0 ,
 	'dbem_image_max_width' => DEFAULT_IMAGE_MAX_WIDTH,
 	'dbem_image_max_height' => DEFAULT_IMAGE_MAX_HEIGHT,
@@ -433,16 +432,12 @@ function dbem_create_events_submenu () {
 	  if(function_exists('add_submenu_page')) {
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel, '../wp-content/plugins/events-manager/images/calendar-16.png');
 	   	add_submenu_page(__FILE__, __('Add new'), __('Add new'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page"); 
-		// Add a submenu to the custom top-level menu:                
-		add_submenu_page(__FILE__, "Locations", "Locations", MIN_CAPABILITY, 'locations', "dbem_locations_page");
-		add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
-		add_submenu_page(__FILE__, 'Test ', 'Test ', 8, 'test', 'dbem_recurrence_test');
-		add_submenu_page(__FILE__, 'Events Manager Settings','Settings', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
-		     
-		
-		
-		
-		}
+			// Add a submenu to the custom top-level menu:                
+			add_submenu_page(__FILE__, "Locations", "Locations", MIN_CAPABILITY, 'locations', "dbem_locations_page");
+			add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
+			//add_submenu_page(__FILE__, 'Test ', 'Test ', 8, 'test', 'dbem_recurrence_test');
+			add_submenu_page(__FILE__, 'Events Manager Settings','Settings', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
+  	}
 }
 
 function dbem_replace_placeholders($format, $event, $target="html") {
