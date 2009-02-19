@@ -52,7 +52,7 @@ define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));
 
 define('DEFAULT_SINGLE_LOCATION_FORMAT', '<p>#_ADDRESS</p><p>#_TOWN</p>'); 
 define('DEFAULT_LOCATION_PAGE_TITLE_FORMAT', '	#_NAME'); 
-define('DEFAULT_LOCATION_BALOON_FORMAT', '<strong>#_NAME</strong><p>#_ADDRESS</p><p>#_TOWN</p>' );
+define('DEFAULT_LOCATION_BALOON_FORMAT', "<strong>#_NAME</strong><br/>#_ADDRESS - #_TOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>");
 define('DEFAULT_LOCATION_EVENT_LIST_ITEM_FORMAT', "<li>#_NAME - #j #M #Y - #H:#i</li>");
 define('DEFAULT_LOCATION_NO_EVENTS_MESSAGE', __('<li>No events in this location</li>', 'dbem'));
 define("IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
@@ -401,7 +401,10 @@ function dbem_add_options() {
 	'dbem_rss_title_format' => DEFAULT_RSS_TITLE_FORMAT,
 	'dbem_gmap_is_active'=>0,
 	'dbem_gmap_key' => '',
-	'dbem_rsvp_mail_notify_is_active' => 0 ,        
+	'dbem_default_contact_person' => 1,
+	'dbem_rsvp_mail_notify_is_active' => 0 ,
+	'dbem_contactperson_email_body' => __("#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.\n\r Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.\n\rYours faithfully,\n\rEvents Manager",'dbem'),        
+	'dbem_respondent_email_body' => __("Dear #_RESPNAME, \n\r you have successfully reserved #_SPACES space/spaces for #_NAME.\n\r Yours faithfully,\n\r #_CONTACTPERSON",'dbem'),
 	'dbem_rsvp_mail_port' => 465,
 	'dbem_smtp_host' => 'localhost',
 	'dbem_mail_sender_name' => '',
@@ -556,16 +559,21 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			
 			$event_string = str_replace($result, $field_value , $event_string ); 
 	 	}
-	  if (preg_match('/#_CONTACTEMAIL$/', $result)) {
-			$events_page_id = get_option('dbem_events_page');
-			$event_page_link = get_permalink($events_page_id);
-			if (stristr($event_page_link, "?"))
-				$joiner = "&amp;";
-			else
-				$joiner = "?";
-			$event_string = str_replace($result, "MAIL" , $event_string );
+	  if (preg_match('/#_CONTACTNAME$/', $result)) {
+      $event['event_contactperson_id'] ? $user_id = $event['event_contactperson_id'] : $user_id = get_option('dbem_default_contact_person');
+			$name = dbem_get_user_name($user_id);
+			$event_string = str_replace($result, $name, $event_string );
 		}
-			
+		if (preg_match('/#_CONTACTEMAIL$/', $result)) {         
+			$event['event_contactperson_id'] ? $user_id = $event['event_contactperson_id'] : $user_id = get_option('dbem_default_contact_person');
+      $email = dbem_get_user_email($user_id);
+			$event_string = str_replace($result, dbem_ascii_encode($email), $event_string );
+		}
+		if (preg_match('/#_CONTACTPHONE$/', $result)) {   
+			$event['event_contactperson_id'] ? $user_id = $event['event_contactperson_id'] : $user_id = get_option('dbem_default_contact_person');
+      $phone = dbem_get_user_phone($user_id);
+			$event_string = str_replace($result, dbem_ascii_encode($phone), $event_string );
+		}	
 		if (preg_match('/#_(IMAGE)/', $result)) {
 				
         if($event['location_image_url'] != '')

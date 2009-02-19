@@ -49,8 +49,10 @@ function dbem_global_map_json($eventful = false) {
 
 		$json_location = array();
 		foreach($location as $key => $value) {
-		 	$json_location[] = '"'.$key.'":"'.$value.'"';
+		 	$json_location[] = '"'.$key.'":"'.$value.'"';  
+			 
 		}
+		$json_location[] = '"location_baloon":"'.dbem_replace_locations_placeholders(get_option('dbem_location_baloon_format'), $location).'"';
 		$json_locations[] = "{".implode(",",$json_location)."}";
 	}        
 	$json .= implode(",", $json_locations); 
@@ -207,5 +209,13 @@ function dbem_update_phone($user_ID) {
 	}
 	
 }
-
+function dbem_get_indexed_users() {
+	global $wpdb;
+	$sql = "SELECT display_name, ID FROM $wpdb->users";  
+	$users = $wpdb->get_results($sql, ARRAY_A);  
+	$indexed_users = array();
+	foreach($users as $user) 
+		$indexed_users[$user['ID']] = $user['display_name'];
+ 	return $indexed_users;
+}
 ?>

@@ -139,7 +139,7 @@ function dbem_locations_edit_layout($location, $message = "") {
 				if ($gmap_is_active) {  
 			  	$layout .= " 
 			    
-				 <tr>
+				 <tr style='display:none;'>
 				  <td>Coordinates</td>
 					<td><input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='".$location['location_latitude']."' size='15'  />
 					<input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='".$location['location_longitude']."' size='15'  /></td>
@@ -220,10 +220,10 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 						foreach ($locations as $this_location) {
 							$table .= "		
 								<tr>\n
-								<td><input type='checkbox' class ='row-selector' value='".$this_location->location_id."' name='locations[]'/></td>\n
-								<td><a href='".get_bloginfo('url')."/wp-admin/admin.php?page=locations&action=edit&location_ID=$this_location->location_id'> $this_location->location_name</a></td>\n
-								<td>$this_location->location_address</td>\n
-								<td>$this_location->location_town</td>\n                         
+								<td><input type='checkbox' class ='row-selector' value='".$this_location['location_id']."' name='locations[]'/></td>\n
+								<td><a href='".get_bloginfo('url')."/wp-admin/admin.php?page=locations&action=edit&location_ID=".$this_location['location_id']."'>".$this_location['location_name']."</a></td>\n
+								<td>".$this_location['location_address']."</td>\n
+								<td>".$this_location['location_town']."</td>\n                         
 								</tr>\n";
 						}
 						$table .= "
@@ -270,17 +270,17 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 								    <p>".__('The address of the location', 'dbem').".</p>\n
 								 </div>\n
                
-								 <div class='form-field'>\n
+								 <div class='form-field '>\n
 								   <label for='location_town'>".__('Location town', 'dbem')."</label>\n
 								 	<input id='location-town' name='location_town' id='location_town' type='text' value='".$new_location['location_town']."' size='40'  />\n
 								    <p>".__('The town of the location', 'dbem').".</p>\n
 								 </div>\n   
 								
-							     <div class='form-field'>\n
+							     <div class='form-field' style='display:none;'>\n
 								   <label for='location_latitude'>LAT</label>\n
 								 	<input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='".$new_location['location_latitude']."' size='40'  />\n
 								 </div>\n
-								 <div class='form-field'>\n
+								 <div class='form-field' style='display:none;'>\n
 								   <label for='location_longitude'>LONG</label>\n
 								 	<input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='".$new_location['location_longitude']."' size='40'  />\n
 								 </div>\n
@@ -328,7 +328,7 @@ function dbem_get_locations($eventful = false) {
 			FROM $locations_table ORDER BY location_name";   
 	}
 
-	$locations = $wpdb->get_results($sql); 
+	$locations = $wpdb->get_results($sql, ARRAY_A); 
 	return $locations;  
 
 }
@@ -468,7 +468,7 @@ function dbem_global_map($atts) {
 			'scope' => 'all',
 			'width' => 450,
 			'height' => 300
-		), $atts));
+		), $atts));                                  
 	$events_page = dbem_get_events_page(true, false);
 	$gmaps_key = get_option('dbem_gmap_key');
 	$result = "<h3>Mappa totale</h3>";
@@ -478,7 +478,8 @@ function dbem_global_map($atts) {
 	  eventful = $eventful;
 	  scope = '$scope';
 	  events_page = '$events_page';
-	  GMapsKey = '$gmaps_key';
+	  GMapsKey = '$gmaps_key'; 
+		location_infos = '$location_infos'
 	//-->
 	</script>";
 	$result .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_global_map.js' type='text/javascript'></script>";
@@ -544,6 +545,10 @@ function dbem_replace_locations_placeholders($format, $location, $target="html")
 					$location_image = "";
 			$location_string = str_replace($result, $location_image , $location_string ); 
 		}
+	 if (preg_match('/#_(LOCATIONPAGEURL)/', $result)) {
+	       $venue_page_link = dbem_get_events_page(true, false)."&location_id=".$location['location_id'];
+	      	$location_string = str_replace($result, $venue_page_link , $location_string ); 
+	 }
 			
 	}
 	return $location_string;	

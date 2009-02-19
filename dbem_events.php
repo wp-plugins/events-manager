@@ -228,9 +228,9 @@ function dbem_options_subpanel() {
         <h3><?php _e('Events format', 'dbem');?></h3>   
 				<table class="form-table">
  						<?php
-						dbem_options_textarea('Default event list format', 'dbem_event_list_item_format', 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the symbol, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> Use HTML tags as <code>li</code>, <code>br</code>, etc.');
+						dbem_options_textarea('Default event list format', 'dbem_event_list_item_format', 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.');
 						dbem_options_input_text('Single event page title format', 'dbem_event_page_title_format', 'The format of a single event page title. Follow the previous formatting instructions.');
-						dbem_options_textarea('Default single event format','dbem_single_event_format','The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings.');
+						dbem_options_textarea('Default single event format','dbem_single_event_format','The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, <code>#_CONTACTPHONE</code> to insert respectively the name, e-mail address and phone number of the designated contact person. <br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings.');
 						dbem_options_radio_binary('Show events page in lists?', 'dbem_list_events_page', 'Check this option if you want the events page to appear together with other pages in pages lists.');
 						dbem_options_input_text('Events page title','dbem_events_page_title','The title on the multiple events page.');
 						dbem_options_input_text('No events message', 'dbem_no_events_message','The message displayed when no events are available.');
@@ -294,7 +294,10 @@ function dbem_options_subpanel() {
 				<h3><?php _e('RSVP and bookings', 'dbem');?></h3>
 				<table  class='form-table'>
 				   <?php
-					 	dbem_options_radio_binary(__('Enable the RSVP e-mail notifications?','dbem'),'dbem_rsvp_mail_notify_is_active', __('Check this option if you want to receive an email when someone books places for your events.','dbem') );
+					 	dbem_options_select(__('Default contact person','dbem'), 'dbem_default_contact_person', dbem_get_indexed_users(), __('Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event','dbem'));
+						dbem_options_radio_binary(__('Enable the RSVP e-mail notifications?','dbem'),'dbem_rsvp_mail_notify_is_active', __('Check this option if you want to receive an email when someone books places for your events.','dbem') );
+					  dbem_options_textarea('Contact person email format','dbem_contactperson_email_body','The format or the email which will be sent to  the contact person. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code>, <code>#_RESPEMAIL</code> and <code>#_RESPPHONE</code> to display respectively the name, e-mail, address and phone of the respondent.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent.<br/> Use <code>#_BOOKEDSEATS</code> and <code>#_AVAILABLESEATS</code> to display respectively the number of booked and available seats.');   
+					  dbem_options_textarea('Contact person email format','dbem_respondent_email_body','The format or the email which will be sent to reposdent. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code> to display the name of the respondent.<br/>Use <code>#_CONTACTNAME</code> and <code>#_CONTACTMAIL</code> a to display respectively the name and e-mail of the contact person.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent.');
 						dbem_options_input_text(__('Notification sender name','dbem'),'dbem_mail_sender_name', __("Insert the display name of the notification sender.",'dbem'));
 						dbem_options_input_text(__('Notification sender address','dbem'),'dbem_mail_sender_address', __("Insert the address of the notification sender. It must corresponds with your gmail account user",'dbem'));
 						dbem_options_input_text(__('Default notification receiver address','dbem'),'dbem_mail_receiver_address',__("Insert the address of the receiver of your notifications",'dbem'));
@@ -340,7 +343,7 @@ function dbem_options_subpanel() {
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_location_page_title_format, dbem_location_baloon_format, dbem_single_location_format, dbem_location_event_list_item_format, dbem_location_no_events_message, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_mail_notify_is_active, dbem_mail_sender_name, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_smtp_host, dbem_rsvp_mail_send_method, dbem_rsvp_mail_port, dbem_rsvp_mail_SMTPAuth, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
+				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_location_page_title_format, dbem_location_baloon_format, dbem_single_location_format, dbem_location_event_list_item_format, dbem_location_no_events_message, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_mail_notify_is_active, dbem_contactperson_email_body, dbem_respondent_email_body, dbem_mail_sender_name, dbem_smtp_username, dbem_smtp_password, dbem_default_contact_person, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_smtp_host, dbem_rsvp_mail_send_method, dbem_rsvp_mail_port, dbem_rsvp_mail_SMTPAuth, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
 				
 				
 			</form>
@@ -1111,10 +1114,10 @@ function dbem_event_form($event, $title, $element) {
 			    <?php
 				$gmap_is_active = get_option('dbem_gmap_is_active'); 
 				if ($gmap_is_active) {
-			 		echo "<div id='map-not-found' style='width: 450px; float: right; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p>".__('Map not found')."</p></div>";
-				echo "<div id='event-map' style='width: 450px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";  
+			 		echo "<div id='map-not-found' style='width: 400px; float: right; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p>".__('Map not found')."</p></div>";
+				echo "<div id='event-map' style='width: 400px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";  
 				?>
-				 		<div id="location_coordinates" class="stuffbox">
+				 		<div id="location_coordinates" class="stuffbox" style='display:none;'>
 							<h3><?php _e('Coordinates','dbem'); ?></h3>
 							<div class="inside">
 							<input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='".$location['location_latitude']."' size='15'  /> - <input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='".$location['location_longitude']."' size='15'  />
@@ -1305,29 +1308,31 @@ $j(document).ready( function() {
 	 	$j('input.row-selector').attr('checked', true);
 	 	else
 	 	$j('input.row-selector').attr('checked', false);
-	});
-	if ($j('select[name:dbem_rsvp_mail_send_method]').val() != "Smtp") {
-	 	$j('tr#dbem_smtp_host_row').hide();
-		$j('tr#dbem_rsvp_mail_SMTPAuth_row').hide();
-	 	$j('tr#dbem_smtp_username_row').hide(); 
-	 	$j('tr#dbem_smtp_password_row').hide();
-	 }    
+	}); 
+	// TODO: NOT WORKING FOR SOME REASON, val() gives me 2 instead of 'smtp'...
+	// console.log($j('select[name:dbem_rsvp_mail_send_method]').val());
+	// 	if ($j('select[name:dbem_rsvp_mail_send_method]').val() != "smtp") {
+	// 	 	$j('tr#dbem_smtp_host_row').hide();
+	// 		$j('tr#dbem_rsvp_mail_SMTPAuth_row').hide();
+	// 	 	$j('tr#dbem_smtp_username_row').hide(); 
+	// 	 	$j('tr#dbem_smtp_password_row').hide();
+	// 	 }    
+	//     
+	// 	 $j('select[name:dbem_rsvp_mail_send_method]').change(function() {
+	// 	 	console.log($j(this).val()); 
+	// 	 	if($j(this).val() == "smtp") {
+	// 	 		$j('tr#dbem_smtp_host_row').show();   
+	// 			$j('tr#dbem_rsvp_mail_SMTPAuth_row').show();
+	// 	 		$j('tr#dbem_smtp_username_row').show(); 
+	// 	 		$j('tr#dbem_smtp_password_row').show(); 
+	// 	 	} else {
+	// 	 		$j('tr#dbem_smtp_host_row').hide();
+	// 			$j('tr#dbem_rsvp_mail_SMTPAuth_row').hide();
+	// 	 		$j('tr#dbem_smtp_username_row').hide(); 
+	// 	 		$j('tr#dbem_smtp_password_row').hide();
+	// 	 	}                                                 
     
-	 $j('select[name:dbem_rsvp_mail_send_method]').change(function() {
-	 	console.log($j(this).val()); 
-	 	if($j(this).val() == "Smtp") {
-	 		$j('tr#dbem_smtp_host_row').show();   
-			$j('tr#dbem_rsvp_mail_SMTPAuth_row').show();
-	 		$j('tr#dbem_smtp_username_row').show(); 
-	 		$j('tr#dbem_smtp_password_row').show(); 
-	 	} else {
-	 		$j('tr#dbem_smtp_host_row').hide();
-			$j('tr#dbem_rsvp_mail_SMTPAuth_row').hide();
-	 		$j('tr#dbem_smtp_username_row').hide(); 
-	 		$j('tr#dbem_smtp_password_row').hide();
-	 	}
-    
-	 });
+	 //});
 	 updateIntervalDescriptor(); 
 	 updateIntervalSelectors();
 	 updateShowHideRecurrence();  

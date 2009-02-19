@@ -104,5 +104,5 @@ function loadMapScript(key) {
 
 function displayLocationInfo(marker, location) {
 	var location_infos = "<strong>"+ location.location_name +"</strong><br/>" + location.location_address + ", " + location.location_town + "<br/><small><a href='" + events_page + "&location_id=" + location.location_id + "'>Details<a>";
-	window.map.openInfoWindowHtml(marker.getLatLng(),location_infos,  {pixelOffset: new GSize(0,-32)});
+	window.map.openInfoWindowHtml(marker.getLatLng(),location.location_baloon,  {pixelOffset: new GSize(0,-32)});
 }
