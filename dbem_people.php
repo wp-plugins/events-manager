@@ -186,5 +186,26 @@ function dbem_add_person($name, $email, $phone = "") {
 	$new_person = dbem_get_person_by_name_and_email($name, $email);  
 	return ($new_person);
 }
+add_action('edit_user_profile', 'dbem_phone_field') ;    
+function dbem_phone_field() {
+	?>
+	<h3><?php _e('Phone number', 'dbem')?></h3>     
+	<table class='form-table'>
+		<tr>
+			<th><?php _e('Phone number','dbem');?></th>
+			<td><input id="dbem_phone" class="regular-text" type="text" value="" name="dbem_phone"/> <br/>
+			<?php _e('The phone number used by Events Manager when the user is indicated as the contact person for an event.','dbem');?></td>
+		</tr>
+	</table>
+	<?php
+}       
+
+add_action('profile_update','dbem_update_phone');
+function dbem_update_phone($user_ID) {
+	if(isset($_POST['dbem_phone']) && $_POST['dbem_phone'] != '') {
+		update_usermeta($user_ID,'dbem_phone', $_POST['dbem_phone']);
+	}
+	
+}
 
 ?>

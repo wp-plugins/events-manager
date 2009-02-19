@@ -188,7 +188,8 @@ function dbem_create_events_table() {
 			event_end_date date NULL, 
 			event_notes text NOT NULL,
 			event_rsvp bool NOT NULL DEFAULT 0,
-			event_seats tinyint,  
+			event_seats tinyint,
+			event_contactperson_id mediumint(9) NULL,  
 			location_id mediumint(9) NOT NULL,
 			recurrence_id mediumint(9) NULL,
 			UNIQUE KEY (event_id)
@@ -228,7 +229,8 @@ function dbem_create_events_table() {
 		maybe_add_column($table_name, 'event_rsvp', "alter table $table_name add event_rsvp BOOL NOT NULL;");
 		maybe_add_column($table_name, 'event_seats', "alter table $table_name add event_seats tinyint NULL;"); 
 		maybe_add_column($table_name, 'location_id', "alter table $table_name add location_id mediumint(9) NOT NULL;");    
-		maybe_add_column($table_name, 'recurrence_id', "alter table $table_name add recurrence_id mediumint(9) NULL;");  
+		maybe_add_column($table_name, 'recurrence_id', "alter table $table_name add recurrence_id mediumint(9) NULL;"); 
+		maybe_add_column($table_name, 'event_contactperson_id', "alter table $table_name add recurrence_id mediumint(9) NULL;");      
 	}
 }
 
@@ -399,7 +401,12 @@ function dbem_add_options() {
 	'dbem_rss_title_format' => DEFAULT_RSS_TITLE_FORMAT,
 	'dbem_gmap_is_active'=>0,
 	'dbem_gmap_key' => '',
-	'dbem_rsvp_mail_notify_is_active' => 0 ,
+	'dbem_rsvp_mail_notify_is_active' => 0 ,        
+	'dbem_rsvp_mail_port' => 465,
+	'dbem_smtp_host' => 'localhost',
+	'dbem_mail_sender_name' => '',
+	'dbem_rsvp_mail_send_method' => 'smtp',  
+	'dbem_rsvp_mail_SMTPAuth' => 1,
 	'dbem_image_max_width' => DEFAULT_IMAGE_MAX_WIDTH,
 	'dbem_image_max_height' => DEFAULT_IMAGE_MAX_HEIGHT,
 	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE,
@@ -441,8 +448,7 @@ function dbem_create_events_submenu () {
 }
 
 function dbem_replace_placeholders($format, $event, $target="html") {
-	
-	$event_string = $format;
+ 	$event_string = $format;
 	preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
 	foreach($placeholders[0] as $result) {    
 		// echo "RESULT: $result <br>";
@@ -489,7 +495,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				$joiner = "?";
 			$event_string = str_replace($result, "<a href='".get_permalink($events_page_id).$joiner."event_id=".$event['event_id']."'   title='".$event['event_name']."'>".$event['event_name']."</a>" , $event_string );
 		} 
-		if (preg_match('/#_URL/', $result)) {
+		if (preg_match('/#_EVENTPAGEURL/', $result)) {
 			$events_page_id = get_option('dbem_events_page');
 			$event_page_link = get_permalink($events_page_id);
 			if (stristr($event_page_link, "?"))
@@ -540,7 +546,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			$event_string = str_replace($result, $field_value , $event_string ); 
 	 	}
 	  
-		if (preg_match('/#_(LOCATION)/', $result)) {
+		if (preg_match('/#_(LOCATION)$/', $result)) {
 			$field = "location_name";
 		 	$field_value = $event[$field];     
 			if ($target == "html")    
@@ -550,7 +556,15 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			
 			$event_string = str_replace($result, $field_value , $event_string ); 
 	 	}
-	  
+	  if (preg_match('/#_CONTACTEMAIL$/', $result)) {
+			$events_page_id = get_option('dbem_events_page');
+			$event_page_link = get_permalink($events_page_id);
+			if (stristr($event_page_link, "?"))
+				$joiner = "&amp;";
+			else
+				$joiner = "?";
+			$event_string = str_replace($result, "MAIL" , $event_string );
+		}
 			
 		if (preg_match('/#_(IMAGE)/', $result)) {
 				
@@ -560,7 +574,11 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 					$location_image = "";
 				$event_string = str_replace($result, $location_image , $event_string ); 
 		 	}
-	
+	  
+		 if (preg_match('/#_(LOCATIONPAGEURL)/', $result)) {
+          $venue_page_link = dbem_get_events_page(true, false)."&location_id=".$event['location_id'];
+	       	$event_string = str_replace($result, $venue_page_link , $event_string ); 
+		}
 		// matches all PHP time placeholders for endtime
 		if (preg_match('/^#@[dDjlNSwzWFmMntLoYy]$/', $result)) {
 			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $event['event_end_date']), $event_string ); 
@@ -591,4 +609,8 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 	
 }
 
+function dbem_date_to_unix_time($date) {
+		$unix_time = mktime(0, 0, 0, substr($date,5,2), substr($date,8,2), substr($date,0,4));
+		return $unix_time;   
+}
 ?>

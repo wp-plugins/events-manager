@@ -461,7 +461,8 @@ function dbem_delete_image_files_for_location_id($location_id) {
 
 
 
-function dbem_global_map($atts) {
+function dbem_global_map($atts) {  
+	if (get_option('dbem_gmap_is_active') == '1') {
 	extract(shortcode_atts(array(
 			'eventful' => "false",
 			'scope' => 'all',
@@ -482,6 +483,10 @@ function dbem_global_map($atts) {
 	</script>";
 	$result .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_global_map.js' type='text/javascript'></script>";
 	$result .= "<ol id='dbem_locations_list'></ol>"; 
+	
+	} else {
+		$result = "";
+	}
 	return $result;
 }
 add_shortcode('locations_map', 'dbem_global_map'); 

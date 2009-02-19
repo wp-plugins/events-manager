@@ -137,7 +137,7 @@ function dbem_record_booking($event_id, $person_id, $seats) {
 	$bookings_table = $wpdb->prefix.BOOKINGS_TBNAME;
 	// checking whether the booker has already booked places
 	$sql = "SELECT * FROM $bookings_table WHERE event_id = '$event_id' and person_id = '$person_id'; ";       
-	echo $sql;
+	//echo $sql;
 	$previously_booked = $wpdb->get_row($sql);
 	if ($previously_booked) {  
 		  
@@ -323,10 +323,27 @@ function dbem_email_rsvp_booking(){
 	$bookerName = $_POST['bookerName'];
 	$bookerEmail = $_POST['bookerEmail'];    
 	$bookedSeats = $_POST['bookedSeats'];      
+	$event_id = $_GET['event_id'];
 	
-	$subject = "New booking!";
- 	$body = "$bookerName ($bookerEmail) will attend this event. He wants to reserve $bookedSeats seats.";
-	dbem_send_mail($subject, $body);
+	
+	$event = dbem_get_event($event_id);
+  //print_r($event);
+	$subject = "New booking!";        
+	
+
+	
+	$localised_date = date(__('M d, Y', 'dbem'), dbem_date_to_unix_time($event['event_start_date']));
+	$available_seats = dbem_get_available_seats($event_id);
+	$reserved_seats = dbem_get_booked_seats($event_id);
+	
+ 	$body = sprintf (__("%s (%s) will attend %s on %s. He wants to reserve %d places.\n\r Now there are %d places reserved, %d are still available.\n\r Yours faithfully,\n\rEvents Manager",'dbem'),$bookerName,$bookerEmail, $event['event_name'], $localised_date, $bookedSeats, $reserved_seats, $available_seats);
+	              
+	$receiver = '';
+	if($event['event_contactperson_id'] != "") 
+		$receiver = dbem_get_user_email($event['event_contactperson_id']); 
+
+	
+	dbem_send_mail($subject, $body, $receiver);
 	// 
 	// $mailer = new PHPMailer();
 	// $mailer->IsSMTP();
@@ -351,5 +368,11 @@ function dbem_email_rsvp_booking(){
 	// 	echo "Message has been sent";
 	// 
 	// }
+}    
+function dbem_get_user_email($user_id) {          
+	global $wpdb;    
+	$sql = "SELECT user_email FROM $wpdb->users WHERE ID = $user_id"; 
+
+	return $wpdb->get_var( $wpdb->prepare($sql) );
 }
 ?>

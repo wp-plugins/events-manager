@@ -72,6 +72,11 @@ function dbem_events_subpanel() {
 		
 		$event['event_rsvp'] = $_POST['event_rsvp'];
     $event['event_seats'] = $_POST['event_seats']; 
+    
+		if(isset($_POST['event_contactperson_id']) && $_POST['event_contactperson_id'] != '' && $_POST['event_contactperson_id'] != '-1') {
+			$event['event_contactperson_id'] = $_POST['event_contactperson_id'];
+			$recurrence['event_contactperson_id'] = $_POST['event_contactperson_id'];
+		}
 
 		if(!_dbem_is_time_valid($event_end_time))
 	 		$event_end_time = $event_time;
@@ -223,9 +228,9 @@ function dbem_options_subpanel() {
         <h3><?php _e('Events format', 'dbem');?></h3>   
 				<table class="form-table">
  						<?php
-						dbem_options_textarea('Default event list format', 'dbem_event_list_item_format', 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page. Use #_URL to print the event URL and make your own customised links. To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a # symbol before them, i.e. #m. #M, #j, etc.  Use HTML tags as <code>li</code>, <code>br</code>, etc.');
+						dbem_options_textarea('Default event list format', 'dbem_event_list_item_format', 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the symbol, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> Use HTML tags as <code>li</code>, <code>br</code>, etc.');
 						dbem_options_input_text('Single event page title format', 'dbem_event_page_title_format', 'The format of a single event page title. Follow the previous formatting instructions.');
-						dbem_options_textarea('Default single event format','dbem_single_event_format','The format of a single eventy page.<br/>Follow the previous formatting instructions. Use <code>#_MAP</code> to insert a map.');
+						dbem_options_textarea('Default single event format','dbem_single_event_format','The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings.');
 						dbem_options_radio_binary('Show events page in lists?', 'dbem_list_events_page', 'Check this option if you want the events page to appear together with other pages in pages lists.');
 						dbem_options_input_text('Events page title','dbem_events_page_title','The title on the multiple events page.');
 						dbem_options_input_text('No events message', 'dbem_no_events_message','The message displayed when no events are available.');
@@ -246,14 +251,14 @@ function dbem_options_subpanel() {
 								<?php _e('Follow the previous formatting instructions.','dbem')?>
 							</td>
 						</tr>
-						<?php dbem_options_textarea('Default single location page format','dbem_single_location_format','The format of a single location page.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code>.<br/> Use <code>#_MAP</code> to display a map of the event location, and <code>#_IMAGE</code> to display an image of the location.<br/> Use <code>#_NEXTEVENTS</code> to insert a list of the upcoming events, <code>#_PASTEVENTS</code> for a list of past events, <code>#_ALLEVENTS</code> for a list of all events taking place in tis location')?><br/>  
+						<?php dbem_options_textarea('Default single location page format','dbem_single_location_format','The format of a single location page.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code>.<br/> Use <code>#_MAP</code> to display a map of the event location, and <code>#_IMAGE</code> to display an image of the location.<br/> Use <code>#_NEXTEVENTS</code> to insert a list of the upcoming events, <code>#_PASTEVENTS</code> for a list of past events, <code>#_ALLEVENTS</code> for a list of all events taking place in this location.')?><br/>  
 								
 		 
 						<?php
 						 	
 						dbem_options_textarea('Default location baloon format', 'dbem_location_baloon_format', 'The format of of the text appearing in the baloon describing the location in the map.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code> or <code>#_IMAGE</code>.');
-						dbem_options_textarea('Default location event list format', 'dbem_location_event_list_item_format', 'The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element.');
-						dbem_options_textarea('Default no events message', 'dbem_location_no_events_message', 'The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available.<br/> Follow the events formatting instructions.');
+						dbem_options_textarea('Default location event list format', 'dbem_location_event_list_item_format', 'The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element. <br/> Follow the events formatting instructions');
+						dbem_options_textarea('Default no events message', 'dbem_location_no_events_message', 'The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available..');
 						
 						?>
 					</table>
@@ -287,45 +292,21 @@ function dbem_options_subpanel() {
 				</table>
 				
 				<h3><?php _e('RSVP and bookings', 'dbem');?></h3>
-					<?php $rsvp_mail_notify_is_active = get_option('dbem_rsvp_mail_notify_is_active'); ?> 
-					<table class='form-table'> 
-           	<tr valign="top">
-					  	<th scope="row"><?php _e('Enable the RSVP e-mail notifications?','dbem'); ?></th>
-					   	<td>
-								<input id="dbem_rsvp_mail_notify_is_active_yes" name="dbem_rsvp_mail_notify_is_active" type="radio" value="1" <?php if($rsvp_mail_notify_is_active) echo "checked='checked'"; ?> /><?php _e('Yes'); ?> <br />
-								<input name="dbem_rsvp_mail_notify_is_active" type="radio" value="0" <?php if(!$rsvp_mail_notify_is_active) echo "checked='checked'"; ?> /> <?php _e('No'); ?>  <br />
-								<?php _e('Check this option if you want to receive an email when someone books places for your events.','dbem')?>
-							</td>
-					  </tr>
-            <tr valign="top">
-							<th scope="row"><?php _e('SMTP username','dbem'); ?></th>
-							<td>
-								<input name="dbem_smtp_username" type="text" id="dbem_smtp_username" style="width: 95%" value="<?php echo get_option('dbem_smtp_username'); ?>" size="45" /><br />
-										<?php _e("Insert the username to be used to access your SMTP server",'dbem')?>.
-							</td>
-						</tr>
-						<tr valign="top">
-							<th scope="row"><?php _e('SMTP password','dbem'); ?></th>
-							<td>
-								<input name="dbem_smtp_password" type="password" id="dbem_smtp_password" style="width: 95%" value="<?php echo get_option('dbem_smtp_password'); ?>" size="45" /><br />
-										<?php _e("Insert the password to be used to access your SMTP server",'dbem')?>.
-							</td>
-						</tr>
-						<tr valign="top">
-							<th scope="row"><?php _e('Notification sender address','dbem'); ?></th>
-							<td>
-								<input name="dbem_mail_sender_address" type="text" id="dbem_mail_sender_address" style="width: 95%" value="<?php echo get_option('dbem_mail_sender_address'); ?>" size="45" /><br />
-										<?php _e("Insert the address of the notification sender. It must corresponds with your gmail account user",'dbem')?></a>.
-							</td>
-						</tr>
-						<tr valign="top">
-							<th scope="row"><?php _e('Notification receiver address','dbem'); ?></th>
-							<td>
-								<input name="dbem_mail_receiver_address" type="text" id="dbem_mail_receiver_address" style="width: 95%" value="<?php echo get_option('dbem_mail_receiver_address'); ?>" size="45" /><br />
-										<?php _e("Insert the address of the receiver of your notifications",'dbem')?>.
-							</td>
-						</tr>
-						   
+				<table  class='form-table'>
+				   <?php
+					 	dbem_options_radio_binary(__('Enable the RSVP e-mail notifications?','dbem'),'dbem_rsvp_mail_notify_is_active', __('Check this option if you want to receive an email when someone books places for your events.','dbem') );
+						dbem_options_input_text(__('Notification sender name','dbem'),'dbem_mail_sender_name', __("Insert the display name of the notification sender.",'dbem'));
+						dbem_options_input_text(__('Notification sender address','dbem'),'dbem_mail_sender_address', __("Insert the address of the notification sender. It must corresponds with your gmail account user",'dbem'));
+						dbem_options_input_text(__('Default notification receiver address','dbem'),'dbem_mail_receiver_address',__("Insert the address of the receiver of your notifications",'dbem'));
+						dbem_options_input_text('Mail sending port','dbem_rsvp_mail_port',__("The port through which you e-mail notifications will be sent. Make sure the firewall doesn't block this port",'dbem'));  
+						dbem_options_select(__('Mail sending method','dbem'), 'dbem_rsvp_mail_send_method', array('smtp'=>'SMTP','mail'=>__('PHP mail function', 'dbem'), 'sendmail' => 'Sendmail', 'qmail' => 'Qmail'), __('Select the method to send email notification.','dbem')); 
+						 dbem_options_radio_binary(__('Use SMTP authentication?','dbem'),'dbem_rsvp_mail_SMTPAuth', __('SMTP authenticatio is often needed. If you use GMail, make sure to set this parameter to Yes','dbem'));   
+						 dbem_options_input_text('SMTP host','dbem_smtp_host',__("The SMTP host. Usually it corresponds to 'localhost'. If you use GMail, set this value to 'ssl://smtp.gmail.com:465'.",'dbem'));									
+             dbem_options_input_text(__('SMTP username','dbem'),'dbem_smtp_username', __("Insert the username to be used to access your SMTP server.",'dbem'));
+						 dbem_options_input_password(__('SMTP password','dbem'),"dbem_smtp_password", __("Insert the password to be used to access your SMTP server",'dbem'));?>
+				 
+						
+			   
 					</table>
 				
 				 	<h3><?php _e('Images size', 'dbem');?></h3>
@@ -359,7 +340,7 @@ function dbem_options_subpanel() {
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
 				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_location_page_title_format, dbem_location_baloon_format, dbem_single_location_format, dbem_location_event_list_item_format, dbem_location_no_events_message, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_mail_notify_is_active, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
+				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_location_page_title_format, dbem_location_baloon_format, dbem_single_location_format, dbem_location_event_list_item_format, dbem_location_no_events_message, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_mail_notify_is_active, dbem_mail_sender_name, dbem_smtp_username, dbem_smtp_password, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_smtp_host, dbem_rsvp_mail_send_method, dbem_rsvp_mail_port, dbem_rsvp_mail_SMTPAuth, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
 				
 				
 			</form>
@@ -678,7 +659,8 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="", $lo
 	 				event_notes, 
 					event_rsvp,
 					recurrence_id, 
-					location_id 
+					location_id, 
+					event_contactperson_id
 					FROM $events_table   
 					$where
 					ORDER BY event_start_date $order
@@ -729,7 +711,8 @@ function dbem_get_event($event_id) {
 					event_rsvp,
 					event_seats,
 					recurrence_id, 
-					location_id
+					location_id,
+					event_contactperson_id
 				FROM $events_table   
 			    WHERE event_id = $event_id";   
 	     
@@ -1055,6 +1038,12 @@ function dbem_event_form($event, $title, $element) {
 							<div class="inside">
 								<p><input id="rsvp-checkbox" name='event_rsvp' value='1' type='checkbox' <?php echo $event_RSVP_checked ?> /> <? _e('Enable registration for this event', 'dbem')?></p>
 								<div id='rsvp-data'>
+								<?php 
+									if ($event['event_contactperson_id'] != NULL)
+								 				$selected = $event['event_contactperson_id'];
+											else
+												$selected = '0';?>
+								<p>Contact: <?php wp_dropdown_users(array('name'=>'event_contactperson_id', 'show_option_none'=>__("Select...",'dbem'),'selected'=>2)) ; ?>
 								<p>	<?php _e('Spaces');?>: <input id="seats-input" type="text" name="event_seats" size='5' value="<?php echo $event[$pref.'seats']?>" /><br/>
 								 <?php dbem_bookings_compact_table($event[$pref.'id']);  ?>
 							</div>
@@ -1123,7 +1112,17 @@ function dbem_event_form($event, $title, $element) {
 				$gmap_is_active = get_option('dbem_gmap_is_active'); 
 				if ($gmap_is_active) {
 			 		echo "<div id='map-not-found' style='width: 450px; float: right; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p>".__('Map not found')."</p></div>";
-				echo "<div id='event-map' style='width: 450px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";   
+				echo "<div id='event-map' style='width: 450px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";  
+				?>
+				 		<div id="location_coordinates" class="stuffbox">
+							<h3><?php _e('Coordinates','dbem'); ?></h3>
+							<div class="inside">
+							<input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='".$location['location_latitude']."' size='15'  /> - <input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='".$location['location_longitude']."' size='15'  />
+						</div>
+					</div>
+				
+				
+				<?php 
 			}
 				?>
 				<div id="location_name" class="stuffbox">
@@ -1147,12 +1146,7 @@ function dbem_event_form($event, $title, $element) {
 						<?php _e('The event town. Example: Verona. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy', 'dbem') ?>
 					</div>
 				</div>
-			 		<div id="location_coordinates" class="stuffbox">
-						<h3><?php _e('Coordinates','dbem'); ?></h3>
-						<div class="inside">
-						<input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='".$location['location_latitude']."' size='15'  /> - <input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='".$location['location_longitude']."' size='15'  />
-					</div>
-				</div>
+
 			
 
 				
@@ -1255,90 +1249,107 @@ function dbem_admin_general_script(){  ?>
 	<script type="text/javascript">
  	//<![CDATA[        
    // TODO: make more general, to support also latitude and longitude (when added)
-		$j=jQuery.noConflict();   
-		
-		function updateIntervalDescriptor () { 
-			$j(".interval-desc").hide();
-		    var number = "-plural";
-			if ($j('input#recurrence-interval').val() == 1 || $j('input#recurrence-interval').val() == "")
-				number = "-singular"
-			var descriptor = "span#interval-"+$j("select#recurrence-frequency").val()+number;
-			$j(descriptor).show();
-		}
-		function updateIntervalSelectors () {
-			$j('p.alternate-selector').hide();   
-			$j('p#'+ $j('select#recurrence-frequency').val() + "-selector").show();
-			//$j('p.recurrence-tip').hide();
-			//$j('p#'+ $j(this).val() + "-tip").show();
-		}
-		 function updateShowHideRecurrence () {
-			if($j('input#event-recurrence').attr("checked")) {
-			   $j("#event_recurrence_pattern").fadeIn();
-			   $j("input#localised-end-date").fadeIn();
-		   } else {
-			   $j("#event_recurrence_pattern").hide();
-			   $j("input#localised-end-date").hide();  
-		   	}
-		}
-		
-		 function updateShowHideRsvp () {
-			if($j('input#rsvp-checkbox').attr("checked")) {
-			   $j("div#rsvp-data").fadeIn();
-			} else {
-			   $j("div#rsvp-data").hide();
-			}
-		}
-		
-		$j(document).ready( function() {
-			locale_format = "ciao";
-	   		$j("#localised_example").show();
-			$j(".no-javascript-example").hide();
-			$j("#localised-date").show();
-		   
-			$j("#date-to-submit").hide();
-			$j("#end-date-to-submit").hide(); 
-			$j("#localised-date").datepicker($j.extend({},
-		  		($j.datepicker.regional["it"], 
-				{altField: "#date-to-submit", 
-				altFormat: "yy-mm-dd"})));
-	 	  	$j("#localised-end-date").datepicker($j.extend({},
-		  		($j.datepicker.regional["it"], 
-		  		{altField: "#end-date-to-submit", 
-		  		altFormat: "yy-mm-dd"})));
-		   
-		   $j('input.select-all').change(function(){
-				console.log('ecco: ' + $j(this).val() );
-				if($j(this).is(':checked'))
-					$j('input.row-selector').attr('checked', true);
-				else
-					$j('input.row-selector').attr('checked', false);
-		});
+$j=jQuery.noConflict();   
 
-		   updateIntervalDescriptor(); 
-		   updateIntervalSelectors();
-		   updateShowHideRecurrence();  
-		   updateShowHideRsvp();
-		   $j('input#event-recurrence').change(updateShowHideRecurrence);  
-		   $j('input#rsvp-checkbox').change(updateShowHideRsvp);   
-		// recurrency elements   
-		   $j('input#recurrence-interval').keyup(updateIntervalDescriptor);
-		   $j('select#recurrence-frequency').change(updateIntervalDescriptor);
-		   $j('select#recurrence-frequency').change(updateIntervalSelectors);
-			
-			// hiding or showing notes according to their content	
-	    	jQuery('.postbox h3').prepend('<a class="togbox">+</a> ');
-			// 	    	if(jQuery("textarea[@name=event_notes]").val()!="") {
-			//    jQuery("textarea[@name=event_notes]").parent().parent().removeClass('closed');
-			// }
-			jQuery('#event_notes h3').click( function() {
-	        	jQuery(jQuery(this).parent().get(0)).toggleClass('closed');
-				
-	    	});  
-	
-		
-		});
-		//]]>
-	</script>
+function updateIntervalDescriptor () { 
+	$j(".interval-desc").hide();
+	var number = "-plural";
+	if ($j('input#recurrence-interval').val() == 1 || $j('input#recurrence-interval').val() == "")
+	number = "-singular"
+	var descriptor = "span#interval-"+$j("select#recurrence-frequency").val()+number;
+	$j(descriptor).show();
+}
+function updateIntervalSelectors () {
+	$j('p.alternate-selector').hide();   
+	$j('p#'+ $j('select#recurrence-frequency').val() + "-selector").show();
+	//$j('p.recurrence-tip').hide();
+	//$j('p#'+ $j(this).val() + "-tip").show();
+}
+function updateShowHideRecurrence () {
+	if($j('input#event-recurrence').attr("checked")) {
+		$j("#event_recurrence_pattern").fadeIn();
+		$j("input#localised-end-date").fadeIn();
+	} else {
+		$j("#event_recurrence_pattern").hide();
+		$j("input#localised-end-date").hide();  
+	}
+}
+
+function updateShowHideRsvp () {
+	if($j('input#rsvp-checkbox').attr("checked")) {
+		$j("div#rsvp-data").fadeIn();
+	} else {
+		$j("div#rsvp-data").hide();
+	}
+}
+
+$j(document).ready( function() {
+	locale_format = "ciao";
+	$j("#localised_example").show();
+	$j(".no-javascript-example").hide();
+	$j("#localised-date").show();
+
+	$j("#date-to-submit").hide();
+	$j("#end-date-to-submit").hide(); 
+	$j("#localised-date").datepicker($j.extend({},
+		($j.datepicker.regional["it"], 
+		{altField: "#date-to-submit", 
+		altFormat: "yy-mm-dd"})));
+	$j("#localised-end-date").datepicker($j.extend({},
+		($j.datepicker.regional["it"], 
+		{altField: "#end-date-to-submit", 
+		altFormat: "yy-mm-dd"})));
+
+	$j('input.select-all').change(function(){
+	 	if($j(this).is(':checked'))
+	 	$j('input.row-selector').attr('checked', true);
+	 	else
+	 	$j('input.row-selector').attr('checked', false);
+	});
+	if ($j('select[name:dbem_rsvp_mail_send_method]').val() != "Smtp") {
+	 	$j('tr#dbem_smtp_host_row').hide();
+		$j('tr#dbem_rsvp_mail_SMTPAuth_row').hide();
+	 	$j('tr#dbem_smtp_username_row').hide(); 
+	 	$j('tr#dbem_smtp_password_row').hide();
+	 }    
+    
+	 $j('select[name:dbem_rsvp_mail_send_method]').change(function() {
+	 	console.log($j(this).val()); 
+	 	if($j(this).val() == "Smtp") {
+	 		$j('tr#dbem_smtp_host_row').show();   
+			$j('tr#dbem_rsvp_mail_SMTPAuth_row').show();
+	 		$j('tr#dbem_smtp_username_row').show(); 
+	 		$j('tr#dbem_smtp_password_row').show(); 
+	 	} else {
+	 		$j('tr#dbem_smtp_host_row').hide();
+			$j('tr#dbem_rsvp_mail_SMTPAuth_row').hide();
+	 		$j('tr#dbem_smtp_username_row').hide(); 
+	 		$j('tr#dbem_smtp_password_row').hide();
+	 	}
+    
+	 });
+	 updateIntervalDescriptor(); 
+	 updateIntervalSelectors();
+	 updateShowHideRecurrence();  
+	 updateShowHideRsvp();
+	 $j('input#event-recurrence').change(updateShowHideRecurrence);  
+	 $j('input#rsvp-checkbox').change(updateShowHideRsvp);   
+	 // recurrency elements   
+	 $j('input#recurrence-interval').keyup(updateIntervalDescriptor);
+	 $j('select#recurrence-frequency').change(updateIntervalDescriptor);
+	 $j('select#recurrence-frequency').change(updateIntervalSelectors);
+    
+	 // hiding or showing notes according to their content	
+	 jQuery('.postbox h3').prepend('<a class="togbox">+</a> ');
+	 // 	    	if(jQuery("textarea[@name=event_notes]").val()!="") {
+	 	//    jQuery("textarea[@name=event_notes]").parent().parent().removeClass('closed');
+	 	// }
+	jQuery('#event_notes h3').click( function() {
+		   	jQuery(jQuery(this).parent().get(0)).toggleClass('closed');
+    });  
+});
+//]]>
+</script>
 	  
 <?php	
 }
@@ -1467,14 +1478,15 @@ if ($gmap_is_active) {
 
 // Script to validate map options
 function dbem_admin_options_script() { 
-	if (isset($_REQUEST['page']) && $_REQUEST['page'] == 'events-manager/events-manager.php') {  
+	if (isset($_REQUEST['page']) && $_REQUEST['page'] == 'events-manager-options') {  
 	   ?>
 	<script type="text/javascript">
 	//<![CDATA[
 		$j=jQuery.noConflict();
-		
-		 $j(document).ready(function() {
-	  		    // users cannot enable Googlr Maps without an api key
+		 
+		 $j(document).ready(function() {   
+				
+	  		// users cannot enable Google Maps without an api key
 				function verifyOptionsForm(){
 				   	var gmap_is_active = $j("input[@name=dbem_gmap_is_active]:checked").val();
 						var gmap_key = $j("input[@name=dbem_gmap_key]").val();
