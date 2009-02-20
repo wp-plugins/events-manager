@@ -417,6 +417,11 @@ function dbem_update_location($location) {
 function dbem_insert_location($location) {
 		global $wpdb;	
 		$table_name = $wpdb->prefix.LOCATIONS_TBNAME; 
+		// if GMap is off the hidden fields are empty, so I add a custom value to make the query work
+		if (empty($location['location_longitude'])) 
+			$location['location_longitude'] = 0;
+		if (empty($location['location_latitude'])) 
+			$location['location_latitude'] = 0;
 		$sql = "INSERT INTO ".$table_name." (location_name, location_address, location_town, location_latitude, location_longitude, location_description)
 		VALUES ('".$location['location_name']."','".$location['location_address']."','".$location['location_town']."',".$location['location_latitude'].",".$location['location_longitude'].",'".$location['location_description']."')";
 		$wpdb->query($sql);

@@ -282,7 +282,7 @@ function dbem_create_locations_table() {
 			location_province tinytext,
 			location_latitude float DEFAULT NULL,
 			location_longitude float DEFAULT NULL,
-			location_description DEFAULT NULL,
+			location_description text DEFAULT NULL,
 			UNIQUE KEY (location_id)
 			);";
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
