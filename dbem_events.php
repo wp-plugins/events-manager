@@ -534,8 +534,28 @@ function dbem_admin_css() {
 
 add_action('admin_print_scripts','dbem_admin_css');
 
+// TEMPLATE TAGS   
+
 // exposed function, for theme  makers
-function dbem_get_events_list($limit="3", $scope="future", $order="ASC", $format='', $display=true) {
+function dbem_get_events_list($limit="3", $scope="future", $order="ASC", $format='', $echo=1) { 
+	if(strpos($limit, "=")) {
+		// allows the use of arguments without breaking the legacy code
+		$defaults = array(
+			'limit' => 3,
+			'scope' => 'future',
+			'order' => 'ASC',
+			'format' => '',
+			'echo' => 1
+		);
+
+		$r = wp_parse_args( $limit, $defaults );
+		extract( $r, EXTR_SKIP ); 
+		$limit = $r['limit']; 
+		$scope = $r['scope']; 
+		$order = $r['order']; 
+		$format = $r['format']; 
+		$echo = $r['echo']; 
+	}
 	if ($scope == "") 
 		$scope = "future";
 	if ($order != "DESC") 
@@ -555,28 +575,68 @@ function dbem_get_events_list($limit="3", $scope="future", $order="ASC", $format
 	} else {
 		$output = "<li class='dbem-no-events'>".get_option('dbem_no_events_message')."</li>";
 	}
-	if ($display)
+	if ($echo)
 		echo $output;
 	else
 		return $output;
 }  
 
-function dbem_get_events_page($justurl=false, $display=true) {
+function dbem_get_events_list_shortcode($atts) {  
+	extract(shortcode_atts(array(
+			'limit' => 3, 
+			'scope' => 'future',
+			'order' => 'ASC',
+			'format'=> '', 
+				), $atts));                                  
+	$result = dbem_get_events_list("limit=$limit&scope=$scope&order=$order&format=$format&echo=0") ;
+	return $result;
+}
+add_shortcode('events_list', 'dbem_get_events_list_shortcode');
+
+
+
+
+function dbem_get_events_page($justurl=0, $echo=1, $text='') {
+	if(strpos($justurl, "=")) {
+		// allows the use of arguments without breaking the legacy code
+		$defaults = array(
+			'justurl' => 0,
+			'text' => '', 
+			'echo' => 1,
+		);
+
+		$r = wp_parse_args( $justurl, $defaults );
+		extract( $r, EXTR_SKIP ); 
+		$justurl = $r['justurl']; 
+		$text = $r['text']; 
+		$echo = $r['echo']; 
+	}
+	 
 	$page_link = get_permalink(get_option("dbem_events_page")) ;
 	if($justurl) {  
 		$result = $page_link;
 	} else {
-		$page_title = get_option("dbem_events_page_title") ;
-		$result = "<a href='$page_link' title='$page_title'>$page_title</a>";
+		if ($text=='')
+			$text = get_option("dbem_events_page_title") ;
+		$result = "<a href='$page_link' title='$text'>$text</a>";
 	}
-	if ($display)
+	if ($echo)
 		echo $result;
 	else
 		return $result;
 	
 }       
+function dbem_get_events_page_shortcode($atts) {  
+	extract(shortcode_atts(array(
+			'justurl' => 0,
+			'text' => '',  
+				), $atts));                                  
+	$result = dbem_get_events_page("justurl=$justurl&text=$text&echo=0") ;
+	return $result;
+}
+add_shortcode('events_page', 'dbem_get_events_page_shortcode');
 
-// TEMPLATE TAGS
+
 
 function dbem_are_events_available($scope="future") {
 	if ($scope == "") 
@@ -1521,15 +1581,48 @@ function dbem_admin_options_script() {
 }
 add_action ('admin_head', 'dbem_admin_options_script');   
 
-function dbem_rss_link($justurl=false) {
+function dbem_rss_link($justurl=0, $echo=1, $text="RSS") {   
+	if(strpos($justurl, "=")) {         
+		// allows the use of arguments without breaking the legacy code
+		$defaults = array(
+			'justurl' => 0,  
+			'echo' => 1,   
+			'text' => 'RSS',
+		);
+
+		$r = wp_parse_args( $justurl, $defaults );
+		extract( $r, EXTR_SKIP ); 
+		$justurl = $r['justurl'];
+		$echo = $r['echo'];   
+		$text = $r['text'];    
+	}
+  if ($text == '')
+		$text = "RSS";
 	$rss_title = get_option('dbem_events_page_title');
 	$url = get_bloginfo('url')."/?dbem_rss=main";  
-	$link = "<a href='$url'>RSS</a>";
+	$link = "<a href='$url'>$text</a>";
+
 	if ($justurl)
-		echo $url;
+		$result =  $url;
 	else
-		echo $link;
+		$result = $link;
+	if($echo)
+		echo $result;
+	else
+		return $result;
 }  
+
+function dbem_rss_link_shortcode($atts) {  
+	extract(shortcode_atts(array(
+			'justurl' => 0,
+			'text' => 'RSS',
+		), $atts));                                  
+	$result = dbem_rss_link("justurl=$justurl&echo=0&text=$text") ;
+	return $result;
+}
+add_shortcode('events_rss_link', 'dbem_rss_link_shortcode');
+
+
 
 function dbem_rss() {
 	if (isset($_REQUEST['dbem_rss']) && $_REQUEST['dbem_rss'] == 'main') {	

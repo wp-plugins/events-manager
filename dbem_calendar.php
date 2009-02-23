@@ -1,8 +1,22 @@
 <?php
 
-function dbem_get_calendar($month="") {
+function dbem_get_calendar_shortcode($atts) {  
+	$result = dbem_get_calendar("echo=0");
+	return $result;
+}    
+add_shortcode('events_calendar', 'dbem_get_calendar_shortcode');
+
+function dbem_get_calendar($args) {
+  $defaults = array(
+		'month' => '',
+		'echo' => 1
+	);
+  	$r = wp_parse_args( $args, $defaults );
+	extract( $r, EXTR_SKIP ); 
+	$month = $r['month']; 
+	$echo = $r['echo'];
 	
-	global $wpdb;
+ 	global $wpdb;  
 //	if (!($month))
 	$date = mktime(0,0,0,date('m'), date('d'), date('Y')); 
 	$day = date('d', $date); 
@@ -219,8 +233,10 @@ if($events){
 	}
 }
 	$output=$calendar;
-	
-	echo $output;
+	if ($echo)
+		echo $output; 
+	else
+		return $output;
 }
 
 function dbem_days_in_month($month, $year) {
