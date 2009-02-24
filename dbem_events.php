@@ -104,7 +104,7 @@ function dbem_events_subpanel() {
 				$new_location = dbem_insert_location($location);
 				$event['location_id']= $new_location['location_id'];
 				$recurrence['location_id'] = $new_location['location_id']; 
-				print_r($new_location);
+				//print_r($new_location);
 				
 			}     
 			   			 		
@@ -113,8 +113,8 @@ function dbem_events_subpanel() {
 		  	if ($_POST[repeated_event]) {
 				
 		  			//insert new recurrence
-		  		 echo "<h2>Inserimento nuova ricorrenza:".$recurrence['recurrence_id']."- </h2>"; 	
-		  			dbem_insert_recurrent_event($event,$recurrence);
+		  		  dbem_insert_recurrent_event($event,$recurrence);
+		 				$feedback_message = __('New recurrent event inserted!','dbem'); 
 		  	} else {
 		  		// INSERT new event 
 		  		$wpdb->insert($event_table_name, $event); 
@@ -975,6 +975,7 @@ function dbem_event_form($event, $title, $element) {
 	
 	$locale_code = substr(get_locale(), 0, 2); 
 	$localised_date_format = $localised_date_formats[$locale_code];
+
 	$localised_example = str_replace("yy", "2008", str_replace("mm", "11", str_replace("dd", "28", $localised_date_format))); 
 	$localised_end_example = str_replace("yy", "2008", str_replace("mm", "11", str_replace("dd", "28", $localised_date_format)));
 	
@@ -1003,7 +1004,7 @@ function dbem_event_form($event, $title, $element) {
 	$freq_options = array("daily" => __('Daily', 'dbem'), "weekly" => __('Weekly','dbem'),"monthly" => __('Monthly','dbem'));    
 	$days_names = array(1 => __('Mon'), 2 => __('Tue'), 3 =>__('Wed'), 4 =>__('Thu'), 5 =>__('Fri'), 6 =>__('Sat'), 7 =>__('Sun'));
  	$saved_bydays = explode(",", $event['recurrence_byday']);
-	$weekno_options = array("1" => __('first', 'dbem'), '2' => _('second','dbem'),'3'=>__('third','dbem'),'4'=>__('fourth', 'dbem'), '-1'=>__('last','dbem'));
+	$weekno_options = array("1" => __('first', 'dbem'), '2' => __('second','dbem'),'3'=>__('third','dbem'),'4'=>__('fourth', 'dbem'), '-1'=>__('last','dbem'));
 	
 	$event[$pref.'rsvp'] ? $event_RSVP_checked = "checked='checked'" :  $event_RSVP_checked ='';
 	
@@ -1094,11 +1095,22 @@ function dbem_event_form($event, $title, $element) {
 							
 							
 						</div>
-					   			
-       	    	   <div id="submitdiv" class="postbox " >
+					   
+						<div id="submitdiv" class="postbox " >
+						<div class="handlediv" title="Fare clic per cambiare."><br /></div>
+						<h3 class='hndle'><span>Contact Person</span></h3>
+						<div class="inside">
+							<p>Contact: <?php wp_dropdown_users(array('name'=>'event_contactperson_id', 'show_option_none'=>__("Select...",'dbem'),'selected'=>2)) ; ?></p> 
+						</div>
+					</div>       
+			 
+					
+								
+       	    	<div id="submitdiv" class="postbox " >
 							<div class="handlediv" title="Fare clic per cambiare."><br /></div>
 							<h3 class='hndle'><span>RSVP</span></h3>
 							<div class="inside">
+								 
 								<p><input id="rsvp-checkbox" name='event_rsvp' value='1' type='checkbox' <?php echo $event_RSVP_checked ?> /> <? _e('Enable registration for this event', 'dbem')?></p>
 								<div id='rsvp-data'>
 								<?php 
@@ -1106,8 +1118,7 @@ function dbem_event_form($event, $title, $element) {
 								 				$selected = $event['event_contactperson_id'];
 											else
 												$selected = '0';?>
-								<p>Contact: <?php wp_dropdown_users(array('name'=>'event_contactperson_id', 'show_option_none'=>__("Select...",'dbem'),'selected'=>2)) ; ?>
-								<p>	<?php _e('Spaces');?>: <input id="seats-input" type="text" name="event_seats" size='5' value="<?php echo $event[$pref.'seats']?>" /><br/>
+								<p>	<?php _e('Spaces');?>: <input id="seats-input" type="text" name="event_seats" size='5' value="<?php echo $event[$pref.'seats']?>" /><p/>
 								 <?php dbem_bookings_compact_table($event[$pref.'id']);  ?>
 							</div>
 						</div>       
@@ -1252,7 +1263,7 @@ function dbem_validate_event($event) {
 	$end_time = $event['event_end_hh'].":".$event['event_end_mm']; 
 	// TODO re-IMPLEMENT TIME VALIDATION
 	// if ( !_dbem_is_time_valid($time) ) {
-	// 	return _("invalid time","dbem");
+	// 	return __("invalid time","dbem");
 	// }   
 	$use_event_end = get_option('dbem_use_event_end'); 
 	if ($use_event_end && $event['event_date']." ".$time  > $event['event_end_date']." ".$end_time)

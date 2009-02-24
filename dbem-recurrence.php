@@ -73,7 +73,7 @@ function dbem_get_recurrence_events($recurrence){
 	$last_week_start = array(25, 22, 25, 24, 25, 24, 25, 25, 24, 25, 24, 25);
 	
 	$weekdays = explode(",", $recurrence['recurrence_byday']);
-	print_r($weekdays);
+	//print_r($weekdays);
 	
 	$weekcounter = 0;
 	$daycounter = 0; 
@@ -123,7 +123,7 @@ function dbem_get_recurrence_events($recurrence){
 
 	}   
 	
-	print_r($matching_days);
+ // print_r($matching_days);
 	
 	return $matching_days ;
 	
@@ -140,12 +140,13 @@ function dbem_insert_recurrent_event($event, $recurrence ){
 		$recurrence_table = $wpdb->prefix.RECURRENCE_TBNAME;
 		
 		if (true) {//TODO add recurrence validation
-			$wpdb->show_errors(true);
+		 //$wpdb->show_errors(true);
 			
 			$wpdb->insert($recurrence_table, $recurrence);
+			//print_r($recurrence);
 		 	$recurrence['recurrence_id'] = mysql_insert_id();
 			$output = "<h2>Recurring</h2>";
-			echo "recurrence_id = $recurrence_id<br/>";  
+			//echo "recurrence_id = $recurrence_id<br/>";  
 			dbem_insert_events_for_recurrence($recurrence);
 		 
 			                         
@@ -155,7 +156,7 @@ function dbem_insert_events_for_recurrence($recurrence) {
 	global $wpdb;
 	$events_table = $wpdb->prefix.EVENTS_TBNAME;   
 	$matching_days = dbem_get_recurrence_events($recurrence);
-	print_r($matching_days);	 
+	//print_r($matching_days);	 
 	sort($matching_days);
 		
 	foreach($matching_days as $day) {

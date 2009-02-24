@@ -206,8 +206,10 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 				 	 <form id='bookings-filter' method='get' action='$destination'>\n
 						<input type='hidden' name='page' value='locations'/>\n
 						<input type='hidden' name='action' value='edit_location'/>\n
-						<input type='hidden' name='event_id' value='$event_id'/>\n
-						<table class='widefat'>\n
+						<input type='hidden' name='event_id' value='$event_id'/>\n";
+						
+						if (count($locations)>0) {
+						$table .= "<table class='widefat'>\n
 							<thead>\n
 								<tr>\n
 									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'></th>\n
@@ -240,12 +242,16 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 
 						<div class='tablenav'>\n
 							<div class=alignleft actions>\n
-							 <input type='hidden' name='action2' value='delete'/>
-						 	 <input class='button-secondary action' type='submit' name='doaction2' value='Delete'/>\n
-								<br class='clear'/>\n 
+							<input type='hidden' name='action2' value='delete'/>
+						 	<input class='button-secondary action' type='submit' name='doaction2' value='Delete'/>\n
+							<br class='clear'/>\n 
 							</div>\n
 							<br class='clear'/>\n
-							</div>\n
+							</div>\n";
+						} else {
+								$table .= "<p>".__('No venues have been inserted yet!', 'dbem');
+						}
+						 $table .= "
 						</form>\n
 					</div>\n
 				</div>  <?-- end col-right -->\n     
