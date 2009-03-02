@@ -168,7 +168,7 @@ function dbem_locations_edit_layout($location, $message = "") {
 
 				</tr>
 				<tr class='form-field'>
-					<th scope='row' valign='top'><label for='location_picture'>".__('Location picture', 'dbem')."</label></th>
+					<th scope='row' valign='top'><label for='location_picture'>".__('Location image', 'dbem')."</label></th>
 					<td>";
 					if ($location['location_image_url'] != '') 
 						$layout .= "<img src='".$location['location_image_url']."' alt='".$location['location_name']."'/>";

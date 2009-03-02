@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: events-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2008-08-17 16:34+0100\n"
+"POT-Creation-Date: 2009-03-02 20:07+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Davide Benini <cno@cnomania.it>\n"
 "Language-Team: \n"
@@ -16,47 +16,858 @@ msgstr ""
 "X-Poedit-KeywordsList: _e;__\n"
 "X-Poedit-SearchPath-0: .\n"
 
-#: dbem_calendar.php:121
-msgid "M_Monday_initial"
-msgstr "L"
+#: dbem-recurrence.php:224
+msgid "Monday"
+msgstr "Lunedì"
 
-#: dbem_calendar.php:121
-msgid "T_Tuesday_initial"
+#: dbem-recurrence.php:224
+msgid "Tuesday"
+msgstr "Martedì"
+
+#: dbem-recurrence.php:224
+#, fuzzy
+msgid "Wednesday"
 msgstr "M"
 
-#: dbem_calendar.php:121
-msgid "W_Wednesday_initial"
-msgstr "M"
-
-#: dbem_calendar.php:121
-msgid "T_Thursday_initial"
+#: dbem-recurrence.php:224
+#, fuzzy
+msgid "Thursday"
 msgstr "G"
 
-#: dbem_calendar.php:121
-msgid "F_Friday_initial"
-msgstr "V"
+#: dbem-recurrence.php:224
+msgid "Friday"
+msgstr "Venerdì"
 
-#: dbem_calendar.php:121
-msgid "S_Saturday_initial"
+#: dbem-recurrence.php:224
+#, fuzzy
+msgid "Saturday"
 msgstr "S"
 
-#: dbem_calendar.php:121
-msgid "S_Sunday_initial"
-msgstr "D"
+#: dbem-recurrence.php:224
+msgid "Sunday"
+msgstr "Domenica"
+
+#: dbem-recurrence.php:225
+#, php-format
+msgid "the first %s of the month"
+msgstr "il primo %s del mese"
+
+#: dbem-recurrence.php:225
+#, php-format
+msgid "the second %s of the month"
+msgstr "il secondo % del mese"
+
+#: dbem-recurrence.php:225
+#, php-format
+msgid "the third %s of the month"
+msgstr "il terso %s del mese"
+
+#: dbem-recurrence.php:225
+#, php-format
+msgid "the fourth %s of the month"
+msgstr "il quarto %s del mese"
+
+#: dbem-recurrence.php:225
+#, php-format
+msgid "the last %s of the month"
+msgstr "l'ultimo %s del mese"
+
+#: dbem-recurrence.php:226
+#, php-format
+msgid "From %1$s to %2$s"
+msgstr "Dal %1$s al %2$s"
+
+#: dbem-recurrence.php:229
+msgid "everyday"
+msgstr "ogni giorno"
+
+#: dbem-recurrence.php:231
+#, php-format
+msgid "every %s days"
+msgstr "ogni %s giorni"
+
+#: dbem-recurrence.php:241
+#, php-format
+msgid "every %s weeks"
+msgstr "ogni %s settimane"
+
+#: dbem-recurrence.php:252
+#, php-format
+msgid "every %s months"
+msgstr "ogni %s mesi"
+
+#: dbem_events.php:6
+#: dbem_events.php:170
+msgid "Insert New Event"
+msgstr "Inserisci un nuovo evento"
+
+#: dbem_events.php:122
+#, fuzzy
+msgid "New recurrent event inserted!"
+msgstr "Nuovo evento inserito!"
+
+#: dbem_events.php:126
+msgid "New event successfully inserted!"
+msgstr "Nuovo evento inserito!"
+
+#: dbem_events.php:135
+msgid "Recurrence updated!"
+msgstr "Ricorrenza aggiornata!"
+
+#: dbem_events.php:137
+msgid "Something went wrong with the recurrence update..."
+msgstr "Caspita, si è verificato un problema durante l'aggiornamento della ricorrenza..."
+
+#: dbem_events.php:145
+msgid "updated"
+msgstr "aggiornato"
+
+#: dbem_events.php:162
+msgid "Ach, there's a problem here:"
+msgstr "Houston, abbiamo un problema:"
+
+#: dbem_events.php:173
+msgid "Edit Event"
+msgstr "Modifica l'evento"
+
+#: dbem_events.php:188
+msgid "Reschedule"
+msgstr "Riprogramma"
+
+#: dbem_events.php:205
+msgid "Past Events"
+msgstr "Eventi passati"
+
+#: dbem_events.php:208
+msgid "All Events"
+msgstr "Tutti gli eventi"
+
+#: dbem_events.php:211
+msgid "Future Events"
+msgstr "Eventi futuri"
+
+#: dbem_events.php:234
+msgid "Event Manager Options"
+msgstr "Opzioni di Events Manager"
+
+#: dbem_events.php:237
+#, fuzzy
+msgid "Events format"
+msgstr "Lista eventi"
+
+#: dbem_events.php:253
+#, fuzzy
+msgid "Locations format"
+msgstr "Luogo"
+
+#: dbem_events.php:256
+#, fuzzy
+msgid "Single location page title format"
+msgstr "Formato del titolo della pagina eventi"
+
+#: dbem_events.php:259
+#, fuzzy
+msgid "The format of a single location page title."
+msgstr "Il formato del titolo della pagina di un singolo evento."
+
+#: dbem_events.php:260
+#: dbem_events.php:299
+msgid "Follow the previous formatting instructions."
+msgstr "Seguire le istruzioni di formattazione precedenti."
+
+#: dbem_events.php:275
+msgid "Maps and geotagging"
+msgstr "Mappe e geotagging"
+
+#: dbem_events.php:280
+msgid "Enable Google Maps integration?"
+msgstr "Abilitare l'integrazione con Google Maps?"
+
+#: dbem_events.php:282
+#: dbem_UI_helpers.php:68
+msgid "Yes"
+msgstr "Sì"
+
+#: dbem_events.php:283
+#: dbem_UI_helpers.php:69
+msgid "No"
+msgstr "No"
+
+#: dbem_events.php:284
+msgid "Check this option to enable Goggle Map integration."
+msgstr "Selezionare questa opzione per abilitare l'integrazione con Google Maps."
+
+#: dbem_events.php:289
+msgid "Google Maps API Key"
+msgstr "Chiave API di Google Maps"
+
+#: dbem_events.php:292
+msgid "To display Google Maps you need a Google Maps API key. Don't worry, it's free, you can get one"
+msgstr "Per visualizzare una mappa di Google Maps è necessaria una chiave API di Google Maps. Non preoccupatevi, è gratuita,  è sufficiente andare su"
+
+#: dbem_events.php:292
+msgid "here"
+msgstr "questa pagina"
+
+#: dbem_events.php:296
+msgid "Map text format"
+msgstr "Formato del testo della mappa"
+
+#: dbem_events.php:298
+msgid "The format the text appearing in the map cloud."
+msgstr "Il fomato del testo del fumetto che appare sulla mappa."
+
+#: dbem_events.php:303
+msgid "RSVP and bookings"
+msgstr "RSVP e prenotazioni"
+
+#: dbem_events.php:306
+msgid "Default contact person"
+msgstr ""
+
+#: dbem_events.php:306
+msgid "Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event"
+msgstr ""
+
+#: dbem_events.php:307
+msgid "Enable the RSVP e-mail notifications?"
+msgstr ""
+
+#: dbem_events.php:307
+#, fuzzy
+msgid "Check this option if you want to receive an email when someone books places for your events."
+msgstr "Selezionare questa opzione se si vuole che  la pagina degli eventi compaia nelle liste delle pagine."
+
+#: dbem_events.php:310
+msgid "Notification sender name"
+msgstr ""
+
+#: dbem_events.php:310
+msgid "Insert the display name of the notification sender."
+msgstr ""
+
+#: dbem_events.php:311
+msgid "Notification sender address"
+msgstr ""
+
+#: dbem_events.php:311
+msgid "Insert the address of the notification sender. It must corresponds with your gmail account user"
+msgstr ""
+
+#: dbem_events.php:312
+msgid "Default notification receiver address"
+msgstr ""
+
+#: dbem_events.php:312
+msgid "Insert the address of the receiver of your notifications"
+msgstr ""
+
+#: dbem_events.php:313
+msgid "The port through which you e-mail notifications will be sent. Make sure the firewall doesn't block this port"
+msgstr ""
+
+#: dbem_events.php:314
+msgid "Mail sending method"
+msgstr ""
+
+#: dbem_events.php:314
+msgid "PHP mail function"
+msgstr ""
+
+#: dbem_events.php:314
+msgid "Select the method to send email notification."
+msgstr ""
+
+#: dbem_events.php:315
+msgid "Use SMTP authentication?"
+msgstr ""
+
+#: dbem_events.php:315
+msgid "SMTP authenticatio is often needed. If you use GMail, make sure to set this parameter to Yes"
+msgstr ""
+
+#: dbem_events.php:316
+msgid "The SMTP host. Usually it corresponds to 'localhost'. If you use GMail, set this value to 'ssl://smtp.gmail.com:465'."
+msgstr ""
+
+#: dbem_events.php:317
+msgid "SMTP username"
+msgstr ""
+
+#: dbem_events.php:317
+msgid "Insert the username to be used to access your SMTP server."
+msgstr ""
+
+#: dbem_events.php:318
+msgid "SMTP password"
+msgstr ""
+
+#: dbem_events.php:318
+msgid "Insert the password to be used to access your SMTP server"
+msgstr ""
+
+#: dbem_events.php:324
+msgid "Images size"
+msgstr ""
+
+#: dbem_events.php:327
+msgid "Maximum width (px)"
+msgstr ""
+
+#: dbem_events.php:330
+msgid "The maximum allowed width for images uploades"
+msgstr ""
+
+#: dbem_events.php:334
+msgid "Maximum height (px)"
+msgstr ""
+
+#: dbem_events.php:337
+msgid "The maximum allowed width for images uploaded, in pixels"
+msgstr ""
+
+#: dbem_events.php:341
+msgid "Maximum size (bytes)"
+msgstr ""
+
+#: dbem_events.php:344
+msgid "The maximum allowed size for images uploaded, in pixels"
+msgstr ""
+
+#: dbem_events.php:352
+msgid "Save Changes"
+msgstr "Salva le modifiche"
+
+#: dbem_events.php:827
+msgid "New Event ..."
+msgstr "Nuovo evento..."
+
+#: dbem_events.php:831
+#: dbem_events.php:836
+#: dbem_widgets.php:90
+msgid "Past events"
+msgstr "Eventi passati"
+
+#: dbem_events.php:832
+#: dbem_events.php:837
+#: dbem_widgets.php:89
+msgid "All events"
+msgstr "Tutti gli eventi"
+
+#: dbem_events.php:833
+#: dbem_events.php:838
+#: dbem_widgets.php:88
+msgid "Future events"
+msgstr "Eventi futuri"
+
+#: dbem_events.php:845
+#, fuzzy
+msgid "Total"
+msgstr "Titolo"
+
+#: dbem_events.php:852
+#, fuzzy
+msgid "Bulk Actions"
+msgstr "Azioni"
+
+#: dbem_events.php:853
+msgid "Delete selected"
+msgstr ""
+
+#: dbem_events.php:868
+msgid "Filter"
+msgstr ""
+
+#: dbem_events.php:883
+#: dbem_events.php:1159
+#: dbem_locations.php:225
+#: dbem_locations.php:233
+#: dbem_people.php:90
+msgid "Name"
+msgstr "Nome"
+
+#: dbem_events.php:884
+#: dbem_events.php:1218
+msgid "Location"
+msgstr "Luogo"
+
+#: dbem_events.php:887
+#, fuzzy
+msgid "Date and time"
+msgstr "Giorno e ora."
+
+#: dbem_events.php:899
+msgid "D d M Y"
+msgstr ""
+
+#: dbem_events.php:1025
+msgid "Daily"
+msgstr ""
+
+#: dbem_events.php:1025
+msgid "Weekly"
+msgstr ""
+
+#: dbem_events.php:1025
+msgid "Monthly"
+msgstr ""
+
+#: dbem_events.php:1026
+msgid "Mon"
+msgstr ""
+
+#: dbem_events.php:1026
+msgid "Tue"
+msgstr ""
+
+#: dbem_events.php:1026
+msgid "Wed"
+msgstr ""
+
+#: dbem_events.php:1026
+msgid "Thu"
+msgstr ""
+
+#: dbem_events.php:1026
+msgid "Fri"
+msgstr ""
+
+#: dbem_events.php:1026
+msgid "Sat"
+msgstr ""
+
+#: dbem_events.php:1026
+msgid "Sun"
+msgstr ""
+
+#: dbem_events.php:1028
+msgid "first"
+msgstr ""
+
+#: dbem_events.php:1028
+msgid "second"
+msgstr ""
+
+#: dbem_events.php:1028
+msgid "third"
+msgstr ""
+
+#: dbem_events.php:1028
+msgid "fourth"
+msgstr ""
+
+#: dbem_events.php:1028
+msgid "last"
+msgstr ""
+
+#: dbem_events.php:1041
+msgid "WARNING: This is a recurrence."
+msgstr ""
+
+#: dbem_events.php:1042
+msgid "Modifying these data all the events linked to this recurrence will be rescheduled"
+msgstr ""
+
+#: dbem_events.php:1045
+msgid "WARNING: This is a recurring event."
+msgstr ""
+
+#: dbem_events.php:1046
+msgid "If you change these data and save, this will become an independent event."
+msgstr ""
+
+#: dbem_events.php:1069
+#, fuzzy
+msgid "Repeated event"
+msgstr "Eventi passati"
+
+#: dbem_events.php:1076
+#: dbem_events.php:1091
+#, fuzzy
+msgid "Every"
+msgstr "Evento"
+
+#: dbem_events.php:1078
+msgid "day"
+msgstr ""
+
+#: dbem_events.php:1079
+msgid "days"
+msgstr ""
+
+#: dbem_events.php:1080
+msgid "week"
+msgstr ""
+
+#: dbem_events.php:1081
+msgid "weeks"
+msgstr ""
+
+#: dbem_events.php:1082
+msgid "month"
+msgstr ""
+
+#: dbem_events.php:1083
+msgid "months"
+msgstr ""
+
+#: dbem_events.php:1100
+msgid "Check if your event happens more than once according to a regular pattern"
+msgstr ""
+
+#: dbem_events.php:1105
+msgid "This is't a recurrent event"
+msgstr ""
+
+#: dbem_events.php:1124
+msgid "Select..."
+msgstr ""
+
+#: dbem_events.php:1135
+msgid "Enable registration for this event"
+msgstr ""
+
+#: dbem_events.php:1142
+#: dbem_rsvp.php:247
+msgid "Spaces"
+msgstr ""
+
+#: dbem_events.php:1162
+msgid "The event name. Example: Birthday party"
+msgstr "Il nome dell'evento. Esempio: festa di compleanno."
+
+#: dbem_events.php:1169
+#, fuzzy
+msgid "Event dates"
+msgstr "Eventi"
+
+#: dbem_events.php:1178
+#, fuzzy
+msgid "The event beginning and end date"
+msgstr "Giorno e ora dell'evento"
+
+#: dbem_events.php:1178
+msgid "Example:"
+msgstr "Esempio: "
+
+#: dbem_events.php:1178
+#, fuzzy
+msgid "Example: 2008-11-28"
+msgstr "Esempio: 2008-11-27"
+
+#: dbem_events.php:1188
+#, fuzzy
+msgid "Event time"
+msgstr "Lista eventi"
+
+#: dbem_events.php:1194
+msgid "The time of the event beginning and end"
+msgstr ""
+
+#: dbem_events.php:1207
+msgid "Coordinates"
+msgstr ""
+
+#: dbem_events.php:1222
+#, fuzzy
+msgid "Name:"
+msgstr "Nome"
+
+#: dbem_events.php:1225
+#: dbem_locations.php:160
+#: dbem_locations.php:312
+msgid "Map not found"
+msgstr "Mappa non trovata"
+
+#: dbem_events.php:1232
+#, fuzzy
+msgid "The name of the location where the event takes place. You can use the name of a venue, a square, etc"
+msgstr "Il locale dove avviene l'evento. Esempio: Arena"
+
+#: dbem_events.php:1236
+#, fuzzy
+msgid "Address:"
+msgstr "Indirizzo"
+
+#: dbem_events.php:1240
+#, fuzzy
+msgid "The address of the location where the event takes place. Example: 21, Dominick Street"
+msgstr "Il locale dove avviene l'evento. Esempio: Arena"
+
+#: dbem_events.php:1244
+#, fuzzy
+msgid "Town:"
+msgstr "Città"
+
+#: dbem_events.php:1248
+#, fuzzy
+msgid "The town where the location is located. If you're using the Google Map integration and want to avoid geotagging ambiguities include the country in the town field. Example: Verona, Italy."
+msgstr "La città dell'evento. Esempio: Verona. Se si utilizza Google Map e si vogliono evitare ambiguità, inserire anche lo stato. Esempio: Verona, Italy"
+
+#: dbem_events.php:1260
+msgid "Details"
+msgstr ""
+
+#: dbem_events.php:1263
+#, fuzzy
+msgid "Details about the event"
+msgstr "Note sull'evento"
+
+#: dbem_events.php:1267
+msgid "Submit Event"
+msgstr "Invia evento"
+
+#: dbem_events.php:1283
+#: dbem_locations.php:392
+msgid " is missing!"
+msgstr ""
+
+#: dbem_events.php:1302
+msgid "end date before begin date"
+msgstr ""
+
+#: dbem_events.php:1620
+msgid "You cannot enable Google Maps integration without setting an appropriate API key."
+msgstr "Non è possibile abilitare l'integrazione con Google Maps senza impostare una chiave API."
+
+#: dbem_locations.php:4
+msgid "The location name"
+msgstr ""
+
+#: dbem_locations.php:4
+msgid "The location address"
+msgstr ""
+
+#: dbem_locations.php:4
+msgid "The location town"
+msgstr ""
+
+#: dbem_locations.php:53
+#, fuzzy
+msgid "The location has been updated."
+msgstr "Il formati della pagina di un singolo evento."
+
+#: dbem_locations.php:112
+msgid "Edit location"
+msgstr "Modifica luogo"
+
+#: dbem_locations.php:129
+#: dbem_locations.php:278
+msgid "Location name"
+msgstr "Nome del uogo"
+
+#: dbem_locations.php:131
+#: dbem_locations.php:280
+msgid "The name of the location"
+msgstr ""
+
+#: dbem_locations.php:135
+#: dbem_locations.php:284
+msgid "Location address"
+msgstr "Indirizzo del luogo"
+
+#: dbem_locations.php:137
+#: dbem_locations.php:286
+#, fuzzy
+msgid "The address of the location"
+msgstr "L'indirizzo del locale. Esempio: Via Mazzini 22"
+
+#: dbem_locations.php:142
+#: dbem_locations.php:290
+#, fuzzy
+msgid "Location town"
+msgstr "Luogo"
+
+#: dbem_locations.php:144
+msgid "The town where the location is located"
+msgstr ""
+
+#: dbem_locations.php:158
+#, fuzzy
+msgid "Location map"
+msgstr "Luogo"
+
+#: dbem_locations.php:165
+#: dbem_locations.php:317
+#, fuzzy
+msgid "Location description"
+msgstr "Descrizione principale dell'RSS"
+
+#: dbem_locations.php:167
+msgid "A description of the Location. You may include any kind of info here."
+msgstr ""
+
+#: dbem_locations.php:171
+#: dbem_locations.php:305
+msgid "Location image"
+msgstr "Immagine del luogo"
+
+#: dbem_locations.php:176
+msgid "No image uploaded for this location yet"
+msgstr ""
+
+#: dbem_locations.php:182
+msgid "Upload/change picture"
+msgstr ""
+
+#: dbem_locations.php:186
+msgid "Update location"
+msgstr "Aggiorna il luogo"
+
+#: dbem_locations.php:203
+msgid "Locations"
+msgstr "Luoghi"
+
+#: dbem_locations.php:226
+#: dbem_locations.php:234
+msgid "Address"
+msgstr "Indirizzo"
+
+#: dbem_locations.php:227
+#: dbem_locations.php:235
+msgid "Town"
+msgstr "Città"
+
+#: dbem_locations.php:262
+msgid "No venues have been inserted yet!"
+msgstr ""
+
+#: dbem_locations.php:273
+#: dbem_locations.php:322
+msgid "Add location"
+msgstr "Aggiungi un luogo"
+
+#: dbem_locations.php:292
+msgid "The town of the location"
+msgstr ""
+
+#: dbem_locations.php:307
+msgid "Select an image to upload"
+msgstr ""
+
+#: dbem_locations.php:319
+msgid "A description of the location. You may include any kind of info here."
+msgstr ""
+
+#: dbem_locations.php:400
+msgid "The image file is too big! Maximum size:"
+msgstr ""
+
+#: dbem_locations.php:405
+msgid "The image is too big! Maximum size allowed:"
+msgstr ""
+
+#: dbem_locations.php:407
+msgid "The image is in a wrong format!"
+msgstr ""
+
+#: dbem_locations.php:414
+msgid "Ach, some problems here:"
+msgstr ""
+
+#: dbem_locations.php:475
+msgid "The image could not be loaded"
+msgstr ""
+
+#: dbem_people.php:87
+msgid "Bookings data"
+msgstr ""
+
+#: dbem_people.php:91
+msgid "E-mail"
+msgstr ""
+
+#: dbem_people.php:92
+#: dbem_people.php:194
+#: dbem_people.php:197
+msgid "Phone number"
+msgstr ""
+
+#: dbem_people.php:93
+msgid "Seats"
+msgstr ""
+
+#: dbem_people.php:106
+msgid "Booked"
+msgstr ""
+
+#: dbem_people.php:111
+msgid "Available"
+msgstr ""
+
+#: dbem_people.php:126
+msgid "No people have responded to your events yet!"
+msgstr ""
+
+#: dbem_people.php:128
+msgid "This table collects the data about the people who responded to your events"
+msgstr ""
+
+#: dbem_people.php:199
+msgid "The phone number used by Events Manager when the user is indicated as the contact person for an event."
+msgstr ""
+
+#: dbem_rsvp.php:88
+msgid "There are no bookings associated to this name and e-mail"
+msgstr ""
+
+#: dbem_rsvp.php:113
+msgid "Your booking has been recorded"
+msgstr ""
+
+#: dbem_rsvp.php:120
+msgid "Sorry, there aren't so many seats available!"
+msgstr ""
+
+#: dbem_rsvp.php:163
+msgid "Booking deleted"
+msgstr ""
+
+#: dbem_rsvp.php:240
+msgid "responses so far"
+msgstr ""
+
+#: dbem_rsvp.php:246
+msgid "Responder"
+msgstr ""
+
+#: dbem_rsvp.php:252
+msgid "Booked spaces"
+msgstr ""
+
+#: dbem_rsvp.php:253
+msgid "Available spaces"
+msgstr ""
+
+#: dbem_rsvp.php:274
+msgid "Printable view"
+msgstr ""
+
+#: dbem_rsvp.php:282
+msgid "No responses yet!"
+msgstr ""
+
+#: dbem_rsvp.php:353
+msgid "New booking"
+msgstr ""
+
+#: dbem_rsvp.php:354
+msgid "Reservation confirmed"
+msgstr ""
 
 #: dbem_widgets.php:10
 #: dbem_widgets.php:35
-#: events-manager.php:40
-#: events-manager.php:183
-#: events-manager.php:189
-#: events-manager.php:215
-#: events-manager.php:226
+#: events-manager.php:45
+#: events-manager.php:399
+#: events-manager.php:400
+#: events-manager.php:433
+#: events-manager.php:444
 msgid "Events"
 msgstr "Eventi"
 
 #: dbem_widgets.php:19
-#: events-manager.php:46
-#: events-manager.php:175
+#: events-manager.php:51
+#: events-manager.php:392
 msgid "No events"
 msgstr "Nessun evento"
 
@@ -72,21 +883,6 @@ msgstr "Numero di eventi"
 #: dbem_widgets.php:86
 msgid "Scope of the events"
 msgstr "Ambito degli eventi"
-
-#: dbem_widgets.php:88
-#: events-manager.php:911
-msgid "Future events"
-msgstr "Eventi futuri"
-
-#: dbem_widgets.php:89
-#: events-manager.php:910
-msgid "All events"
-msgstr "Tutti gli eventi"
-
-#: dbem_widgets.php:90
-#: events-manager.php:909
-msgid "Past events"
-msgstr "Eventi passati"
 
 #: dbem_widgets.php:94
 msgid "Order of the events"
@@ -118,299 +914,117 @@ msgstr "Lista eventi"
 msgid "Events Calendar"
 msgstr "Calendario eventi"
 
-#: events-manager.php:292
-msgid "New event successfully inserted!"
-msgstr "Nuovo evento inserito!"
-
-#: events-manager.php:306
-msgid "Event"
-msgstr "Evento"
-
-#: events-manager.php:306
-msgid "updated"
-msgstr "aggiornato"
-
-#: events-manager.php:336
-msgid "Insert New Event"
-msgstr "Inserisci un nuovo evento"
-
-#: events-manager.php:338
-msgid "Edit Event"
-msgstr "Modifica l'evento"
-
-#: events-manager.php:376
-msgid "Past Events"
-msgstr "Eventi passati"
-
-#: events-manager.php:379
-msgid "All Events"
-msgstr "Tutti gli eventi"
-
-#: events-manager.php:382
-msgid "Future Events"
-msgstr "Eventi futuri"
-
-#: events-manager.php:400
-msgid "Event Manager Options"
-msgstr "Opzioni di Events Manager"
-
-#: events-manager.php:405
-msgid "Default event list format"
-msgstr "Formato predefinito della lista eventi"
+#: events-manager.php:57
+msgid "<li>No events in this location</li>"
+msgstr ""
 
 #: events-manager.php:407
-msgid "The format of any events in a list."
-msgstr "Il formato di ciascun evento della lista."
+msgid ""
+"#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.\n"
+"\r Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.\n"
+"\rYours faithfully,\n"
+"\rEvents Manager"
+msgstr ""
 
 #: events-manager.php:408
-msgid "Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page. Use #_URL to print the event URL and make your own customised links."
-msgstr "Inserire uno o più dei seguenti segnaposto: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>. Utilizzare <code>#_LINKEDNAME</code> per il nome dell'evento con un link alla pagina corrispondente. Utilizzare #_URL per visualizzare l'URL dell'evento e creare link personalizzati."
-
-#: events-manager.php:409
-msgid "To insert date and time values, use <a href=\"http://www.php.net/manual/en/function.date.php\">PHP time format characters</a>  with a # symbol before them, i.e. #m. #M, #j, etc. "
-msgstr "Per inserire valori di data e ora, utilizzare i <a href=\"http://www.php.net/manual/it/function.date.php\">caratteri di stringa formato PHP</a>  anteponendo ad essi un #, ad esempio #m. #M, #j, etc. "
-
-#: events-manager.php:410
-msgid "Use HTML tags as <code>li</code>, <code>br</code>, etc."
-msgstr "Utilizzare liberamente tag HTML come <code>li</code>, <code>br</code>, ecc."
-
-#: events-manager.php:413
-msgid "Single event page title format"
-msgstr "Formato del titolo della pagina eventi"
-
-#: events-manager.php:416
-msgid "The format of a single event page title."
-msgstr "Il formato del titolo della pagina di un singolo evento."
-
-#: events-manager.php:417
-#: events-manager.php:425
-#: events-manager.php:494
-#: events-manager.php:525
-msgid "Follow the previous formatting instructions."
-msgstr "Seguire le istruzioni di formattazione precedenti."
-
-#: events-manager.php:421
-msgid "Default single event format"
-msgstr "Fomato predefinito di un singolo evento"
-
-#: events-manager.php:424
-msgid "The format of a single eventy page."
-msgstr "Il formati della pagina di un singolo evento."
-
-#: events-manager.php:426
-msgid "Use <code>#_MAP</code> to insert a map."
-msgstr "Utilizzare <code>#_MAP</code> per inserire una mappa."
-
-#: events-manager.php:434
-msgid "Show events page in lists?"
-msgstr "Mostrare la pagina degli eventi nelle liste?"
-
-#: events-manager.php:436
-#: events-manager.php:508
-msgid "Yes"
-msgstr "Sì"
-
-#: events-manager.php:437
-#: events-manager.php:509
-msgid "No"
-msgstr "No"
-
-#: events-manager.php:438
-msgid "Check this option if you want the events page to appear together with other pages in pages lists."
-msgstr "Selezionare questa opzione se si vuole che  la pagina degli eventi compaia nelle liste delle pagine."
+msgid ""
+"Dear #_RESPNAME, \n"
+"\r you have successfully reserved #_SPACES space/spaces for #_NAME.\n"
+"\r Yours faithfully,\n"
+"\r #_CONTACTPERSON"
+msgstr ""
 
 #: events-manager.php:446
-msgid "Events page title"
-msgstr "Titolo della pagina degli eventi"
-
-#: events-manager.php:449
-msgid "The title on the multiple events page."
-msgstr "Il titolo della pagina che contiene più eventi."
-
-#: events-manager.php:453
-msgid "No events message"
-msgstr "Messaggio Nessun evento"
-
-#: events-manager.php:456
-msgid "The message displayed when no events are available."
-msgstr "Il messaggio visualizzato quando non ci sono eventi disponibili."
-
-#: events-manager.php:467
-msgid "RSS main title"
-msgstr "Titolo principale dell'RSS"
-
-#: events-manager.php:470
-msgid "The main title of your RSS events feed."
-msgstr "Il titolo principale del feed RSS degli eventi."
-
-#: events-manager.php:474
-msgid "RSS main description"
-msgstr "Descrizione principale dell'RSS"
-
-#: events-manager.php:477
-msgid "The main description of your RSS events feed."
-msgstr "La descrizione principale del feed RSS degli eventi."
-
-#: events-manager.php:482
-msgid "RSS title format"
-msgstr "Formato del titolo dell'RSS"
-
-#: events-manager.php:485
-msgid "The format of the title of each item in the events RSS feed."
-msgstr "Il formato del titolo di ciascun elemento nel feed RSS."
-
-#: events-manager.php:490
-msgid "RSS description format"
-msgstr "Formato della descrizione nell'RSS"
-
-#: events-manager.php:493
-msgid "The format of the description of each item in the events RSS feed."
-msgstr "Il formato della descrizione di ciascun elemento nel feed RSS."
-
-#: events-manager.php:506
-msgid "Enable Google Maps integration?"
-msgstr "Abilitare l'integrazione con Google Maps?"
-
-#: events-manager.php:510
-msgid "Check this option to enable Goggle Map integration."
-msgstr "Selezionare questa opzione per abilitare l'integrazione con Google Maps."
-
-#: events-manager.php:515
-msgid "Google Maps API Key"
-msgstr "Chiave API di Google Maps"
-
-#: events-manager.php:518
-msgid "To display Google Maps you need a Google Maps API key. Don't worry, it's free, you can get one"
-msgstr "Per visualizzare una mappa di Google Maps è necessaria una chiave API di Google Maps. Non preoccupatevi, è gratuita,  è sufficiente andare su"
-
-#: events-manager.php:518
-msgid "here"
-msgstr "questa pagina"
-
-#: events-manager.php:522
-msgid "Map text format"
-msgstr "Formato del testo della mappa"
-
-#: events-manager.php:524
-msgid "The format the text appearing in the map cloud."
-msgstr "Il fomato del testo del fumetto che appare sulla mappa."
-
-#: events-manager.php:529
-msgid "Save Changes"
-msgstr "Salva le modifiche"
-
-#: events-manager.php:905
-msgid "New Event ..."
-msgstr "Nuovo evento..."
-
-#: events-manager.php:921
-msgid "ID"
-msgstr "ID"
-
-#: events-manager.php:922
-#: events-manager.php:1035
-msgid "Name"
-msgstr "Nome"
-
-#: events-manager.php:923
-#: events-manager.php:1069
-msgid "Location"
-msgstr "Luogo"
-
-#: events-manager.php:924
-#: events-manager.php:1062
-msgid "Town"
-msgstr "Città"
-
-#: events-manager.php:925
-#: events-manager.php:1076
-msgid "Address"
-msgstr "Indirizzo"
-
-#: events-manager.php:926
-msgid "Date"
-msgstr "Data"
-
-#: events-manager.php:927
-msgid "Time"
-msgstr "Ora"
-
-#: events-manager.php:929
-msgid "Latitude"
-msgstr "Latitudine"
-
-#: events-manager.php:930
-msgid "Longitude"
-msgstr "Longitudine"
-
-#: events-manager.php:932
-msgid "Actions"
-msgstr "Azioni"
-
-#: events-manager.php:993
 msgid "Edit"
 msgstr "Modifica"
 
-#: events-manager.php:994
-msgid "Are you sure?"
-msgstr "Sei sicuro?"
+#: events-manager.php:447
+msgid "Add new"
+msgstr ""
 
-#: events-manager.php:994
-msgid "Delete"
-msgstr "Elimina"
-
-#: events-manager.php:1038
-msgid "The event name. Example: Birthday party"
-msgstr "Il nome dell'evento. Esempio: festa di compleanno."
-
-#: events-manager.php:1044
-msgid "Day and Time"
-msgstr "Giorno e ora."
-
-#: events-manager.php:1047
-msgid "The event day and time"
-msgstr "Giorno e ora dell'evento"
-
-#: events-manager.php:1047
-msgid "Example:"
-msgstr "Esempio: "
-
-#: events-manager.php:1047
-msgid "Example: 2008-11-27"
-msgstr "Esempio: 2008-11-27"
-
-#: events-manager.php:1057
-msgid "Map not found"
-msgstr "Mappa non trovata"
-
-#: events-manager.php:1065
-msgid "The event town. Example: Verona. If you're using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy"
-msgstr "La città dell'evento. Esempio: Verona. Se si utilizza Google Map e si vogliono evitare ambiguità, inserire anche lo stato. Esempio: Verona, Italy"
-
-#: events-manager.php:1072
-msgid "The location where the event takes place. Example: Arena"
-msgstr "Il locale dove avviene l'evento. Esempio: Arena"
-
-#: events-manager.php:1079
-msgid "The address of the location. Example: Via Mazzini 22"
-msgstr "L'indirizzo del locale. Esempio: Via Mazzini 22"
-
-#: events-manager.php:1083
-msgid "Notes"
-msgstr "Note"
-
-#: events-manager.php:1086
-msgid "Notes about the event"
-msgstr "Note sull'evento"
-
-#: events-manager.php:1091
-msgid "Submit Event"
-msgstr "Invia evento"
-
-#: events-manager.php:1400
-msgid "You cannot enable Google Maps integration without setting an appropriate API key."
-msgstr "Non è possibile abilitare l'integrazione con Google Maps senza impostare una chiave API."
-
+#, fuzzy
+#~ msgid "Location picture"
+#~ msgstr "Luogo"
+#~ msgid "M_Monday_initial"
+#~ msgstr "L"
+#~ msgid "T_Tuesday_initial"
+#~ msgstr "M"
+#~ msgid "F_Friday_initial"
+#~ msgstr "V"
+#~ msgid "S_Sunday_initial"
+#~ msgstr "D"
+#~ msgid "Default event list format"
+#~ msgstr "Formato predefinito della lista eventi"
+#~ msgid "The format of any events in a list."
+#~ msgstr "Il formato di ciascun evento della lista."
+#~ msgid ""
+#~ "Insert one or more of the following placeholders: <code>#_NAME</code>, "
+#~ "<code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, "
+#~ "<code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name "
+#~ "with a link to the given event page. Use #_URL to print the event URL and "
+#~ "make your own customised links."
+#~ msgstr ""
+#~ "Inserire uno o più dei seguenti segnaposto: <code>#_NAME</code>, "
+#~ "<code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, "
+#~ "<code>#_NOTES</code>. Utilizzare <code>#_LINKEDNAME</code> per il nome "
+#~ "dell'evento con un link alla pagina corrispondente. Utilizzare #_URL per "
+#~ "visualizzare l'URL dell'evento e creare link personalizzati."
+#~ msgid ""
+#~ "To insert date and time values, use <a href=\"http://www.php.net/manual/"
+#~ "en/function.date.php\">PHP time format characters</a>  with a # symbol "
+#~ "before them, i.e. #m. #M, #j, etc. "
+#~ msgstr ""
+#~ "Per inserire valori di data e ora, utilizzare i <a href=\"http://www.php."
+#~ "net/manual/it/function.date.php\">caratteri di stringa formato PHP</a>  "
+#~ "anteponendo ad essi un #, ad esempio #m. #M, #j, etc. "
+#~ msgid "Use HTML tags as <code>li</code>, <code>br</code>, etc."
+#~ msgstr ""
+#~ "Utilizzare liberamente tag HTML come <code>li</code>, <code>br</code>, "
+#~ "ecc."
+#~ msgid "Default single event format"
+#~ msgstr "Fomato predefinito di un singolo evento"
+#~ msgid "Use <code>#_MAP</code> to insert a map."
+#~ msgstr "Utilizzare <code>#_MAP</code> per inserire una mappa."
+#~ msgid "Show events page in lists?"
+#~ msgstr "Mostrare la pagina degli eventi nelle liste?"
+#~ msgid "Events page title"
+#~ msgstr "Titolo della pagina degli eventi"
+#~ msgid "The title on the multiple events page."
+#~ msgstr "Il titolo della pagina che contiene più eventi."
+#~ msgid "No events message"
+#~ msgstr "Messaggio Nessun evento"
+#~ msgid "The message displayed when no events are available."
+#~ msgstr "Il messaggio visualizzato quando non ci sono eventi disponibili."
+#~ msgid "RSS main title"
+#~ msgstr "Titolo principale dell'RSS"
+#~ msgid "The main title of your RSS events feed."
+#~ msgstr "Il titolo principale del feed RSS degli eventi."
+#~ msgid "The main description of your RSS events feed."
+#~ msgstr "La descrizione principale del feed RSS degli eventi."
+#~ msgid "RSS title format"
+#~ msgstr "Formato del titolo dell'RSS"
+#~ msgid "The format of the title of each item in the events RSS feed."
+#~ msgstr "Il formato del titolo di ciascun elemento nel feed RSS."
+#~ msgid "RSS description format"
+#~ msgstr "Formato della descrizione nell'RSS"
+#~ msgid "The format of the description of each item in the events RSS feed."
+#~ msgstr "Il formato della descrizione di ciascun elemento nel feed RSS."
+#~ msgid "ID"
+#~ msgstr "ID"
+#~ msgid "Date"
+#~ msgstr "Data"
+#~ msgid "Time"
+#~ msgstr "Ora"
+#~ msgid "Latitude"
+#~ msgstr "Latitudine"
+#~ msgid "Longitude"
+#~ msgstr "Longitudine"
+#~ msgid "Are you sure?"
+#~ msgstr "Sei sicuro?"
+#~ msgid "Delete"
+#~ msgstr "Elimina"
+#~ msgid "Notes"
+#~ msgstr "Note"
 #~ msgid ""
 #~ "You are about to delete this event.\\n  'Cancel' to stop, 'OK' to delete."
 #~ msgstr ""

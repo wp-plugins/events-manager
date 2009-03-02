@@ -1121,7 +1121,7 @@ function dbem_event_form($event, $title, $element) {
 						<div class="handlediv" title="Fare clic per cambiare."><br /></div>
 						<h3 class='hndle'><span>Contact Person</span></h3>
 						<div class="inside">
-							<p>Contact: <?php wp_dropdown_users(array('name'=>'event_contactperson_id', 'show_option_none'=>__("Select...",'dbem'),'selected'=>2)) ; ?></p> 
+							<p>Contact: <?php wp_dropdown_users(array('name'=>'event_contactperson_id', 'show_option_none'=>__("Select...",'dbem'),'selected'=>$event['event_contactperson_id'])) ; ?></p> 
 						</div>
 					</div>       
 			 
