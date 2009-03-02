@@ -47,8 +47,8 @@ function dbem_events_subpanel() {
 
 		$event = array();   
 		$location = array();                        
-		
-		$event['event_name']=$_POST[event_name]; 
+	  
+		$event['event_name']=stripslashes($_POST[event_name]); 
 		// Set event end time to event time if not valid
 		// if (!_dbem_is_date_valid($event['event_end_date']))
 		// 	$event['event_end_date'] = $event['event-date'];  
@@ -90,7 +90,7 @@ function dbem_events_subpanel() {
 		$location['location_latitude']=$_POST[location_latitude];
 		$location['location_longitude']=$_POST[location_longitude];
 		$location['location_description']="";
-		$event['event_notes']=$_POST[event_notes];
+		$event['event_notes']=stripslashes($_POST[event_notes]);
 		$recurrence['recurrence_notes']=$_POST[event_notes]; 
 		$validation_result = dbem_validate_event($event);
 		
@@ -107,9 +107,7 @@ function dbem_events_subpanel() {
 			else {          
 				
 				$new_location = dbem_insert_location($location);   
-				print_r($new_location);
-	 
-				$event['location_id']= $new_location['location_id'];
+			 	$event['location_id']= $new_location['location_id'];
 				$recurrence['location_id'] = $new_location['location_id']; 
 				//print_r($new_location);
 				
@@ -124,7 +122,7 @@ function dbem_events_subpanel() {
 		 				$feedback_message = __('New recurrent event inserted!','dbem'); 
 		  	} else {
 		  		// INSERT new event 
-		  		$wpdb->insert($event_table_name, $event); 
+		  		$wpdb->insert($event_table_name, $event);
 		 			$feedback_message = __('New event successfully inserted!','dbem');  
 		   	}
 		  } else { 
@@ -1746,5 +1744,12 @@ function dbem_delete_event($event_id) {
 	 	$wpdb->query($sql);
 
 }
-
+add_filter('favorite_actions', 'dbem_favorite_menu');
+ 
+function dbem_favorite_menu($actions) {
+    // remove the "Add new page" link
+        // add quick link to our favorite plugin
+    $actions['admin.php?page=new_event'] = array('Add an event', MIN_CAPABILITY);
+    return $actions;
+}
 ?>

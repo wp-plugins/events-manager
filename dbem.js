@@ -1,10 +1,8 @@
 $j=jQuery.noConflict();   
 
 function remove_booking() {
-	console.log('ecco qui'); 
 	eventId = ($j(this).parents('table:first').attr('id').split("-"))[3]; 
 	idToRemove = ($j(this).parents('tr:first').attr('id').split("-"))[1];     
-    console.log('event: ' + eventId);
 	$j.ajax({
   	  type: "POST",
 	    url: "admin.php?page=people&action=remove_booking",

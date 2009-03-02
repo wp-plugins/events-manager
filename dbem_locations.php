@@ -19,7 +19,7 @@ function dbem_intercept_locations_actions() {
 }
 
 function dbem_locations_page() {      
-	
+
 	if(isset($_GET['action']) && $_GET['action'] == "edit") { 
 		// edit location  
 		$location_id = $_GET['location_ID'];
@@ -27,6 +27,7 @@ function dbem_locations_page() {
 		dbem_locations_edit_layout($location);
   } else { 
     if(isset($_POST['action']) && $_POST['action'] == "editedlocation") { 
+		
 			// location update required  
 			$location = array();
 			$location['location_id'] = $_POST['location_ID'];
@@ -36,13 +37,21 @@ function dbem_locations_page() {
 			$location['location_latitude'] = $_POST['location_latitude'];
 			$location['location_longitude'] = $_POST['location_longitude'];
 			$location['location_description'] = $_POST['location_description'];
-			//$location['location_description'] = $_POST['location_description'];
+			
+			if(empty($location['location_latitude'])) {
+				$location['location_latitude']  = 0;
+				$location['location_longitude'] = 0;
+			}
+			
 			$validation_result = dbem_validate_location($location);
-			if ($validation_result == "OK") {   
-				dbem_update_location($location);    
+			if ($validation_result == "OK") {
+				  
+				dbem_update_location($location); 
+				    
 			  if ($_FILES['location_image']['size'] > 0 )
 					dbem_upload_location_picture($location);
-				$message = __('The location has been updated.', 'dbem'); 
+				$message = __('The location has been updated.', 'dbem');
+				
 				$locations = dbem_get_locations();
 				dbem_locations_table_layout($locations, $message);
 			} else {
@@ -417,7 +426,8 @@ function dbem_update_location($location) {
 		"location_longitude=".$location['location_longitude'].",".
 		"location_description='".$location['location_description']."' ". 
 		"WHERE location_id='".$location['location_id']."';";  
-	$wpdb->query($sql);
+	$wpdb->query($sql);      
+
 }   
 
 function dbem_insert_location($location) {    

@@ -442,8 +442,9 @@ add_action('admin_menu','dbem_create_events_submenu');
 function dbem_create_events_submenu () {
 	  if(function_exists('add_submenu_page')) {
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel, '../wp-content/plugins/events-manager/images/calendar-16.png');
-	   	add_submenu_page(__FILE__, __('Add new'), __('Add new'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page"); 
-			// Add a submenu to the custom top-level menu:                
+	   	// Add a submenu to the custom top-level menu: 
+			add_submenu_page(__FILE__, __('Edit'),__('Edit'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel);
+			add_submenu_page(__FILE__, __('Add new', 'dbem'), __('Add new','dbem'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page"); 
 			add_submenu_page(__FILE__, "Locations", "Locations", MIN_CAPABILITY, 'locations', "dbem_locations_page");
 			add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
 			//add_submenu_page(__FILE__, 'Test ', 'Test ', 8, 'test', 'dbem_recurrence_test');

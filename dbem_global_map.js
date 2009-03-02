@@ -45,12 +45,12 @@ function loadGMap() {
 
 			});
 
-			console.log("Latitudes: " + latitudes + " MAX: " + max_latitude + " MIN: " + min_latitude);
-			console.log("Longitudes: " + longitudes +  " MAX: " + max_longitude + " MIN: " + min_longitude);    
+			//console.log("Latitudes: " + latitudes + " MAX: " + max_latitude + " MIN: " + min_latitude);
+			//console.log("Longitudes: " + longitudes +  " MAX: " + max_longitude + " MIN: " + min_longitude);    
 
 			center_lat = min_latitude + (max_latitude - min_latitude)/2;
 			center_lon = min_longitude + (max_longitude - min_longitude)/2;
-			console.log("center: " + center_lat + " - " + center_lon) + min_longitude;
+			//console.log("center: " + center_lat + " - " + center_lon) + min_longitude;
 
 			lat_interval = max_latitude - min_latitude;
 
@@ -58,7 +58,7 @@ function loadGMap() {
 			vertical_compensation = lat_interval * 0.1;
 
 			var locationsBound = new GLatLngBounds(new GLatLng(max_latitude + vertical_compensation,min_longitude),new GLatLng(min_latitude,max_longitude) );
-			console.log(locationsBound);
+			//console.log(locationsBound);
 			var locationsZoom = map.getBoundsZoomLevel(locationsBound);
 			map.setCenter(new GLatLng(center_lat + vertical_compensation,center_lon), locationsZoom); 
 			var letters = new Array('A','B','C','D','E','F','G','H');
