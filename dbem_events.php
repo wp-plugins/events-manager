@@ -223,15 +223,17 @@ function dbem_events_subpanel() {
 
 // Function composing the options subpanel
 function dbem_options_subpanel() {
+ // dbem_options_register();
 	
    ?>
-	<div class="wrap"> 
+	<div class="wrap">
+	 
 		<div id='icon-options-general' class='icon32'>
 			<br/>
 		</div>
 		<h2><?php _e('Event Manager Options','dbem'); ?></h2>
 			<form id="dbem_options_form" method="post" action="options.php">
-				<?php wp_nonce_field('update-options'); ?>
+				
         <h3><?php _e('Events format', 'dbem');?></h3>   
 				<table class="form-table">
  						<?php
@@ -247,7 +249,7 @@ function dbem_options_subpanel() {
 						dbem_options_input_text('RSS description format','dbem_rss_description_format','The format of the description of each item in the events RSS feed. Follow the previous formatting instructions.');
 						?>
 			</table> 
-			   
+			    
 			<h3><?php _e('Locations format', 'dbem');?></h3>   
 				<table class="form-table">
 						<tr valign="top">
@@ -349,10 +351,9 @@ function dbem_options_subpanel() {
 				<p class="submit">
 					<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e('Save Changes') ?>" />
 				</p>
-				<input type="hidden" name="action" value="update" />
-				<input type="hidden" name="page_options" value="dbem_use_event_end, dbem_event_list_item_format,dbem_event_page_title_format,dbem_single_event_format,dbem_list_events_page,dbem_events_page_title, dbem_no_events_message, dbem_location_page_title_format, dbem_location_baloon_format, dbem_single_location_format, dbem_location_event_list_item_format, dbem_location_no_events_message, dbem_gmap_is_active, dbem_rss_main_title, dbem_rss_main_description, dbem_rss_title_format, dbem_rss_description_format, dbem_gmap_key, dbem_map_text_format, dbem_rsvp_mail_notify_is_active, dbem_contactperson_email_body, dbem_respondent_email_body, dbem_mail_sender_name, dbem_smtp_username, dbem_smtp_password, dbem_default_contact_person, dbem_mail_sender_address, dbem_mail_receiver_address, dbem_smtp_host, dbem_rsvp_mail_send_method, dbem_rsvp_mail_port, dbem_rsvp_mail_SMTPAuth, dbem_image_max_width, dbem_image_max_height, dbem_image_max_size" />
+
 				
-				
+			<?php settings_fields('dbem-options'); ?> 
 			</form>
 		</div> 
 	<?php
@@ -1759,5 +1760,51 @@ function dbem_favorite_menu($actions) {
         // add quick link to our favorite plugin
     $actions['admin.php?page=new_event'] = array('Add an event', MIN_CAPABILITY);
     return $actions;
+}    
+
+////////////////////////////////////
+// WP 2.7 options registration
+function dbem_options_register() {
+   $options = array(
+	'dbem_use_event_end',
+	'dbem_event_list_item_format',
+	'dbem_event_page_title_format',
+	'dbem_single_event_format',
+	'dbem_list_events_page',
+	'dbem_events_page_title',
+	'dbem_no_events_message',
+	'dbem_location_page_title_format','dbem_location_baloon_format',
+	'dbem_single_location_format',
+	'dbem_location_event_list_item_format',
+	'dbem_location_no_events_message',
+	'dbem_gmap_is_active',
+	'dbem_rss_main_title',
+	'dbem_rss_main_description',
+	'dbem_rss_title_format',
+	'dbem_rss_description_format',
+	'dbem_gmap_key',
+	'dbem_map_text_format',
+	'dbem_rsvp_mail_notify_is_active',
+	'dbem_contactperson_email_body',
+	'dbem_respondent_email_body',
+	'dbem_mail_sender_name',
+	'dbem_smtp_username',
+	'dbem_smtp_password',
+	'dbem_default_contact_person',
+	'dbem_mail_sender_address',
+	'dbem_mail_receiver_address',
+	'dbem_smtp_host',
+	'dbem_rsvp_mail_send_method',
+	'dbem_rsvp_mail_port',
+	'dbem_rsvp_mail_SMTPAuth',
+	'dbem_image_max_width',
+	'dbem_image_max_height',
+	'dbem_image_max_size',
+   );
+   foreach($options as $opt) {
+       register_setting('dbem-options',$opt,'');
+   } 
+
 }
+add_action( 'admin_init', 'dbem_options_register' );
 ?>
