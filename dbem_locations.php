@@ -368,8 +368,8 @@ function dbem_get_identical_location($location) {
 	$locations_table = $wpdb->prefix.LOCATIONS_TBNAME; 
 	//$sql = "SELECT * FROM $locations_table WHERE location_name ='".$location['location_name']."' AND location_address ='".$location['location_address']."' AND location_town ='".$location['location_town']."';";   
   $prepared_sql=$wpdb->prepare("SELECT * FROM $locations_table WHERE location_name = %s AND location_address = %s AND location_town = %s", $location['location_name'], $location['location_address'], $location['location_town'] );
-	$cached_location = $wpdb->get_row($prepared_sql, ARRAY_A); 
- 
+	$wpdb->show_errors(true);
+	$cached_location = $wpdb->get_row($prepared_sql, ARRAY_A);
 	return $cached_location;  
 
 }
@@ -420,7 +420,8 @@ function dbem_update_location($location) {
 	$wpdb->query($sql);
 }   
 
-function dbem_insert_location($location) {
+function dbem_insert_location($location) {    
+ 
 		global $wpdb;	
 		$table_name = $wpdb->prefix.LOCATIONS_TBNAME; 
 		// if GMap is off the hidden fields are empty, so I add a custom value to make the query work
@@ -429,9 +430,10 @@ function dbem_insert_location($location) {
 		if (empty($location['location_latitude'])) 
 			$location['location_latitude'] = 0;
 		$sql = "INSERT INTO ".$table_name." (location_name, location_address, location_town, location_latitude, location_longitude, location_description)
-		VALUES ('".$location['location_name']."','".$location['location_address']."','".$location['location_town']."',".$location['location_latitude'].",".$location['location_longitude'].",'".$location['location_description']."')";
+		VALUES ('".$location['location_name']."','".$location['location_address']."','".$location['location_town']."',".$location['location_latitude'].",".$location['location_longitude'].",'".$location['location_description']."')"; 
 		$wpdb->query($sql);
-    $new_location = dbem_get_identical_location($location); 
+    $new_location = dbem_get_location(mysql_insert_id());            
+
 		return $new_location;
 }
 

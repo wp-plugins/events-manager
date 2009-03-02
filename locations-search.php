@@ -21,7 +21,7 @@ foreach($return as $row) {
 		$location = array();
 		$rows =array();
 		foreach($row as $key => $value)
-			$location[] = "'$key' : '$value'";
+			$location[] = "'$key' : '".str_replace("'", "\'", $value)."'";
 		echo ("{".implode(" , ", $location)." }\n");	    
 		}
 		

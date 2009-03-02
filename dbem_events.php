@@ -75,7 +75,8 @@ function dbem_events_subpanel() {
 		$event['event_rsvp'] = $_POST['event_rsvp'];
     $event['event_seats'] = $_POST['event_seats']; 
     
-		if(isset($_POST['event_contactperson_id']) && $_POST['event_contactperson_id'] != '' && $_POST['event_contactperson_id'] != '-1') {
+		if(isset($_POST['event_contactperson_id']) && $_POST['event_contactperson_id'] != '' && $_POST['event_contactperson_id'] != '-1') {  
+			
 			$event['event_contactperson_id'] = $_POST['event_contactperson_id'];
 			$recurrence['event_contactperson_id'] = $_POST['event_contactperson_id'];
 		}
@@ -95,15 +96,19 @@ function dbem_events_subpanel() {
 		
 		
 		if (true) { //RESETME( $validation_result == "OK") { 
-			// validation successful
+			// validation successful  
+			
 			$related_location = dbem_get_identical_location($location); 
-			//print_r($related_location); 
+			print_r($related_location); 
 			if ($related_location)  {
 				$event['location_id'] = $related_location['location_id'];
 				$recurrence['location_id'] = $related_location['location_id'];      
 			}
-			else {
-				$new_location = dbem_insert_location($location);
+			else {          
+				
+				$new_location = dbem_insert_location($location);   
+				print_r($new_location);
+	 
 				$event['location_id']= $new_location['location_id'];
 				$recurrence['location_id'] = $new_location['location_id']; 
 				//print_r($new_location);
