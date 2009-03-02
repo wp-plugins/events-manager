@@ -10,7 +10,7 @@ function dbem_new_event_page() {
 }
 
 function dbem_events_subpanel() {         
-
+  
   global $wpdb;
 	$action=$_GET['action']; 
 	$action2 =$_GET['action2'];
@@ -54,9 +54,11 @@ function dbem_events_subpanel() {
 		// 	$event['event_end_date'] = $event['event-date'];  
 	  $event['event_start_date'] = $_POST[event_date];
 		$event['event_end_date'] = $_POST[event_end_date];
-		$event['event_start_time'] = $_POST[event_hh].":".$_POST[event_mm].":00";
-		$event['event_end_time'] = $_POST[event_end_hh].":".$_POST[event_end_mm].":00";         
-    $recurrence['recurrence_name'] = $event['event_name'];
+		//$event['event_start_time'] = $_POST[event_hh].":".$_POST[event_mm].":00";
+		//$event['event_end_time'] = $_POST[event_end_hh].":".$_POST[event_end_mm].":00";         
+    $event['event_start_time'] = date("G:i:00", strtotime($_POST['event_start_time'])); 
+		$event['event_end_time'] = date("G:i:00", strtotime($_POST['event_end_time']));  
+		$recurrence['recurrence_name'] = $event['event_name'];
 		$recurrence['recurrence_start_date'] = $event['event_start_date'];
 		$recurrence['recurrence_end_date'] = $event['event_end_date'];
 		$recurrence['recurrence_start_time'] = $event['event_start_time'];
@@ -124,10 +126,12 @@ function dbem_events_subpanel() {
 		 		// something exists
 		  	if($recurrence_ID) {  
 		  		// UPDATE old recurrence
-		  		echo ("<h2>Aggiornamento recurrence!!!</h2>");  
 		  		$recurrence['recurrence_id'] = $recurrence_ID;
-		  		print_r($recurrence); 
-		  		dbem_update_recurrence($recurrence);
+		  		//print_r($recurrence); 
+		  		if(dbem_update_recurrence($recurrence))
+						$feedback_message = __('Recurrence updated!','dbem');
+					else
+					  $feedback_message = __('Something went wrong with the recurrence update...','dbem');   
 		  	
 		  	} else {
 		  	   // UPDATE old event
@@ -184,7 +188,7 @@ function dbem_events_subpanel() {
 	  }
 	  
 		if ($action == 'update_recurrence') {  
-			print_r($recurrence);
+			//print_r($recurrence);
 			die('update recurrence!');
 		}
 	
@@ -759,13 +763,17 @@ function dbem_get_event($event_id) {
 					DATE_FORMAT(event_start_date, '%m') AS 'event_month',
 					DATE_FORMAT(event_start_date, '%Y') AS 'event_year',
 			  	DATE_FORMAT(event_start_time, '%k') AS 'event_hh',
-			  	DATE_FORMAT(event_start_time, '%i') AS 'event_mm', 
+			  	DATE_FORMAT(event_start_time, '%i') AS 'event_mm',
+			DATE_FORMAT(event_start_time, '%h:%i%p') AS 'event_start_12h_time', 
+			DATE_FORMAT(event_start_time, '%H:%i') AS 'event_start_24h_time', 
 			    DATE_FORMAT(event_end_time, '%Y-%m-%e') AS 'event_end_date', 
 					DATE_FORMAT(event_end_time, '%e') AS 'event_end_day',        
 					DATE_FORMAT(event_end_time, '%m') AS 'event_end_month',  
 		  		DATE_FORMAT(event_end_time, '%Y') AS 'event_end_year',
 		  		DATE_FORMAT(event_end_time, '%k') AS 'event_end_hh',
-		  		DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',   
+		  		DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',
+				DATE_FORMAT(event_end_time, '%h:%i%p') AS 'event_end_12h_time', 
+				DATE_FORMAT(event_end_time, '%H:%i') AS 'event_end_24h_time',   
 		      event_start_date,
 					event_end_date,
 					event_start_time,
@@ -804,7 +812,7 @@ function dbem_events_table($events, $limit, $title) {
 		$offset = $_GET['offset'];
 	
 	$use_events_end = get_option('dbem_use_event_end');
-		
+	    	
 	?>
 	 
 	<div class="wrap">
@@ -974,7 +982,14 @@ function dbem_event_form($event, $title, $element) {
 
 	
 	$locale_code = substr(get_locale(), 0, 2); 
-	$localised_date_format = $localised_date_formats[$locale_code];
+	$localised_date_format = $localised_date_formats[$locale_code];  
+	
+	$hours_locale = "24"; 
+	// Setting 12 hours format for those countries using it
+	if(preg_match("/en|sk|zh|us|uk/",$locale_code)) 
+		$hours_locale = "12";  
+ 
+
 
 	$localised_example = str_replace("yy", "2008", str_replace("mm", "11", str_replace("dd", "28", $localised_date_format))); 
 	$localised_end_example = str_replace("yy", "2008", str_replace("mm", "11", str_replace("dd", "28", $localised_date_format)));
@@ -1166,13 +1181,18 @@ function dbem_event_form($event, $title, $element) {
 					 <div id="event_end_day" class="stuffbox">
 							<h3><?php _e('Event time','dbem'); ?></h3>  
 							<div class="inside">
-							<input type="text" size="3" maxlength="2" name="event_hh" value="<?php echo $event[$pref.'hh'] ?>" /> : <input type="text" size="3" maxlength="2" name="event_mm" value="<?php echo $event[$pref.'mm'] ?>" />
-							- 
-							<input type="text" size="3" maxlength="2" name="event_end_hh" value="<?php echo $event[$pref.'end_hh'] ?>" /> : <input type="text" size="3" maxlength="2" name="event_end_mm" value="<?php echo $event[$pref.'end_mm'] ?>" /><br/>
-								<?php _e('The day and time of the event end', 'dbem') ?>. <span id="localised_end_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_example"; ?></span><span class="no-javascript-example"><?php _e("Example: 2008-11-27", "dbem")?></span> - 20:30
+						  	<input id="start-time" type="text" size="8" maxlength="8" name="event_start_time" value="<?php echo $event[$pref.'start_'.$hours_locale."h_time"]; ?>" /> - 
+						  	<input id="end-time" type="text" size="8" maxlength="8" name="event_end_time" value="<?php echo $event[$pref.'end_'.$hours_locale."h_time"]; ?>" /> <br/>
+						
+						
+								<?php _e('The time of the event beginning and end', 'dbem') ?>. 
 
 							</div>
-					 </div>
+					 </div>          
+					
+					
+					
+				   		
 				
 				
 				
@@ -1305,11 +1325,17 @@ function url_exists($url) {
 function dbem_admin_general_script(){  ?>
 	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/dbem.js" type="text/javascript"></script>  
 	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/ui.datepicker.js" 	type="text/javascript"></script>
-
+  <script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/timeentry/jquery.timeentry.js" type="text/javascript"></script> 
 	<?php
 
 	// Check if the locale is there and loads it
-	$locale_code = substr(get_locale(), 0, 2);  
+	$locale_code = substr(get_locale(), 0, 2);
+		
+	$show24Hours = 'true'; 
+	// Setting 12 hours format for those countries using it
+	if(preg_match("/en|sk|zh|us|uk/",$locale_code)) 
+			$show24Hours = 'false';
+	  
 
 	$locale_file = get_bloginfo('url')."/wp-content/plugins/events-manager/js/i18n/ui.datepicker-$locale_code.js";
 	if(url_exists($locale_file)) {   ?>
@@ -1373,6 +1399,18 @@ $j(document).ready( function() {
 		($j.datepicker.regional["it"], 
 		{altField: "#end-date-to-submit", 
 		altFormat: "yy-mm-dd"})));
+
+
+
+
+
+  
+ 	$j("#start-time").timeEntry({spinnerImage: '', show24Hours: <?php echo $show24Hours;?> });
+  $j("#end-time").timeEntry({spinnerImage: '', show24Hours: <?php echo $show24Hours;?>});
+
+
+
+
 
 	$j('input.select-all').change(function(){
 	 	if($j(this).is(':checked'))
