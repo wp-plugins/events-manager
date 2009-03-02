@@ -221,36 +221,37 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 						$table .= "<table class='widefat'>\n
 							<thead>\n
 								<tr>\n
-									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'></th>\n
+									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>\n
 									<th>".__('Name', 'dbem')."</th>\n
 									<th>".__('Address', 'dbem')."</th>\n
 									<th>".__('Town', 'dbem')."</th>\n                
 								</tr>\n 
 							</thead>\n
+							<tfoot>\n
+								<tr>\n
+									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>\n
+									<th>".__('Name', 'dbem')."</th>\n
+									<th>".__('Address', 'dbem')."</th>\n
+									<th>".__('Town', 'dbem')."</th>\n      
+								</tr>\n             
+							</tfoot>\n
 							<tbody>\n";
 						foreach ($locations as $this_location) {
 							$table .= "		
 								<tr>\n
 								<td><input type='checkbox' class ='row-selector' value='".$this_location['location_id']."' name='locations[]'/></td>\n
-								<td><a href='".get_bloginfo('url')."/wp-admin/admin.php?page=locations&action=edit&location_ID=".$this_location['location_id']."'>".$this_location['location_name']."</a></td>\n
+								<td><a href='".get_bloginfo('url')."/wp-admin/admin.php?page=locations&amp;action=edit&amp;location_ID=".$this_location['location_id']."'>".$this_location['location_name']."</a></td>\n
 								<td>".$this_location['location_address']."</td>\n
 								<td>".$this_location['location_town']."</td>\n                         
 								</tr>\n";
 						}
 						$table .= "
 							</tbody>\n
-							<tfoot>\n
-								<tr>\n
-									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'></th>\n
-									<th>".__('Name', 'dbem')."</th>\n
-									<th>".__('Address', 'dbem')."</th>\n
-									<th>".__('Town', 'dbem')."</th>\n      
-								</tr>\n             
-							</tfoot>\n
+
 						</table>\n
 
 						<div class='tablenav'>\n
-							<div class=alignleft actions>\n
+							<div class='alignleft actions'>\n
 							<input type='hidden' name='action2' value='delete'/>
 						 	<input class='button-secondary action' type='submit' name='doaction2' value='Delete'/>\n
 							<br class='clear'/>\n 
@@ -293,11 +294,11 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 								
 							     <div class='form-field' style='display:none;'>\n
 								   <label for='location_latitude'>LAT</label>\n
-								 	<input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='".$new_location['location_latitude']."' size='40'  />\n
+								 	<input id='location-latitude' name='location_latitude' type='text' value='".$new_location['location_latitude']."' size='40'  />\n
 								 </div>\n
 								 <div class='form-field' style='display:none;'>\n
 								   <label for='location_longitude'>LONG</label>\n
-								 	<input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='".$new_location['location_longitude']."' size='40'  />\n
+								 	<input id='location-longitude' name='location_longitude' type='text' value='".$new_location['location_longitude']."' size='40'  />\n
 								 </div>\n
 								
 								 <div class='form-field'>\n
@@ -352,7 +353,7 @@ function dbem_get_location($location_id) {
 	global $wpdb;
 	$locations_table = $wpdb->prefix.LOCATIONS_TBNAME; 
 	$sql = "SELECT * FROM $locations_table WHERE location_id ='$location_id'";   
-  $location = $wpdb->get_row($sql, ARRAY_A);    
+  $location = $wpdb->get_row($sql, ARRAY_A);
 	$location['location_image_url'] = dbem_image_url_for_location_id($location['location_id']);
 	return $location;  
 

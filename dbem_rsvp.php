@@ -216,7 +216,7 @@ function dbem_bookings_table($event_id) {
 						 <tr><th scope='row' colspan='4'>Available seats:</th><td class='booking-result' id='available-seats'>$available_seats</td></tr></tfoot>
 							</table></div>
 							<div class='tablenav'>
-								<div class=alignleft actions>
+								<div class='alignleft actions'>
 								 <input class=button-secondary action' type='submit' name='doaction2' value='Delete'/>
 									<br class='clear'/>
 								</div>

@@ -91,4 +91,9 @@ p#recurrence_warning {
 }
 div#icon-events{
 	background:url('images/calendar-32.png') no-repeat center;
+} 
+
+table#dbem-location-data th {
+	text-align: right;   
+	width: 50px;
 }

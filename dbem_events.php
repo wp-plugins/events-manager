@@ -99,7 +99,7 @@ function dbem_events_subpanel() {
 			// validation successful  
 			
 			$related_location = dbem_get_identical_location($location); 
-			print_r($related_location); 
+		 // print_r($related_location); 
 			if ($related_location)  {
 				$event['location_id'] = $related_location['location_id'];
 				$recurrence['location_id'] = $related_location['location_id'];      
@@ -797,7 +797,9 @@ function dbem_get_event($event_id) {
 	$event['location_name'] = $location['location_name'];
 	$event['location_address'] = $location['location_address'];
 	$event['location_town'] = $location['location_town'];   
-	$event['location_image_url'] = $location['location_image_url'];
+	$event['location_latitude'] = $location['location_latitude'];
+	$event['location_longitude'] = $location['location_longitude']; 
+	$event['location_image_url'] = $location['location_image_url']; 
 	return $event;
 }        
 
@@ -847,7 +849,7 @@ function dbem_events_table($events, $limit, $title) {
 				<div class="alignleft actions">
 				<select name="action">
         <option value="-1" selected="selected"><?php _e('Bulk Actions');?></option> 	
-				<option value="deleteEvents" "><?php _e('Delete selected');?></option> 
+				<option value="deleteEvents"><?php _e('Delete selected');?></option> 
 				
 				</select>
 				<input type="submit" value="Applica" name="doaction2" id="doaction2" class="button-secondary action" />
@@ -864,7 +866,7 @@ function dbem_events_table($events, $limit, $title) {
 				</select>	
 				<input id="post-query-submit" class="button-secondary" type="submit" value="<?php _e('Filter')?>"/>
 				</div>
-				<div class="clear"></div>
+				<div class="clear">
 				</div>
 				<?php 
 				if (empty($events)) {
@@ -876,7 +878,7 @@ function dbem_events_table($events, $limit, $title) {
 	<table class="widefat">
   		<thead>
 			<tr>
-  				<th class='manage-column column-cb check-column' scope='col'><input class='select-all' type="checkbox" value='1'></th>
+  				<th class='manage-column column-cb check-column' scope='col'><input class='select-all' type="checkbox" value='1'/></th>
   	  		<th><?php _e('Name', 'dbem');?></th>
   	   		<th><?php _e('Location', 'dbem');?></th>
   	   	 
@@ -906,7 +908,7 @@ function dbem_events_table($events, $limit, $title) {
 	  <tr <?php echo"$class $style"; ?> >   
 			 
   	   <td>
- 	    		<input type='checkbox' class='row-selector' value='<?php echo $event['event_id'];?>' name='events[]'/></td>
+ 	    		<input type='checkbox' class='row-selector' value='<?php echo $event['event_id'];?>' name='events[]'/>
   	   </td>
   	   <td>
   	    <strong><a class="row-title" href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $event['event_id']; ?>"><?php echo ($event['event_name']); ?></a></strong>
@@ -944,7 +946,7 @@ function dbem_events_table($events, $limit, $title) {
   <?php } // end of table?>
 
 			<div class='tablenav'>
-				<div class=alignleft actions>
+				<div class="alignleft actions">
 				
 			 	 
 					<br class='clear'/> 
@@ -1050,7 +1052,7 @@ function dbem_event_form($event, $title, $element) {
 			 	<div id="side-info-column" class="inner-sidebar">  
 					<div id='side-sortables' class='meta-box-sortables'>
 	          		<!-- recurrence postbox -->
-						<div id="submitdiv" class="postbox " >
+						<div class="postbox " >
 							<div class="handlediv" title="Fare clic per cambiare."><br /></div>
 							<h3 class='hndle'><span>Recurrence</span></h3>
 							
@@ -1114,7 +1116,7 @@ function dbem_event_form($event, $title, $element) {
 							
 						</div>
 					   
-						<div id="submitdiv" class="postbox " >
+						<div class="postbox " >
 						<div class="handlediv" title="Fare clic per cambiare."><br /></div>
 						<h3 class='hndle'><span>Contact Person</span></h3>
 						<div class="inside">
@@ -1124,7 +1126,7 @@ function dbem_event_form($event, $title, $element) {
 			 
 					
 								
-       	    	<div id="submitdiv" class="postbox " >
+       	    	<div class="postbox " >
 							<div class="handlediv" title="Fare clic per cambiare."><br /></div>
 							<h3 class='hndle'><span>RSVP</span></h3>
 							<div class="inside">
@@ -1136,7 +1138,7 @@ function dbem_event_form($event, $title, $element) {
 								 				$selected = $event['event_contactperson_id'];
 											else
 												$selected = '0';?>
-								<p>	<?php _e('Spaces');?>: <input id="seats-input" type="text" name="event_seats" size='5' value="<?php echo $event[$pref.'seats']?>" /><p/>
+								<p>	<?php _e('Spaces');?>: <input id="seats-input" type="text" name="event_seats" size='5' value="<?php echo $event[$pref.'seats']?>" /></p>
 								 <?php dbem_bookings_compact_table($event[$pref.'id']);  ?>
 							</div>
 						</div>       
@@ -1193,28 +1195,17 @@ function dbem_event_form($event, $title, $element) {
 							</div>
 					 </div>          
 					
+			
 					
-					
-				   		
-				
-				
-				
-
-		
-				
-				 
-				
-						
 			    <?php
 				$gmap_is_active = get_option('dbem_gmap_is_active'); 
-				if ($gmap_is_active) {
-			 		echo "<div id='map-not-found' style='width: 400px; float: right; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p>".__('Map not found')."</p></div>";
-				echo "<div id='event-map' style='width: 400px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";  
+				if ($gmap_is_active) { 
+
 				?>
 				 		<div id="location_coordinates" class="stuffbox" style='display:none;'>
 							<h3><?php _e('Coordinates','dbem'); ?></h3>
 							<div class="inside">
-							<input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='".$location['location_latitude']."' size='15'  /> - <input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='".$location['location_longitude']."' size='15'  />
+							<input id='location-latitude' name='location_latitude' type='text' value='<?php echo $event['location_latitude']; ?>' size='15'  /> - <input id='location-longitude' name='location_longitude'  type='text' value='<?php echo $event['location_longitude']; ?>' size='15'  />         
 						</div>
 					</div>
 				
@@ -1225,24 +1216,41 @@ function dbem_event_form($event, $title, $element) {
 				<div id="location_name" class="stuffbox">
 					<h3><?php _e('Location','dbem'); ?></h3>
 					<div class="inside">
-						<input id="location-name" type="text" name="location_name" value="<?php echo $event['location_name']?>" /><br/>
-						<?php _e('The location where the event takes place. Example: Arena', 'dbem') ?>
+						<table id="dbem-location-data">
+							<tr>
+								<th><?php _e('Name:') ?>&nbsp;</th><td><input id="location-name" type="text" name="location_name" value="<?php echo $event['location_name']?>" /></td>
+								<?php if ($gmap_is_active) { ?>
+									<td rowspan='6'>
+										<div id='map-not-found' style='width: 400px; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p><?php _e('Map not found');?></p></div>
+									<div id='event-map' style='width: 400px; height: 300px; background: green; display: hide; margin-right:8px'></div>
+									</td> 
+							<?php } ; // end of IF_GMAP_ACTIVE?>
+					 		</tr>
+				 			<tr>
+								<td colspan='2'>
+							 <p><?php _e('The name of the location where the event takes place. You can use the name of a venue, a square, etc','dbem') ?> </p>
+									</td>
+							</tr>
+							<tr>
+								<th><?php _e('Address:') ?>&nbsp;</th><td><input id="location-address" type="text" name="location_address" value="<?php echo $event['location_address']; ?>" /></td>
+							</tr>
+								<tr>
+									<td colspan='2'>
+								 <p><?php _e('The address of the location where the event takes place. Example: 21, Dominick Street','dbem') ?> </p>
+										</td>
+								</tr>
+							<tr>
+								<th><?php _e('Town:') ?>&nbsp;</th><td> <input id="location-town" type="text" name="location_town" value="<?php echo $event['location_town']?>" /></td>
+							</tr>
+						 <tr>
+							<td colspan='2'>
+						<p><?php _e('The town where the location is located. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country in the town field. Example: Verona, Italy.', 'dbem') ?></p>
+							</td>
+						</tr>
+						</table>
 					</div>
 				</div>
-				<div id="location_address" class="stuffbox">
-					<h3><?php _e('Address','dbem'); ?></h3>
-					<div class="inside">
-						<input id="location-address" type="text" name="location_address" value="<?php echo $event['location_address']; ?>" /><br/>
-						<?php _e('The address of the location. Example: Via Mazzini 22', 'dbem') ?>
-					</div>
-				</div>
-				<div id="location_town" class="stuffbox">
-					<h3><?php _e('Town','dbem'); ?></h3>
-					<div class="inside">
-						<input id="location-town" type="text" name="location_town" value="<?php echo $event['location_town']?>" /><br/>
-						<?php _e('The event town. Example: Verona. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country as well. Example: Verona, Italy', 'dbem') ?>
-					</div>
-				</div>
+ 
 
 			
 
@@ -1494,12 +1502,12 @@ function dbem_admin_map_script() {
 	   		
 		?>
 		<style type="text/css">
-		   div#location_town, div#location_address, div#location_name {
+		  /* div#location_town, div#location_address, div#location_name {
 					width: 480px;
 				}
 				table.form-table {
 					width: 50%;
-				}
+				}     */
 		</style>
 		<script src="http://maps.google.com/maps?file=api&amp;v=2&amp;key=<?php echo $gmap_key;?>" type="text/javascript"></script>         
 		<script type="text/javascript">
@@ -1532,7 +1540,7 @@ function dbem_admin_map_script() {
 					        map.addOverlay(marker);
 					        marker.openInfoWindowHtml('<strong>' + location +'</strong><p>' + address + '</p><p>' + town + '</p>'); 
 							$j('input#location-latitude').val(point.y);
-					        $j('input#location-longitude').val(point.x);   
+					    $j('input#location-longitude').val(point.x);   
 							$j("#event-map").show();
 							$j('#map-not-found').hide();
 							}
