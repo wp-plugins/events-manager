@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: events-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-03 11:39+0100\n"
+"POT-Creation-Date: 2009-03-03 19:23+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Davide Benini <cno@cnomania.it>\n"
 "Language-Team: \n"
@@ -600,6 +600,10 @@ msgstr "ATTENZIONE: questo è un'evento ricorrente"
 msgid "If you change these data and save, this will become an independent event."
 msgstr "Se si cambiano questi dati e si effettua un salvataggio, questo evento diverrà indipendente."
 
+#: dbem_events.php:1055
+msgid "Recurrence"
+msgstr "Ricorrenza"
+
 #: dbem_events.php:1066
 msgid "Repeated event"
 msgstr "Eventi ripetuti"
@@ -641,6 +645,10 @@ msgstr "Selezionare se l'evento si ripete secondo uno schema regolare"
 msgid "This is't a recurrent event"
 msgstr "Questo non è un evento ricorrente"
 
+#: dbem_events.php:1119
+msgid "Contact Person"
+msgstr "Responsabile dell'evento"
+
 #: dbem_events.php:1121
 msgid "Select..."
 msgstr "Seleziona..."
@@ -659,20 +667,20 @@ msgid "The event name. Example: Birthday party"
 msgstr "Il nome dell'evento. Esempio: festa di compleanno."
 
 #: dbem_events.php:1166
-msgid "Event dates"
-msgstr "Date degli eventi"
+msgid "Event date"
+msgstr "Date dell'evento"
+
+#: dbem_events.php:1166
+msgid "Recurrence dates"
+msgstr "Date della ricorrenza"
 
 #: dbem_events.php:1175
-msgid "The event beginning and end date"
-msgstr "Le date di inizio e fine dell'evento"
+msgid "The event date."
+msgstr "La data dell'evento"
 
 #: dbem_events.php:1175
-msgid "Example:"
-msgstr "Esempio: "
-
-#: dbem_events.php:1175
-msgid "Example: 2008-11-28"
-msgstr "Esempio: 2008-11-28"
+msgid "The recurrence beginning and end date."
+msgstr "Le date di inizio e fine della ricorrenza"
 
 #: dbem_events.php:1185
 msgid "Event time"
@@ -737,11 +745,11 @@ msgstr "non è presente!"
 msgid "end date before begin date"
 msgstr "la data finale precede quella iniziale"
 
-#: dbem_events.php:1617
+#: dbem_events.php:1625
 msgid "You cannot enable Google Maps integration without setting an appropriate API key."
 msgstr "Non è possibile abilitare l'integrazione con Google Maps senza impostare una chiave API."
 
-#: dbem_events.php:1757
+#: dbem_events.php:1765
 msgid "Add an event"
 msgstr "Aggiungi un evento"
 
@@ -967,17 +975,17 @@ msgstr "Prenotazione confermata"
 
 #: dbem_widgets.php:10
 #: dbem_widgets.php:35
-#: events-manager.php:45
-#: events-manager.php:402
-#: events-manager.php:403
-#: events-manager.php:437
-#: events-manager.php:448
+#: events-manager.php:44
+#: events-manager.php:399
+#: events-manager.php:400
+#: events-manager.php:434
+#: events-manager.php:445
 msgid "Events"
 msgstr "Eventi"
 
 #: dbem_widgets.php:19
-#: events-manager.php:51
-#: events-manager.php:395
+#: events-manager.php:50
+#: events-manager.php:392
 msgid "No events"
 msgstr "Nessun evento"
 
@@ -1024,26 +1032,30 @@ msgstr "Lista eventi"
 msgid "Events Calendar"
 msgstr "Calendario eventi"
 
-#: events-manager.php:57
+#: events-manager.php:55
 msgid "<li>No events in this location</li>"
 msgstr "<li>Nessun evento in questo luogo</li>"
 
-#: events-manager.php:387
+#: events-manager.php:384
 msgid "#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.<br/> Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager"
 msgstr "#_RESPNAME (#_RESPEMAIL) parteciperà all'evento #_NAME su #m #d, #Y. Vuole prenotare #_SPACES posti.<br/> Ora ci sono #_RESERVEDSPACES posti prenotati, #_AVAILABLESPACES sono ancora liberi.<br/>A presto,<br/>Events Manager"
 
-#: events-manager.php:388
+#: events-manager.php:385
 msgid "Dear #_RESPNAME, <br/>you have successfully reserved #_SPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/> #_CONTACTPERSON"
 msgstr "#_RESPNAME, <br/>la prenotazione di #_SPACES posto/i a nome di #_NAME è andata a buon fine.<br/>A presto,<br/> #_CONTACTPERSON"
 
-#: events-manager.php:450
+#: events-manager.php:447
 msgid "Edit"
 msgstr "Modifica"
 
-#: events-manager.php:451
+#: events-manager.php:448
 msgid "Add new"
 msgstr "Aggiungi nuovo"
 
+#~ msgid "Example:"
+#~ msgstr "Esempio: "
+#~ msgid "Example: 2008-11-28"
+#~ msgstr "Esempio: 2008-11-28"
 #~ msgid "The format the text appearing in the map cloud."
 #~ msgstr "Il fomato del testo del fumetto che appare sulla mappa."
 #~ msgid "Follow the previous formatting instructions."

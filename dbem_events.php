@@ -197,7 +197,7 @@ function dbem_events_subpanel() {
 	  
 		if ($action == 'update_recurrence') {  
 			//print_r($recurrence);
-			die('update recurrence!');
+			//die('update recurrence!');
 		}
 	
 	 if ($action == "-1" || $action ==""){
@@ -1035,12 +1035,12 @@ function dbem_event_form($event, $title, $element) {
 		if($event['recurrence_id']) { ?>
 			<p id='recurrence_warning'>
 			<?php if(isset($_GET['action']) && ($_GET['action'] == 'edit_recurrence')) {
-				_e('WARNING: This is a recurrence.')?><br/>
-			<?php _e('Modifying these data all the events linked to this recurrence will be rescheduled');
+				_e('WARNING: This is a recurrence.', 'dbem')?><br/>
+			<?php _e('Modifying these data all the events linked to this recurrence will be rescheduled','dbem');
 				
 			} else {
-			 _e('WARNING: This is a recurring event.');
-			 _e('If you change these data and save, this will become an independent event.');
+			 _e('WARNING: This is a recurring event.', 'dbem');
+			 _e('If you change these data and save, this will become an independent event.','dbem');
 			}?></p>
 	<?php } ?>
    		<div id="poststuff" class="metabox-holder">
@@ -1052,7 +1052,7 @@ function dbem_event_form($event, $title, $element) {
 	          		<!-- recurrence postbox -->
 						<div class="postbox " >
 							<div class="handlediv" title="Fare clic per cambiare."><br /></div>
-							<h3 class='hndle'><span>Recurrence</span></h3>
+							<h3 class='hndle'><span><?php _e("Recurrence",'dbem');?></span></h3>
 							
 							<div class="inside">     
                         <?php
@@ -1116,7 +1116,7 @@ function dbem_event_form($event, $title, $element) {
 					   
 						<div class="postbox " >
 						<div class="handlediv" title="Fare clic per cambiare."><br /></div>
-						<h3 class='hndle'><span>Contact Person</span></h3>
+						<h3 class='hndle'><span><? _e('Contact Person','dbem');?></span></h3>
 						<div class="inside">
 							<p>Contact: <?php wp_dropdown_users(array('name'=>'event_contactperson_id', 'show_option_none'=>__("Select...",'dbem'),'selected'=>$event['event_contactperson_id'])) ; ?></p> 
 						</div>
@@ -1163,7 +1163,7 @@ function dbem_event_form($event, $title, $element) {
 				
 				
 				<div id="event_start_date" class="stuffbox">
-					<h3><?php _e('Event dates','dbem'); ?></h3>  
+					<h3 id='event-date-title'><?php _e('Event date','dbem'); ?></h3><h3 id='recurrence-dates-title'><?php _e('Recurrence dates','dbem'); ?></h3>  
 					<div class="inside">
 					 <input id="localised-date" type="text" name="localised_event_date" value="<?php echo $localised_date ?>" style ="display: none;" />  
 					 <input id="date-to-submit" type="text" name="event_date" value="<?php echo $event[$pref.'start_date'] ?>" style="background: #FCFFAA" />              <input id="localised-end-date" type="text" name="localised_event_end_date" value="<?php echo $localised_end_date ?>" style ="display: none; " />
@@ -1172,7 +1172,7 @@ function dbem_event_form($event, $title, $element) {
 			
 			
 			<br/>
-						<?php _e('The event beginning and end date', 'dbem') ?>. <span id="localised_date_example" style ="display: none;"><?php echo __("Example:", "dbem")." $localised_end_example"; ?></span><span class="no-javascript-example"><?php _e("Example: 2008-11-28", "dbem")?></span> - 20:30
+						<span id='event-date-explanation'><?php _e('The event date.', 'dbem'); ?></span><span id='recurrence-dates-explanation'><?php _e('The recurrence beginning and end date.', 'dbem'); ?></span>
 						
 					</div>
 				</div>
@@ -1377,10 +1377,18 @@ function updateIntervalSelectors () {
 function updateShowHideRecurrence () {
 	if($j('input#event-recurrence').attr("checked")) {
 		$j("#event_recurrence_pattern").fadeIn();
-		$j("input#localised-end-date").fadeIn();
+		$j("input#localised-end-date").fadeIn(); 
+		$j("#event-date-explanation").hide();
+		$j("#recurrence-dates-explanation").show();
+		$j("h3#recurrence-dates-title").show();
+		$j("h3#event-date-title").hide();     
 	} else {
 		$j("#event_recurrence_pattern").hide();
-		$j("input#localised-end-date").hide();  
+		$j("input#localised-end-date").hide();
+		$j("#recurrence-dates-explanation").hide();
+		$j("#event-date-explanation").show();
+		$j("h3#recurrence-dates-title").hide();
+		$j("h3#event-date-title").show();   
 	}
 }
 
@@ -1394,8 +1402,8 @@ function updateShowHideRsvp () {
 
 $j(document).ready( function() {
 	locale_format = "ciao";
-	$j("#localised_example").show();
-	$j(".no-javascript-example").hide();
+ 
+	$j("#recurrence-dates-explanation").hide();
 	$j("#localised-date").show();
 
 	$j("#date-to-submit").hide();
