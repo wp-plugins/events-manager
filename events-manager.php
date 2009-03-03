@@ -90,9 +90,8 @@ $localised_date_formats = array("am" => "dd.mm.yy","ar" => "dd/mm/yy", "bg" => "
 //required fields
 $required_fields = array('event_name'); 
 
+load_plugin_textdomain('dbem', "/wp-content/plugins/events-manager/langs/");  
 
-
-load_plugin_textdomain('dbem', "/wp-content/plugins/events-manager/");
 // To enable activation through the activate function
 register_activation_hook(__FILE__,'events-manager');
 
