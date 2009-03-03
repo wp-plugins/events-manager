@@ -1,5 +1,5 @@
 $j=jQuery.noConflict();   
-console.log("single location map");
+//console.log("single location map");
 
 $j(document.body).unload(function() {
 	if (GBrowserIsCompatible()) {
