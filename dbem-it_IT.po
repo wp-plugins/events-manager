@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: events-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-03 11:37+0100\n"
+"POT-Creation-Date: 2009-03-03 11:39+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Davide Benini <cno@cnomania.it>\n"
 "Language-Team: \n"
@@ -127,6 +127,7 @@ msgid "Edit Event"
 msgstr "Modifica l'evento"
 
 #: dbem_events.php:193
+#: dbem_events.php:929
 #: dbem_events.php:1106
 msgid "Reschedule"
 msgstr "Riprogramma"
