@@ -1333,7 +1333,7 @@ function url_exists($url) {
 // General script to make sure hidden fields are shown when containing data
 function dbem_admin_general_script(){  ?>
 	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/dbem.js" type="text/javascript"></script>  
-	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/ui.datepicker.js" 	type="text/javascript"></script>
+	<script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/jquery-ui-datepicker/ui.datepicker.js" 	type="text/javascript"></script>
   <script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/timeentry/jquery.timeentry.js" type="text/javascript"></script> 
 	<?php
 
@@ -1346,14 +1346,14 @@ function dbem_admin_general_script(){  ?>
 			$show24Hours = 'false';
 	  
 
-	$locale_file = get_bloginfo('url')."/wp-content/plugins/events-manager/js/i18n/ui.datepicker-$locale_code.js";
+	$locale_file = get_bloginfo('url')."/wp-content/plugins/events-manager/js/jquery-ui-datepicker/i18n/ui.datepicker-$locale_code.js";
 	if(url_exists($locale_file)) {   ?>
-	  <script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/i18n/ui.datepicker-<?php echo $locale_code;?>.js" type="text/javascript"></script>   
+	  <script src="<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/jquery-ui-datepicker/i18n/ui.datepicker-<?php echo $locale_code;?>.js" type="text/javascript"></script>   
 	<?php } ?>                 
 	
 	
 	<style type='text/css' media='all'>
-		@import "<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/ui.datepicker.css";
+		@import "<?php bloginfo('url');?>/wp-content/plugins/events-manager/js/jquery-ui-datepicker/ui.datepicker.css";
 	</style>
 	<script type="text/javascript">
  	//<![CDATA[        

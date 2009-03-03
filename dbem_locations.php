@@ -616,13 +616,13 @@ add_action ('admin_head', 'dbem_locations_autocomplete');
 function dbem_locations_autocomplete() {     
 	if ((isset($_REQUEST['action']) && $_REQUEST['action'] == 'edit_event') || (isset($_GET['page']) && $_GET['page'] == 'new_event')) { 	 
 		?>
-		<link rel="stylesheet" href="../wp-content/plugins/events-manager/jquery-autocomplete/jquery.autocomplete.css" type="text/css"/>
+		<link rel="stylesheet" href="../wp-content/plugins/events-manager/js/jquery-autocomplete/jquery.autocomplete.css" type="text/css"/>
     
 
-		<script src="../wp-content/plugins/events-manager/jquery-autocomplete/lib/jquery.bgiframe.min.js" type="text/javascript"></script>
-		<script src="../wp-content/plugins/events-manager/jquery-autocomplete/lib/jquery.ajaxQueue.js" type="text/javascript"></script> 
+		<script src="../wp-content/plugins/events-manager/js/jquery-autocomplete/lib/jquery.bgiframe.min.js" type="text/javascript"></script>
+		<script src="../wp-content/plugins/events-manager/js/jquery-autocomplete/lib/jquery.ajaxQueue.js" type="text/javascript"></script> 
 
-		<script src="../wp-content/plugins/events-manager/jquery-autocomplete/jquery.autocomplete.min.js" type="text/javascript"></script>
+		<script src="../wp-content/plugins/events-manager/js/jquery-autocomplete/jquery.autocomplete.min.js" type="text/javascript"></script>
 
 		<script type="text/javascript">
 		//<![CDATA[

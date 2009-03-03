@@ -35,7 +35,6 @@ define('LOCATIONS_TBNAME','dbem_locations'); //TABLE NAME
 define('BOOKINGS_TBNAME','dbem_bookings'); //TABLE NAME
 define('PEOPLE_TBNAME','dbem_people'); //TABLE NAME  
 define('BOOKING_PEOPLE_TBNAME','dbem_bookings_people'); //TABLE NAME  
-
 define('DEFAULT_EVENT_PAGE_NAME', 'Events');   
 define('DBEM_PAGE','<!--DBEM_EVENTS_PAGE-->'); //EVENTS PAGE
 define('MIN_CAPABILITY', 'edit_posts');	// Minimum user level to access calendars
@@ -49,7 +48,6 @@ define('DEFAULT_RSS_TITLE_FORMAT',"#_NAME");
 define('DEFAULT_MAP_TEXT_FORMAT', '<strong>#_LOCATION</strong><p>#_ADDRESS</p><p>#_TOWN</p>');     
 define('DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT','<li>#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul></li>');
 define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));  
-
 define('DEFAULT_SINGLE_LOCATION_FORMAT', '<p>#_ADDRESS</p><p>#_TOWN</p>'); 
 define('DEFAULT_LOCATION_PAGE_TITLE_FORMAT', '	#_NAME'); 
 define('DEFAULT_LOCATION_BALOON_FORMAT', "<strong>#_NAME</strong><br/>#_ADDRESS - #_TOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>");
@@ -62,6 +60,8 @@ define('DEFAULT_IMAGE_MAX_SIZE', 204800);
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, alog will show in admin pages
 define('USE_FIREPHP', false);
+// DEBUG constant for developing
+// if you are hacking this plugin, set to TRUE, a log will show in admin pages
 define('DEBUG', false);     
 
 // if (DEBUG)  { 
@@ -76,7 +76,6 @@ define('DEBUG', false);
 include("dbem_events.php");
 include("dbem_calendar.php");      
 include("dbem_widgets.php");
-include("dbem_locations_autocomplete.php"); 
 include("dbem_rsvp.php");     
 include("dbem_locations.php"); 
 include("dbem_people.php");
@@ -88,10 +87,9 @@ require_once("phpmailer/dbem_phpmailer.php") ;
   
 // Localised date formats as in the jquery UI datepicker plugin
 $localised_date_formats = array("am" => "dd.mm.yy","ar" => "dd/mm/yy", "bg" => "dd.mm.yy", "ca" => "mm/dd/yy", "cs" => "dd.mm.yy", "da" => "dd-mm-yy", "de" =>"dd.mm.yy", "es" => "dd/mm/yy", "en" => "mm/dd/yy", "fi" => "dd.mm.yy", "fr" => "dd/mm/yy", "he" => "dd/mm/yy", "hu" => "yy-mm-dd", "hy" => "dd.mm.yy", "id" => "dd/mm/yy", "is" => "dd/mm/yy", "it" => "dd/mm/yy", "ja" => "yy/mm/dd", "ko" => "yy-mm-dd", "lt" => "yy-mm-dd", "lv" => "dd-mm-yy", "nl" => "dd.mm.yy", "no" => "yy-mm-dd", "pl" => "yy-mm-dd", "pt" => "dd/mm/yy", "ro" => "mm/dd/yy", "ru" => "dd.mm.yy", "sk" => "dd.mm.yy", "sv" => "yy-mm-dd", "th" => "dd/mm/yy", "tr" => "dd.mm.yy", "ua" => "dd.mm.yy", "uk" => "dd.mm.yy", "us" => "mm/dd/yy", "CN" => "yy-mm-dd", "TW" => "yy/mm/dd");
-//required fiealds
+//required fields
 $required_fields = array('event_name'); 
-// DEBUG constant for developing
-// if you are hacking this plugin, set to TRUE, alog will show in admin pages
+
 
 
 load_plugin_textdomain('dbem', "/wp-content/plugins/events-manager/");
