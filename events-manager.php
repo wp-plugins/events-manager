@@ -384,6 +384,9 @@ function dbem_migrate_old_events() {
 }
 
 function dbem_add_options() {
+	$contact_person_email_body_localizable = __("#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.<br/> Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager",'dbem') ;
+	$respondent_email_body_localizable = __("Dear #_RESPNAME, <br/>you have successfully reserved #_SPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/> #_CONTACTPERSON",'dbem');
+	
 	$dbem_options = array('dbem_event_list_item_format' => DEFAULT_EVENT_LIST_ITEM_FORMAT,
 	'dbem_single_event_format' => DEFAULT_SINGLE_EVENT_FORMAT,
 	'dbem_event_page_title_format' => DEFAULT_EVENT_PAGE_TITLE_FORMAT,
@@ -404,8 +407,8 @@ function dbem_add_options() {
 	'dbem_gmap_key' => '',
 	'dbem_default_contact_person' => 1,
 	'dbem_rsvp_mail_notify_is_active' => 0 ,
-	'dbem_contactperson_email_body' => __("#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.\n\r Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.\n\rYours faithfully,\n\rEvents Manager",'dbem'),        
-	'dbem_respondent_email_body' => __("Dear #_RESPNAME, \n\r you have successfully reserved #_SPACES space/spaces for #_NAME.\n\r Yours faithfully,\n\r #_CONTACTPERSON",'dbem'),
+	'dbem_contactperson_email_body' => __(str_replace("<br/>", "\n\r", $contact_person_email_body_localizable)),        
+	'dbem_respondent_email_body' => __(str_replace("<br>", "\n\r", $respondent_email_body_localizable)),
 	'dbem_rsvp_mail_port' => 465,
 	'dbem_smtp_host' => 'localhost',
 	'dbem_mail_sender_name' => '',
@@ -413,7 +416,8 @@ function dbem_add_options() {
 	'dbem_rsvp_mail_SMTPAuth' => 1,
 	'dbem_image_max_width' => DEFAULT_IMAGE_MAX_WIDTH,
 	'dbem_image_max_height' => DEFAULT_IMAGE_MAX_HEIGHT,
-	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE,
+	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE, 
+	'dbem_hello_to_user' => 1,
 	'dbem_version' => 1);
 	
 	foreach($dbem_options as $key => $value)

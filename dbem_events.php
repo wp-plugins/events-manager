@@ -10,7 +10,6 @@ function dbem_new_event_page() {
 }
 
 function dbem_events_subpanel() {         
-  
   global $wpdb;
 	$action=$_GET['action']; 
 	$action2 =$_GET['action2'];
@@ -21,12 +20,18 @@ function dbem_events_subpanel() {
 	$order=$_GET['order'];
 	$selectedEvents = $_GET['events'];
 	
+	// Disable Hello to new user if requested
+	if(isset($_GET['disable_hello_to_user']) && $_GET['disable_hello_to_user'] == 'true')
+		update_option('dbem_hello_to_user', 0);
+	
 	if ($order == "")
 	 $order = "ASC";
 	if ($offset=="")
 	 $offset = "0";
 	$event_table_name = $wpdb->prefix.EVENTS_TBNAME;
 	// Debug code, to make sure I get the correct page
+
+  
 
 
 	// DELETE action
@@ -237,40 +242,35 @@ function dbem_options_subpanel() {
         <h3><?php _e('Events format', 'dbem');?></h3>   
 				<table class="form-table">
  						<?php
-						dbem_options_textarea('Default event list format', 'dbem_event_list_item_format', 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.');
-						dbem_options_input_text('Single event page title format', 'dbem_event_page_title_format', 'The format of a single event page title. Follow the previous formatting instructions.');
-						dbem_options_textarea('Default single event format','dbem_single_event_format','The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, <code>#_CONTACTPHONE</code> to insert respectively the name, e-mail address and phone number of the designated contact person. <br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings.');
-						dbem_options_radio_binary('Show events page in lists?', 'dbem_list_events_page', 'Check this option if you want the events page to appear together with other pages in pages lists.');
-						dbem_options_input_text('Events page title','dbem_events_page_title','The title on the multiple events page.');
-						dbem_options_input_text('No events message', 'dbem_no_events_message','The message displayed when no events are available.');
-						dbem_options_input_text('RSS main title','dbem_rss_main_title','The main title of your RSS events feed.');
-						dbem_options_input_text('RSS main description','dbem_rss_main_description','The main description of your RSS events feed.');
-						dbem_options_input_text('RSS title format','dbem_rss_title_format','The format of the title of each item in the events RSS feed.');
-						dbem_options_input_text('RSS description format','dbem_rss_description_format','The format of the description of each item in the events RSS feed. Follow the previous formatting instructions.');
+						dbem_options_textarea(__('Default event list format', 'dbem'), 'dbem_event_list_item_format', __('The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.', 'dbem'));
+						dbem_options_input_text(__('Single event page title format','dbem'), 'dbem_event_page_title_format', _('The format of a single event page title. Follow the previous formatting instructions.','dbem'));
+						dbem_options_textarea(_('Default single event format','dbem'), 'dbem_single_event_format',__('The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, <code>#_CONTACTPHONE</code> to insert respectively the name, e-mail address and phone number of the designated contact person. <br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings.','dbem'));
+						dbem_options_radio_binary(__('Show events page in lists?','dbem'), 'dbem_list_events_page', __('Check this option if you want the events page to appear together with other pages in pages lists.','dbem'));
+						dbem_options_input_text(__('Events page title','dbem'),'dbem_events_page_title',__('The title on the multiple events page.','dbem'));
+						dbem_options_input_text(__('No events message','dbem'), 'dbem_no_events_message',__('The message displayed when no events are available.','dbem'));
+						dbem_options_textarea(__('Map text format','dbem'),'dbem_map_text_format',__('The format the text appearing in the event page map cloud.<br/>Follow the previous formatting instructions.','dbem'));
 						?>
 			</table> 
-			    
+		 		    
 			<h3><?php _e('Locations format', 'dbem');?></h3>   
-				<table class="form-table">
-						<tr valign="top">
-							<th scope="row"><?php _e('Single location page title format','dbem');?></th>
-							<td>
-								<input name="dbem_location_page_title_format" type="text" id="dbem_location_page_title_format" style="width: 95%" value="<?php echo get_option('dbem_location_page_title_format'); ?>" size="45" /><br />
-								<?php _e('The format of a single location page title.','dbem')?><br/>
-								<?php _e('Follow the previous formatting instructions.','dbem')?>
-							</td>
-						</tr>
-						<?php dbem_options_textarea('Default single location page format','dbem_single_location_format','The format of a single location page.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code>.<br/> Use <code>#_MAP</code> to display a map of the event location, and <code>#_IMAGE</code> to display an image of the location.<br/> Use <code>#_NEXTEVENTS</code> to insert a list of the upcoming events, <code>#_PASTEVENTS</code> for a list of past events, <code>#_ALLEVENTS</code> for a list of all events taking place in this location.')?><br/>  
-								
-		 
-						<?php
-						 	
-						dbem_options_textarea('Default location baloon format', 'dbem_location_baloon_format', 'The format of of the text appearing in the baloon describing the location in the map.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code> or <code>#_IMAGE</code>.');
-						dbem_options_textarea('Default location event list format', 'dbem_location_event_list_item_format', 'The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element. <br/> Follow the events formatting instructions');
-						dbem_options_textarea('Default no events message', 'dbem_location_no_events_message', 'The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available..');
+				<table class="form-table"><?php 
+						dbem_options_input_text(__('Single location page title format','dbem'),'dbem_location_page_title_format',__('The format of a single location page title.<br/>Follow the previous formatting instructions.','dbem')); 
+			      dbem_options_textarea(__('Default single location page format','dbem'),'dbem_single_location_format',__('The format of a single location page.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code>.<br/> Use <code>#_MAP</code> to display a map of the event location, and <code>#_IMAGE</code> to display an image of the location.<br/> Use <code>#_NEXTEVENTS</code> to insert a list of the upcoming events, <code>#_PASTEVENTS</code> for a list of past events, <code>#_ALLEVENTS</code> for a list of all events taking place in this location.','dbem'));
+						dbem_options_textarea(__('Default location baloon format','dbem'),'dbem_location_baloon_format', __('The format of of the text appearing in the baloon describing the location in the map.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code> or <code>#_IMAGE</code>.','dbem'));
+						dbem_options_textarea(__('Default location event list format','dbem'), 'dbem_location_event_list_item_format', __('The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element. <br/> Follow the events formatting instructions','dbem'));
+						dbem_options_textarea(__('Default no events message', 'dbem'),'dbem_location_no_events_message', __('The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available.','dbem'));
 						
 						?>
-					</table>
+				</table>
+			
+		<h3><?php _e('RSS feed format', 'dbem');?></h3>   
+			<table class="form-table"><?php			
+    
+					dbem_options_input_text(__('RSS main title','dbem'),'dbem_rss_main_title',__('The main title of your RSS events feed.','dbem'));
+					dbem_options_input_text(__('RSS main description','dbem'),'dbem_rss_main_description',__('The main description of your RSS events feed.','dbem'));
+					dbem_options_input_text(__('RSS title format','dbem'),'dbem_rss_title_format',__('The format of the title of each item in the events RSS feed.','dbem'));
+					dbem_options_input_text(__('RSS description format','dbem'),'dbem_rss_description_format',__('The format of the description of each item in the events RSS feed. Follow the previous formatting instructions.','dbem')); ?>
+		</table>
 				
 			<h3><?php _e('Maps and geotagging', 'dbem');?></h3>
 				<table class='form-table'> 
@@ -284,20 +284,9 @@ function dbem_options_subpanel() {
 							<?php _e('Check this option to enable Goggle Map integration.','dbem')?>
 						</td>
 				   	</tr>
-						
-				   	<tr valign="top">
-						<th scope="row"><?php _e('Google Maps API Key','dbem'); ?></th>
-						<td>
-							<input name="dbem_gmap_key" type="text" id="dbem_gmap_key" style="width: 95%" value="<?php echo get_option('dbem_gmap_key'); ?>" size="45" /><br />
-									<?php _e("To display Google Maps you need a Google Maps API key. Don't worry, it's free, you can get one", "dbem");?> <a href="http://code.google.com/apis/maps/signup.html"><?php _e("here",'dbem')?></a>.
-						</td>
-					</tr>
-					<tr valign="top">
-						<th scope="row"><?php _e('Map text format','dbem')?></th>
-						<td><textarea name="dbem_map_text_format" id="dbem_map_text_format" rows="6" cols="60"><?php echo (get_option('dbem_map_text_format'));?></textarea><br/>
-							<?php _e('The format the text appearing in the map cloud.','dbem')?><br/>
-							<?php _e('Follow the previous formatting instructions.','dbem')?></td>
-					</tr>                    
+					 <?php 
+				   dbem_options_input_text(__('Google Maps API Key','dbem'), 'dbem_gmap_key', sprintf (__("To display Google Maps you need a Google Maps API key. Don't worry, it's free, you can get one <a href='%s'>here</a>.",'dbem'), 'http://code.google.com/apis/maps/signup.html'));
+					  ?>       
 				</table>
 				
 				<h3><?php _e('RSVP and bookings', 'dbem');?></h3>
@@ -305,8 +294,8 @@ function dbem_options_subpanel() {
 				   <?php
 					 	dbem_options_select(__('Default contact person','dbem'), 'dbem_default_contact_person', dbem_get_indexed_users(), __('Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event','dbem'));
 						dbem_options_radio_binary(__('Enable the RSVP e-mail notifications?','dbem'),'dbem_rsvp_mail_notify_is_active', __('Check this option if you want to receive an email when someone books places for your events.','dbem') );
-					  dbem_options_textarea('Contact person email format','dbem_contactperson_email_body','The format or the email which will be sent to  the contact person. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code>, <code>#_RESPEMAIL</code> and <code>#_RESPPHONE</code> to display respectively the name, e-mail, address and phone of the respondent.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent.<br/> Use <code>#_BOOKEDSEATS</code> and <code>#_AVAILABLESEATS</code> to display respectively the number of booked and available seats.');   
-					  dbem_options_textarea('Contact person email format','dbem_respondent_email_body','The format or the email which will be sent to reposdent. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code> to display the name of the respondent.<br/>Use <code>#_CONTACTNAME</code> and <code>#_CONTACTMAIL</code> a to display respectively the name and e-mail of the contact person.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent.');
+					  dbem_options_textarea(__('Contact person email format','dbem'),'dbem_contactperson_email_body',__('The format or the email which will be sent to  the contact person. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code>, <code>#_RESPEMAIL</code> and <code>#_RESPPHONE</code> to display respectively the name, e-mail, address and phone of the respondent.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent.<br/> Use <code>#_BOOKEDSEATS</code> and <code>#_AVAILABLESEATS</code> to display respectively the number of booked and available seats.','dbem'));   
+					  dbem_options_textarea(__('Contact person email format','dbem'),'dbem_respondent_email_body',__('The format or the email which will be sent to reposdent. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code> to display the name of the respondent.<br/>Use <code>#_CONTACTNAME</code> and <code>#_CONTACTMAIL</code> a to display respectively the name and e-mail of the contact person.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent.','dbem'));
 						dbem_options_input_text(__('Notification sender name','dbem'),'dbem_mail_sender_name', __("Insert the display name of the notification sender.",'dbem'));
 						dbem_options_input_text(__('Notification sender address','dbem'),'dbem_mail_sender_address', __("Insert the address of the notification sender. It must corresponds with your gmail account user",'dbem'));
 						dbem_options_input_text(__('Default notification receiver address','dbem'),'dbem_mail_receiver_address',__("Insert the address of the receiver of your notifications",'dbem'));
@@ -317,33 +306,16 @@ function dbem_options_subpanel() {
              dbem_options_input_text(__('SMTP username','dbem'),'dbem_smtp_username', __("Insert the username to be used to access your SMTP server.",'dbem'));
 						 dbem_options_input_password(__('SMTP password','dbem'),"dbem_smtp_password", __("Insert the password to be used to access your SMTP server",'dbem'));?>
 				 
-						
+						 
 			   
 					</table>
 				
 				 	<h3><?php _e('Images size', 'dbem');?></h3>
-				    <table class='form-table'> 
-	          	<tr valign="top">
-								<th scope="row"><?php _e('Maximum width (px)','dbem'); ?></th>
-								<td>
-									<input name="dbem_image_max_width" type="text" id="dbem_image_max_width" style="width: 95%" value="<?php echo get_option('dbem_image_max_width'); ?>" size="45" /><br />
-											<?php _e("The maximum allowed width for images uploades",'dbem')?>.
-								</td>
-							</tr>
-							<tr valign="top">
-								<th scope="row"><?php _e('Maximum height (px)','dbem'); ?></th>
-								<td>
-									<input name="dbem_image_max_height" type="text" id="dbem_image_max_height" style="width: 95%" value="<?php echo get_option('dbem_image_max_height'); ?>" size="45" /><br />
-											<?php _e("The maximum allowed width for images uploaded, in pixels",'dbem')?>.
-								</td>
-							</tr>
-							<tr valign="top">
-								<th scope="row"><?php _e('Maximum size (bytes)','dbem'); ?></th>
-								<td>
-									<input name="dbem_image_max_size" type="text" id="dbem_image_max_size" style="width: 95%" value="<?php echo get_option('dbem_image_max_size'); ?>" size="45" /><br />
-											<?php _e("The maximum allowed size for images uploaded, in pixels",'dbem')?></a>.
-								</td>
-							</tr>
+				    <table class='form-table'> <?php 
+							dbem_options_input_text(__('Maximum width (px)','dbem'),'dbem_image_max_width',__('The maximum allowed width for images uploades','dbem')); 			 
+							dbem_options_input_text(__('Maximum height (px)','dbem'),'dbem_image_max_height', __("The maximum allowed width for images uploaded, in pixels",'dbem'));
+							dbem_options_input_text(__('Maximum size (bytes)','dbem'),'dbem_image_max_size', __("The maximum allowed size for images uploaded, in pixels",'dbem'));
+							?>
 					 </table> 
 				
 				
@@ -804,6 +776,24 @@ function dbem_get_event($event_id) {
 	return $event;
 }        
 
+function dbem_hello_to_new_user() {
+	$current_user = wp_get_current_user(); 
+	$advice = sprintf(__("<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like around here.</p> 
+	<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>
+	<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>
+	<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>", 'dbem'),
+	$current_user->display_name, 
+	get_bloginfo('url').'/wp-admin/widgets.php',
+	'http://davidebenini.it/wordpress-plugins/events-manager#template-tags',
+	'http://davidebenini.it/wordpress-plugins/events-manager#shortcodes',
+	get_bloginfo('url').'/wp-admin/admin.php?page=events-manager-options',
+	get_bloginfo('url').'/wp-admin/admin.php?page=events-manager/events-manager.php&disable_hello_to_user=true');
+	?>
+	<div id="message" class="updated">
+		<?php echo $advice; ?>
+	</div>
+	<?php
+}
 
 function dbem_events_table($events, $limit, $title) {	
 	if (isset($_GET['scope'])) 
@@ -823,7 +813,14 @@ function dbem_events_table($events, $limit, $title) {
 	 
 	<div class="wrap">
 		 <div id="icon-events" class="icon32"><br/></div> 
-		 <h2><?php echo $title; ?></h2>   
+		 <h2><?php echo $title; ?></h2>
+		 		
+		<?php 
+			$say_hello = get_option('dbem_hello_to_user'); 
+			if ($say_hello == 1)
+				dbem_hello_to_new_user();
+		
+		?>   
   	<!--<div id='new-event' class='switch-tab'><a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event"><?php _e('New Event ...', 'dbem');?></a></div>-->  
 		<?php
 			
@@ -929,7 +926,7 @@ function dbem_events_table($events, $limit, $title) {
 				 <?php if($event['recurrence_id']) {
 								$recurrence = dbem_get_recurrence($event[recurrence_id]);   ?>
 						
-								<b><?php echo $recurrence['recurrence_description'];?> <br/> <a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_recurrence&amp;recurrence_id=<?php echo $recurrence['recurrence_id'];?>">Reschedule</a></b>
+								<b><?php echo $recurrence['recurrence_description'];?> <br/> <a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_recurrence&amp;recurrence_id=<?php echo $recurrence['recurrence_id'];?>"><?php _e('Reschedule','dbem');?></a></b>
 								
 								 
 							 <?php } ?>
@@ -1106,7 +1103,7 @@ function dbem_event_form($event, $title, $element) {
 										} else {      
 											
 											$recurrence = dbem_get_recurrence($event['recurrence_id']);  ?>
-											<p><?php echo $recurrence['recurrence_description'];?><br/><a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_recurrence&amp;recurrence_id=<?php echo $recurrence['recurrence_id'];?>">Reschedule</a></p>
+											<p><?php echo $recurrence['recurrence_description'];?><br/><a href="<?php bloginfo('wpurl')?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_recurrence&amp;recurrence_id=<?php echo $recurrence['recurrence_id'];?>"><?php _e('Reschedule', 'dbem');?></a></p>
 																						
 									 <?php  } ?>
 								
@@ -1756,9 +1753,8 @@ function dbem_delete_event($event_id) {
 add_filter('favorite_actions', 'dbem_favorite_menu');
  
 function dbem_favorite_menu($actions) {
-    // remove the "Add new page" link
-        // add quick link to our favorite plugin
-    $actions['admin.php?page=new_event'] = array('Add an event', MIN_CAPABILITY);
+    // add quick link to our favorite plugin
+    $actions['admin.php?page=new_event'] = array(__('Add an event', 'dbem'), MIN_CAPABILITY);
     return $actions;
 }    
 

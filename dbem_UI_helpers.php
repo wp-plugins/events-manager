@@ -43,7 +43,7 @@ function dbem_options_input_password($title, $name, $description) {
 		<th scope="row"><?php _e($title, 'dbem') ?></th>
 	    <td>
 			<input name="<?php echo $name ?>" type="password" id="<?php echo $title ?>" style="width: 95%" value="<?php echo get_option($name); ?>" size="45" /><br />
-						<?php _e($description, 'dbem') ?>
+						<?php echo $description; ?>
 			</td>
 		</tr>
 	<?php
@@ -54,7 +54,7 @@ function dbem_options_textarea($title, $name, $description) {
 	<tr valign="top" id='<?php echo $name;?>_row'>
 		<th scope="row"><?php _e($title,'dbem')?></th>
 			<td><textarea name="<?php echo $name ?>" id="<?php echo $name ?>" rows="6" cols="60"><?php echo (get_option($name));?></textarea><br/>
-				<?php _e($description,'dbem')?></td>
+				<?php echo $description; ?></td>
 		</tr>
 	<?php
 }
@@ -67,7 +67,7 @@ function dbem_options_radio_binary($title, $name, $description) {
 	   		<td>   
 				<input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> /><?php _e('Yes'); ?> <br />
 				<input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> /><?php _e('No'); ?> <br />
-				<?php _e($description,'dbem')?>
+				<?php echo $description; ?>
 			</td>
 	   	</tr>
 <?php	
@@ -84,7 +84,7 @@ function dbem_options_select($title, $name, $list, $description) {
 						echo "<option value='$key' $selected>$value</option>";
 				  } ?>
 				</select> <br/>
-				<?php _e($description,'dbem')?>
+				<?php echo $description; ?>
 			</td>
 	   	</tr>
 <?php	

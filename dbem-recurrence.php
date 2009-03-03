@@ -223,12 +223,12 @@ function dbem_build_recurrence_description($recurrence) {
 
 	$weekdays_name = array(__('Monday'),__('Tuesday'),__('Wednesday'),__('Thursday'),__('Friday'),__('Saturday'),__('Sunday'));
 	$monthweek_name = array('1' => __('the first %s of the month', 'dbem'),'2' => __('the second %s of the month', 'dbem'), '3' => __('the third %s of the month', 'dbem'), '4' => __('the fourth %s of the month', 'dbem'), '-1' => __('the last %s of the month', 'dbem'));
-	$output = sprintf (__('From %1$s to %2$s'),  $recurrence['recurrence_start_date'], $recurrence['recurrence_end_date']).", ";
+	$output = sprintf (__('From %1$s to %2$s', 'dbem'),  $recurrence['recurrence_start_date'], $recurrence['recurrence_end_date']).", ";
 	if ($recurrence['recurrence_freq'] == 'daily')  {
 	  
 		$freq_desc =__('everyday', 'dbem');
 		if ($recurrence['recurrence_interval'] > 1 ) {
-			$freq_desc = sprintf (__("every %s days"), $recurrence['recurrence_interval']);
+			$freq_desc = sprintf (__("every %s days", 'dbem'), $recurrence['recurrence_interval']);
 		}
 	}
 	if ($recurrence['recurrence_freq'] == 'weekly')  {
