@@ -143,16 +143,16 @@ function dbem_locations_edit_layout($location, $message = "") {
 					<td><input name='location_town' id='location-town' type='text' value='".$location['location_town']."' size='40' /><br />
 		            ".__('The town where the location is located', 'dbem').".</td>
 
-				</tr>";
-				$gmap_is_active = get_option('dbem_gmap_is_active');
-				if ($gmap_is_active) {  
-			  	$layout .= " 
+				</tr>
 			    
 				 <tr style='display:none;'>
 				  <td>Coordinates</td>
 					<td><input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='".$location['location_latitude']."' size='15'  />
 					<input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='".$location['location_longitude']."' size='15'  /></td>
-				 </tr>\n
+				 </tr>\n	";
+					$gmap_is_active = get_option('dbem_gmap_is_active');
+					if ($gmap_is_active) {  
+				  	$layout .= "
 			
 				<tr>
 			 <th scope='row' valign='top'><label for='location_map'>".__('Location map', 'dbem')."</label></th>

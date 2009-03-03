@@ -1195,11 +1195,6 @@ function dbem_event_form($event, $title, $element) {
 					
 			
 					
-			    <?php
-				$gmap_is_active = get_option('dbem_gmap_is_active'); 
-				if ($gmap_is_active) { 
-
-				?>
 				 		<div id="location_coordinates" class="stuffbox" style='display:none;'>
 							<h3><?php _e('Coordinates','dbem'); ?></h3>
 							<div class="inside">
@@ -1208,15 +1203,16 @@ function dbem_event_form($event, $title, $element) {
 					</div>
 				
 				
-				<?php 
-			}
-				?>
+			
+				
 				<div id="location_name" class="stuffbox">
 					<h3><?php _e('Location','dbem'); ?></h3>
 					<div class="inside">
 						<table id="dbem-location-data">
 							<tr>
 								<th><?php _e('Name:') ?>&nbsp;</th><td><input id="location-name" type="text" name="location_name" value="<?php echo $event['location_name']?>" /></td>
+								<?php $gmap_is_active = get_option('dbem_gmap_is_active'); ?>
+						    
 								<?php if ($gmap_is_active) { ?>
 									<td rowspan='6'>
 										<div id='map-not-found' style='width: 400px; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p><?php _e('Map not found');?></p></div>

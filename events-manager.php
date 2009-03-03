@@ -212,11 +212,11 @@ function dbem_create_events_table() {
 		$in_one_year = strftime('%Y-%m-%d',mktime($hours,$minutes,$seconds,$month,$day,$year+1)); 
 		
 		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id)
-				VALUES ('Monster gig', '$in_one_week', '16:00:00', '18:00:00', 1)");
+				VALUES ('Orality in James Joyce Conference', '$in_one_week', '16:00:00', '18:00:00', 1)");
 		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id)
-				VALUES ('Fiesta Mexicana', '$in_four_weeks', '20:00:00', '22:00:00', 2)");
+				VALUES ('Traditional music session', '$in_four_weeks', '20:00:00', '22:00:00', 2)");
 	  $wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id)
-					VALUES ('Gladiators fight', '$in_one_year','22:00:00', '24:00:00', 2)");
+					VALUES ('6 Nations, Italy VS Ireland', '$in_one_year','22:00:00', '24:00:00', 3)");
 	} else {  
 		// eventual maybe_add_column() for later versions
 	  maybe_add_column($table_name, 'event_start_date', "alter table $table_name add event_start_date date NOT NULL;"); 
@@ -286,18 +286,12 @@ function dbem_create_locations_table() {
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
 		
-		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
-					VALUES ('Arena', 'Piazza Bra','Verona')");
-      $wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
-							VALUES ('Hardrock Cafe', '1501 Broadway','New York')");
-		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
-				VALUES ('Wembley Stadium', 'Wembley','London')");
-		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
-					VALUES ('Harp Pub', 'Via Cantarane','Verona')");
-      $wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
-							VALUES ('Silverstar Pub', 'Via Bentegodi','Verona')");
-		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town)
-				VALUES ('Hartigan pub', 'Vicolo cieco disciplina','Verona')");		
+		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_latitude, location_longitude)
+					VALUES ('Arts Millenium Building', 'Newcastle Road','Galway', 53.275, -9.06532)");
+   	$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_latitude, location_longitude)
+					VALUES ('The Crane Bar', '2, Sea Road','Galway', 53.2692, -9.06151)");
+		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_latitude, location_longitude)
+					VALUES ('Taaffes Bar', '19 Shop Street','Galway', 53.2725, -9.05321)");
 	}
 }
 
