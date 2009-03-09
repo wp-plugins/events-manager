@@ -6,7 +6,7 @@ function dbem_get_calendar_shortcode($atts) {
 }    
 add_shortcode('events_calendar', 'dbem_get_calendar_shortcode');
 
-function dbem_get_calendar($args) {
+function dbem_get_calendar($args="") {
   $defaults = array(
 		'month' => '',
 		'echo' => 1

@@ -243,8 +243,8 @@ function dbem_options_subpanel() {
 				<table class="form-table">
  						<?php
 						dbem_options_textarea(__('Default event list format', 'dbem'), 'dbem_event_list_item_format', __('The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.', 'dbem'));
-						dbem_options_input_text(__('Single event page title format','dbem'), 'dbem_event_page_title_format', _('The format of a single event page title. Follow the previous formatting instructions.','dbem'));
-						dbem_options_textarea(_('Default single event format','dbem'), 'dbem_single_event_format',__('The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, <code>#_CONTACTPHONE</code> to insert respectively the name, e-mail address and phone number of the designated contact person. <br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings.','dbem'));
+						dbem_options_input_text(__('Single event page title format','dbem'), 'dbem_event_page_title_format', __('The format of a single event page title. Follow the previous formatting instructions.','dbem'));
+						dbem_options_textarea(__('Default single event format','dbem'), 'dbem_single_event_format',__('The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, <code>#_CONTACTPHONE</code> to insert respectively the name, e-mail address and phone number of the designated contact person. <br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings.','dbem'));
 						dbem_options_radio_binary(__('Show events page in lists?','dbem'), 'dbem_list_events_page', __('Check this option if you want the events page to appear together with other pages in pages lists.','dbem'));
 						dbem_options_input_text(__('Events page title','dbem'),'dbem_events_page_title',__('The title on the multiple events page.','dbem'));
 						dbem_options_input_text(__('No events message','dbem'), 'dbem_no_events_message',__('The message displayed when no events are available.','dbem'));
@@ -410,16 +410,35 @@ function dbem_events_page_title($data) {
 	$events_page_id = get_option('dbem_events_page');
 	$events_page = get_page($events_page_id);
 	$events_page_title = $events_page->post_title;      
+  
 
 
-	if (($data == $events_page_title) && (is_page($events_page_id))) {
+	if (($data == $events_page_title) && (is_page($events_page_id))) {    
+		if (isset($_REQUEST['calendar_day']) && $_REQUEST['calendar_day'] != ''){ 
+
+				$date = $_REQUEST['calendar_day'];
+				$events_N = dbem_events_count_for($date);
+
+				if ($events_N = 1) { 
+					$events = dbem_get_events("",$_REQUEST['calendar_day']);
+					$event= $events[0];  
+					$stored_page_title_format = get_option('dbem_event_page_title_format');
+					$page_title = dbem_replace_placeholders($stored_page_title_format, $event);
+				  return $page_title;
+				}
+
+		}
+	 
+		
+		
+		
 		if (isset($_REQUEST['location_id']) && $_REQUEST['location_id'] |= '') {
 			$location= dbem_get_location($_REQUEST['location_id']);
 			$stored_page_title_format = get_option('dbem_location_page_title_format');
 			$page_title = dbem_replace_locations_placeholders($stored_page_title_format, $location);
 			return $page_title;
 		}
-	   	if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
+	  if (isset($_REQUEST['event_id']) && $_REQUEST['event_id'] != '') { 
 			// single event page
 			$event_ID=$_REQUEST['event_id'];
 			$event= dbem_get_event($event_ID);
@@ -432,6 +451,9 @@ function dbem_events_page_title($data) {
 			return $page_title;       
 
 		}
+	 
+		
+		
 	
 	} else {
 		return $data;
@@ -778,7 +800,7 @@ function dbem_get_event($event_id) {
 
 function dbem_hello_to_new_user() {
 	$current_user = wp_get_current_user(); 
-	$advice = sprintf(__("<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like around here.</p> 
+	$advice = sprintf(__("<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> 
 	<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>
 	<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>
 	<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>", 'dbem'),
@@ -850,7 +872,7 @@ function dbem_events_table($events, $limit, $title) {
 				<option value="deleteEvents"><?php _e('Delete selected');?></option> 
 				
 				</select>
-				<input type="submit" value="Applica" name="doaction2" id="doaction2" class="button-secondary action" />
+				<input type="submit" value="<? _e('Apply'); ?>" name="doaction2" id="doaction2" class="button-secondary action" />
 				<select name="scope">
 	
 					<?php

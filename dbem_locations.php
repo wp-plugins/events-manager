@@ -570,7 +570,7 @@ function dbem_replace_locations_placeholders($format, $location, $target="html")
 			$location_string = str_replace($result, $location_image , $location_string ); 
 		}
 	 if (preg_match('/#_(LOCATIONPAGEURL)/', $result)) {
-	       $venue_page_link = dbem_get_events_page(true, false)."&location_id=".$location['location_id'];
+	       $venue_page_link = dbem_get_events_page(true, false)."&amp;location_id=".$location['location_id'];
 	      	$location_string = str_replace($result, $venue_page_link , $location_string ); 
 	 }
 			

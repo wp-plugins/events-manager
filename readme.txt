@@ -6,7 +6,7 @@ Tested up to: 2.6
 Stable tag: 1.0.1   
 Donate link: http://davidebenini.it/wordpress-plugins/
 
-Manage events and display them in your blog. Includes lists, calendar, Google map integration and sidebar widgets.
+Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. Works with widgets, template tags and shortcodes.
              
 == Description ==
 
