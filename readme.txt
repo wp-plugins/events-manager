@@ -2,7 +2,7 @@
 Contributors: nutsmuggler  
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.5.1   
-Tested up to: 2.6   
+Tested up to: 2.7   
 Stable tag: 2.0b1   
 Donate link: http://davidebenini.it/wordpress-plugins/
 
