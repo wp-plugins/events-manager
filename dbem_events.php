@@ -364,7 +364,7 @@ function dbem_events_page_content() {
 			if ($events_N > 1) {
 					$_GET['calendar_day'] ? $scope = $_GET['calendar_day']: $scope =  "future";   
 					$stored_format = get_option('dbem_event_list_item_format');
-					$events_body  =  dbem_get_events_list(10, $scope, "ASC", $stored_format, $false); 
+					$events_body  =  "<ul class='dbem_events_list'>".dbem_get_events_list(10, $scope, "ASC", $stored_format, $false)."</ul>"; 
 					return $events_body;   
 			} else {
 			   $events = dbem_get_events("",$_REQUEST['calendar_day']);
@@ -378,7 +378,7 @@ function dbem_events_page_content() {
 		// Multiple events page
 		$_GET['scope'] ? $scope = $_GET['scope']: $scope =  "future";   
 		$stored_format = get_option('dbem_event_list_item_format');
-		$events_body  =  dbem_get_events_list(10, $scope, "ASC", $stored_format, $false);  
+		$events_body  =  $events_body  =  "<ul class='dbem_events_list'>".dbem_get_events_list(10, $scope, "ASC", $stored_format, $false)."</ul>";  
 		return $events_body;       
 		
 	}
@@ -419,7 +419,7 @@ function dbem_events_page_title($data) {
 				$date = $_REQUEST['calendar_day'];
 				$events_N = dbem_events_count_for($date);
 
-				if ($events_N = 1) { 
+				if ($events_N == 1) { 
 					$events = dbem_get_events("",$_REQUEST['calendar_day']);
 					$event= $events[0];  
 					$stored_page_title_format = get_option('dbem_event_page_title_format');
