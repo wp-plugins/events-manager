@@ -279,24 +279,24 @@ function dbem_days_in_month($month, $year) {
 function dbem_calendar_style() {
 	?>
 	<style type="text/css"> 
-	#dbem-calendar td {
+	.dbem-calendar td {
 		padding: 2px 4px; 
 		text-align: center;
 	}
-	#dbem-calendar tr.days-names {
+	.dbem-calendar tr.days-names {
 		font-weight: bold;
 	} 
-	#dbem-calendar td.eventless-pre, #dbem-calendar td.eventless-post {
+	.dbem-calendar td.eventless-pre, .dbem-calendar td.eventless-post {
 		color: #ccc;
 	}
-	#dbem-calendar td.eventful a {
+	.dbem-calendar td.eventful a {
 	  font-weight: bold;
 	  color: #FD7E29;
 	}
-	 #dbem-calendar td.eventless-today {
+	 .dbem-calendar td.eventless-today {
 	   background-color: #CFCFCF;  
 	}
-	#dbem-calendar thead {
+	.dbem-calendar thead {
 		font-size: 120%;  
 		font-weight: bold;  
 	}
