@@ -1,7 +1,11 @@
 <?php
 
-function dbem_get_calendar_shortcode($atts) {  
-	$result = dbem_get_calendar("echo=0");
+function dbem_get_calendar_shortcode($atts) { 
+	extract(shortcode_atts(array(
+			'month' => '',
+			'year' => '',
+				), $atts)); 
+	$result = dbem_get_calendar("month={$month}&year={$year}&echo=0");
 	return $result;
 }    
 add_shortcode('events_calendar', 'dbem_get_calendar_shortcode');
@@ -11,17 +15,28 @@ function dbem_get_calendar($args="") {
 		'month' => '',
 		'echo' => 1
 	);
-  	$r = wp_parse_args( $args, $defaults );
+  $r = wp_parse_args( $args, $defaults );
 	extract( $r, EXTR_SKIP ); 
 	$month = $r['month']; 
 	$echo = $r['echo'];
 	
- 	global $wpdb;  
-//	if (!($month))
-	$date = mktime(0,0,0,date('m'), date('d'), date('Y')); 
+ 	global $wpdb;    
+	if(isset($_GET['calmonth']) && $_GET['calmonth'] != '')   {
+		$month =  $_GET['calmonth'] ;
+	} else {
+		if ($month == '')
+			$month = date('m'); 
+	}
+	if(isset($_GET['calyear']) && $_GET['calyear'] != '')   {
+		$year =  $_GET['calyear'] ;
+	} else {
+		if ($year == '')
+			$year = date('Y');
+	}
+	$date = mktime(0,0,0,$month, date('d'), $year); 
 	$day = date('d', $date); 
-	$month = date('m', $date); 
-	$year = date('Y', $date); 
+	// $month = date('m', $date); 
+	// $year = date('Y', $date);       
 	// Get the first day of the month 
 	$month_start = mktime(0,0,0,$month, 1, $year);
 	// Get friendly month name  
@@ -108,30 +123,34 @@ function dbem_get_calendar($args="") {
 	
 
 	// Build Previous and Next Links 
-	$previous_link = "<a href=\"".$_SERVER['PHP_SELF']."?date="; 
+	$base_link = "?".$_SERVER['QUERY_STRING']."&";
 	if($month == 1){ 
-	   $previous_link .= mktime(0,0,0,12,$day,($year -1)); 
+		 $back_month = 12;
+		 $back_year = $year-1;
 	} else { 
-	   $previous_link .= mktime(0,0,0,($month -1),$day,$year); 
+	   $back_month = $month -1;
+		 $back_year = $year;
 	} 
-	$previous_link .= "\">&lt;&lt; Prev</a>"; 
+	$previous_link = "<a href=\"".$base_link."calmonth={$back_month}&calyear={$back_year} \">&lt;&lt;</a>"; 
 
 	$next_link = "<a href=\"".$_SERVER['PHP_SELF']."?date="; 
 	if($month == 12){ 
-	   $next_link .= mktime(0,0,0,1,$day,($year + 1)); 
+	   $next_month = 1;
+		 $next_year = $year+1;
 	} else { 
-	   $next_link .= mktime(0,0,0,($month +1),$day,$year); 
+	   $next_month = $month + 1;
+		 $next_year = $year;	
 	} 
-	$next_link .= "\">Next >></a>"; 
-
-	$calendar="<div id='dbem-calendar'>";
+	$next_link = "<a href=\"".$base_link."calmonth={$next_month}&calyear={$next_year} \">&gt;&gt;</a>";  
+  $random = (rand(100,200));
+	$calendar="<div class='dbem-calendar' id='dbem-calendar-$random'>";
 	
 	$days_initials = "<td>".dbem_translate_and_trim("Monday")."</td><td>".dbem_translate_and_trim("Tuesday")."</td><td>".dbem_translate_and_trim("Wednesday")."</td><td>".dbem_translate_and_trim("Thursday")."</td><td>".dbem_translate_and_trim("Friday")."</td><td>".dbem_translate_and_trim("Saturday")."</td><td>".dbem_translate_and_trim("Sunday")."</td>\n";
 	
 	// Build the heading portion of the calendar table 
 	$calendar .=  "<table id='dbem-calendar-table'>\n". 
 	   	"<thead>\n<tr>\n".
-		"<td colspan='7'>$month_name $year</td>\n". 
+		"<td>$previous_link</td><td colspan='5'>$month_name $year</td><td>$next_link\n". 
 		"</tr>\n</thead>\n".	
 	    "<tr class='days-names'>\n". 
 	    $days_initials. 
@@ -166,16 +185,7 @@ function dbem_get_calendar($args="") {
 	      } 
 	      $calendar .= "</tr>\n";    
 	} 
-	  // $calendar .= "<tr>\n". 
-	  // 	     "<td colspan='7'>\n". 
-	  // 	     "<table align='center'>\n". 
-	  // 	     "<tr class='month-navigation'>\n". 
-	  // 	     "<td class='previous-month' colspan='2' align='left'>$previous_link</td>\n". 
-	  // 	     "<td colspan='3'>&nbsp;</td>".	     
-	  // 		"<td class='next-month' colspan='2'  align='right'>$next_link</td>\n". 
-	  // 	     "</tr>\n". 
-	  // 	     "</table>\n". 
-	  // 	     "</td>\n</tr>\n";
+	
 	  	$calendar .= " </table>\n</div>";
 	
 	// query the database for events in this time span
