@@ -1,10 +1,10 @@
 === Events Manager ===  
-Contributors: nutsmuggler  
+Contributors: nutsmuggler   
+Donate link: http://davidebenini.it  
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.5.1   
-Tested up to: 2.7   
-Stable tag: 2.0b1   
-Donate link: http://davidebenini.it/wordpress-plugins/
+Tested up to: 2.7.1   
+Stable tag: 2.0b2   
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
@@ -29,7 +29,7 @@ Events Manager is fully localisable. IN this release you will find the Italian a
 Events Manager 1.* adopters should:
 
 1. backup their Wordpress database. 
-2. deactivate Events Manager 1.\*
+2. deactivate Events Manager 1.*
 3. delete Events Managers 1.* and upload Events Manager 2.* to their server
 4. activate Events Manager 2.*
 
