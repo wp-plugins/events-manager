@@ -580,8 +580,13 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				$event_string = str_replace($result, $location_image , $event_string ); 
 		 	}
 	  
-		 if (preg_match('/#_(LOCATIONPAGEURL)/', $result)) {
-          $venue_page_link = dbem_get_events_page(true, false)."&location_id=".$event['location_id'];
+		 if (preg_match('/#_(LOCATIONPAGEURL)/', $result)) { 
+			 $events_page_link = dbem_get_events_page(true, false);
+			  if (stristr($events_page_link, "?"))
+			  	$joiner = "&amp;";
+			  else
+			  	$joiner = "?";
+			$venue_page_link = $events_page_link.$joiner."location_id=".$event['location_id'];
 	       	$event_string = str_replace($result, $venue_page_link , $event_string ); 
 		}
 		// matches all PHP time placeholders for endtime

@@ -123,7 +123,8 @@ function dbem_get_calendar($args="") {
 	
 
 	// Build Previous and Next Links 
-	$base_link = "?".$_SERVER['QUERY_STRING']."&";
+	$base_link = "?".$_SERVER['QUERY_STRING']."&";       
+	
 	if($month == 1){ 
 		 $back_month = 12;
 		 $back_year = $year-1;
@@ -131,9 +132,8 @@ function dbem_get_calendar($args="") {
 	   $back_month = $month -1;
 		 $back_year = $year;
 	} 
-	$previous_link = "<a href=\"".$base_link."calmonth={$back_month}&calyear={$back_year} \">&lt;&lt;</a>"; 
+	$previous_link = "<a class='prev-month' href=\"".$base_link."calmonth={$back_month}&calyear={$back_year} \">&lt;&lt;</a>"; 
 
-	$next_link = "<a href=\"".$_SERVER['PHP_SELF']."?date="; 
 	if($month == 12){ 
 	   $next_month = 1;
 		 $next_year = $year+1;
@@ -141,14 +141,14 @@ function dbem_get_calendar($args="") {
 	   $next_month = $month + 1;
 		 $next_year = $year;	
 	} 
-	$next_link = "<a href=\"".$base_link."calmonth={$next_month}&calyear={$next_year} \">&gt;&gt;</a>";  
+	$next_link = "<a class='next-month' href=\"".$base_link."calmonth={$next_month}&calyear={$next_year} \">&gt;&gt;</a>";  
   $random = (rand(100,200));
-	$calendar="<div class='dbem-calendar' id='dbem-calendar-$random'>";
+	$calendar="<div class='dbem-calendar' id='dbem-calendar-$random'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
 	
 	$days_initials = "<td>".dbem_translate_and_trim("Monday")."</td><td>".dbem_translate_and_trim("Tuesday")."</td><td>".dbem_translate_and_trim("Wednesday")."</td><td>".dbem_translate_and_trim("Thursday")."</td><td>".dbem_translate_and_trim("Friday")."</td><td>".dbem_translate_and_trim("Saturday")."</td><td>".dbem_translate_and_trim("Sunday")."</td>\n";
 	
 	// Build the heading portion of the calendar table 
-	$calendar .=  "<table id='dbem-calendar-table'>\n". 
+	$calendar .=  "<table class='dbem-calendar-table'>\n". 
 	   	"<thead>\n<tr>\n".
 		"<td>$previous_link</td><td colspan='5'>$month_name $year</td><td>$next_link\n". 
 		"</tr>\n</thead>\n".	
@@ -279,24 +279,24 @@ function dbem_days_in_month($month, $year) {
 function dbem_calendar_style() {
 	?>
 	<style type="text/css"> 
-	.dbem-calendar td {
+	table.dbem-calendar-table td {
 		padding: 2px 4px; 
 		text-align: center;
 	}
-	.dbem-calendar tr.days-names {
+	table.dbem-calendar.table tr.days-names {
 		font-weight: bold;
 	} 
-	.dbem-calendar td.eventless-pre, .dbem-calendar td.eventless-post {
+	table.dbem-calendar-table td.eventless-pre, .dbem-calendar td.eventless-post {
 		color: #ccc;
 	}
-	.dbem-calendar td.eventful a {
+	table.dbem-calendar-table td.eventful a {
 	  font-weight: bold;
 	  color: #FD7E29;
 	}
-	 .dbem-calendar td.eventless-today {
+	 table.dbem-calendar-table td.eventless-today {
 	   background-color: #CFCFCF;  
 	}
-	.dbem-calendar thead {
+	table.dbem-calendar-table thead {
 		font-size: 120%;  
 		font-weight: bold;  
 	}
@@ -307,5 +307,76 @@ add_action('wp_head', 'dbem_calendar_style');
  
 function dbem_translate_and_trim($string, $length = 1) {
 	return substr(__($string), 0, $length);
+}       
+
+function dbem_ajaxize_calendar()
+{ ?>
+	<script type='text/javascript'>
+		$j=jQuery.noConflict();   
+        
+
+		$j(document).ready( function() {
+		   initCalendar();
+		});
+		
+		function initCalendar() {
+			$j('a.prev-month').click(function(e){
+				e.preventDefault();
+				tableDiv = $j(this).parents('table').parent();    
+				prevMonthCalendar(tableDiv);
+			} );
+			$j('a.next-month').click(function(e){
+				e.preventDefault();
+				tableDiv = $j(this).parents('table').parent();    
+				nextMonthCalendar(tableDiv);
+			} );
+		}    
+		function prevMonthCalendar(tableDiv) {
+			month_n = tableDiv.children('div.month_n').html();                                
+			year_n = tableDiv.children('div.year_n').html();
+			parseInt(month_n) == 1 ? prevMonth = 12 : prevMonth = parseInt(month_n) - 1 ; 
+		   	if (parseInt(month_n) == 1)
+					year_n = parseInt(year_n) -1;
+			$j.get("<?php bloginfo('url'); ?>", {ajaxCalendar: 'true', calmonth: prevMonth, calyear: year_n}, function(data){
+				tableDiv.html(data);
+				initCalendar();
+			});
+		}
+		function nextMonthCalendar(tableDiv) {
+			month_n = tableDiv.children('div.month_n').html();                                
+			year_n = tableDiv.children('div.year_n').html();
+			parseInt(month_n) == 12 ? nextMonth = 1 : nextMonth = parseInt(month_n) + 1 ; 
+		   	if (parseInt(month_n) == 12)
+					year_n = parseInt(year_n) + 1;
+			$j.get("<?php bloginfo('url'); ?>", {ajaxCalendar: 'true', calmonth: nextMonth, calyear: year_n}, function(data){
+				tableDiv.html(data);
+				initCalendar();
+			});
+		}
+		
+		// function reloadCalendar(e) {
+		// 	// e.preventDefault();
+		//  	console.log($j(this).parents('table'));
+		//     $j.get("<?php bloginfo('url'); ?>", {ajax: 'true'}, function(data){
+		// 		tableDiv = table.parent();
+		// 		tableDiv.html(data);
+		//             });
+		// }
+		//                      
+		
+	</script>
+	
+<?php
 }
+add_action('wp_head', 'dbem_ajaxize_calendar');
+
+function dbem_filter_calendar_ajax() {
+	if(isset($_GET['ajaxCalendar']) && $_GET['ajaxCalendar'] == true) {
+		$month = $_GET['month']; 
+		$year = $_GET['year'];
+		dbem_get_calendar('echo=1');
+		die();
+	}
+}
+add_action('init','dbem_filter_calendar_ajax');
 ?>

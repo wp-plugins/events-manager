@@ -571,12 +571,12 @@ function dbem_replace_locations_placeholders($format, $location, $target="html")
 		}
 	 if (preg_match('/#_(LOCATIONPAGEURL)/', $result)) {
 	      $events_page_link = dbem_get_events_page(true, false);
-				if (stristr($events_page_link, "?"))
-					$joiner = "&amp;";
-				else
-					$joiner = "?";
-				$venue_page_link = dbem_get_events_page(true, false).$joiner."location_id=".$location['location_id'];
-				$location_string = str_replace($result, $venue_page_link , $location_string ); 
+		  if (stristr($events_page_link, "?"))
+		  	$joiner = "&amp;";
+		  else
+		  	$joiner = "?";
+		  $venue_page_link = dbem_get_events_page(true, false).$joiner."location_id=".$location['location_id'];
+		  $location_string = str_replace($result, $venue_page_link , $location_string ); 
 	 }
 			
 	}
@@ -585,7 +585,7 @@ function dbem_replace_locations_placeholders($format, $location, $target="html")
 }
 function dbem_single_location_map($location) {
 	$gmap_is_active = get_option('dbem_gmap_is_active'); 
-	$map_text = dbem_replace_locations_placeholders(get_option('dbem_location_baloon_format'), $location);
+	$map_text = addslashes(dbem_replace_locations_placeholders(get_option('dbem_location_baloon_format'), $location));
 	if ($gmap_is_active) {  
    		$gmaps_key = get_option('dbem_gmap_key');
    		$map_div = "<div id='dbem-location-map' style=' background: green; width: 400px; height: 300px'></div>" ;

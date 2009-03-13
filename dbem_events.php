@@ -96,7 +96,7 @@ function dbem_events_subpanel() {
 		$location['location_longitude']=$_POST[location_longitude];
 		$location['location_description']="";
 		$event['event_notes']=stripslashes($_POST[event_notes]);
-		$recurrence['recurrence_notes']=$_POST[event_notes]; 
+		$recurrence['recurrence_notes']=$event['event_notes'];
 		$validation_result = dbem_validate_event($event);
 		
 		
