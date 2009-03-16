@@ -1860,4 +1860,4 @@ function dbem_alert_events_page() {
 
 }     
 add_action('admin_notices', 'dbem_alert_events_page');
-?>                                 
+?>
