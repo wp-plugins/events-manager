@@ -74,14 +74,14 @@ function dbem_options_radio_binary($title, $name, $description) {
 }  
 function dbem_options_select($title, $name, $list, $description) {
 		$option_value = get_option($name); ?>
-		  
+	 
 	   	<tr valign="top" id='<?php echo $name;?>_row'>
 	   		<th scope="row"><?php _e($title,'dbem'); ?></th>
 	   		<td>   
 				<select name="<?php echo $name; ?>" > 
-					<?php foreach($list as $key => $value) {
-						$key == $option_value ? $selected = "selected='selected' " : $selected = ''; 
-						echo "<option value='$key' $selected>$value</option>";
+					<?php foreach($list as $key => $value) {   
+	 					"$key" == $option_value ? $selected = "selected='selected' " : $selected = '';       
+	          echo "<option value='$key' $selected>$value</option>";
 				  } ?>
 				</select> <br/>
 				<?php echo $description; ?>

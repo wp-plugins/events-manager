@@ -225,6 +225,17 @@ function dbem_events_subpanel() {
 	
                                                 
 }         
+// array of all pages, bypasses the filter I set up :)
+function dbem_get_all_pages() {
+	global $wpdb;
+	$query = "SELECT id, post_title FROM ".$wpdb->prefix."posts WHERE post_type = 'page';";
+	$pages = $wpdb->get_results($query, ARRAY_A);
+	$output = array();
+	foreach($pages as $page) { 
+		$output[$page['id']] = $page['post_title'];
+	}
+	return $output;
+}
 
 // Function composing the options subpanel
 function dbem_options_subpanel() {
@@ -238,8 +249,12 @@ function dbem_options_subpanel() {
 		</div>
 		<h2><?php _e('Event Manager Options','dbem'); ?></h2>
 			<form id="dbem_options_form" method="post" action="options.php">
-				
-        <h3><?php _e('Events format', 'dbem');?></h3>   
+				<h3><?php _e('Events page', 'dbem');?></h3> 
+				<table class="form-table">  
+ 					<?php dbem_options_select(__('Events page'), 'dbem_events_page', dbem_get_all_pages(), __('This option allows you to select which page to use as an events page')) ;
+					dbem_options_radio_binary(__('Display calendar in events page?', 'dbem'), 'dbem_display_calendar_in_events_page', __('This options allows to display the calendar in the events page, instead of the default list. It is recommended not to display both the calendar widget and a calendar page.'))?>
+	      </table>
+				<h3><?php _e('Events format', 'dbem');?></h3> 
 				<table class="form-table">
  						<?php
 						dbem_options_textarea(__('Default event list format', 'dbem'), 'dbem_event_list_item_format', __('The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.', 'dbem'));
@@ -378,7 +393,10 @@ function dbem_events_page_content() {
 		// Multiple events page
 		$_GET['scope'] ? $scope = $_GET['scope']: $scope =  "future";   
 		$stored_format = get_option('dbem_event_list_item_format');
-		$events_body  =  $events_body  =  "<ul class='dbem_events_list'>".dbem_get_events_list(10, $scope, "ASC", $stored_format, $false)."</ul>";  
+		if(get_option('dbem_display_calendar_in_events_page'))
+			$events_body = dbem_get_calendar();
+		else
+			$events_body  =  $events_body  =  "<ul class='dbem_events_list'>".dbem_get_events_list(10, $scope, "ASC", $stored_format, $false)."</ul>";  
 		return $events_body;       
 		
 	}
@@ -1788,6 +1806,8 @@ function dbem_favorite_menu($actions) {
 // WP 2.7 options registration
 function dbem_options_register() {
    $options = array(
+	'dbem_events_page',
+	'dbem_display_calendar_in_events_page',
 	'dbem_use_event_end',
 	'dbem_event_list_item_format',
 	'dbem_event_page_title_format',

@@ -379,6 +379,7 @@ function dbem_add_options() {
 	$respondent_email_body_localizable = __("Dear #_RESPNAME, <br/>you have successfully reserved #_SPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/> #_CONTACTPERSON",'dbem');
 	
 	$dbem_options = array('dbem_event_list_item_format' => DEFAULT_EVENT_LIST_ITEM_FORMAT,
+	'dbem_display_calendar_in_events_page' => 0,
 	'dbem_single_event_format' => DEFAULT_SINGLE_EVENT_FORMAT,
 	'dbem_event_page_title_format' => DEFAULT_EVENT_PAGE_TITLE_FORMAT,
 	'dbem_list_events_page' => 0,   
