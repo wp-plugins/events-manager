@@ -426,7 +426,7 @@ function dbem_create_events_page(){
 	echo "inserimento pagina";
 	global $wpdb,$current_user;
 	$page_name= DEFAULT_EVENT_PAGE_NAME;
-	$sql= "INSERT INTO $wpdb->posts (post_author, post_date, post_date_gmt, post_type, post_content, post_title, post_name, post_modified, post_modified_gmt, comment_count) VALUES ($current_user->ID, '$now', '$now_gmt', 'page','CONTENTS', '$page_name', '".$wpdb->escape(__('Events','dbem'))."', '$now', '$now_gmt', '0')";
+	$sql= "INSERT INTO $wpdb->posts (post_author, post_date, post_date_gmt, post_type, post_content, post_title, post_name, post_modified, post_modified_gmt, comment_count) VALUES ($current_user->ID, '$now', '$now_gmt', 'page','CONTENTS', '$page_name', '".$wpdb->escape(__('events','dbem'))."', '$now', '$now_gmt', '0')";
   // echo($sql);
 	$wpdb->query($sql);
     

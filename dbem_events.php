@@ -1848,5 +1848,16 @@ function dbem_options_register() {
    } 
 
 }
-add_action( 'admin_init', 'dbem_options_register' );
-?>
+add_action( 'admin_init', 'dbem_options_register' );             
+
+function dbem_alert_events_page() { 
+	$events_page_id = get_option('dbem_events_page');
+	if(strpos($_SERVER['SCRIPT_NAME'], 'page.php') && isset($_GET['action']) && $_GET['action'] == 'edit' && isset($_GET['post']) && $_GET['post'] == "$events_page_id" )  { 
+		$message = sprintf(__("This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. ", 'dbem'), 'admin.php?page=events-manager-options');
+		$notice = "<div class='error'><p>$message</p></div>";
+		echo $notice;
+	}
+
+}     
+add_action('admin_notices', 'dbem_alert_events_page');
+?>                                 
