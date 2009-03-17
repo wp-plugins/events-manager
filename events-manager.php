@@ -227,7 +227,7 @@ function dbem_create_events_table() {
 		maybe_add_column($table_name, 'event_seats', "alter table $table_name add event_seats tinyint NULL;"); 
 		maybe_add_column($table_name, 'location_id', "alter table $table_name add location_id mediumint(9) NOT NULL;");    
 		maybe_add_column($table_name, 'recurrence_id', "alter table $table_name add recurrence_id mediumint(9) NULL;"); 
-		maybe_add_column($table_name, 'event_contactperson_id', "alter table $table_name add recurrence_id mediumint(9) NULL;");      
+		maybe_add_column($table_name, 'event_contactperson_id', "alter table $table_name add event_contactperson_id mediumint(9) NULL;");      
 	}
 }
 
@@ -453,7 +453,15 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 	preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
 	foreach($placeholders[0] as $result) {    
 		// echo "RESULT: $result <br>";
-		// matches alla fields placeholder
+		// matches alla fields placeholder  
+		//TODO CUSTOM FIX FOR Brian
+		// EVENTUALLY REMOVE 
+		if (preg_match('/#_JCCSTARTTIME/', $result)) { 
+			$time = substr($event['event_start_time'], 0,5);
+			$event_string = str_replace($result, $time , $event_string );		
+				} 
+		// END of REMOVE
+		
 		if (preg_match('/#_MAP/', $result)) {
 			$location = dbem_get_location($event['location_id']);
 			$map_div = dbem_single_location_map($location);
@@ -609,7 +617,8 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				// echo $event_string;  
 		}
 		
-		if (preg_match('/^#[aABgGhHisueIOPTZcrU]$/', $result)) {
+		if (preg_match('/^#[aABgGhHisueIOPTZcrU]$/', $result)) {   
+			echo (mysql2date("H:i", "0000-00-00 13:24")."<br/>");
 			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), "0000-00-00 ".$event['event_start_time']),$event_string );  
 			// echo $event_string;  
 		}
