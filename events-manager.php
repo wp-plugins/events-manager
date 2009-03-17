@@ -343,7 +343,7 @@ function dbem_migrate_old_events() {
 		
 		$events_table = $wpdb->prefix.EVENTS_TBNAME;
 		$sql = "SELECT event_id, event_time, event_venue, event_address, event_town FROM $events_table";
-		echo $sql;
+		//echo $sql;
 		$events = $wpdb->get_results($sql, ARRAY_A);
 		foreach($events as $event) {
 
@@ -618,7 +618,6 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		}
 		
 		if (preg_match('/^#[aABgGhHisueIOPTZcrU]$/', $result)) {   
-			echo (mysql2date("H:i", "0000-00-00 13:24")."<br/>");
 			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), "0000-00-00 ".$event['event_start_time']),$event_string );  
 			// echo $event_string;  
 		}
