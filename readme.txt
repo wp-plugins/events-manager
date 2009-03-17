@@ -4,7 +4,7 @@ Donate link: http://davidebenini.it
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.5.1   
 Tested up to: 2.7.1   
-Stable tag: 2.0b2   
+Stable tag: 2.0b3   
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
