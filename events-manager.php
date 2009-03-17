@@ -348,7 +348,7 @@ function dbem_migrate_old_events() {
 		foreach($events as $event) {
 
 			// Migrating location data to the location table
-			$location = array('venue_name' => $event['event_venue'], 'location_address' => $event['event_address'], 'location_town' => $event['event_town']);
+			$location = array('location_name' => $event['event_venue'], 'location_address' => $event['event_address'], 'location_town' => $event['event_town']);
 			$related_location = dbem_get_identical_location($location); 
 				 
 				if ($related_location)  {
