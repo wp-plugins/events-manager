@@ -6,7 +6,7 @@ function dbem_add_booking_form() {
 	//$message = dbem_catch_rsvp();
  
 	$destination = "?".$_SERVER['QUERY_STRING']."#dbem-rsvp-form";
-	$module = "<h3>RSVP module</h3><br/>";
+	$module = "<h3>".__('Book now!','dbem')."</h3><br/>";
 	if(!empty($form_add_message))
 		$module .= "<div class='dbem-rsvp-message'>$form_add_message</div>";
 	$booked_places_options = array();
@@ -15,16 +15,16 @@ function dbem_add_booking_form() {
 	
 	$module  .= "<form id='dbem-rsvp-form' name='booking-form' method='post' action='$destination'>
 			<table class='dbem-rsvp-form'>
-				<tr><th scope='row'>Name:</th><td><input type='text' name='bookerName' value=''/></td></tr>
-		  	<tr><th scope='row'>E-mail:</th><td><input type='text' name='bookerEmail' value=''/></td></tr>
-		  	<tr><th scope='row'>Phone number:</th><td><input type='text' name='bookerPhone' value=''/></td></tr>
-				<tr><th scope='row'>How many seats?</th><td><select name='bookedSeats' >";
+				<tr><th scope='row'>".__('Name', 'dbem').":</th><td><input type='text' name='bookerName' value=''/></td></tr>
+		  	<tr><th scope='row'>".__('E-Mail', 'dbem').":</th><td><input type='text' name='bookerEmail' value=''/></td></tr>
+		  	<tr><th scope='row'>".__('Phone number', 'dbem').":</th><td><input type='text' name='bookerPhone' value=''/></td></tr>
+				<tr><th scope='row'>".__('Seats', 'dbem').":</th><td><select name='bookedSeats' >";
 		  foreach($booked_places_options as $option) {
 				$module .= $option."\n";                  
 			}
 	 	$module .= "</select></td></tr>
 		</table>
-		<input type='submit' value='Send your booking'/>   
+		<input type='submit' value='".__('Send your booking', 'dbem')."'/>   
 		 <input type='hidden' name='eventAction' value='add_booking'/>  
 	</form>";   
 	// $module .= "dati inviati: ";
@@ -41,7 +41,7 @@ function dbem_delete_booking_form() {
 	global $form_delete_message;
 	
 	$destination = "?".$_SERVER['QUERY_STRING'];
-	$module = "<h3>Delete module</h3><br/>";       
+	$module = "<h3>".__('Cancel your booking', 'dbem')."</h3><br/>";       
 	
 	if(!empty($form_delete_message))
 		$module .= "<div class='dbem-rsvp-message'>$form_delete_message</div>";
@@ -49,11 +49,11 @@ function dbem_delete_booking_form() {
 	
 	$module  .= "<form name='booking-delete-form' method='post' action='$destination'>
 			<table class='dbem-rsvp-form'>
-				<tr><th scope='row'>Name:</th><td><input type='text' name='bookerName' value=''/></td></tr>
-		  	<tr><th scope='row'>E-mail:</th><td><input type='text' name='bookerEmail' value=''/></td></tr>
+				<tr><th scope='row'>".__('Name', 'dbem').":</th><td><input type='text' name='bookerName' value=''/></td></tr>
+		  	<tr><th scope='row'>".__('E-Mail', 'dbem').":</th><td><input type='text' name='bookerEmail' value=''/></td></tr>
 		  	<input type='hidden' name='eventAction' value='delete_booking'/>
 		</table>
-		<input type='submit' value='Delete your booking'/>
+		<input type='submit' value='".__('Cancel your booking', 'dbem')."'/>
 	</form>";   
 	// $module .= "dati inviati: ";
 	//  	$module .= $_POST['bookerName'];  

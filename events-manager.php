@@ -441,10 +441,10 @@ function dbem_create_events_submenu () {
 	   	// Add a submenu to the custom top-level menu: 
 			add_submenu_page(__FILE__, __('Edit'),__('Edit'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel);
 			add_submenu_page(__FILE__, __('Add new', 'dbem'), __('Add new','dbem'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page"); 
-			add_submenu_page(__FILE__, "Locations", "Locations", MIN_CAPABILITY, 'locations', "dbem_locations_page");
-			add_submenu_page(__FILE__, "People", "People", MIN_CAPABILITY, 'people', "dbem_people_page"); 
+			add_submenu_page(__FILE__, __('Locations', 'dbem'), __('Locations', 'dbem'), MIN_CAPABILITY, 'locations', "dbem_locations_page");
+			add_submenu_page(__FILE__, __('People', 'dbem'), __('People', 'dbem'), MIN_CAPABILITY, 'people', "dbem_people_page"); 
 			//add_submenu_page(__FILE__, 'Test ', 'Test ', 8, 'test', 'dbem_recurrence_test');
-			add_submenu_page(__FILE__, 'Events Manager Settings','Settings', SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
+			add_submenu_page(__FILE__, __('Events Manager Settings','dbem'),__('Settings','dbem'), SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
   	}
 }
 

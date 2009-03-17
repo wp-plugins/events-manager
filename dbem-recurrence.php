@@ -161,6 +161,7 @@ function dbem_insert_events_for_recurrence($recurrence) {
 		
 	foreach($matching_days as $day) {
 		$new_event['event_name'] = $recurrence['recurrence_name'];
+		$new_event['event_notes'] = $recurrence['recurrence_notes'];
 		$new_event['event_start_time'] = $recurrence['recurrence_start_time'];
 		$new_event['event_end_time'] = $recurrence['recurrence_end_time'];   
 		$new_event['event_rsvp'] = $recurrence['recurrence_rsvp'];
