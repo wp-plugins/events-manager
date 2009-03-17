@@ -30,6 +30,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 // Setting constants
 define('EVENTS_TBNAME','dbem_events'); //TABLE NAME
+define('OLD_EVENTS_TBNAME','events'); //TABLE NAME 
 define('RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME   
 define('LOCATIONS_TBNAME','dbem_locations'); //TABLE NAME  
 define('BOOKINGS_TBNAME','dbem_bookings'); //TABLE NAME
@@ -341,7 +342,7 @@ function dbem_migrate_old_events() {
 	if ($version < 2)  {
 		global $wpdb;  
 		
-		$events_table = $wpdb->prefix.EVENTS_TBNAME;
+		$events_table = $wpdb->prefix.OLD_EVENTS_TBNAME;
 		$sql = "SELECT event_id, event_time, event_venue, event_address, event_town FROM $events_table";
 		//echo $sql;
 		$events = $wpdb->get_results($sql, ARRAY_A);
