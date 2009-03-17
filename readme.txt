@@ -140,4 +140,12 @@ Added locations support.
 Added RSVP and people management.
 Added repeated events.
 Added multiple map.  
-Fixed a bug in calendars which displayed only the first events when more are present.
+Fixed a bug in calendars which displayed only the first events when more are present.       
+
+2.0b2
+Fixed some bugs
+
+2.0b3 
+Fixed some bugs affecting EM 1.0 users
+Added 2 settings: EM page as calendar and change EM page
+Added Swedish and German localisations
