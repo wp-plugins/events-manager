@@ -1003,9 +1003,9 @@ function dbem_events_table($events, $limit, $title) {
 			 		echo "COUNT = $count BACKWARD = $backward  FORWARD = $forward<br> -- OFFSET = $offset" ; 
 				echo "<div id='events-pagination'> ";
 				if ($backward < $events_count)
-					echo "<a style='float: left' href='".get_bloginfo('url')."/wp-admin/edit.php?page=eventmanager.php&amp;scope=$scope&offset=$backward'>&lt;&lt;</a>" ;
+					echo "<a style='float: left' href='".get_bloginfo('url')."/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=$scope&offset=$backward'>&lt;&lt;</a>" ;
 				if ($forward >= 0)
-					echo "<a style='float: right' href='".get_bloginfo('url')."/wp-admin/edit.php?page=eventmanager.php&amp;scope=$scope&offset=$forward'>&gt;&gt;</a>";
+					echo "<a style='float: right' href='".get_bloginfo('url')."/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=$scope&offset=$forward'>&gt;&gt;</a>";
 		    echo "</div>" ;
 		}
 			?>
@@ -1764,7 +1764,6 @@ function dbem_rss() {
 
 			</channel>
 			</rss>
-		</code>
 	
 	<?php
 	die();

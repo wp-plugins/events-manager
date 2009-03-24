@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 2.0b3
+Version: 2.0b4
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini
@@ -177,13 +177,13 @@ function dbem_create_events_table() {
 		// Creating the events table
 		$sql = "CREATE TABLE ".$table_name." (
 			event_id mediumint(9) NOT NULL AUTO_INCREMENT,
-			event_author mediumint(9) NOT NULL,
+			event_author mediumint(9) DEFAULT NULL,
 			event_name tinytext NOT NULL,
 			event_start_time time NOT NULL,
 			event_end_time time NOT NULL,
 			event_start_date date NOT NULL,
 			event_end_date date NULL, 
-			event_notes text NOT NULL,
+			event_notes text DEFAULT NULL,
 			event_rsvp bool NOT NULL DEFAULT 0,
 			event_seats tinyint,
 			event_contactperson_id mediumint(9) NULL,  
@@ -227,7 +227,11 @@ function dbem_create_events_table() {
 		maybe_add_column($table_name, 'event_seats', "alter table $table_name add event_seats tinyint NULL;"); 
 		maybe_add_column($table_name, 'location_id', "alter table $table_name add location_id mediumint(9) NOT NULL;");    
 		maybe_add_column($table_name, 'recurrence_id', "alter table $table_name add recurrence_id mediumint(9) NULL;"); 
-		maybe_add_column($table_name, 'event_contactperson_id', "alter table $table_name add event_contactperson_id mediumint(9) NULL;");      
+		maybe_add_column($table_name, 'event_contactperson_id', "alter table $table_name add event_contactperson_id mediumint(9) NULL;");
+		
+		// Fix buggy columns
+		$wpdb->query("ALTER TABLE $table_name MODIFY event_notes text ;");
+		$wpdb->query("ALTER TABLE $table_name MODIFY event_author mediumint(9);");
 	}
 }
 
@@ -450,7 +454,7 @@ function dbem_create_events_submenu () {
 
 function dbem_replace_placeholders($format, $event, $target="html") {
  	$event_string = $format;
-	preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
+	preg_match_all("/#@?_?[A-Za-z0-9]+/", $format, $placeholders);
 	foreach($placeholders[0] as $result) {    
 		// echo "RESULT: $result <br>";
 		// matches alla fields placeholder  
@@ -459,8 +463,40 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		if (preg_match('/#_JCCSTARTTIME/', $result)) { 
 			$time = substr($event['event_start_time'], 0,5);
 			$event_string = str_replace($result, $time , $event_string );		
-				} 
+			} 
 		// END of REMOVE
+		
+		if (preg_match('/#_24HSTARTTIME/', $result)) { 
+			$time = substr($event['event_start_time'], 0,5);
+			$event_string = str_replace($result, $time , $event_string );		
+		}
+		if (preg_match('/#_24HENDTIME/', $result)) { 
+			$time = substr($event['event_end_time'], 0,5);
+			$event_string = str_replace($result, $time , $event_string );		
+		}
+		
+		if (preg_match('/#_12HSTARTTIME/', $result)) {
+			$AMorPM = "AM"; 
+			$hour = substr($event['event_start_time'], 0,2);   
+			$minute = substr($event['event_start_time'], 3,2);
+			if ($hour > 12) {
+				$hour = $hour -12;
+				$AMorPM = "PM";
+			}
+			$time = "$hour:$minute $AMorPM";
+			$event_string = str_replace($result, $time , $event_string );		
+		}
+		if (preg_match('/#_12HENDTIME/', $result)) {
+			$AMorPM = "AM"; 
+			$hour = substr($event['event_end_time'], 0,2);   
+			$minute = substr($event['event_end_time'], 3,2);
+			if ($hour > 12) {
+				$hour = $hour -12;
+				$AMorPM = "PM";
+			}
+			$time = "$hour:$minute $AMorPM";
+			$event_string = str_replace($result, $time , $event_string );		
+		}		
 		
 		if (preg_match('/#_MAP/', $result)) {
 			$location = dbem_get_location($event['location_id']);

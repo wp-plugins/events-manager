@@ -4,7 +4,7 @@ Donate link: http://davidebenini.it
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.5.1   
 Tested up to: 2.7.1   
-Stable tag: 2.0b3   
+Stable tag: 2.0b4   
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
@@ -149,3 +149,11 @@ Fixed some bugs
 Fixed some bugs affecting EM 1.0 users
 Added 2 settings: EM page as calendar and change EM page
 Added Swedish and German localisations
+
+2.0b4
+Fixed a bug in the RSS generator
+Added alternate start and end time selector for those installs not supporting the default system
+Removed "Mappa totale" from the gloabl map code  
+Fixed a problem in the back button in the events table
+Removed some debug "echo" from the RSVP form
+Hopefully fixed a database scheme bug that some users signalled 

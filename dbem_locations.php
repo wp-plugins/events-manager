@@ -495,7 +495,7 @@ function dbem_global_map($atts) {
 		), $atts));                                  
 	$events_page = dbem_get_events_page(true, false);
 	$gmaps_key = get_option('dbem_gmap_key');
-	$result = "<h3>Mappa totale</h3>";
+	$result = "";
 	$result .= "<div id='dbem_global_map' style='width: {$width}px; height: {$height}px'>map</div>";
 	$result .= "<script type='text/javascript'>
 	<!--// 

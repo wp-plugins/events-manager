@@ -151,7 +151,7 @@ function dbem_record_booking($event_id, $person_id, $seats) {
 		if(true) {
 			$sql = "INSERT INTO $bookings_table (event_id, person_id, booking_seats) VALUES ($event_id, $person_id, $seats)";
 			$wpdb->query($sql);
-			echo $sql;
+		 // echo $sql;
 		}  
 	}
 } 
