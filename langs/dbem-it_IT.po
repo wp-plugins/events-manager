@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: events-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-17 16:34+0100\n"
+"POT-Creation-Date: 2009-03-30 19:08+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Davide Benini <cno@cnomania.it>\n"
 "Language-Team: \n"
@@ -526,6 +526,7 @@ msgstr "Filtro"
 
 #: dbem_events.php:920
 #: dbem_events.php:1196
+#: dbem_events.php:1523
 #: dbem_locations.php:225
 #: dbem_locations.php:233
 #: dbem_people.php:90
@@ -536,6 +537,7 @@ msgstr "Nome"
 
 #: dbem_events.php:921
 #: dbem_events.php:1249
+#: dbem_events.php:1523
 msgid "Location"
 msgstr "Luogo"
 
@@ -768,15 +770,39 @@ msgstr "non è presente!"
 msgid "end date before begin date"
 msgstr "la data finale precede quella iniziale"
 
-#: dbem_events.php:1661
+#: dbem_events.php:1523
+msgid "Date"
+msgstr "Data"
+
+#: dbem_events.php:1523
+#: dbem_locations.php:226
+#: dbem_locations.php:234
+msgid "Address"
+msgstr "Indirizzo"
+
+#: dbem_events.php:1523
+#: dbem_locations.php:227
+#: dbem_locations.php:235
+msgid "Town"
+msgstr "Città"
+
+#: dbem_events.php:1540
+msgid "Some required fields are missing:"
+msgstr "Mancano alcuni campi obbligatori:"
+
+#: dbem_events.php:1543
+msgid "Since the event is repeated, you must specify an end date"
+msgstr "Per gli eventi ripetuti è necessario specificare una data di fine"
+
+#: dbem_events.php:1698
 msgid "You cannot enable Google Maps integration without setting an appropriate API key."
 msgstr "Non è possibile abilitare l'integrazione con Google Maps senza impostare una chiave API."
 
-#: dbem_events.php:1801
+#: dbem_events.php:1837
 msgid "Add an event"
 msgstr "Aggiungi un evento"
 
-#: dbem_events.php:1856
+#: dbem_events.php:1892
 #, php-format
 msgid "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. "
 msgstr "Questa pagina corriponde alla pagina eventi di <strong>Events Manager</strong>. Il suo contenuto verrà sovrascritto da <strong>Events Manager</strong>. Se vuoi visualizzare il tuo contenuto, puoi assegnare ad <strong>Events Manager</strong> un'altra pagina, tramite le <a href='%s'>Opzioni</a>. "
@@ -861,19 +887,9 @@ msgid "Update location"
 msgstr "Aggiorna il luogo"
 
 #: dbem_locations.php:203
-#: events-manager.php:444
+#: events-manager.php:448
 msgid "Locations"
 msgstr "Luoghi"
-
-#: dbem_locations.php:226
-#: dbem_locations.php:234
-msgid "Address"
-msgstr "Indirizzo"
-
-#: dbem_locations.php:227
-#: dbem_locations.php:235
-msgid "Town"
-msgstr "Città"
 
 #: dbem_locations.php:262
 msgid "No venues have been inserted yet!"
@@ -1025,15 +1041,15 @@ msgstr "Prenotazione confermata"
 #: dbem_widgets.php:10
 #: dbem_widgets.php:35
 #: events-manager.php:44
-#: events-manager.php:394
-#: events-manager.php:395
-#: events-manager.php:440
+#: events-manager.php:398
+#: events-manager.php:399
+#: events-manager.php:444
 msgid "Events"
 msgstr "Eventi"
 
 #: dbem_widgets.php:19
 #: events-manager.php:50
-#: events-manager.php:387
+#: events-manager.php:391
 msgid "No events"
 msgstr "Nessun evento"
 
@@ -1084,35 +1100,35 @@ msgstr "Calendario eventi"
 msgid "<li>No events in this location</li>"
 msgstr "<li>Nessun evento in questo luogo</li>"
 
-#: events-manager.php:378
+#: events-manager.php:382
 msgid "#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.<br/> Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager"
 msgstr "#_RESPNAME (#_RESPEMAIL) parteciperà all'evento #_NAME su #m #d, #Y. Vuole prenotare #_SPACES posti.<br/> Ora ci sono #_RESERVEDSPACES posti prenotati, #_AVAILABLESPACES sono ancora liberi.<br/>A presto,<br/>Events Manager"
 
-#: events-manager.php:379
+#: events-manager.php:383
 msgid "Dear #_RESPNAME, <br/>you have successfully reserved #_SPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/> #_CONTACTPERSON"
 msgstr "#_RESPNAME, <br/>la prenotazione di #_SPACES posto/i a nome di #_NAME è andata a buon fine.<br/>A presto,<br/> #_CONTACTPERSON"
 
-#: events-manager.php:429
+#: events-manager.php:433
 msgid "events"
 msgstr "eventi"
 
-#: events-manager.php:442
+#: events-manager.php:446
 msgid "Edit"
 msgstr "Modifica"
 
-#: events-manager.php:443
+#: events-manager.php:447
 msgid "Add new"
 msgstr "Aggiungi nuovo"
 
-#: events-manager.php:445
+#: events-manager.php:449
 msgid "People"
 msgstr "Persone"
 
-#: events-manager.php:447
+#: events-manager.php:451
 msgid "Events Manager Settings"
 msgstr "Impostazioni di Events Manager"
 
-#: events-manager.php:447
+#: events-manager.php:451
 msgid "Settings"
 msgstr "Impostazioni"
 
@@ -1172,8 +1188,6 @@ msgstr "Impostazioni"
 #~ msgstr "Il formato della descrizione di ciascun elemento nel feed RSS."
 #~ msgid "ID"
 #~ msgstr "ID"
-#~ msgid "Date"
-#~ msgstr "Data"
 #~ msgid "Time"
 #~ msgstr "Ora"
 #~ msgid "Latitude"

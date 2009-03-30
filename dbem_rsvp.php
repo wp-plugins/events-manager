@@ -376,4 +376,13 @@ function dbem_ascii_encode($e)
     return $output;  
 }
 
+function dbem_is_event_rsvpable() {
+	if (dbem_is_single_event_page()) {
+		$event = dbem_get_event($_GET['event_id']);
+		if($event)
+			return $event['event_rsvp']; 
+	} 
+		return 0;
+}
+
 ?>

@@ -96,4 +96,7 @@ div#icon-events{
 table#dbem-location-data th {
 	text-align: right;   
 	width: 50px;
+}          
+#dbem-location-map img {
+	max-width: none;
 }

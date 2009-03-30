@@ -1330,9 +1330,7 @@ function dbem_validate_event($event) {
 	// if ( !_dbem_is_time_valid($time) ) {
 	// 	return __("invalid time","dbem");
 	// }   
-	$use_event_end = get_option('dbem_use_event_end'); 
-	if ($use_event_end && $event['event_date']." ".$time  > $event['event_end_date']." ".$end_time)
-		return __("end date before begin date", "dbem");
+
 	return "OK";
 	
 }
@@ -1513,7 +1511,44 @@ $j(document).ready( function() {
 	 	// }
 	jQuery('#event_notes h3').click( function() {
 		   	jQuery(jQuery(this).parent().get(0)).toggleClass('closed');
-    });  
+    });
+
+   // users cannot submit the event form unless some fields are filled
+   	function verifyEventForm(){
+   		errors = "";
+		var recurring = $j("input[@name=repeated_event]:checked").val();
+		requiredFields= new Array('event_name', 'localised_event_date', 'location_name','location_address','location_town');
+		var localisedRequiredFields = {'event_name':"<?php _e('Name','dbem')?>", 'localised_event_date':"<?php _e('Date','dbem')?>", 'location_name':"<?php _e('Location','dbem')?>",'location_address':"<?php _e('Address','dbem')?>",'location_town':"<?php _e('Town','dbem')?>"};
+		
+		missingFields = new Array;
+		for (var i in requiredFields) {
+			if ($j("input[@name=" + requiredFields[i]+ "]").val() == 0) {
+				missingFields.push(localisedRequiredFields[requiredFields[i]]);
+				$j("input[@name=" + requiredFields[i]+ "]").css('border','2px solid red');
+			} else {
+				$j("input[@name=" + requiredFields[i]+ "]").css('border','1px solid #DFDFDF');
+				
+			}
+				
+	   	}
+	
+		// 	alert('ciao ' + recurring+ " end: " + $j("input[@name=localised_event_end_date]").val());     
+	   	if (missingFields.length > 0) {
+	
+		    errors = "<?php echo _e('Some required fields are missing:','dbem' )?> " + missingFields.join(", ") + ". ";
+		}
+		if(recurring && $j("input[@name=localised_event_end_date]").val() == "")
+			errors = errors +  "<?php _e('Since the event is repeated, you must specify an end date','dbem')?>.";
+		if(errors != "") {
+			alert(errors);
+			return false;
+		}
+		return true; 
+   }
+   
+   $j('#eventForm').bind("submit", verifyEventForm);
+   	
+  
 });
 //]]>
 </script>
