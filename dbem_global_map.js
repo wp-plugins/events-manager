@@ -1,5 +1,5 @@
 $j=jQuery.noConflict();   
-console.log("eventful: " + eventful + " scope " + scope);
+// console.log("eventful: " + eventful + " scope " + scope);
 
 $j(document.body).unload(function() {
 	if (GBrowserIsCompatible()) {
