@@ -100,7 +100,7 @@ function dbem_events_subpanel() {
 		$validation_result = dbem_validate_event($event);
 		
 		
-		if (true) { //RESETME( $validation_result == "OK") { 
+		if ($validation_result == "OK") { 
 			// validation successful  
 			
 			$related_location = dbem_get_identical_location($location); 
@@ -120,7 +120,7 @@ function dbem_events_subpanel() {
 			   			 		
 		  if(!$event_ID && !$recurrence_ID ) {
       	// there isn't anything
-		  	if ($_POST[repeated_event]) {
+		  	if ($_POST['repeated_event']) {
 				
 		  			//insert new recurrence
 		  		  dbem_insert_recurrent_event($event,$recurrence);
@@ -1307,31 +1307,24 @@ function dbem_event_form($event, $title, $element) {
 }            
 
 function dbem_validate_event($event) {
-	// TODO decide which fields are required
-	// Implement type check for dates, etc
+	// Only for emergencies, when JS is disabled
+	// TODO make it fully functional without JS
 	global $required_fields;
-	
+	$errors = Array();
 	foreach ($required_fields as $field) {
 		if ($event[$field] == "" ) {
-		return $field.__(" is missing!", "dbem");
+		$errors[] = $field;
 		}       
 	}
-	
-	$event_year = substr($event['event_date'],0,4);
-	$event_month = substr($event['event_date'],5,2);
-	$event_day = substr($event['event_date'],8,2);
-	
-	// if (!_dbem_is_date_valid($event['event_date'])) {
-	// 	return __("invalid date!", "dbem");
-	// }                                                         
-	$time = $event['event_hh'].":".$event['event_mm'];
-	$end_time = $event['event_end_hh'].":".$event['event_end_mm']; 
-	// TODO re-IMPLEMENT TIME VALIDATION
-	// if ( !_dbem_is_time_valid($time) ) {
-	// 	return __("invalid time","dbem");
-	// }   
-
-	return "OK";
+	$error_message = "";
+	if (count($errors) >0) 
+		$error_message = __('Missing fields: ').implode(", ", $errors).". "; 
+	if($_POST['repeated_event'] == "1" && $_POST['event_end_date'] == "")
+		$error_message .= __('Since the event is repeated, you must specify an event date.','dbem');
+	if ($error_message != "")
+		return  $error_message;
+	else	
+		return "OK";
 	
 }
 
@@ -1514,7 +1507,7 @@ $j(document).ready( function() {
     });
 
    // users cannot submit the event form unless some fields are filled
-   	function verifyEventForm(){
+   	function validateEventForm(){
    		errors = "";
 		var recurring = $j("input[@name=repeated_event]:checked").val();
 		requiredFields= new Array('event_name', 'localised_event_date', 'location_name','location_address','location_town');
@@ -1535,7 +1528,7 @@ $j(document).ready( function() {
 		// 	alert('ciao ' + recurring+ " end: " + $j("input[@name=localised_event_end_date]").val());     
 	   	if (missingFields.length > 0) {
 	
-		    errors = "<?php echo _e('Some required fields are missing:','dbem' )?> " + missingFields.join(", ") + ". ";
+		    errors = "<?php echo _e('Some required fields are missing:','dbem' )?> " + missingFields.join(", ") + ".\n";
 		}
 		if(recurring && $j("input[@name=localised_event_end_date]").val() == "")
 			errors = errors +  "<?php _e('Since the event is repeated, you must specify an end date','dbem')?>.";
@@ -1546,7 +1539,7 @@ $j(document).ready( function() {
 		return true; 
    }
    
-   $j('#eventForm').bind("submit", verifyEventForm);
+   $j('#eventForm').bind("submit", validateEventForm);
    	
   
 });

@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: events-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2009-03-30 19:08+0100\n"
+"POT-Creation-Date: 2009-03-30 19:56+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Davide Benini <cno@cnomania.it>\n"
 "Language-Team: \n"
@@ -526,7 +526,7 @@ msgstr "Filtro"
 
 #: dbem_events.php:920
 #: dbem_events.php:1196
-#: dbem_events.php:1523
+#: dbem_events.php:1514
 #: dbem_locations.php:225
 #: dbem_locations.php:233
 #: dbem_people.php:90
@@ -537,7 +537,7 @@ msgstr "Nome"
 
 #: dbem_events.php:921
 #: dbem_events.php:1249
-#: dbem_events.php:1523
+#: dbem_events.php:1514
 msgid "Location"
 msgstr "Luogo"
 
@@ -761,48 +761,47 @@ msgstr "Note sull'evento"
 msgid "Submit Event"
 msgstr "Invia evento"
 
-#: dbem_events.php:1316
-#: dbem_locations.php:392
-msgid " is missing!"
-msgstr "non è presente!"
+#: dbem_events.php:1321
+msgid "Missing fields: "
+msgstr "Campi obbligatori mancanti:"
 
-#: dbem_events.php:1335
-msgid "end date before begin date"
-msgstr "la data finale precede quella iniziale"
+#: dbem_events.php:1323
+msgid "Since the event is repeated, you must specify an event date."
+msgstr "Per gli eventi ripetuti è necessario specificare una data di fine."
 
-#: dbem_events.php:1523
+#: dbem_events.php:1514
 msgid "Date"
 msgstr "Data"
 
-#: dbem_events.php:1523
+#: dbem_events.php:1514
 #: dbem_locations.php:226
 #: dbem_locations.php:234
 msgid "Address"
 msgstr "Indirizzo"
 
-#: dbem_events.php:1523
+#: dbem_events.php:1514
 #: dbem_locations.php:227
 #: dbem_locations.php:235
 msgid "Town"
 msgstr "Città"
 
-#: dbem_events.php:1540
+#: dbem_events.php:1531
 msgid "Some required fields are missing:"
 msgstr "Mancano alcuni campi obbligatori:"
 
-#: dbem_events.php:1543
+#: dbem_events.php:1534
 msgid "Since the event is repeated, you must specify an end date"
 msgstr "Per gli eventi ripetuti è necessario specificare una data di fine"
 
-#: dbem_events.php:1698
+#: dbem_events.php:1689
 msgid "You cannot enable Google Maps integration without setting an appropriate API key."
 msgstr "Non è possibile abilitare l'integrazione con Google Maps senza impostare una chiave API."
 
-#: dbem_events.php:1837
+#: dbem_events.php:1828
 msgid "Add an event"
 msgstr "Aggiungi un evento"
 
-#: dbem_events.php:1892
+#: dbem_events.php:1883
 #, php-format
 msgid "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. "
 msgstr "Questa pagina corriponde alla pagina eventi di <strong>Events Manager</strong>. Il suo contenuto verrà sovrascritto da <strong>Events Manager</strong>. Se vuoi visualizzare il tuo contenuto, puoi assegnare ad <strong>Events Manager</strong> un'altra pagina, tramite le <a href='%s'>Opzioni</a>. "
@@ -911,6 +910,10 @@ msgstr "Selezionare un'immagine da caricare."
 #: dbem_locations.php:319
 msgid "A description of the location. You may include any kind of info here."
 msgstr "Una descrizione del luogo. In questo campo è possibile inserire qualsiasi tipo di informazione."
+
+#: dbem_locations.php:392
+msgid " is missing!"
+msgstr "non è presente!"
 
 #: dbem_locations.php:400
 msgid "The image file is too big! Maximum size:"
@@ -1132,6 +1135,8 @@ msgstr "Impostazioni di Events Manager"
 msgid "Settings"
 msgstr "Impostazioni"
 
+#~ msgid "end date before begin date"
+#~ msgstr "la data finale precede quella iniziale"
 #~ msgid "Example:"
 #~ msgstr "Esempio: "
 #~ msgid "Example: 2008-11-28"
