@@ -58,19 +58,8 @@ define('DEFAULT_IMAGE_MAX_WIDTH', 700);
 define('DEFAULT_IMAGE_MAX_HEIGHT', 700);  
 define('DEFAULT_IMAGE_MAX_SIZE', 204800);  
 // DEBUG constant for developing
-// if you are hacking this plugin, set to TRUE, alog will show in admin pages
-define('USE_FIREPHP', false);
-// DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, a log will show in admin pages
 define('DEBUG', false);     
-
-// if (DEBUG)  { 
-// 	if (USE_FIREPHP) {
-//  		require('FirePHPCore/fb.php');  
-// 		ob_start();
-// 		fb('FirePHP activated');   
-// 	}
-// } 
 
 // INCLUDES        
 include("dbem_events.php");
@@ -130,9 +119,13 @@ function dbem_install() {
   dbem_create_bookings_table();
   dbem_create_people_table();
 	dbem_add_options();
-  dbem_migrate_old_events();
-	update_option('dbem_version', 2);   
- 
+  if (get_option('dbem_version')) {
+	  
+	 dbem_migrate_old_events();
+	 
+		
+	}  
+  update_option('dbem_version', 2); 
 	// Create events page if necessary
  	$events_page_id = get_option('dbem_events_page')  ;
 	if ($events_page_id != "" ) {
@@ -340,9 +333,8 @@ function dbem_create_people_table() {
 } 
 
 function dbem_migrate_old_events() {         
-	$version = get_option('dbem_version');  
 	
-	if ($version < 2)  {
+
 		global $wpdb;  
 		
 		$events_table = $wpdb->prefix.EVENTS_TBNAME;
@@ -375,7 +367,7 @@ function dbem_migrate_old_events() {
 		
 		}
 		 
-	}
+
 }
 
 function dbem_add_options() {
@@ -413,8 +405,7 @@ function dbem_add_options() {
 	'dbem_image_max_width' => DEFAULT_IMAGE_MAX_WIDTH,
 	'dbem_image_max_height' => DEFAULT_IMAGE_MAX_HEIGHT,
 	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE, 
-	'dbem_hello_to_user' => 1,
-	'dbem_version' => 1);
+	'dbem_hello_to_user' => 1);
 	
 	foreach($dbem_options as $key => $value)
 		dbem_add_option($key, $value);

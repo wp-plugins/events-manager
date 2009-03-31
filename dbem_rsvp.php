@@ -228,7 +228,6 @@ function dbem_bookings_table($event_id) {
 }
 
 function dbem_bookings_compact_table($event_id) {
-
 	$bookings =  dbem_get_bookings_for($event_id);
 	$destination = get_bloginfo('url')."/wp-admin/edit.php"; 
 	$available_seats = dbem_get_available_seats($event_id);

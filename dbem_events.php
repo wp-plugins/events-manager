@@ -4,7 +4,6 @@
 function dbem_new_event_page() {
 
 	$title=__("Insert New Event", 'dbem');
-	$event = dbem_get_event($element);
 	dbem_event_form($event, $title, $element);
 	
 }
@@ -1171,13 +1170,16 @@ function dbem_event_form($event, $title, $element) {
 								 
 								<p><input id="rsvp-checkbox" name='event_rsvp' value='1' type='checkbox' <?php echo $event_RSVP_checked ?> /> <?php _e('Enable registration for this event', 'dbem')?></p>
 								<div id='rsvp-data'>
+								
 								<?php 
 									if ($event['event_contactperson_id'] != NULL)
 								 				$selected = $event['event_contactperson_id'];
 											else
 												$selected = '0';?>
-								<p>	<?php _e('Spaces');?>: <input id="seats-input" type="text" name="event_seats" size='5' value="<?php echo $event[$pref.'seats']?>" /></p>
-								 <?php dbem_bookings_compact_table($event[$pref.'id']);  ?>
+								<p>	<?php _e('Spaces');?>: <input id="seats-input" type="text" name="event_seats" size='5' value="<?php echo $event[$pref.'seats']?>" /></p>  
+								<?php if($event['event_rsvp']){?>  
+								 <?php dbem_bookings_compact_table($event[$pref.'id']);  ?> 
+								<?php } ?>
 							</div>
 						</div>       
 					</div>
@@ -1530,8 +1532,12 @@ $j(document).ready( function() {
 	
 		    errors = "<?php echo _e('Some required fields are missing:','dbem' )?> " + missingFields.join(", ") + ".\n";
 		}
-		if(recurring && $j("input[@name=localised_event_end_date]").val() == "")
-			errors = errors +  "<?php _e('Since the event is repeated, you must specify an end date','dbem')?>.";
+		if(recurring && $j("input[@name=localised_event_end_date]").val() == "") {
+			errors = errors +  "<?php _e('Since the event is repeated, you must specify an end date','dbem')?>."; 
+			$j("input[@name=localised_event_end_date]").css('border','2px solid red');
+		} else {
+			$j("input[@name=localised_event_end_date]").css('border','1px solid #DFDFDF');
+		}
 		if(errors != "") {
 			alert(errors);
 			return false;
@@ -1784,7 +1790,7 @@ function dbem_rss() {
         		$description = dbem_replace_placeholders($description_format, $event, "rss");
 				echo "<item>";   
 				echo "<title>$title</title>\n";
-				echo "<link>$events_page_link".$joiner."event_id=$event->event_id</link>\n ";
+				echo "<link>$events_page_link".$joiner."event_id=".$event['event_id']."</link>\n ";
 				echo "<description>$description </description>\n";
 				echo "</item>";
       }

@@ -18,7 +18,9 @@ Events Manager provides also a RSS feed, to keep your subscribers updated about 
 
 Events manager is fully customisable; you can customise the amount of data displayed and their format in events lists, pages and in the RSS feed. You can choose to show or hide the events page, and change its title.   
 
-Events Manager is fully localisable. IN this release you will find the Italian and Spanish localizations; German and Swedish will follow soon.
+Events Manager is fully localisable and aòlready localised in Italian, Spanish, German and Swedish.
+
+For more information visit the [Documentation Page](http://davidebenini.it/wordpress-plugins/events-manager/) and [Support Forum](http://davidebenini.it/events-manager-forum/).
 
 == Installation ==
 
@@ -28,9 +30,9 @@ Events Manager is fully localisable. IN this release you will find the Italian a
 
 Events Manager 1.* adopters should:
 
-1. backup their Wordpress database. 
+1. backup the Wordpress database. 
 2. deactivate Events Manager 1.*
-3. delete Events Managers 1.* and upload Events Manager 2.* to their server
+3. delete Events Managers 1.* and upload Events Manager 2.* to the server
 4. activate Events Manager 2.*
 
 Events Manager should take care of your events database migration automatically, but since this is a beta release it's much better to perform a database backup, as previously suggested.
@@ -156,4 +158,11 @@ Added alternate start and end time selector for those installs not supporting th
 Removed "Mappa totale" from the gloabl map code  
 Fixed a problem in the back button in the events table
 Removed some debug "echo" from the RSVP form
-Hopefully fixed a database scheme bug that some users signalled 
+Hopefully fixed a database scheme bug that some users signalled  
+
+2.0b5
+Added JS validation and fallback server-side validation  
+Added a dbem\_is\_rsvpable() conditional template tag
+Fixed a MySql bug
+Added the proper expanded PHP tags
+Fixed links in the RSS feed
