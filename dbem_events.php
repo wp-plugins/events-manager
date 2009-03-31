@@ -879,7 +879,7 @@ function dbem_events_table($events, $limit, $title) {
   			<form id="posts-filter" action="" method="get">
         <input type='hidden' name='page' value='events-manager/events-manager.php'/>  
 				<ul class="subsubsub">
-				<li><a href='edit.php'  class="current"><? _e('Total', 'dbem');?> <span class="count">(<?php echo (count($events));?>)</span></a> </li></ul>
+				<li><a href='edit.php'  class="current"><?php _e('Total', 'dbem');?> <span class="count">(<?php echo (count($events));?>)</span></a> </li></ul>
 
 
 				<div class="tablenav">
@@ -890,7 +890,7 @@ function dbem_events_table($events, $limit, $title) {
 				<option value="deleteEvents"><?php _e('Delete selected');?></option> 
 				
 				</select>
-				<input type="submit" value="<? _e('Apply'); ?>" name="doaction2" id="doaction2" class="button-secondary action" />
+				<input type="submit" value="<?php _e('Apply'); ?>" name="doaction2" id="doaction2" class="button-secondary action" />
 				<select name="scope">
 	
 					<?php
@@ -1156,7 +1156,7 @@ function dbem_event_form($event, $title, $element) {
 					   
 						<div class="postbox " >
 						<div class="handlediv" title="Fare clic per cambiare."><br /></div>
-						<h3 class='hndle'><span><? _e('Contact Person','dbem');?></span></h3>
+						<h3 class='hndle'><span><?php _e('Contact Person','dbem');?></span></h3>
 						<div class="inside">
 							<p>Contact: <?php wp_dropdown_users(array('name'=>'event_contactperson_id', 'show_option_none'=>__("Select...",'dbem'),'selected'=>$event['event_contactperson_id'])) ; ?></p> 
 						</div>
@@ -1169,7 +1169,7 @@ function dbem_event_form($event, $title, $element) {
 							<h3 class='hndle'><span>RSVP</span></h3>
 							<div class="inside">
 								 
-								<p><input id="rsvp-checkbox" name='event_rsvp' value='1' type='checkbox' <?php echo $event_RSVP_checked ?> /> <? _e('Enable registration for this event', 'dbem')?></p>
+								<p><input id="rsvp-checkbox" name='event_rsvp' value='1' type='checkbox' <?php echo $event_RSVP_checked ?> /> <?php _e('Enable registration for this event', 'dbem')?></p>
 								<div id='rsvp-data'>
 								<?php 
 									if ($event['event_contactperson_id'] != NULL)
