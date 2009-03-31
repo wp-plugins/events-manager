@@ -2,9 +2,9 @@
 Contributors: nutsmuggler   
 Donate link: http://davidebenini.it  
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
-Requires at least: 2.5.1   
+Requires at least: 2.7   
 Tested up to: 2.7.1   
-Stable tag: 2.0b4   
+Stable tag: 2.0rc1   
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
@@ -160,9 +160,10 @@ Fixed a problem in the back button in the events table
 Removed some debug "echo" from the RSVP form
 Hopefully fixed a database scheme bug that some users signalled  
 
-2.0b5
+2.0rc1
 Added JS validation and fallback server-side validation  
-Added a dbem\_is\_rsvpable() conditional template tag
-Fixed a MySql bug
+Added a dbem\_is\_rsvpable() conditional template tag 
+Fixed a css bug with some themes, preventing the correct visualisation of the map.
+Fixed MySql bugs in the main view and in the activation page
 Added the proper expanded PHP tags
 Fixed links in the RSS feed

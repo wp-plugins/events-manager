@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 2.0b4
+Version: 2.0rc1
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini
@@ -9,7 +9,7 @@ Author URI: http://www.davidebenini.it/blog
 */
 
 /*
-Copyright (c) 2008, Davide Benini.  $Revision: 1 $
+Copyright (c) 2009, Davide Benini.  $Revision: 1 $
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -119,12 +119,10 @@ function dbem_install() {
   dbem_create_bookings_table();
   dbem_create_people_table();
 	dbem_add_options();
-  if (get_option('dbem_version')) {
-	  
-	 dbem_migrate_old_events();
-	 
-		
-	}  
+  // if ANY 1.0 option is there  AND the version options hasn't been set yet THEN launch the updat script 
+	if (get_option('dbem_events_page') && !get_option('dbem_version')) 
+		dbem_migrate_old_events();
+  
   update_option('dbem_version', 2); 
 	// Create events page if necessary
  	$events_page_id = get_option('dbem_events_page')  ;
