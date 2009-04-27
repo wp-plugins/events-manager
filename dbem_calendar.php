@@ -123,7 +123,7 @@ function dbem_get_calendar($args="") {
 	
 
 	// Build Previous and Next Links 
-	$base_link = "?".$_SERVER['QUERY_STRING']."&";       
+	$base_link = "?".$_SERVER['QUERY_STRING']."&amp;";       
 	
 	if($month == 1){ 
 		 $back_month = 12;
@@ -132,7 +132,7 @@ function dbem_get_calendar($args="") {
 	   $back_month = $month -1;
 		 $back_year = $year;
 	} 
-	$previous_link = "<a class='prev-month' href=\"".$base_link."calmonth={$back_month}&calyear={$back_year} \">&lt;&lt;</a>"; 
+	$previous_link = "<a class='prev-month' href=\"".$base_link."calmonth={$back_month}&amp;calyear={$back_year} \">&lt;&lt;</a>"; 
 
 	if($month == 12){ 
 	   $next_month = 1;
@@ -141,7 +141,7 @@ function dbem_get_calendar($args="") {
 	   $next_month = $month + 1;
 		 $next_year = $year;	
 	} 
-	$next_link = "<a class='next-month' href=\"".$base_link."calmonth={$next_month}&calyear={$next_year} \">&gt;&gt;</a>";  
+	$next_link = "<a class='next-month' href=\"".$base_link."calmonth={$next_month}&amp;calyear={$next_year} \">&gt;&gt;</a>";  
   $random = (rand(100,200));
 	$calendar="<div class='dbem-calendar' id='dbem-calendar-$random'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
 	
@@ -150,7 +150,7 @@ function dbem_get_calendar($args="") {
 	// Build the heading portion of the calendar table 
 	$calendar .=  "<table class='dbem-calendar-table'>\n". 
 	   	"<thead>\n<tr>\n".
-		"<td>$previous_link</td><td colspan='5'>$month_name $year</td><td>$next_link\n". 
+		"<td>$previous_link</td><td class='month_name' colspan='5'>$month_name $year</td><td>$next_link</td>\n". 
 		"</tr>\n</thead>\n".	
 	    "<tr class='days-names'>\n". 
 	    $days_initials. 
