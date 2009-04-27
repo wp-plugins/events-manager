@@ -1,0 +1,1217 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: events-manager_CZ\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2009-03-30 19:56+0100\n"
+"PO-Revision-Date: \n"
+"Last-Translator: Vladimír Šlachta <vladimir.slachta@slachta.cz>\n"
+"Language-Team: Vladimír Šlachta <vladimir.slachta@slachta.cz>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Poedit-Language: Czech\n"
+"X-Poedit-Country: CZECH REPUBLIC\n"
+"X-Poedit-SourceCharset: utf-8\n"
+"X-Poedit-Basepath: /Users/davidebenini/Sites/testblog/wp-content/plugins/events-manager/\n"
+"X-Poedit-KeywordsList: _e;__\n"
+"Plural-Forms: nplurals=3; plural=n>=2 && n<=4 ? 1 : n==1 ? 0 : 2;\n"
+"X-Poedit-Bookmarks: -1,-1,10,-1,-1,-1,-1,-1,-1,-1\n"
+"X-Poedit-SearchPath-0: .\n"
+
+#: dbem-recurrence.php:225
+msgid "Monday"
+msgstr "Pondělí"
+
+#: dbem-recurrence.php:225
+msgid "Tuesday"
+msgstr "Úterý"
+
+#: dbem-recurrence.php:225
+msgid "Wednesday"
+msgstr "Středa"
+
+#: dbem-recurrence.php:225
+msgid "Thursday"
+msgstr "Čtvrtek"
+
+#: dbem-recurrence.php:225
+msgid "Friday"
+msgstr "Pátek"
+
+#: dbem-recurrence.php:225
+msgid "Saturday"
+msgstr "Sobota"
+
+#: dbem-recurrence.php:225
+msgid "Sunday"
+msgstr "Neděle"
+
+#: dbem-recurrence.php:226
+#, php-format
+msgid "the first %s of the month"
+msgstr "první %s v měsíci"
+
+#: dbem-recurrence.php:226
+#, php-format
+msgid "the second %s of the month"
+msgstr "druhé % v měsíci"
+
+#: dbem-recurrence.php:226
+#, php-format
+msgid "the third %s of the month"
+msgstr "třetí %s v měsíci"
+
+#: dbem-recurrence.php:226
+#, php-format
+msgid "the fourth %s of the month"
+msgstr "the fourth %s of the month"
+
+#: dbem-recurrence.php:226
+#, php-format
+msgid "the last %s of the month"
+msgstr "poslední %s v měsíci"
+
+#: dbem-recurrence.php:227
+#, php-format
+msgid "From %1$s to %2$s"
+msgstr "Od %1$s do %2$s"
+
+#: dbem-recurrence.php:230
+msgid "everyday"
+msgstr "každý den"
+
+#: dbem-recurrence.php:232
+#, php-format
+msgid "every %s days"
+msgstr "Každé %s dny"
+
+#: dbem-recurrence.php:242
+#, php-format
+msgid "every %s weeks"
+msgstr "každé %s týdny"
+
+#: dbem-recurrence.php:253
+#, php-format
+msgid "every %s months"
+msgstr "každé %s měsíce"
+
+#: dbem_events.php:6
+#: dbem_events.php:175
+msgid "Insert New Event"
+msgstr "Vložit novou událost"
+
+#: dbem_events.php:127
+msgid "New recurrent event inserted!"
+msgstr "Nová opakovaná událost byla vložena!"
+
+#: dbem_events.php:131
+msgid "New event successfully inserted!"
+msgstr "Nová událost byla úspěšně vložena!"
+
+#: dbem_events.php:140
+msgid "Recurrence updated!"
+msgstr "Opakování bylo aktualizováno!"
+
+#: dbem_events.php:142
+msgid "Something went wrong with the recurrence update..."
+msgstr "Aktualizace opakování se nezdařila..."
+
+#: dbem_events.php:150
+msgid "updated"
+msgstr "změněno"
+
+#: dbem_events.php:167
+msgid "Ach, there's a problem here:"
+msgstr "Houstone, máme problém:"
+
+#: dbem_events.php:178
+msgid "Edit Event"
+msgstr "Upravit událost"
+
+#: dbem_events.php:193
+#: dbem_events.php:969
+#: dbem_events.php:1146
+msgid "Reschedule"
+msgstr "Přeplánovat"
+
+#: dbem_events.php:210
+msgid "Past Events"
+msgstr "Minulé události"
+
+#: dbem_events.php:213
+msgid "All Events"
+msgstr "Všechny události"
+
+#: dbem_events.php:216
+msgid "Future Events"
+msgstr "Budoucí události"
+
+#: dbem_events.php:250
+msgid "Event Manager Options"
+msgstr "Možnosti Events Manageru"
+
+#: dbem_events.php:252
+#: dbem_events.php:254
+msgid "Events page"
+msgstr "Strana událostí"
+
+#: dbem_events.php:254
+msgid "This option allows you to select which page to use as an events page"
+msgstr "Tato volba umožňuje vybrat, která stránka bude použita jako stránka událostí"
+
+#: dbem_events.php:255
+msgid "Display calendar in events page?"
+msgstr "Zobrazit kalendář na stránce s událostmi?"
+
+#: dbem_events.php:255
+msgid "This options allows to display the calendar in the events page, instead of the default list. It is recommended not to display both the calendar widget and a calendar page."
+msgstr "Tato volba umožňuje zobrazit kalendář na stránce s událostmi místo předvoleného seznamu. Doporučujeme nezobrazovat současně kalendář na stránce a ve widgetu."
+
+#: dbem_events.php:257
+msgid "Events format"
+msgstr "Formát událostí"
+
+#: dbem_events.php:260
+msgid "Default event list format"
+msgstr "Předvolený formát seznamu událostí"
+
+#: dbem_events.php:260
+msgid "The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>To insert date and time values, use <a href=\"http://www.php.net/manual/en/function.date.php\">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on."
+msgstr "Formát všech událostí na seznamu.<br/>Vložte jeden nebo více z následujících příkazů: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Použijte <code>#_LINKEDNAME</code> pro název události s odkazem na příslušnou stránku události.<br/> Použijte <code>#_EVENTPAGEURL</code> ke zobrazení adresy stránky s událostí a vytvořte svůj vlastní přizpůsobený odkaz.<br/> Použijte <code>#_LOCATIONPAGEURL</code> ke zobrazení adresy stránky s místem konání vytvořte svůj vlastní přizpůsobený odkaz.<br/>Pro vložení datumu a času použijte <a href=\"http://www.php.net/manual/cs/function.date.php\">řetězce PHP pro formátování času</a>  se symbolem<code>#</code> vpředu, např. <code>#m</code>, <code>#M</code>, <code>#j</code>, apod.<br/> Pro čas ukončení vložte <code>#@</code> vpředu, např. <code>#@h</code>, <code>#@i</code>, apod.<br/> Bez obav můžete použít HTML tagy <code>li</code>, <code>br</code> a tak dále."
+
+#: dbem_events.php:261
+msgid "Single event page title format"
+msgstr "Formát stránky jednotlivé události"
+
+#: dbem_events.php:261
+msgid "The format of a single event page title. Follow the previous formatting instructions."
+msgstr "Formát nadpisu stránky jednotlivé události. Dodržujte příkazy pro formátování událostí."
+
+#: dbem_events.php:262
+msgid "Default single event format"
+msgstr "Přednastavený formát stránky jednotlivé události"
+
+#: dbem_events.php:262
+msgid "The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, <code>#_CONTACTPHONE</code> to insert respectively the name, e-mail address and phone number of the designated contact person. <br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings."
+msgstr "Formát stránky s jednotlivou událostí.<br/>Dodržujte příkazy pro formátování událostí. <br/>Použijte <code>#_MAP</code> pro vložení mapy.<br/>Použijte <code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, <code>#_CONTACTPHONE</code> k vložení příslušného jména, e-mailové adresy a telefonního čísla kontaktní osoby. <br/>Použijte <code>#_ADDBOOKINGFORM</code> pro vložení formuláře, který umožní zájemcům rezervovat jedno nebo více míst.<br/> Použijte <code>#_REMOVEBOOKINGFORM</code> k vložení formuláře, kde zájemci po uvedení jejich jména a e-mailové adresy budou moci zrušit rezervaci."
+
+#: dbem_events.php:263
+msgid "Show events page in lists?"
+msgstr "Zobrazit stránku s událostmi na seznamu?"
+
+#: dbem_events.php:263
+msgid "Check this option if you want the events page to appear together with other pages in pages lists."
+msgstr "Tuto možnost zvolte pokud budete chtít zobrazit stránku s událostmi společně s ostatními stránkami na seznamu stránek."
+
+#: dbem_events.php:264
+msgid "Events page title"
+msgstr "Nadpis stránky s událostmi"
+
+#: dbem_events.php:264
+msgid "The title on the multiple events page."
+msgstr "Nadpis stránky se seznamem událostí."
+
+#: dbem_events.php:265
+msgid "No events message"
+msgstr "Zpráva, která se zobrazí pokud nejsou žádné události"
+
+#: dbem_events.php:265
+msgid "The message displayed when no events are available."
+msgstr "Tato zpráva se zobrazí, pokud nebudou k dispozici žádné události."
+
+#: dbem_events.php:266
+msgid "Map text format"
+msgstr "Formát textu na mapě"
+
+#: dbem_events.php:266
+msgid "The format the text appearing in the event page map cloud.<br/>Follow the previous formatting instructions."
+msgstr "Formát textu, který se objeví na stránce události v bublině na mapě. <br/>Dodržujte příkazy pro formátování událostí."
+
+#: dbem_events.php:270
+msgid "Locations format"
+msgstr "Formát místa konání"
+
+#: dbem_events.php:272
+msgid "Single location page title format"
+msgstr "Formát stránky s jednotlivým místem konání"
+
+#: dbem_events.php:272
+msgid "The format of a single location page title.<br/>Follow the previous formatting instructions."
+msgstr "Formát nadpisu jednotlivého místa konání.<br/>Dodržujte příkazy pro formátování událostí."
+
+#: dbem_events.php:273
+msgid "Default single location page format"
+msgstr "Přednastavený formát stránky pro jednotlivá místa konání"
+
+#: dbem_events.php:273
+msgid "The format of a single location page.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code>.<br/> Use <code>#_MAP</code> to display a map of the event location, and <code>#_IMAGE</code> to display an image of the location.<br/> Use <code>#_NEXTEVENTS</code> to insert a list of the upcoming events, <code>#_PASTEVENTS</code> for a list of past events, <code>#_ALLEVENTS</code> for a list of all events taking place in this location."
+msgstr "Formát stránky jednotlivého místa konání.<br/>Vložte jeden nebo více z příkazů: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code>.<br/> Použijte <code>#_MAP</code> ke zobrazení mapy místa konání a <code>#_IMAGE</code> pro obrázek.<br/> Použijte <code>#_NEXTEVENTS</code> pro vložení seznamu budoucích událostí, <code>#_PASTEVENTS</code> pro seznam minulých událostí, <code>#_ALLEVENTS</code> pro seznam všech událostí konaných v tomto místě."
+
+#: dbem_events.php:274
+msgid "Default location baloon format"
+msgstr "Přednastavený formát bubliny místa konání"
+
+#: dbem_events.php:274
+msgid "The format of of the text appearing in the baloon describing the location in the map.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code> or <code>#_IMAGE</code>."
+msgstr "Formát textu, který se objeví na stránce události v bublině na mapě. <br/>Vložte jeden nebo více z příkazů: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code> či <code>#_IMAGE</code>."
+
+#: dbem_events.php:275
+msgid "Default location event list format"
+msgstr "Přednastavený formát seznamu událostí v daném místě"
+
+#: dbem_events.php:275
+msgid "The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element. <br/> Follow the events formatting instructions"
+msgstr "Formát seznamu míst vložený do stránky s místy konání pomocí příkazů <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> a <code>#_ALLEVENTS</code> . <br/> Dodržujte příkazy pro formátování událostí."
+
+#: dbem_events.php:276
+msgid "Default no events message"
+msgstr "Přednastavená zpráva, která se zobrazí pokud nejsou žádné událos"
+
+#: dbem_events.php:276
+msgid "The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available."
+msgstr "Zpráva, která se zobrazí v seznamu generované příkazy <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> a <code>#_ALLEVENTS</code> , pokud nebudou dostupné žádné události."
+
+#: dbem_events.php:281
+msgid "RSS feed format"
+msgstr "Formát zasílání RSS"
+
+#: dbem_events.php:284
+msgid "RSS main title"
+msgstr "Hlavní nadpis RSS"
+
+#: dbem_events.php:284
+msgid "The main title of your RSS events feed."
+msgstr "Hlavní nadpis vašeho RSS kanálu pro události."
+
+#: dbem_events.php:285
+msgid "RSS main description"
+msgstr "Hlavní popis RSS"
+
+#: dbem_events.php:285
+msgid "The main description of your RSS events feed."
+msgstr "Hlavní popis vašeho RSS kanálu pro události"
+
+#: dbem_events.php:286
+msgid "RSS title format"
+msgstr "Formát RSS nadpisu"
+
+#: dbem_events.php:286
+msgid "The format of the title of each item in the events RSS feed."
+msgstr "Formát nadpisu konkrétní položky RSS události."
+
+#: dbem_events.php:287
+msgid "RSS description format"
+msgstr "Formát popisu RSS"
+
+#: dbem_events.php:287
+msgid "The format of the description of each item in the events RSS feed. Follow the previous formatting instructions."
+msgstr "Formát popisu konkrétní položky RSS události. Dbejte výše zmíněných pokynů pro formátování."
+
+#: dbem_events.php:290
+msgid "Maps and geotagging"
+msgstr "Mapy a označování míst"
+
+#: dbem_events.php:295
+msgid "Enable Google Maps integration?"
+msgstr "Povolit použití Google Maps?"
+
+#: dbem_events.php:297
+#: dbem_UI_helpers.php:68
+msgid "Yes"
+msgstr "Ano"
+
+#: dbem_events.php:298
+#: dbem_UI_helpers.php:69
+msgid "No"
+msgstr "Ne"
+
+#: dbem_events.php:299
+msgid "Check this option to enable Goggle Map integration."
+msgstr "Zaškrtnout pro propojení s Google Maps."
+
+#: dbem_events.php:303
+msgid "Google Maps API Key"
+msgstr "Google Maps API"
+
+#: dbem_events.php:303
+#, php-format
+msgid "To display Google Maps you need a Google Maps API key. Don't worry, it's free, you can get one <a href='%s'>here</a>."
+msgstr "Pro zobrazení Google Maps potřebujete klíč Google Maps API. Nebojte, je to zdarma a můžete jej získat <a href='%s'>zde</a>."
+
+#: dbem_events.php:307
+msgid "RSVP and bookings"
+msgstr "Odpovědi a rezervace"
+
+#: dbem_events.php:310
+msgid "Default contact person"
+msgstr "Předvolená kontaktní osoba"
+
+#: dbem_events.php:310
+msgid "Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event"
+msgstr "Vyberte předvolenou kontaktní osobu"
+
+#: dbem_events.php:311
+msgid "Enable the RSVP e-mail notifications?"
+msgstr "Umožnit oznámení odpovědí e-mailem?"
+
+#: dbem_events.php:311
+msgid "Check this option if you want to receive an email when someone books places for your events."
+msgstr "Zvol tuto možnost, pokud chceš zasílat e-maily po té, co si někdo rezervuje místa."
+
+#: dbem_events.php:312
+#: dbem_events.php:313
+msgid "Contact person email format"
+msgstr "Formát emailu pro kontaktní osobu"
+
+#: dbem_events.php:312
+msgid "The format or the email which will be sent to  the contact person. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code>, <code>#_RESPEMAIL</code> and <code>#_RESPPHONE</code> to display respectively the name, e-mail, address and phone of the respondent.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent.<br/> Use <code>#_BOOKEDSEATS</code> and <code>#_AVAILABLESEATS</code> to display respectively the number of booked and available seats."
+msgstr "Formát e-mailu, který bude zaslán kontaktní osobě. Dodržujte příkazy pro formátování událostí. <br/>Použijte <code>#_RESPNAME</code>, <code>#_RESPEMAIL</code> a <code>#_RESPPHONE</code> pro zobrazení jména, e-mailu, adresy a telefonu daného zájemce.<br/>Použijte <code>#_SPACES</code> pro zobrazení počtu zájemcem rezervovaných míst.<br/> Použijte <code>#_BOOKEDSEATS</code> a <code>#_AVAILABLESEATS</code> pro zobrazení aktuálního počtu rezervovaných a volných míst."
+
+#: dbem_events.php:313
+msgid "The format or the email which will be sent to reposdent. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code> to display the name of the respondent.<br/>Use <code>#_CONTACTNAME</code> and <code>#_CONTACTMAIL</code> a to display respectively the name and e-mail of the contact person.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent."
+msgstr "Formát e-mailu, který bude zaslán zájemci. Dodržujte příkazy pro formátování událostí.<br/>Použijte <code>#_RESPNAME</code> pro zobrazení jména zájemce.<br/>Použijte <code>#_CONTACTNAME</code>  a <code>#_CONTACTMAIL</code> pro zobrazení jména a e-mailu kontaktní osoby.<br/>Použijte <code>#_SPACES</code> počtu respondentem rezervovaných míst."
+
+#: dbem_events.php:314
+msgid "Notification sender name"
+msgstr "Jméno odesílatele potvrzení"
+
+#: dbem_events.php:314
+msgid "Insert the display name of the notification sender."
+msgstr "Vložte zobrazované jméno odesílatele potvrzení."
+
+#: dbem_events.php:315
+msgid "Notification sender address"
+msgstr "E-mailová adresa odesílatele potvrzení"
+
+#: dbem_events.php:315
+msgid "Insert the address of the notification sender. It must corresponds with your gmail account user"
+msgstr "Vložte adresu příjemce potvrzení."
+
+#: dbem_events.php:316
+msgid "Default notification receiver address"
+msgstr "Předvolená adresa příjemce potvrzení"
+
+#: dbem_events.php:316
+msgid "Insert the address of the receiver of your notifications"
+msgstr "Vložte adresu příjemce potvrzení"
+
+#: dbem_events.php:317
+msgid "The port through which you e-mail notifications will be sent. Make sure the firewall doesn't block this port"
+msgstr "Port skrze který bude potvrzení odesíláno. Ujistěte se, že tento port není blokován firewallem"
+
+#: dbem_events.php:318
+msgid "Mail sending method"
+msgstr "Způsob odesílání e-mailu"
+
+#: dbem_events.php:318
+msgid "PHP mail function"
+msgstr "PHP mail"
+
+#: dbem_events.php:318
+msgid "Select the method to send email notification."
+msgstr "Zvolte způsob zasílání potvrzovacího e-mailu"
+
+#: dbem_events.php:319
+msgid "Use SMTP authentication?"
+msgstr "Vyžaduje SMTP ověření?"
+
+#: dbem_events.php:319
+msgid "SMTP authenticatio is often needed. If you use GMail, make sure to set this parameter to Yes"
+msgstr "SMTP ověření je často vyžadováno. Pokud používáte GMail, ověřte si, že parametr je nastaven na Ano."
+
+#: dbem_events.php:320
+msgid "The SMTP host. Usually it corresponds to 'localhost'. If you use GMail, set this value to 'ssl://smtp.gmail.com:465'."
+msgstr "SMTP host. Obvykle odpovídá 'localhost'. Pokud používáte GMail, nastavte jej 'ssl://smtp.gmail.com:465'."
+
+#: dbem_events.php:321
+msgid "SMTP username"
+msgstr "SMTP uživatelské jméno"
+
+#: dbem_events.php:321
+msgid "Insert the username to be used to access your SMTP server."
+msgstr "Vlož uživatelské jméno pro přístup k Tvému SMTP serveru."
+
+#: dbem_events.php:322
+msgid "SMTP password"
+msgstr "Heslo pro SMTP"
+
+#: dbem_events.php:322
+msgid "Insert the password to be used to access your SMTP server"
+msgstr "Vlož heslo používané pro komunikaci s SMTP serverem."
+
+#: dbem_events.php:328
+msgid "Images size"
+msgstr "Velikost obrázku"
+
+#: dbem_events.php:330
+msgid "Maximum width (px)"
+msgstr "Maximální šířka (px)"
+
+#: dbem_events.php:330
+msgid "The maximum allowed width for images uploades"
+msgstr "Maximální dovolená šířka přidávaných obrázků"
+
+#: dbem_events.php:331
+msgid "Maximum height (px)"
+msgstr "Maximální výška (px)"
+
+#: dbem_events.php:331
+msgid "The maximum allowed width for images uploaded, in pixels"
+msgstr "Maximální dovolená šířka přidávaných obrázků v pixelech"
+
+#: dbem_events.php:332
+msgid "Maximum size (bytes)"
+msgstr "Maximální velikost (v bytech)"
+
+#: dbem_events.php:332
+msgid "The maximum allowed size for images uploaded, in pixels"
+msgstr "Maximální dovolená velikost přidávaných obrázků v pixelech"
+
+#: dbem_events.php:339
+msgid "Save Changes"
+msgstr "Uložit změny"
+
+#: dbem_events.php:821
+#, php-format
+msgid ""
+"<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> \n"
+"\t<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\n"
+"\t<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>\n"
+"\t<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>"
+msgstr ""
+"<p>Dobrý den <strong>%s</strong>, <strong>Events Manager</strong> Vás vítá! </p> \n"
+"\t<p>Nastal čas vložit seznam událostí přes <a href='%s' title='stránku Widgetů'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> nebo <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\n"
+"\t<p>Mimochodem, podíval si se na <a href='%s' title='Nastavení'>Settings page</a>? Na tomto místě si můžeš přizpůsobit zobrazení událostí a míst konání.</p>\n"
+"\t<p>Copak? Lezou Ti už rady krkem? Slyším Tě, <a href='%s' title='Víckrát nezobrazovat'>klikne zde</a> a příště už to neuvidíš!</p>"
+
+#: dbem_events.php:864
+msgid "New Event ..."
+msgstr "Nová událost..."
+
+#: dbem_events.php:868
+#: dbem_events.php:873
+#: dbem_widgets.php:90
+msgid "Past events"
+msgstr "Minulé události"
+
+#: dbem_events.php:869
+#: dbem_events.php:874
+#: dbem_widgets.php:89
+msgid "All events"
+msgstr "Všechny události"
+
+#: dbem_events.php:870
+#: dbem_events.php:875
+#: dbem_widgets.php:88
+msgid "Future events"
+msgstr "Budoucí události"
+
+#: dbem_events.php:882
+msgid "Total"
+msgstr "Celkem"
+
+#: dbem_events.php:889
+msgid "Bulk Actions"
+msgstr "Hromadná akce"
+
+#: dbem_events.php:890
+msgid "Delete selected"
+msgstr "Odstranit vybrané"
+
+#: dbem_events.php:893
+msgid "Apply"
+msgstr "Použít"
+
+#: dbem_events.php:905
+msgid "Filter"
+msgstr "Filtr"
+
+#: dbem_events.php:920
+#: dbem_events.php:1196
+#: dbem_events.php:1514
+#: dbem_locations.php:225
+#: dbem_locations.php:233
+#: dbem_people.php:90
+#: dbem_rsvp.php:18
+#: dbem_rsvp.php:52
+msgid "Name"
+msgstr "Jméno"
+
+#: dbem_events.php:921
+#: dbem_events.php:1249
+#: dbem_events.php:1514
+msgid "Location"
+msgstr "Místo"
+
+#: dbem_events.php:924
+msgid "Date and time"
+msgstr "Datum a čas"
+
+#: dbem_events.php:936
+msgid "D d M Y"
+msgstr "D d M Y"
+
+#: dbem_events.php:1062
+msgid "Daily"
+msgstr "Denně"
+
+#: dbem_events.php:1062
+msgid "Weekly"
+msgstr "Týdně"
+
+#: dbem_events.php:1062
+msgid "Monthly"
+msgstr "Měsíčně"
+
+#: dbem_events.php:1063
+msgid "Mon"
+msgstr "Po"
+
+#: dbem_events.php:1063
+msgid "Tue"
+msgstr "Út"
+
+#: dbem_events.php:1063
+msgid "Wed"
+msgstr "St"
+
+#: dbem_events.php:1063
+msgid "Thu"
+msgstr "Čt"
+
+#: dbem_events.php:1063
+msgid "Fri"
+msgstr "Pá"
+
+#: dbem_events.php:1063
+msgid "Sat"
+msgstr "So"
+
+#: dbem_events.php:1063
+msgid "Sun"
+msgstr "Ne"
+
+#: dbem_events.php:1065
+msgid "first"
+msgstr "první"
+
+#: dbem_events.php:1065
+msgid "second"
+msgstr "druhý"
+
+#: dbem_events.php:1065
+msgid "third"
+msgstr "třetí"
+
+#: dbem_events.php:1065
+msgid "fourth"
+msgstr "čtvrtý"
+
+#: dbem_events.php:1065
+msgid "last"
+msgstr "poslední"
+
+#: dbem_events.php:1078
+msgid "WARNING: This is a recurrence."
+msgstr "POZOR: jedná se o opakování."
+
+#: dbem_events.php:1079
+msgid "Modifying these data all the events linked to this recurrence will be rescheduled"
+msgstr "Změnou datumu budou přeplánovány všechny související opakované události"
+
+#: dbem_events.php:1082
+msgid "WARNING: This is a recurring event."
+msgstr "POZOR: jedná se o opakovanou událost."
+
+#: dbem_events.php:1083
+msgid "If you change these data and save, this will become an independent event."
+msgstr "Pokud změníte tyto údaje a uložíte je, změní se na nezávislou událost."
+
+#: dbem_events.php:1095
+msgid "Recurrence"
+msgstr "Opakování"
+
+#: dbem_events.php:1106
+msgid "Repeated event"
+msgstr "Opakovaná událost"
+
+#: dbem_events.php:1113
+#: dbem_events.php:1128
+msgid "Every"
+msgstr "Každý"
+
+#: dbem_events.php:1115
+msgid "day"
+msgstr "den"
+
+#: dbem_events.php:1116
+msgid "days"
+msgstr "dny"
+
+#: dbem_events.php:1117
+msgid "week"
+msgstr "týden"
+
+#: dbem_events.php:1118
+msgid "weeks"
+msgstr "týdny"
+
+#: dbem_events.php:1119
+msgid "month"
+msgstr "měsíc"
+
+#: dbem_events.php:1120
+msgid "months"
+msgstr "měsíce"
+
+#: dbem_events.php:1137
+msgid "Check if your event happens more than once according to a regular pattern"
+msgstr "Zkontroluj, jestli se událost nekoná více než jednou v pravidelných intervalech"
+
+#: dbem_events.php:1142
+msgid "This is't a recurrent event"
+msgstr "Toto je opakující se událost"
+
+#: dbem_events.php:1159
+msgid "Contact Person"
+msgstr "Kontaktní osoba"
+
+#: dbem_events.php:1161
+msgid "Select..."
+msgstr "Vyber..."
+
+#: dbem_events.php:1172
+msgid "Enable registration for this event"
+msgstr "Povolit registraci události"
+
+#: dbem_events.php:1179
+#: dbem_rsvp.php:247
+msgid "Spaces"
+msgstr "Počet míst"
+
+#: dbem_events.php:1199
+msgid "The event name. Example: Birthday party"
+msgstr "Název události. Např.: narozeninová oslava"
+
+#: dbem_events.php:1206
+msgid "Event date"
+msgstr "Datum události"
+
+#: dbem_events.php:1206
+msgid "Recurrence dates"
+msgstr "Datumy opakování"
+
+#: dbem_events.php:1215
+msgid "The event date."
+msgstr "Datum události"
+
+#: dbem_events.php:1215
+msgid "The recurrence beginning and end date."
+msgstr "Datum prvního a posledního konání opakované události"
+
+#: dbem_events.php:1225
+msgid "Event time"
+msgstr "Čas události"
+
+#: dbem_events.php:1231
+msgid "The time of the event beginning and end"
+msgstr "Čas začátku a konce události"
+
+#: dbem_events.php:1239
+msgid "Coordinates"
+msgstr "Souřadnice"
+
+#: dbem_events.php:1253
+msgid "Name:"
+msgstr "Název:"
+
+#: dbem_events.php:1258
+#: dbem_locations.php:160
+#: dbem_locations.php:312
+msgid "Map not found"
+msgstr "Mapa nebyla nalezena"
+
+#: dbem_events.php:1265
+msgid "The name of the location where the event takes place. You can use the name of a venue, a square, etc"
+msgstr "Název místa, kde se událost bude konat. Můžete použít např. název podniku, náměstí a pod."
+
+#: dbem_events.php:1269
+msgid "Address:"
+msgstr "Adresa:"
+
+#: dbem_events.php:1273
+msgid "The address of the location where the event takes place. Example: 21, Dominick Street"
+msgstr "Adresa místa, kde se akce bude konat. Příklad: Jungmanova 22"
+
+#: dbem_events.php:1277
+msgid "Town:"
+msgstr "Město:"
+
+#: dbem_events.php:1281
+msgid "The town where the location is located. If you're using the Google Map integration and want to avoid geotagging ambiguities include the country in the town field. Example: Verona, Italy."
+msgstr "Město, kde se událost bude konat. Pokud využíváte integraci s Google Map a chcete předejít nejednoznačnosti umístění, přidejte zemi do pole s městem. Např.: Praha, Česká republika"
+
+#: dbem_events.php:1293
+msgid "Details"
+msgstr "Podrobnosti"
+
+#: dbem_events.php:1296
+msgid "Details about the event"
+msgstr "Podrobnosti týkající se události"
+
+#: dbem_events.php:1300
+msgid "Submit Event"
+msgstr "Uložit událost"
+
+#: dbem_events.php:1321
+msgid "Missing fields: "
+msgstr "Chybějící položky:"
+
+#: dbem_events.php:1323
+msgid "Since the event is repeated, you must specify an event date."
+msgstr "Jelikož se jedná o opakovanou událost, musíte upřesnit její datum."
+
+#: dbem_events.php:1514
+msgid "Date"
+msgstr "Datum"
+
+#: dbem_events.php:1514
+#: dbem_locations.php:226
+#: dbem_locations.php:234
+msgid "Address"
+msgstr "Adresa"
+
+#: dbem_events.php:1514
+#: dbem_locations.php:227
+#: dbem_locations.php:235
+msgid "Town"
+msgstr "město"
+
+#: dbem_events.php:1531
+msgid "Some required fields are missing:"
+msgstr "Některé požadované údaje chybí:"
+
+#: dbem_events.php:1534
+msgid "Since the event is repeated, you must specify an end date"
+msgstr "Jelikož se událost opakuje, musíte upřesnit závěrečné datum"
+
+#: dbem_events.php:1689
+msgid "You cannot enable Google Maps integration without setting an appropriate API key."
+msgstr "Nemůžete povolit použití Google Maps bez nastavení příslušného API"
+
+#: dbem_events.php:1828
+msgid "Add an event"
+msgstr "Přidat událost"
+
+#: dbem_events.php:1883
+#, php-format
+msgid "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. "
+msgstr "Tato stránka je svázána se stránkou <strong>Events Manageru</strong>. Její obsah bude přepsán<strong>Events Managerem</strong>. Pokud na ní budete chtít zobrazit Váš obsah, musíte přiřadit <strong>Events Manageru</strong> v <a href='%s'>Nastavení</a> jinou stránku. "
+
+#: dbem_locations.php:4
+msgid "The location name"
+msgstr "Název místa"
+
+#: dbem_locations.php:4
+msgid "The location address"
+msgstr "Adresa místa"
+
+#: dbem_locations.php:4
+msgid "The location town"
+msgstr "Město"
+
+#: dbem_locations.php:53
+msgid "The location has been updated."
+msgstr "Místo bylo změněno."
+
+#: dbem_locations.php:112
+msgid "Edit location"
+msgstr "Upravit místo"
+
+#: dbem_locations.php:129
+#: dbem_locations.php:278
+msgid "Location name"
+msgstr "Název místa"
+
+#: dbem_locations.php:131
+#: dbem_locations.php:280
+msgid "The name of the location"
+msgstr "Název místa"
+
+#: dbem_locations.php:135
+#: dbem_locations.php:284
+msgid "Location address"
+msgstr "Adresa místa"
+
+#: dbem_locations.php:137
+#: dbem_locations.php:286
+msgid "The address of the location"
+msgstr "Adresa místa"
+
+#: dbem_locations.php:142
+#: dbem_locations.php:290
+msgid "Location town"
+msgstr "Město"
+
+#: dbem_locations.php:144
+msgid "The town where the location is located"
+msgstr "Město, kde se událost koná"
+
+#: dbem_locations.php:158
+msgid "Location map"
+msgstr "Mapa místa konání"
+
+#: dbem_locations.php:165
+#: dbem_locations.php:317
+msgid "Location description"
+msgstr "Popis místa konání"
+
+#: dbem_locations.php:167
+msgid "A description of the Location. You may include any kind of info here."
+msgstr "Popis místa. Zde můžeš přidat jakékoliv informace."
+
+#: dbem_locations.php:171
+#: dbem_locations.php:305
+msgid "Location image"
+msgstr "Obrázek místa konání"
+
+#: dbem_locations.php:176
+msgid "No image uploaded for this location yet"
+msgstr "Zatím nebyl k místu přidán žádný obrázek"
+
+#: dbem_locations.php:182
+msgid "Upload/change picture"
+msgstr "Přidat/změnit obrázek"
+
+#: dbem_locations.php:186
+msgid "Update location"
+msgstr "Aktualizovat místo"
+
+#: dbem_locations.php:203
+#: events-manager.php:448
+msgid "Locations"
+msgstr "Místa konání"
+
+#: dbem_locations.php:262
+msgid "No venues have been inserted yet!"
+msgstr "Žádné místo zatím nebylo vloženo!"
+
+#: dbem_locations.php:273
+#: dbem_locations.php:322
+msgid "Add location"
+msgstr "Přidat místo"
+
+#: dbem_locations.php:292
+msgid "The town of the location"
+msgstr "Město, kde se událost koná"
+
+#: dbem_locations.php:307
+msgid "Select an image to upload"
+msgstr "Vyber obrázek k uložení."
+
+#: dbem_locations.php:319
+msgid "A description of the location. You may include any kind of info here."
+msgstr "Popis místa. Zde můžeš přidat jakékoliv informace."
+
+#: dbem_locations.php:392
+msgid " is missing!"
+msgstr " chybí!"
+
+#: dbem_locations.php:400
+msgid "The image file is too big! Maximum size:"
+msgstr "soubor s obrázkem je příliš veliký! Maximální velikost může být::"
+
+#: dbem_locations.php:405
+msgid "The image is too big! Maximum size allowed:"
+msgstr "Obrázek je příliš veliký! Maximální rozměry jsou:"
+
+#: dbem_locations.php:407
+msgid "The image is in a wrong format!"
+msgstr "Obrázek je ve špatném formátu!"
+
+#: dbem_locations.php:414
+msgid "Ach, some problems here:"
+msgstr "Ajé, tady jsou nějaké problémy:"
+
+#: dbem_locations.php:475
+msgid "The image could not be loaded"
+msgstr "Obrázek nejde načíst"
+
+#: dbem_people.php:87
+msgid "Bookings data"
+msgstr "Rezervační údaje"
+
+#: dbem_people.php:91
+msgid "E-mail"
+msgstr "E-mail"
+
+#: dbem_people.php:92
+#: dbem_people.php:194
+#: dbem_people.php:197
+#: dbem_rsvp.php:20
+msgid "Phone number"
+msgstr "Telefon"
+
+#: dbem_people.php:93
+#: dbem_rsvp.php:21
+msgid "Seats"
+msgstr "Počet míst"
+
+#: dbem_people.php:106
+msgid "Booked"
+msgstr "Rezervováno"
+
+#: dbem_people.php:111
+msgid "Available"
+msgstr "Volných"
+
+#: dbem_people.php:126
+msgid "No people have responded to your events yet!"
+msgstr "Zatím nikdo na událost nereagoval!"
+
+#: dbem_people.php:128
+msgid "This table collects the data about the people who responded to your events"
+msgstr "Tato tabulka obsahuje data o lidech, kteří reagovali na událost"
+
+#: dbem_people.php:199
+msgid "The phone number used by Events Manager when the user is indicated as the contact person for an event."
+msgstr "Telefonní číslo použité Events Mangerem, pokud je uživatel označen jako kontaktní osoba události."
+
+#: dbem_rsvp.php:9
+msgid "Book now!"
+msgstr "Objednat!"
+
+#: dbem_rsvp.php:19
+#: dbem_rsvp.php:53
+msgid "E-Mail"
+msgstr "E-Mail"
+
+#: dbem_rsvp.php:27
+msgid "Send your booking"
+msgstr "Odeslat rezervaci"
+
+#: dbem_rsvp.php:44
+#: dbem_rsvp.php:56
+msgid "Cancel your booking"
+msgstr "Zrušit rezervaci"
+
+#: dbem_rsvp.php:88
+msgid "There are no bookings associated to this name and e-mail"
+msgstr "Neexistuje rezervaci přiřazená k tomuto jménu a e-mailu"
+
+#: dbem_rsvp.php:113
+msgid "Your booking has been recorded"
+msgstr "Vaše rezervace byla přijata"
+
+#: dbem_rsvp.php:120
+msgid "Sorry, there aren't so many seats available!"
+msgstr "Bohužel, již nejsou volná místa!"
+
+#: dbem_rsvp.php:163
+msgid "Booking deleted"
+msgstr "Rezervace byla zrušena."
+
+#: dbem_rsvp.php:240
+msgid "responses so far"
+msgstr "Odpovědí do teď"
+
+#: dbem_rsvp.php:246
+msgid "Responder"
+msgstr "Zájemce"
+
+#: dbem_rsvp.php:252
+msgid "Booked spaces"
+msgstr "Rezervovaných míst"
+
+#: dbem_rsvp.php:253
+msgid "Available spaces"
+msgstr "Volných míst"
+
+#: dbem_rsvp.php:274
+msgid "Printable view"
+msgstr "Tiskový náhled"
+
+#: dbem_rsvp.php:282
+msgid "No responses yet!"
+msgstr "Zatím žádné odpovědi!"
+
+#: dbem_rsvp.php:353
+msgid "New booking"
+msgstr "Nová rezervace"
+
+#: dbem_rsvp.php:354
+msgid "Reservation confirmed"
+msgstr "Rezervace potvrzena"
+
+#: dbem_widgets.php:10
+#: dbem_widgets.php:35
+#: events-manager.php:44
+#: events-manager.php:398
+#: events-manager.php:399
+#: events-manager.php:444
+msgid "Events"
+msgstr "Události"
+
+#: dbem_widgets.php:19
+#: events-manager.php:50
+#: events-manager.php:391
+msgid "No events"
+msgstr "Žádné události"
+
+#: dbem_widgets.php:78
+#: dbem_widgets.php:156
+msgid "Title"
+msgstr "Název"
+
+#: dbem_widgets.php:82
+msgid "Number of events"
+msgstr "Počet událostí"
+
+#: dbem_widgets.php:86
+msgid "Scope of the events"
+msgstr "Zaměření událostí"
+
+#: dbem_widgets.php:94
+msgid "Order of the events"
+msgstr "Pořadí událostí"
+
+#: dbem_widgets.php:96
+msgid "Ascendant"
+msgstr "Předchozí"
+
+#: dbem_widgets.php:97
+msgid "Descendant"
+msgstr "Následující"
+
+#: dbem_widgets.php:101
+msgid "List item format"
+msgstr "Formát výpisu"
+
+#: dbem_widgets.php:122
+msgid "calendar"
+msgstr "kalendář"
+
+#: dbem_widgets.php:176
+#: dbem_widgets.php:177
+msgid "Events List"
+msgstr "Seznam událostí"
+
+#: dbem_widgets.php:178
+#: dbem_widgets.php:179
+msgid "Events Calendar"
+msgstr "Kalendář událostí"
+
+#: events-manager.php:55
+msgid "<li>No events in this location</li>"
+msgstr "<li>V tomto místě není bohužel zatím plánována žádná událost</li>"
+
+#: events-manager.php:382
+msgid "#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.<br/> Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager"
+msgstr "#_RESPNAME (#_RESPEMAIL) se zúčastní #_NAME dne #m #d, #Y. Požaduje rezervaci #_SPACES míst.<br/> Nyní je rezervováno #_RESERVEDSPACES míst, #_AVAILABLESPACES je stále volných.<br/>S pozdravem,<br/>Events Manager"
+
+#: events-manager.php:383
+msgid "Dear #_RESPNAME, <br/>you have successfully reserved #_SPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/> #_CONTACTPERSON"
+msgstr "Vážená/ý #_RESPNAME, <br/>úspěšně jste rezervoval #_SPACES místo pro #_NAME.<br/>Děkujeme za rezervaci!<br/><br/>S pozdravem,<br/> #_CONTACTPERSON"
+
+#: events-manager.php:433
+msgid "events"
+msgstr "Události"
+
+#: events-manager.php:446
+msgid "Edit"
+msgstr "Upravit"
+
+#: events-manager.php:447
+msgid "Add new"
+msgstr "Přidat nový"
+
+#: events-manager.php:449
+msgid "People"
+msgstr "Účastníci"
+
+#: events-manager.php:451
+msgid "Events Manager Settings"
+msgstr "Nastavení Events Managera"
+
+#: events-manager.php:451
+msgid "Settings"
+msgstr "Nastavení"
+
+#~ msgid "end date before begin date"
+#~ msgstr "la data finale precede quella iniziale"
+#~ msgid "Example:"
+#~ msgstr "Esempio: "
+#~ msgid "Example: 2008-11-28"
+#~ msgstr "Esempio: 2008-11-28"
+#~ msgid "The format the text appearing in the map cloud."
+#~ msgstr "Il fomato del testo del fumetto che appare sulla mappa."
+#~ msgid "Follow the previous formatting instructions."
+#~ msgstr "Seguire le istruzioni di formattazione precedenti."
+#~ msgid "here"
+#~ msgstr "questa pagina"
+#~ msgid "The format of a single location page title."
+#~ msgstr "Il formato del titolo della pagina di un singolo luogo."
+
+#, fuzzy
+#~ msgid "Location picture"
+#~ msgstr "Luogo"
+#~ msgid "M_Monday_initial"
+#~ msgstr "L"
+#~ msgid "T_Tuesday_initial"
+#~ msgstr "M"
+#~ msgid "F_Friday_initial"
+#~ msgstr "V"
+#~ msgid "S_Sunday_initial"
+#~ msgstr "D"
+#~ msgid "The format of any events in a list."
+#~ msgstr "Il formato di ciascun evento della lista."
+#~ msgid ""
+#~ "Insert one or more of the following placeholders: <code>#_NAME</code>, "
+#~ "<code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, "
+#~ "<code>#_NOTES</code>. Use <code>#_LINKEDNAME</code> for the event name "
+#~ "with a link to the given event page. Use #_URL to print the event URL and "
+#~ "make your own customised links."
+#~ msgstr ""
+#~ "Inserire uno o più dei seguenti segnaposto: <code>#_NAME</code>, "
+#~ "<code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, "
+#~ "<code>#_NOTES</code>. Utilizzare <code>#_LINKEDNAME</code> per il nome "
+#~ "dell'evento con un link alla pagina corrispondente. Utilizzare #_URL per "
+#~ "visualizzare l'URL dell'evento e creare link personalizzati."
+#~ msgid ""
+#~ "To insert date and time values, use <a href=\"http://www.php.net/manual/"
+#~ "en/function.date.php\">PHP time format characters</a>  with a # symbol "
+#~ "before them, i.e. #m. #M, #j, etc. "
+#~ msgstr ""
+#~ "Per inserire valori di data e ora, utilizzare i <a href=\"http://www.php."
+#~ "net/manual/it/function.date.php\">caratteri di stringa formato PHP</a>  "
+#~ "anteponendo ad essi un #, ad esempio #m. #M, #j, etc. "
+#~ msgid "Use HTML tags as <code>li</code>, <code>br</code>, etc."
+#~ msgstr ""
+#~ "Utilizzare liberamente tag HTML come <code>li</code>, <code>br</code>, "
+#~ "ecc."
+#~ msgid "Use <code>#_MAP</code> to insert a map."
+#~ msgstr "Utilizzare <code>#_MAP</code> per inserire una mappa."
+#~ msgid "The format of the description of each item in the events RSS feed."
+#~ msgstr "Il formato della descrizione di ciascun elemento nel feed RSS."
+#~ msgid "ID"
+#~ msgstr "ID"
+#~ msgid "Time"
+#~ msgstr "Ora"
+#~ msgid "Latitude"
+#~ msgstr "Latitudine"
+#~ msgid "Longitude"
+#~ msgstr "Longitudine"
+#~ msgid "Are you sure?"
+#~ msgstr "Sei sicuro?"
+#~ msgid "Delete"
+#~ msgstr "Elimina"
+#~ msgid "Notes"
+#~ msgstr "Note"
+#~ msgid ""
+#~ "You are about to delete this event.\\n  'Cancel' to stop, 'OK' to delete."
+#~ msgstr ""
+#~ "Stai per cancellare questo evento.\\n  \\'Cancel\\' per annullare "
+#~ "l'opererazione, \\'Ok\\' per cancellare."
+#~ msgid "Widget Title"
+#~ msgstr "Titolo"
+
