@@ -692,7 +692,7 @@ function dbem_get_events($limit="",$scope="future",$order="ASC", $offset="", $lo
 		$limit = "LIMIT $limit";
 	if ($offset != "")
 		$offset = "OFFSET $offset";  
-	if($order="")
+	if($order=="")
 		$order="ASC";
 
 	$timestamp = time();
@@ -907,8 +907,7 @@ function dbem_events_table($events, $limit, $title) {
 				</div>
 				<?php 
 				if (empty($events)) {
-					 // TODO localize
-					echo "no events";
+					 _e("no events",'dbem');
 				} else {
 					?>
 		

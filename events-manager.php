@@ -123,7 +123,9 @@ function dbem_install() {
 	if (get_option('dbem_events_page') && !get_option('dbem_version')) 
 		dbem_migrate_old_events();
   
-  update_option('dbem_version', 2); 
+  update_option('dbem_version', 2);  
+
+	// TODO add a migration script to chane event_seats from tinyint to smallint
 	// Create events page if necessary
  	$events_page_id = get_option('dbem_events_page')  ;
 	if ($events_page_id != "" ) {

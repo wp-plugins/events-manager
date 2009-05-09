@@ -170,8 +170,10 @@ function dbem_get_calendar($args="") {
 		         if(($i >= $offset_count) && ($i < ($num_weeks * 7) - $outset)){ // if it is THIS month
 	        	$fullday=$d;
 				$d=date('j', $d);
-				$day_link = "$d"; 
-	           	if($date == mktime(0,0,0,$month,$d,$year)){ 
+				$day_link = "$d";
+				 			// Apllying this patch http://davidebenini.it/events-manager-forum/topic.php?id=73; was 
+	           	//if($date == mktime(0,0,0,$month,$d,$year)){ 
+						 if(($date == mktime(0,0,0,$month,$d,$year)) && (date('F') == $month_name)) { 
 	               $calendar .= "<td class='eventless-today'>$d</td>\n"; 
 	           } else { 
 	               $calendar .= "<td class='eventless'>$day_link</td>\n"; 
