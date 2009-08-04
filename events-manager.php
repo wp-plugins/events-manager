@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 2.0rc1
+Version: 2.0.1rc1
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini
@@ -61,7 +61,10 @@ define('DEFAULT_IMAGE_MAX_SIZE', 204800);
 // if you are hacking this plugin, set to TRUE, a log will show in admin pages
 define('DEBUG', false);     
 
-// INCLUDES        
+// INCLUDES   
+/* Marcus Begin Edit */
+include("marcus-extras.php");
+/* Marcus End Edit */     
 include("dbem_events.php");
 include("dbem_calendar.php");      
 include("dbem_widgets.php");
@@ -119,13 +122,14 @@ function dbem_install() {
   dbem_create_bookings_table();
   dbem_create_people_table();
 	dbem_add_options();
+	/* Marcus Begin Edit */
+		dbem_create_categories_table();
+	/* Marcus End Edit */
   // if ANY 1.0 option is there  AND the version options hasn't been set yet THEN launch the updat script 
 	if (get_option('dbem_events_page') && !get_option('dbem_version')) 
 		dbem_migrate_old_events();
   
-  update_option('dbem_version', 2);  
-
-	// TODO add a migration script to chane event_seats from tinyint to smallint
+  update_option('dbem_version', 2); 
 	// Create events page if necessary
  	$events_page_id = get_option('dbem_events_page')  ;
 	if ($events_page_id != "" ) {
@@ -168,6 +172,8 @@ function dbem_create_events_table() {
 		// if ($user_level < 8) { return; }
 	
 		// Creating the events table
+		/* Marcus Begin Edit*/
+		//Added Category FK Field
 		$sql = "CREATE TABLE ".$table_name." (
 			event_id mediumint(9) NOT NULL AUTO_INCREMENT,
 			event_author mediumint(9) DEFAULT NULL,
@@ -182,8 +188,10 @@ function dbem_create_events_table() {
 			event_contactperson_id mediumint(9) NULL,  
 			location_id mediumint(9) NOT NULL,
 			recurrence_id mediumint(9) NULL,
+  			event_category_id int(11) default NULL,
 			UNIQUE KEY (event_id)
 			);";
+		/* Marcus End Edit */
 		
 		dbDelta($sql);
 		//--------------  DEBUG CODE to insert a few events n the new table
@@ -592,19 +600,19 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			
 			$event_string = str_replace($result, $field_value , $event_string ); 
 	 	}
-	  if (preg_match('/#_CONTACTNAME$/', $result)) {
-      $event['event_contactperson_id'] ? $user_id = $event['event_contactperson_id'] : $user_id = get_option('dbem_default_contact_person');
+	 	if (preg_match('/#_CONTACTNAME$/', $result)) {
+      		$event['event_contactperson_id'] ? $user_id = $event['event_contactperson_id'] : $user_id = get_option('dbem_default_contact_person');
 			$name = dbem_get_user_name($user_id);
 			$event_string = str_replace($result, $name, $event_string );
 		}
 		if (preg_match('/#_CONTACTEMAIL$/', $result)) {         
 			$event['event_contactperson_id'] ? $user_id = $event['event_contactperson_id'] : $user_id = get_option('dbem_default_contact_person');
-      $email = dbem_get_user_email($user_id);
+      		$email = dbem_get_user_email($user_id);
 			$event_string = str_replace($result, dbem_ascii_encode($email), $event_string );
 		}
 		if (preg_match('/#_CONTACTPHONE$/', $result)) {   
 			$event['event_contactperson_id'] ? $user_id = $event['event_contactperson_id'] : $user_id = get_option('dbem_default_contact_person');
-      $phone = dbem_get_user_phone($user_id);
+      		$phone = dbem_get_user_phone($user_id);
 			$event_string = str_replace($result, dbem_ascii_encode($phone), $event_string );
 		}	
 		if (preg_match('/#_(IMAGE)/', $result)) {
@@ -628,15 +636,16 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		// matches all PHP time placeholders for endtime
 		if (preg_match('/^#@[dDjlNSwzWFmMntLoYy]$/', $result)) {
 			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $event['event_end_date']), $event_string ); 
-	 	} 
-		    
+	 	}		    
 		
 		// matches all PHP date placeholders
 		if (preg_match('/^#[dDjlNSwzWFmMntLoYy]$/', $result)) {
 			// echo "-inizio-";
 			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $event['event_start_date']),$event_string );  
 			// echo $event_string;  
-		}  
+		}
+
+		
 		
 		// matches all PHP time placeholders
 		if (preg_match('/^#@[aABgGhHisueIOPTZcrU]$/', $result)) {
@@ -649,8 +658,30 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			// echo $event_string;  
 		}
 		
+		/* Marcus Begin Edit*/
+			//Add a placeholder for categories
+		 	if (preg_match('/#_CATEGORY$/', $result)) {
+	      		$category = (dbem_get_event_category($event['event_id']));
+				$event_string = str_replace($result, $category['category_name'], $event_string );
+			}
+		/* Marcus End Edit */
+		
 		     
 	}
+	/* Marcus Begin Edit */
+	preg_match_all("/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/", $format, $placeholders);
+	foreach($placeholders[0] as $result) {
+		if(substr($result, 0, 3 ) == "#@_"){
+			$date = 'event_end_date';
+			$offset = 4;
+		}else{
+			$date = 'event_start_date';
+			$offset = 3;
+		}
+		$event_string = str_replace($result, mysql2date(substr($result, $offset, (strlen($result)-($offset+1)) ), $event[$date]),$event_string );
+	}
+	/* Marcus End Edit */
+	
 	return $event_string;	
 	
 }

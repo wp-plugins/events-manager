@@ -1,5 +1,5 @@
 === Events Manager ===  
-Contributors: nutsmuggler   
+Contributors: nutsmuggler, netweblogic    
 Donate link: http://davidebenini.it  
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.7   
@@ -18,7 +18,7 @@ Events Manager provides also a RSS feed, to keep your subscribers updated about 
 
 Events manager is fully customisable; you can customise the amount of data displayed and their format in events lists, pages and in the RSS feed. You can choose to show or hide the events page, and change its title.   
 
-Events Manager is fully localisable and aòlready localised in Italian, Spanish, German and Swedish.
+Events Manager is fully localisable and already localised in Italian, Spanish, German and Swedish.
 
 For more information visit the [Documentation Page](http://davidebenini.it/wordpress-plugins/events-manager/) and [Support Forum](http://davidebenini.it/events-manager-forum/).
 
