@@ -1666,7 +1666,7 @@ function dbem_admin_general_script() {
 	src="<?php
 	bloginfo ( 'url' );
 	?>/wp-content/plugins/events-manager/js/timeentry/jquery.timeentry.js"
-	type="text/javascript"></script>
+	type="text/javascript"></script>   
 <?php
 	
 	// Check if the locale is there and loads it

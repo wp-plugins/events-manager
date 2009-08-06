@@ -3,8 +3,8 @@ Contributors: nutsmuggler, netweblogic
 Donate link: http://davidebenini.it  
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.7   
-Tested up to: 2.7.1   
-Stable tag: 2.0rc1   
+Tested up to: 2.8.3   
+Stable tag: 2.0rc2   
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
@@ -166,4 +166,17 @@ Added a dbem\_is\_rsvpable() conditional template tag
 Fixed a css bug with some themes, preventing the correct visualisation of the map.
 Fixed MySql bugs in the main view and in the activation page
 Added the proper expanded PHP tags
-Fixed links in the RSS feed
+Fixed links in the RSS feed       
+
+2.0rc2
+Marcus Skies jumps in as a contributor
+Made the edit page WP 2.8 compatible (CSS tags)
+Added a "Duplicate Event", since your reoccurring event doesn't give perfect date flexibility
+Added a Category option, so you can categorize each event
+Manage categories with own subpanel
+DDM available in event page (like with people)
+Added shortcode option in event_list, so category=ID is an option now
+Added #_CATEGORY as a placeholder
+Added the TinyMCE of wordpress to the description of the event. That solves the problem of adding pictures!
+Added an end date option always on for multi-day events.
+Added a new placeholder format to deal with the end date. You can now wrap dates in #_{} or #@_{} . The values inside will have a format of date(). For example #_{Y-m-d} #@_{ \u\n\t\i\l Y-m-d} will show as "2009-03-23 until 2009-03-28" (only for end dates with no recurrence) or just "2009-03-23" for normal events. 

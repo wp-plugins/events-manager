@@ -229,7 +229,36 @@ function dbem_get_calendar($args="") {
 //}
 // ------------------
 	// inserts the events 
-     
+// $eventful_months= array();
+// if($events){	
+// 	foreach($events as $event) {     
+// 		if($eventful_months[$event->event_month_n]){
+// 			$eventful_months[$event->event_month_n][] = $event; 
+// 		} else {
+// 			$eventful_months[$event->event_month_n] = array($event);  
+// 		}
+// 	}    
+// 	$eventful_days = array();
+// 	foreach($eventful_months as $month) { 
+// 		print_r($month);
+// 		$eventful_days[$month] = array();
+// 		
+// 		foreach($month as $event) {    
+// 			// if($eventful_days[$month][$event->event_day]){
+// 			// 	$eventful_days[$month][$event->event_day][] = $event; 
+// 			// } else {
+// 			// 	$eventful_days[$month][$event->event_day] = array($event);  
+// 			// }
+// 			
+// 		}
+// 	}
+// 	
+// 	
+// 	                 
+// }                              
+// print_r("ECCO: <br/><pre>");
+// print_r($eventful_days);     
+// print_r("</pre>");     
 $events_page = get_option('dbem_events_page');
 if($events){	
 	foreach($events as $event) { 
@@ -380,5 +409,13 @@ function dbem_filter_calendar_ajax() {
 		die();
 	}
 }
-add_action('init','dbem_filter_calendar_ajax');
+add_action('init','dbem_filter_calendar_ajax');     
+
+function dbem_full_calendar() {
+	echo "<p>Demo di <code>dbem_full_calendar</code></p>"  ;
+	echo '<div id="jMonthCalendar"></div>';
+	dbem_get_calendar();
+}
+
+
 ?>
