@@ -213,6 +213,7 @@ function dbem_get_calendar($args="") {
 	$sql = "SELECT event_id, 
 									event_name, 
 								 	event_start_date, 
+									DATE_FORMAT(event_start_date, '%e-%c') AS 'event_day_month',
 									DATE_FORMAT(event_start_date, '%w') AS 'event_weekday_n',
 									DATE_FORMAT(event_start_date, '%e') AS 'event_day',
 									DATE_FORMAT(event_start_date, '%c') AS 'event_month_n',
@@ -229,30 +230,18 @@ function dbem_get_calendar($args="") {
 //}
 // ------------------
 	// inserts the events 
-// $eventful_months= array();
-// if($events){	
-// 	foreach($events as $event) {     
-// 		if($eventful_months[$event->event_month_n]){
-// 			$eventful_months[$event->event_month_n][] = $event; 
-// 		} else {
-// 			$eventful_months[$event->event_month_n] = array($event);  
-// 		}
-// 	}    
-// 	$eventful_days = array();
-// 	foreach($eventful_months as $month) { 
-// 		print_r($month);
-// 		$eventful_days[$month] = array();
-// 		
-// 		foreach($month as $event) {    
-// 			// if($eventful_days[$month][$event->event_day]){
-// 			// 	$eventful_days[$month][$event->event_day][] = $event; 
-// 			// } else {
-// 			// 	$eventful_days[$month][$event->event_day] = array($event);  
-// 			// }
-// 			
-// 		}
-// 	}
-// 	
+$eventful_days= array();
+if($events){	
+	foreach($events as $event) {     
+		if($eventful_days[$event->event_day_month]){
+			$eventful_days[$event->event_day_month][] = $event; 
+		} else {
+			$eventful_days[$event->event_day_month] = array($event);  
+		}
+	}
+}    
+echo "ciao";
+print_r($eventful_days);       
 // 	
 // 	                 
 // }                              
