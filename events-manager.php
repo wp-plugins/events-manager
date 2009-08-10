@@ -1,7 +1,11 @@
 <?php
 /*
 Plugin Name: Events Manager
+<<<<<<< .mine
+Version: 2.0.1rc2
+=======
 Version: 2.0rc2
+>>>>>>> .r144499
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini, Marcus Skyes
@@ -56,7 +60,8 @@ define('DEFAULT_LOCATION_NO_EVENTS_MESSAGE', __('<li>No events in this location<
 define("IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
 define('DEFAULT_IMAGE_MAX_WIDTH', 700);  
 define('DEFAULT_IMAGE_MAX_HEIGHT', 700);  
-define('DEFAULT_IMAGE_MAX_SIZE', 204800);  
+define('DEFAULT_IMAGE_MAX_SIZE', 204800); 
+define('DEFAULT_FULL_CALENDAR_EVENT_FORMAT', '<li>#_LINKEDNAME</li>');
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, a log will show in admin pages
 define('DEBUG', false);     
@@ -412,7 +417,8 @@ function dbem_add_options() {
 	'dbem_rsvp_mail_SMTPAuth' => 1,
 	'dbem_image_max_width' => DEFAULT_IMAGE_MAX_WIDTH,
 	'dbem_image_max_height' => DEFAULT_IMAGE_MAX_HEIGHT,
-	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE, 
+	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE,
+	'dbem_full_calendar_event_format' => DEFAULT_FULL_CALENDAR_EVENT_FORMAT, 
 	'dbem_hello_to_user' => 1);
 	
 	foreach($dbem_options as $key => $value)

@@ -1,4 +1,4 @@
-<?php
+                                     <?php
 
 function dbem_get_calendar_shortcode($atts) { 
 	extract(shortcode_atts(array(
@@ -11,12 +11,14 @@ function dbem_get_calendar_shortcode($atts) {
 add_shortcode('events_calendar', 'dbem_get_calendar_shortcode');
 
 function dbem_get_calendar($args="") {
-  $defaults = array(
+	$defaults = array(
+		'full' => 0,
 		'month' => '',
 		'echo' => 1
-	);
-  $r = wp_parse_args( $args, $defaults );
-	extract( $r, EXTR_SKIP ); 
+	);           
+	$r = wp_parse_args( $args, $defaults );
+	extract( $r, EXTR_SKIP );     
+	$full = $r['full'];
 	$month = $r['month']; 
 	$echo = $r['echo'];
 	
@@ -143,12 +145,13 @@ function dbem_get_calendar($args="") {
 	} 
 	$next_link = "<a class='next-month' href=\"".$base_link."calmonth={$next_month}&amp;calyear={$next_year} \">&gt;&gt;</a>";  
   $random = (rand(100,200));
-	$calendar="<div class='dbem-calendar' id='dbem-calendar-$random'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
+	$full ? $class = 'dbem-calendar-full' : $class='dbem-calendar';
+	$calendar="<div class='$class' id='dbem-calendar-$random'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
 	
 	$days_initials = "<td>".dbem_translate_and_trim("Monday")."</td><td>".dbem_translate_and_trim("Tuesday")."</td><td>".dbem_translate_and_trim("Wednesday")."</td><td>".dbem_translate_and_trim("Thursday")."</td><td>".dbem_translate_and_trim("Friday")."</td><td>".dbem_translate_and_trim("Saturday")."</td><td>".dbem_translate_and_trim("Sunday")."</td>\n";
-	
+	$full ? $fullclass = 'fullcalendar' : $fullclass='';
 	// Build the heading portion of the calendar table 
-	$calendar .=  "<table class='dbem-calendar-table'>\n". 
+	$calendar .=  "<table class='dbem-calendar-table $fullclass'>\n". 
 	   	"<thead>\n<tr>\n".
 		"<td>$previous_link</td><td class='month_name' colspan='5'>$month_name $year</td><td>$next_link</td>\n". 
 		"</tr>\n</thead>\n".	
@@ -159,38 +162,41 @@ function dbem_get_calendar($args="") {
 	// Now we break each key of the array  
 	// into a week and create a new table row for each 
 	// week with the days of that week in the table data 
-
+  
 	$i = 0; 
 	foreach($weeks as $week){ 
-	       $calendar .= "<tr>\n"; 
-	       foreach($week as $d){ 
-	         if($i < $offset_count){ //if it is PREVIOUS month
-	             $calendar .= "<td class='eventless-pre'>$d</td>\n"; 
-	         } 
-		         if(($i >= $offset_count) && ($i < ($num_weeks * 7) - $outset)){ // if it is THIS month
-	        	$fullday=$d;
+		$calendar .= "<tr>\n"; 
+	   foreach($week as $d){ 
+	   	if($i < $offset_count){ //if it is PREVIOUS month
+	      	$calendar .= "<td class='eventless-pre'>$d</td>\n"; 
+	      }
+		   if(($i >= $offset_count) && ($i < ($num_weeks * 7) - $outset)){ // if it is THIS month
+	      	$fullday=$d;
 				$d=date('j', $d);
 				$day_link = "$d";
-				 			// Apllying this patch http://davidebenini.it/events-manager-forum/topic.php?id=73; was 
-	           	//if($date == mktime(0,0,0,$month,$d,$year)){ 
-						 if(($date == mktime(0,0,0,$month,$d,$year)) && (date('F') == $month_name)) { 
-	               $calendar .= "<td class='eventless-today'>$d</td>\n"; 
-	           } else { 
-	               $calendar .= "<td class='eventless'>$day_link</td>\n"; 
+			  	// original :
+	        	//if($date == mktime(0,0,0,$month,$d,$year)){
+		 	  	// proposed patch (http://davidebenini.it/events-manager-forum/topic.php?id=73 )
+			  	// if(($date == mktime(0,0,0,$month,$d,$year)) && (date('F') == $month_name)) {
+			  	// my solution:
+			  	if($d == date('j') && $month == date('m') && $year == date('Y')) {
+	        		$calendar .= "<td class='eventless-today'>$d</td>\n"; 
+	        	} else { 
+	         	$calendar .= "<td class='eventless'>$day_link</td>\n"; 
+	        	} 
+	        	} elseif(($outset > 0)) { //if it is NEXT month
+	         	if(($i >= ($num_weeks * 7) - $outset)){ 
+	            	$calendar .= "<td class='eventless-post'>$d</td>\n"; 
 	           } 
-	        } elseif(($outset > 0)) { //if it is NEXT month
-	            if(($i >= ($num_weeks * 7) - $outset)){ 
-	               $calendar .= "<td class='eventless-post'>$d</td>\n"; 
-	           } 
-	        } 
-	        $i++; 
+	        	} 
+	        	$i++; 
 	      } 
 	      $calendar .= "</tr>\n";    
-	} 
+		} 
 	
 	  	$calendar .= " </table>\n</div>";
 	
-	// query the database for events in this time span
+		// query the database for events in this time span
 	if ($month == 1) {
 		$month_pre=12;
 		$month_post=2;
@@ -213,7 +219,7 @@ function dbem_get_calendar($args="") {
 	$sql = "SELECT event_id, 
 									event_name, 
 								 	event_start_date, 
-									DATE_FORMAT(event_start_date, '%e-%c') AS 'event_day_month',
+									DATE_FORMAT(event_start_date, '%d-%m') AS 'event_day_month',
 									DATE_FORMAT(event_start_date, '%w') AS 'event_weekday_n',
 									DATE_FORMAT(event_start_date, '%e') AS 'event_day',
 									DATE_FORMAT(event_start_date, '%c') AS 'event_month_n',
@@ -222,46 +228,60 @@ function dbem_get_calendar($args="") {
 									DATE_FORMAT(event_start_time, '%i') AS 'event_mm'
 		FROM $events_table WHERE event_start_date BETWEEN '$limit_pre' AND '$limit_post' ORDER BY event_start_date";               
 
-	$events=$wpdb->get_results($sql);   
+	$events=$wpdb->get_results($sql, ARRAY_A);   
 
 //----- DEBUG ------------
 //foreach($events as $event) { //DEBUG
 //	$calendar .= ("$event->event_day / $event->event_month_n - $event->event_name<br/>");
 //}
 // ------------------
-	// inserts the events 
-$eventful_days= array();
-if($events){	
-	foreach($events as $event) {     
-		if($eventful_days[$event->event_day_month]){
-			$eventful_days[$event->event_day_month][] = $event; 
-		} else {
-			$eventful_days[$event->event_day_month] = array($event);  
+  
+	$eventful_days= array();
+	if($events){	
+		foreach($events as $event) {     
+			if($eventful_days[$event['event_day_month']]){
+				$eventful_days[$event['event_day_month']][] = $event; 
+			} else {
+				$eventful_days[$event['event_day_month']] = array($event);  
+			}
 		}
-	}
-}    
-echo "ciao";
-print_r($eventful_days);       
-// 	
-// 	                 
-// }                              
-// print_r("ECCO: <br/><pre>");
-// print_r($eventful_days);     
-// print_r("</pre>");     
-$events_page = get_option('dbem_events_page');
-if($events){	
-	foreach($events as $event) { 
-		if ($event->event_month_n == $month_pre) {
-			$calendar=str_replace("<td class='eventless-pre'>$event->event_day</td>","<td class='eventful-pre'><a href='?page_id=$events_page&amp;calendar_day="."$event->event_start_date'>$event->event_day</a></td>",$calendar);
-		} elseif($event->event_month_n == $month_post) {
-			$calendar=str_replace("<td class='eventless-post'>$event->event_day</td>","<td class='eventful-post'><a href='?page_id=$events_page&amp;calendar_day="."$event->event_start_date'>$event->event_day</a></td>",$calendar);
-		} elseif($event->event_day == $day) {
-			$calendar=str_replace("<td class='eventless-today'>$event->event_day</td>","<td class='eventful-today'><a href='?page_id=$events_page&amp;calendar_day="."$event->event_start_date'>$event->event_day</a></td>",$calendar);
-		} else{
-			$calendar=str_replace("<td class='eventless'>$event->event_day</td>","<td class='eventful'><a href='?page_id=$events_page&amp;calendar_day="."$event->event_start_date'>$event->event_day</a></td>",$calendar);
+	}         
+   
+	$events_page = get_option('dbem_events_page');
+	$event_format = get_option('dbem_full_calendar_event_format');
+	$cells = array() ;
+	foreach($eventful_days as $day_key => $events) {
+		$cells[$day_key]['day'] = $events[0]['event_day'];  
+		$cells[$day_key]['month'] = $events[0]['event_month_n'];
+		$cells[$day_key]['date'] = $events[0]['event_start_date']; 
+		$cells[$day_key]['cell'] = "<a href='?page_id=$events_page&amp;calendar_day=".$events[0]['event_start_date']."'>".$events[0]['event_day']."</a>";
+		if ($full) {
+			$cells[$day_key]['cell'] .= "<ul>";
+		
+			foreach($events as $event) {
+				$cells[$day_key]['cell'] .= dbem_replace_placeholders($event_format, $event);
+			} 
+			$cells[$day_key]['cell'] .= "</ul>";  
+   	}
+	}      
+
+//	print_r($cells);
+
+	if($events){	
+		foreach($cells as $cell) {     
+			 //echo $cell['cell'];
+			if ($cell['month'] == $month_pre) {
+			 	$calendar=str_replace("<td class='eventless-pre'>".$cell['day']."</td>","<td class='eventful-pre'>".$cell['cell']."</td>",$calendar);
+			} elseif($cell['month'] == $month_post) {
+			 	$calendar=str_replace("<td class='eventless-post'>".$cell['day']."</td>","<td class='eventful-post'>".$cell['cell']."</td>",$calendar);
+			} elseif($cell['day'] == $day) {
+  			 	$calendar=str_replace("<td class='eventless-today'>".$cell['day']."</td>","<td class='eventful-today'>".$cell['cell']."</td>",$calendar);
+			} else{   
+		    $calendar=str_replace("<td class='eventless'>".$cell['day']."</td>","<td class='eventful'>".$cell['cell']."</td>",$calendar);
+	   	}
 		}
-	}
-}
+	}          
+	        
 	$output=$calendar;
 	if ($echo)
 		echo $output; 
@@ -323,7 +343,7 @@ function dbem_calendar_style() {
 	</style>
 	<?php
 }
-add_action('wp_head', 'dbem_calendar_style');
+//add_action('wp_head', 'dbem_calendar_style');
  
 function dbem_translate_and_trim($string, $length = 1) {
 	return substr(__($string), 0, $length);
@@ -403,7 +423,7 @@ add_action('init','dbem_filter_calendar_ajax');
 function dbem_full_calendar() {
 	echo "<p>Demo di <code>dbem_full_calendar</code></p>"  ;
 	echo '<div id="jMonthCalendar"></div>';
-	dbem_get_calendar();
+	dbem_get_calendar("full=1");
 }
 
 
