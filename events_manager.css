@@ -99,4 +99,40 @@ table#dbem-location-data th {
 }          
 #dbem-location-map img {
 	max-width: none;
+}                  
+            
+
+table.dbem-calendar-table td {
+	padding: 2px 4px; 
+	text-align: center;
+}
+table.dbem-calendar.table tr.days-names {
+	font-weight: bold;
+} 
+table.dbem-calendar-table td.eventless-pre, .dbem-calendar td.eventless-post {
+	color: #ccc;
+}
+table.dbem-calendar-table td.eventful a {
+  font-weight: bold;
+  color: #FD7E29;
+}
+ table.dbem-calendar-table td.eventless-today {
+   background-color: #CFCFCF;  
+}
+table.dbem-calendar-table thead {
+	font-size: 120%;  
+	font-weight: bold;  
+}
+table.fullcalendar {
+	border-collapse: collapse;
+}
+table.fullcalendar td {
+	text-align: left;
+	width: 50px;  
+	height: 50px;             
+	border: 1px solid #888;
+}
+.dbem-calendar-full ul {
+	font-size: 80%;     
+	list-style: none;
 }
