@@ -145,8 +145,9 @@ function dbem_get_calendar($args="") {
 	} else { 
 	   $back_month = $month -1;
 		 $back_year = $year;
-	} 
-	$previous_link = "<a class='prev-month' href=\"".$base_link."calmonth={$back_month}&amp;calyear={$back_year} \">&lt;&lt;</a>"; 
+	}  
+	$full ? $link_extra_class = "full-link" : $link_extra_class = '';
+	$previous_link = "<a class='prev-month $link_extra_class' href=\"".$base_link."calmonth={$back_month}&amp;calyear={$back_year} \">&lt;&lt;</a>"; 
 
 	if($month == 12){ 
 	   $next_month = 1;
@@ -155,7 +156,7 @@ function dbem_get_calendar($args="") {
 	   $next_month = $month + 1;
 		 $next_year = $year;	
 	} 
-	$next_link = "<a class='next-month' href=\"".$base_link."calmonth={$next_month}&amp;calyear={$next_year} \">&gt;&gt;</a>";  
+	$next_link = "<a class='next-month $link_extra_class' href=\"".$base_link."calmonth={$next_month}&amp;calyear={$next_year} \">&gt;&gt;</a>";  
    $random = (rand(100,200));
 	$full ? $class = 'dbem-calendar-full' : $class='dbem-calendar';
 	$calendar="<div class='$class' id='dbem-calendar-$random'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
@@ -382,33 +383,41 @@ function dbem_ajaxize_calendar()
 		function initCalendar() {
 			$j('a.prev-month').click(function(e){
 				e.preventDefault();
-				tableDiv = $j(this).parents('table').parent();    
-				prevMonthCalendar(tableDiv);
+				tableDiv = $j(this).parents('table').parent();
+				($j(this).hasClass('full-link')) ? fullcalendar = 1 : fullcalendar = 0;   
+				prevMonthCalendar(tableDiv, fullcalendar);
 			} );
 			$j('a.next-month').click(function(e){
 				e.preventDefault();
-				tableDiv = $j(this).parents('table').parent();    
-				nextMonthCalendar(tableDiv);
+				tableDiv = $j(this).parents('table').parent();
+				($j(this).hasClass('full-link')) ? fullcalendar = 1 : fullcalendar = 0;     
+				nextMonthCalendar(tableDiv, fullcalendar);
 			} );
 		}    
-		function prevMonthCalendar(tableDiv) {
+		function prevMonthCalendar(tableDiv, fullcalendar) {  
+			if (fullcalendar === undefined) {
+			    fullcalendar = 0;
+			  }
 			month_n = tableDiv.children('div.month_n').html();                                
 			year_n = tableDiv.children('div.year_n').html();
-			parseInt(month_n) == 1 ? prevMonth = 12 : prevMonth = parseInt(month_n) - 1 ; 
-		   	if (parseInt(month_n) == 1)
-					year_n = parseInt(year_n) -1;
-			$j.get("<?php bloginfo('url'); ?>", {ajaxCalendar: 'true', calmonth: prevMonth, calyear: year_n}, function(data){
+			parseInt(month_n) == 1 ? prevMonth = 12 : prevMonth = parseInt(month_n,10) - 1 ; 
+		   	if (parseInt(month_n,10) == 1)
+					year_n = parseInt(year_n,10) -1;
+			$j.get("<?php bloginfo('url'); ?>", {ajaxCalendar: 'true', calmonth: prevMonth, calyear: year_n, full: fullcalendar}, function(data){
 				tableDiv.html(data);
 				initCalendar();
 			});
 		}
-		function nextMonthCalendar(tableDiv) {
+		function nextMonthCalendar(tableDiv, fullcalendar) {
+			if (fullcalendar === undefined) {
+			    fullcalendar = 0;
+			  }
 			month_n = tableDiv.children('div.month_n').html();                                
 			year_n = tableDiv.children('div.year_n').html();
-			parseInt(month_n) == 12 ? nextMonth = 1 : nextMonth = parseInt(month_n) + 1 ; 
-		   	if (parseInt(month_n) == 12)
-					year_n = parseInt(year_n) + 1;
-			$j.get("<?php bloginfo('url'); ?>", {ajaxCalendar: 'true', calmonth: nextMonth, calyear: year_n}, function(data){
+			parseInt(month_n,10) == 12 ? nextMonth = 1 : nextMonth = parseInt(month_n,10) + 1 ; 
+		   	if (parseInt(month_n,10) == 12)
+					year_n = parseInt(year_n,10) + 1;
+			$j.get("<?php bloginfo('url'); ?>", {ajaxCalendar: 'true', calmonth: nextMonth, calyear: year_n, full : fullcalendar}, function(data){
 				tableDiv.html(data);
 				initCalendar();
 			});
@@ -432,9 +441,10 @@ add_action('wp_head', 'dbem_ajaxize_calendar');
 
 function dbem_filter_calendar_ajax() {
 	if(isset($_GET['ajaxCalendar']) && $_GET['ajaxCalendar'] == true) {
+		(isset($_GET['full']) && $_GET['full'] == 1) ? $full = 1 : $full = 0;
 		$month = $_GET['month']; 
 		$year = $_GET['year'];
-		dbem_get_calendar('echo=1');
+		dbem_get_calendar('echo=1&full='.$full);
 		die();
 	}
 }
