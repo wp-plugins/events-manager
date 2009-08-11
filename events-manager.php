@@ -418,7 +418,8 @@ function dbem_add_options() {
 	'dbem_image_max_width' => DEFAULT_IMAGE_MAX_WIDTH,
 	'dbem_image_max_height' => DEFAULT_IMAGE_MAX_HEIGHT,
 	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE,
-	'dbem_full_calendar_event_format' => DEFAULT_FULL_CALENDAR_EVENT_FORMAT, 
+	'dbem_full_calendar_event_format' => DEFAULT_FULL_CALENDAR_EVENT_FORMAT,   
+	'dbem_week_starts_sunday' => 0,
 	'dbem_hello_to_user' => 1);
 	
 	foreach($dbem_options as $key => $value)

@@ -1,5 +1,4 @@
-                                     <?php
-
+<?php
 function dbem_get_calendar_shortcode($atts) { 
 	extract(shortcode_atts(array(
 			'month' => '',
@@ -22,6 +21,8 @@ function dbem_get_calendar($args="") {
 	$month = $r['month']; 
 	$echo = $r['echo'];
 	
+	$week_starts_on_sunday = get_option('dbem_week_starts_sunday');
+   
  	global $wpdb;    
 	if(isset($_GET['calmonth']) && $_GET['calmonth'] != '')   {
 		$month =  $_GET['calmonth'] ;
@@ -47,16 +48,27 @@ function dbem_get_calendar($args="") {
 	// Figure out which day of the week 
 	// the month starts on. 
 	$month_start_day = date('D', $month_start);
-	switch($month_start_day){ 
-	    case "Sun": $offset = 6; break; 
-	    case "Mon": $offset = 0; break; 
-	    case "Tue": $offset = 1; break; 
-	    case "Wed": $offset = 2; break; 
-	    case "Thu": $offset = 3; break; 
-	    case "Fri": $offset = 4; break; 
-	    case "Sat": $offset = 5; break;
+	if($week_starts_on_sunday) {
+  		switch($month_start_day){ 
+			case "Sun": $offset = 0; break; 
+		   case "Mon": $offset = 1; break; 
+		   case "Tue": $offset = 2; break; 
+		   case "Wed": $offset = 3; break; 
+		   case "Thu": $offset = 4; break; 
+		   case "Fri": $offset = 5; break; 
+		   case "Sat": $offset = 6; break;
+		}       
+	} else {
+		switch($month_start_day){ 
+			case "Sun": $offset = 6; break; 
+		   case "Mon": $offset = 0; break; 
+		   case "Tue": $offset = 1; break; 
+		   case "Wed": $offset = 2; break; 
+		   case "Thu": $offset = 3; break; 
+		   case "Fri": $offset = 4; break; 
+		   case "Sat": $offset = 5; break;	
+		}
 	}
-	
 	// determine how many days are in the last month. 
 	if($month == 1) { 
 	   $num_days_last = dbem_days_in_month(12, ($year -1)); 
@@ -144,11 +156,19 @@ function dbem_get_calendar($args="") {
 		 $next_year = $year;	
 	} 
 	$next_link = "<a class='next-month' href=\"".$base_link."calmonth={$next_month}&amp;calyear={$next_year} \">&gt;&gt;</a>";  
-  $random = (rand(100,200));
+   $random = (rand(100,200));
 	$full ? $class = 'dbem-calendar-full' : $class='dbem-calendar';
 	$calendar="<div class='$class' id='dbem-calendar-$random'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
 	
-	$days_initials = "<td>".dbem_translate_and_trim("Monday")."</td><td>".dbem_translate_and_trim("Tuesday")."</td><td>".dbem_translate_and_trim("Wednesday")."</td><td>".dbem_translate_and_trim("Thursday")."</td><td>".dbem_translate_and_trim("Friday")."</td><td>".dbem_translate_and_trim("Saturday")."</td><td>".dbem_translate_and_trim("Sunday")."</td>\n";
+	if($week_starts_on_sunday) 
+		$weekdays = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
+	else
+		$weekdays = array('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday');
+	
+	$days_initials = "";
+	foreach($weekdays as $weekday) {
+		$days_initials .= "<td>".dbem_translate_and_trim($weekday)."</td>";
+	} 
 	$full ? $fullclass = 'fullcalendar' : $fullclass='';
 	// Build the heading portion of the calendar table 
 	$calendar .=  "<table class='dbem-calendar-table $fullclass'>\n". 
