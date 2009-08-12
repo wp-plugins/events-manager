@@ -237,7 +237,7 @@ function dbem_get_calendar($args="") {
 	$events_table = $wpdb->prefix.EVENTS_TBNAME; 
 	$sql = "SELECT event_id, 
 									event_name, 
-								 	event_start_date
+								 	event_start_date,
 									event_start_time, 
 									DATE_FORMAT(event_start_date, '%d-%m') AS 'event_day_month',
 									DATE_FORMAT(event_start_date, '%w') AS 'event_weekday_n',

@@ -660,7 +660,9 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		}
 		
 		if (preg_match('/^#[aABgGhHisueIOPTZcrU]$/', $result)) {   
-			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), "2000-10-10 ".$event['event_start_time']),$event_string );  
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), "2000-10-10 ".$event['event_start_time']),$event_string ); 
+			//echo $event['event_start_time'];
+			//echo mysql2date('h:i A', '2010-10-10 23:35:00')."<br/>"; 
 			// echo $event_string;  
 		}
 		
