@@ -419,7 +419,6 @@ function dbem_add_options() {
 	'dbem_image_max_height' => DEFAULT_IMAGE_MAX_HEIGHT,
 	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE,
 	'dbem_full_calendar_event_format' => DEFAULT_FULL_CALENDAR_EVENT_FORMAT,   
-	'dbem_week_starts_sunday' => 0,
 	'dbem_hello_to_user' => 1);
 	
 	foreach($dbem_options as $key => $value)
@@ -656,12 +655,12 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		
 		// matches all PHP time placeholders
 		if (preg_match('/^#@[aABgGhHisueIOPTZcrU]$/', $result)) {
-			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), "0000-00-00 ".$event['event_end_time']),$event_string );  
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), "2000-10-10 ".$event['event_end_time']),$event_string );  
 				// echo $event_string;  
 		}
 		
 		if (preg_match('/^#[aABgGhHisueIOPTZcrU]$/', $result)) {   
-			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), "0000-00-00 ".$event['event_start_time']),$event_string );  
+			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), "2000-10-10 ".$event['event_start_time']),$event_string );  
 			// echo $event_string;  
 		}
 		

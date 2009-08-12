@@ -280,10 +280,14 @@ function dbem_options_subpanel() {
 	dbem_options_textarea ( __ ( 'Default single event format', 'dbem' ), 'dbem_single_event_format', __ ( 'The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, <code>#_CONTACTPHONE</code> to insert respectively the name, e-mail address and phone number of the designated contact person. <br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings.', 'dbem' ) );
 	dbem_options_radio_binary ( __ ( 'Show events page in lists?', 'dbem' ), 'dbem_list_events_page', __ ( 'Check this option if you want the events page to appear together with other pages in pages lists.', 'dbem' ) );
 	dbem_options_input_text ( __ ( 'Events page title', 'dbem' ), 'dbem_events_page_title', __ ( 'The title on the multiple events page.', 'dbem' ) );
-	dbem_options_input_text ( __ ( 'No events message', 'dbem' ), 'dbem_no_events_message', __ ( 'The message displayed when no events are available.', 'dbem' ) );
-	dbem_options_textarea ( __ ( 'Map text format', 'dbem' ), 'dbem_map_text_format', __ ( 'The format the text appearing in the event page map cloud.<br/>Follow the previous formatting instructions.', 'dbem' ) );
-	dbem_options_input_text ( __ ( 'Full calendar events format', 'dbem' ), 'dbem_full_calendar_event_format', __ ( 'The format of each event when displayed in the full calendar. Remember to include <code>li</code> tags before and after the event.', 'dbem' ) );        
-   dbem_options_radio_binary ( __ ( 'Week starts on sunday?', 'dbem' ), 'dbem_week_starts_sunday', __ ( 'Check this option if you want weeks to start on sunday in the calendar.', 'dbem' ) );
+	dbem_options_input_text ( __ ( 'No events message', 'dbem' ), 'dbem_no_events_message', __ ( 'The message displayed when no events are available.', 'dbem' ) );?>         
+ 
+  </table>                      
+   <h3><?php _e ( 'Calendar format', 'dbem' ); ?></h3>
+	<table class="form-table">   
+<?php
+  dbem_options_input_text ( __ ( 'Full calendar events format', 'dbem' ), 'dbem_full_calendar_event_format', __ ( 'The format of each event when displayed in the full calendar. Remember to include <code>li</code> tags before and after the event.', 'dbem' ) );        
+
 	?>
 			</table>
 
@@ -345,7 +349,9 @@ function dbem_options_subpanel() {
 	</tr>
 					 <?php
 	dbem_options_input_text ( __ ( 'Google Maps API Key', 'dbem' ), 'dbem_gmap_key', sprintf ( __ ( "To display Google Maps you need a Google Maps API key. Don't worry, it's free, you can get one <a href='%s'>here</a>.", 'dbem' ), 'http://code.google.com/apis/maps/signup.html' ) );
-	?>       
+	         
+	 dbem_options_textarea ( __ ( 'Map text format', 'dbem' ), 'dbem_map_text_format', __ ( 'The format the text appearing in the event page map cloud.<br/>Follow the previous formatting instructions.', 'dbem' ) );     
+	?> 
 				</table>
 
 <h3><?php
@@ -2183,7 +2189,7 @@ function dbem_favorite_menu($actions) {
 ////////////////////////////////////
 // WP 2.7 options registration
 function dbem_options_register() {
-	$options = array ('dbem_events_page', 'dbem_display_calendar_in_events_page', 'dbem_use_event_end', 'dbem_event_list_item_format', 'dbem_event_page_title_format', 'dbem_single_event_format', 'dbem_list_events_page', 'dbem_events_page_title', 'dbem_no_events_message', 'dbem_location_page_title_format', 'dbem_location_baloon_format', 'dbem_single_location_format', 'dbem_location_event_list_item_format', 'dbem_location_no_events_message', 'dbem_gmap_is_active', 'dbem_rss_main_title', 'dbem_rss_main_description', 'dbem_rss_title_format', 'dbem_rss_description_format', 'dbem_gmap_key', 'dbem_map_text_format', 'dbem_rsvp_mail_notify_is_active', 'dbem_contactperson_email_body', 'dbem_respondent_email_body', 'dbem_mail_sender_name', 'dbem_smtp_username', 'dbem_smtp_password', 'dbem_default_contact_person', 'dbem_mail_sender_address', 'dbem_mail_receiver_address', 'dbem_smtp_host', 'dbem_rsvp_mail_send_method', 'dbem_rsvp_mail_port', 'dbem_rsvp_mail_SMTPAuth', 'dbem_image_max_width', 'dbem_image_max_height', 'dbem_image_max_size','dbem_full_calendar_event_format','dbem_week_starts_sunday' );
+	$options = array ('dbem_events_page', 'dbem_display_calendar_in_events_page', 'dbem_use_event_end', 'dbem_event_list_item_format', 'dbem_event_page_title_format', 'dbem_single_event_format', 'dbem_list_events_page', 'dbem_events_page_title', 'dbem_no_events_message', 'dbem_location_page_title_format', 'dbem_location_baloon_format', 'dbem_single_location_format', 'dbem_location_event_list_item_format', 'dbem_location_no_events_message', 'dbem_gmap_is_active', 'dbem_rss_main_title', 'dbem_rss_main_description', 'dbem_rss_title_format', 'dbem_rss_description_format', 'dbem_gmap_key', 'dbem_map_text_format', 'dbem_rsvp_mail_notify_is_active', 'dbem_contactperson_email_body', 'dbem_respondent_email_body', 'dbem_mail_sender_name', 'dbem_smtp_username', 'dbem_smtp_password', 'dbem_default_contact_person', 'dbem_mail_sender_address', 'dbem_mail_receiver_address', 'dbem_smtp_host', 'dbem_rsvp_mail_send_method', 'dbem_rsvp_mail_port', 'dbem_rsvp_mail_SMTPAuth', 'dbem_image_max_width', 'dbem_image_max_height', 'dbem_image_max_size','dbem_full_calendar_event_format');
 	foreach ( $options as $opt ) {
 		register_setting ( 'dbem-options', $opt, '' );
 	}

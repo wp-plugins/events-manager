@@ -22,7 +22,8 @@ function dbem_get_calendar($args="") {
 	$echo = $r['echo'];
 	
 	$week_starts_on_sunday = get_option('dbem_week_starts_sunday');
-   
+   $start_of_week = get_option('start_of_week');
+
  	global $wpdb;    
 	if(isset($_GET['calmonth']) && $_GET['calmonth'] != '')   {
 		$month =  $_GET['calmonth'] ;
@@ -48,27 +49,21 @@ function dbem_get_calendar($args="") {
 	// Figure out which day of the week 
 	// the month starts on. 
 	$month_start_day = date('D', $month_start);
-	if($week_starts_on_sunday) {
-  		switch($month_start_day){ 
-			case "Sun": $offset = 0; break; 
-		   case "Mon": $offset = 1; break; 
-		   case "Tue": $offset = 2; break; 
-		   case "Wed": $offset = 3; break; 
-		   case "Thu": $offset = 4; break; 
-		   case "Fri": $offset = 5; break; 
-		   case "Sat": $offset = 6; break;
-		}       
-	} else {
-		switch($month_start_day){ 
-			case "Sun": $offset = 6; break; 
-		   case "Mon": $offset = 0; break; 
-		   case "Tue": $offset = 1; break; 
-		   case "Wed": $offset = 2; break; 
-		   case "Thu": $offset = 3; break; 
-		   case "Fri": $offset = 4; break; 
-		   case "Sat": $offset = 5; break;	
-		}
-	}
+  
+  	switch($month_start_day){ 
+		case "Sun": $offset = 0; break; 
+	   case "Mon": $offset = 1; break; 
+	   case "Tue": $offset = 2; break; 
+	   case "Wed": $offset = 3; break; 
+	   case "Thu": $offset = 4; break; 
+	   case "Fri": $offset = 5; break; 
+	   case "Sat": $offset = 6; break;
+	}       
+   
+	$offset -= $start_of_week;
+	if($offset<0)
+		$offset += 7;
+	
 	// determine how many days are in the last month. 
 	if($month == 1) { 
 	   $num_days_last = dbem_days_in_month(12, ($year -1)); 
@@ -161,11 +156,14 @@ function dbem_get_calendar($args="") {
 	$full ? $class = 'dbem-calendar-full' : $class='dbem-calendar';
 	$calendar="<div class='$class' id='dbem-calendar-$random'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
 	
-	if($week_starts_on_sunday) 
-		$weekdays = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
-	else
-		$weekdays = array('Monday','Tuesday','Wednesday','Thursday','Friday','Saturday','Sunday');
-	
+ 	$weekdays = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
+   $n = 0 ;
+	while( $n < $start_of_week ) {   
+		$last_day = array_shift($weekdays);     
+		$weekdays[]= $last_day; 
+		$n++;
+	}
+   
 	$days_initials = "";
 	foreach($weekdays as $weekday) {
 		$days_initials .= "<td>".dbem_translate_and_trim($weekday)."</td>";
@@ -239,7 +237,8 @@ function dbem_get_calendar($args="") {
 	$events_table = $wpdb->prefix.EVENTS_TBNAME; 
 	$sql = "SELECT event_id, 
 									event_name, 
-								 	event_start_date, 
+								 	event_start_date
+									event_start_time, 
 									DATE_FORMAT(event_start_date, '%d-%m') AS 'event_day_month',
 									DATE_FORMAT(event_start_date, '%w') AS 'event_weekday_n',
 									DATE_FORMAT(event_start_date, '%e') AS 'event_day',

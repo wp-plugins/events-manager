@@ -31,7 +31,7 @@ function dbem_options_input_text($title, $name, $description) {
 	<tr valign="top" id='<?php echo $name;?>_row'>
 		<th scope="row"><?php _e($title, 'dbem') ?></th>
 	    <td>
-			<input name="<?php echo $name ?>" type="text" id="<?php echo $title ?>" style="width: 95%" value="<?php echo get_option($name); ?>" size="45" /><br />
+			<input name="<?php echo $name ?>" type="text" id="<?php echo $title ?>" style="width: 95%" value="<?php echo htmlspecialchars(get_option($name)); ?>" size="45" /><br />
 						<?php _e($description, 'dbem') ?>
 			</td>
 		</tr>
