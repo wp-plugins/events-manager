@@ -3,13 +3,8 @@ Contributors: nutsmuggler, netweblogic
 Donate link: http://davidebenini.it  
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.7   
-<<<<<<< .mine
 Tested up to: 2.8.0   
 Stable tag: 2.0rc2   
-=======
-Tested up to: 2.8.3   
-Stable tag: 2.0rc2   
->>>>>>> .r144499
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
@@ -185,7 +180,8 @@ Added #_CATEGORY as a placeholder
 Added the TinyMCE of wordpress to the description of the event. That solves the problem of adding pictures!
 Added an end date option always on for multi-day events.
 Added a new placeholder format to deal with the end date. You can now wrap dates in #_{} or #@_{} . The values inside will have a format of date(). For example #_{Y-m-d} #@_{ \u\n\t\i\l Y-m-d} will show as "2009-03-23 until 2009-03-28" (only for end dates with no recurrence) or just "2009-03-23" for normal events.  
-2.1
+2.1     
+Properly added Marcus Skies as a contributor
 Fixed the time bug
 Added a full calendar
 Now weeks starts according to WP settings
