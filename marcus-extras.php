@@ -1,4 +1,5 @@
 <?php
+//Extras added by Marcus Sykes. To be incorporated into plugin more gracefully :)
 define('DBEM_CATEGORIES_TBNAME', 'dbem_categories');
 
 //Add the categories table
