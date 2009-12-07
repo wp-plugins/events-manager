@@ -1,5 +1,4 @@
 <?php
-//Extras added by Marcus Sykes. To be incorporated into plugin more gracefully :)
 define('DBEM_CATEGORIES_TBNAME', 'dbem_categories');
 
 //Add the categories table
@@ -25,7 +24,8 @@ add_action('admin_menu','dbem_add_to_events_submenu', 100);
 function dbem_add_to_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		$file = dirname(__FILE__).DIRECTORY_SEPARATOR."events-manager.php";
-		add_submenu_page($file, __('Event Categories','dbem'),__('Categories','dbem'), SETTING_CAPABILITY, "events-manager-categories", dbem_categories_subpanel);
+		$plugin_page = add_submenu_page($file, __('Event Categories','dbem'),__('Categories','dbem'), SETTING_CAPABILITY, "events-manager-categories", dbem_categories_subpanel);
+		add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' );
   	}
 }
 
@@ -277,4 +277,114 @@ function dbem_get_event_category($event_id) {
 	return $category;
 }
 
+function dbem_attributes_form($event) {
+	$dbem_data = $event['event_attributes'];
+	//We also get a list of attribute names and create a ddm list (since placeholders are fixed)
+	$formats = 
+		get_option ( 'dbem_event_list_item_format' ).
+		get_option ( 'dbem_event_page_title_format' ).
+		get_option ( 'dbem_full_calendar_event_format' ).
+		get_option ( 'dbem_location_baloon_format' ).
+		get_option ( 'dbem_location_event_list_item_format' ).
+		get_option ( 'dbem_location_page_title_format' ).
+		get_option ( 'dbem_map_text_format' ).
+		get_option ( 'dbem_rss_description_format' ).
+		get_option ( 'dbem_rss_title_format' ).
+		get_option ( 'dbem_single_event_format' ).
+		get_option ( 'dbem_single_location_format' );
+	//We now have one long string of formats
+	preg_match_all("/#_ATT\{.+?\}(\{.+?\})?/", $formats, $placeholders);
+	$attributes = array();
+	//Now grab all the unique attributes we can use in our event.
+	foreach($placeholders[0] as $result) {
+		$attribute = substr( substr($result, 0, strpos($result, '}')), 6 );
+		if( !in_array($attribute, $attributes) ){			
+			$attributes[] = $attribute ;
+		}
+	}
+	?>
+	<div class="wrap">
+		<h2>Attributes</h2>
+		<p>Add attributes here</p>
+		<form method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
+			<table class="form-table">
+				<thead>
+					<tr valign="top">
+						<td><strong>Attribute Name</strong></td>
+						<td><strong>Value</strong></td>
+					</tr>
+				</thead>
+				<tbody id="mtm_body">
+					<?php
+					$count = 1;
+					if( is_array($dbem_data) and count($dbem_data) > 0){
+						foreach( $dbem_data as $name => $value){
+							?>
+							<tr valign="top" id="mtm_<?php echo $count ?>">
+								<td scope="row">
+									<select name="mtm_<?php echo $count ?>_ref">
+										<?php
+										if( !in_array($name, $attributes) ){
+											echo "<option value='$name'>$name (".__('Not defined in templates', 'dbem').")</option>";
+										}
+										foreach( $attributes as $attribute ){
+											if( $attribute == $name ) {
+												echo "<option selected='selected'>$attribute</option>";
+											}else{
+												echo "<option>$attribute</option>";
+											}
+										}
+										?>
+									</select>
+									<a href="#" rel="<?php echo $count ?>">Remove</a>
+								</td>
+								<td>
+									<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
+								</td>
+							</tr>
+							<?php
+							$count++;
+						}
+					}else{
+						if( count( $attributes ) > 0 ){
+							?>
+							<tr valign="top" id="mtm_<?php echo $count ?>">
+								<td scope="row">
+									<select name="mtm_<?php echo $count ?>_ref">
+										<?php
+										foreach( $attributes as $attribute ){
+											echo "<option>$attribute</option>";
+										}
+										?>
+									</select>
+									<a href="#" rel="<?php echo $count ?>">Remove</a>
+								</td>
+								<td>
+									<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
+								</td>
+							</tr>
+							<?php
+						}else{
+							?>
+							<tr valign="top">
+								<td scope="row" colspan='2'>
+								<?php _e('In order to use attributes, you must define some in your templates, otherwise they\'ll never show. Go to Events > Settings to add attribute placeholders.', 'dbem'); ?>
+								</td>
+							</tr>
+							<?php
+							
+						}
+					}
+					?>
+				</tbody>
+				<tfoot>
+					<tr valign="top">
+						<td colspan="3"><a href="#" id="mtm_add_tag">Add new tag</a></td>
+					</tr>
+				</tfoot>
+			</table>
+		</form>
+	</div>
+	<?php
+}
 ?>

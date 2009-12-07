@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 2.0rc2
+Version: 2.0rc3
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini
@@ -190,6 +190,7 @@ function dbem_create_events_table() {
 			location_id mediumint(9) NOT NULL,
 			recurrence_id mediumint(9) NULL,
   			event_category_id int(11) default NULL,
+  			event_attributes TEXT NULL 
 			UNIQUE KEY (event_id)
 			);";
 		/* Marcus End Edit */
@@ -444,12 +445,17 @@ function dbem_create_events_submenu () {
 	  if(function_exists('add_submenu_page')) {
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel, '../wp-content/plugins/events-manager/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu: 
-			add_submenu_page(__FILE__, __('Edit'),__('Edit'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel);
-			add_submenu_page(__FILE__, __('Add new', 'dbem'), __('Add new','dbem'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page"); 
-			add_submenu_page(__FILE__, __('Locations', 'dbem'), __('Locations', 'dbem'), MIN_CAPABILITY, 'locations', "dbem_locations_page");
-			add_submenu_page(__FILE__, __('People', 'dbem'), __('People', 'dbem'), MIN_CAPABILITY, 'people', "dbem_people_page"); 
+			$plugin_page = add_submenu_page(__FILE__, __('Edit'),__('Edit'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel);
+			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' );
+			$plugin_page = add_submenu_page(__FILE__, __('Add new', 'dbem'), __('Add new','dbem'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page");
+			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' ); 
+			$plugin_page = add_submenu_page(__FILE__, __('Locations', 'dbem'), __('Locations', 'dbem'), MIN_CAPABILITY, 'locations', "dbem_locations_page");
+			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' );
+			$plugin_page = add_submenu_page(__FILE__, __('People', 'dbem'), __('People', 'dbem'), MIN_CAPABILITY, 'people', "dbem_people_page");
+			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' ); 
 			//add_submenu_page(__FILE__, 'Test ', 'Test ', 8, 'test', 'dbem_recurrence_test');
-			add_submenu_page(__FILE__, __('Events Manager Settings','dbem'),__('Settings','dbem'), SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
+			$plugin_page = add_submenu_page(__FILE__, __('Events Manager Settings','dbem'),__('Settings','dbem'), SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
+			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' );
   	}
 }
 
@@ -541,32 +547,51 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				$joiner = "?";
 			$event_string = str_replace($result, "<a href='".get_permalink($events_page_id).$joiner."event_id=".$event['event_id']."'   title='".$event['event_name']."'>".$event['event_name']."</a>" , $event_string );
 		} 
-		if (preg_match('/#_EVENTPAGEURL/', $result)) {
+		if (preg_match('/#_EVENTPAGEURL(\[(.+\)]))?/', $result)) {
 			$events_page_id = get_option('dbem_events_page');
-			$event_page_link = get_permalink($events_page_id);
 			if (stristr($event_page_link, "?"))
 				$joiner = "&amp;";
 			else
 				$joiner = "?";
 			$event_string = str_replace($result, get_permalink($events_page_id).$joiner."event_id=".$event['event_id'] , $event_string );
 		}
-	 	if (preg_match('/#_(NAME|NOTES|SEATS)/', $result)) {
+	 	if (preg_match('/#_(NAME|NOTES|SEATS|EXCERPT)/', $result)) {
 			$field = "event_".ltrim(strtolower($result), "#_");
 		 	$field_value = $event[$field];      
 			
-			if ($field == "event_notes") {
-				if ($target == "html")
-					$field_value = apply_filters('dbem_notes', $field_value);
-				else
-				  if ($target == "map")
+			if ($field == "event_notes" || $field == "event_excerpt") {
+				/* Marcus Begin Edit */
+				if ($target == "html"){
+					//If excerpt, we use more link text
+					if($field == "event_excerpt"){
+						$matches = explode('<!--more-->', $event['event_notes']);
+						$field_value = $matches[0];
+						$field_value = apply_filters('dbem_notes_excerpt', $field_value);
+					}else{
+						//$field_value = apply_filters('dbem_notes', $field_value);
+					}
+					$field_value = apply_filters('the_content', $field_value);
+				}else{
+				  if ($target == "map"){
 					$field_value = apply_filters('dbem_notes_map', $field_value);
-				  else
-				 	$field_value = apply_filters('dbem_notes_rss', $field_value);
+				  } else {
+		  			if($field == "event_excerpt"){
+						$matches = explode('<!--more-->', $event['event_notes']);
+						$field_value = htmlentities($matches[0]);
+						$field_value = apply_filters('dbem_notes_rss', $field_value);
+					}else{
+						$field_value = apply_filters('dbem_notes_rss', $field_value);
+					}
+					$field_value = apply_filters('the_content_rss', $field_value);
+				  }
+				}
+				/* Marcus End Edit */
 		  	} else {
-				if ($target == "html")    
+				if ($target == "html"){    
 					$field_value = apply_filters('dbem_general', $field_value); 
-				else 
-					$field_value = apply_filters('dbem_general_rss', $field_value); 
+		  		}else{
+					$field_value = apply_filters('dbem_general_rss', $field_value);
+		  		}
 			}
 			$event_string = str_replace($result, $field_value , $event_string ); 
 	 	}  
@@ -646,8 +671,6 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $event['event_start_date']),$event_string );  
 			// echo $event_string;  
 		}
-
-		
 		
 		// matches all PHP time placeholders
 		if (preg_match('/^#@[aABgGhHisueIOPTZcrU]$/', $result)) {
@@ -664,7 +687,7 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		
 		/* Marcus Begin Edit*/
 			//Add a placeholder for categories
-		 	if (preg_match('/#_CATEGORY$/', $result)) {
+		 	if (preg_match('/^#_CATEGORY$/', $result)) {
 	      		$category = (dbem_get_event_category($event['event_id']));
 				$event_string = str_replace($result, $category['category_name'], $event_string );
 			}
@@ -673,8 +696,8 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 		     
 	}
 	/* Marcus Begin Edit */
-	preg_match_all("/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/", $format, $placeholders);
-	foreach($placeholders[0] as $result) {
+	preg_match_all("/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/", $format, $results);
+	foreach($results[0] as $result) {
 		if(substr($result, 0, 3 ) == "#@_"){
 			$date = 'event_end_date';
 			$offset = 4;
@@ -682,7 +705,25 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			$date = 'event_start_date';
 			$offset = 3;
 		}
-		$event_string = str_replace($result, mysql2date(substr($result, $offset, (strlen($result)-($offset+1)) ), $event[$date]),$event_string );
+		if( $date == 'event_end_date' && $event[$date] == $event['event_start_date'] ){
+			$event_string = str_replace($result, '', $event_string);
+		}else{
+			$event_string = str_replace($result, mysql2date(substr($result, $offset, (strlen($result)-($offset+1)) ), $event[$date]),$event_string );
+		}
+	}
+	/* Marcus End Edit */
+	/* Marcus Begin Edit */
+	//This is for the custom attributes
+	preg_match_all("/#_ATT\{.+?\}(\{.+?\})?/", $format, $results);
+	foreach($results[0] as $resultKey => $result) {
+		//Strip string of placeholder and just leave the reference
+		$attRef = substr( substr($result, 0, strpos($result, '}')), 6 );
+		$attString = $event['event_attributes'][$attRef];
+		if( trim($attString) == '' && $results[1][$resultKey] != '' ){
+			//Check to see if we have a second set of braces;
+			$attString = substr( $results[1][$resultKey], 1, strlen(trim($results[1][$resultKey]))-2 );
+		}
+		$event_string = str_replace($result, $attString ,$event_string );
 	}
 	/* Marcus End Edit */
 	

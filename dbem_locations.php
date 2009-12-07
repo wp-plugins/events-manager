@@ -36,7 +36,7 @@ function dbem_locations_page() {
 			$location['location_town'] = $_POST['location_town']; 
 			$location['location_latitude'] = $_POST['location_latitude'];
 			$location['location_longitude'] = $_POST['location_longitude'];
-			$location['location_description'] = $_POST['location_description'];
+			$location['location_description'] = $_POST['content'];
 			
 			if(empty($location['location_latitude'])) {
 				$location['location_latitude']  = 0;
@@ -65,7 +65,7 @@ function dbem_locations_page() {
 				$location['location_town'] = $_POST['location_town']; 
 				$location['location_latitude'] = $_POST['location_latitude'];
 				$location['location_longitude'] = $_POST['location_longitude'];
-				$location['location_description'] = $_POST['location_description'];
+				$location['location_description'] = $_POST['content'];
 				$validation_result = dbem_validate_location($location);
 				if ($validation_result == "OK") {   
 					$new_location = dbem_insert_location($location);   
@@ -103,232 +103,237 @@ function dbem_locations_page() {
 }  
 
 function dbem_locations_edit_layout($location, $message = "") {
-	$layout = "
+	?>
 	<div class='wrap'>
-		<div id='icon-edit' class='icon32'>
-			<br/>
-		</div>
-			
-		<h2>".__('Edit location', 'dbem')."</h2>";   
- 		
-		if($message != "") {
-			$layout .= "
-		<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
-			<p>$message</p>
-		</div>";
-		}
-		$layout .= "
-		<div id='ajax-response'></div>
-
-		<form enctype='multipart/form-data' name='editcat' id='editcat' method='post' action='admin.php?page=locations' class='validate'>
-		<input type='hidden' name='action' value='editedlocation' />
-		<input type='hidden' name='location_ID' value='".$location['location_id']."'/>";
-		
-		$layout .= "<table class='form-table'>
-				<tr class='form-field form-required'>
-					<th scope='row' valign='top'><label for='location_name'>".__('Location name', 'dbem')."</label></th>
-					<td><input name='location_name' id='location-name' type='text' value='".$location['location_name']."' size='40'  /><br />
-		           ".__('The name of the location', 'dbem')."</td>
-				</tr>
-
-				<tr class='form-field'>
-					<th scope='row' valign='top'><label for='location_address'>".__('Location address', 'dbem')."</label></th>
-					<td><input name='location_address' id='location-address' type='text' value='".$location['location_address']."' size='40' /><br />
-		            ".__('The address of the location', 'dbem').".</td>
-
-				</tr>
-				
-				<tr class='form-field'>
-					<th scope='row' valign='top'> <label for='location_town'>".__('Location town', 'dbem')."</label></th>
-					<td><input name='location_town' id='location-town' type='text' value='".$location['location_town']."' size='40' /><br />
-		            ".__('The town where the location is located', 'dbem').".</td>
-
-				</tr>
-			    
-				 <tr style='display:none;'>
-				  <td>Coordinates</td>
-					<td><input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='".$location['location_latitude']."' size='15'  />
-					<input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='".$location['location_longitude']."' size='15'  /></td>
-				 </tr>\n	";
-					$gmap_is_active = get_option('dbem_gmap_is_active');
-					if ($gmap_is_active) {  
-				  	$layout .= "
-			
-				<tr>
-			 <th scope='row' valign='top'><label for='location_map'>".__('Location map', 'dbem')."</label></th>
-										<td>
-										<div id='map-not-found' style='width: 450px; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p>".__('Map not found')."</p></div>
-						 <div id='event-map' style='width: 450px; height: 300px; background: green; display: hide; margin-right:8px'></div></td></tr>";   
-						}
-			$layout .= "
-				<tr class='form-field'>
-					<th scope='row' valign='top'><label for='location_description'>".__('Location description', 'dbem')."</label></th>
-					<td><textarea name='location_description' id='location_description' rows='5' cols='50' style='width: 97%;'>".$location['location_description']."</textarea><br />
-		            ".__('A description of the Location. You may include any kind of info here.', 'dbem')."</td>
-
-				</tr>
-				<tr class='form-field'>
-					<th scope='row' valign='top'><label for='location_picture'>".__('Location image', 'dbem')."</label></th>
-					<td>";
-					if ($location['location_image_url'] != '') 
-						$layout .= "<img src='".$location['location_image_url']."' alt='".$location['location_name']."'/>";
-					else 
-						$layout .= __('No image uploaded for this location yet', 'debm');
-					
-					$layout .= "</td>
-
-				</tr>
-				<tr>
-					<th scope='row' valign='top'><label for='location_image'>".__('Upload/change picture', 'dbem')."</label></th>
-					<td><input id='location-image' name='location_image' id='location_image' type='file' size='40' /></td>
-			 </tr>\n
-			</table>
-		<p class='submit'><input type='submit' class='button-primary' name='submit' value='".__('Update location', 'dbem')."' /></p>
-		</form>
-		   
-   	
-	</div>
-			
-	";  
-	echo $layout;
-}
-
-function dbem_locations_table_layout($locations, $new_location, $message = "") {
-	$destination = get_bloginfo('url')."/wp-admin/admin.php"; 
-	$table = "
-		<div class='wrap nosubsub'>\n
+		<div id="poststuff">
 			<div id='icon-edit' class='icon32'>
 				<br/>
 			</div>
- 	 		<h2>".__('Locations', 'dbem')."</h2>\n ";   
-	 		
-			if($message != "") {
-				$table .= "
-			<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
-				<p>$message</p>
-			</div>";
-			}
-			$table .= "
-			<div id='col-container'>\n
-				<div id='col-right'>\n
-			 	 <div class='col-wrap'>\n       
-				 	 <form id='bookings-filter' method='get' action='$destination'>\n
-						<input type='hidden' name='page' value='locations'/>\n
-						<input type='hidden' name='action' value='edit_location'/>\n
-						<input type='hidden' name='event_id' value='$event_id'/>\n";
-						
-						if (count($locations)>0) {
-						$table .= "<table class='widefat'>\n
-							<thead>\n
-								<tr>\n
-									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>\n
-									<th>".__('Name', 'dbem')."</th>\n
-									<th>".__('Address', 'dbem')."</th>\n
-									<th>".__('Town', 'dbem')."</th>\n                
-								</tr>\n 
-							</thead>\n
-							<tfoot>\n
-								<tr>\n
-									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>\n
-									<th>".__('Name', 'dbem')."</th>\n
-									<th>".__('Address', 'dbem')."</th>\n
-									<th>".__('Town', 'dbem')."</th>\n      
-								</tr>\n             
-							</tfoot>\n
-							<tbody>\n";
-						foreach ($locations as $this_location) {
-							$table .= "		
-								<tr>\n
-								<td><input type='checkbox' class ='row-selector' value='".$this_location['location_id']."' name='locations[]'/></td>\n
-								<td><a href='".get_bloginfo('url')."/wp-admin/admin.php?page=locations&amp;action=edit&amp;location_ID=".$this_location['location_id']."'>".$this_location['location_name']."</a></td>\n
-								<td>".$this_location['location_address']."</td>\n
-								<td>".$this_location['location_town']."</td>\n                         
-								</tr>\n";
-						}
-						$table .= "
-							</tbody>\n
-
-						</table>\n
-
-						<div class='tablenav'>\n
-							<div class='alignleft actions'>\n
-							<input type='hidden' name='action2' value='delete'/>
-						 	<input class='button-secondary action' type='submit' name='doaction2' value='Delete'/>\n
-							<br class='clear'/>\n 
-							</div>\n
-							<br class='clear'/>\n
-							</div>\n";
-						} else {
-								$table .= "<p>".__('No venues have been inserted yet!', 'dbem');
-						}
-						 $table .= "
-						</form>\n
-					</div>\n
-				</div>  <?-- end col-right -->\n     
 				
-				<div id='col-left'>\n
-			  	<div class='col-wrap'>\n
-						<div class='form-wrap'>\n 
+			<h2><?php echo __('Edit location', 'dbem') ?></h2>   
+	 		
+			<?php if($message != "") : ?>
+				<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
+					<p><?php  echo $message ?></p>
+				</div>
+			<?php endif; ?>
+			<div id='ajax-response'></div>
+	
+			<form enctype='multipart/form-data' name='editcat' id='editcat' method='post' action='admin.php?page=locations' class='validate'>
+			<input type='hidden' name='action' value='editedlocation' />
+			<input type='hidden' name='location_ID' value='<?php echo $location['location_id'] ?>'/>
+			
+				<table class='form-table'>
+					<tr class='form-field form-required'>
+						<th scope='row' valign='top'><label for='location_name'><?php echo __('Location name', 'dbem') ?></label></th>
+						<td><input name='location_name' id='location-name' type='text' value='<?php echo $location['location_name'] ?>' size='40'  /><br />
+			           <?php echo __('The name of the location', 'dbem') ?></td>
+					</tr>
+	
+					<tr class='form-field'>
+						<th scope='row' valign='top'><label for='location_address'><?php echo __('Location address', 'dbem') ?></label></th>
+						<td><input name='location_address' id='location-address' type='text' value='<?php echo $location['location_address'] ?>' size='40' /><br />
+			            <?php echo __('The address of the location', 'dbem') ?>.</td>
+	
+					</tr>
+					
+					<tr class='form-field'>
+						<th scope='row' valign='top'> <label for='location_town'><?php echo __('Location town', 'dbem') ?></label></th>
+						<td><input name='location_town' id='location-town' type='text' value='<?php echo $location['location_town'] ?>' size='40' /><br />
+			            <?php echo __('The town where the location is located', 'dbem') ?>.</td>
+	
+					</tr>
+				    
+					 <tr style='display:none;'>
+					  <td>Coordinates</td>
+						<td><input id='location-latitude' name='location_latitude' id='location_latitude' type='text' value='<?php echo $location['location_latitude'] ?>' size='15'  />
+						<input id='location-longitude' name='location_longitude' id='location_longitude' type='text' value='<?php echo $location['location_longitude'] ?>' size='15'  /></td>
+					 </tr>
+					 
+					 <?php
+						$gmap_is_active = get_option('dbem_gmap_is_active');
+						if ($gmap_is_active) {  
+					 ?>
+					<tr>
+				 		<th scope='row' valign='top'><label for='location_map'><?php echo __('Location map', 'dbem') ?></label></th>
+						<td>
+							<div id='map-not-found' style='width: 450px; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p><?php echo __('Map not found') ?></p></div>
+		 					<div id='event-map' style='width: 450px; height: 300px; background: green; display: hide; margin-right:8px'></div>
+		 				</td>
+		 			</tr>
+		 			<?php
+						}
+					?>
+					<tr class='form-field'>
+						<th scope='row' valign='top'><label for='location_description'><?php _e('Location description', 'dbem') ?></label></th>
+						<td>
+							<div class="inside">
+								<div id="<?php echo user_can_richedit() ? 'postdivrich' : 'postdiv'; ?>" class="postarea">
+									<?php the_editor($location['location_description']); ?>
+								</div>
+								<?php _e('A description of the Location. You may include any kind of info here.', 'dbem') ?>
+							</div>
+						</td>
+					</tr>
+					<tr class='form-field'>
+						<th scope='row' valign='top'><label for='location_picture'><?php echo __('Location image', 'dbem') ?></label></th>
+						<td>
+							<?php if ($location['location_image_url'] != '') : ?> 
+								<img src='<?php echo $location['location_image_url'] ?>' alt='<?php echo $location['location_name'] ?>'/>
+							<?php else : ?> 
+								<?php echo __('No image uploaded for this location yet', 'debm') ?>
+							<?php endif; ?>
+						</td>
+					</tr>
+					<tr>
+						<th scope='row' valign='top'><label for='location_image'><?php echo __('Upload/change picture', 'dbem') ?></label></th>
+						<td><input id='location-image' name='location_image' id='location_image' type='file' size='40' /></td>
+					</tr>
+				</table>
+				<p class='submit'><input type='submit' class='button-primary' name='submit' value='<?php echo __('Update location', 'dbem') ?>' /></p>
+			</form>
+		</div>
+	</div>
+	<?php
+}
+
+function dbem_locations_table_layout($locations, $new_location, $message = "") {
+	$destination = get_bloginfo('url')."/wp-admin/admin.php";
+	$new_location = (is_array($new_location)) ? $new_location : array();
+	ob_start();
+	?>
+		<div class='wrap nosubsub'>
+			<div id='icon-edit' class='icon32'>
+				<br/>
+			</div>
+ 	 		<h2><?php echo __('Locations', 'dbem') ?></h2>  
+	 		
+			<?php if($message != "") : ?>
+				<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
+					<p><?php echo $message ?></p>
+				</div>
+			<?php endif; ?>
+			<div id='col-container'>
+				<div id='col-right'>
+			 	 <div class='col-wrap'>       
+				 	 <form id='bookings-filter' method='get' action='<?php echo $destination ?>'>
+						<input type='hidden' name='page' value='locations'/>
+						<input type='hidden' name='action' value='edit_location'/>
+						<input type='hidden' name='event_id' value='<?php echo $event_id ?>'/>
+						
+						<?php if (count($locations)>0) : ?>
+						<table class='widefat'>
+							<thead>
+								<tr>
+									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
+									<th><?php echo __('Name', 'dbem') ?></th>
+									<th><?php echo __('Address', 'dbem') ?></th>
+									<th><?php echo __('Town', 'dbem') ?></th>                
+								</tr> 
+							</thead>
+							<tfoot>
+								<tr>
+									<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
+									<th><?php echo __('Name', 'dbem') ?></th>
+									<th><?php echo __('Address', 'dbem') ?></th>
+									<th><?php echo __('Town', 'dbem') ?></th>      
+								</tr>             
+							</tfoot>
+							<tbody>
+								<?php foreach ($locations as $this_location) : ?>	
+								<tr>
+									<td><input type='checkbox' class ='row-selector' value='<?php echo $this_location['location_id'] ?>' name='locations[]'/></td>
+									<td><a href='<?php echo get_bloginfo('url') ?>/wp-admin/admin.php?page=locations&amp;action=edit&amp;location_ID=<?php echo $this_location['location_id'] ?>'><?php echo $this_location['location_name'] ?></a></td>
+									<td><?php echo $this_location['location_address'] ?></td>
+									<td><?php echo $this_location['location_town'] ?></td>                         
+								</tr>
+								<?php endforeach; ?>
+							</tbody>
+
+						</table>
+
+						<div class='tablenav'>
+							<div class='alignleft actions'>
+							<input type='hidden' name='action2' value='delete'/>
+						 	<input class='button-secondary action' type='submit' name='doaction2' value='Delete'/>
+							<br class='clear'/> 
+							</div>
+							<br class='clear'/>
+						</div>
+						<?php else: ?>
+							<p><?php echo __('No venues have been inserted yet!', 'dbem') ?></p>
+						<?php endif; ?>
+						</form>
+					</div>
+				</div>  <!-- end col-right -->     
+				
+				<div id='col-left'>
+			  	<div class='col-wrap'>
+						<div class='form-wrap'> 
 							<div id='ajax-response'/>
-					  	<h3>".__('Add location', 'dbem')."</h3>\n
-							 <form enctype='multipart/form-data' name='addlocation' id='addlocation' method='post' action='admin.php?page=locations' class='add:the-list: validate'>\n
+					  	<h3><?php echo __('Add location', 'dbem') ?></h3>
+							 <form enctype='multipart/form-data' name='addlocation' id='addlocation' method='post' action='admin.php?page=locations' class='add:the-list: validate'>
 							 		
-									<input type='hidden' name='action' value='addlocation' />\n
-							    <div class='form-field form-required'>\n
-							      <label for='location_name'>".__('Location name', 'dbem')."</label>\n
-								 	<input id='location-name' name='location_name' id='location_name' type='text' value='".$new_location['location_name']."' size='40' />\n
-								    <p>".__('The name of the location', 'dbem').".</p>\n
-								 </div>\n
+									<input type='hidden' name='action' value='addlocation' />
+							    <div class='form-field form-required'>
+							      <label for='location_name'><?php echo __('Location name', 'dbem') ?></label>
+								 	<input id='location-name' name='location_name' id='location_name' type='text' value='<?php echo $new_location['location_name'] ?>' size='40' />
+								    <p><?php echo __('The name of the location', 'dbem') ?>.</p>
+								 </div>
                
-								 <div class='form-field'>\n
-								   <label for='location_address'>".__('Location address', 'dbem')."</label>\n
-								 	<input id='location-address' name='location_address' id='location_address' type='text' value='".$new_location['location_address']."' size='40'  />\n
-								    <p>".__('The address of the location', 'dbem').".</p>\n
-								 </div>\n
+								 <div class='form-field'>
+								   <label for='location_address'><?php echo __('Location address', 'dbem') ?></label>
+								 	<input id='location-address' name='location_address' id='location_address' type='text' value='<?php echo $new_location['location_address'] ?>' size='40'  />
+								    <p><?php echo __('The address of the location', 'dbem') ?>.</p>
+								 </div>
                
-								 <div class='form-field '>\n
-								   <label for='location_town'>".__('Location town', 'dbem')."</label>\n
-								 	<input id='location-town' name='location_town' id='location_town' type='text' value='".$new_location['location_town']."' size='40'  />\n
-								    <p>".__('The town of the location', 'dbem').".</p>\n
-								 </div>\n   
+								 <div class='form-field '>
+								   <label for='location_town'><?php echo __('Location town', 'dbem') ?></label>
+								 	<input id='location-town' name='location_town' id='location_town' type='text' value='<?php echo $new_location['location_town'] ?>' size='40'  />
+								    <p><?php echo __('The town of the location', 'dbem') ?>.</p>
+								 </div>   
 								
-							     <div class='form-field' style='display:none;'>\n
-								   <label for='location_latitude'>LAT</label>\n
-								 	<input id='location-latitude' name='location_latitude' type='text' value='".$new_location['location_latitude']."' size='40'  />\n
-								 </div>\n
-								 <div class='form-field' style='display:none;'>\n
-								   <label for='location_longitude'>LONG</label>\n
-								 	<input id='location-longitude' name='location_longitude' type='text' value='".$new_location['location_longitude']."' size='40'  />\n
-								 </div>\n
+							     <div class='form-field' style='display:none;'>
+								   <label for='location_latitude'>LAT</label>
+								 	<input id='location-latitude' name='location_latitude' type='text' value='<?php echo $new_location['location_latitude'] ?>' size='40'  />
+								 </div>
+								 <div class='form-field' style='display:none;'>
+								   <label for='location_longitude'>LONG</label>
+								 	<input id='location-longitude' name='location_longitude' type='text' value='<?php echo $new_location['location_longitude'] ?>' size='40'  />
+								 </div>
 								
-								 <div class='form-field'>\n
-								   <label for='location_image'>".__('Location image', 'dbem')."</label>\n
-								 	<input id='location-image' name='location_image' id='location_image' type='file' size='35' />\n
-								    <p>".__('Select an image to upload', 'dbem').".</p>\n
-								 </div>\n";
-									$gmap_is_active = get_option('dbem_gmap_is_active'); 
-									
-                 	if ($gmap_is_active) {
-							 		 	$table .= "<div id='map-not-found' style='width: 450px; float: right; font-size: 140%; text-align: center; margin-top: 100px; display: hide'><p>".__('Map not found')."</p></div>";
-								 		$table .= "<div id='event-map' style='width: 450px; height: 300px; background: green; float: right; display: hide; margin-right:8px'></div>";   
-							}   
-								$table .= "
-								 	<div class='form-field'>\n
-								 	<label for='location_description'>".__('Location description', 'dbem')."</label>\n
-								 	<textarea name='location_description' id='location_description' rows='5' cols='40'>".$new_location['location_description']."</textarea>\n
-								    <p>".__('A description of the location. You may include any kind of info here.', 'dbem')."</p>\n
-								 </div>\n
-               
-								 <p class='submit'><input type='submit' class='button' name='submit' value='".__('Add location', 'dbem')."' /></p>\n
-							 </form>\n   
+								 <div class='form-field'>
+								   <label for='location_image'><?php echo __('Location image', 'dbem') ?></label>
+								 	<input id='location-image' name='location_image' id='location_image' type='file' size='35' />
+								    <p><?php echo __('Select an image to upload', 'dbem') ?>.</p>
+								 </div>
+								 <?php 
+									$gmap_is_active = get_option('dbem_gmap_is_active');
+                 					if ($gmap_is_active) :
+								 ?>	
+						 		 	<div id='map-not-found' style='width: 450px; font-size: 140%; text-align: center; margin-top: 20px; display: hide'><p><?php echo __('Map not found') ?></p></div>
+							 		<div id='event-map' style='width: 450px; height: 300px; background: green; display: hide; margin-right:8px'></div>
+							 		<br style='clear:both;' />   
+								 <?php endif; ?>
+									<div id="poststuff">
+										<label for='location_description'><?php _e('Location description', 'dbem') ?></label>
+										<div class="inside">
+											<div id="<?php echo user_can_richedit() ? 'postdivrich' : 'postdiv'; ?>" class="postarea">
+												<?php the_editor($new_location['location_description']); ?>
+											</div>
+											<?php _e('A description of the Location. You may include any kind of info here.', 'dbem') ?>
+										</div>
+									</div>               
+								 <p class='submit'><input type='submit' class='button' name='submit' value='<?php echo __('Add location', 'dbem') ?>' /></p>
+							 </form>   
 
-					  </div>\n
-					</div>\n 
-				</div>  <?-- end col-left -->\n   
-			</div>\n 
-  	</div>\n";                                                
-
-	echo $table;  
+					  </div>
+					</div> 
+				</div>  <!-- end col-left -->   
+			</div> 
+  	</div>
+  	<?php
+	echo ob_get_clean();  
 }
 
 	 
@@ -361,8 +366,7 @@ function dbem_get_location($location_id) {
 
 function dbem_image_url_for_location_id($location_id) {
 	$file_name= ABSPATH.IMAGE_UPLOAD_DIR."/location-".$location_id;
-  $mime_types = array('gif','jpg','png');
-	foreach($mime_types as $type) { 
+  $mime_types = array('gif','jpg','png');foreach($mime_types as $type) { 
 		$file_path = "$file_name.$type";
 		if (file_exists($file_path)) {
 			$result = get_bloginfo('url')."/".IMAGE_UPLOAD_DIR."/location-$location_id.$type";

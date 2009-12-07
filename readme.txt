@@ -3,8 +3,8 @@ Contributors: nutsmuggler, netweblogic
 Donate link: http://davidebenini.it  
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.7   
-Tested up to: 2.8.0   
-Stable tag: 2.0rc2   
+Tested up to: 2.8.4   
+Stable tag: 2.0rc3   
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
