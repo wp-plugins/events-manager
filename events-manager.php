@@ -120,17 +120,17 @@ function dbem_install() {
 	dbem_create_events_table();
 	dbem_create_recurrence_table();  
 	dbem_create_locations_table();
-  dbem_create_bookings_table();
-  dbem_create_people_table();
+  	dbem_create_bookings_table();
+  	dbem_create_people_table();
 	dbem_add_options();
 	/* Marcus Begin Edit */
-		dbem_create_categories_table();
+	dbem_create_categories_table();
 	/* Marcus End Edit */
-  // if ANY 1.0 option is there  AND the version options hasn't been set yet THEN launch the updat script 
+  	// if ANY 1.0 option is there  AND the version options hasn't been set yet THEN launch the updat script 
 	if (get_option('dbem_events_page') && !get_option('dbem_version')) 
 		dbem_migrate_old_events();
   
-  update_option('dbem_version', 2); 
+  	update_option('dbem_version', 2); 
 	// Create events page if necessary
  	$events_page_id = get_option('dbem_events_page')  ;
 	if ($events_page_id != "" ) {
@@ -151,7 +151,6 @@ function dbem_install() {
 }
 
 function dbem_create_events_table() {
-	
 	global  $wpdb, $user_level;
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php'); 
 	
@@ -190,7 +189,7 @@ function dbem_create_events_table() {
 			location_id mediumint(9) NOT NULL,
 			recurrence_id mediumint(9) NULL,
   			event_category_id int(11) default NULL,
-  			event_attributes TEXT NULL 
+  			event_attributes text NULL, 
 			UNIQUE KEY (event_id)
 			);";
 		/* Marcus End Edit */
