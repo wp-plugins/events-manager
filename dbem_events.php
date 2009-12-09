@@ -779,7 +779,7 @@ function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset
 		$where = " WHERE " . $where;
 	
 	$sql = "SELECT event_id, 
-			    event_name, 
+			   event_name, 
 			  	DATE_FORMAT(event_start_time, '%e') AS 'event_day',
 			  	DATE_FORMAT(event_start_time, '%Y') AS 'event_year',
 			  	DATE_FORMAT(event_start_time, '%k') AS 'event_hh',
@@ -789,20 +789,20 @@ function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset
 			  	DATE_FORMAT(event_end_time, '%k') AS 'event_end_hh',
 			  	DATE_FORMAT(event_end_time, '%i') AS 'event_end_mm',
 			  	event_start_date,
-					event_end_date,
-					event_start_time,
-					event_end_time,
-	 				event_notes, 
-					event_rsvp,
-					recurrence_id, 
-					location_id, 
-					event_contactperson_id,
-					event_attributes
-					FROM $events_table   
-					$where
-					ORDER BY event_start_date $order , event_start_time $order
-					$limit 
-					$offset";
+				event_end_date,
+				event_start_time,
+				event_end_time,
+	 			event_notes, 
+				event_rsvp,
+				recurrence_id, 
+				location_id, 
+				event_contactperson_id,
+				event_attributes
+				FROM $events_table   
+				$where
+				ORDER BY event_start_date $order , event_start_time $order
+				$limit 
+				$offset";
 	$wpdb->show_errors = true;
 	$events = $wpdb->get_results ( $sql, ARRAY_A );
 	if (! empty ( $events )) {
@@ -1038,6 +1038,11 @@ function dbem_events_table($events, $limit, $title) {
 			?>"><?php
 			echo ($event ['event_name']);
 			?></a></strong>
+			<?
+			$category = dbem_get_category($event ['event_id']);
+			if($category)
+				echo "<br/><span title='".__ ( 'Category', 'dbem' ).": ".$category['category_name']."'>".$category['category_name']."</span>";
+			?> 
 			</td>
 			<td>
   	    	<?php /* Marcus Begin Edit */			?>
@@ -1383,7 +1388,7 @@ function dbem_event_form($event, $title, $element) {
 								</div>
 							</div>
 						</div>
-						<? 
+						<?php
 	/* Marcus Begin Edit */
 	//adding the category selection box
 	?>
@@ -1416,12 +1421,12 @@ function dbem_event_form($event, $title, $element) {
 							</div>
 						</div>
 					</div>
-					<? /* Marcus End Edit */ ?>
+					<?php/* Marcus End Edit */ ?>
 				</div>
 				<!-- END OF SIDEBAR -->
 				<div id="post-body">
 					<div id="post-body-content">
-			<? /* Marcus End Edit */ ?>
+			<?php/* Marcus End Edit */ ?>
 						<div id="event_name" class="stuffbox">
 							<h3>
 								<?php
@@ -1605,17 +1610,17 @@ function dbem_event_form($event, $title, $element) {
 			?>
 							</h3>
 							<div class="inside">
-								<? /* Marcus Begin Edit */ ?>
+								<?php/* Marcus Begin Edit */ ?>
 								<div id="<?php echo user_can_richedit() ? 'postdivrich' : 'postdiv'; ?>" class="postarea">
 									<?php the_editor($event [$pref . 'notes']); ?>
 								</div>
-								<? /* Marcus End Edit */ ?>
+								<?php/* Marcus End Edit */ ?>
 								<br />
 								<?php
 			_e ( 'Details about the event', 'dbem' )?>
 							</div>
 						</div>
-						<? /* Marcus Begin Edit */ ?>
+						<?php/* Marcus Begin Edit */ ?>
 						<div id="event_attributes" class="postbox">
 							<h3>
 								<?php
@@ -1626,7 +1631,7 @@ function dbem_event_form($event, $title, $element) {
 								<?php dbem_attributes_form($event) ?>
 							</div>
 						</div>
-						<? /* Marcus End Edit */ ?>
+						<?php/* Marcus End Edit */ ?>
 					</div>
 					<p class="submit">
 						<input type="submit" name="events_update"
