@@ -184,4 +184,5 @@ Added a new placeholder format to deal with the end date. You can now wrap dates
 Properly added Marcus Skies as a contributor
 Fixed the time bug
 Added a full calendar
-Now weeks starts according to WP settings
+Now weeks starts according to WP settings       
+Moved the hide page option up for better access

@@ -221,7 +221,7 @@ function dbem_create_events_table() {
 					VALUES ('6 Nations, Italy VS Ireland', '$in_one_year','22:00:00', '24:00:00', 3)");
 	} else {  
 		// eventual maybe_add_column() for later versions
-	  maybe_add_column($table_name, 'event_start_date', "alter table $table_name add event_start_date date NOT NULL;"); 
+		maybe_add_column($table_name, 'event_start_date', "alter table $table_name add event_start_date date NOT NULL;"); 
 		maybe_add_column($table_name, 'event_end_date', "alter table $table_name add event_end_date date NULL;");
 		maybe_add_column($table_name, 'event_start_time', "alter table $table_name add event_start_time time NOT NULL;"); 
 		maybe_add_column($table_name, 'event_end_time', "alter table $table_name add event_end_time time NOT NULL;"); 
@@ -313,11 +313,13 @@ function dbem_create_bookings_table() {
 			event_id tinyint NOT NULL,
 			person_id tinyint NOT NULL, 
 			booking_seats tinyint NOT NULL,
-			UNIQUE KEY (booking_id)
+			booking_comment text DEFAULT NULL,
+			UNIQUE KEY  (booking_id)
 			);";
 		require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 		dbDelta($sql);
-		
+	} else {
+		maybe_add_column($table_name, 'booking_comment', "ALTER TABLE $table_name add booking_comment text DEFAULT NULL;"); 
 	}
 }
 

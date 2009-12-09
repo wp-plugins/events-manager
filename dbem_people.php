@@ -90,7 +90,8 @@ function dbem_printable_booking_report($event_id) {
 					<th scope='col'><?php _e('Name', 'dbem')?></th>
 					<th scope='col'><?php _e('E-mail', 'dbem')?></th>
 					<th scope='col'><?php _e('Phone number', 'dbem')?></th> 
-					<th scope='col'><?php _e('Seats', 'dbem')?></th> 
+					<th scope='col'><?php _e('Seats', 'dbem')?></th>
+					<th scope='col'><?php _e('Comment', 'dbem')?></th> 
 				<?php
 				foreach($bookings as $booking) {       ?>
 				<tr>
@@ -98,16 +99,17 @@ function dbem_printable_booking_report($event_id) {
 					<td><?php echo $booking['person_name']?></td> 
 					<td><?php echo $booking['person_email']?></td>
 					<td><?php echo $booking['person_phone']?></td>
-					<td class='seats-number'><?php echo $booking['booking_seats']?></td> 
+					<td class='seats-number'><?php echo $booking['booking_seats']?></td>
+					<td><?=$booking['booking_comment'] ?></td> 
 				</tr>
-			   <?php } ?>
+			   	<?php } ?>
 			  	<tr id='booked-seats'>
-					<td colspan='2'>&nbsp;</td>
+					<td colspan='3'>&nbsp;</td>
 					<td class='total-label'><?php _e('Booked', 'dbem')?>:</td>
 					<td class='seats-number'><?php echo $booked_seats; ?></td>
 				</tr>
 				<tr id='available-seats'>
-					<td colspan='2'>&nbsp;</td> 
+					<td colspan='3'>&nbsp;</td> 
 					<td class='total-label'><?php _e('Available', 'dbem')?>:</td>  
 					<td class='seats-number'><?php echo $available_seats; ?></td>
 				</tr>
