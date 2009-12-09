@@ -230,6 +230,7 @@ function dbem_create_events_table() {
 		maybe_add_column($table_name, 'location_id', "alter table $table_name add location_id mediumint(9) NOT NULL;");    
 		maybe_add_column($table_name, 'recurrence_id', "alter table $table_name add recurrence_id mediumint(9) NULL;"); 
 		maybe_add_column($table_name, 'event_contactperson_id', "alter table $table_name add event_contactperson_id mediumint(9) NULL;");
+		maybe_add_column($table_name, 'event_attributes', "alter table $table_name add event_attributes text NULL;"); 
 		
 		// Fix buggy columns
 		$wpdb->query("ALTER TABLE $table_name MODIFY event_notes text ;");
