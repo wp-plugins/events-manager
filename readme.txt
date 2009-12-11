@@ -179,10 +179,16 @@ Added shortcode option in event_list, so category=ID is an option now
 Added #_CATEGORY as a placeholder
 Added the TinyMCE of wordpress to the description of the event. That solves the problem of adding pictures!
 Added an end date option always on for multi-day events.
-Added a new placeholder format to deal with the end date. You can now wrap dates in #_{} or #@_{} . The values inside will have a format of date(). For example #_{Y-m-d} #@_{ \u\n\t\i\l Y-m-d} will show as "2009-03-23 until 2009-03-28" (only for end dates with no recurrence) or just "2009-03-23" for normal events.  
+Added a new placeholder format to deal with the end date. You can now wrap dates in #_{} or #@_{} . The values inside will have a format of date(). For example #_{Y-m-d} #@_{ \u\n\t\i\l Y-m-d} will show as "2009-03-23 until 2009-03-28" (only for end dates with no recurrence) or just "2009-03-23" for normal events.
+  
 2.1     
-Properly added Marcus Skies as a contributor
+Properly added Marcus Sykes as a contributor  
+Removed php short tags
 Fixed the time bug
 Added a full calendar
 Now weeks starts according to WP settings       
-Moved the hide page option up for better access
+Moved the hide page option up for better access  
+Attributes column was not created when the plugin was upgraded, fixed
+event_time not taken into consideration in ordering events, fixed
+categories are now displayed in the events table
+added comment field to the RSVP form and #_COMMENT placeholder in RSVP email templates
