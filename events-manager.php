@@ -57,7 +57,9 @@ define("IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
 define('DEFAULT_IMAGE_MAX_WIDTH', 700);  
 define('DEFAULT_IMAGE_MAX_HEIGHT', 700);  
 define('DEFAULT_IMAGE_MAX_SIZE', 204800); 
-define('DEFAULT_FULL_CALENDAR_EVENT_FORMAT', '<li>#_LINKEDNAME</li>');
+define('DEFAULT_FULL_CALENDAR_EVENT_FORMAT', '<li>#_LINKEDNAME</li>');    
+define('DEFAULT_SMALL_CALENDAR_EVENT_TITLE_FORMAT', "#_NAME" );
+define('DEFAULT_SMALL_CALENDAR_EVENT_TITLE_SEPARATOR', ", ");
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, a log will show in admin pages
 define('DEBUG', false);     
@@ -417,7 +419,9 @@ function dbem_add_options() {
 	'dbem_image_max_width' => DEFAULT_IMAGE_MAX_WIDTH,
 	'dbem_image_max_height' => DEFAULT_IMAGE_MAX_HEIGHT,
 	'dbem_image_max_size' => DEFAULT_IMAGE_MAX_SIZE,
-	'dbem_full_calendar_event_format' => DEFAULT_FULL_CALENDAR_EVENT_FORMAT,   
+	'dbem_full_calendar_event_format' => DEFAULT_FULL_CALENDAR_EVENT_FORMAT,
+	'dbem_small_calendar_event_title_format' => DEFAULT_SMALL_CALENDAR_EVENT_TITLE_FORMAT,
+	'dbem_small_calendar_event_title_separator' => DEFAULT_SMALL_CALENDAR_EVENT_TITLE_SEPARATOR, 
 	'dbem_hello_to_user' => 1);
 	
 	foreach($dbem_options as $key => $value)

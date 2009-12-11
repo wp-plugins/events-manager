@@ -296,9 +296,12 @@ function dbem_options_subpanel() {
    <h3><?php _e ( 'Calendar format', 'dbem' ); ?></h3>
 	<table class="form-table">   
 <?php
-  dbem_options_input_text ( __ ( 'Full calendar events format', 'dbem' ), 'dbem_full_calendar_event_format', __ ( 'The format of each event when displayed in the full calendar. Remember to include <code>li</code> tags before and after the event.', 'dbem' ) );        
+    dbem_options_input_text ( __ ( 'Small calendar title', 'dbem' ), 'dbem_small_calendar_event_title_format', __ ( 'The format of the title that appears whne hovering on an eventful calendar day.', 'dbem' ) );
+	dbem_options_input_text ( __ ( 'Small calendar title separator', 'dbem' ), 'dbem_small_calendar_event_title_separator', __ ( 'The separator appearing on the above title when more than one events are taking place on the same day.', 'dbem' ) );         
+    dbem_options_input_text ( __ ( 'Full calendar events format', 'dbem' ), 'dbem_full_calendar_event_format', __ ( 'The format of each event when displayed in the full calendar. Remember to include <code>li</code> tags before and after the event.', 'dbem' ) );        
 
 	?>
+	
 			</table>
 
 <h3><?php

@@ -268,13 +268,20 @@ function dbem_get_calendar($args="") {
 	}         
    
 	$events_page = get_option('dbem_events_page');
-	$event_format = get_option('dbem_full_calendar_event_format');
+	$event_format = get_option('dbem_full_calendar_event_format'); 
+	$event_title_format = get_option('dbem_small_calendar_event_title_format');
+	$event_title_separator_format = get_option('dbem_small_calendar_event_title_separator');
 	$cells = array() ;
 	foreach($eventful_days as $day_key => $events) {
 		$cells[$day_key]['day'] = $events[0]['event_day'];  
 		$cells[$day_key]['month'] = $events[0]['event_month_n'];
-		$cells[$day_key]['date'] = $events[0]['event_start_date']; 
-		$cells[$day_key]['cell'] = "<a href='?page_id=$events_page&amp;calendar_day=".$events[0]['event_start_date']."'>".$events[0]['event_day']."</a>";
+		$cells[$day_key]['date'] = $events[0]['event_start_date'];
+		$events_titles = array();
+		foreach($events as $event) { 
+			$events_titles[] = dbem_replace_placeholders($event_title_format, $event);
+		}   
+		$link_title = implode($event_title_separator_format,$events_titles);
+		$cells[$day_key]['cell'] = "<a title='$link_title'   href='?page_id=$events_page&amp;calendar_day=".$events[0]['event_start_date']."'>".$events[0]['event_day']."</a>";
 		if ($full) {
 			$cells[$day_key]['cell'] .= "<ul>";
 		
