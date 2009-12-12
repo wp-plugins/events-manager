@@ -191,4 +191,5 @@ Moved the hide page option up for better access
 Attributes column was not created when the plugin was upgraded, fixed
 event_time not taken into consideration in ordering events, fixed
 categories are now displayed in the events table
-added comment field to the RSVP form and #_COMMENT placeholder in RSVP email templates
+added comment field to the RSVP form and #_COMMENT placeholder in RSVP email templates 
+added customizable title to small calendar
