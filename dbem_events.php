@@ -285,7 +285,10 @@ function dbem_options_subpanel() {
 <table class="form-table">
  	<?php
  	/* Marcus Begin Edit */
+	dbem_options_textarea ( __ ( 'Default event list format header', 'dbem' ), 'dbem_event_list_item_format_header', __ ( 'This content will appear just above your code for the default event list format. Default is <code>&lt;ul class=\'dbem_events_list\'&gt;</code>', 'dbem' ) );
  	dbem_options_textarea ( __ ( 'Default event list format', 'dbem' ), 'dbem_event_list_item_format', __ ( 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_EXCERPT</code> to show <code>#_NOTES</code> until you place a &lt;!&ndash;&ndash; more &ndash;&ndash;&gt; marker.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> You can also create a date format without prepending <code>#</code> by wrapping it in #_{} or #@_{} (e.g. <code>#_{d/m/Y}</code>). If there is no end date, the value is not shown.<br/> Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.<br/>For custom attributes, you use <code>#_ATT{key}{alternative text}</code>, the second braces are optional and will appear if the attribute is not defined or left blank for that event. This key will appear as an option when adding attributes to your event.', 'dbem' ) );
+	dbem_options_textarea ( __ ( 'Default event list format footer', 'dbem' ), 'dbem_event_list_item_format_footer', __ ( 'This content will appear just below your code for the default event list format. Default is <code>&lt;/ul&gt;</code>', 'dbem' ) );
+
  	/* Marcus End Edit */
 	dbem_options_input_text ( __ ( 'Single event page title format', 'dbem' ), 'dbem_event_page_title_format', __ ( 'The format of a single event page title. Follow the previous formatting instructions.', 'dbem' ) );
 	dbem_options_textarea ( __ ( 'Default single event format', 'dbem' ), 'dbem_single_event_format', __ ( 'The format of a single event page.<br/>Follow the previous formatting instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use <code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, <code>#_CONTACTPHONE</code> to insert respectively the name, e-mail address and phone number of the designated contact person. <br/>Use <code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond to your events reserving one or more places (RSVP).<br/> Use <code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting their name and e-mail address, can remove their bookings.', 'dbem' ) );
@@ -436,7 +439,6 @@ function dbem_events_page_content() {
 		$page_body = dbem_replace_placeholders ( $single_event_format, $event, 'stop' );
 		return $page_body;
 	} elseif (isset ( $_REQUEST ['calendar_day'] ) && $_REQUEST ['calendar_day'] != '') {
-		
 		$date = $_REQUEST ['calendar_day'];
 		$events_N = dbem_events_count_for ( $date );
 		// $_GET['scope'] ? $scope = $_GET['scope']: $scope =  "future";   
@@ -445,8 +447,12 @@ function dbem_events_page_content() {
 		if ($events_N > 1) {
 			$_GET ['calendar_day'] ? $scope = $_GET ['calendar_day'] : $scope = "future";
 			$stored_format = get_option ( 'dbem_event_list_item_format' );
-			$events_body = "<ul class='dbem_events_list'>" . dbem_get_events_list ( 10, $scope, "ASC", $stored_format, $false ) . "</ul>";
-			return $events_body;
+			//Add headers and footers to the events list
+			$single_event_format_header = get_option ( 'dbem_event_list_item_format_header' );
+			$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='dbem_events_list'>";
+			$single_event_format_footer = get_option ( 'dbem_event_list_item_format_footer' );
+			$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
+			return $single_event_format_header .  dbem_get_events_list ( 10, $scope, "ASC", $stored_format, $false ) . $single_event_format_footer;
 		} else {
 			$events = dbem_get_events ( "", $_REQUEST ['calendar_day'] );
 			$event = $events [0];
@@ -459,10 +465,15 @@ function dbem_events_page_content() {
 		// Multiple events page
 		$_GET ['scope'] ? $scope = $_GET ['scope'] : $scope = "future";
 		$stored_format = get_option ( 'dbem_event_list_item_format' );
-		if (get_option ( 'dbem_display_calendar_in_events_page' ))
+		if (get_option ( 'dbem_display_calendar_in_events_page' )){
 			$events_body = dbem_get_calendar ('full=1');
-		else
-			$events_body = $events_body = "<ul class='dbem_events_list'>" . dbem_get_events_list ( 10, $scope, "ASC", $stored_format, $false ) . "</ul>";
+		}else{
+			$single_event_format_header = get_option ( 'dbem_event_list_item_format_header' );
+			$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='dbem_events_list'>";
+			$single_event_format_footer = get_option ( 'dbem_event_list_item_format_footer' );
+			$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
+			$events_body = $single_event_format_header . dbem_get_events_list ( 10, $scope, "ASC", $stored_format, $false ) . $single_event_format_footer;
+		}
 		return $events_body;
 	
 	}
@@ -635,16 +646,24 @@ function dbem_get_events_list($limit = "3", $scope = "future", $order = "ASC", $
 		$scope = "future";
 	if ($order != "DESC")
 		$order = "ASC";
-	if ($format == '')
+	if ($format == ''){
+		$orig_format = true;
 		$format = get_option ( 'dbem_event_list_item_format' );
+	}
 	$events = dbem_get_events ( $limit, $scope, $order, '', '', $category );
 	$output = "";
 	if (! empty ( $events )) {
 		foreach ( $events as $event ) {
 			//  $localised_date = mysql2date("j M Y", $event->event_time);
-			
-
 			$output .= dbem_replace_placeholders ( $format, $event );
+		}
+		//Add headers and footers to output
+		if( $orig_format ){
+			$single_event_format_header = get_option ( 'dbem_event_list_item_format_header' );
+			$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='dbem_events_list'>";
+			$single_event_format_footer = get_option ( 'dbem_event_list_item_format_footer' );
+			$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
+			$output =  $single_event_format_header .  $output . $single_event_format_footer;
 		}
 	} else {
 		$output = "<li class='dbem-no-events'>" . get_option ( 'dbem_no_events_message' ) . "</li>";
@@ -2228,7 +2247,7 @@ function dbem_favorite_menu($actions) {
 ////////////////////////////////////
 // WP 2.7 options registration
 function dbem_options_register() {
-	$options = array ('dbem_events_page', 'dbem_display_calendar_in_events_page', 'dbem_use_event_end', 'dbem_event_list_item_format', 'dbem_event_page_title_format', 'dbem_single_event_format', 'dbem_list_events_page', 'dbem_events_page_title', 'dbem_no_events_message', 'dbem_location_page_title_format', 'dbem_location_baloon_format', 'dbem_single_location_format', 'dbem_location_event_list_item_format', 'dbem_location_no_events_message', 'dbem_gmap_is_active', 'dbem_rss_main_title', 'dbem_rss_main_description', 'dbem_rss_title_format', 'dbem_rss_description_format', 'dbem_gmap_key', 'dbem_map_text_format', 'dbem_rsvp_mail_notify_is_active', 'dbem_contactperson_email_body', 'dbem_respondent_email_body', 'dbem_mail_sender_name', 'dbem_smtp_username', 'dbem_smtp_password', 'dbem_default_contact_person', 'dbem_mail_sender_address', 'dbem_mail_receiver_address', 'dbem_smtp_host', 'dbem_rsvp_mail_send_method', 'dbem_rsvp_mail_port', 'dbem_rsvp_mail_SMTPAuth', 'dbem_image_max_width', 'dbem_image_max_height', 'dbem_image_max_size','dbem_full_calendar_event_format');
+	$options = array ('dbem_events_page', 'dbem_display_calendar_in_events_page', 'dbem_use_event_end', 'dbem_event_list_item_format_header', 'dbem_event_list_item_format', 'dbem_event_list_item_format_footer', 'dbem_event_page_title_format', 'dbem_single_event_format', 'dbem_list_events_page', 'dbem_events_page_title', 'dbem_no_events_message', 'dbem_location_page_title_format', 'dbem_location_baloon_format', 'dbem_single_location_format', 'dbem_location_event_list_item_format', 'dbem_location_no_events_message', 'dbem_gmap_is_active', 'dbem_rss_main_title', 'dbem_rss_main_description', 'dbem_rss_title_format', 'dbem_rss_description_format', 'dbem_gmap_key', 'dbem_map_text_format', 'dbem_rsvp_mail_notify_is_active', 'dbem_contactperson_email_body', 'dbem_respondent_email_body', 'dbem_mail_sender_name', 'dbem_smtp_username', 'dbem_smtp_password', 'dbem_default_contact_person', 'dbem_mail_sender_address', 'dbem_mail_receiver_address', 'dbem_smtp_host', 'dbem_rsvp_mail_send_method', 'dbem_rsvp_mail_port', 'dbem_rsvp_mail_SMTPAuth', 'dbem_image_max_width', 'dbem_image_max_height', 'dbem_image_max_size','dbem_full_calendar_event_format');
 	foreach ( $options as $opt ) {
 		register_setting ( 'dbem-options', $opt, '' );
 	}

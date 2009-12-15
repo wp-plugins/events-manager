@@ -468,7 +468,7 @@ function dbem_create_events_submenu () {
 function dbem_replace_placeholders($format, $event, $target="html") {
  	$event_string = $format;
 	preg_match_all("/#@?_?[A-Za-z0-9]+/", $format, $placeholders);
-	foreach($placeholders[0] as $result) {    
+	foreach($placeholders[0] as $result) {
 		// echo "RESULT: $result <br>";
 		// matches alla fields placeholder  
 		//TODO CUSTOM FIX FOR Brian
@@ -574,9 +574,9 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 						$field_value = $matches[0];
 						$field_value = apply_filters('dbem_notes_excerpt', $field_value);
 					}else{
-						//$field_value = apply_filters('dbem_notes', $field_value);
+						$field_value = apply_filters('dbem_notes', $field_value);
 					}
-					$field_value = apply_filters('the_content', $field_value);
+					//$field_value = apply_filters('the_content', $field_value); - chucks a wobbly if we do this.
 				}else{
 				  if ($target == "map"){
 					$field_value = apply_filters('dbem_notes_map', $field_value);
@@ -698,9 +698,9 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 				$event_string = str_replace($result, $category['category_name'], $event_string );
 			}
 		/* Marcus End Edit */
-		
 		     
 	}
+		     
 	/* Marcus Begin Edit */
 	preg_match_all("/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/", $format, $results);
 	foreach($results[0] as $result) {
