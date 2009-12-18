@@ -481,7 +481,7 @@ function dbem_events_page_content() {
 function dbem_events_count_for($date) {
 	global $wpdb;
 	$table_name = $wpdb->prefix . EVENTS_TBNAME;
-	$sql = "SELECT COUNT(*) FROM  $table_name WHERE event_start_date  like '$date';";
+	$sql = "SELECT COUNT(*) FROM  $table_name WHERE (event_start_date  like '$date') OR (event_start_date <= '$date' AND event_end_date >= '$date');";
 	return $wpdb->get_var ( $sql );
 }
 
@@ -767,7 +767,8 @@ function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset
 	
 	$conditions = array ();
 	if (preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope )) {
-		$conditions [] = " event_start_date like '$scope'";
+		//$conditions [] = " event_start_date like '$scope'";
+		$conditions [] = " (event_start_date  like '$scope') OR (event_start_date <= '$scope' AND event_end_date >= '$scope')";
 	} else {
 		if (($scope != "past") && ($scope != "all"))
 			$scope = "future";

@@ -1,10 +1,12 @@
 <?php
 function dbem_get_calendar_shortcode($atts) { 
 	extract(shortcode_atts(array(
+			'full' => 0,
 			'month' => '',
 			'year' => '',
+			'long_events' => 0
 				), $atts)); 
-	$result = dbem_get_calendar("month={$month}&year={$year}&echo=0");
+	$result = dbem_get_calendar("full={$full}&month={$month}&year={$year}&echo=0&long_events={$long_events}");
 	return $result;
 }    
 add_shortcode('events_calendar', 'dbem_get_calendar_shortcode');
@@ -13,10 +15,12 @@ function dbem_get_calendar($args="") {
 	$defaults = array(
 		'full' => 0,
 		'month' => '',
-		'echo' => 1
+		'echo' => 1,
+		'long_events' => 0
 	);           
 	$r = wp_parse_args( $args, $defaults );
-	extract( $r, EXTR_SKIP );     
+	print_r($r);
+	extract( $r, EXTR_SKIP );  
 	$full = $r['full'];
 	$month = $r['month']; 
 	$echo = $r['echo'];
@@ -236,17 +240,18 @@ function dbem_get_calendar($args="") {
 	$limit_post=date("Y-m-d", mktime(0,0,0,$month_post, 30 , $year_post));
 	$events_table = $wpdb->prefix.EVENTS_TBNAME; 
 	$sql = "SELECT event_id, 
-									event_name, 
-								 	event_start_date,
-									event_start_time, 
-									DATE_FORMAT(event_start_date, '%d-%m') AS 'event_day_month',
-									DATE_FORMAT(event_start_date, '%w') AS 'event_weekday_n',
-									DATE_FORMAT(event_start_date, '%e') AS 'event_day',
-									DATE_FORMAT(event_start_date, '%c') AS 'event_month_n',
-									DATE_FORMAT(event_start_time, '%Y') AS 'event_year',
-									DATE_FORMAT(event_start_time, '%k') AS 'event_hh',
-									DATE_FORMAT(event_start_time, '%i') AS 'event_mm'
-		FROM $events_table WHERE event_start_date BETWEEN '$limit_pre' AND '$limit_post' ORDER BY event_start_date";               
+		event_name, 
+	 	event_start_date,
+		event_start_time, 
+		event_end_date,
+		DATE_FORMAT(event_start_date, '%w') AS 'event_weekday_n',
+		DATE_FORMAT(event_start_date, '%e') AS 'event_day',
+		DATE_FORMAT(event_start_date, '%c') AS 'event_month_n',
+		DATE_FORMAT(event_start_time, '%Y') AS 'event_year',
+		DATE_FORMAT(event_start_time, '%k') AS 'event_hh',
+		DATE_FORMAT(event_start_time, '%i') AS 'event_mm'
+		FROM $events_table 
+		WHERE (event_start_date BETWEEN '$limit_pre' AND '$limit_post') OR (event_end_date BETWEEN '$limit_pre' AND '$limit_post') ORDER BY event_start_date";      
 
 	$events=$wpdb->get_results($sql, ARRAY_A);   
 
@@ -258,14 +263,32 @@ function dbem_get_calendar($args="") {
   
 	$eventful_days= array();
 	if($events){	
-		foreach($events as $event) {     
-			if($eventful_days[$event['event_day_month']]){
-				$eventful_days[$event['event_day_month']][] = $event; 
-			} else {
-				$eventful_days[$event['event_day_month']] = array($event);  
+		//Go through the events and slot them into the right d-m index
+		foreach($events as $event) {   
+			if( $long_events ){
+				//If $long_events is set then show a date as eventful if there is an multi-day event which runs during that day
+				$event_start_date = strtotime($event['event_start_date']);
+				$event_end_date = strtotime($event['event_end_date']);
+				while( $event_start_date <= $event_end_date ){
+					$event_eventful_date = date('Y-m-d', $event_start_date);
+					//Only show events on the day that they start
+					if( is_array($eventful_days[$event_eventful_date]) ){
+						$eventful_days[$event_eventful_date][] = $event; 
+					} else {
+						$eventful_days[$event_eventful_date] = array($event);  
+					}	
+					$event_start_date += (60*60*24);				
+				}
+			}else{
+				//Only show events on the day that they start
+				if( is_array($eventful_days[$event['event_start_date']]) ){
+					$eventful_days[$event['event_start_date']][] = $event; 
+				} else {
+					$eventful_days[$event['event_start_date']] = array($event);  
+				}
 			}
 		}
-	}         
+	}
    
 	$events_page = get_option('dbem_events_page');
 	$event_format = get_option('dbem_full_calendar_event_format'); 
@@ -273,15 +296,16 @@ function dbem_get_calendar($args="") {
 	$event_title_separator_format = get_option('dbem_small_calendar_event_title_separator');
 	$cells = array() ;
 	foreach($eventful_days as $day_key => $events) {
-		$cells[$day_key]['day'] = $events[0]['event_day'];  
-		$cells[$day_key]['month'] = $events[0]['event_month_n'];
-		$cells[$day_key]['date'] = $events[0]['event_start_date'];
+		//Set the date into the key
+		$event_date = explode('-', $day_key);
+		$cells[$day_key]['day'] = $event_date[2];  
+		$cells[$day_key]['month'] = $event_date[1];
 		$events_titles = array();
 		foreach($events as $event) { 
 			$events_titles[] = dbem_replace_placeholders($event_title_format, $event);
 		}   
 		$link_title = implode($event_title_separator_format,$events_titles);
-		$cells[$day_key]['cell'] = "<a title='$link_title'   href='?page_id=$events_page&amp;calendar_day=".$events[0]['event_start_date']."'>".$events[0]['event_day']."</a>";
+		$cells[$day_key]['cell'] = "<a title='$link_title' href='?page_id=$events_page&amp;calendar_day={$day_key}'>{$cells[$day_key]['day']}</a>";
 		if ($full) {
 			$cells[$day_key]['cell'] .= "<ul>";
 		
@@ -289,7 +313,7 @@ function dbem_get_calendar($args="") {
 				$cells[$day_key]['cell'] .= dbem_replace_placeholders($event_format, $event);
 			} 
 			$cells[$day_key]['cell'] .= "</ul>";  
-   	}
+   		}
 	}      
 
 //	print_r($cells);

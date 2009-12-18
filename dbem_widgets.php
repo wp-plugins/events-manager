@@ -116,22 +116,22 @@ function widget_dbem_calendar($args) {
   extract($args);
 
   $options = get_option("widget_dbem_calendar");
-  if (!is_array( $options ))
-	{
+  
+  if (!is_array( $options )) {
 		$options = array(
-      'title' => _e('calendar','dbem')
-      ); 
-  }      
+			'title' => _e('calendar','dbem'),
+	  		'long_events' => 0
+	    );
+  }     
 
-  echo $before_widget;
+	echo $before_widget;
     echo $before_title;
-      echo $options['title'];
+    echo $options['title'];
     echo $after_title;
-    //Our Widget Content
-    $current_month =  date("m");   
-		
-    dbem_get_calendar($current_month);
-		  	echo $after_widget;
+    //Our Widget Content  
+	$options['month'] = date("m");
+    dbem_get_calendar($options);
+	echo $after_widget;
 }
 
 function dbem_calendar_control() 
@@ -142,13 +142,15 @@ function dbem_calendar_control()
 	{
 		$options = array(
       'title' => 'Calendar',
+	  'long_events' => 0
 	  ); 
   }      
   
   if ($_POST['dbem_calendar-Submit']) 
   {
     $options['title'] = htmlspecialchars($_POST['dbem_calendar-WidgetTitle']);
-   	update_option("widget_dbem_calendar", $options);
+   	$options['long_events'] = ($_POST['dbem_calendar-WidgetLongEvents'] == '1') ? 1:0;
+    update_option("widget_dbem_calendar", $options);
   }
   
 ?>
@@ -156,6 +158,10 @@ function dbem_calendar_control()
     <label for="dbem_calendar-WidgetTitle"><?php _e('Title'); ?>:</label>
     <input type="text" id="dbem_calendar-WidgetTitle" name="dbem_calendar-WidgetTitle" value="<?php echo $options['title'];?>" />
     <input type="hidden" id="dbem_calendar-Submit" name="dbem_calendar-Submit" value="1" />
+  </p>
+  <p>
+    <label for="dbem_calendar-WidgetTitle"><?php _e('Show Long Events?', 'dbem'); ?>:</label>
+    <input type="checkbox" id="dbem_calendar-WidgetLongEvents" name="dbem_calendar-WidgetLongEvents" value="1" <?php echo ($options['long_events']) ? 'checked="checked"':'' ;?>" />
   </p>
 <?php
 }
