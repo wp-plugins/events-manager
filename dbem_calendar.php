@@ -19,7 +19,6 @@ function dbem_get_calendar($args="") {
 		'long_events' => 0
 	);           
 	$r = wp_parse_args( $args, $defaults );
-	print_r($r);
 	extract( $r, EXTR_SKIP );  
 	$full = $r['full'];
 	$month = $r['month']; 
