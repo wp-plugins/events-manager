@@ -317,18 +317,17 @@ function dbem_get_calendar($args="") {
 
 //	print_r($cells);
 
-	if($events){	
+	if($events){
 		foreach($cells as $cell) {     
-			 //echo $cell['cell'];
 			if ($cell['month'] == $month_pre) {
 			 	$calendar=str_replace("<td class='eventless-pre'>".$cell['day']."</td>","<td class='eventful-pre'>".$cell['cell']."</td>",$calendar);
 			} elseif($cell['month'] == $month_post) {
 			 	$calendar=str_replace("<td class='eventless-post'>".$cell['day']."</td>","<td class='eventful-post'>".$cell['cell']."</td>",$calendar);
-			} elseif($cell['day'] == $day) {
+			} elseif($cell['day'] == $day ) {
   			 	$calendar=str_replace("<td class='eventless-today'>".$cell['day']."</td>","<td class='eventful-today'>".$cell['cell']."</td>",$calendar);
-			} else{   
-		    $calendar=str_replace("<td class='eventless'>".$cell['day']."</td>","<td class='eventful'>".$cell['cell']."</td>",$calendar);
-	   	}
+			} elseif( $cell['month'] == $month ){   
+		    	$calendar=str_replace("<td class='eventless'>".$cell['day']."</td>","<td class='eventful'>".$cell['cell']."</td>",$calendar);
+	   		}
 		}
 	}          
 	        
