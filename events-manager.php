@@ -740,5 +740,18 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 function dbem_date_to_unix_time($date) {
 		$unix_time = mktime(0, 0, 0, substr($date,5,2), substr($date,8,2), substr($date,0,4));
 		return $unix_time;   
+}   
+function dbem_sanitize_request( $value ) {
+	if( get_magic_quotes_gpc() ) 
+      $value = stripslashes( $value );
+
+	//check if this function exists
+	if( function_exists( "mysql_real_escape_string" ) ) {
+      $value = mysql_real_escape_string( $value );
+//for PHP version < 4.3.0 use addslashes
+	} else {
+      $value = addslashes( $value );
+	}
+	return $value;
 }
 ?>

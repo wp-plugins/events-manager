@@ -433,7 +433,7 @@ function dbem_events_page_content() {
 	}
 	if (isset ( $_REQUEST ['event_id'] ) && $_REQUEST ['event_id'] != '') {
 		// single event page
-		$event_ID = $_REQUEST ['event_id'];
+		$event_ID = $_REQUEST ['event_id'];    
 		$event = dbem_get_event ( $event_ID );
 		$single_event_format = get_option ( 'dbem_single_event_format' );
 		$page_body = dbem_replace_placeholders ( $single_event_format, $event, 'stop' );

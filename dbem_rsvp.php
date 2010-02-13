@@ -344,16 +344,16 @@ function dbem_email_rsvp_booking(){
 	$booker_body = dbem_replace_placeholders(get_option('dbem_respondent_email_body'), $event);
 	
 	// email specific placeholders
-	$placeholders = array('#_CONTACTPERSON'=> $contact_name, '#_RESPNAME' =>  $bookerName, '#_RESPEMAIL' => $bookerEmail, '#_SPACES' => $bookedSeats,'#_COMMENT' => $bookerComment, '#_RESERVEDSPACES' => $reserved_seats, '#_AVAILABLESPACES' => $available_seats);
+	$placeholders = array('#_CONTACTPERSON'=> $contact_name, '#_RESPNAME' =>  $bookerName, '#_RESPEMAIL' => $bookerEmail, '#_RESPPHONE' => $bookerPhone,   '#_SPACES' => $bookedSeats,'#_COMMENT' => $bookerComment, '#_RESERVEDSPACES' => $reserved_seats, '#_AVAILABLESPACES' => $available_seats);
   
   	foreach($placeholders as $key => $value) {
 		$contact_body= str_replace($key, $value, $contact_body);  
 		$booker_body= str_replace($key, $value, $booker_body);
 	}
-  
+    die($contact_body);
 	$contact_email = dbem_get_user_email($contact_id);
 	dbem_send_mail(__("New booking",'dbem'), $contact_body, $contact_email);
-  dbem_send_mail(__('Reservation confirmed','dbem'),$booker_body, $bookerEmail);
+    dbem_send_mail(__('Reservation confirmed','dbem'),$booker_body, $bookerEmail);
 
 } 
    

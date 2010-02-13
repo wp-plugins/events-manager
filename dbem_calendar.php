@@ -204,7 +204,7 @@ function dbem_get_calendar($args="") {
 			  	if($d == date('j') && $month == date('m') && $year == date('Y')) {
 	        		$calendar .= "<td class='eventless-today'>$d</td>\n"; 
 	        	} else { 
-	         	$calendar .= "<td class='eventless'>$day_link</td>\n"; 
+	         		$calendar .= "<td class='eventless'>$day_link</td>\n"; 
 	        	} 
 	        	} elseif(($outset > 0)) { //if it is NEXT month
 	         	if(($i >= ($num_weeks * 7) - $outset)){ 
@@ -289,7 +289,6 @@ function dbem_get_calendar($args="") {
 		}
 	}
    
-	$events_page = get_option('dbem_events_page');
 	$event_format = get_option('dbem_full_calendar_event_format'); 
 	$event_title_format = get_option('dbem_small_calendar_event_title_format');
 	$event_title_separator_format = get_option('dbem_small_calendar_event_title_separator');
@@ -303,8 +302,17 @@ function dbem_get_calendar($args="") {
 		foreach($events as $event) { 
 			$events_titles[] = dbem_replace_placeholders($event_title_format, $event);
 		}   
-		$link_title = implode($event_title_separator_format,$events_titles);
-		$cells[$day_key]['cell'] = "<a title='$link_title' href='?page_id=$events_page&amp;calendar_day={$day_key}'>{$cells[$day_key]['day']}</a>";
+		$link_title = implode($event_title_separator_format,$events_titles);       
+		
+		$events_page_id = get_option('dbem_events_page');
+		$event_page_link = get_permalink($events_page_id);
+		if (stristr($event_page_link, "?"))
+			$joiner = "&amp;";
+		else
+			$joiner = "?";
+		
+		
+		$cells[$day_key]['cell'] = "<a title='$link_title' href='".$event_page_link.$joiner."calendar_day={$day_key}'>{$cells[$day_key]['day']}</a>";
 		if ($full) {
 			$cells[$day_key]['cell'] .= "<ul>";
 		
@@ -323,7 +331,7 @@ function dbem_get_calendar($args="") {
 			 	$calendar=str_replace("<td class='eventless-pre'>".$cell['day']."</td>","<td class='eventful-pre'>".$cell['cell']."</td>",$calendar);
 			} elseif($cell['month'] == $month_post) {
 			 	$calendar=str_replace("<td class='eventless-post'>".$cell['day']."</td>","<td class='eventful-post'>".$cell['cell']."</td>",$calendar);
-			} elseif($cell['day'] == $day ) {
+			} elseif($cell['day'] == $day && $cell['month'] == date('m')) {
   			 	$calendar=str_replace("<td class='eventless-today'>".$cell['day']."</td>","<td class='eventful-today'>".$cell['cell']."</td>",$calendar);
 			} elseif( $cell['month'] == $month ){   
 		    	$calendar=str_replace("<td class='eventless'>".$cell['day']."</td>","<td class='eventful'>".$cell['cell']."</td>",$calendar);
