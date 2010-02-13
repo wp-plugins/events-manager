@@ -78,7 +78,7 @@ function dbem_get_calendar($args="") {
 	// Build an array for the current days 
 	// in the month 
 	for($i = 1; $i <= $num_days_current; $i++){ 
-	   $num_days_array[] = mktime(0,0,0,date('m'), $i, date('Y')); 
+	   $num_days_array[] = mktime(0,0,0,$month, $i, $year); 
 	}
 	// Build an array for the number of days 
 	// in last month 
@@ -297,7 +297,7 @@ function dbem_get_calendar($args="") {
 	foreach($eventful_days as $day_key => $events) {
 		//Set the date into the key
 		$event_date = explode('-', $day_key);
-		$cells[$day_key]['day'] = $event_date[2];  
+		$cells[$day_key]['day'] = ltrim($event_date[2],'0');  
 		$cells[$day_key]['month'] = $event_date[1];
 		$events_titles = array();
 		foreach($events as $event) { 
@@ -318,7 +318,7 @@ function dbem_get_calendar($args="") {
 //	print_r($cells);
 
 	if($events){
-		foreach($cells as $cell) {     
+		foreach($cells as $cell) {  
 			if ($cell['month'] == $month_pre) {
 			 	$calendar=str_replace("<td class='eventless-pre'>".$cell['day']."</td>","<td class='eventful-pre'>".$cell['cell']."</td>",$calendar);
 			} elseif($cell['month'] == $month_post) {
