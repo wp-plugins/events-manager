@@ -425,7 +425,7 @@ function dbem_events_page_content() {
 	global $wpdb;
 	if (isset ( $_REQUEST ['location_id'] ) && $_REQUEST ['location_id'] |= '') {
 		
-		$location = dbem_get_location ( $_REQUEST ['location_id'] );
+		$location = dbem_get_location ( dbem_sanitize_request($_REQUEST ['location_id']));
 		$single_location_format = get_option ( 'dbem_single_location_format' );
 		$page_body = dbem_replace_locations_placeholders ( $single_location_format, $location );
 		return $page_body;
@@ -433,19 +433,19 @@ function dbem_events_page_content() {
 	}
 	if (isset ( $_REQUEST ['event_id'] ) && $_REQUEST ['event_id'] != '') {
 		// single event page
-		$event_ID = $_REQUEST ['event_id'];    
+		$event_ID = dbem_sanitize_request($_REQUEST ['event_id']);    
 		$event = dbem_get_event ( $event_ID );
 		$single_event_format = get_option ( 'dbem_single_event_format' );
 		$page_body = dbem_replace_placeholders ( $single_event_format, $event, 'stop' );
 		return $page_body;
 	} elseif (isset ( $_REQUEST ['calendar_day'] ) && $_REQUEST ['calendar_day'] != '') {
-		$date = $_REQUEST ['calendar_day'];
+		$date = dbem_sanitize_request($_REQUEST ['calendar_day']);
 		$events_N = dbem_events_count_for ( $date );
-		// $_GET['scope'] ? $scope = $_GET['scope']: $scope =  "future";   
+		// $_GET['scope'] ? $scope = dbem_sanitize_request($_GET['scope']): $scope =  "future";   
 		// $stored_format = get_option('dbem_event_list_item_format');
 		// $events_body  =  dbem_get_events_list(10, $scope, "ASC", $stored_format, $false);  
 		if ($events_N > 1) {
-			$_GET ['calendar_day'] ? $scope = $_GET ['calendar_day'] : $scope = "future";
+			$_GET ['calendar_day'] ? dbem_sanitize_request($scope = $_GET ['calendar_day']) : $scope = "future";
 			$stored_format = get_option ( 'dbem_event_list_item_format' );
 			//Add headers and footers to the events list
 			$single_event_format_header = get_option ( 'dbem_event_list_item_format_header' );
@@ -454,7 +454,7 @@ function dbem_events_page_content() {
 			$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
 			return $single_event_format_header .  dbem_get_events_list ( 10, $scope, "ASC", $stored_format, $false ) . $single_event_format_footer;
 		} else {
-			$events = dbem_get_events ( "", $_REQUEST ['calendar_day'] );
+			$events = dbem_get_events ( "", dbem_sanitize_request($_REQUEST['calendar_day']) );
 			$event = $events [0];
 			$single_event_format = get_option ( 'dbem_single_event_format' );
 			$page_body = dbem_replace_placeholders ( $single_event_format, $event );
@@ -463,7 +463,7 @@ function dbem_events_page_content() {
 		return $events_body;
 	} else {
 		// Multiple events page
-		$_GET ['scope'] ? $scope = $_GET ['scope'] : $scope = "future";
+		$_GET ['scope'] ? $scope = dbem_sanitize_request($_GET ['scope']) : $scope = "future";
 		$stored_format = get_option ( 'dbem_event_list_item_format' );
 		if (get_option ( 'dbem_display_calendar_in_events_page' )){
 			$events_body = dbem_get_calendar ('full=1');
@@ -510,11 +510,11 @@ function dbem_events_page_title($data) {
 	if (($data == $events_page_title) && (is_page ( $events_page_id ))) {
 		if (isset ( $_REQUEST ['calendar_day'] ) && $_REQUEST ['calendar_day'] != '') {
 			
-			$date = $_REQUEST ['calendar_day'];
+			$date = dbem_sanitize_request($_REQUEST ['calendar_day']);
 			$events_N = dbem_events_count_for ( $date );
 			
 			if ($events_N == 1) {
-				$events = dbem_get_events ( "", $_REQUEST ['calendar_day'] );
+				$events = dbem_get_events ( "", dbem_sanitize_request($_REQUEST ['calendar_day']));
 				$event = $events [0];
 				$stored_page_title_format = get_option ( 'dbem_event_page_title_format' );
 				$page_title = dbem_replace_placeholders ( $stored_page_title_format, $event );
@@ -524,14 +524,14 @@ function dbem_events_page_title($data) {
 		}
 		
 		if (isset ( $_REQUEST ['location_id'] ) && $_REQUEST ['location_id'] |= '') {
-			$location = dbem_get_location ( $_REQUEST ['location_id'] );
+			$location = dbem_get_location ( dbem_sanitize_request($_REQUEST ['location_id']) );
 			$stored_page_title_format = get_option ( 'dbem_location_page_title_format' );
 			$page_title = dbem_replace_locations_placeholders ( $stored_page_title_format, $location );
 			return $page_title;
 		}
 		if (isset ( $_REQUEST ['event_id'] ) && $_REQUEST ['event_id'] != '') {
 			// single event page
-			$event_ID = $_REQUEST ['event_id'];
+			$event_ID = dbem_sanitize_request($_REQUEST ['event_id']);
 			$event = dbem_get_event ( $event_ID );
 			$stored_page_title_format = get_option ( 'dbem_event_page_title_format' );
 			$page_title = dbem_replace_placeholders ( $stored_page_title_format, $event );
