@@ -742,7 +742,7 @@ function dbem_is_multiple_events_page() {
 
 // main function querying the database event table
 /* Marcus Begin Edit */
-	//Added extra method option for cateogry
+	//Added extra method option for category
 function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset = "", $location_id = "", $category = '') {
 /* Marcus End Edit */
 	global $wpdb;
@@ -795,6 +795,7 @@ function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset
 		}
 		$conditions [] = "(".implode(' OR', $category_conditions).")";
 	}
+
 	/* Marcus End Edit */
 	
 	$where = implode ( " AND ", $conditions );
@@ -819,7 +820,8 @@ function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset
 				event_rsvp,
 				recurrence_id, 
 				location_id, 
-				event_contactperson_id,
+				event_contactperson_id, 
+				event_category_id
 				event_attributes
 				FROM $events_table   
 				$where
