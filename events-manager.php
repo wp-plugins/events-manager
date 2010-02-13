@@ -748,7 +748,7 @@ function dbem_sanitize_request( $value ) {
 	//check if this function exists
 	if( function_exists( "mysql_real_escape_string" ) ) {
       $value = mysql_real_escape_string( $value );
-//for PHP version < 4.3.0 use addslashes
+	//for PHP version < 4.3.0 use addslashes
 	} else {
       $value = addslashes( $value );
 	}

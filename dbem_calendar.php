@@ -29,13 +29,13 @@ function dbem_get_calendar($args="") {
 
  	global $wpdb;    
 	if(isset($_GET['calmonth']) && $_GET['calmonth'] != '')   {
-		$month =  $_GET['calmonth'] ;
+		$month =  dbem_sanitize_request($_GET['calmonth']) ;
 	} else {
 		if ($month == '')
 			$month = date('m'); 
 	}
 	if(isset($_GET['calyear']) && $_GET['calyear'] != '')   {
-		$year =  $_GET['calyear'] ;
+		$year =  dbem_sanitize_request($_GET['calyear']) ;
 	} else {
 		if ($year == '')
 			$year = date('Y');
@@ -478,8 +478,8 @@ add_action('wp_head', 'dbem_ajaxize_calendar');
 function dbem_filter_calendar_ajax() {
 	if(isset($_GET['ajaxCalendar']) && $_GET['ajaxCalendar'] == true) {
 		(isset($_GET['full']) && $_GET['full'] == 1) ? $full = 1 : $full = 0;
-		$month = $_GET['month']; 
-		$year = $_GET['year'];
+		$month = dbem_sanitize_request($_GET['month']); 
+		$year = dbem_sanitize_request($_GET['year']);
 		dbem_get_calendar('echo=1&full='.$full);
 		die();
 	}
