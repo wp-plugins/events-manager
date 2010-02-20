@@ -956,9 +956,9 @@ function dbem_events_table($events, $limit, $title) {
 		<?php
 	
 	$link = array ();
-	$link ['past'] = "<a href='" . get_bloginfo ( 'url' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=past&amp;order=desc'>" . __ ( 'Past events', 'dbem' ) . "</a>";
-	$link ['all'] = " <a href='" . get_bloginfo ( 'url' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=all&amp;order=desc'>" . __ ( 'All events', 'dbem' ) . "</a>";
-	$link ['future'] = "  <a href='" . get_bloginfo ( 'url' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=future'>" . __ ( 'Future events', 'dbem' ) . "</a>";
+	$link ['past'] = "<a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=past&amp;order=desc'>" . __ ( 'Past events', 'dbem' ) . "</a>";
+	$link ['all'] = " <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=all&amp;order=desc'>" . __ ( 'All events', 'dbem' ) . "</a>";
+	$link ['future'] = "  <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=future'>" . __ ( 'Future events', 'dbem' ) . "</a>";
 	
 	$scope_names = array ();
 	$scope_names ['past'] = __ ( 'Past events', 'dbem' );
@@ -1155,9 +1155,9 @@ function dbem_events_table($events, $limit, $title) {
 			echo "COUNT = $count BACKWARD = $backward  FORWARD = $forward<br> -- OFFSET = $offset";
 		echo "<div id='events-pagination'> ";
 		if ($backward < $events_count)
-			echo "<a style='float: left' href='" . get_bloginfo ( 'url' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=$scope&offset=$backward'>&lt;&lt;</a>";
+			echo "<a style='float: left' href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=$scope&offset=$backward'>&lt;&lt;</a>";
 		if ($forward >= 0)
-			echo "<a style='float: right' href='" . get_bloginfo ( 'url' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=$scope&offset=$forward'>&gt;&gt;</a>";
+			echo "<a style='float: right' href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=$scope&offset=$forward'>&gt;&gt;</a>";
 		echo "</div>";
 	}
 	?>
@@ -1366,7 +1366,7 @@ function dbem_event_form($event, $title, $element) {
 		?>
 								</span></h3>
 							<div class="inside">
-								<p>Contact:
+								<p><?php _e('Contact','dbem'); ?>
 									<?php
 		wp_dropdown_users ( array ('name' => 'event_contactperson_id', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $event ['event_contactperson_id'] ) );
 		?>
@@ -1376,7 +1376,7 @@ function dbem_event_form($event, $title, $element) {
 						<div class="postbox ">
 							<div class="handlediv" title="Fare clic per cambiare."><br />
 							</div>
-							<h3 class='hndle'><span>RSVP</span></h3>
+							<h3 class='hndle'><span><?php _e('RSVP','dbem'); ?></span></h3>
 							<div class="inside">
 								<p>
 									<input id="rsvp-checkbox" name='event_rsvp' value='1' type='checkbox'
@@ -1394,7 +1394,7 @@ function dbem_event_form($event, $title, $element) {
 		?>
 									<p>
 										<?php
-		_e ( 'Spaces' );
+		_e ( 'Spaces','dbem' );
 		?>
 										:
 										<input id="seats-input" type="text"
@@ -1424,12 +1424,12 @@ function dbem_event_form($event, $title, $element) {
 								<?php _e ( 'Category', 'dbem' ); ?>
 								</span></h3>
 							<div class="inside">
-								<p>Category:
+								<p><?php _e ( 'Category:', 'dbem' ); ?> 
 									<select name="event_category_id">
 										<?php
 							$categories = dbem_get_categories();
 							?>
-										<option value="">Select...</option>
+										<option value=""><?php _e ( 'Select...', 'dbem' ); ?>   </option>
 										<?php
 							foreach ( $categories as $category ){
 								$event_category = dbem_get_event_category($event['event_id']);
@@ -1728,17 +1728,17 @@ function dbem_admin_general_script() {
 	?>
 <script
 	src="<?php
-	bloginfo ( 'url' );
+	bloginfo ( 'wpurl' );
 	?>/wp-content/plugins/events-manager/dbem.js"
 	type="text/javascript"></script>
 <script
 	src="<?php
-	bloginfo ( 'url' );
+	bloginfo ( 'wpurl' );
 	?>/wp-content/plugins/events-manager/js/jquery-ui-datepicker/ui.datepicker.js"
 	type="text/javascript"></script>
 <script
 	src="<?php
-	bloginfo ( 'url' );
+	bloginfo ( 'wpurl' );
 	?>/wp-content/plugins/events-manager/js/timeentry/jquery.timeentry.js"
 	type="text/javascript"></script>   
 <?php
@@ -1751,12 +1751,12 @@ function dbem_admin_general_script() {
 	if (preg_match ( "/en|sk|zh|us|uk/", $locale_code ))
 		$show24Hours = 'false';
 	
-	$locale_file = get_bloginfo ( 'url' ) . "/wp-content/plugins/events-manager/js/jquery-ui-datepicker/i18n/ui.datepicker-$locale_code.js";
+	$locale_file = get_bloginfo ( 'wpurl' ) . "/wp-content/plugins/events-manager/js/jquery-ui-datepicker/i18n/ui.datepicker-$locale_code.js";
 	if (url_exists ( $locale_file )) {
 		?>
 <script
 	src="<?php
-		bloginfo ( 'url' );
+		bloginfo ( 'wpurl' );
 		?>/wp-content/plugins/events-manager/js/jquery-ui-datepicker/i18n/ui.datepicker-<?php
 		echo $locale_code;
 		?>.js"
@@ -1769,7 +1769,7 @@ function dbem_admin_general_script() {
 <style type='text/css' media='all'>
 @import
 	"<?php
-	bloginfo ( 'url' );
+	bloginfo ( 'wpurl' );
 	?>/wp-content/plugins/events-manager/js/jquery-ui-datepicker/ui.datepicker.css"
 	;
 </style>
@@ -2142,7 +2142,7 @@ function dbem_rss_link($justurl = 0, $echo = 1, $text = "RSS") {
 	if ($text == '')
 		$text = "RSS";
 	$rss_title = get_option ( 'dbem_events_page_title' );
-	$url = get_bloginfo ( 'url' ) . "/?dbem_rss=main";
+	$url = get_bloginfo ( 'wpurl' ) . "/?dbem_rss=main";
 	$link = "<a href='$url'>$text</a>";
 	
 	if ($justurl)
@@ -2217,12 +2217,12 @@ Weblog Editor 2.0
 add_action ( 'init', 'dbem_rss' );
 function substitute_rss($data) {
 	if (isset ( $_REQUEST ['event_id'] ))
-		return get_bloginfo ( 'url' ) . "/?dbem_rss=main";
+		return get_bloginfo ( 'wpurl' ) . "/?dbem_rss=main";
 	else
 		return $data;
 }
 function dbem_general_css() {
-	$base_url = get_bloginfo ( 'url' );
+	$base_url = get_bloginfo ( 'wpurl' );
 	echo "<link rel='stylesheet' href='$base_url/wp-content/plugins/events-manager/events_manager.css' type='text/css'/>";
 
 }

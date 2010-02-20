@@ -68,7 +68,7 @@ function dbem_printable_booking_report($event_id) {
 	$bookings =  dbem_get_bookings_for($event_id);
 	$available_seats = dbem_get_available_seats($event_id);
 	$booked_seats = dbem_get_booked_seats($event_id);   
-	$stylesheet = get_bloginfo('url')."/wp-content/plugins/events-manager/events_manager.css";
+	$stylesheet = get_bloginfo('wpurl')."/wp-content/plugins/events-manager/events_manager.css";
 	?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">

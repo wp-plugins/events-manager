@@ -185,7 +185,7 @@ Added a new placeholder format to deal with the end date. You can now wrap dates
 Properly added Marcus Sykes as a contributor  
 Added a full calendar  
 Added an #_EDITEVENT placeholder  
-Added Brazialian Portuguese localization
+Added Brazialian Portuguese localization and some translatable strings
 Categories are now displayed in the events table
 Now weeks starts according to WP settings       
 Moved the hide page option up for better access  
@@ -201,3 +201,4 @@ Bugfix: events link in the calendar now work with permalink
 Bugfix: today in next mont was not matched in the calendar 
 Bugfix: _RESPPHONE was not matched in emails
 Bugfix: fixed security vulnerability, which could lead to sql inject attacks
+Bugfix: bloginfo('wpurl') instead of bloginfo('url')
