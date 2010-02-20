@@ -183,13 +183,21 @@ Added a new placeholder format to deal with the end date. You can now wrap dates
   
 2.1     
 Properly added Marcus Sykes as a contributor  
-Removed php short tags
-Fixed the time bug
-Added a full calendar
+Added a full calendar  
+Added an #_EDITEVENT placeholder  
+Added Brazialian Portuguese localization
+Categories are now displayed in the events table
 Now weeks starts according to WP settings       
 Moved the hide page option up for better access  
 Attributes column was not created when the plugin was upgraded, fixed
-event_time not taken into consideration in ordering events, fixed
-categories are now displayed in the events table
-added comment field to the RSVP form and #_COMMENT placeholder in RSVP email templates 
-added customizable title to small calendar
+Added comment field to the RSVP form and #_COMMENT placeholder in RSVP email templates 
+Added customizable title to small calendar      
+Removed php short tags
+Bugfix:there was a time bug
+Bugfix: event_time not taken into consideration in ordering events, fixed
+Bugfix: on calendar for days after 28  on the event calendar view
+Bugfix: for events in days with single digit
+Bugfix: events link in the calendar now work with permalink
+Bugfix: today in next mont was not matched in the calendar 
+Bugfix: _RESPPHONE was not matched in emails
+Bugfix: fixed security vulnerability, which could lead to sql inject attacks

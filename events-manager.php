@@ -478,7 +478,12 @@ function dbem_replace_placeholders($format, $event, $target="html") {
 			$event_string = str_replace($result, $time , $event_string );		
 			} 
 		// END of REMOVE
-		
+		if (preg_match('/#_EDITEVENTLINK/', $result)) { 
+			$link = "";
+			if(is_user_logged_in())
+				$link = "<a href=' ".get_bloginfo('url')."/wp-admin/edit.php?page=events-manager/events-manager.php&action=edit_event&event_id=".$event['event_id']."'>".__('Edit')."</a>";
+			$event_string = str_replace($result, $link , $event_string );		
+		}
 		if (preg_match('/#_24HSTARTTIME/', $result)) { 
 			$time = substr($event['event_start_time'], 0,5);
 			$event_string = str_replace($result, $time , $event_string );		
