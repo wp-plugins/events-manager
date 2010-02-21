@@ -198,7 +198,7 @@ function dbem_locations_edit_layout($location, $message = "") {
 }
 
 function dbem_locations_table_layout($locations, $new_location, $message = "") {
-	$destination = get_bloginfo('url')."/wp-admin/admin.php";
+	$destination = get_bloginfo('wpurl')."/wp-admin/admin.php";
 	$new_location = (is_array($new_location)) ? $new_location : array();
 	ob_start();
 	?>
@@ -243,7 +243,7 @@ function dbem_locations_table_layout($locations, $new_location, $message = "") {
 								<?php foreach ($locations as $this_location) : ?>	
 								<tr>
 									<td><input type='checkbox' class ='row-selector' value='<?php echo $this_location['location_id'] ?>' name='locations[]'/></td>
-									<td><a href='<?php echo get_bloginfo('url') ?>/wp-admin/admin.php?page=locations&amp;action=edit&amp;location_ID=<?php echo $this_location['location_id'] ?>'><?php echo $this_location['location_name'] ?></a></td>
+									<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=locations&amp;action=edit&amp;location_ID=<?php echo $this_location['location_id'] ?>'><?php echo $this_location['location_name'] ?></a></td>
 									<td><?php echo $this_location['location_address'] ?></td>
 									<td><?php echo $this_location['location_town'] ?></td>                         
 								</tr>
@@ -369,7 +369,7 @@ function dbem_image_url_for_location_id($location_id) {
   $mime_types = array('gif','jpg','png');foreach($mime_types as $type) { 
 		$file_path = "$file_name.$type";
 		if (file_exists($file_path)) {
-			$result = get_bloginfo('url')."/".IMAGE_UPLOAD_DIR."/location-$location_id.$type";
+			$result = get_bloginfo('wpurl')."/".IMAGE_UPLOAD_DIR."/location-$location_id.$type";
   		return $result;
 		}
 	}
@@ -510,7 +510,7 @@ function dbem_global_map($atts) {
 		location_infos = '$location_infos'
 	//-->
 	</script>";
-	$result .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_global_map.js' type='text/javascript'></script>";
+	$result .= "<script src='".get_bloginfo('wpurl')."/wp-content/plugins/events-manager/dbem_global_map.js' type='text/javascript'></script>";
 	$result .= "<ol id='dbem_locations_list'></ol>"; 
 	
 	} else {
@@ -601,7 +601,7 @@ function dbem_single_location_map($location) {
   		map_text = '$map_text';
 		//-->
 		</script>";
-		$map_div .= "<script src='".get_bloginfo('url')."/wp-content/plugins/events-manager/dbem_single_location_map.js' type='text/javascript'></script>";
+		$map_div .= "<script src='".get_bloginfo('wpurl')."/wp-content/plugins/events-manager/dbem_single_location_map.js' type='text/javascript'></script>";
 	} else {
 		$map_div = "";
 	}

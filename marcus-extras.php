@@ -136,7 +136,7 @@ function dbem_categories_table_layout($message = "") {
 				<?-- begin col-right -->\n   
 				<div id='col-right'>\n
 			 	 <div class='col-wrap'>\n       
-				 	 <form id='bookings-filter' method='post' action='".get_bloginfo('url')."/wp-admin/admin.php?page=events-manager-categories'>\n
+				 	 <form id='bookings-filter' method='post' action='".get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-categories'>\n
 						<input type='hidden' name='action' value='delete'/>\n";
 						
 						if (count($categories)>0) {
@@ -160,8 +160,8 @@ function dbem_categories_table_layout($message = "") {
 								$table .= "		
 									<tr>\n
 									<td><input type='checkbox' class ='row-selector' value='".$this_category['category_id']."' name='categories[]'/></td>\n
-									<td><a href='".get_bloginfo('url')."/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=".$this_category['category_id']."'>".$this_category['category_id']."</a></td>\n
-									<td><a href='".get_bloginfo('url')."/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=".$this_category['category_id']."'>".$this_category['category_name']."</a></td>\n
+									<td><a href='".get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=".$this_category['category_id']."'>".$this_category['category_id']."</a></td>\n
+									<td><a href='".get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=".$this_category['category_id']."'>".$this_category['category_name']."</a></td>\n
 									</tr>\n
 								";
 							}

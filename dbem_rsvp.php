@@ -192,7 +192,7 @@ function dbem_are_seats_available_for($event_id, $seats) {
 function dbem_bookings_table($event_id) {
 
 	$bookings =  dbem_get_bookings_for($event_id);
-	$destination = get_bloginfo('url')."/wp-admin/edit.php"; 
+	$destination = get_bloginfo('wpurl')."/wp-admin/edit.php"; 
 	$table = "<form id='bookings-filter' method='get' action='$destination'>
 						<input type='hidden' name='page' value='events-manager/events-manager.php'/>
 						<input type='hidden' name='action' value='edit_event'/>
@@ -230,10 +230,10 @@ function dbem_bookings_table($event_id) {
 
 function dbem_bookings_compact_table($event_id) {
 	$bookings =  dbem_get_bookings_for($event_id);
-	$destination = get_bloginfo('url')."/wp-admin/edit.php"; 
+	$destination = get_bloginfo('wpurl')."/wp-admin/edit.php"; 
 	$available_seats = dbem_get_available_seats($event_id);
 	$booked_seats = dbem_get_booked_seats($event_id);   
-	$printable_address = get_bloginfo('url')."/wp-admin/admin.php?page=people&action=printable&event_id=$event_id";
+	$printable_address = get_bloginfo('wpurl')."/wp-admin/admin.php?page=people&action=printable&event_id=$event_id";
 	if (count($bookings)>0) { 
 		$table = 
 		"<div class='wrap'>
