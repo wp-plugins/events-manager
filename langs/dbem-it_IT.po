@@ -2,7 +2,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: events-manager\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2010-02-20 18:12+0100\n"
+"POT-Creation-Date: 2010-03-04 16:46+0100\n"
 "PO-Revision-Date: \n"
 "Last-Translator: Davide Benini <cno@cnomania.it>\n"
 "Language-Team: \n"
@@ -128,8 +128,8 @@ msgid "Edit Event"
 msgstr "Modifica l'evento"
 
 #: dbem_events.php:215
-#: dbem_events.php:1115
-#: dbem_events.php:1349
+#: dbem_events.php:1116
+#: dbem_events.php:1350
 msgid "Reschedule"
 msgstr "Riprogramma"
 
@@ -183,24 +183,24 @@ msgid "Default event list format header"
 msgstr "Formato predefinito dell'header della lista eventi"
 
 #: dbem_events.php:288
-msgid "This content will appear just above your code for the default event list format. Default is <code>&lt;ul class='dbem_events_list'&gt;</code>"
-msgstr "Questo contenuto appare in cima alla lista eventi. Il calore predefinito è <code>&lt;ul class='dbem_events_list'&gt;</code>"
+msgid "This content will appear just above your code for the default event list format. Default is blank"
+msgstr "Questo contenuto appare in fondo alla lista eventi. Il valore predefinito è vuoto."
 
 #: dbem_events.php:289
 msgid "Default event list format"
 msgstr "Formato predefinito della lista eventi"
 
 #: dbem_events.php:289
-msgid "The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_EXCERPT</code> to show <code>#_NOTES</code> until you place a &lt;!&ndash;&ndash; more &ndash;&ndash;&gt; marker.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>Use #_EDITEVENTLINK to add add a link to edit page for the event, which will appear only when a user is logged in.<br/>To insert date and time values, use <a href=\"http://www.php.net/manual/en/function.date.php\">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> You can also create a date format without prepending <code>#</code> by wrapping it in #_{} or #@_{} (e.g. <code>#_{d/m/Y}</code>). If there is no end date, the value is not shown.<br/> Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.<br/>For custom attributes, you use <code>#_ATT{key}{alternative text}</code>, the second braces are optional and will appear if the attribute is not defined or left blank for that event. This key will appear as an option when adding attributes to your event."
-msgstr "Il formato degli eventi in una lista.<br/>Inserire uno o più dei seguenti segnaposto: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Utilizzare <code>#_EXCERPT</code> per mostrare <code>#_NOTES</code> fino al marker &lt;!&ndash;&ndash; more &ndash;&ndash;&gt;.<br/> Utilizzare <code>#_LINKEDNAME</code> per inserire il nome dell'evento con un link alla pagina dell'evento stesso.<br/> Utilizzare <code>#_EVENTPAGEURL</code> per stampare l'URL della pagina dell'evento e creare i propri link personalizzati.<br/> Utilizzare <code>#_LOCATIONPAGEURL</code> per stampare l'URL della pagina del luogo e creare i propri link personalizzati.<br/>Utilizzare #_EDITEVENTLINK per inserire un link alla pagina modifica evento; verrà visualizzato solo se un utente è autenticato. <br/>Per inserire valori temporali, utilizzare i <a href=\"http://www.php.net/manual/it/function.date.php\">caratteri della stringa formato PHP</a> anteponendo il carattere <code>#</code> , ad esempio <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> Per l'ora di fine dell'evento anteporre il carattere <code>#@</code>, ad esempio <code>#@h</code>, <code>#@i</code>, etc. È inoltre possibile creare un formato di data senza inserire <code>#</code> per ogni segnaposto, utilizzando la sintassi in <code>#_{}</code> o <code>#@_{}</code> (es. <code>#_{d/m/Y}</code>). Se la data finale non è impostata, non verrà visualizzata.<br/> <br/> Utilizzare liberamente i tag HTML come <code>li</code>, <code>br</code> e così via.<br/> Per gli attributi personalizzati, utilizzare <code>#_ATT{chiave}{testo alternativo}</code>; il secondo parametro è opzionale e apparirà se l'attributo non è definito o è vuoto. La chiave apparirà tra le opzioni quando si aggiungono attributi all'evento."
+msgid "The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_EXCERPT</code> to show <code>#_NOTES</code> until you place a &lt;!&ndash;&ndash; more &ndash;&ndash;&gt; marker.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>Use <code>#_EDITEVENTLINK</code> to add add a link to edit page for the event, which will appear only when a user is logged in.<br/>To insert date and time values, use <a href=\"http://www.php.net/manual/en/function.date.php\">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> You can also create a date format without prepending <code>#</code> by wrapping it in #_{} or #@_{} (e.g. <code>#_{d/m/Y}</code>). If there is no end date, the value is not shown.<br/>Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.<br/>For custom attributes, you use <code>#_ATT{key}{alternative text}</code>, the second braces are optional and will appear if the attribute is not defined or left blank for that event. This key will appear as an option when adding attributes to your event."
+msgstr "Il formato degli eventi in una lista.<br/>Inserire uno o più dei seguenti segnaposto: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Utilizzare <code>#_EXCERPT</code> per mostrare <code>#_NOTES</code> fino al marker &lt;!&ndash;&ndash; more &ndash;&ndash;&gt;.<br/> Utilizzare <code>#_LINKEDNAME</code> per inserire il nome dell'evento con un link alla pagina dell'evento stesso.<br/> Utilizzare <code>#_EVENTPAGEURL</code> per stampare l'URL della pagina dell'evento e creare i propri link personalizzati.<br/> Utilizzare <code>#_LOCATIONPAGEURL</code> per stampare l'URL della pagina del luogo e creare i propri link personalizzati.<br/>Utilizzare <code>#_EDITEVENTLINK</code> per inserire un link alla pagina modifica evento; verrà visualizzato solo se un utente è autenticato. <br/>Per inserire valori temporali, utilizzare i <a href=\"http://www.php.net/manual/it/function.date.php\">caratteri della stringa formato PHP</a> anteponendo il carattere <code>#</code> , ad esempio <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> Per l'ora di fine dell'evento anteporre il carattere <code>#@</code>, ad esempio <code>#@h</code>, <code>#@i</code>, etc. È inoltre possibile creare un formato di data senza inserire <code>#</code> per ogni segnaposto, utilizzando la sintassi in <code>#_{}</code> o <code>#@_{}</code> (es. <code>#_{d/m/Y}</code>). Se la data finale non è impostata, non verrà visualizzata.<br/> <br/> Utilizzare liberamente i tag HTML come <code>li</code>, <code>br</code> e così via.<br/> Per gli attributi personalizzati, utilizzare <code>#_ATT{chiave}{testo alternativo}</code>; il secondo parametro è opzionale e apparirà se l'attributo non è definito o è vuoto. La chiave apparirà tra le opzioni quando si aggiungono attributi all'evento."
 
 #: dbem_events.php:290
 msgid "Default event list format footer"
 msgstr "Formato predefinito del footer della lista eventi"
 
 #: dbem_events.php:290
-msgid "This content will appear just below your code for the default event list format. Default is <code>&lt;/ul&gt;</code>"
-msgstr "Questo contenuto appare in fondo alla lista eventi. Il calore predefinito è <code>&lt;ul class='dbem_events_list'&gt;</code>"
+msgid "This content will appear just below your code for the default event list format. Default is blank"
+msgstr "Questo contenuto appare in fondo alla lista eventi. Il calore predefinito è vuoto"
 
 #: dbem_events.php:293
 msgid "Single event page title format"
@@ -514,7 +514,7 @@ msgstr "La dimensione massima consentita per le immmagini, in pixel"
 msgid "Save Changes"
 msgstr "Salva le modifiche"
 
-#: dbem_events.php:910
+#: dbem_events.php:911
 #, php-format
 msgid ""
 "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> \r\n"
@@ -527,51 +527,51 @@ msgstr ""
 "\t<p>Dimenticavo, hai dato un'occhiata alla <a href='%s' title='Change settings'>pagina delle Impostazioni</a>? Troverai un sacco di parametri per ottimizzare la visualizzazione degli eventi.</p>\r\n"
 "\t<p>Cosa? Stufo di questa pappardella? Capisco, <a href='%s' title='Non mostrare più questo avviso'>fai clic qui</a> per non vedere più questo avviso.</p>"
 
-#: dbem_events.php:954
+#: dbem_events.php:955
 msgid "New Event ..."
 msgstr "Nuovo evento..."
 
-#: dbem_events.php:959
-#: dbem_events.php:964
+#: dbem_events.php:960
+#: dbem_events.php:965
 #: dbem_widgets.php:90
 msgid "Past events"
 msgstr "Eventi passati"
 
-#: dbem_events.php:960
-#: dbem_events.php:965
+#: dbem_events.php:961
+#: dbem_events.php:966
 #: dbem_widgets.php:89
 msgid "All events"
 msgstr "Tutti gli eventi"
 
-#: dbem_events.php:961
-#: dbem_events.php:966
+#: dbem_events.php:962
+#: dbem_events.php:967
 #: dbem_widgets.php:88
 msgid "Future events"
 msgstr "Eventi futuri"
 
-#: dbem_events.php:974
+#: dbem_events.php:975
 msgid "Total"
 msgstr "Totali"
 
-#: dbem_events.php:986
+#: dbem_events.php:987
 msgid "Bulk Actions"
 msgstr "Azioni "
 
-#: dbem_events.php:989
+#: dbem_events.php:990
 msgid "Delete selected"
 msgstr "Elimina selezionati"
 
-#: dbem_events.php:993
+#: dbem_events.php:994
 msgid "Apply"
 msgstr "Applica"
 
-#: dbem_events.php:1008
+#: dbem_events.php:1009
 msgid "Filter"
 msgstr "Filtro"
 
-#: dbem_events.php:1023
-#: dbem_events.php:1458
-#: dbem_events.php:1918
+#: dbem_events.php:1024
+#: dbem_events.php:1459
+#: dbem_events.php:1919
 #: dbem_locations.php:229
 #: dbem_locations.php:237
 #: dbem_people.php:90
@@ -582,290 +582,303 @@ msgstr "Filtro"
 msgid "Name"
 msgstr "Nome"
 
-#: dbem_events.php:1029
-#: dbem_events.php:1561
-#: dbem_events.php:1920
+#: dbem_events.php:1030
+#: dbem_events.php:1562
+#: dbem_events.php:1921
 msgid "Location"
 msgstr "Luogo"
 
-#: dbem_events.php:1032
+#: dbem_events.php:1033
 msgid "Date and time"
 msgstr "Giorno e ora"
 
-#: dbem_events.php:1042
+#: dbem_events.php:1043
 msgid "D d M Y"
 msgstr "D d M Y"
 
-#: dbem_events.php:1069
-#: dbem_events.php:1424
+#: dbem_events.php:1070
+#: dbem_events.php:1425
 msgid "Category"
 msgstr "Categoria"
 
-#: dbem_events.php:1080
+#: dbem_events.php:1081
 msgid "Duplicate this event"
 msgstr "Duplica questo evento"
 
-#: dbem_events.php:1209
+#: dbem_events.php:1210
 msgid "Daily"
 msgstr "Quotidiana"
 
-#: dbem_events.php:1209
+#: dbem_events.php:1210
 msgid "Weekly"
 msgstr "Settimanale"
 
-#: dbem_events.php:1209
+#: dbem_events.php:1210
 msgid "Monthly"
 msgstr "Mensile"
 
-#: dbem_events.php:1210
+#: dbem_events.php:1211
 msgid "Mon"
 msgstr "Lun"
 
-#: dbem_events.php:1210
+#: dbem_events.php:1211
 msgid "Tue"
 msgstr "Mar"
 
-#: dbem_events.php:1210
+#: dbem_events.php:1211
 msgid "Wed"
 msgstr "Mer"
 
-#: dbem_events.php:1210
+#: dbem_events.php:1211
 msgid "Thu"
 msgstr "Gio"
 
-#: dbem_events.php:1210
+#: dbem_events.php:1211
 msgid "Fri"
 msgstr "Ven"
 
-#: dbem_events.php:1210
+#: dbem_events.php:1211
 msgid "Sat"
 msgstr "Sab"
 
-#: dbem_events.php:1210
+#: dbem_events.php:1211
 msgid "Sun"
 msgstr "Dom"
 
-#: dbem_events.php:1212
+#: dbem_events.php:1213
 msgid "first"
 msgstr "primo"
 
-#: dbem_events.php:1212
+#: dbem_events.php:1213
 msgid "second"
 msgstr "secondo"
 
-#: dbem_events.php:1212
+#: dbem_events.php:1213
 msgid "third"
 msgstr "terzo"
 
-#: dbem_events.php:1212
+#: dbem_events.php:1213
 msgid "fourth"
 msgstr "quarto"
 
-#: dbem_events.php:1212
+#: dbem_events.php:1213
 msgid "last"
 msgstr "ultimo"
 
-#: dbem_events.php:1227
+#: dbem_events.php:1228
 msgid "WARNING: This is a recurrence."
 msgstr "ATTENZIONE: questa è una ricorrenza."
 
-#: dbem_events.php:1230
+#: dbem_events.php:1231
 msgid "Modifying these data all the events linked to this recurrence will be rescheduled"
 msgstr "Se si modificano i dati tutti gli eventi collegati a questa ricorrenza verranno riprogrammati"
 
-#: dbem_events.php:1233
+#: dbem_events.php:1234
 msgid "WARNING: This is a recurring event."
 msgstr "ATTENZIONE: questo è un'evento ricorrente"
 
-#: dbem_events.php:1234
+#: dbem_events.php:1235
 msgid "If you change these data and save, this will become an independent event."
 msgstr "Se si cambiano questi dati e si effettua un salvataggio, questo evento diverrà indipendente."
 
-#: dbem_events.php:1255
+#: dbem_events.php:1256
 msgid "Recurrence"
 msgstr "Ricorrenza"
 
-#: dbem_events.php:1273
+#: dbem_events.php:1274
 msgid "Repeated event"
 msgstr "Eventi ripetuti"
 
-#: dbem_events.php:1286
-#: dbem_events.php:1311
+#: dbem_events.php:1287
+#: dbem_events.php:1312
 msgid "Every"
 msgstr "Ogni"
 
-#: dbem_events.php:1293
+#: dbem_events.php:1294
 msgid "day"
 msgstr "giorno"
 
-#: dbem_events.php:1295
+#: dbem_events.php:1296
 msgid "days"
 msgstr "giorni"
 
-#: dbem_events.php:1297
+#: dbem_events.php:1298
 msgid "week"
 msgstr "settimana"
 
-#: dbem_events.php:1299
+#: dbem_events.php:1300
 msgid "weeks"
 msgstr "settimane"
 
-#: dbem_events.php:1301
+#: dbem_events.php:1302
 msgid "month"
 msgstr "mese"
 
-#: dbem_events.php:1303
+#: dbem_events.php:1304
 msgid "months"
 msgstr "mesi"
 
-#: dbem_events.php:1327
+#: dbem_events.php:1328
 msgid "Check if your event happens more than once according to a regular pattern"
 msgstr "Selezionare se l'evento si ripete secondo uno schema regolare"
 
-#: dbem_events.php:1333
+#: dbem_events.php:1334
 msgid "This is't a recurrent event"
 msgstr "Questo non è un evento ricorrente"
 
-#: dbem_events.php:1365
+#: dbem_events.php:1366
 msgid "Contact Person"
 msgstr "Responsabile dell'evento"
 
-#: dbem_events.php:1371
+#: dbem_events.php:1370
+msgid "Contact"
+msgstr "Contatto"
+
+#: dbem_events.php:1372
+#: dbem_events.php:1433
 msgid "Select..."
 msgstr "Seleziona..."
 
-#: dbem_events.php:1386
+#: dbem_events.php:1380
+msgid "RSVP"
+msgstr "RSVP"
+
+#: dbem_events.php:1387
 msgid "Enable registration for this event"
 msgstr "Abilitare la registrazione per questo evento"
 
-#: dbem_events.php:1397
+#: dbem_events.php:1398
 #: dbem_rsvp.php:247
 msgid "Spaces"
 msgstr "Posti"
 
-#: dbem_events.php:1467
+#: dbem_events.php:1428
+msgid "Category:"
+msgstr "Categoria:"
+
+#: dbem_events.php:1468
 msgid "The event name. Example: Birthday party"
 msgstr "Il nome dell'evento. Esempio: festa di compleanno."
 
-#: dbem_events.php:1473
+#: dbem_events.php:1474
 msgid "Event date"
 msgstr "Date dell'evento"
 
-#: dbem_events.php:1478
+#: dbem_events.php:1479
 msgid "Recurrence dates"
 msgstr "Date della ricorrenza"
 
-#: dbem_events.php:1502
+#: dbem_events.php:1503
 msgid "The event date."
 msgstr "La data dell'evento"
 
-#: dbem_events.php:1505
+#: dbem_events.php:1506
 msgid "When not reoccurring, this event spans between the beginning and end date."
 msgstr "Quando non ripetuto, le date di inizio e fine indicano la durata dell'evento,"
 
-#: dbem_events.php:1511
+#: dbem_events.php:1512
 msgid "The recurrence beginning and end date."
 msgstr "Le date di inizio e fine della ricorrenza"
 
-#: dbem_events.php:1518
+#: dbem_events.php:1519
 msgid "Event time"
 msgstr "Ora dell'evento"
 
-#: dbem_events.php:1535
+#: dbem_events.php:1536
 msgid "The time of the event beginning and end"
 msgstr "L'ora di inizio e fine dell'evento"
 
-#: dbem_events.php:1541
+#: dbem_events.php:1542
 msgid "Coordinates"
 msgstr "Coordinate"
 
-#: dbem_events.php:1568
+#: dbem_events.php:1569
 msgid "Name:"
 msgstr "Nome:"
 
-#: dbem_events.php:1583
+#: dbem_events.php:1584
 #: dbem_locations.php:160
 #: dbem_locations.php:314
 msgid "Map not found"
 msgstr "Mappa non trovata"
 
-#: dbem_events.php:1596
+#: dbem_events.php:1597
 msgid "The name of the location where the event takes place. You can use the name of a venue, a square, etc"
 msgstr "Il nome del locale dove avviene l'evento. È possibile usare il nome di un locale, di una piazza, ecc"
 
-#: dbem_events.php:1601
+#: dbem_events.php:1602
 msgid "Address:"
 msgstr "Indirizzo:"
 
-#: dbem_events.php:1611
+#: dbem_events.php:1612
 msgid "The address of the location where the event takes place. Example: 21, Dominick Street"
 msgstr "L'indirizzo del luogo dove si tiene l'evento. Esempio: Arena"
 
-#: dbem_events.php:1616
+#: dbem_events.php:1617
 msgid "Town:"
 msgstr "Città:"
 
-#: dbem_events.php:1625
+#: dbem_events.php:1626
 msgid "The town where the location is located. If you're using the Google Map integration and want to avoid geotagging ambiguities include the country in the town field. Example: Verona, Italy."
 msgstr "La città dell'evento. Se si utilizza Google Map e si vogliono evitare ambiguità, inserire anche lo stato. Esempio: Verona, Italy"
 
-#: dbem_events.php:1634
+#: dbem_events.php:1635
 msgid "Details"
 msgstr "Dettagli"
 
-#: dbem_events.php:1645
+#: dbem_events.php:1646
 msgid "Details about the event"
 msgstr "Note sull'evento"
 
-#: dbem_events.php:1652
+#: dbem_events.php:1653
 msgid "Attributes"
 msgstr "Attributi"
 
-#: dbem_events.php:1664
+#: dbem_events.php:1665
 msgid "Submit Event"
 msgstr "Invia evento"
 
-#: dbem_events.php:1686
+#: dbem_events.php:1687
 msgid "Missing fields: "
 msgstr "Campi obbligatori mancanti:"
 
-#: dbem_events.php:1688
+#: dbem_events.php:1689
 msgid "Since the event is repeated, you must specify an event date."
 msgstr "Per gli eventi ripetuti è necessario specificare una data di fine."
 
-#: dbem_events.php:1919
+#: dbem_events.php:1920
 msgid "Date"
 msgstr "Data"
 
-#: dbem_events.php:1921
+#: dbem_events.php:1922
 #: dbem_locations.php:230
 #: dbem_locations.php:238
 msgid "Address"
 msgstr "Indirizzo"
 
-#: dbem_events.php:1922
+#: dbem_events.php:1923
 #: dbem_locations.php:231
 #: dbem_locations.php:239
 msgid "Town"
 msgstr "Città"
 
-#: dbem_events.php:1940
+#: dbem_events.php:1941
 msgid "Some required fields are missing:"
 msgstr "Mancano alcuni campi obbligatori:"
 
-#: dbem_events.php:1944
+#: dbem_events.php:1945
 msgid "Since the event is repeated, you must specify an end date"
 msgstr "Per gli eventi ripetuti è necessario specificare una data di fine"
 
-#: dbem_events.php:2105
+#: dbem_events.php:2106
 msgid "You cannot enable Google Maps integration without setting an appropriate API key."
 msgstr "Non è possibile abilitare l'integrazione con Google Maps senza impostare una chiave API."
 
-#: dbem_events.php:2246
+#: dbem_events.php:2247
 msgid "Add an event"
 msgstr "Aggiungi un evento"
 
-#: dbem_events.php:2264
+#: dbem_events.php:2265
 #, php-format
 msgid "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. "
 msgstr "Questa pagina corriponde alla pagina eventi di <strong>Events Manager</strong>. Il suo contenuto verrà sovrascritto da <strong>Events Manager</strong>. Se vuoi visualizzare il tuo contenuto, puoi assegnare ad <strong>Events Manager</strong> un'altra pagina, tramite le <a href='%s'>Opzioni</a>. "
@@ -951,7 +964,7 @@ msgid "Update location"
 msgstr "Aggiorna il luogo"
 
 #: dbem_locations.php:209
-#: events-manager.php:458
+#: events-manager.php:459
 msgid "Locations"
 msgstr "Luoghi"
 
@@ -972,27 +985,27 @@ msgstr "La città del luogo."
 msgid "Select an image to upload"
 msgstr "Selezionare un'immagine da caricare."
 
-#: dbem_locations.php:396
+#: dbem_locations.php:395
 msgid " is missing!"
 msgstr "non è presente!"
 
-#: dbem_locations.php:404
+#: dbem_locations.php:403
 msgid "The image file is too big! Maximum size:"
 msgstr "Il file dell'immagine è troppo grande! Dimensione massima:"
 
-#: dbem_locations.php:409
+#: dbem_locations.php:408
 msgid "The image is too big! Maximum size allowed:"
 msgstr "L'immagine è troppo grande! Dimensioni massime:"
 
-#: dbem_locations.php:411
+#: dbem_locations.php:410
 msgid "The image is in a wrong format!"
 msgstr "L'immagine non è nel formato corretto!"
 
-#: dbem_locations.php:418
+#: dbem_locations.php:417
 msgid "Ach, some problems here:"
 msgstr "Accidenti, ci sono dei problemi:"
 
-#: dbem_locations.php:479
+#: dbem_locations.php:478
 msgid "The image could not be loaded"
 msgstr "Impossibile caricare l'immagine"
 
@@ -1068,8 +1081,8 @@ msgid "Your booking has been recorded"
 msgstr "La prenotazione è stata registrata"
 
 #: dbem_rsvp.php:122
-msgid "Sorry, there aren't so many seats available!"
-msgstr "Accidenti, non ci sono posti disponibili!"
+msgid "Booking cannot be made – not enough seats available!"
+msgstr "Impossibile prenotare - non ci sono abbastanza posti disponibili."
 
 #: dbem_rsvp.php:164
 msgid "Booking deleted"
@@ -1114,15 +1127,15 @@ msgstr "Prenotazione confermata"
 #: dbem_widgets.php:10
 #: dbem_widgets.php:35
 #: events-manager.php:44
-#: events-manager.php:404
 #: events-manager.php:405
-#: events-manager.php:452
+#: events-manager.php:406
+#: events-manager.php:453
 msgid "Events"
 msgstr "Eventi"
 
 #: dbem_widgets.php:19
 #: events-manager.php:50
-#: events-manager.php:397
+#: events-manager.php:398
 msgid "No events"
 msgstr "Nessun evento"
 
@@ -1177,36 +1190,36 @@ msgstr "Calendario eventi"
 msgid "<li>No events in this location</li>"
 msgstr "<li>Nessun evento in questo luogo</li>"
 
-#: events-manager.php:388
+#: events-manager.php:389
 msgid "#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.<br/> Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager"
 msgstr "#_RESPNAME (#_RESPEMAIL) parteciperà all'evento #_NAME su #m #d, #Y. Vuole prenotare #_SPACES posti.<br/> Ora ci sono #_RESERVEDSPACES posti prenotati, #_AVAILABLESPACES sono ancora liberi.<br/>A presto,<br/>Events Manager"
 
-#: events-manager.php:389
+#: events-manager.php:390
 msgid "Dear #_RESPNAME, <br/>you have successfully reserved #_SPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/> #_CONTACTPERSON"
 msgstr "#_RESPNAME, <br/>la prenotazione di #_SPACES posto/i a nome di #_NAME è andata a buon fine.<br/>A presto,<br/> #_CONTACTPERSON"
 
-#: events-manager.php:441
+#: events-manager.php:442
 msgid "events"
 msgstr "eventi"
 
-#: events-manager.php:454
-#: events-manager.php:484
+#: events-manager.php:455
+#: events-manager.php:485
 msgid "Edit"
 msgstr "Modifica"
 
-#: events-manager.php:456
+#: events-manager.php:457
 msgid "Add new"
 msgstr "Aggiungi nuovo"
 
-#: events-manager.php:460
+#: events-manager.php:461
 msgid "People"
 msgstr "Persone"
 
-#: events-manager.php:463
+#: events-manager.php:464
 msgid "Events Manager Settings"
 msgstr "Impostazioni di Events Manager"
 
-#: events-manager.php:463
+#: events-manager.php:464
 msgid "Settings"
 msgstr "Impostazioni"
 
@@ -1258,6 +1271,16 @@ msgstr "Non definito nei template"
 #: marcus-extras.php:371
 msgid "In order to use attributes, you must define some in your templates, otherwise they'll never show. Go to Events > Settings to add attribute placeholders."
 msgstr "Per utilizzare gli attributi è necessario definirli nei template, altrimenti non verranno visualizzate. Cliccare su Eventi > Impostazioni per aggiungere segnaposti per gli attributi."
+
+#~ msgid ""
+#~ "This content will appear just above your code for the default event list "
+#~ "format. Default is <code>&lt;ul class='dbem_events_list'&gt;</code>"
+#~ msgstr ""
+#~ "Questo contenuto appare in cima alla lista eventi. Il calore predefinito "
+#~ "è <code>&lt;ul class='dbem_events_list'&gt;</code>"
+
+#~ msgid "Sorry, there aren't so many seats available!"
+#~ msgstr "Accidenti, non ci sono posti disponibili!"
 
 #~ msgid ""
 #~ "A description of the location. You may include any kind of info here."

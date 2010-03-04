@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 2.1a
+Version: 2.1
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini
@@ -85,11 +85,8 @@ $localised_date_formats = array("am" => "dd.mm.yy","ar" => "dd/mm/yy", "bg" => "
 //required fields
 $required_fields = array('event_name'); 
 
-load_plugin_textdomain('dbem', "/wp-content/plugins/events-manager/langs/");  
-// OR:
-// $thisDir = dirname( plugin_basename( __FILE__ ) );
-// load_plugin_textdomain('dbem', false, $thisDir.'/langs'); 
-// -- as soon as IAN answers back
+$thisDir = dirname( plugin_basename( __FILE__ ) );
+load_plugin_textdomain('dbem', false, $thisDir.'/langs'); 
 
 // To enable activation through the activate function
 register_activation_hook(__FILE__,'events-manager');

@@ -113,7 +113,7 @@ function dbem_events_subpanel() {
 		if ($validation_result == "OK") {
 			// validation successful  
 
-			$related_location = dbem_get_identical_location ( $location );
+			$related_location = dbem_get_identical_location ( $location );   
 			// print_r($related_location); 
 			if ($related_location) {
 				$event ['location_id'] = $related_location ['location_id'];
@@ -285,9 +285,9 @@ function dbem_options_subpanel() {
 <table class="form-table">
  	<?php
  	/* Marcus Begin Edit */
-	dbem_options_textarea ( __ ( 'Default event list format header', 'dbem' ), 'dbem_event_list_item_format_header', __( 'This content will appear just above your code for the default event list format. Default is <code>&lt;ul class=\'dbem_events_list\'&gt;</code>', 'dbem' ) );
- 	dbem_options_textarea ( __ ( 'Default event list format', 'dbem' ), 'dbem_event_list_item_format', __ ( 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_EXCERPT</code> to show <code>#_NOTES</code> until you place a &lt;!&ndash;&ndash; more &ndash;&ndash;&gt; marker.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>Use #_EDITEVENTLINK to add add a link to edit page for the event, which will appear only when a user is logged in.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> You can also create a date format without prepending <code>#</code> by wrapping it in #_{} or #@_{} (e.g. <code>#_{d/m/Y}</code>). If there is no end date, the value is not shown.<br/> Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.<br/>For custom attributes, you use <code>#_ATT{key}{alternative text}</code>, the second braces are optional and will appear if the attribute is not defined or left blank for that event. This key will appear as an option when adding attributes to your event.', 'dbem' ) );
-	dbem_options_textarea ( __ ( 'Default event list format footer', 'dbem' ), 'dbem_event_list_item_format_footer', __ ( 'This content will appear just below your code for the default event list format. Default is <code>&lt;/ul&gt;</code>', 'dbem' ) );
+	dbem_options_textarea ( __ ( 'Default event list format header', 'dbem' ), 'dbem_event_list_item_format_header', __( 'This content will appear just above your code for the default event list format. Default is blank', 'dbem' ) );
+ 	dbem_options_textarea ( __ ( 'Default event list format', 'dbem' ), 'dbem_event_list_item_format', __ ( 'The format of any events in a list.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_EXCERPT</code> to show <code>#_NOTES</code> until you place a &lt;!&ndash;&ndash; more &ndash;&ndash;&gt; marker.<br/> Use <code>#_LINKEDNAME</code> for the event name with a link to the given event page.<br/> Use <code>#_EVENTPAGEURL</code> to print the event page URL and make your own customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the location page URL and make your own customised links.<br/>Use <code>#_EDITEVENTLINK</code> to add add a link to edit page for the event, which will appear only when a user is logged in.<br/>To insert date and time values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, <code>#@i</code>, etc.<br/> You can also create a date format without prepending <code>#</code> by wrapping it in #_{} or #@_{} (e.g. <code>#_{d/m/Y}</code>). If there is no end date, the value is not shown.<br/>Feel free to use HTML tags as <code>li</code>, <code>br</code> and so on.<br/>For custom attributes, you use <code>#_ATT{key}{alternative text}</code>, the second braces are optional and will appear if the attribute is not defined or left blank for that event. This key will appear as an option when adding attributes to your event.', 'dbem' ) );
+	dbem_options_textarea ( __ ( 'Default event list format footer', 'dbem' ), 'dbem_event_list_item_format_footer', __ ( 'This content will appear just below your code for the default event list format. Default is blank', 'dbem' ) );
 
  	/* Marcus End Edit */
 	dbem_options_input_text ( __ ( 'Single event page title format', 'dbem' ), 'dbem_event_page_title_format', __ ( 'The format of a single event page title. Follow the previous formatting instructions.', 'dbem' ) );
@@ -628,10 +628,10 @@ add_action ( 'admin_print_scripts', 'dbem_admin_css' );
 // exposed function, for theme  makers
 /* Marcus Begin Edit */
 	//Added a category option to the get events list method and shortcode
-function dbem_get_events_list($limit = "3", $scope = "future", $order = "ASC", $format = '', $echo = 1, $category = '') {
+function dbem_get_events_list($limit = "10", $scope = "future", $order = "ASC", $format = '', $echo = 1, $category = '') {
 	if (strpos ( $limit, "=" )) {
 		// allows the use of arguments without breaking the legacy code
-		$defaults = array ('limit' => 3, 'scope' => 'future', 'order' => 'ASC', 'format' => '', 'echo' => 1 , 'category' => '');
+		$defaults = array ('limit' => 10, 'scope' => 'future', 'order' => 'ASC', 'format' => '', 'echo' => 1 , 'category' => '');
 		
 		$r = wp_parse_args ( $limit, $defaults );
 		extract ( $r, EXTR_SKIP );
@@ -746,7 +746,7 @@ function dbem_is_multiple_events_page() {
 function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset = "", $location_id = "", $category = '') {
 /* Marcus End Edit */
 	global $wpdb;
-	
+  
 	$events_table = $wpdb->prefix . EVENTS_TBNAME;
 	if ($limit != "")
 		$limit = "LIMIT $limit";
@@ -769,8 +769,8 @@ function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset
 	if (preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope )) {
 		//$conditions [] = " event_start_date like '$scope'";
 		$conditions [] = " (event_start_date  like '$scope') OR (event_start_date <= '$scope' AND event_end_date >= '$scope')";
-	} else {
-		if (($scope != "past") && ($scope != "all"))
+	} else {   
+		if (($scope != "past") && ($scope != "all") && ($scope != "today"))
 			$scope = "future";
 		if ($scope == "future")
 		/* Marcus Begin Edit */
@@ -778,8 +778,10 @@ function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset
 			$conditions [] = " (event_start_date >= '$today' OR (event_end_date >= '$today' AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
 		/* Marcus End Edit */
 		if ($scope == "past")
-			$conditions [] = " event_start_date < '$today'";
-	}
+			$conditions [] = " event_start_date < '$today'";  
+		if ($scope == "today")
+			$conditions [] = " (event_start_date  like '$today') OR (event_start_date <= '$today' AND event_end_date >= '$today')";
+	}    
 	
 	if ($location_id != "")
 		$conditions [] = " location_id = $location_id";
@@ -795,7 +797,6 @@ function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset
 		}
 		$conditions [] = "(".implode(' OR', $category_conditions).")";
 	}
-
 	/* Marcus End Edit */
 	
 	$where = implode ( " AND ", $conditions );

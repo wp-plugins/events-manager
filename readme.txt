@@ -3,8 +3,8 @@ Contributors: nutsmuggler, netweblogic
 Donate link: http://davidebenini.it  
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.7   
-Tested up to: 2.8.4   
-Stable tag: 2.0rc2   
+Tested up to: 2.9.2   
+Stable tag: 2.1   
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
@@ -186,19 +186,24 @@ Properly added Marcus Sykes as a contributor
 Added a full calendar  
 Added an #_EDITEVENT placeholder  
 Added Brazialian Portuguese localization and some translatable strings
-Categories are now displayed in the events table
+Added a today scope for events lists
+Increased to 3 te default lists limit
+Categories are now displayed in the events table                        
 Now weeks starts according to WP settings       
 Moved the hide page option up for better access  
 Attributes column was not created when the plugin was upgraded, fixed
 Added comment field to the RSVP form and #_COMMENT placeholder in RSVP email templates 
 Added customizable title to small calendar      
-Removed php short tags
-Bugfix:there was a time bug
+Removed php short tags                        
+Changed RVSP 'no seats available message' for better English
+Bugfix: there was a time bug
 Bugfix: event_time not taken into consideration in ordering events, fixed
 Bugfix: on calendar for days after 28  on the event calendar view
 Bugfix: for events in days with single digit
 Bugfix: events link in the calendar now work with permalink
 Bugfix: today in next mont was not matched in the calendar 
 Bugfix: _RESPPHONE was not matched in emails
-Bugfix: fixed security vulnerability, which could lead to sql inject attacks
-Bugfix: bloginfo('wpurl') instead of bloginfo('url')
+Bugfix: fixed security vulnerability, which could lead to sql inject attacks      
+Bugfix: locations with apostrophe were duplicated
+Bugfix: bloginfo('wpurl') instead of bloginfo('url')  
+Bugfix: now loading textdomain in the new (not deprecated) way

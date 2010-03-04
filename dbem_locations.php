@@ -378,14 +378,13 @@ function dbem_image_url_for_location_id($location_id) {
 
 function dbem_get_identical_location($location) { 
 	global $wpdb;
-	
 	$locations_table = $wpdb->prefix.LOCATIONS_TBNAME; 
 	//$sql = "SELECT * FROM $locations_table WHERE location_name ='".$location['location_name']."' AND location_address ='".$location['location_address']."' AND location_town ='".$location['location_town']."';";   
-  $prepared_sql=$wpdb->prepare("SELECT * FROM $locations_table WHERE location_name = %s AND location_address = %s AND location_town = %s", $location['location_name'], $location['location_address'], $location['location_town'] );
+  $prepared_sql=$wpdb->prepare("SELECT * FROM $locations_table WHERE location_name = %s AND location_address = %s AND location_town = %s", stripcslashes($location['location_name']), stripcslashes($location['location_address']), stripcslashes($location['location_town']) );
 	//$wpdb->show_errors(true);
 	$cached_location = $wpdb->get_row($prepared_sql, ARRAY_A);
 	return $cached_location;  
-
+   
 }
 
 function dbem_validate_location($location) {

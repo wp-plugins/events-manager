@@ -119,7 +119,7 @@ function dbem_book_seats() {
 		} 
 		
 	}	else {
-		 $result = __('Sorry, there aren\'t so many seats available!', 'dbem');
+		 $result = __('Booking cannot be made – not enough seats available!', 'dbem');
 	}  
 	return $result;
 }
