@@ -639,7 +639,8 @@ function dbem_locations_autocomplete() {
 
 		$j(document).ready(function() {
 			var gmap_enabled = <?php echo get_option('dbem_gmap_is_active'); ?>; 
-		 
+		    
+		   <?php if(!get_option('dbem_use_select_for_locations')) :?>
 			$j("input#location-name").autocomplete("../wp-content/plugins/events-manager/locations-search.php", {
 				width: 260,
 				selectFirst: false,
@@ -664,7 +665,21 @@ function dbem_locations_autocomplete() {
 					
 					loadMap(eventLocation, eventTown, eventAddress)
 				} 
-			});
+			});  
+			<?php else : ?>
+			$j('#location-select-id').change(function() {
+				$j.getJSON("/../wp-content/plugins/events-manager/locations-search.php",{id: $j(this).val()}, function(data){
+					eventLocation = data.name;
+					eventAddress = data.address;
+					eventTown = data.town;
+					$j("input[name='location-select-name']").val(eventLocation);  
+					$j("input[name='location-select-address']").val(eventAddress); 
+					$j("input[name='location-select-town']").val(eventTown); 
+					loadMap(eventLocation, eventTown, eventAddress)
+					
+			   	})
+			});  
+			<?php endif; ?>
 
 		});	
 		//]]> 

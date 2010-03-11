@@ -207,3 +207,6 @@ Bugfix: fixed security vulnerability, which could lead to sql inject attacks
 Bugfix: locations with apostrophe were duplicated
 Bugfix: bloginfo('wpurl') instead of bloginfo('url')  
 Bugfix: now loading textdomain in the new (not deprecated) way
+
+2.2b
+Adding a option to get events through a select
