@@ -306,84 +306,82 @@ function dbem_attributes_form($event) {
 	<div class="wrap">
 		<h2>Attributes</h2>
 		<p>Add attributes here</p>
-		<form method="post" action="<?php echo str_replace( '%7E', '~', $_SERVER['REQUEST_URI']); ?>">
-			<table class="form-table">
-				<thead>
-					<tr valign="top">
-						<td><strong>Attribute Name</strong></td>
-						<td><strong>Value</strong></td>
-					</tr>
-				</thead>
-				<tbody id="mtm_body">
-					<?php
-					$count = 1;
-					if( is_array($dbem_data) and count($dbem_data) > 0){
-						foreach( $dbem_data as $name => $value){
-							?>
-							<tr valign="top" id="mtm_<?php echo $count ?>">
-								<td scope="row">
-									<select name="mtm_<?php echo $count ?>_ref">
-										<?php
-										if( !in_array($name, $attributes) ){
-											echo "<option value='$name'>$name (".__('Not defined in templates', 'dbem').")</option>";
-										}
-										foreach( $attributes as $attribute ){
-											if( $attribute == $name ) {
-												echo "<option selected='selected'>$attribute</option>";
-											}else{
-												echo "<option>$attribute</option>";
-											}
-										}
-										?>
-									</select>
-									<a href="#" rel="<?php echo $count ?>">Remove</a>
-								</td>
-								<td>
-									<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
-								</td>
-							</tr>
-							<?php
-							$count++;
-						}
-					}else{
-						if( count( $attributes ) > 0 ){
-							?>
-							<tr valign="top" id="mtm_<?php echo $count ?>">
-								<td scope="row">
-									<select name="mtm_<?php echo $count ?>_ref">
-										<?php
-										foreach( $attributes as $attribute ){
+		<table class="form-table">
+			<thead>
+				<tr valign="top">
+					<td><strong>Attribute Name</strong></td>
+					<td><strong>Value</strong></td>
+				</tr>
+			</thead>    
+			<tfoot>
+				<tr valign="top">
+					<td colspan="3"><a href="#" id="mtm_add_tag">Add new tag</a></td>
+				</tr>
+			</tfoot>
+			<tbody id="mtm_body">
+				<?php
+				$count = 1;
+				if( is_array($dbem_data) and count($dbem_data) > 0){
+					foreach( $dbem_data as $name => $value){
+						?>
+						<tr valign="top" id="mtm_<?php echo $count ?>">
+							<td scope="row">
+								<select name="mtm_<?php echo $count ?>_ref">
+									<?php
+									if( !in_array($name, $attributes) ){
+										echo "<option value='$name'>$name (".__('Not defined in templates', 'dbem').")</option>";
+									}
+									foreach( $attributes as $attribute ){
+										if( $attribute == $name ) {
+											echo "<option selected='selected'>$attribute</option>";
+										}else{
 											echo "<option>$attribute</option>";
 										}
-										?>
-									</select>
-									<a href="#" rel="<?php echo $count ?>">Remove</a>
-								</td>
-								<td>
-									<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
-								</td>
-							</tr>
-							<?php
-						}else{
-							?>
-							<tr valign="top">
-								<td scope="row" colspan='2'>
-								<?php _e('In order to use attributes, you must define some in your templates, otherwise they\'ll never show. Go to Events > Settings to add attribute placeholders.', 'dbem'); ?>
-								</td>
-							</tr>
-							<?php
-							
-						}
+									}
+									?>
+								</select>
+								<a href="#" rel="<?php echo $count ?>">Remove</a>
+							</td>
+							<td>
+								<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
+							</td>
+						</tr>
+						<?php
+						$count++;
 					}
-					?>
-				</tbody>
-				<tfoot>
-					<tr valign="top">
-						<td colspan="3"><a href="#" id="mtm_add_tag">Add new tag</a></td>
-					</tr>
-				</tfoot>
-			</table>
-		</form>
+				}else{
+					if( count( $attributes ) > 0 ){
+						?>
+						<tr valign="top" id="mtm_<?php echo $count ?>">
+							<td scope="row">
+								<select name="mtm_<?php echo $count ?>_ref">
+									<?php
+									foreach( $attributes as $attribute ){
+										echo "<option>$attribute</option>";
+									}
+									?>
+								</select>
+								<a href="#" rel="<?php echo $count ?>">Remove</a>
+							</td>
+							<td>
+								<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
+							</td>
+						</tr>
+						<?php
+					}else{
+						?>
+						<tr valign="top">
+							<td scope="row" colspan='2'>
+							<?php _e('In order to use attributes, you must define some in your templates, otherwise they\'ll never show. Go to Events > Settings to add attribute placeholders.', 'dbem'); ?>
+							</td>
+						</tr>
+						<?php
+						
+					}
+				}
+				?>
+			</tbody>
+		</table>
 	</div>
 	<?php
 }

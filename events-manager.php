@@ -60,7 +60,12 @@ define('DEFAULT_IMAGE_MAX_SIZE', 204800);
 define('DEFAULT_FULL_CALENDAR_EVENT_FORMAT', '<li>#_LINKEDNAME</li>');    
 define('DEFAULT_SMALL_CALENDAR_EVENT_TITLE_FORMAT', "#_NAME" );
 define('DEFAULT_SMALL_CALENDAR_EVENT_TITLE_SEPARATOR', ", ");  
-define('DEFAULT_USE_SELECT_FOR_LOCATIONS', false);
+define('DEFAULT_USE_SELECT_FOR_LOCATIONS', false);      
+define('DEFAULT_ATTRIBUTES_ENABLED', false);
+define('DEFAULT_RECURRENCE_ENABLED', false);
+define('DEFAULT_RSVP_ENABLED', false);
+define('DEFAULT_CATEGORIES_ENABLED', false);
+
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, a log will show in admin pages
 define('DEBUG', false);     
@@ -425,7 +430,11 @@ function dbem_add_options() {
 	'dbem_small_calendar_event_title_format' => DEFAULT_SMALL_CALENDAR_EVENT_TITLE_FORMAT,
 	'dbem_small_calendar_event_title_separator' => DEFAULT_SMALL_CALENDAR_EVENT_TITLE_SEPARATOR, 
 	'dbem_hello_to_user' => 1,
-	'dbem_use_select_for_locations' => DEFAULT_USE_SELECT_FOR_LOCATIONS);
+	'dbem_use_select_for_locations' => DEFAULT_USE_SELECT_FOR_LOCATIONS,
+	'dbem_attributes_enabled', DEFAULT_ATTRIBUTES_ENABLED,
+	'dbem_recurrence_enabled', DEFAULT_RECURRENCE_ENABLED,
+	'dbem_rsvp_enabled', DEFAULT_RSVP_ENABLED,
+	'dbem_categories_enabled', DEFAULT_CATEGORIES_ENABLED);
 	
 	foreach($dbem_options as $key => $value)
 		dbem_add_option($key, $value);

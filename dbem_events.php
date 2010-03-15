@@ -277,7 +277,11 @@ function dbem_options_subpanel() {
 	?></h3>
 <table class="form-table">                              
  					<?php
-	dbem_options_radio_binary ( __ ( 'Use dropdown for locations?' ), 'dbem_use_select_for_locations', __ ( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );
+	dbem_options_radio_binary ( __ ( 'Use dropdown for locations?' ), 'dbem_use_select_for_locations', __ ( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );  
+	dbem_options_radio_binary ( __ ( 'Use recurrence?' ), 'dbem_recurrence_enabled', __ ( 'Select yes to enable the recurrence features feature','dbem' ) ); 
+	dbem_options_radio_binary ( __ ( 'Use RSVP?' ), 'dbem_rsvp_enabled', __ ( 'Select yes to enable the recurrence features feature','dbem' ) );     
+	dbem_options_radio_binary ( __ ( 'Use categories?' ), 'dbem_categories_enabled', __ ( 'Select yes to enable the category features','dbem' ) );     
+	dbem_options_radio_binary ( __ ( 'Use attributes?' ), 'dbem_attributes_enabled', __ ( 'Select yes to enable the attributes feature','dbem' ) );
    ?>
 </table>
 <h3><?php
@@ -314,8 +318,7 @@ function dbem_options_subpanel() {
     dbem_options_input_text ( __ ( 'Full calendar events format', 'dbem' ), 'dbem_full_calendar_event_format', __ ( 'The format of each event when displayed in the full calendar. Remember to include <code>li</code> tags before and after the event.', 'dbem' ) );        
 
 	?>
-	
-			</table>
+	</table>
 
 <h3><?php
 	_e ( 'Locations format', 'dbem' );
@@ -1253,11 +1256,12 @@ function dbem_event_form($event, $title, $element) {
 			<?php
 			/* Marcus Begin Edit */
 			//This is an edit for WP 2.8 for styling fix
-			?>
+			?>                
 			<div id="poststuff" class="metabox-holder has-right-sidebar">
 				<!-- SIDEBAR -->
 				<div id="side-info-column" class='inner-sidebar'>
-					<div id='side-sortables'>
+					<div id='side-sortables'>       
+						<? if(get_option('dbem_recurrence_enabled')) : ?>
 						<!-- recurrence postbox -->
 						<div class="postbox ">
 							<div class="handlediv" title="Fare clic per cambiare."><br />
@@ -1299,8 +1303,7 @@ function dbem_event_form($event, $title, $element) {
 										<input id="recurrence-interval" name='recurrence_interval'
 		size='2' value='<?php
 			echo $event ['recurrence_interval'];
-			?>'>
-										</input>
+			?>' />
 										<span class='interval-desc' id="interval-daily-singular">
 										<?php _e ( 'day', 'dbem' )?>
 										</span> <span class='interval-desc' id="interval-daily-plural">
@@ -1368,7 +1371,9 @@ function dbem_event_form($event, $title, $element) {
 		}
 		?>
 							</div>
-						</div>
+						</div>        
+						<? endif; ?>          
+						<?php if(get_option('dbem_rsvp_enabled')) : ?>
 						<div class="postbox ">
 							<div class="handlediv" title="Fare clic per cambiare."><br />
 							</div>
@@ -1428,7 +1433,8 @@ function dbem_event_form($event, $title, $element) {
 						<?php
 	/* Marcus Begin Edit */
 	//adding the category selection box
-	?>
+	?>  				<? endif; ?>  
+						<? if(get_option('dbem_categories_enabled')) :?>
 						<div class="postbox ">
 							<div class="handlediv" title="Fare clic per cambiare."><br />
 							</div>
@@ -1456,7 +1462,8 @@ function dbem_event_form($event, $title, $element) {
 									</select>
 								</p>
 							</div>
-						</div>
+						</div> 
+						<? endif; ?>
 					</div>
 					<?php/* Marcus End Edit */ ?>
 				</div>
@@ -1694,6 +1701,7 @@ function dbem_event_form($event, $title, $element) {
 			_e ( 'Details about the event', 'dbem' )?>
 							</div>
 						</div>
+						<?php if(get_option('dbem_attributes_enabled')) : ?>
 						<?php/* Marcus Begin Edit */ ?>
 						<div id="event_attributes" class="postbox">
 							<h3>
@@ -1706,6 +1714,7 @@ function dbem_event_form($event, $title, $element) {
 							</div>
 						</div>
 						<?php/* Marcus End Edit */ ?>
+						<?php endif; ?>
 					</div>
 					<p class="submit">
 						<input type="submit" name="events_update"
@@ -2306,7 +2315,7 @@ function dbem_favorite_menu($actions) {
 ////////////////////////////////////
 // WP 2.7 options registration
 function dbem_options_register() {
-	$options = array ('dbem_events_page', 'dbem_display_calendar_in_events_page', 'dbem_use_event_end', 'dbem_event_list_item_format_header', 'dbem_event_list_item_format', 'dbem_event_list_item_format_footer', 'dbem_event_page_title_format', 'dbem_single_event_format', 'dbem_list_events_page', 'dbem_events_page_title', 'dbem_no_events_message', 'dbem_location_page_title_format', 'dbem_location_baloon_format', 'dbem_single_location_format', 'dbem_location_event_list_item_format', 'dbem_location_no_events_message', 'dbem_gmap_is_active', 'dbem_rss_main_title', 'dbem_rss_main_description', 'dbem_rss_title_format', 'dbem_rss_description_format', 'dbem_gmap_key', 'dbem_map_text_format', 'dbem_rsvp_mail_notify_is_active', 'dbem_contactperson_email_body', 'dbem_respondent_email_body', 'dbem_mail_sender_name', 'dbem_smtp_username', 'dbem_smtp_password', 'dbem_default_contact_person', 'dbem_mail_sender_address', 'dbem_mail_receiver_address', 'dbem_smtp_host', 'dbem_rsvp_mail_send_method', 'dbem_rsvp_mail_port', 'dbem_rsvp_mail_SMTPAuth', 'dbem_image_max_width', 'dbem_image_max_height', 'dbem_image_max_size','dbem_full_calendar_event_format','dbem_use_select_for_locations');
+	$options = array ('dbem_events_page', 'dbem_display_calendar_in_events_page', 'dbem_use_event_end', 'dbem_event_list_item_format_header', 'dbem_event_list_item_format', 'dbem_event_list_item_format_footer', 'dbem_event_page_title_format', 'dbem_single_event_format', 'dbem_list_events_page', 'dbem_events_page_title', 'dbem_no_events_message', 'dbem_location_page_title_format', 'dbem_location_baloon_format', 'dbem_single_location_format', 'dbem_location_event_list_item_format', 'dbem_location_no_events_message', 'dbem_gmap_is_active', 'dbem_rss_main_title', 'dbem_rss_main_description', 'dbem_rss_title_format', 'dbem_rss_description_format', 'dbem_gmap_key', 'dbem_map_text_format', 'dbem_rsvp_mail_notify_is_active', 'dbem_contactperson_email_body', 'dbem_respondent_email_body', 'dbem_mail_sender_name', 'dbem_smtp_username', 'dbem_smtp_password', 'dbem_default_contact_person', 'dbem_mail_sender_address', 'dbem_mail_receiver_address', 'dbem_smtp_host', 'dbem_rsvp_mail_send_method', 'dbem_rsvp_mail_port', 'dbem_rsvp_mail_SMTPAuth', 'dbem_image_max_width', 'dbem_image_max_height', 'dbem_image_max_size', 'dbem_full_calendar_event_format', 'dbem_use_select_for_locations', 'dbem_attributes_enabled', 'dbem_recurrence_enabled','dbem_rsvp_enabled','dbem_categories_enabled');
 	foreach ( $options as $opt ) {
 		register_setting ( 'dbem-options', $opt, '' );
 	}
