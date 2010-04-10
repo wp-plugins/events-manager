@@ -24,7 +24,7 @@ add_action('admin_menu','dbem_add_to_events_submenu', 100);
 function dbem_add_to_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		$file = dirname(__FILE__).DIRECTORY_SEPARATOR."events-manager.php";
-		$plugin_page = add_submenu_page($file, __('Event Categories','dbem'),__('Categories','dbem'), SETTING_CAPABILITY, "events-manager-categories", dbem_categories_subpanel);
+		$plugin_page = add_submenu_page($file, __('Event Categories','dbem'),__('Categories','dbem'), SETTING_CAPABILITY, "events-manager-categories", 'dbem_categories_subpanel');
 		add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' );
   	}
 }

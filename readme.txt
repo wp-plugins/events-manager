@@ -4,7 +4,7 @@ Donate link: http://davidebenini.it
 Tags: events, manager, calendar, gigs, concert, maps, geotagging  
 Requires at least: 2.7   
 Tested up to: 2.9.2   
-Stable tag: 2.1   
+Stable tag: 2.2   
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
@@ -208,5 +208,7 @@ Bugfix: locations with apostrophe were duplicated
 Bugfix: bloginfo('wpurl') instead of bloginfo('url')  
 Bugfix: now loading textdomain in the new (not deprecated) way
 
-2.2b
-Adding a option to get events through a select
+2.2
+Adding a option to get events through a select            
+Closed many bugs causing a notices/warning visible only in debug mode
+Closed a critical security hole discovered by Danilo Massa (to be released on May 10th)

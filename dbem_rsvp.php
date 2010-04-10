@@ -67,21 +67,22 @@ function dbem_delete_booking_form() {
 
 
 function dbem_catch_rsvp() {
-  global $form_add_message;   
-	global $form_delete_message;
+  	global $form_add_message;   
+	global $form_delete_message; 
+	$result = "";
 	if (isset($_POST['eventAction']) && $_POST['eventAction'] == 'add_booking') { 
 		$result = dbem_book_seats();
 		$form_add_message = $result;
 	  
 		
-  } 
+  	} 
 
 	if (isset($_POST['eventAction']) && $_POST['eventAction'] == 'delete_booking') { 
 		
 		$bookerName = dbem_sanitize_request($_POST['bookerName']);
 		$bookerEmail = dbem_sanitize_request($_POST['bookerEmail']);
 		$booker = dbem_get_person_by_name_and_email($bookerName, $bookerEmail); 
-	  if ($booker) {
+	  	if ($booker) {
 			$booker_id = $booker['person_id'];
 			$booking = dbem_get_booking_by_person_id($booker_id);
 			$result = dbem_delete_booking($booking['booking_id']);
@@ -89,7 +90,7 @@ function dbem_catch_rsvp() {
 			$result = __('There are no bookings associated to this name and e-mail', 'dbem');
 		}
 		$form_delete_message = $result; 
-  } 
+  	} 
 	
 	return $result;
 	
@@ -309,9 +310,10 @@ function dbem_get_bookings_for($event_id) {
 
 function dbem_intercept_bookings_delete() {
 	//dbem_email_rsvp_booking();
-	$bookings = $_GET['bookings'];  
+	if(isset($_GET['bookings']))
+		$bookings = $_GET['bookings'];  
 	
-	if ($bookings) {
+	if (isset($bookings)) {
 		foreach($bookings as $booking_id) {
 			dbem_delete_booking($booking_id);
 		}

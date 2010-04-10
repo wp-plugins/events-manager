@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 2.2b
+Version: 2.2
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini
@@ -461,9 +461,9 @@ function dbem_create_events_page(){
 add_action('admin_menu','dbem_create_events_submenu');     
 function dbem_create_events_submenu () {
 	  if(function_exists('add_submenu_page')) {
-	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel, '../wp-content/plugins/events-manager/images/calendar-16.png');
+	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,'dbem_events_subpanel', '../wp-content/plugins/events-manager/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu: 
-			$plugin_page = add_submenu_page(__FILE__, __('Edit'),__('Edit'),MIN_CAPABILITY,__FILE__,dbem_events_subpanel);
+			$plugin_page = add_submenu_page(__FILE__, __('Edit'),__('Edit'),MIN_CAPABILITY,__FILE__,'dbem_events_subpanel');
 			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' );
 			$plugin_page = add_submenu_page(__FILE__, __('Add new', 'dbem'), __('Add new','dbem'), MIN_CAPABILITY, 'new_event', "dbem_new_event_page");
 			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' ); 
@@ -472,7 +472,7 @@ function dbem_create_events_submenu () {
 			$plugin_page = add_submenu_page(__FILE__, __('People', 'dbem'), __('People', 'dbem'), MIN_CAPABILITY, 'people', "dbem_people_page");
 			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' ); 
 			//add_submenu_page(__FILE__, 'Test ', 'Test ', 8, 'test', 'dbem_recurrence_test');
-			$plugin_page = add_submenu_page(__FILE__, __('Events Manager Settings','dbem'),__('Settings','dbem'), SETTING_CAPABILITY, "events-manager-options", dbem_options_subpanel);
+			$plugin_page = add_submenu_page(__FILE__, __('Events Manager Settings','dbem'),__('Settings','dbem'), SETTING_CAPABILITY, "events-manager-options", 'dbem_options_subpanel');
 			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' );
   	}
 }

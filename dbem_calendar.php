@@ -37,7 +37,7 @@ function dbem_get_calendar($args="") {
 	if(isset($_GET['calyear']) && $_GET['calyear'] != '')   {
 		$year =  dbem_sanitize_request($_GET['calyear']) ;
 	} else {
-		if ($year == '')
+		if (!isset($year) || $year == '')
 			$year = date('Y');
 	}
 	$date = mktime(0,0,0,$month, date('d'), $year); 
@@ -280,7 +280,7 @@ function dbem_get_calendar($args="") {
 				}
 			}else{
 				//Only show events on the day that they start
-				if( is_array($eventful_days[$event['event_start_date']]) ){
+				if( isset($eventful_days[$event['event_start_date']]) && is_array($eventful_days[$event['event_start_date']]) ){
 					$eventful_days[$event['event_start_date']][] = $event; 
 				} else {
 					$eventful_days[$event['event_start_date']] = array($event);  
@@ -478,8 +478,8 @@ add_action('wp_head', 'dbem_ajaxize_calendar');
 function dbem_filter_calendar_ajax() {
 	if(isset($_GET['ajaxCalendar']) && $_GET['ajaxCalendar'] == true) {
 		(isset($_GET['full']) && $_GET['full'] == 1) ? $full = 1 : $full = 0;
-		$month = dbem_sanitize_request($_GET['month']); 
-		$year = dbem_sanitize_request($_GET['year']);
+		// $month = dbem_sanitize_request($_GET['month']); 
+		// $year = dbem_sanitize_request($_GET['year']);
 		dbem_get_calendar('echo=1&full='.$full);
 		die();
 	}

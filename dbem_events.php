@@ -446,7 +446,9 @@ function dbem_events_page_content() {
 	}
 	if (isset ( $_REQUEST ['event_id'] ) && $_REQUEST ['event_id'] != '') {
 		// single event page
-		$event_ID = dbem_sanitize_request($_REQUEST ['event_id']);    
+		$event_ID = dbem_sanitize_request($_REQUEST ['event_id']);      
+		// measure against blind sql attack suggested by Danilo Massa 
+		settype($event_ID, "int");
 		$event = dbem_get_event ( $event_ID );
 		$single_event_format = get_option ( 'dbem_single_event_format' );
 		$page_body = dbem_replace_placeholders ( $single_event_format, $event, 'stop' );
@@ -545,6 +547,8 @@ function dbem_events_page_title($data) {
 		if (isset ( $_REQUEST ['event_id'] ) && $_REQUEST ['event_id'] != '') {
 			// single event page
 			$event_ID = dbem_sanitize_request($_REQUEST ['event_id']);
+			// measure against blind sql attack suggested by Danilo Massa 
+			settype($event_ID, "int");
 			$event = dbem_get_event ( $event_ID );
 			$stored_page_title_format = get_option ( 'dbem_event_page_title_format' );
 			$page_title = dbem_replace_placeholders ( $stored_page_title_format, $event );
@@ -569,14 +573,16 @@ function dbem_filter_get_pages($data) {
 	$output = array ();
 	$events_page_id = get_option ( 'dbem_events_page' );
 	for($i = 0; $i < count ( $data ); ++ $i) {
-		if ($data [$i]->ID == $events_page_id) {
-			$list_events_page = get_option ( 'dbem_list_events_page' );
-			if ($list_events_page) {
-				$data [$i]->post_title = get_option ( 'dbem_events_page_title' ) . "&nbsp;";
+		if(isset($data [$i])) {
+			if ($data [$i]->ID == $events_page_id) {
+				$list_events_page = get_option ( 'dbem_list_events_page' );
+				if ($list_events_page) {
+					$data [$i]->post_title = get_option ( 'dbem_events_page_title' ) . "&nbsp;";
+					$output [] = $data [$i];
+				}
+			} else {
 				$output [] = $data [$i];
-			}
-		} else {
-			$output [] = $data [$i];
+			}  
 		}
 	}
 	return $output;
@@ -1000,7 +1006,7 @@ function dbem_events_table($events, $limit, $title) {
 	_e ( 'Bulk Actions' );
 	?></option>
 	<option value="deleteEvents"><?php
-	_e ( 'Delete selected' );
+	_e ( 'Delete selected','dbem' );
 	?></option>
 
 </select> <input type="submit" value="<?php
