@@ -95,10 +95,7 @@ $thisDir = dirname( plugin_basename( __FILE__ ) );
 load_plugin_textdomain('dbem', false, $thisDir.'/langs'); 
 
 // To enable activation through the activate function
-register_activation_hook(__FILE__,'events-manager');
-
-// Execute the install script when the plugin is installed
-add_action('activate_events-manager/events-manager.php','dbem_install');
+register_activation_hook(__FILE__,'dbem_install');
 
 // filters for general events field (corresponding to those of  "the _title")
 add_filter('dbem_general', 'wptexturize');
@@ -136,6 +133,7 @@ function dbem_install() {
 	dbem_create_categories_table();
 	/* Marcus End Edit */
   	// if ANY 1.0 option is there  AND the version options hasn't been set yet THEN launch the updat script 
+	
 	if (get_option('dbem_events_page') && !get_option('dbem_version')) 
 		dbem_migrate_old_events();
   
@@ -150,13 +148,12 @@ function dbem_install() {
 		}
 		if ($count == 0)
 			dbem_create_events_page(); 
-  } else {
-	  dbem_create_events_page(); 
-  }
-    // wp-content must be chmodded 777. Maybe just wp-content.
-   if(!file_exists("../".IMAGE_UPLOAD_DIR))
-			mkdir("../".IMAGE_UPLOAD_DIR, 0777);
-	
+	  } else {
+		  dbem_create_events_page(); 
+	  }
+		// wp-content must be chmodded 777. Maybe just wp-content.
+	   if(!file_exists("../".IMAGE_UPLOAD_DIR))
+				mkdir("../".IMAGE_UPLOAD_DIR, 0777);
 }
 
 function dbem_create_events_table() {
@@ -436,8 +433,11 @@ function dbem_add_options() {
 	'dbem_rsvp_enabled', DEFAULT_RSVP_ENABLED,
 	'dbem_categories_enabled', DEFAULT_CATEGORIES_ENABLED);
 	
-	foreach($dbem_options as $key => $value)
-		dbem_add_option($key, $value);
+	foreach($dbem_options as $key => $value){
+		if(preg_match('/$dbem/', $key)){
+			add_option($key, $value);
+		}
+	}
 		
 }
 function dbem_add_option($key, $value) {
