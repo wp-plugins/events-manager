@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 2.2
+Version: 2.2.1
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini
@@ -460,8 +460,8 @@ function dbem_create_events_page(){
 // Create the Manage Events and the Options submenus 
 add_action('admin_menu','dbem_create_events_submenu');     
 function dbem_create_events_submenu () {
-	  if(function_exists('add_submenu_page')) {
-	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,'dbem_events_subpanel', '../wp-content/plugins/events-manager/images/calendar-16.png');
+	if(function_exists('add_submenu_page')) {
+		add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,'dbem_events_subpanel', '../wp-content/plugins/events-manager/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu: 
 			$plugin_page = add_submenu_page(__FILE__, __('Edit'),__('Edit'),MIN_CAPABILITY,__FILE__,'dbem_events_subpanel');
 			add_action( 'admin_head-'. $plugin_page, 'dbem_admin_general_script' );

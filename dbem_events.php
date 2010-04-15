@@ -677,7 +677,7 @@ function dbem_get_events_list($limit = "10", $scope = "future", $order = "ASC", 
 			$output .= dbem_replace_placeholders ( $format, $event );
 		}
 		//Add headers and footers to output
-		if( $orig_format ){
+		if( isset($orig_format) && !empty($orig_format) ){
 			$single_event_format_header = get_option ( 'dbem_event_list_item_format_header' );
 			$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='dbem_events_list'>";
 			$single_event_format_footer = get_option ( 'dbem_event_list_item_format_footer' );
