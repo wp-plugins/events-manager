@@ -215,3 +215,6 @@ Closed a critical security hole discovered by Danilo Massa (to be released on Ma
 
 2.2.1
 newtweblogic fixed a bug in the install routine
+
+2.2.2 (working copy)
+small fix that stopped custom fields from showing up in events lists.

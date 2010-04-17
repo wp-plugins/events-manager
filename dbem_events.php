@@ -841,7 +841,7 @@ function dbem_get_events($limit = "", $scope = "future", $order = "ASC", $offset
 				recurrence_id, 
 				location_id, 
 				event_contactperson_id, 
-				event_category_id
+				event_category_id,
 				event_attributes
 				FROM $events_table   
 				$where
