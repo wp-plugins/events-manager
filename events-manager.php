@@ -85,13 +85,13 @@ if( is_admin() ){
 
 // Setting constants
 define('EM_VERSION', 2.31); //self expanatory
-define('DBEM_CATEGORIES_TBNAME', 'dbem_categories'); //TABLE NAME
-define('EVENTS_TBNAME','dbem_events'); //TABLE NAME
+define('DBEM_CATEGORIES_TBNAME', 'em_categories'); //TABLE NAME
+define('EVENTS_TBNAME','em_events'); //TABLE NAME
 define('RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME   
-define('LOCATIONS_TBNAME','dbem_locations'); //TABLE NAME  
-define('BOOKINGS_TBNAME','dbem_bookings'); //TABLE NAME
-define('PEOPLE_TBNAME','dbem_people'); //TABLE NAME  
-define('BOOKING_PEOPLE_TBNAME','dbem_bookings_people'); //TABLE NAME  
+define('LOCATIONS_TBNAME','em_locations'); //TABLE NAME  
+define('BOOKINGS_TBNAME','em_bookings'); //TABLE NAME
+define('PEOPLE_TBNAME','em_people'); //TABLE NAME  
+define('BOOKING_PEOPLE_TBNAME','em_bookings_people'); //TABLE NAME  
 define('DEFAULT_EVENT_PAGE_NAME', 'Events');   
 define('DBEM_PAGE','<!--DBEM_EVENTS_PAGE-->'); //EVENTS PAGE
 define('MIN_CAPABILITY', 'edit_posts');	// Minimum user level to access calendars
@@ -591,7 +591,7 @@ function em_migrate_to_new_tables(){
 	}                                                                                        
 	
 	// migrating locations
-	$bookings = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_LOCATIONS_TBNAME,ARRAY_A)  ;
+	$locations = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_LOCATIONS_TBNAME,ARRAY_A)  ;
 	foreach($locations as $l) {                
 		$wpdb->insert($wpdb->prefix.LOCATIONS_TBNAME, $l);
 	}
