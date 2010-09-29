@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 2.2.2
+Version: 2.3
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini, Marcus Sykes
@@ -123,6 +123,15 @@ define('DEFAULT_ATTRIBUTES_ENABLED', false);
 define('DEFAULT_RECURRENCE_ENABLED', false);
 define('DEFAULT_RSVP_ENABLED', false);
 define('DEFAULT_CATEGORIES_ENABLED', false);
+       
+// obsolete tables
+define('OLD_EVENTS_TBNAME','dbem_events') ; 
+define('OLD_LOCATIONS_TBNAME','dbem_locations'); //TABLE NAME  
+define('OLD_BOOKINGS_TBNAME','dbem_bookings'); //TABLE NAME
+define('OLD_PEOPLE_TBNAME','dbem_people'); //TABLE NAME  
+define('OLD_BOOKING_PEOPLE_TBNAME','dbem_bookings_people'); //TABLE NAME   
+define('OLD_DBEM_CATEGORIES_TBNAME', 'dbem_categories'); //TABLE NAME
+
 
 // DEBUG constant for developing
 // if you are hacking this plugin, set to TRUE, a log will show in admin pages
@@ -176,6 +185,21 @@ function dbem_load_event(){
 	define('EM_RSS_URI', get_bloginfo('wpurl')."/?dbem_rss=main"); //RSS PAGE URI
 }
 add_action('init', 'dbem_load_event', 1);
+                   
+// Settings link in the plugins page menu
+function em_set_plugin_meta($links, $file) {
+	$plugin = plugin_basename(__FILE__);
+	// create link
+	if ($file == $plugin) {
+		return array_merge(
+			$links,
+			array( sprintf( '<a href="admin.php?page=events-manager-options">%s</a>', __('Settings') ) )
+		);
+	}
+	return $links;
+}
+add_filter( 'plugin_row_meta', 'em_set_plugin_meta', 10, 2 );
+
 
 // Create the Manage Events and the Options submenus  
 function dbem_create_events_submenu () {
@@ -218,6 +242,7 @@ function dbem_favorite_menu($actions) {
 	return $actions;
 }
 add_filter ( 'favorite_actions', 'dbem_favorite_menu' );
+      
 
 ////////////////////////////////////
 // WP 2.7 options registration
@@ -268,6 +293,9 @@ function dbem_install() {
 	  
 	  	update_option('dbem_version', EM_VERSION); 
 		
+		if( get_option('dbem_version') < 3 )  
+			em_migrate_to_new_tables();
+			
 	  	// Create events page if necessary
 	 	dbem_create_events_page();
 		// wp-content must be chmodded 777. Maybe just wp-content.
@@ -307,7 +335,9 @@ function dbem_create_events_table() {
 		UNIQUE KEY (event_id)
 		);";
 	
-	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+	$old_table_name = $wpdb->prefix.OLD_EVENTS_TBNAME; 
+
+	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);		
 		//Add default events
 		$in_one_week = date('Y-m-d', time()*60*60*24*7);
@@ -376,7 +406,10 @@ function dbem_create_locations_table() {
 		);";
 		
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name) {
+	
+	$old_table_name = $wpdb->prefix.OLD_LOCATIONS_TBNAME;     
+
+	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);		
 		//Add default values
 		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_latitude, location_longitude) VALUES ('Arts Millenium Building', 'Newcastle Road','Galway', 53.275, -9.06532)");
@@ -509,5 +542,78 @@ function dbem_create_events_page(){
 		}
 	}
 	update_option('dbem_events_page', $wpdb->insert_id);
+}   
+
+// migrate old dbem tables to new em ones
+function em_migrate_to_new_tables(){
+	global $wpdb;                       
+	
+	// migrating events
+	$events = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_EVENTS_TBNAME,ARRAY_A)  ;
+	foreach($events as $e) {                
+		$wpdb->insert($wpdb->prefix.EVENTS_TBNAME, $e);
+	}     
+	// inserting recurrences into events                 
+	$table_name = $wpdb->prefix.EVENTS_TBNAME;  
+	$results = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.RECURRENCE_TBNAME, ARRAY_A);
+	foreach($results as $recurrence_raw){       
+		
+		//Save copy of recurrence_id
+		$recurrence_id = $recurrence_raw['recurrence_id'];
+		//First insert the event into events table
+		$recurrence = array( //Save new array with correct indexes
+			'event_author' => $user_ID,                  
+			'event_name' => $recurrence_raw['recurrence_name'],
+			'event_start_date' => $recurrence_raw['recurrence_start_date'],
+			'event_end_date' => $recurrence_raw['recurrence_end_date'],
+			'event_start_time' => $recurrence_raw['recurrence_start_time'],
+			'event_end_time' => $recurrence_raw['recurrence_end_time'],
+			'event_notes' => $recurrence_raw['recurrence_notes'],
+			'location_id' => $recurrence_raw['location_id'],
+			'recurrence' => 1,
+			'recurrence_interval' => $recurrence_raw['recurrence_interval'],
+			'recurrence_freq' => $recurrence_raw['recurrence_freq'],
+	   		'recurrence_byday' => $recurrence_raw['recurrence_byday'],
+	   		'recurrence_byweekno' => $recurrence_raw['recurrence_byweekno']
+		);
+		
+		if ($recurrence_raw['event_contactperson_id'] != '') $recurrence['event_contactperson_id'] = $recurrence_raw['event_contactperson_id'];  
+		
+		$result = $wpdb->insert($table_name, $recurrence);    
+		$wpdb->print_error();
+		//Then change the id of all the events with recurrence_id
+		if($result == 1){    
+			$wpdb->query("UPDATE {$table_name} SET recurrence_id='{$wpdb->insert_id}' WHERE recurrence_id='{$recurrence_id}'");
+		}else{
+			//FIXME Better fallback in case of bad install 
+			die( __('We could not mirgrate old recurrence data over. Please try again, or contact the developers to let them know of this bug.', 'dbem'));
+		} 
+	}                                                                                        
+	
+	// migrating locations
+	$bookings = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_LOCATIONS_TBNAME,ARRAY_A)  ;
+	foreach($locations as $l) {                
+		$wpdb->insert($wpdb->prefix.LOCATIONS_TBNAME, $l);
+	}
+	
+	// migrating people
+	$people = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_PEOPLE_TBNAME,ARRAY_A)  ;
+	foreach($people as $p) {                
+		$wpdb->insert($wpdb->prefix.PEOPLE_TBNAME, $p);
+	}
+	 
+	// migrating bookings
+	$bookings = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_BOOKINGS_TBNAME,ARRAY_A)  ;
+	foreach($bookings as $b) {                
+		$wpdb->insert($wpdb->prefix.BOOKINGS_TBNAME, $b);
+	} 
+	
+	 
+	// migrating categories
+	$categories = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_DBEM_CATEGORIES_TBNAME,ARRAY_A)  ;
+	foreach($categories as $c) {                
+		$wpdb->insert($wpdb->prefix.DBEM_CATEGORIES_TBNAME, $c);
+	} 
+	 
 }
 ?>
