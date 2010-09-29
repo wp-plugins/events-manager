@@ -277,35 +277,31 @@ function em_upgrade_stuff(){
 }
 
 /* Creating the wp_events table to store event data*/
-function dbem_install() {
- 	// if ANY 1.0 option is there  AND the version options hasn't been set yet THEN launch the updat script
-	if ( get_option('dbem_events_page') && !get_option('dbem_version') ) {
-		die( __('Please upgrade to the latest 2.x version before proceeding to installing version 3 onwards.', 'dbem') );
-	}
+function em_install() {
 	if( EM_VERSION > get_option('dbem_version') ){
 	 	// Creates the events table if necessary
-		dbem_create_events_table(); 
-		dbem_create_locations_table();
-	  	dbem_create_bookings_table();
-	  	dbem_create_people_table();
-		dbem_create_categories_table();
-		dbem_add_options();
-	  
-	  	update_option('dbem_version', EM_VERSION); 
+		em_create_events_table(); 
+		em_create_locations_table();
+	  	em_create_bookings_table();
+	  	em_create_people_table();
+		em_create_categories_table();
+		em_add_options();
 		
-		if( get_option('dbem_version') < 3 )  
+		if( get_option('dbem_version') < 2.3 )  
 			em_migrate_to_new_tables();
 			
+	  	update_option('dbem_version', EM_VERSION); 
+	  	
 	  	// Create events page if necessary
-	 	dbem_create_events_page();
+	 	em_create_events_page();
 		// wp-content must be chmodded 777. Maybe just wp-content.
 		if(!file_exists("../".IMAGE_UPLOAD_DIR))
-			mkdir("../".IMAGE_UPLOAD_DIR, 0777);
+			mkdir("../".IMAGE_UPLOAD_DIR, 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
 	}
 }
-register_activation_hook( __FILE__,'dbem_install');
+register_activation_hook( __FILE__,'em_install');
 
-function dbem_create_events_table() {
+function em_create_events_table() {
 	global  $wpdb, $user_level, $user_ID;
 	get_currentuserinfo();
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php'); 
@@ -349,45 +345,10 @@ function dbem_create_events_table() {
 		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id) VALUES ('6 Nations, Italy VS Ireland', '$in_one_year','22:00:00', '24:00:00', 3)");
 	}else{
 		dbDelta($sql);
-		//if previous version is < 3 then we must migrate old recurrence data
-		if( get_option('dbem_version') < 3 ){
-			$results = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.RECURRENCE_TBNAME, ARRAY_A);
-			foreach($results as $recurrence_raw){
-				//Save copy of recurrence_id
-				$recurrence_id = $recurrence_raw['recurrence_id'];
-				//First insert the event into events table
-				$recurrence = array(); //Save new array with correct indexes
-				$recurrence['event_id'] = $recurrence_raw['recurrence_id'];
-				$recurrence['event_author'] = $user_ID;
-				$recurrence['event_name'] = $recurrence_raw['recurrence_name'];
-				$recurrence['event_start_date'] = $recurrence_raw['recurrence_start_date'];
-				$recurrence['event_end_date'] = $recurrence_raw['recurrence_end_date'];
-				$recurrence['event_start_time'] = $recurrence_raw['recurrence_start_time'];
-				$recurrence['event_end_time'] = $recurrence_raw['recurrence_end_time'];
-				$recurrence['event_notes'] = $recurrence_raw['recurrence_notes'];
-				$recurrence['location_id'] = $recurrence_raw['location_id'];
-				$recurrence['recurrence'] = 1;
-				$recurrence['recurrence_interval'] = $recurrence_raw['recurrence_interval'];
-				$recurrence['recurrence_freq'] = $recurrence_raw['recurrence_freq'];
-				$recurrence['recurrence_byday'] = $recurrence_raw['recurrence_byday'];
-				$recurrence['recurrence_byweekno'] = $recurrence_raw['recurrence_byweekno'];
-				if ($recurrence_raw['event_contactperson_id'] != '') $recurrence['event_contactperson_id'] = $recurrence_raw['event_contactperson_id'];
-				$result = $wpdb->insert($table_name, $recurrence);
-				//Then change the id of all the events with recurrence_id
-				if($result == 1){
-					$wpdb->query("UPDATE {$table_name} SET recurrence_id='{$wpdb->insert_id}' WHERE recurrence_id='{$recurrence_id}'");
-				}else{
-					//FIXME Better fallback in case of bad install 
-					die( __('We could not mirgrate old recurrence data over. Please try again, or contact the developers to let them know of this bug.', 'dbem'));
-				}
-			}
-			//Now delete recurrence table
-			$wpdb->query('DROP TABLE '.$wpdb->prefix.RECURRENCE_TBNAME);
-		}
 	}
 }
 
-function dbem_create_locations_table() {
+function em_create_locations_table() {
 	
 	global  $wpdb, $user_level;
 	$table_name = $wpdb->prefix.LOCATIONS_TBNAME;
@@ -420,7 +381,7 @@ function dbem_create_locations_table() {
 	}
 }
 
-function dbem_create_bookings_table() {
+function em_create_bookings_table() {
 	
 	global  $wpdb, $user_level;
 	$table_name = $wpdb->prefix.BOOKINGS_TBNAME;
@@ -438,7 +399,7 @@ function dbem_create_bookings_table() {
 	dbDelta($sql);
 }
 
-function dbem_create_people_table() {
+function em_create_people_table() {
 	
 	global  $wpdb, $user_level;
 	$table_name = $wpdb->prefix.PEOPLE_TBNAME;
@@ -455,7 +416,7 @@ function dbem_create_people_table() {
 } 
 
 //Add the categories table
-function dbem_create_categories_table() {
+function em_create_categories_table() {
 	
 	global  $wpdb, $user_level;
 	$table_name = $wpdb->prefix.DBEM_CATEGORIES_TBNAME;
@@ -471,7 +432,7 @@ function dbem_create_categories_table() {
 }
 
 
-function dbem_add_options() {
+function em_add_options() {
 	$contact_person_email_body_localizable = __("#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.<br/> Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager",'dbem') ;
 	$respondent_email_body_localizable = __("Dear #_RESPNAME, <br/>you have successfully reserved #_SPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/> #_CONTACTPERSON",'dbem');
 	
@@ -528,7 +489,7 @@ function dbem_add_option($key, $value) {
 		update_option($key, $value);
 }      
 
-function dbem_create_events_page(){
+function em_create_events_page(){
 	global $wpdb;
 	$events_page_id = get_option('dbem_events_page')  ;
 	if ( $events_page_id != "" ) {
@@ -550,9 +511,12 @@ function em_migrate_to_new_tables(){
 	
 	// migrating events
 	$events = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_EVENTS_TBNAME,ARRAY_A)  ;
-	foreach($events as $e) {                
-		$wpdb->insert($wpdb->prefix.EVENTS_TBNAME, $e);
-	}     
+	foreach($events as $event) {
+		foreach($event as $key => $value){
+			if($value == ''){ unset($event[$key]); }
+		}          
+		$wpdb->insert($wpdb->prefix.EVENTS_TBNAME, $event);
+	}
 	// inserting recurrences into events                 
 	$table_name = $wpdb->prefix.EVENTS_TBNAME;  
 	$results = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.RECURRENCE_TBNAME, ARRAY_A);
@@ -575,9 +539,12 @@ function em_migrate_to_new_tables(){
 			'recurrence_freq' => $recurrence_raw['recurrence_freq'],
 	   		'recurrence_byday' => $recurrence_raw['recurrence_byday'],
 	   		'recurrence_byweekno' => $recurrence_raw['recurrence_byweekno']
-		);
-		
-		if ($recurrence_raw['event_contactperson_id'] != '') $recurrence['event_contactperson_id'] = $recurrence_raw['event_contactperson_id'];  
+		);  
+		foreach($recurrence as $key => $value){
+			if($value == ''){ 
+				unset($recurrence[$key]); 
+			}
+		}  
 		
 		$result = $wpdb->insert($table_name, $recurrence);    
 		$wpdb->print_error();
@@ -586,7 +553,7 @@ function em_migrate_to_new_tables(){
 			$wpdb->query("UPDATE {$table_name} SET recurrence_id='{$wpdb->insert_id}' WHERE recurrence_id='{$recurrence_id}'");
 		}else{
 			//FIXME Better fallback in case of bad install 
-			die( __('We could not mirgrate old recurrence data over. Please try again, or contact the developers to let them know of this bug.', 'dbem'));
+			_e('We could not mirgrate old recurrence data over. Please try again, or contact the developers to let them know of this bug.', 'dbem');
 		} 
 	}                                                                                        
 	
