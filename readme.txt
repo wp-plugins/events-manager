@@ -1,9 +1,9 @@
 === Events Manager ===  
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://davidebenini.it  
-Tags: events, manager, calendar, gigs, concert, maps, geotagging  
+Tags: events, manager, calendar, gigs, concert, maps, geotagging, rsvp  
 Requires at least: 2.7   
-Tested up to: 2.9.2   
+Tested up to: 3.0.1   
 Stable tag: 2.2.2   
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
@@ -217,4 +217,13 @@ Closed a critical security hole discovered by Danilo Massa (to be released on Ma
 newtweblogic fixed a bug in the install routine
 
 2.2.2
-small fix that stopped custom fields from showing up in events lists.
+Small fix that stopped custom fields from showing up in events lists.         
+
+2.3
+Refactored all the underlying achitecture, to make it object oriented. Now classes and templates are separate.
+Merged the events and recurrences tables                                                   
+Tables migration from dbem to em (to provide a fallback in case the previous merge goes wrong)
+Bugfix: 127 limit increased (got rid of tinyint types)
+Bugfix: fixed all major php bugs preventing the use with Wordpress 3.0
+Bugfix: fixed all major js bugs preventing the use with Wordpress 3.0
+Restyling of the Settings page
