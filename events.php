@@ -89,8 +89,8 @@ add_filter ( 'single_post_title', 'em_events_page_title' ); //Filter for the wp_
  */
 function em_wp_the_title($data){
 	//This is set by the loop_start and loop_end actions
-	global $wpdb;
-	if ( $wpdb->in_the_loop() ) {
+	global $wp_query;
+	if ( $wp_query->in_the_loop ) {
 		return em_events_page_title($data) ;
 	}else{
 		return $data ;

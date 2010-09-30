@@ -329,7 +329,7 @@ function em_create_events_table() {
 		recurrence_byday int(4) NULL DEFAULT NULL,
 		recurrence_byweekno int(4) NULL DEFAULT NULL,  		
 		UNIQUE KEY (event_id)
-		);";
+		) DEFAULT CHARSET=utf8 ;";
 	
 	$old_table_name = $wpdb->prefix.OLD_EVENTS_TBNAME; 
 
@@ -364,7 +364,7 @@ function em_create_locations_table() {
 		location_longitude float DEFAULT NULL,
 		location_description text DEFAULT NULL,
 		UNIQUE KEY (location_id)
-		);";
+		) DEFAULT CHARSET=utf8 ;";
 		
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
@@ -394,7 +394,7 @@ function em_create_bookings_table() {
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		UNIQUE KEY  (booking_id)
-		);";
+		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
 }
@@ -410,7 +410,7 @@ function em_create_people_table() {
 		person_email tinytext NOT NULL,
 		person_phone tinytext NOT NULL,
 		UNIQUE KEY (person_id)
-		);";
+		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
 } 
@@ -426,7 +426,7 @@ function em_create_categories_table() {
 		category_id bigint(20) unsigned NOT NULL auto_increment,
 		category_name tinytext NOT NULL,
 		PRIMARY KEY  (category_id)
-		);";
+		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
 }
@@ -502,7 +502,7 @@ function em_create_events_page(){
 			$wpdb->query($sql);
 		}
 	}
-	update_option('dbem_events_page', $wpdb->insert_id);
+	add_option('dbem_events_page', $wpdb->insert_id);
 }   
 
 // migrate old dbem tables to new em ones
