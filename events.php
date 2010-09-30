@@ -89,30 +89,14 @@ add_filter ( 'single_post_title', 'em_events_page_title' ); //Filter for the wp_
  */
 function em_wp_the_title($data){
 	//This is set by the loop_start and loop_end actions
-	global $em_wp_loop_status;
-	if ( $em_wp_loop_status ) {
+	global $wpdb;
+	if ( $wpdb->in_the_loop() ) {
 		return em_events_page_title($data) ;
 	}else{
 		return $data ;
 	}
 }
 add_filter ( 'the_title', 'em_wp_the_title' );
-
-/**
- * Sets global flag to true when loop starts
- */
-function em_wp_loop_start(){ 
-	global $em_wp_loop_status; $em_wp_loop_status = true; 
-}
-add_action('loop_start', 'em_wp_loop_start');
-
-/**
- * Sets global flag to false when loop ends
- */
-function em_wp_loop_end(){ 
-	global $em_wp_loop_status; $em_wp_loop_status = false; 
-}
-add_action('loop_end', 'em_wp_loop_end');
 
 /**
  * Filters the get_pages functions so it includes the event pages?

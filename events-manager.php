@@ -84,7 +84,7 @@ if( is_admin() ){
 
 
 // Setting constants
-define('EM_VERSION', 2.31); //self expanatory
+define('EM_VERSION', 2.3); //self expanatory
 define('DBEM_CATEGORIES_TBNAME', 'em_categories'); //TABLE NAME
 define('EVENTS_TBNAME','em_events'); //TABLE NAME
 define('RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME   
@@ -308,8 +308,8 @@ function em_create_events_table() {
 	
 	$table_name = $wpdb->prefix.EVENTS_TBNAME; 
 	$sql = "CREATE TABLE ".$table_name." (
-		event_id mediumint(9) NOT NULL AUTO_INCREMENT,
-		event_author mediumint(9) DEFAULT NULL,
+		event_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		event_author bigint(20) unsigned DEFAULT NULL,
 		event_name tinytext NOT NULL,
 		event_start_time time NOT NULL,
 		event_end_time time NOT NULL,
@@ -317,17 +317,17 @@ function em_create_events_table() {
 		event_end_date date NULL, 
 		event_notes text NULL DEFAULT NULL,
 		event_rsvp bool NOT NULL DEFAULT 0,
-		event_seats tinyint,
-		event_contactperson_id mediumint(9) NULL,  
-		location_id mediumint(9) NOT NULL,
-		recurrence_id mediumint(9) NULL,
-  		event_category_id int(11) NULL DEFAULT NULL,
+		event_seats int(5),
+		event_contactperson_id bigint(20) unsigned NULL,  
+		location_id bigint(20) unsigned NOT NULL,
+		recurrence_id bigint(20) unsigned NULL,
+  		event_category_id bigint(20) unsigned NULL DEFAULT NULL,
   		event_attributes text NULL,
 		recurrence bool NOT NULL DEFAULT 0,
-		recurrence_interval tinyint NULL DEFAULT NULL,
+		recurrence_interval int(4) NULL DEFAULT NULL,
 		recurrence_freq tinytext NULL DEFAULT NULL,
-		recurrence_byday tinyint NULL DEFAULT NULL,
-		recurrence_byweekno tinyint NULL DEFAULT NULL,  		
+		recurrence_byday int(4) NULL DEFAULT NULL,
+		recurrence_byweekno int(4) NULL DEFAULT NULL,  		
 		UNIQUE KEY (event_id)
 		);";
 	
@@ -355,7 +355,7 @@ function em_create_locations_table() {
 
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
-		location_id mediumint(9) NOT NULL AUTO_INCREMENT,
+		location_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		location_name tinytext NOT NULL,
 		location_address tinytext NOT NULL,
 		location_town tinytext NOT NULL,
@@ -387,10 +387,10 @@ function em_create_bookings_table() {
 	$table_name = $wpdb->prefix.BOOKINGS_TBNAME;
 		
 	$sql = "CREATE TABLE ".$table_name." (
-		booking_id mediumint(9) NOT NULL AUTO_INCREMENT,
-		event_id mediumint(9) NOT NULL,
-		person_id tinyint NOT NULL, 
-		booking_seats tinyint NOT NULL,
+		booking_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		event_id bigint(20) unsigned NOT NULL,
+		person_id bigint(20) unsigned NOT NULL, 
+		booking_seats int(5) NOT NULL,
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		UNIQUE KEY  (booking_id)
@@ -405,7 +405,7 @@ function em_create_people_table() {
 	$table_name = $wpdb->prefix.PEOPLE_TBNAME;
 
 	$sql = "CREATE TABLE ".$table_name." (
-		person_id mediumint(9) NOT NULL AUTO_INCREMENT,
+		person_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		person_name tinytext NOT NULL, 
 		person_email tinytext NOT NULL,
 		person_phone tinytext NOT NULL,
@@ -423,7 +423,7 @@ function em_create_categories_table() {
 
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
-		category_id int(11) NOT NULL auto_increment,
+		category_id bigint(20) unsigned NOT NULL auto_increment,
 		category_name tinytext NOT NULL,
 		PRIMARY KEY  (category_id)
 		);";
@@ -507,16 +507,29 @@ function em_create_events_page(){
 
 // migrate old dbem tables to new em ones
 function em_migrate_to_new_tables(){
-	global $wpdb;                       
+	global $wpdb, $current_user;
+	get_currentuserinfo();                       
 	
 	// migrating events
+	$events_required = array('event_id', 'event_name','event_start_time','event_end_time','event_start_date','event_rsvp','location_id','recurrence');
 	$events = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_EVENTS_TBNAME,ARRAY_A)  ;
+	$events_values = array();
+	$events_keys = array_keys($events[0]); 
 	foreach($events as $event) {
 		foreach($event as $key => $value){
-			if($value == ''){ unset($event[$key]); }
-		}          
-		$wpdb->insert($wpdb->prefix.EVENTS_TBNAME, $event);
+			if($value == '' && !in_array($key,$events_required)){ $event[$key] = 'NULL'; }
+			elseif ( $value == '-1' && !in_array($key,$events_required) ) { $event[$key] = 'NULL'; } 
+			else { $event[$key] = "'".$wpdb->escape($event[$key])."'"; }
+		}
+		$events_values[] = "\n".'('. implode(', ', $event).')';
 	}
+	if( count($events_values) > 1 ){
+		$events_sql = "INSERT INTO " . $wpdb->prefix.EVENTS_TBNAME . 
+			"(`" . implode('` ,`', $events_keys) . "`) VALUES".
+			implode(', ', $events_values);
+		$wpdb->query($events_sql);
+	}
+	
 	// inserting recurrences into events                 
 	$table_name = $wpdb->prefix.EVENTS_TBNAME;  
 	$results = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.RECURRENCE_TBNAME, ARRAY_A);
@@ -526,7 +539,7 @@ function em_migrate_to_new_tables(){
 		$recurrence_id = $recurrence_raw['recurrence_id'];
 		//First insert the event into events table
 		$recurrence = array( //Save new array with correct indexes
-			'event_author' => $user_ID,                  
+			'event_author' => $current_user->ID,                  
 			'event_name' => $recurrence_raw['recurrence_name'],
 			'event_start_date' => $recurrence_raw['recurrence_start_date'],
 			'event_end_date' => $recurrence_raw['recurrence_end_date'],
@@ -539,42 +552,72 @@ function em_migrate_to_new_tables(){
 			'recurrence_freq' => $recurrence_raw['recurrence_freq'],
 	   		'recurrence_byday' => $recurrence_raw['recurrence_byday'],
 	   		'recurrence_byweekno' => $recurrence_raw['recurrence_byweekno']
-		);  
-		foreach($recurrence as $key => $value){
-			if($value == ''){ 
-				unset($recurrence[$key]); 
-			}
-		}  
-		
-		$result = $wpdb->insert($table_name, $recurrence);    
-		$wpdb->print_error();
+		);
+		$result = $wpdb->insert($table_name, $recurrence, array('%d','%s','%s','%s','%s','%s','%s','%d','%d','%d','%d','%d','%d'));
 		//Then change the id of all the events with recurrence_id
 		if($result == 1){    
 			$wpdb->query("UPDATE {$table_name} SET recurrence_id='{$wpdb->insert_id}' WHERE recurrence_id='{$recurrence_id}'");
 		}else{
 			//FIXME Better fallback in case of bad install 
-			_e('We could not mirgrate old recurrence data over. Please try again, or contact the developers to let them know of this bug.', 'dbem');
+			_e('We could not mirgrate old recurrence data over. DONT WORRY! You can just delete the current plugin, and re-install the previous 2.2.2 version and you wont lose any of your data. Either way, please contact the developers to let them know of this bug.', 'dbem');
 		} 
 	}                                                                                        
 	
 	// migrating locations
+	$locations_required = array('location_id', 'location_name', 'location_address', 'location_town');
 	$locations = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_LOCATIONS_TBNAME,ARRAY_A)  ;
-	foreach($locations as $l) {                
-		$wpdb->insert($wpdb->prefix.LOCATIONS_TBNAME, $l);
+	$locations_values = array();
+	$locations_keys = array_keys($locations[0]); 
+	foreach($locations as $location) {
+		foreach($location as $key => $value){
+			if($value == '' && !in_array($key, $locations_required)){ $location[$key] = 'NULL'; }
+			elseif ( $value == '-1' && !in_array($key, $locations_required) ) { $location[$key] = 'NULL'; } 
+			else { $location[$key] = "'".$wpdb->escape($location[$key])."'"; }
+		}
+		$locations_values[] = "\n".'('. implode(', ', $location).')';
+	}
+	if( count($locations_values) > 1 ){
+		$locations_sql = "INSERT INTO " . $wpdb->prefix.LOCATIONS_TBNAME . 
+			"(`" . implode('` ,`', $locations_keys) . "`) VALUES".
+			implode(', ', $locations_values);
+		$wpdb->query($locations_sql);
 	}
 	
 	// migrating people
 	$people = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_PEOPLE_TBNAME,ARRAY_A)  ;
-	foreach($people as $p) {                
-		$wpdb->insert($wpdb->prefix.PEOPLE_TBNAME, $p);
+	$people_values = array();
+	$people_keys = array_keys($people[0]); 
+	foreach($people as $person) {
+		foreach($person as $key => $value){
+			$person[$key] = "'".$wpdb->escape($person[$key])."'";
+		}
+		$people_values[] = "\n".'('. implode(', ', $person).')';
+	}
+	if( count($people_values) > 1 ){
+		$people_sql = "INSERT INTO " . $wpdb->prefix.PEOPLE_TBNAME . 
+			"(`" . implode('` ,`', $people_keys) . "`) VALUES".
+			implode(', ', $people_values);
+		$wpdb->query($people_sql);
 	}
 	 
 	// migrating bookings
 	$bookings = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_BOOKINGS_TBNAME,ARRAY_A)  ;
-	foreach($bookings as $b) {                
-		$wpdb->insert($wpdb->prefix.BOOKINGS_TBNAME, $b);
-	} 
-	
+	$bookings_values = array();
+	$bookings_keys = array_keys($bookings[0]); 
+	foreach($bookings as $booking) {
+		foreach($booking as $key => $value){
+			if($value == '' && $key == 'booking_comment'){ $booking[$key] = 'NULL'; }
+			elseif ( $value == '-1' ) { $booking[$key] = '0'; } 
+			else { $booking[$key] = "'".$wpdb->escape($booking[$key])."'"; }
+		}
+		$bookings_values[] = "\n".'('. implode(', ', $booking).')';
+	}
+	if( count($bookings_values) > 1 ){
+		$bookings_sql = "INSERT INTO " . $wpdb->prefix.BOOKINGS_TBNAME . 
+			"(`" . implode('` ,`', $bookings_keys) . "`) VALUES".
+			implode(', ', $bookings_values);
+		$wpdb->query($bookings_sql);
+	}
 	 
 	// migrating categories
 	$categories = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_DBEM_CATEGORIES_TBNAME,ARRAY_A)  ;
