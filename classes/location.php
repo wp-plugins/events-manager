@@ -41,10 +41,10 @@ class EM_Location extends EM_Object {
 			//Load location data
 			if( is_array($location_data) && isset($location_data['location_name']) ){
 				$location = $location_data;
-			}elseif( $location_data > 0 || is_numeric($location_data['location_id']) ){
+			}elseif( $location_data > 0 ){
 				//Retreiving from the database		
 				global $wpdb;
-				$sql = "SELECT * FROM ". $wpdb->prefix.LOCATIONS_TBNAME ." WHERE location_id ='{$location_data['location_id']}'";   
+				$sql = "SELECT * FROM ". $wpdb->prefix.LOCATIONS_TBNAME ." WHERE location_id ='{$location_data}'";   
 			  	$location = $wpdb->get_row($sql, ARRAY_A);
 			}
 			//If gmap is turned off, values may not be returned and set, so we set it here
@@ -182,7 +182,7 @@ class EM_Location extends EM_Object {
 		return (count($affected_events) > 0);
 	}
 	
-	function get_events($args) {
+	function get_events($args = array()) {
 		$args['location_id'] = $this->id;
 		return EM_Events::get($args);
 	}	
@@ -256,7 +256,7 @@ class EM_Location extends EM_Object {
 			 	$location_string = str_replace($result, $list , $location_string ); 
 			}
 			if (preg_match('/#_ALLEVENTS/', $result)) {
-			 	$list = $this->get_events("all");
+			 	$list = $this->get_events( array('scope'=>'all') );
 			 	$location_string = str_replace($result, $list , $location_string ); 
 			}	
 			if (preg_match('/#_IMAGE$/', $result)) {

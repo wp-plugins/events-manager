@@ -94,18 +94,19 @@ class EM_Event extends EM_Object{
 					WHERE event_id = $event_data
 				"; //We get event and location data here to avoid extra queries
 				$event = $wpdb->get_row ( $sql, ARRAY_A );
-				//Sort out attributes
-				$event ['event_attributes'] = @unserialize($event ['event_attributes']);
-				$event ['event_attributes'] = (!is_array($event ['event_attributes'])) ?  array() : $event ['event_attributes'] ;
 				//Sort Location
 				$this->location = new EM_Location ( $event );
 			}
+			//Sort out attributes
+			$event ['event_attributes'] = @unserialize($event ['event_attributes']);
+			$event ['event_attributes'] = (!is_array($event ['event_attributes'])) ?  array() : $event ['event_attributes'] ;
 			$this->to_object($event);
 			//Add Contact Person
 			if($this->contactperson_id){
 				if($this->contactperson_id > 0){
 					$this->contact = get_userdata($this->contactperson_id);
-				}else{
+				}
+				if( !is_object($this->contact) ){
 					$this->contactperson_id = get_option('dbem_default_contact_person');
 					$this->contact = get_userdata($this->contactperson_id);
 				}
@@ -201,6 +202,8 @@ class EM_Event extends EM_Object{
 	 		return false;
 		}
 		$this->location_id = $this->location->id;
+		//TODO make contactperson_id NULL if not used
+		$this->contactperson_id = ( $this->contactperson_id > 0 ) ? $this->contactperson_id:0;
 		//Now save the event
 		if ( !$this->id ) {
 			// Insert New Event
@@ -208,24 +211,28 @@ class EM_Event extends EM_Object{
 			$event = $this->to_array(false, true);
 			$event['event_attributes'] = serialize($this->attributes);
 			$event['recurrence_id'] = ( is_numeric($this->recurrence_id) ) ? $this->recurrence_id : 0;
-			$wpdb->insert ( $events_table, $event, $this->get_types($event) );
-			$this->id = $wpdb->insert_id;
-			//Deal with recurrences
-			if ( $this->is_recurring() ) {
-				//Recurrence master event saved, now Save Events & check errors
-			 	if( !$this->save_events() ){
-					$this->errors[] = 	__ ( 'Something went wrong with the recurrence update...', 'dbem' ).
-										__ ( 'There was a problem saving the recurring events.', 'dbem' );
-					$this->delete();
-			 		return false;
-			 	}
-			 	//All good! Event Saved
-				$this->feedback_message = __ ( 'New recurrent event inserted!', 'dbem' );
+			$result = $wpdb->insert ( $events_table, $event, $this->get_types($event) );
+			if($result !== false){
+				$this->id = $wpdb->insert_id;
+				//Deal with recurrences
+				if ( $this->is_recurring() ) {
+					//Recurrence master event saved, now Save Events & check errors
+				 	if( !$this->save_events() ){
+						$this->errors[] = 	__ ( 'Something went wrong with the recurrence update...', 'dbem' ).
+											__ ( 'There was a problem saving the recurring events.', 'dbem' );
+						$this->delete();
+				 		return false;
+				 	}
+				 	//All good! Event Saved
+					$this->feedback_message = __ ( 'New recurrent event inserted!', 'dbem' );
+					return true;
+				}
+				//Successful individual save
+				$this->feedback_message = __ ( 'New event successfully inserted!', 'dbem' );
 				return true;
+			}else{
+				$this->errors[] = 	__ ( 'Could not save the event details due to a database error.', 'dbem' );
 			}
-			//Successful individual save
-			$this->feedback_message = __ ( 'New event successfully inserted!', 'dbem' );
-			return true;
 		} else {
 			// Update Event
 			//TODO event privacy protection, only authors and authorized users can edit events
@@ -247,8 +254,7 @@ class EM_Event extends EM_Object{
 					return true;			
 				}
 			}else{
-				$this->errors[] = __('Could not save the event details.', 'dbem');
-				print_r($wpdb);
+				$this->errors[] = __('Could not save the event details due to a database error.', 'dbem');
 				return false;
 			}
 			//Successful individual or recurrence save
@@ -431,7 +437,7 @@ class EM_Event extends EM_Object{
 			if (preg_match('/#_ADDBOOKINGFORM/', $result)) {
 			 	$rsvp_is_active = get_option('dbem_rsvp_enabled'); 
 				if ($this->rsvp) {
-				   $rsvp_add_module .= dbem_add_booking_form();
+				   $rsvp_add_module .= em_add_booking_form();
 				} else {
 					$rsvp_add_module .= "";
 				}
@@ -440,7 +446,7 @@ class EM_Event extends EM_Object{
 			if (preg_match('/#_REMOVEBOOKINGFORM/', $result)) {
 			 	$rsvp_is_active = get_option('dbem_rsvp_enabled'); 
 				if ($this->rsvp) {
-				   $rsvp_delete_module .= dbem_delete_booking_form();
+				   $rsvp_delete_module .= em_delete_booking_form();
 				} else {
 					$rsvp_delete_module .= "";
 				}

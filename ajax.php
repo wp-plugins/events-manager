@@ -1,6 +1,6 @@
 <?php
 //AJAX function 
-function dbem_ajax_actions() {
+function em_ajax_actions() {
 	//Clean this up.... use a uniformed way of calling EM Ajax actions
  	if(isset($_REQUEST['dbem_ajax_action']) && $_REQUEST['dbem_ajax_action'] == 'booking_data') {
 		if(isset($_REQUEST['id'])){
@@ -48,6 +48,6 @@ function dbem_ajax_actions() {
 		die();
 	}
 }  
-add_action('init','dbem_ajax_actions');
+add_action('init','em_ajax_actions');
 
 ?>

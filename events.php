@@ -11,25 +11,25 @@
 function em_content($data) {
 	$events_page_id = get_option ( 'dbem_events_page' );
 	if ( get_the_ID() == $events_page_id ) {
-		global $wpdb;
-		if ( is_numeric($_REQUEST['location_id']) ) {
-			//Just a single location
-			$location = new EM_Location($_REQUEST['location_id']);
-			return $location->output_single();	
-		}
-		if ( is_numeric($_REQUEST['event_id']) ) {
-			// single event page
-			$event = new EM_Event( $_REQUEST['event_id'] );
-			return $event->output_single();
-		} elseif ( isset( $_REQUEST['calendar_day'] ) && $_REQUEST['calendar_day'] != '' ) {
+		global $wpdb, $EM_Event;
+		//TODO any loop should put the current $EM_Event etc. into the global variable
+		if ( isset( $_REQUEST['calendar_day'] ) && $_REQUEST['calendar_day'] != '' ) {
 			//Events for a specific day
 			$events = EM_Events::get( array('limit'=>10,'scope'=>$_REQUEST['calendar_day'],'order'=>"ASC") );
 			if ( count($events) > 1) {
 				return EM_Events::output($events);
 			} else {
-				$event = $events[0];
-				return $event->output_single();
+				$EM_Event = $events[0];
+				return $EM_Event->output_single();
 			}
+		} elseif ( is_numeric($_REQUEST['location_id']) ) {
+			//Just a single location
+			$location = new EM_Location($_REQUEST['location_id']);
+			return $location->output_single();
+		} elseif ( is_numeric($_REQUEST['event_id']) ) {
+			// single event page
+			$event = new EM_Event( $_REQUEST['event_id'] );
+			return $event->output_single();
 		} else {
 			// Multiple events page
 			$scope = ($_REQUEST['scope']) ? EM_Object::sanitize($_REQUEST['scope']) : "future";

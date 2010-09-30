@@ -170,7 +170,7 @@ load_plugin_textdomain('dbem', false, dirname( plugin_basename( __FILE__ ) ).'/i
  * All functions (admin and public) can now work off this object rather than it around via arguments.
  * @return null
  */
-function dbem_load_event(){
+function em_load_event(){
 	global $EM_Event, $EM_Recurrences, $EM_Location;
 	$EM_Recurrences = array();
 	if( isset( $_REQUEST['event_id'] ) && is_numeric($_REQUEST['event_id']) ){
@@ -184,7 +184,7 @@ function dbem_load_event(){
 	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
 	define('EM_RSS_URI', get_bloginfo('wpurl')."/?dbem_rss=main"); //RSS PAGE URI
 }
-add_action('init', 'dbem_load_event', 1);
+add_action('init', 'em_load_event', 1);
                    
 // Settings link in the plugins page menu
 function em_set_plugin_meta($links, $file) {
@@ -202,7 +202,7 @@ add_filter( 'plugin_row_meta', 'em_set_plugin_meta', 10, 2 );
 
 
 // Create the Manage Events and the Options submenus  
-function dbem_create_events_submenu () {
+function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//TODO Add flexible permissions
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),MIN_CAPABILITY,__FILE__,'dbem_events_subpanel', '../wp-content/plugins/events-manager/includes/images/calendar-16.png');
@@ -221,41 +221,41 @@ function dbem_create_events_submenu () {
 			}
   	}
 }
-add_action('admin_menu','dbem_create_events_submenu');
+add_action('admin_menu','em_create_events_submenu');
 
 // Enqueing jQuery script to make sure it's loaded
-function dbem_enqueue_scripts() {
+function em_enqueue_scripts() {
 	wp_enqueue_script ( 'jquery' );
 	// wp_enqueue_script('datepicker','/wp-content/plugins/events-manager/jquery-ui-datepicker/jquery-ui-personalized-1.6b.js', array('jquery') );
 }
-add_action ( 'template_redirect', 'dbem_enqueue_scripts' );
+add_action ( 'template_redirect', 'em_enqueue_scripts' );
 
-function dbem_general_css() {
+function em_general_css() {
 	echo "<link rel='stylesheet' href='". get_bloginfo('wpurl') ."/wp-content/plugins/events-manager/includes/css/events_manager.css' type='text/css'/>";
 
 }
-add_action ( 'wp_head', 'dbem_general_css' );
+add_action ( 'wp_head', 'em_general_css' );
 
-function dbem_favorite_menu($actions) {
+function em_favorite_menu($actions) {
 	// add quick link to our favorite plugin
 	$actions ['admin.php?page=new_event'] = array (__ ( 'Add an event', 'dbem' ), MIN_CAPABILITY );
 	return $actions;
 }
-add_filter ( 'favorite_actions', 'dbem_favorite_menu' );
+add_filter ( 'favorite_actions', 'em_favorite_menu' );
       
 
 ////////////////////////////////////
 // WP 2.7 options registration
-function dbem_options_register() {
+function em_options_register() {
 	$options = array ('dbem_events_page', 'dbem_display_calendar_in_events_page', 'dbem_use_event_end', 'dbem_event_list_item_format_header', 'dbem_event_list_item_format', 'dbem_event_list_item_format_footer', 'dbem_event_page_title_format', 'dbem_single_event_format', 'dbem_list_events_page', 'dbem_events_page_title', 'dbem_no_events_message', 'dbem_location_page_title_format', 'dbem_location_baloon_format', 'dbem_single_location_format', 'dbem_location_event_list_item_format', 'dbem_location_no_events_message', 'dbem_gmap_is_active', 'dbem_rss_main_title', 'dbem_rss_main_description', 'dbem_rss_title_format', 'dbem_rss_description_format', 'dbem_gmap_key', 'dbem_map_text_format', 'dbem_rsvp_mail_notify_is_active', 'dbem_contactperson_email_body', 'dbem_respondent_email_body', 'dbem_mail_sender_name', 'dbem_smtp_username', 'dbem_smtp_password', 'dbem_default_contact_person', 'dbem_mail_sender_address', 'dbem_mail_receiver_address', 'dbem_smtp_host', 'dbem_rsvp_mail_send_method', 'dbem_rsvp_mail_port', 'dbem_rsvp_mail_SMTPAuth', 'dbem_image_max_width', 'dbem_image_max_height', 'dbem_image_max_size', 'dbem_full_calendar_event_format', 'dbem_use_select_for_locations', 'dbem_attributes_enabled', 'dbem_recurrence_enabled','dbem_rsvp_enabled','dbem_categories_enabled');
 	foreach ( $options as $opt ) {
 		register_setting ( 'dbem-options', $opt, '' );
 	}
 
 }
-add_action ( 'admin_init', 'dbem_options_register' );
+add_action ( 'admin_init', 'em_options_register' );
 
-function dbem_alert_events_page() {
+function em_alert_events_page() {
 	$events_page_id = get_option ( 'dbem_events_page' );
 	if (strpos ( $_SERVER ['SCRIPT_NAME'], 'page.php' ) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
 		$message = sprintf ( __ ( "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. ", 'dbem' ), 'admin.php?page=events-manager-options' );
@@ -264,7 +264,7 @@ function dbem_alert_events_page() {
 	}
 
 }
-add_action ( 'admin_notices', 'dbem_alert_events_page' );
+add_action ( 'admin_notices', 'em_alert_events_page' );
 
 
 /***********************************************************
@@ -482,12 +482,7 @@ function em_add_options() {
 		add_option($key, $value);
 	}
 		
-}
-function dbem_add_option($key, $value) {
-	$option = get_option($key);
-	if (empty($option))
-		update_option($key, $value);
-}      
+}     
 
 function em_create_events_page(){
 	global $wpdb;

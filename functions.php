@@ -30,7 +30,7 @@ function url_exists($url) {
  * Gets all WP users
  * @return array
  */
-function dbem_get_wp_users() {
+function em_get_wp_users() {
 	global $wpdb;
 	$sql = "SELECT display_name, ID FROM $wpdb->users";  
 	$users = $wpdb->get_results($sql, ARRAY_A);  

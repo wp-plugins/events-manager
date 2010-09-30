@@ -225,7 +225,7 @@ class EM_Calendar extends EM_Object {
 					if( $event_end_date == '' ) $event_end_date = $event_start_date;
 					while( $event_start_date <= $event_end_date ){
 						$event_eventful_date = date('Y-m-d', $event_start_date);
-						if( is_array($eventful_days[$event_eventful_date]) ){
+						if( array_key_exists($event_eventful_date, $eventful_days) && is_array($eventful_days[$event_eventful_date]) ){
 							$eventful_days[$event_eventful_date][] = $event; 
 						} else {
 							$eventful_days[$event_eventful_date] = array($event);  

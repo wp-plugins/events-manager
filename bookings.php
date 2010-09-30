@@ -9,7 +9,7 @@ $dbem_form_messages_booking_add = array();
  * Check if there's any actions to take for bookings
  * @return null
  */
-function dbem_actions_bookings() {
+function em_actions_bookings() {
 	global $dbem_form_messages_booking_delete, $dbem_form_messages_booking_add;
 	global $wpdb;
 	global $EM_Event;
@@ -45,14 +45,14 @@ function dbem_actions_bookings() {
 	  	}
 	}
 }   
-add_action('init','dbem_actions_bookings');
+add_action('init','em_actions_bookings');
 
 /**
  * Returns the booking form for the front-end, displayed when using placeholder #_ADDBOOKINGFORM
  * @return string
  */
-function dbem_add_booking_form() {                
-	global $dbem_form_messages_booking_add;
+function em_add_booking_form() {                
+	global $dbem_form_messages_booking_add, $EM_Event;
  
 	$destination = "?".$_SERVER['QUERY_STRING']."#dbem-rsvp";
 	$booked_places_options = array();
@@ -96,6 +96,7 @@ function dbem_add_booking_form() {
 			<p>
 				<input type='submit' value='<?php _e('Send your booking', 'dbem') ?>'/>&nbsp;&nbsp;&nbsp;&nbsp;
 			 	<input type='hidden' name='eventAction' value='add_booking'/>
+			 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->id; ?>'/>
 			</p>  
 		</form>
 	</div>
@@ -126,8 +127,8 @@ function dbem_add_booking_form() {
  * Booking removal in front end, called by placeholder #_REMOVEBOOKINGFORM
  * @return string
  */
-function dbem_delete_booking_form() {   
-	global $dbem_form_messages_booking_delete;	
+function em_delete_booking_form() {   
+	global $dbem_form_messages_booking_delete, $EM_Event;	
 	$destination = "?".$_SERVER['QUERY_STRING'];
 	ob_start();
 	?>
@@ -153,6 +154,7 @@ function dbem_delete_booking_form() {
 			  	</tr>
 			</table>
 			<input type='hidden' name='eventAction' value='delete_booking'/>
+			 <input type='hidden' name='event_id' value='<?php echo $EM_Event->id; ?>'/>
 			<input type='submit' value='<?php _e('Cancel your booking', 'dbem') ?>'/>
 		</form>
 	</div>

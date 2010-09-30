@@ -51,6 +51,7 @@ class EM_Events extends EM_Object {
 		$today = date( 'Y-m-d' );
 		$limit = ( $limit && is_numeric($limit)) ? "LIMIT $limit" : '';
 		$offset = ( $limit != "" && is_numeric($offset) ) ? "OFFSET $offset" : '';
+		//TODO order by?
 		$order = ($order == "DESC") ? "DESC" : "ASC";
 		
 		//Create the WHERE statement
@@ -190,6 +191,8 @@ class EM_Events extends EM_Object {
 	 * @return unknown_type
 	 */
 	function output( $args ){
+		global $EM_Event;
+		$old_EM_Event = $EM_Event;
 		//TODO add shortcode conversion also
 		//Can be either an array for the get search or an array of EM_Event objects
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Event' ){
@@ -205,6 +208,7 @@ class EM_Events extends EM_Object {
 		$output = "";
 		if ( count($events) > 0 ) {
 			foreach ( $events as $event ) {
+				$EM_Event = $event;
 				/* @var EM_Event $event */
 				$output .= $event->output_list();
 			}
@@ -219,6 +223,8 @@ class EM_Events extends EM_Object {
 		} else {
 			$output = "<li class='dbem-no-events'>" . get_option ( 'dbem_no_events_message' ) . "</li>";
 		}
+		//TODO check if reference is ok when restoring object, due to changes in php5 v 4
+		$old_EM_Event = $EM_Event;
 		return $output;		
 	}
 	

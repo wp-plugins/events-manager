@@ -13,10 +13,8 @@ function dbem_events_subpanel() {
 	$event_ID = $_GET ['event_id'];
 	$recurrence_ID = $_GET ['recurrence_id'];
 	$scope = ($_GET ['scope'] != '') ? $_GET['scope']:'future';
-	$offset = $_GET ['offset'];
-	$order = $_GET ['order'];
+	$order = $_GET ['order']; //FIXME order not used consistently in admin area
 	$selectedEvents = $_GET ['events'];
-	$limit = ($_GET ['limit'] > 0) ? $_GET['limit'] : 10;//Default limit
 	
 	// Disable Hello to new user if requested
 	if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true')
@@ -26,6 +24,7 @@ function dbem_events_subpanel() {
 		$order = "ASC";
 	if ($offset == "")
 		$offset = "0";
+		
 	$event_table_name = $wpdb->prefix . EVENTS_TBNAME;
 	// Debug code, to make sure I get the correct page
 	
@@ -33,7 +32,7 @@ function dbem_events_subpanel() {
 	// DELETE action
 	if ($action == 'deleteEvents') {
 		EM_Events::delete( $selectedEvents );
-		dbem_events_table ( EM_Events::get( array('limit' => $limit, 'scope'=>$scope) ), 10, "Future events" );
+		dbem_events_table ( EM_Events::get( array('scope'=>$scope) ), "Future events" );
 	}
 	// UPDATE or CREATE action
 	if ($action == 'update_event') {
@@ -51,7 +50,7 @@ function dbem_events_subpanel() {
 					<p><?php echo $EM_Event->feedback_message ?></p>
 				</div>
 				<?php
-				dbem_events_table ( EM_Events::get( array('limit' => $limit, 'scope'=>$scope) ), 10, "Future events" );
+				dbem_events_table ( EM_Events::get( array('scope'=>$scope) ), "Future events" );
 			}else{
 				// saving unsuccessful		
 				?>
@@ -67,7 +66,7 @@ function dbem_events_subpanel() {
 			// validation unsuccessful			
 			?>
 			<div id='message' class='error '>
-				<p><?php print_r($EM_Event); echo "<strong>" . __( "Ach, there's a problem here:", "dbem" ) . "</strong><br /><br />" . implode('<br />', $EM_Event->errors); ?></p>
+				<p><?php echo "<strong>" . __( "Ach, there's a problem here:", "dbem" ) . "</strong><br /><br />" . implode('<br />', $EM_Event->errors); ?></p>
 			</div>
 			<?php			
 			dbem_event_form ( $title );		
@@ -96,7 +95,7 @@ function dbem_events_subpanel() {
 			dbem_event_form ( $title );
 		}else{
 			echo "<div class='error'><p>There was an error duplicating the event. Try again maybe?</div>";
-			dbem_events_table ( EM_Events::get(array('limit' => $limit, 'scope'=>$scope)), $limit, $title );
+			dbem_events_table ( EM_Events::get(array('scope'=>$scope)), $title );
 		}
 	}
 	
@@ -113,14 +112,14 @@ function dbem_events_subpanel() {
 				$title = __ ( 'Future Events', 'dbem' );
 				$scope = "future";
 		}
-		$limit = 20;
-		$events = EM_Events::get( array('limit'=>$limit, 'scope'=>$scope, 'order'=>$order, 'offset'=>$offset ) );		
-		dbem_events_table ( $events, $limit, $title );	
+		$events = EM_Events::get( array('scope'=>$scope, 'order'=>$order ) );		
+		dbem_events_table ( $events, $title );	
 	}
 }
 
-function dbem_events_table($events, $limit, $title) {
-	
+function dbem_events_table($events, $title) {
+	$offset = ($_GET ['offset'] == '') ? 0 : $_GET ['offset'];
+	$limit = ($_GET ['limit'] > 0) ? $_GET['limit'] : 20;//Default limit
 	$scope_names = array (
 		'past' => __ ( 'Past events', 'dbem' ),
 		'all' => __ ( 'All events', 'dbem' ),
@@ -172,6 +171,16 @@ function dbem_events_table($events, $limit, $title) {
 						?>
 					</select> 
 					<input id="post-query-submit" class="button-secondary" type="submit" value="<?php _e ( 'Filter' )?>" />
+					<?php
+						$events_nav = '';
+						$backward = ($offset - $limit < 0) ? 0 : $offset - $limit;
+						$forward = $offset + $limit;
+						if ($offset > 0)
+							$events_nav .= " <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&limit=$limit&amp;scope=$scope&amp;offset=$backward'>&lt;&lt; ".__('Previous Page','dbem')."</a> ";
+						if ($events_count > $limit+$offset)
+							$events_nav .= "<a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&limit=$limit&amp;scope=$scope&amp;offset=$forward'>".__('Next Page','dbem')." &gt;&gt;</a>";
+						echo $events_nav;
+					?>
 				</div>
 				<div class="clear"></div>
 				
@@ -197,65 +206,69 @@ function dbem_events_table($events, $limit, $title) {
 					<tbody>
 				  	  	<?php 
 				  	  	$i = 1;
+				  	  	$rowno = 0;
 						foreach ( $events as $event ) {
-							$class = ($i % 2) ? ' class="alternate"' : '';
-							// FIXME set to american
-							$localised_start_date = mysql2date ( __ ( 'D d M Y' ), $event->start_date );
-							$localised_end_date = mysql2date ( __ ( 'D d M Y' ), $event->end_date );
-							$style = "";
-							$today = date ( "Y-m-d" );
-							$location_summary = "<b>" . $event->location->name . "</b><br/>" . $event->location->address . " - " . $event->location->town;
-							$category = EM_Category::get($event->id);
-							
-							if ($event->start_date < $today && $event->end_date < $today){
-								$style = "style ='background-color: #FADDB7;'";
-							}							
-							?>
-							<tr <?php echo "$class $style"; ?>>
-				
-								<td>
-									<input type='checkbox' class='row-selector' value='<?php echo $event->id; ?>' name='events[]' />
-								</td>
-								<td>
-									<strong>
-									<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $event->id ?>"><?php echo ($event->name); ?></a>
-									</strong>
-									<?php if($category) : ?>
-									<br/><span title='<?php _e( 'Category', 'dbem' ).": ".$category['category_name'] ?>'><?php $category['category_name'] ?></span> 
-									<?php endif; ?>
-								</td>
-								<td>
-						 	    	<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=duplicate_event&amp;event_id=<?php echo $event->id; ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
-						 	    		<strong>+</strong>
-						 	    	</a>
-						  	   	</td>
-								<td>
-					  	 			<?php echo $location_summary; ?>
-								</td>
-						
-								<td>
-						  	    	<?php echo $localised_start_date; ?>
-						  	    	<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
-						  	    	<br />
-						  	    	<?php
-						  	    		//TODO Should 00:00 - 00:00 be treated as an all day event? 
-						  	    		echo substr ( $event->start_time, 0, 5 ) . " - " . substr ( $event->end_time, 0, 5 ); 
-						  	    	?>
-								</td>
-								<td>
-									<?php 
-									if ( $event->is_recurrence() ) {
-										?>
+							if( $i >= $offset && $i <= $offset+$limit ) {
+								$rowno++;
+								$class = ($rowno % 2) ? ' class="alternate"' : '';
+								// FIXME set to american
+								$localised_start_date = mysql2date ( __ ( 'D d M Y' ), $event->start_date );
+								$localised_end_date = mysql2date ( __ ( 'D d M Y' ), $event->end_date );
+								$style = "";
+								$today = date ( "Y-m-d" );
+								$location_summary = "<b>" . $event->location->name . "</b><br/>" . $event->location->address . " - " . $event->location->town;
+								$category = EM_Category::get($event->id);
+								
+								if ($event->start_date < $today && $event->end_date < $today){
+									$style = "style ='background-color: #FADDB7;'";
+								}							
+								?>
+								<tr <?php echo "$class $style"; ?>>
+					
+									<td>
+										<input type='checkbox' class='row-selector' value='<?php echo $event->id; ?>' name='events[]' />
+									</td>
+									<td>
 										<strong>
-										<?php echo $event->get_recurrence_description(); ?> <br />
-										<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $event->id ?>"><?php echo ($event->name); ?></a>
 										</strong>
-										<?php
-									}
-									?>
-								</td>
-							</tr>
-							<?php
+										<?php if($category) : ?>
+										<br/><span title='<?php _e( 'Category', 'dbem' ).": ".$category['category_name'] ?>'><?php $category['category_name'] ?></span> 
+										<?php endif; ?>
+									</td>
+									<td>
+							 	    	<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=duplicate_event&amp;event_id=<?php echo $event->id; ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
+							 	    		<strong>+</strong>
+							 	    	</a>
+							  	   	</td>
+									<td>
+						  	 			<?php echo $location_summary; ?>
+									</td>
+							
+									<td>
+							  	    	<?php echo $localised_start_date; ?>
+							  	    	<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
+							  	    	<br />
+							  	    	<?php
+							  	    		//TODO Should 00:00 - 00:00 be treated as an all day event? 
+							  	    		echo substr ( $event->start_time, 0, 5 ) . " - " . substr ( $event->end_time, 0, 5 ); 
+							  	    	?>
+									</td>
+									<td>
+										<?php 
+										if ( $event->is_recurrence() ) {
+											?>
+											<strong>
+											<?php echo $event->get_recurrence_description(); ?> <br />
+											<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+											</strong>
+											<?php
+										}
+										?>
+									</td>
+								</tr>
+								<?php
+							}
 							$i ++;
 						}
 						?>
@@ -266,26 +279,14 @@ function dbem_events_table($events, $limit, $title) {
 				?>
 				
 				<div class='tablenav'>
-					<div class="alignleft actions"><br class='clear' />
+					<div class="alignleft actions">
+						<?php echo $events_nav; ?>
+					<br class='clear' />
 					</div>
 					<br class='clear' />
 				</div>
 			</div>
 		</form>		
-		<?php
-		if ($events_count > $limit) {
-			$backward = $offset + $limit;
-			$forward = $offset - $limit;
-			if (DEBUG)
-				echo "COUNT = $events_count BACKWARD = $backward  FORWARD = $forward<br> -- OFFSET = $offset";
-			echo "<div id='events-pagination'> ";
-			if ($backward < $events_count)
-				echo "<a style='float: left' href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=$scope&offset=$backward'>&lt;&lt;</a>";
-			if ($forward >= 0)
-				echo "<a style='float: right' href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=$scope&offset=$forward'>&gt;&gt;</a>";
-			echo "</div>";
-		}
-		?>
 	</div>
 	<?php
 }
