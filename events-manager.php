@@ -292,8 +292,19 @@ function em_install() {
 			
 	  	update_option('dbem_version', EM_VERSION); 
 	  	
-	  	// Create events page if necessary
-	 	em_create_events_page();
+	  	// Create events page if necessary          
+	    $events_page_id = get_option('dbem_events_page')  ;
+		if ($events_page_id != "" ) {
+			query_posts("page_id=$events_page_id");
+			$count = 0;
+			while(have_posts()) { the_post();
+		 		$count++;
+			}
+			if ($count == 0)
+				em_create_events_page(); 
+		  } else {
+			  em_create_events_page(); 
+		  }
 		// wp-content must be chmodded 777. Maybe just wp-content.
 		if(!file_exists("../".IMAGE_UPLOAD_DIR))
 			mkdir("../".IMAGE_UPLOAD_DIR, 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
@@ -485,19 +496,24 @@ function em_add_options() {
 }     
 
 function em_create_events_page(){
-	global $wpdb;
-	$events_page_id = get_option('dbem_events_page')  ;
-	if ( $events_page_id != "" ) {
-		$events_page = get_page($events_page_id);
-		if( !is_object($events_page) ){
-			//TODO Use WP functions to create event page
-			global $wpdb,$current_user;
-			$page_name= DEFAULT_EVENT_PAGE_NAME;
-			$sql= "INSERT INTO $wpdb->posts (post_author, post_date, post_date_gmt, post_type, post_content, post_excerpt, post_title, post_name, post_modified, post_modified_gmt, comment_count) VALUES ($current_user->ID, '', '', 'page','CONTENTS', '', '$page_name', '".$wpdb->escape(__('events','dbem'))."', '', '', '0')";
-			$wpdb->query($sql);
-		}
-	}
-	add_option('dbem_events_page', $wpdb->insert_id);
+	// global $wpdb;
+	// $events_page_id = get_option('dbem_events_page')  ;
+	// if ( $events_page_id != "" ) 
+	// 	$events_page = get_page($events_page_id);
+	// if( !is_object($events_page) ){
+	// 	//TODO Use WP functions to create event page
+	// 	global $wpdb,$current_user;
+	// 	$page_name= DEFAULT_EVENT_PAGE_NAME;
+	// 	$sql= "INSERT INTO $wpdb->posts (post_author, post_date, post_date_gmt, post_type, post_content, post_excerpt, post_title, post_name, post_modified, post_modified_gmt, comment_count) VALUES ($current_user->ID, '', '', 'page','CONTENTS', '', '$page_name', '".$wpdb->escape(__('events','dbem'))."', '', '', '0')";
+	// 	$wpdb->query($sql);
+	// 	add_option('dbem_events_page', $wpdb->insert_id);
+	// 	
+	// } 
+	global $wpdb,$current_user;
+	$page_name= DEFAULT_EVENT_PAGE_NAME;
+	$sql= "INSERT INTO $wpdb->posts (post_author, post_date, post_date_gmt, post_type, post_content, post_title, post_name, post_modified, post_modified_gmt, comment_count) VALUES ($current_user->ID, '$now', '$now_gmt', 'page','CONTENTS', '$page_name', '".$wpdb->escape(__('events','dbem'))."', '$now', '$now_gmt', '0')";
+	$wpdb->query($sql);
+    update_option('dbem_events_page', mysql_insert_id()); 
 }   
 
 // migrate old dbem tables to new em ones
