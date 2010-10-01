@@ -347,9 +347,9 @@ function em_create_events_table() {
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);		
 		//Add default events
-		$in_one_week = date('Y-m-d', time()*60*60*24*7);
-		$in_four_weeks = date('Y-m-d', time()*60*60*24*7*4); 
-		$in_one_year = date('Y-m-d', time()*60*60*24*7*365);
+		$in_one_week = date('Y-m-d', time() + 60*60*24*7);
+		$in_four_weeks = date('Y-m-d', time() + 60*60*24*7*4); 
+		$in_one_year = date('Y-m-d', time() + 60*60*24*7*365);
 		
 		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id) VALUES ('Orality in James Joyce Conference', '$in_one_week', '16:00:00', '18:00:00', 1)");
 		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id)	VALUES ('Traditional music session', '$in_four_weeks', '20:00:00', '22:00:00', 2)");
