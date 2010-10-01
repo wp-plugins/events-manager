@@ -7,10 +7,10 @@
 function em_admin_load_scripts(){
 	wp_enqueue_script('em-google-maps', 'http://maps.google.com/maps/api/js?sensor=false');
 	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));
-	//Load the UI items, currently date picker and autocomplete plus dependencies 
-	//wp_deregister_script('jquery-ui-core');
-	wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery'));
-	wp_enqueue_script('em-script', WP_PLUGIN_URL.'/events-manager/includes/js/em_admin.js', array('jquery', 'em-ui-js'));
+	//Load the UI items, currently date picker and autocomplete plus dependencies
+	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
+	wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/em_ui.js', array('jquery', 'jquery-ui-core'));
+	wp_enqueue_script('em-script', WP_PLUGIN_URL.'/events-manager/includes/js/em_admin.js', array('em-ui-js'));
 	//Date Picker Locale
 	$locale_code = substr ( get_locale (), 0, 2 );
 	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";

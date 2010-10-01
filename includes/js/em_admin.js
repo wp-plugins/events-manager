@@ -101,6 +101,7 @@ jQuery(document).ready( function($) {
 	if( $('select#location-select-id, input#location-name').length > 0 ){	
 		
 		//Autocomplete
+		/* for jquery-ui-1.8.5
 		$( "#eventForm input#location-name" ).autocomplete({
 			source: '../wp-content/plugins/events-manager/admin/locations-search.php',
 			minLength: 2,
@@ -111,6 +112,34 @@ jQuery(document).ready( function($) {
 					get_map_by_id(ui.item.id);
 				}
 			}
+		});
+		*/
+		$( "#eventForm input#location-name" ).autocomplete( '../wp-content/plugins/events-manager/admin/locations-search.php', {
+			multiple: true,
+			width: 350,
+			selectFirst: false,
+			dataType: "json",
+			parse: function(data) {
+				return $.map(data, function(row) {
+					return {
+						data: row,
+						value: row.value,
+						result: row.value
+					}
+				});
+			},
+			formatItem: function(item) {
+				return item.label;
+			},
+			formatResult: function(item){
+				return item.value;
+			}
+		}).result(function(e, item) {
+			e.preventDefault();
+			$( "input#location-name" ).val(item.value);
+			$('input#location-address').val(item.address);
+			$('input#location-town').val(item.town);
+			get_map_by_id(item.id);
 		});
 
 		//Load map
@@ -136,23 +165,25 @@ jQuery(document).ready( function($) {
 		
 		//Add listeners for changes to address
 		var get_map_by_id = function(id){
-			$.getJSON(document.URL,{ em_ajax_action:'get_location', id:id }, function(data){
-				if( data.location_latitude!=0 && data.location_longitude!=0 ){
-					loc_latlng = new google.maps.LatLng(data.location_latitude, data.location_longitude);
-					marker.setPosition(loc_latlng);
-					marker.setTitle( data.location_name );
-					$('#em-map').show();
-					$('#em-map-404').hide();
-					google.maps.event.trigger(map, 'resize');
-					map.setCenter(loc_latlng);
-					map.panBy(40,-55);
-					infoWindow.setContent( '<div id="location-balloon-content">'+ data.location_balloon +'</div>');
-					infoWindow.open(map, marker);
-				}else{
-					$('#em-map').hide();
-					$('#em-map-404').show();
-				}
-			});
+			if($('#em-map').length > 0){
+				$.getJSON(document.URL,{ em_ajax_action:'get_location', id:id }, function(data){
+					if( data.location_latitude!=0 && data.location_longitude!=0 ){
+						loc_latlng = new google.maps.LatLng(data.location_latitude, data.location_longitude);
+						marker.setPosition(loc_latlng);
+						marker.setTitle( data.location_name );
+						$('#em-map').show();
+						$('#em-map-404').hide();
+						map.setCenter(loc_latlng);
+						map.panBy(40,-55);
+						infoWindow.setContent( '<div id="location-balloon-content">'+ data.location_balloon +'</div>');
+						infoWindow.open(map, marker);
+						google.maps.event.trigger(map, 'resize');
+					}else{
+						$('#em-map').hide();
+						$('#em-map-404').show();
+					}
+				});
+			}
 		}
 		$('#location-select-id').change( function(){get_map_by_id($(this).val())} );
 		$('#location-town, #location-address').change( function(){

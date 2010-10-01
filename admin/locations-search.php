@@ -9,7 +9,7 @@ global $wpdb;
 
 $locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
 
-$term = '%'.$_GET['term'].'%';
+$term = (isset($_GET['term'])) ? '%'.$_GET['term'].'%' : '%'.$_GET['q'].'%';
 $sql = $wpdb->prepare("
 	SELECT 
 		Concat( location_name, ', ', location_address, ', ', location_town)  AS `label`,
@@ -22,7 +22,17 @@ $sql = $wpdb->prepare("
 ", $term);
 
 $locations_array = $wpdb->get_results($sql);
-$return = $locations_array;
 
-echo EM_Object::json_encode($return);
+echo EM_Object::json_encode($locations_array);
+/*
+$return_string_array = array();
+foreach($locations_array as $location){
+	$return_string_class = array();
+	foreach($location as $key => $value ){
+		$return_string_class[] = "$key : '".addslashes($value)."'";
+	}
+	$return_string_array[] = '{'. implode(',', $return_string_class) .'}'; 
+}
+echo '['. implode(',', $return_string_array) .']';
+*/
 ?>
