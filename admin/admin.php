@@ -12,13 +12,13 @@ function em_admin_load_scripts(){
 	//Load the UI items, currently date picker and autocomplete plus dependencies
 	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
 	wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/em_ui.js', array('jquery', 'jquery-ui-core'));
-	wp_enqueue_script('em-script', WP_PLUGIN_URL.'/events-manager/includes/js/em_admin.js', array('em-ui-js'));
 	//Date Picker Locale
 	$locale_code = substr ( get_locale (), 0, 2 );
 	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
 	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
 		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('em-ui-js'));
 	}
+	wp_enqueue_script('em-script', WP_PLUGIN_URL.'/events-manager/includes/js/em_admin.js', array('em-ui-js'));
 }
 
 /**

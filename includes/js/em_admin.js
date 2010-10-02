@@ -81,16 +81,10 @@ jQuery(document).ready( function($) {
 			altField: "#end-date-to-submit", 
 			altFormat: "yy-mm-dd"
 		});
-		var start_date = $('#date-to-submit').val();
-		var end_date = $('#end-date-to-submit').val();
-		if( start_date != '' ){
-			start_date = start_date.split('-');
-			end_date = end_date.split('-');
-			start_date_Date =  new Date(start_date[0],start_date[1]-1,start_date[2]);
-			end_date_Date = (end_date.length == 3) ? new Date(end_date[0],end_date[1]-1,end_date[2]) : start_date_Date;
-			date_dateFormat = $.datepicker._defaults.dateFormat;
-			start_date_formatted = $.datepicker.formatDate( date_dateFormat, start_date_Date );
-			end_date_formatted = $.datepicker.formatDate( date_dateFormat, end_date_Date );
+		if( $('#date-to-submit').val() != '' ){
+			date_dateFormat = $("#localised-date").datepicker('option', 'dateFormat');
+			start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#date-to-submit').val()) );
+			end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#end-date-to-submit').val()) );
 			$("#localised-date").val(start_date_formatted);
 			$("#localised-end-date").val(end_date_formatted);
 		}
