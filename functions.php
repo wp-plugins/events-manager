@@ -14,6 +14,7 @@ function em_hello_to_new_user() {
 	}
 }
 
+
 function url_exists($url) {
 	
 	if ((strpos ( $url, "http" )) === false)

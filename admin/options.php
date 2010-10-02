@@ -1,7 +1,6 @@
 <?php
 // Function composing the options subpanel
-function dbem_options_subpanel() {
-	//TODO place all options into an array
+function em_options_save(){
 	if( current_user_can('activate_plugins') and  $_POST['em-submitted'] == '1' ){
 		//Build the array of options here
 		foreach ($_POST as $postKey => $postValue){
@@ -12,10 +11,19 @@ function dbem_options_subpanel() {
 				update_option($postKey, stripslashes($postValue));
 			}
 		}
-		?>
-		<div class="updated"><p><strong><?php _e('Changes saved.'); ?></strong></p></div>
-		<?php
+		function em_options_saved_notice(){
+			?>
+			<div class="updated"><p><strong><?php _e('Changes saved.'); ?></strong></p></div>
+			<?php
+		}
+		add_action ( 'admin_notices', 'em_options_saved_notice' );
 	}
+}
+add_action('admin_head', 'em_options_save');
+
+function dbem_options_subpanel() {
+	//TODO place all options into an array
+	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes' ) .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
 	?>	
 	<script type="text/javascript" charset="utf-8">
 		jQuery(document).ready(function($){
@@ -45,8 +53,10 @@ function dbem_options_subpanel() {
 					dbem_options_radio_binary ( __( 'Use RSVP?' ), 'dbem_rsvp_enabled', __( 'Select yes to enable the recurrence features feature','dbem' ) );     
 					dbem_options_radio_binary ( __( 'Use categories?' ), 'dbem_categories_enabled', __( 'Select yes to enable the category features','dbem' ) );     
 					dbem_options_radio_binary ( __( 'Use attributes?' ), 'dbem_attributes_enabled', __( 'Select yes to enable the attributes feature','dbem' ) );
+					echo $save_button;
 					?>
-				</table>     
+				</table>
+				    
 			</div> <!-- . inside --> 
 			</div> <!-- .postbox -->    
 			
@@ -68,7 +78,8 @@ function dbem_options_subpanel() {
 					$em_disable_filter = false;
 					//Rest
 					dbem_options_radio_binary ( __( 'Show events page in lists?', 'dbem' ), 'dbem_list_events_page', __( 'Check this option if you want the events page to appear together with other pages in pages lists.', 'dbem' ) ); 
-					dbem_options_radio_binary ( __( 'Display calendar in events page?', 'dbem' ), 'dbem_display_calendar_in_events_page', __( 'This options allows to display the calendar in the events page, instead of the default list. It is recommended not to display both the calendar widget and a calendar page.','dbem' ) )
+					dbem_options_radio_binary ( __( 'Display calendar in events page?', 'dbem' ), 'dbem_display_calendar_in_events_page', __( 'This options allows to display the calendar in the events page, instead of the default list. It is recommended not to display both the calendar widget and a calendar page.','dbem' ) );
+					echo $save_button;
 					?>				
 				</table>
 			</div> <!-- . inside -->
@@ -87,6 +98,7 @@ function dbem_options_subpanel() {
 					dbem_options_input_text ( __( 'Events page title', 'dbem' ), 'dbem_events_page_title', __( 'The title on the multiple events page.', 'dbem' ) );
 					dbem_options_input_text ( __( 'No events message', 'dbem' ), 'dbem_no_events_message', __( 'The message displayed when no events are available.', 'dbem' ) );
 					dbem_options_input_text ( __( 'List events by date title', 'dbem' ), 'dbem_list_date_title', __( 'If viewing a page for events on a specific dates, this is the title that would show up. To insert date values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/>', 'dbem' ) );
+					echo $save_button;
 					?>
 				</table> 	
 			</div> <!-- . inside -->
@@ -99,7 +111,8 @@ function dbem_options_subpanel() {
 					<?php
 				    dbem_options_input_text ( __( 'Small calendar title', 'dbem' ), 'dbem_small_calendar_event_title_format', __( 'The format of the title, corresponding to the text that appears when hovering on an eventful calendar day.', 'dbem' ) );
 					dbem_options_input_text ( __( 'Small calendar title separator', 'dbem' ), 'dbem_small_calendar_event_title_separator', __( 'The separator appearing on the above title when more than one events are taking place on the same day.', 'dbem' ) );         
-				    dbem_options_input_text ( __( 'Full calendar events format', 'dbem' ), 'dbem_full_calendar_event_format', __( 'The format of each event when displayed in the full calendar. Remember to include <code>li</code> tags before and after the event.', 'dbem' ) );        
+				    dbem_options_input_text ( __( 'Full calendar events format', 'dbem' ), 'dbem_full_calendar_event_format', __( 'The format of each event when displayed in the full calendar. Remember to include <code>li</code> tags before and after the event.', 'dbem' ) );
+					echo $save_button;        
 					?>
 				</table>
 			</div> <!-- . inside -->
@@ -115,6 +128,7 @@ function dbem_options_subpanel() {
 					dbem_options_textarea ( __( 'Default location baloon format', 'dbem' ), 'dbem_location_baloon_format', __( 'The format of of the text appearing in the baloon describing the location in the map.<br/>Insert one or more of the following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</code> or <code>#_IMAGE</code>.', 'dbem' ) );
 					dbem_options_textarea ( __( 'Default location event list format', 'dbem' ), 'dbem_location_event_list_item_format', __( 'The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element. <br/> Follow the events formatting instructions', 'dbem' ) );
 					dbem_options_textarea ( __( 'Default no events message', 'dbem' ), 'dbem_location_no_events_message', __( 'The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available.', 'dbem' ) );
+					echo $save_button;
 					?>
 				</table>
 			</div> <!-- . inside -->
@@ -129,6 +143,7 @@ function dbem_options_subpanel() {
 					dbem_options_input_text ( __( 'RSS main description', 'dbem' ), 'dbem_rss_main_description', __( 'The main description of your RSS events feed.', 'dbem' ) );
 					dbem_options_input_text ( __( 'RSS title format', 'dbem' ), 'dbem_rss_title_format', __( 'The format of the title of each item in the events RSS feed.', 'dbem' ) );
 					dbem_options_input_text ( __( 'RSS description format', 'dbem' ), 'dbem_rss_description_format', __( 'The format of the description of each item in the events RSS feed. Follow the previous formatting instructions.', 'dbem' ) );
+					echo $save_button;
 					?>
 				</table>
 			</div> <!-- . inside -->
@@ -148,7 +163,8 @@ function dbem_options_subpanel() {
 						</td>
 					</tr>
 					<?php
-					dbem_options_textarea ( __( 'Map text format', 'dbem' ), 'dbem_map_text_format', __( 'The format the text appearing in the event page map cloud.<br/>Follow the previous formatting instructions.', 'dbem' ) );     
+					dbem_options_textarea ( __( 'Map text format', 'dbem' ), 'dbem_map_text_format', __( 'The format the text appearing in the event page map cloud.<br/>Follow the previous formatting instructions.', 'dbem' ) );
+					echo $save_button;     
 					?> 
 				</table>
 			</div> <!-- . inside -->
@@ -172,6 +188,7 @@ function dbem_options_subpanel() {
 					dbem_options_input_text ( 'SMTP host', 'dbem_smtp_host', __( "The SMTP host. Usually it corresponds to 'localhost'. If you use GMail, set this value to 'ssl://smtp.gmail.com:465'.", 'dbem' ) );
 					dbem_options_input_text ( __( 'SMTP username', 'dbem' ), 'dbem_smtp_username', __( "Insert the username to be used to access your SMTP server.", 'dbem' ) );
 					dbem_options_input_password ( __( 'SMTP password', 'dbem' ), "dbem_smtp_password", __( "Insert the password to be used to access your SMTP server", 'dbem' ) );
+					echo $save_button;
 					?>
 				</table>
 			</div> <!-- . inside -->
@@ -186,7 +203,7 @@ function dbem_options_subpanel() {
 					dbem_options_input_text ( __( 'Maximum height (px)', 'dbem' ), 'dbem_image_max_height', __( "The maximum allowed width for images uploaded, in pixels", 'dbem' ) );
 					dbem_options_input_text ( __( 'Maximum size (bytes)', 'dbem' ), 'dbem_image_max_size', __( "The maximum allowed size for images uploaded, in pixels", 'dbem' ) );
 					?>
-				</table>
+				</table> 
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
 

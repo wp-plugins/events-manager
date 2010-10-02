@@ -10,7 +10,7 @@ class EM_Map extends EM_Object {
 	 * @return string
 	 */
 	function get_global($atts) { 
-		//TODO Finish and document this feature, currently we don't have all the locaions to feed to the map. 
+		//TODO Finish and document this feature, need to add balloons here
 		if (get_option('dbem_gmap_is_active') == '1') {
 			ob_start();
 			?>

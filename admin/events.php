@@ -176,9 +176,9 @@ function dbem_events_table($events, $title) {
 						$backward = ($offset - $limit < 0) ? 0 : $offset - $limit;
 						$forward = $offset + $limit;
 						if ($offset > 0)
-							$events_nav .= " <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&limit=$limit&amp;scope=$scope&amp;offset=$backward'>&lt;&lt; ".__('Previous Page','dbem')."</a> ";
+							$events_nav .= " <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;limit=$limit&amp;scope=$scope&amp;offset=$backward'>&lt;&lt; ".__('Previous Page','dbem')."</a> ";
 						if ($events_count > $limit+$offset)
-							$events_nav .= "<a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&limit=$limit&amp;scope=$scope&amp;offset=$forward'>".__('Next Page','dbem')." &gt;&gt;</a>";
+							$events_nav .= "<a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;limit=$limit&amp;scope=$scope&amp;offset=$forward'>".__('Next Page','dbem')." &gt;&gt;</a>";
 						echo $events_nav;
 					?>
 				</div>
