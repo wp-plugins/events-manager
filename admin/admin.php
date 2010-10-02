@@ -15,7 +15,7 @@ function em_admin_load_scripts(){
 	$locale_code = substr ( get_locale (), 0, 2 );
 	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
 	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
-		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('em-ui-datepicker'));
+		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('em-ui-js'));
 	}
 }
 
