@@ -25,7 +25,7 @@ function em_admin_load_scripts(){
  * Called by admin_print_styles-(hook|page) action, created when adding menu items in events-manager.php  
  */
 function em_admin_load_styles() {
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.5.custom.css');
+	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
 	wp_enqueue_style('events-manager-admin', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css');
 }
 

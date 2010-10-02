@@ -110,6 +110,7 @@ jQuery(document).ready( function($) {
 		$( "#eventForm input#location-name" ).autocomplete( '../wp-content/plugins/events-manager/admin/locations-search.php', {
 			multiple: true,
 			width: 350,
+			scroll:false,
 			selectFirst: false,
 			dataType: "json",
 			parse: function(data) {
@@ -122,7 +123,7 @@ jQuery(document).ready( function($) {
 				});
 			},
 			formatItem: function(item) {
-				return item.label;
+				return item.value + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town;
 			},
 			formatResult: function(item){
 				return item.value;
