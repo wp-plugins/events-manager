@@ -143,25 +143,27 @@ jQuery(document).ready( function($) {
 		});
 
 		//Load map
-		var em_LatLng = new google.maps.LatLng(0, 0);
-		var map = new google.maps.Map( document.getElementById('em-map'), {
-		    zoom: 14,
-		    center: em_LatLng,
-		    mapTypeId: google.maps.MapTypeId.ROADMAP,
-		    mapTypeControl: false
-		});
-		var marker = new google.maps.Marker({
-		    position: em_LatLng,
-		    map: map
-		});
-		var infoWindow = new google.maps.InfoWindow({
-		    content: ''
-		});
-		var geocoder = new google.maps.Geocoder();
-		google.maps.event.addListener(infoWindow, 'domready', function() { 
-			document.getElementById('location-balloon-content').parentNode.style.overflow=''; 
-			document.getElementById('location-balloon-content').parentNode.parentNode.style.overflow=''; 
-		});
+		if($('#em-map').length > 0){
+			var em_LatLng = new google.maps.LatLng(0, 0);
+			var map = new google.maps.Map( document.getElementById('em-map'), {
+			    zoom: 14,
+			    center: em_LatLng,
+			    mapTypeId: google.maps.MapTypeId.ROADMAP,
+			    mapTypeControl: false
+			});
+			var marker = new google.maps.Marker({
+			    position: em_LatLng,
+			    map: map
+			});
+			var infoWindow = new google.maps.InfoWindow({
+			    content: ''
+			});
+			var geocoder = new google.maps.Geocoder();
+			google.maps.event.addListener(infoWindow, 'domready', function() { 
+				document.getElementById('location-balloon-content').parentNode.style.overflow=''; 
+				document.getElementById('location-balloon-content').parentNode.parentNode.style.overflow=''; 
+			});
+		}
 		
 		//Add listeners for changes to address
 		var get_map_by_id = function(id){

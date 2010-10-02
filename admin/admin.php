@@ -5,6 +5,7 @@
  * Called by admin_print_scripts-(hook|page) action, created when adding menu items in events-manager.php
  */
 function em_admin_load_scripts(){
+	
 	wp_enqueue_script('em-google-maps', 'http://maps.google.com/maps/api/js?sensor=false');
 	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));
 	//Load the UI items, currently date picker and autocomplete plus dependencies
