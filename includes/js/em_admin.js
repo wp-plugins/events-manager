@@ -98,8 +98,7 @@ jQuery(document).ready( function($) {
 	
 	
 	//Location stuff - only needed if inputs for location exist
-	if( $('select#location-select-id, input#location-name').length > 0 ){	
-		
+	if( $('select#location-select-id, input#location-name').length > 0 ){
 		//Autocomplete
 		/* for jquery-ui-1.8.5
 		$( "#eventForm input#location-name" ).autocomplete({
@@ -190,7 +189,7 @@ jQuery(document).ready( function($) {
 		$('#location-select-id').change( function(){get_map_by_id($(this).val())} );
 		$('#location-town, #location-address').change( function(){
 			var address = $('#location-address').val() + ', ' + $('#location-town').val();
-			if( address != '' ){
+			if( address != '' && $('#em-map').length > 0 ){
 				geocoder.geocode( { 'address': address }, function(results, status) {
 				    if (status == google.maps.GeocoderStatus.OK) {
 						marker.setPosition(results[0].geometry.location);
