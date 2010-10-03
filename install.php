@@ -50,7 +50,7 @@ function em_create_events_table() {
 		recurrence bool NOT NULL DEFAULT 0,
 		recurrence_interval int(4) NULL DEFAULT NULL,
 		recurrence_freq tinytext NULL DEFAULT NULL,
-		recurrence_byday int(4) NULL DEFAULT NULL,
+		recurrence_byday tinytext NULL DEFAULT NULL,
 		recurrence_byweekno int(4) NULL DEFAULT NULL,  		
 		UNIQUE KEY (event_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -152,7 +152,15 @@ function em_create_categories_table() {
 		PRIMARY KEY  (category_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
-	dbDelta($sql);
+	
+	$old_table_name = $wpdb->prefix.OLD_CATEGORIES_TBNAME;     
+	
+	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
+		dbDelta($sql);
+		$wpdb->insert( $table_name, array('category_name'=>__('Uncategorized', 'dbem')), array('%s') );
+	}else{
+		dbDelta($sql);
+	}
 }
 
 
@@ -341,7 +349,7 @@ function em_migrate_to_new_tables(){
 	}
 	 
 	// migrating categories
-	$categories = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_DBEM_CATEGORIES_TBNAME,ARRAY_A)  ;
+	$categories = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_CATEGORIES_TBNAME,ARRAY_A)  ;
 	foreach($categories as $c) {                
 		$wpdb->insert($wpdb->prefix.DBEM_CATEGORIES_TBNAME, $c);
 	} 

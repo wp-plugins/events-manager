@@ -35,7 +35,7 @@ class EM_Event extends EM_Object{
 		'recurrence' => array( 'name'=>'recurrence', 'type'=>'%d' ),
 		'recurrence_interval' => array( 'name'=>'interval', 'type'=>'%d' ),
 		'recurrence_freq' => array( 'name'=>'freq', 'type'=>'%s' ),
-		'recurrence_byday' => array( 'name'=>'byday', 'type'=>'%d' ),
+		'recurrence_byday' => array( 'name'=>'byday', 'type'=>'%s' ),
 		'recurrence_byweekno' => array( 'name'=>'byweekno', 'type'=>'%d' )
 	);
 	
@@ -100,7 +100,7 @@ class EM_Event extends EM_Object{
 			//Sort out attributes
 			$event ['event_attributes'] = @unserialize($event ['event_attributes']);
 			$event ['event_attributes'] = (!is_array($event ['event_attributes'])) ?  array() : $event ['event_attributes'] ;
-			$this->to_object($event);
+			$this->to_object($event, true);
 			//Add Contact Person
 			if($this->contactperson_id){
 				if($this->contactperson_id > 0){
@@ -171,7 +171,7 @@ class EM_Event extends EM_Object{
 		if($_POST ['repeated_event']){
 			$this->recurrence = 1;
 			$this->freq = $_POST ['recurrence_freq'];
-			$this->byday = ($this->freq == 'weekly') ? implode ( ",", $_POST ['recurrence_bydays'] ) : $_POST ['recurrence_byday'];
+			$this->byday = ($this->freq == 'weekly') ? implode ( ",", $_POST ['recurrence_bydays'] ) : $_POST ['recurrence_bydays'];
 			$this->interval = ($_POST ['recurrence_interval'] == "") ? 1 : $_POST ['recurrence_interval'];
 			$this->byweekno = $_POST ['recurrence_byweekno'];
 		}

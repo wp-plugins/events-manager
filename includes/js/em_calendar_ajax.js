@@ -1,3 +1,4 @@
+//inserted at wp_head
 jQuery(document).ready( function($) {
 	$('.dbem-calendar a.em-calnav').live('click', function(e){
 		e.preventDefault();

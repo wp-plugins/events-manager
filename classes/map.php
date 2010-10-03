@@ -20,7 +20,7 @@ class EM_Map extends EM_Object {
 			<!--// 
 				var eventful = <?php echo ($atts['eventful']) ? 'true':'false'; ?>; 
 				var scope = '<?php echo $atts['scope']; ?>';
-				em_load_map('em_map_global'); 
+				em_load_map('em_map_global');
 			//-->
 			</script> 
 			<?php
@@ -44,7 +44,7 @@ class EM_Map extends EM_Object {
 			ob_start();
 			?>
 	   		<div id='em-location-map' style='background: #CDCDCD; width: <?php echo $width ?>px; height: <?php echo $height ?>px'><?php _e('Loading Map....', 'dbem'); ?></div>
-	   		<div id='em-location-map-info' style="display:none; visibility:hidden;"><p style="font-size:12px;"><?php echo $location->output(get_option('dbem_location_baloon_format')); ?></p></div>
+   		<div id='em-location-map-info' style="display:none; visibility:hidden;"><div id="em-map-balloon" style="font-size:12px;"><div id="content"><?php echo $location->output(get_option('dbem_location_baloon_format')); ?></div></div></div>
 			<script src='<?php bloginfo('wpurl'); ?>/wp-content/plugins/events-manager/includes/js/em_maps.js' type='text/javascript'></script>
 	   		<script type='text/javascript'>
 	  			<!--// 

@@ -158,7 +158,7 @@ function dbem_event_form( $title ) {
 								</div>
 							</div> 
 							<!-- END recurrence postbox -->   
-						<? endif; ?>          
+						<?php endif; ?>          
 						<?php if(get_option('dbem_rsvp_enabled')) : ?>
 							<!-- START RSVP -->
 							<div class="postbox ">
@@ -221,7 +221,7 @@ function dbem_event_form( $title ) {
 																</tr>
 															</tfoot>
 															<tbody>
-																<?
+																<?php
 																foreach ($EM_Event->bookings->bookings as $EM_Booking) { 
 																	?>
 																	<tr id='booking-<?php echo $EM_Booking->id ?>'> 
@@ -263,8 +263,8 @@ function dbem_event_form( $title ) {
 								</div>
 							</div>
 							<!-- END RSVP -->
-						<? endif; ?>  
-						<? if(get_option('dbem_categories_enabled')) :?>
+						<?php endif; ?>  
+						<?php if(get_option('dbem_categories_enabled')) :?>
 							<!-- START Categories -->
 							<div class="postbox ">
 								<div class="handlediv" title="Fare clic per cambiare."><br />
@@ -283,14 +283,14 @@ function dbem_event_form( $title ) {
 												<option value="<?php echo $category['category_id'] ?>" <?php echo $selected ?>>
 												<?php echo $category['category_name'] ?>
 												</option>
-												<? 
+												<?php 
 											} ?>
 										</select>
 									</p>
 								</div>
 							</div> 
 							<!-- END Categories -->
-						<? endif; ?>
+						<?php endif; ?>
 					</div>
 				</div>
 				<!-- END OF SIDEBAR -->
@@ -301,7 +301,7 @@ function dbem_event_form( $title ) {
 								<?php _e ( 'Name', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
-								<input type="text" name="event_name" value="<?php echo $EM_Event->name ?>" />
+								<input type="text" name="event_name" value="<?php echo htmlentities($EM_Event->name,true); ?>" />
 								<br />
 								<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
 							</div>
@@ -390,21 +390,21 @@ function dbem_event_form( $title ) {
 												<tr>
 													<th><?php _e ( 'Name:' )?></th>
 													<td>
-														<input id="location-name" type="text" name="location_name" value="<?php echo $EM_Event->location->name ?>" />													
+														<input id="location-name" type="text" name="location_name" value="<?php echo htmlentities($EM_Event->location->name, true); ?>" />													
 					                            		<p><?php _e ( 'Select a location for your event', 'dbem' )?></p>
 					                            	</td>
 										 		</tr>
 												<tr>
 													<th><?php _e ( 'Address:' )?>&nbsp;</th>
 													<td>
-														<input id="location-address" type="text" name="location_address" value="<?php echo $EM_Event->location->address ; ?>" />
+														<input id="location-address" type="text" name="location_address" value="<?php echo htmlentities($EM_Event->location->address, true); ; ?>" />
 														<p><?php _e ( 'The address of the location where the event takes place. Example: 21, Dominick Street', 'dbem' )?></p>
 													</td>
 												</tr>
 												<tr>
 													<th><?php _e ( 'Town:' )?>&nbsp;</th>
 													<td>
-														<input id="location-town" type="text" name="location_town" value="<?php echo $EM_Event->location->town ?>" />
+														<input id="location-town" type="text" name="location_town" value="<?php echo htmlentities($EM_Event->location->town, true); ?>" />
 														<p><?php _e ( 'The town where the location is located. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country in the town field. Example: Verona, Italy.', 'dbem' )?></p>
 													</td>
 												</tr>
@@ -468,53 +468,53 @@ function dbem_event_form( $title ) {
 								}
 								?>
 								<div class="wrap">
-									<h2>Attributes</h2>
-									<p>Add attributes here</p>
-									<table class="form-table">
-										<thead>
-											<tr valign="top">
-												<td><strong>Attribute Name</strong></td>
-												<td><strong>Value</strong></td>
-											</tr>
-										</thead>    
-										<tfoot>
-											<tr valign="top">
-												<td colspan="3"><a href="#" id="mtm_add_tag">Add new tag</a></td>
-											</tr>
-										</tfoot>
-										<tbody id="mtm_body">
-											<?php
-											$count = 1;
-											if( is_array($EM_Event->attributes) and count($EM_Event->attributes) > 0){
-												foreach( $EM_Event->attributes as $name => $value){
-													?>
-													<tr valign="top" id="mtm_<?php echo $count ?>">
-														<td scope="row">
-															<select name="mtm_<?php echo $count ?>_ref">
-																<?php
-																if( !in_array($name, $attributes) ){
-																	echo "<option value='$name'>$name (".__('Not defined in templates', 'dbem').")</option>";
-																}
-																foreach( $attributes as $attribute ){
-																	if( $attribute == $name ) {
-																		echo "<option selected='selected'>$attribute</option>";
-																	}else{
-																		echo "<option>$attribute</option>";
+									<?php if( count( $attributes ) > 0 ) : ?>
+										<h2>Attributes</h2>
+										<p>Add attributes here</p>
+										<table class="form-table">
+											<thead>
+												<tr valign="top">
+													<td><strong>Attribute Name</strong></td>
+													<td><strong>Value</strong></td>
+												</tr>
+											</thead>    
+											<tfoot>
+												<tr valign="top">
+													<td colspan="3"><a href="#" id="mtm_add_tag">Add new tag</a></td>
+												</tr>
+											</tfoot>
+											<tbody id="mtm_body">
+												<?php
+												$count = 1;
+												if( is_array($EM_Event->attributes) and count($EM_Event->attributes) > 0){
+													foreach( $EM_Event->attributes as $name => $value){
+														?>
+														<tr valign="top" id="mtm_<?php echo $count ?>">
+															<td scope="row">
+																<select name="mtm_<?php echo $count ?>_ref">
+																	<?php
+																	if( !in_array($name, $attributes) ){
+																		echo "<option value='$name'>$name (".__('Not defined in templates', 'dbem').")</option>";
 																	}
-																}
-																?>
-															</select>
-															<a href="#" rel="<?php echo $count ?>">Remove</a>
-														</td>
-														<td>
-															<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
-														</td>
-													</tr>
-													<?php
-													$count++;
-												}
-											}else{
-												if( count( $attributes ) > 0 ){
+																	foreach( $attributes as $attribute ){
+																		if( $attribute == $name ) {
+																			echo "<option selected='selected'>$attribute</option>";
+																		}else{
+																			echo "<option>$attribute</option>";
+																		}
+																	}
+																	?>
+																</select>
+																<a href="#" rel="<?php echo $count ?>">Remove</a>
+															</td>
+															<td>
+																<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
+															</td>
+														</tr>
+														<?php
+														$count++;
+													}
+												}else{
 													?>
 													<tr valign="top" id="mtm_<?php echo $count ?>">
 														<td scope="row">
@@ -532,20 +532,18 @@ function dbem_event_form( $title ) {
 														</td>
 													</tr>
 													<?php
-												}else{
-													?>
-													<tr valign="top">
-														<td scope="row" colspan='2'>
-														<?php _e('In order to use attributes, you must define some in your templates, otherwise they\'ll never show. Go to Events > Settings to add attribute placeholders.', 'dbem'); ?>
-														</td>
-													</tr>
-													<?php
-													
 												}
-											}
-											?>
-										</tbody>
-									</table>
+												?>
+											</tbody>
+										</table>
+									<?php else : ?>
+										<p>
+										<?php _e('In order to use attributes, you must define some in your templates, otherwise they\'ll never show. Go to Events > Settings to add attribute placeholders.', 'dbem'); ?>
+										</p> 
+										<script>
+											jQuery(document).ready(function($){ $('#event_attributes').addClass('closed'); });
+										</script>
+									<?php endif; ?>
 								</div>
 							</div>
 						</div>

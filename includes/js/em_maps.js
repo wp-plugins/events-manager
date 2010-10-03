@@ -1,3 +1,5 @@
+var map;
+
 function em_load_map( callback ) {
 	var script = document.createElement("script");
 	script.setAttribute("src", "http://maps.google.com/maps/api/js?sensor=false&callback="+callback);
@@ -22,36 +24,50 @@ function em_map_single() {
 	infowindow.open(map,marker);
 }
 
-//Load a map for multiple locations
-function em_map_global(){
+function em_map_global() {
 	jQuery.getJSON(document.URL,{ajax: 'true', query:'GlobalMapData', eventful:eventful}, function(data){
-		//Load a map on a single page
-		//TODO create an option for where to center the map, for now we just use the first event
-		var map = new google.maps.Map( document.getElementById('em-locations-map'), {
-		    zoom: 13,
-		    center: new google.maps.LatLng(data[0].location_latitude, data[0].location_longitude),
-		    mapTypeId: google.maps.MapTypeId.ROADMAP,
-		    mapTypeControl: false
-		});
-		var markers = [];
-		var infoWindow = new google.maps.InfoWindow;
-		for( i=0 ; i<data.length; i++ ){
-			latitude = data[i].location_latitude;
-			longitude = data[i].location_longitude;
-			balloon = '<div id="location-balloon-content">'+ data[i].location_balloon +'</div>';
-			markers[i] = new google.maps.Marker({
-			    position: new google.maps.LatLng( parseFloat(latitude), parseFloat(longitude) ),
-			    map: map,
-			    title: data[i].location_name
-			});
-			google.maps.event.addListener(markers[i], 'click', function() {
-		        infoWindow.setContent( balloon );
-		        infoWindow.open(map, markers[i]);
-		    });
-			google.maps.event.addListener(infoWindow, 'domready', function() { 
-				document.getElementById('location-balloon-content').parentNode.style.overflow=''; 
-				document.getElementById('location-balloon-content').parentNode.parentNode.style.overflow=''; 
-			});
-		}
+	  var myLatlng = new google.maps.LatLng(data[0].location_latitude,data[0].location_longitude);
+	  var myOptions = {
+	    mapTypeId: google.maps.MapTypeId.ROADMAP
+	  }
+	 
+	  map = new google.maps.Map(document.getElementById("em-locations-map"), myOptions);
+	  
+	  var minLatLngArr = [0,0];
+	  var maxLatLngArr = [0,0];
+	  
+	  for (var i = 0; i < data.length; i++) {
+		var latitude = parseFloat( data[i].location_latitude );
+		var longitude = parseFloat( data[i].location_longitude );
+		var location = new google.maps.LatLng( latitude, longitude );
+	    var marker = new google.maps.Marker({
+	        position: location, 
+	        map: map
+	    });
+	    marker.setTitle(data[i].location_name);
+		var myContent = '<div id="em-map-balloon"><div id="content">'+ data[i].location_balloon +'</div></div>';
+		em_map_infobox(marker, myContent);
+		
+		//Get min and max long/lats
+		minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
+		minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
+		maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
+		maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];		
+	  }
+	  // Zoom in to the bounds
+	  var minLatLng = new google.maps.LatLng(minLatLngArr[0],minLatLngArr[1]);
+	  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
+	  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
+	  map.fitBounds(bounds);
 	});
+}
+ 
+// The five markers show a secret message when clicked
+// but that message is not within the marker's instance data
+ 
+function em_map_infobox(marker, message) {
+  var infowindow = new google.maps.InfoWindow({ content: message });
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.open(map,marker);
+  });
 }

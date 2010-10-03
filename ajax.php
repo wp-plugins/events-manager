@@ -23,7 +23,7 @@ function em_ajax_actions() {
 		$json_locations = array();
 		foreach($locations as $location_key => $location) {
 			$json_locations[$location_key] = $location->to_array();
-			$json_locations[$location_key]['location_balloon'] = $location->output(get_option('dbem_location_baloon_format'));
+			$json_locations[$location_key]['location_balloon'] = $location->output(get_option('dbem_map_text_format'));
 		}
 		echo EM_Object::json_encode($json_locations);
 	 	die();   

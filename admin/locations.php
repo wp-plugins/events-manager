@@ -18,6 +18,7 @@ add_action('init', 'dbem_intercept_locations_actions');
  * @return null
  */
 function dbem_locations_page() {   
+	global $_POST,$_GET,$_REQUEST;
 	if(isset($_GET['action']) && $_GET['action'] == "edit") { 
 		// edit location  
 		$EM_Location = new EM_Location($_GET['location_id']);
@@ -39,14 +40,25 @@ function dbem_locations_page() {
 			}
 		} elseif(isset($_POST['action']) && $_POST['action'] == "addlocation") {    
 			$EM_Location = new EM_Location();
+			$EM_Location->get_post();
 			$validation_result = $EM_Location->validate();
 			if ($validation_result) {   
-				$EM_Location->save();
-				//RESETME $message = __('The location has been added.', 'dbem'); 
+				$EM_Location->save(); 
+				?>
+				<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
+					<p><?php _e('The location has been added.', 'dbem') ?></p>
+				</div>
+				<?php
 				$locations = EM_Locations::get();
-				dbem_admin_locations($locations, null,$message);
+				dbem_admin_locations($locations, null);
 			} else {
-				$message = $validation_result;
+				?>
+				<div id='message' class='error '>
+					<p>
+						<strong><?php _e( "Ach, there's a problem here:", "dbem" ) ?></strong><br /><br /><?php echo implode('<br />', $EM_Location->errors); ?>
+					</p>
+				</div>
+				<?php
 				$locations = EM_Locations::get();
 				dbem_admin_locations($locations, $EM_Location, $message);
 			}
@@ -68,17 +80,12 @@ function dbem_admin_locations($locations, $new_location, $message = "") {
 			</div>
  	 		<h2><?php _e('Locations', 'dbem'); ?></h2>  
 	 		
-			<?php if($message != "") : ?>
-				<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
-					<p><?php echo $message ?></p>
-				</div>
-			<?php endif; ?>
 			<div id='col-container'>
 				<div id='col-right'>
 			 	 <div class='col-wrap'>       
 				 	 <form id='bookings-filter' method='get' action='<?php echo $destination ?>'>
 						<input type='hidden' name='page' value='locations'/>
-						<input type='hidden' name='action' value='edit_location'/>
+						<input type='hidden' name='action' value='addlocation'/>
 						
 						<?php if (count($locations)>0) : ?>
 						<table class='widefat'>
@@ -216,20 +223,20 @@ function dbem_admin_location($location, $message = "") {
 							<table class='form-table'>
 				<tr class='form-field form-required'>
 					<th scope='row' valign='top'><label for='location_name'><?php echo __('Location name', 'dbem') ?></label></th>
-					<td><input name='location_name' id='location-name' type='text' value='<?php echo $location['location_name'] ?>' size='40'  /><br />
+					<td><input name='location_name' id='location-name' type='text' value='<?php echo htmlentities($location['location_name'], true); ?>' size='40'  /><br />
 		           <?php echo __('The name of the location', 'dbem') ?></td>
 				</tr>
 
 				<tr class='form-field'>
 					<th scope='row' valign='top'><label for='location_address'><?php echo __('Location address', 'dbem') ?></label></th>
-					<td><input name='location_address' id='location-address' type='text' value='<?php echo $location['location_address'] ?>' size='40' /><br />
+					<td><input name='location_address' id='location-address' type='text' value='<?php echo htmlentities($location['location_address'], true); ?>' size='40' /><br />
 		            <?php echo __('The address of the location', 'dbem') ?>.</td>
 
 				</tr>
 				
 				<tr class='form-field'>
 					<th scope='row' valign='top'> <label for='location_town'><?php echo __('Location town', 'dbem') ?></label></th>
-					<td><input name='location_town' id='location-town' type='text' value='<?php echo $location['location_town'] ?>' size='40' /><br />
+					<td><input name='location_town' id='location-town' type='text' value='<?php echo htmlentities($location['location_town'], true); ?>' size='40' /><br />
 		            <?php echo __('The town where the location is located', 'dbem') ?>.</td>
 
 				</tr>

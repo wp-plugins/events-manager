@@ -126,11 +126,12 @@ define('DEFAULT_CATEGORIES_ENABLED', false);
        
 // obsolete tables
 define('OLD_EVENTS_TBNAME','dbem_events') ; 
+define('OLD_RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME   
 define('OLD_LOCATIONS_TBNAME','dbem_locations'); //TABLE NAME  
 define('OLD_BOOKINGS_TBNAME','dbem_bookings'); //TABLE NAME
 define('OLD_PEOPLE_TBNAME','dbem_people'); //TABLE NAME  
 define('OLD_BOOKING_PEOPLE_TBNAME','dbem_bookings_people'); //TABLE NAME   
-define('OLD_DBEM_CATEGORIES_TBNAME', 'dbem_categories'); //TABLE NAME
+define('OLD_CATEGORIES_TBNAME', 'dbem_categories'); //TABLE NAME
 
 
 // DEBUG constant for developing

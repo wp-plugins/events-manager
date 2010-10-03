@@ -158,7 +158,7 @@ function em_delete_booking_form() {
 			<input type='submit' value='<?php _e('Cancel your booking', 'dbem') ?>'/>
 		</form>
 	</div>
-	<?	
+	<?php
 	return ob_get_clean();	
 }
 ?>

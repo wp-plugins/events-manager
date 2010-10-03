@@ -68,10 +68,11 @@ class EM_Object {
 	 * @param array $array
 	 * @return null
 	 */
-	function to_object( $array = array() ){
+	function to_object( $array = array(), $addslashes = false ){
 		//Save core data
 		foreach ( $this->fields as $key => $val ) {
 			if(array_key_exists($key, $array)){
+				$array[$key] = ($addslashes) ? stripslashes($array[$key]):$array[$key];
 				$this->$val['name'] = $array[$key];
 			}
 		}

@@ -161,3 +161,6 @@ table.fullcalendar td {
 	font-size: 80%;     
 	list-style: none;
 }
+
+/*Maps*/
+#em-map-balloon #content { margin:0px; padding:0px; font-size:12px; }

@@ -53,7 +53,7 @@ class EM_Location extends EM_Object {
 				$location['location_longitude'] = 0;
 			}
 			//Save into the object
-			$this->to_object($location);
+			$this->to_object($location, true);
 			$this->image_url = $this->get_image_url();
 		} 
 	}
@@ -62,12 +62,12 @@ class EM_Location extends EM_Object {
 		//We are getting the values via POST or GET
 		$location = array();
 		$location['location_id'] = $_POST['location_id'];
-		$location['location_name'] = $_POST['location_name'];
-		$location['location_address'] = $_POST['location_address']; 
-		$location['location_town'] = $_POST['location_town']; 
+		$location['location_name'] = stripslashes($_POST['location_name']);
+		$location['location_address'] = stripslashes($_POST['location_address']); 
+		$location['location_town'] = stripslashes($_POST['location_town']); 
 		$location['location_latitude'] = $_POST['location_latitude'];
 		$location['location_longitude'] = $_POST['location_longitude'];
-		$location['location_description'] = $_POST['content'];
+		$location['location_description'] = stripslashes($_POST['content']);
 		$this->to_object($location);
 	}
 	
