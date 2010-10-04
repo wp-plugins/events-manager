@@ -33,9 +33,12 @@ Events Manager 1.* adopters should:
 1. backup the Wordpress database. 
 2. deactivate Events Manager 1.*
 3. delete Events Managers 1.* and upload Events Manager 2.* to the server
-4. activate Events Manager 2.*
+4. activate Events Manager 2.* 
+5. Downaload and activate Events Manager 3.x
+    
+If you migrate from 2.x to 3.0 and something goes wrong in your database, in the Settings page there's a link to revert to v. 2.2 ; this will enable you to use the old version until we fine-tune the migration script.
 
-Events Manager should take care of your events database migration automatically, but since this is a beta release it's much better to perform a database backup, as previously suggested.
+Events Manager should take care of your events database migration automatically, but it's always much better to perform a database backup, as previously suggested. 
 
 == Usage == 
 
@@ -219,11 +222,12 @@ newtweblogic fixed a bug in the install routine
 2.2.2
 Small fix that stopped custom fields from showing up in events lists.         
 
-2.3
-Refactored all the underlying achitecture, to make it object oriented. Now classes and templates are separate.
+3.0
+Refactored all the underlying achitecture, to make it object oriented. Now classes and templates are separate.    
 Merged the events and recurrences tables                                                   
 Tables migration from dbem to em (to provide a fallback in case the previous merge goes wrong)
 Bugfix: 127 limit increased (got rid of tinyint types)
 Bugfix: fixed all major php bugs preventing the use with Wordpress 3.0
 Bugfix: fixed all major js bugs preventing the use with Wordpress 3.0
-Restyling of the Settings page
+Restyling of the Settings page    
+Added a setting to revert to 2.2

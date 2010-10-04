@@ -17,9 +17,23 @@ function em_options_save(){
 			<?php
 		}
 		add_action ( 'admin_notices', 'em_options_saved_notice' );
+	}              
+	if( current_user_can('activate_plugins') and  $_GET['revert-to2'] == '1' ){
+	    update_option('dbem_version',2);
+		function em_reverted_to2(){
+			?>
+			<div class="updated"><p><strong><?php _e('Succesfully reverted to 2. Now deactivate Events Manager and replace it with versione 2.2.'); ?></strong></p></div>
+			<?php
+		}
+		add_action ( 'admin_notices', 'em_reverted_to2' );
+		
 	}
+	
+	
 }
-add_action('admin_head', 'em_options_save');
+add_action('admin_head', 'em_options_save');          
+
+
 
 function dbem_options_subpanel() {
 	//TODO place all options into an array
@@ -206,7 +220,23 @@ function dbem_options_subpanel() {
 				</table> 
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
-
+            
+			<div  class="postbox " >
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Troubleshooting', 'dbem' ); ?> </span></h3>
+			<div class="inside">      
+				<div style='margin-left: 20px'>
+			   		<p>If somehthing went wrong with the update to version 3.0 you can safely dowgrade.</p>
+					<ul style="list-style: bullet"> 
+						<li>First of all, <a href='http://downloads.wordpress.org/plugin/events-manager.2.2.2.zip'>dowload a copy of version 2.2</a></li>
+						<li>Click the link at the end of this box</li>
+						<li>Deactivate Event Manager in the plugin page</li>
+						<li>Replace the Events Manager 3.0 folder with the 2.2 version</li>
+						<li>Let the developers know, we might be able to help.</li>
+					<ul>
+					<p><a href='?page=events-manager-options&amp;revert-to2=1'>Revert my database to 2.2</a> </p> 
+			   </div>
+			</div> <!-- . inside -->
+			</div> <!-- .postbox -->
 
 			<p class="submit">
 				<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e ( 'Save Changes' )?>" />
