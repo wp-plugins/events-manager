@@ -34,9 +34,9 @@ Events Manager 1.* adopters should:
 2. deactivate Events Manager 1.*
 3. delete Events Managers 1.* and upload Events Manager 2.* to the server
 4. activate Events Manager 2.* 
-5. Downaload and activate Events Manager 3.x
+5. Download and activate Events Manager 3.*
     
-If you migrate from 2.x to 3.0 and something goes wrong in your database, in the Settings page there's a link to revert to v. 2.2 ; this will enable you to use the old version until we fine-tune the migration script.
+If you migrate from 2.* to 3.* and something goes wrong in your database, in the Settings page there's a link to revert to v. 2.2 ; this will enable you to use the old version until we fine tune the migration script.
 
 Events Manager should take care of your events database migration automatically, but it's always much better to perform a database backup, as previously suggested. 
 

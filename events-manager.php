@@ -119,10 +119,10 @@ define('DEFAULT_FULL_CALENDAR_EVENT_FORMAT', '<li>#_LINKEDNAME</li>');
 define('DEFAULT_SMALL_CALENDAR_EVENT_TITLE_FORMAT', "#_NAME" );
 define('DEFAULT_SMALL_CALENDAR_EVENT_TITLE_SEPARATOR', ", ");  
 define('DEFAULT_USE_SELECT_FOR_LOCATIONS', false);      
-define('DEFAULT_ATTRIBUTES_ENABLED', false);
-define('DEFAULT_RECURRENCE_ENABLED', false);
-define('DEFAULT_RSVP_ENABLED', false);
-define('DEFAULT_CATEGORIES_ENABLED', false);
+define('DEFAULT_ATTRIBUTES_ENABLED', true);
+define('DEFAULT_RECURRENCE_ENABLED', true);
+define('DEFAULT_RSVP_ENABLED', true);
+define('DEFAULT_CATEGORIES_ENABLED', true);
        
 // obsolete tables
 define('OLD_EVENTS_TBNAME','dbem_events') ; 
