@@ -31,7 +31,7 @@ function dbem_event_form( $title ) {
 	$localised_end_example = str_replace ( "yy", "2008", str_replace ( "mm", "11", str_replace ( "dd", "28", $localised_date_format ) ) );
 	
 	if ($EM_Event->start_date != "") {
-		preg_match ( "/(\d{4})-(\d{2})-(\d{2})/", $EM_Event->start_date, $matches );
+		preg_match ( '/(\d{4})-(\d{2})-(\d{2})/', $EM_Event->start_date, $matches );
 		$year = $matches [1];
 		$month = $matches [2];
 		$day = $matches [3];
@@ -40,7 +40,7 @@ function dbem_event_form( $title ) {
 		$localised_date = "";
 	}
 	if ($EM_Event->end_date != "") {
-		preg_match ( "/(\d{4})-(\d{2})-(\d{2})/", $EM_Event->end_date, $matches );
+		preg_match ( '/(\d{4})-(\d{2})-(\d{2})/', $EM_Event->end_date, $matches );
 		$end_year = $matches [1];
 		$end_month = $matches [2];
 		$end_day = $matches [3];
@@ -301,7 +301,7 @@ function dbem_event_form( $title ) {
 								<?php _e ( 'Name', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
-								<input type="text" name="event_name" value="<?php echo htmlentities($EM_Event->name,true); ?>" />
+								<input type="text" name="event_name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
 								<br />
 								<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
 							</div>
@@ -390,21 +390,21 @@ function dbem_event_form( $title ) {
 												<tr>
 													<th><?php _e ( 'Name:' )?></th>
 													<td>
-														<input id="location-name" type="text" name="location_name" value="<?php echo htmlentities($EM_Event->location->name, true); ?>" />													
+														<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Event->location->name, ENT_QUOTES); ?>" />													
 					                            		<p><?php _e ( 'Select a location for your event', 'dbem' )?></p>
 					                            	</td>
 										 		</tr>
 												<tr>
 													<th><?php _e ( 'Address:' )?>&nbsp;</th>
 													<td>
-														<input id="location-address" type="text" name="location_address" value="<?php echo htmlentities($EM_Event->location->address, true); ; ?>" />
+														<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Event->location->address, ENT_QUOTES); ; ?>" />
 														<p><?php _e ( 'The address of the location where the event takes place. Example: 21, Dominick Street', 'dbem' )?></p>
 													</td>
 												</tr>
 												<tr>
 													<th><?php _e ( 'Town:' )?>&nbsp;</th>
 													<td>
-														<input id="location-town" type="text" name="location_town" value="<?php echo htmlentities($EM_Event->location->town, true); ?>" />
+														<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Event->location->town, ENT_QUOTES); ?>" />
 														<p><?php _e ( 'The town where the location is located. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country in the town field. Example: Verona, Italy.', 'dbem' )?></p>
 													</td>
 												</tr>
@@ -457,7 +457,7 @@ function dbem_event_form( $title ) {
 									get_option ( 'dbem_single_event_format' ).
 									get_option ( 'dbem_single_location_format' );
 								//We now have one long string of formats, get all the attribute placeholders
-								preg_match_all("/#_ATT\{.+?\}(\{.+?\})?/", $formats, $placeholders);
+								preg_match_all('/#_ATT\{.+?\}(\{.+?\})?/', $formats, $placeholders);
 								//Now grab all the unique attributes we can use in our event.
 								$attributes = array();
 								foreach($placeholders[0] as $result) {
@@ -508,7 +508,7 @@ function dbem_event_form( $title ) {
 																<a href="#" rel="<?php echo $count ?>">Remove</a>
 															</td>
 															<td>
-																<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
+																<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo htmlspecialchars($value, ENT_QUOTES); ?>" />
 															</td>
 														</tr>
 														<?php
@@ -528,7 +528,7 @@ function dbem_event_form( $title ) {
 															<a href="#" rel="<?php echo $count ?>">Remove</a>
 														</td>
 														<td>
-															<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo $value ?>" />
+															<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo htmlspecialchars($value, ENT_QUOTES); ?>" />
 														</td>
 													</tr>
 													<?php

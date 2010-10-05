@@ -238,7 +238,7 @@ class EM_Events extends EM_Object {
 		$defaults = array(
 			'limit' => false, 
 			'scope' => 'all', 
-			'order' => 'DESC', 
+			'order' => 'ASC', 
 			'format' => '', 
 			'category_id' => 0, 
 			'location_id' => 0, 

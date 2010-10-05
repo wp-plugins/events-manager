@@ -10,7 +10,7 @@
  */
 function em_content($data) {
 	$events_page_id = get_option ( 'dbem_events_page' );
-	if ( get_the_ID() == $events_page_id ) {
+	if ( get_the_ID() == $events_page_id && $events_page_id != 0 ) {
 		global $wpdb, $EM_Event;
 		//TODO any loop should put the current $EM_Event etc. into the global variable
 		if ( isset( $_REQUEST['calendar_day'] ) && $_REQUEST['calendar_day'] != '' ) {
@@ -55,7 +55,7 @@ function em_events_page_title($data) {
 	global $post;
 	$events_page_id = get_option ( 'dbem_events_page' );
 	
-	if ( $post->ID == $events_page_id ) {
+	if ( $post->ID == $events_page_id && $events_page_id != 0 ) {
 		if (isset ( $_REQUEST['calendar_day'] ) && $_REQUEST['calendar_day'] != '') {
 			$events = EM_Events::get(array('limit'=>2,'scope'=>$_REQUEST['calendar_day']));
 			$event = $events[0];

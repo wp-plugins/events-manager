@@ -106,13 +106,13 @@ class EM_Event extends EM_Object{
 				if($this->contactperson_id > 0){
 					$this->contact = get_userdata($this->contactperson_id);
 				}
-				if( !is_object($this->contact) ){
-					$this->contactperson_id = get_option('dbem_default_contact_person');
-					$this->contact = get_userdata($this->contactperson_id);
-				}
-				if( is_object($this->contact) ){
-		      		$this->contact->phone = get_user_meta($this->contact->ID, 'dbem_phone', true);
-				}
+			}
+			if( !is_object($this->contact) ){
+				$this->contactperson_id = get_option('dbem_default_contact_person');
+				$this->contact = get_userdata($this->contactperson_id);
+			}
+			if( is_object($this->contact) ){
+	      		$this->contact->phone = get_user_meta($this->contact->ID, 'dbem_phone', true);
 			}
 			//Now, if this is a recurrence, get the recurring for caching to the $EM_Recurrences
 			if( $this->is_recurrence() && !array_key_exists($this->recurrence_id, $EM_Recurrences) ){
@@ -162,7 +162,7 @@ class EM_Event extends EM_Object{
 		$event_attributes = array();
 		for($i=1 ; trim($_POST["mtm_{$i}_ref"])!='' ; $i++ ){
 	 		if(trim($_POST["mtm_{$i}_name"]) != ''){
-		 		$event_attributes[$_POST["mtm_{$i}_ref"]] = $_POST["mtm_{$i}_name"];
+		 		$event_attributes[$_POST["mtm_{$i}_ref"]] = stripslashes($_POST["mtm_{$i}_name"]);
 	 		}
 	 	}
 	 	$this->attributes = $event_attributes;
@@ -456,9 +456,9 @@ class EM_Event extends EM_Object{
 			 	$rsvp_is_active = get_option('dbem_rsvp_enabled');
 			 	$this->get_bookings(); 
 				if ($this->rsvp) {
-				   $availble_seats .= $this->bookings->get_available_seats();
+				   $availble_seats = $this->bookings->get_available_seats();
 				} else {
-					$availble_seats .= "";
+					$availble_seats = "0";
 				}
 			 	$event_string = str_replace($result, $availble_seats , $event_string );
 			} 
@@ -525,7 +525,7 @@ class EM_Event extends EM_Object{
 				$event_string = str_replace($result, dbem_ascii_encode($this->contact->user_email), $event_string );
 			}
 			if (preg_match('/#_CONTACTPHONE$/', $result)) {   
-	      		if($phone == ''){ $phone = __('N/A', 'dbem'); }
+	      		if( $this->contact->phone == ''){ $phone = __('N/A', 'dbem'); }
 				$event_string = str_replace($result, $phone, $event_string );
 			}
 		

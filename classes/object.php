@@ -72,7 +72,9 @@ class EM_Object {
 		//Save core data
 		foreach ( $this->fields as $key => $val ) {
 			if(array_key_exists($key, $array)){
-				$array[$key] = ($addslashes) ? stripslashes($array[$key]):$array[$key];
+				if( !is_object($array[$key]) && !is_array($array[$key]) ){
+					$array[$key] = ($addslashes) ? stripslashes($array[$key]):$array[$key];
+				}
 				$this->$val['name'] = $array[$key];
 			}
 		}
@@ -186,7 +188,7 @@ class EM_Object {
 	            $key = "'".addslashes($key)."'";
 	            // Format the value:
 	            if( is_array( $value )){
-	                $value = dbem_array_to_json( $value );
+	                $value = $this->array_to_json( $value );
 	            }else if( is_bool($value) ) {
 	            	$value = ($value) ? "true" : "false";
 	            }else if( !is_numeric( $value ) || is_string( $value ) ){
@@ -202,7 +204,7 @@ class EM_Object {
 	        foreach( $array as $value ){
 	            // Format the value:
 	            if( is_array( $value )){
-	                $value = dbem_array_to_json( $value );
+	                $value = $this->array_to_json( $value );
 	            } else if( !is_numeric( $value ) || is_string( $value ) ){
 	                $value = "'".addslashes($value)."'";
 	            }

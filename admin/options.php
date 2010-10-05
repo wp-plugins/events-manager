@@ -88,6 +88,7 @@ function dbem_options_subpanel() {
 				 	foreach($get_pages as $page){
 				 		$events_page_options[$page->ID] = $page->post_title;
 				 	} 
+				 	$events_page_options[0] = __('No Events Page');
 				   	dbem_options_select ( __( 'Events page' ), 'dbem_events_page', $events_page_options, __( 'This option allows you to select which page to use as an events page','dbem' ) );
 					$em_disable_filter = false;
 					//Rest
@@ -221,23 +222,6 @@ function dbem_options_subpanel() {
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
             
-			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Troubleshooting', 'dbem' ); ?> </span></h3>
-			<div class="inside">      
-				<div style='margin-left: 20px'>
-			   		<p>If somehthing went wrong with the update to version 3.0 you can safely dowgrade.</p>
-					<ul style="list-style: bullet"> 
-						<li>First of all, <a href='http://downloads.wordpress.org/plugin/events-manager.2.2.2.zip'>dowload a copy of version 2.2</a></li>
-						<li>Click the link at the end of this box</li>
-						<li>Deactivate Event Manager in the plugin page</li>
-						<li>Replace the Events Manager 3.0 folder with the 2.2 version</li>
-						<li>Let the developers know, we might be able to help.</li>
-					<ul>
-					<p><a href='?page=events-manager-options&amp;revert-to2=1'>Revert my database to 2.2</a></p> 
-			   </div>
-			</div> <!-- . inside -->
-			</div> <!-- .postbox -->
-
 			<p class="submit">
 				<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e ( 'Save Changes' )?>" />
 				<input type="hidden" name="em-submitted" value="1" />

@@ -13,6 +13,7 @@ function em_install() {
 		$old_version = get_option('dbem_version');
 		if( $old_version < 2.3 && $old_version != '' ){
 			em_migrate_to_new_tables();
+			em_import_verify();
 		}
 		//Upate Version	
 	  	update_option('dbem_version', EM_VERSION); 
@@ -374,6 +375,10 @@ function em_reimport(){
 }
 add_action('admin_init', 'em_reimport');
 
+/**
+ * If importing from 2.x to 3.x, this function will be called to verify the import went well.
+ * @return string|string
+ */
 function em_import_verify(){
 	global $wpdb;
 	$p = $wpdb->prefix;
@@ -384,27 +389,41 @@ function em_import_verify(){
 	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.LOCATIONS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_LOCATIONS_TBNAME.";") );
 	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.PEOPLE_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_PEOPLE_TBNAME.";") );
 	if( in_array(false, $results) ){
-		add_action ( 'admin_notices', 'em_import_message_fail' );
+		update_option( 'dbem_import_fail', 1 );
 		return false;
 	}else{
+		update_option( 'dbem_import_fail', 0 );
 		add_action ( 'admin_notices', 'em_import_message_success' );
 		return true;
 	}	
 }
 
+/**
+ * Gets called if re-import was successful. 
+ */
 function em_import_message_success(){
 	?>
-		<div id="em_page_error" class="updated">
-			<p><?php _e('Events Manager successfully imported your events, please check your records to verify.','dbem')?></p>
-		</div>
+	<div id="em_page_error" class="updated">
+		<p><?php _e('Events Manager successfully imported your events, please check your records to verify.','dbem')?></p>
+	</div>
 	<?php
 }
 
-function em_import_message_fail(){	
-	?>
-		<div id="em_page_error" class="error">
-			<p><?php sprintf(_e('Something has gone wrong when importing your old event. See the <a href="%s">support page</a> for more information','dbem'), get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-support'); ?></p>
-		</div>
-	<?php
+/*
+ * If import failed, a persistant message will show unless ignored.
+ */		
+function em_import_message_fail(){
+	if( $_GET['em_dismiss_import'] == '1' ){
+		update_option('dbem_import_fail', 0);
+	}	
+	if( get_option('dbem_import_fail') == 1 ){
+		$dismiss_link_joiner = ( count($_GET) > 0 ) ? '&amp;':'?';
+		?>
+			<div id="em_page_error" class="error">
+				<p><?php printf( __('Something has gone wrong when importing your old event. See the <a href="%s">support page</a> for more information. <a href="%s">Dismiss this message</a>','dbem'), get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-support', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_import=1'); ?></p>
+			</div>
+		<?php
+	}
 }
+add_action ( 'admin_notices', 'em_import_message_fail' );
 ?>

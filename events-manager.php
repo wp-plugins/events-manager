@@ -220,7 +220,7 @@ function em_create_events_submenu () {
 			$plugin_pages[] = add_submenu_page(__FILE__, __('People', 'dbem'), __('People', 'dbem'), MIN_CAPABILITY, 'people', "dbem_people_page");
 			$plugin_pages[] = add_submenu_page(__FILE__, __('Event Categories','dbem'),__('Categories','dbem'), SETTING_CAPABILITY, "events-manager-categories", 'dbem_categories_subpanel');
 			$plugin_pages[] = add_submenu_page(__FILE__, __('Events Manager Settings','dbem'),__('Settings','dbem'), SETTING_CAPABILITY, "events-manager-options", 'dbem_options_subpanel');
-			$plugin_pages[] = add_submenu_page(__FILE__, __('Getting Support Events Manager','dbem'),__('Support','dbem'), SETTING_CAPABILITY, "events-manager-support", 'em_admin_support');
+			$plugin_pages[] = add_submenu_page(__FILE__, __('Getting Help for Events Manager','dbem'),__('Help','dbem'), SETTING_CAPABILITY, "events-manager-support", 'em_admin_support');
 			foreach($plugin_pages as $plugin_page){
 				add_action( 'admin_print_scripts-'. $plugin_page, 'em_admin_load_scripts' );
 				add_action( 'admin_head-'. $plugin_page, 'em_admin_general_script' );
@@ -256,26 +256,31 @@ add_filter ( 'favorite_actions', 'em_favorite_menu' );
  * Generate warnings and notices in the admin area
  */
 function em_admin_warnings() {
-	//If we're editing the events page 
-	$events_page_id = get_option ( 'dbem_events_page' );
-	if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
-		$message = sprintf ( __ ( "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. ", 'dbem' ), 'admin.php?page=events-manager-options' );
-		$notice = "<div class='error'><p>$message</p></div>";
-		echo $notice;
+	//If we're editing the events page show hello to new user
+	if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
+		// Disable Hello to new user if requested
+		update_option ( 'dbem_hello_to_user', 0 );
+	}else{
+		$events_page_id = get_option ( 'dbem_events_page' );
+		if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
+			$message = sprintf ( __ ( "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. ", 'dbem' ), 'admin.php?page=events-manager-options' );
+			$notice = "<div class='error'><p>$message</p></div>";
+			echo $notice;
+		}
 	}
 	//If events page couldn't be created
 	if( $_GET['em_dismiss_events_page'] == '1' ){
 		update_option('dbem_dismiss_events_page',1);
-	}
-	if ( !get_page(get_option('dbem_events_page')) && !get_option('dbem_dismiss_events_page') ){
-		$sever = $_SERVER;
-		$dismiss_link_joiner = ( count($_GET) > 0 ) ? '&amp;':'?';
-		$advice = sprintf ( __( 'Uh Oh! For some reason wordpress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">options page</a>. Sorry for the extra step! <a href="%s">Ignore Message</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1' );
-		?>
-		<div id="em_page_error" class="updated">
-			<p><?php echo $advice; ?></p>
-		</div>
-		<?php		
+	}else{
+		if ( !get_page(get_option('dbem_events_page')) && !get_option('dbem_dismiss_events_page') ){
+			$dismiss_link_joiner = ( count($_GET) > 0 ) ? '&amp;':'?';
+			$advice = sprintf ( __( 'Uh Oh! For some reason wordpress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">options page</a>. Sorry for the extra step! If you know what you are doing, you may have done this on purpose, if so <a href="%s">ignore this message</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1' );
+			?>
+			<div id="em_page_error" class="updated">
+				<p><?php echo $advice; ?></p>
+			</div>
+			<?php		
+		}
 	}
 }
 add_action ( 'admin_notices', 'em_admin_warnings' );
@@ -287,7 +292,7 @@ function em_activate() {
 }
 register_activation_hook( __FILE__,'em_activate');
 
-if($_GET['em_reimport'] == '1'){
+if( $_GET['em_reimport'] == '1' || get_option('dbem_import_fail') == '1' ){
 	require_once(WP_PLUGIN_DIR.'/events-manager/install.php');
 }
 

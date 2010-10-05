@@ -73,7 +73,7 @@ function dbem_bookings_table() {
 		</div>
 		<div class='tablenav'>
 			<div class='alignleft actions'>
-			 <input class=button-secondary action' type='submit' name='doaction2' value='Delete'/>
+			 <input class='button-secondary action' type='submit' name='doaction2' value='Delete'/>
 				<br class='clear'/>
 			</div>
 			<br class='clear'/>

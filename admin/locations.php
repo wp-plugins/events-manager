@@ -198,6 +198,7 @@ function dbem_admin_locations($locations, $new_location, $message = "") {
 					</div> 
 				</div>  <!-- end col-left -->   
 			</div> 
+		</div>
   	</div>
   	<?php 
 }
@@ -223,20 +224,20 @@ function dbem_admin_location($location, $message = "") {
 							<table class='form-table'>
 				<tr class='form-field form-required'>
 					<th scope='row' valign='top'><label for='location_name'><?php echo __('Location name', 'dbem') ?></label></th>
-					<td><input name='location_name' id='location-name' type='text' value='<?php echo htmlentities($location['location_name'], true); ?>' size='40'  /><br />
+					<td><input name='location_name' id='location-name' type='text' value='<?php echo htmlspecialchars($location['location_name'], ENT_QUOTES); ?>' size='40'  /><br />
 		           <?php echo __('The name of the location', 'dbem') ?></td>
 				</tr>
 
 				<tr class='form-field'>
 					<th scope='row' valign='top'><label for='location_address'><?php echo __('Location address', 'dbem') ?></label></th>
-					<td><input name='location_address' id='location-address' type='text' value='<?php echo htmlentities($location['location_address'], true); ?>' size='40' /><br />
+					<td><input name='location_address' id='location-address' type='text' value='<?php echo htmlspecialchars($location['location_address'], ENT_QUOTES); ?>' size='40' /><br />
 		            <?php echo __('The address of the location', 'dbem') ?>.</td>
 
 				</tr>
 				
 				<tr class='form-field'>
 					<th scope='row' valign='top'> <label for='location_town'><?php echo __('Location town', 'dbem') ?></label></th>
-					<td><input name='location_town' id='location-town' type='text' value='<?php echo htmlentities($location['location_town'], true); ?>' size='40' /><br />
+					<td><input name='location_town' id='location-town' type='text' value='<?php echo htmlspecialchars($location['location_town'], ENT_QUOTES); ?>' size='40' /><br />
 		            <?php echo __('The town where the location is located', 'dbem') ?>.</td>
 
 				</tr>

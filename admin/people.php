@@ -40,9 +40,9 @@ function dbem_printable_booking_report() {
 					<th scope='col'><?php _e('E-mail', 'dbem')?></th>
 					<th scope='col'><?php _e('Phone number', 'dbem')?></th> 
 					<th scope='col'><?php _e('Seats', 'dbem')?></th>
-					<th scope='col'><?php _e('Comment', 'dbem')?></th> 
-				<?php
-				foreach($EM_Event->bookings->bookings as $EM_Booking) {       ?>
+					<th scope='col'><?php _e('Comment', 'dbem')?></th>
+				</tr> 
+				<?php foreach($EM_Event->bookings->bookings as $EM_Booking) {       ?>
 				<tr>
 					
 					<td><?php echo $EM_Booking->person->name ?></td> 

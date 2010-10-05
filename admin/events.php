@@ -16,18 +16,10 @@ function dbem_events_subpanel() {
 	$order = $_GET ['order']; //FIXME order not used consistently in admin area
 	$selectedEvents = $_GET ['events'];
 	
-	// Disable Hello to new user if requested
-	if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true')
-		update_option ( 'dbem_hello_to_user', 0 );
-	
-	if ($order == "")
+	if ($order == ""){
 		$order = "ASC";
-	if ($offset == "")
-		$offset = "0";
-		
-	$event_table_name = $wpdb->prefix . EVENTS_TBNAME;
-	// Debug code, to make sure I get the correct page
-	
+	}		
+	$event_table_name = $wpdb->prefix . EVENTS_TBNAME;	
 
 	// DELETE action
 	if ($action == 'deleteEvents') {

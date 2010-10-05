@@ -87,8 +87,8 @@ function dbem_categories_table_layout($message = "") {
 									<?php foreach ($categories as $this_category) : ?>
 									<tr>
 										<td><input type='checkbox' class ='row-selector' value='<?php echo $this_category['category_id'] ?>' name='categories[]'/></td>
-										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=<?php echo $this_category['category_id'] ?>'><?php echo $this_category['category_id'] ?></a></td>
-										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=<?php echo $this_category['category_id'] ?>'><?php echo $this_category['category_name'] ?></a></td>
+										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=<?php echo $this_category['category_id'] ?>'><?php echo htmlspecialchars($this_category['category_id'], ENT_QUOTES); ?></a></td>
+										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=<?php echo $this_category['category_id'] ?>'><?php echo htmlspecialchars($this_category['category_name'], ENT_QUOTES); ?></a></td>
 									</tr>
 									<?php endforeach; ?>
 								</tbody>
