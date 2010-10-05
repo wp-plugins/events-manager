@@ -233,7 +233,7 @@ function dbem_options_subpanel() {
 						<li>Replace the Events Manager 3.0 folder with the 2.2 version</li>
 						<li>Let the developers know, we might be able to help.</li>
 					<ul>
-					<p><a href='?page=events-manager-options&amp;revert-to2=1'>Revert my database to 2.2</a> </p> 
+					<p><a href='?page=events-manager-options&amp;revert-to2=1'>Revert my database to 2.2</a></p> 
 			   </div>
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->

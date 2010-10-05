@@ -80,6 +80,7 @@ if( is_admin() ){
 	include_once('admin/functions.php');
 	include_once('admin/options.php');
 	include_once('admin/people.php');
+	include_once('admin/support.php');
 }
 
 
@@ -91,7 +92,6 @@ define('RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME
 define('LOCATIONS_TBNAME','em_locations'); //TABLE NAME  
 define('BOOKINGS_TBNAME','em_bookings'); //TABLE NAME
 define('PEOPLE_TBNAME','em_people'); //TABLE NAME  
-define('BOOKING_PEOPLE_TBNAME','em_bookings_people'); //TABLE NAME  
 define('DEFAULT_EVENT_PAGE_NAME', 'Events');   
 define('DBEM_PAGE','<!--DBEM_EVENTS_PAGE-->'); //EVENTS PAGE
 define('MIN_CAPABILITY', 'edit_posts');	// Minimum user level to access calendars
@@ -220,6 +220,7 @@ function em_create_events_submenu () {
 			$plugin_pages[] = add_submenu_page(__FILE__, __('People', 'dbem'), __('People', 'dbem'), MIN_CAPABILITY, 'people', "dbem_people_page");
 			$plugin_pages[] = add_submenu_page(__FILE__, __('Event Categories','dbem'),__('Categories','dbem'), SETTING_CAPABILITY, "events-manager-categories", 'dbem_categories_subpanel');
 			$plugin_pages[] = add_submenu_page(__FILE__, __('Events Manager Settings','dbem'),__('Settings','dbem'), SETTING_CAPABILITY, "events-manager-options", 'dbem_options_subpanel');
+			$plugin_pages[] = add_submenu_page(__FILE__, __('Getting Support Events Manager','dbem'),__('Support','dbem'), SETTING_CAPABILITY, "events-manager-support", 'em_admin_support');
 			foreach($plugin_pages as $plugin_page){
 				add_action( 'admin_print_scripts-'. $plugin_page, 'em_admin_load_scripts' );
 				add_action( 'admin_head-'. $plugin_page, 'em_admin_general_script' );
@@ -285,5 +286,9 @@ function em_activate() {
 	em_install();
 }
 register_activation_hook( __FILE__,'em_activate');
+
+if($_GET['em_reimport'] == '1'){
+	require_once(WP_PLUGIN_DIR.'/events-manager/install.php');
+}
 
 ?>

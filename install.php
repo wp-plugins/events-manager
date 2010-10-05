@@ -251,7 +251,7 @@ function em_migrate_to_new_tables(){
 		}
 		$events_values[] = "\n".'('. implode(', ', $event).')';
 	}
-	if( count($events_values) > 1 ){
+	if( count($events_values) > 0 ){
 		$events_sql = "INSERT INTO " . $wpdb->prefix.EVENTS_TBNAME . 
 			"(`" . implode('` ,`', $events_keys) . "`) VALUES".
 			implode(', ', $events_values);
@@ -304,7 +304,7 @@ function em_migrate_to_new_tables(){
 		}
 		$locations_values[] = "\n".'('. implode(', ', $location).')';
 	}
-	if( count($locations_values) > 1 ){
+	if( count($locations_values) > 0 ){
 		$locations_sql = "INSERT INTO " . $wpdb->prefix.LOCATIONS_TBNAME . 
 			"(`" . implode('` ,`', $locations_keys) . "`) VALUES".
 			implode(', ', $locations_values);
@@ -321,7 +321,7 @@ function em_migrate_to_new_tables(){
 		}
 		$people_values[] = "\n".'('. implode(', ', $person).')';
 	}
-	if( count($people_values) > 1 ){
+	if( count($people_values) > 0 ){
 		$people_sql = "INSERT INTO " . $wpdb->prefix.PEOPLE_TBNAME . 
 			"(`" . implode('` ,`', $people_keys) . "`) VALUES".
 			implode(', ', $people_values);
@@ -340,7 +340,7 @@ function em_migrate_to_new_tables(){
 		}
 		$bookings_values[] = "\n".'('. implode(', ', $booking).')';
 	}
-	if( count($bookings_values) > 1 ){
+	if( count($bookings_values) > 0 ){
 		$bookings_sql = "INSERT INTO " . $wpdb->prefix.BOOKINGS_TBNAME . 
 			"(`" . implode('` ,`', $bookings_keys) . "`) VALUES".
 			implode(', ', $bookings_values);
@@ -353,5 +353,58 @@ function em_migrate_to_new_tables(){
 		$wpdb->insert($wpdb->prefix.DBEM_CATEGORIES_TBNAME, $c);
 	} 
 	 
+}
+
+function em_reimport(){
+	//Check for reimport request
+	global $wpdb;
+	if($_GET['em_reimport'] == 1 ){
+		check_admin_referer( 'em_reimport' );
+		$p = $wpdb->prefix;
+		$table_bookings = $p.BOOKINGS_TBNAME;
+		$table_categories = $p.DBEM_CATEGORIES_TBNAME;
+		$table_events = $p.EVENTS_TBNAME;
+		$table_locations = $p.LOCATIONS_TBNAME;
+		$table_people = $p.PEOPLE_TBNAME;
+		$wpdb->query('DROP TABLE '.$table_bookings.', '.$table_categories.', '.$table_events.', '.$table_locations.', '.$table_people.';');
+		update_option('dbem_version','2');
+		em_install();
+		return em_import_verify();
+	}
+}
+add_action('admin_init', 'em_reimport');
+
+function em_import_verify(){
+	global $wpdb;
+	$p = $wpdb->prefix;
+	//Now go through each table and compare row counts, if all match (events is old recurrences + events, then we're fine
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.BOOKINGS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_BOOKINGS_TBNAME.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.DBEM_CATEGORIES_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_CATEGORIES_TBNAME.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EVENTS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_EVENTS_TBNAME.";") + $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_RECURRENCE_TBNAME.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.LOCATIONS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_LOCATIONS_TBNAME.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.PEOPLE_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_PEOPLE_TBNAME.";") );
+	if( in_array(false, $results) ){
+		add_action ( 'admin_notices', 'em_import_message_fail' );
+		return false;
+	}else{
+		add_action ( 'admin_notices', 'em_import_message_success' );
+		return true;
+	}	
+}
+
+function em_import_message_success(){
+	?>
+		<div id="em_page_error" class="updated">
+			<p><?php _e('Events Manager successfully imported your events, please check your records to verify.','dbem')?></p>
+		</div>
+	<?php
+}
+
+function em_import_message_fail(){	
+	?>
+		<div id="em_page_error" class="error">
+			<p><?php sprintf(_e('Something has gone wrong when importing your old event. See the <a href="%s">support page</a> for more information','dbem'), get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-support'); ?></p>
+		</div>
+	<?php
 }
 ?>
