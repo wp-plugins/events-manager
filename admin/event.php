@@ -293,9 +293,9 @@ function dbem_event_form( $title ) {
 								<?php _e ( 'Recurrence dates', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
-								<input id="localised-date" type="text" name="localised_event_date" value="<?php echo $localised_date?>" style="display: none;" />
+								<input id="localised-date" type="text" name="localised_event_date" style="display: none;" />
 								<input id="date-to-submit" type="text" name="event_start_date" value="<?php echo $EM_Event->start_date ?>" style="background: #FCFFAA" />
-								<input id="localised-end-date" type="text" name="localised_event_end_date" value="<?php echo $localised_end_date?>" style="display: none;" />
+								<input id="localised-end-date" type="text" name="localised_event_end_date" style="display: none;" />
 								<input id="end-date-to-submit" type="text" name="event_end_date" value="<?php echo $EM_Event->end_date ?>" style="background: #FCFFAA" />
 								<br />
 								<span id='event-date-explanation'>

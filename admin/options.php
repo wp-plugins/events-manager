@@ -27,9 +27,7 @@ function em_options_save(){
 		}
 		add_action ( 'admin_notices', 'em_reverted_to2' );
 		
-	}
-	
-	
+	}	
 }
 add_action('admin_head', 'em_options_save');          
 
@@ -41,13 +39,25 @@ function dbem_options_subpanel() {
 	?>	
 	<script type="text/javascript" charset="utf-8">
 		jQuery(document).ready(function($){
-			//$(".postbox:not(:first)").addClass('closed');
+			var close_text = '<?php _e('Collapse All','dbem'); ?>';
+			var open_text = '<?php _e('Expand All','dbem'); ?>';
+			var open_close = $('<a href="#" style="display:block; float:right; clear:right; margin:10px;">'+close_text+'</a>');
+			$('#icon-options-general').after(open_close);
+			open_close.click( function(e){
+				e.preventDefault();
+				if($(this).text() == close_text){
+					$(".postbox").addClass('closed');
+					$(this).text(open_text);
+				}else{
+					$(".postbox").removeClass('closed');
+					$(this).text(close_text);
+				} 
+			});
 		});
-	</script>		
+	</script>
 	<div class="wrap">
 		<div id='icon-options-general' class='icon32'><br />
-		</div>
-		
+		</div>		
 		<h2><?php _e ( 'Event Manager Options', 'dbem' ); ?></h2>
 		
 		<form id="dbem_options_form" method="post" action="">          
@@ -194,9 +204,20 @@ function dbem_options_subpanel() {
 					dbem_options_radio_binary ( __( 'Enable the RSVP e-mail notifications?', 'dbem' ), 'dbem_rsvp_mail_notify_is_active', __( 'Check this option if you want to receive an email when someone books places for your events.', 'dbem' ) );
 					dbem_options_textarea ( __( 'Contact person email format', 'dbem' ), 'dbem_contactperson_email_body', __( 'The format or the email which will be sent to  the contact person. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code>, <code>#_RESPEMAIL</code> and <code>#_RESPPHONE</code> to display respectively the name, e-mail, address and phone of the respondent.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent. Use <code>#_COMMENT</code> to display the respondent\'s comment. <br/> Use <code>#_BOOKEDSEATS</code> and <code>#_AVAILABLESEATS</code> to display respectively the number of booked and available seats.', 'dbem' ) );
 					dbem_options_textarea ( __( 'Contact person email format', 'dbem' ), 'dbem_respondent_email_body', __( 'The format or the email which will be sent to reposdent. Follow the events formatting instructions. <br/>Use <code>#_RESPNAME</code> to display the name of the respondent.<br/>Use <code>#_CONTACTNAME</code> and <code>#_CONTACTMAIL</code> a to display respectively the name and e-mail of the contact person.<br/>Use <code>#_SPACES</code> to display the number of spaces reserved by the respondent. Use <code>#_COMMENT</code> to display the respondent\'s comment.', 'dbem' ) );
+					dbem_options_input_text ( __( 'Default notification receiver address', 'dbem' ), 'dbem_mail_receiver_address', __( "Insert the address of the receiver of your notifications", 'dbem' ) );
+					echo $save_button;
+					?>
+				</table>
+			</div> <!-- . inside -->
+			</div> <!-- .postbox -->
+						
+			<div  class="postbox " >
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Email Settings', 'dbem' ); ?> </span></h3>
+			<div class="inside">
+				<table class='form-table'>
+					<?php
 					dbem_options_input_text ( __( 'Notification sender name', 'dbem' ), 'dbem_mail_sender_name', __( "Insert the display name of the notification sender.", 'dbem' ) );
 					dbem_options_input_text ( __( 'Notification sender address', 'dbem' ), 'dbem_mail_sender_address', __( "Insert the address of the notification sender. It must corresponds with your gmail account user", 'dbem' ) );
-					dbem_options_input_text ( __( 'Default notification receiver address', 'dbem' ), 'dbem_mail_receiver_address', __( "Insert the address of the receiver of your notifications", 'dbem' ) );
 					dbem_options_input_text ( 'Mail sending port', 'dbem_rsvp_mail_port', __( "The port through which you e-mail notifications will be sent. Make sure the firewall doesn't block this port", 'dbem' ) );
 					dbem_options_select ( __( 'Mail sending method', 'dbem' ), 'dbem_rsvp_mail_send_method', array ('smtp' => 'SMTP', 'mail' => __( 'PHP mail function', 'dbem' ), 'sendmail' => 'Sendmail', 'qmail' => 'Qmail' ), __( 'Select the method to send email notification.', 'dbem' ) );
 					dbem_options_radio_binary ( __( 'Use SMTP authentication?', 'dbem' ), 'dbem_rsvp_mail_SMTPAuth', __( 'SMTP authenticatio is often needed. If you use GMail, make sure to set this parameter to Yes', 'dbem' ) );

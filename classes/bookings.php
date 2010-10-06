@@ -51,24 +51,37 @@ class EM_Bookings extends EM_Object{
 	 * @return boolean
 	 */
 	function add( $EM_Booking ){
-		global $wpdb;   
+		global $wpdb; 
 		if ( $this->get_available_seats() >= $EM_Booking->seats ) {  
 			$EM_Booking->event_id = $this->event_id;
 			// checking whether the booker has already booked places
 			$previous_booking = $this->find_previous_booking( $EM_Booking );
+			$email = false;
 			if ( is_object($previous_booking) ) { 
 				//Previously booked, so we add these seats to the booking
 				$new_seats = $EM_Booking->seats;
 				$EM_Booking = $previous_booking;
 				$EM_Booking->seats += $new_seats;	
-				$result = $EM_Booking->save();	
+				$result = $EM_Booking->save();
+				if($result){
+					$email = $this->email($EM_Booking);
+				}
 			} else {
 				//New booking, so let's save the booking
 				$result = $EM_Booking->save();
+				if($result){
+					$email = $this->email($EM_Booking);
+				}
 			}
 			if($result){
 				//Success
 				$this->feedback_message = __('Booking successful.', 'dbem');
+				if(!$email){
+					$this->feedback_message .= ' '.__('However, we were not able to send you an email.', 'dbem');
+					if( current_user_can('activate_plugins') ){
+						$this->feedback_message .= '<br/><strong>Errors:</strong> (only admins see this)<br/><ul><li>'. implode('</li><li>', $EM_Mailer->errors).'</li></ul>';
+					}
+				}
 				return true;
 			}else{
 				//Failure
@@ -139,7 +152,7 @@ class EM_Bookings extends EM_Object{
 	 * @return boolean
 	 */
 	function email($EM_Booking){
-		global $EM_Event;
+		global $EM_Event, $EM_Mailer;
 		
 		$contact_id = ( $EM_Event->contactperson_id != "") ? $EM_Event->contactperson_id : get_option('dbem_default_contact_person');
 		 
@@ -147,6 +160,7 @@ class EM_Bookings extends EM_Object{
 		$booker_body = $EM_Event->output(get_option('dbem_respondent_email_body'));
 		
 		// email specific placeholders
+		// TODO pre 3.1 this is probably not needed anymore...
 		$placeholders = array(
 			'#_CONTACTPERSON'=> $EM_Event->contact->display_name,
 			'#_RESPNAME' =>  $EM_Booking->person->name,
@@ -157,14 +171,20 @@ class EM_Bookings extends EM_Object{
 			'#_RESERVEDSPACES' => $this->get_available_seats(),
 			'#_AVAILABLESPACES' => $this->get_booked_seats()
 		);
-		  
+		 
 		foreach($placeholders as $key => $value) {
 			$contact_body= str_replace($key, $value, $contact_body);  
 			$booker_body= str_replace($key, $value, $booker_body);
 		}
 		
-		dbem_send_mail(__("New booking",'dbem'), $contact_body, $EM_Event->contact->user_email);
-		dbem_send_mail(__('Reservation confirmed','dbem'),$booker_body, $this->person->email);
+		//TODO offer subject changes
+		if( !$EM_Mailer->send(__('Reservation confirmed','dbem'),$booker_body, $EM_Booking->person->email) ){
+			return false;
+		}
+		if( !$EM_Mailer->send(__("New booking",'dbem'), $contact_body, $EM_Event->contact->user_email) && current_user_can('activate_plugins')){
+			$EM_Mailer->errors[] = 'Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).';
+			return false;
+		}
 		
 		//TODO need error checking for booking mail send
 		return true;

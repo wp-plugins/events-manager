@@ -53,7 +53,6 @@ include_once("functions.php");
 include_once("shortcode.php");
 include_once("template-tags.php");
 include_once("template-tags-depreciated.php"); //To depreciate
-include_once("includes/phpmailer/dbem_phpmailer.php") ;
 //Widgets
 include_once("widgets/events.php");
 include_once("widgets/calendar.php");
@@ -66,6 +65,7 @@ include_once('classes/event.php');
 include_once('classes/events.php');
 include_once('classes/location.php');
 include_once('classes/locations.php');
+include_once("classes/mailer.php") ;
 include_once('classes/map.php');
 include_once('classes/people.php');
 include_once('classes/person.php');
@@ -85,7 +85,7 @@ if( is_admin() ){
 
 
 // Setting constants
-define('EM_VERSION', 2.3); //self expanatory
+define('EM_VERSION', 3); //self expanatory
 define('DBEM_CATEGORIES_TBNAME', 'em_categories'); //TABLE NAME
 define('EVENTS_TBNAME','em_events'); //TABLE NAME
 define('RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME   
@@ -172,7 +172,7 @@ load_plugin_textdomain('dbem', false, dirname( plugin_basename( __FILE__ ) ).'/i
  * @return null
  */
 function em_load_event(){
-	global $EM_Event, $EM_Recurrences, $EM_Location;
+	global $EM_Event, $EM_Recurrences, $EM_Location, $EM_Mailer;
 	$EM_Recurrences = array();
 	if( isset( $_REQUEST['event_id'] ) && is_numeric($_REQUEST['event_id']) ){
 		$EM_Event = new EM_Event($_REQUEST['event_id']);
@@ -182,6 +182,7 @@ function em_load_event(){
 	}elseif( $_REQUEST['location_id'] && is_numeric($_REQUEST['location_id']) ){
 		$EM_Location = new EM_Location($_REQUEST['location_id']);
 	}
+	$EM_Mailer = new EM_Mailer();
 	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
 	define('EM_RSS_URI', get_bloginfo('wpurl')."/?dbem_rss=main"); //RSS PAGE URI
 }

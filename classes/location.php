@@ -54,7 +54,7 @@ class EM_Location extends EM_Object {
 			}
 			//Save into the object
 			$this->to_object($location, true);
-			$this->image_url = $this->get_image_url();
+			$this->get_image_url();
 		} 
 	}
 	
@@ -85,8 +85,8 @@ class EM_Location extends EM_Object {
 			$wpdb->insert($table, $data, $this->get_types($data));
 		    $this->id = $wpdb->insert_id;   
 		}
-		$this->image_upload();
-		return ( $this->id > 0 );
+		$image_upload = $this->image_upload();
+		return ( $this->id > 0 && $image_upload );
 	}
 	
 	function delete(){
@@ -98,15 +98,16 @@ class EM_Location extends EM_Object {
 	}
 	
 	function get_image_url(){
-		$file_name= ABSPATH.IMAGE_UPLOAD_DIR."/location-".$this->id;
-	  	foreach($this->mime_types as $type) { 
-			$file_path = "$file_name.$type";
-			if (file_exists($file_path)) {
-				$result = get_bloginfo('wpurl')."/".IMAGE_UPLOAD_DIR."/location-$this->id.$type";
-	  			return $result;
+		if($this->image_url == ''){
+		  	foreach($this->mime_types as $type) { 
+				$file_path = "/".IMAGE_UPLOAD_DIR."/location-{$this->id}.$type";
+				if( file_exists( ABSPATH . $file_path) ) {
+					$result = get_bloginfo('wpurl').$file_path;
+		  			$this->image_url = $result;
+				}
 			}
 		}
-		return '';
+		return $this->image_url;
 	}
 	
 	function image_delete() {
@@ -118,6 +119,7 @@ class EM_Location extends EM_Object {
 	}
 	
 	function image_upload(){	
+		//TODO better image upload error handling
 		if ($_FILES['location_image']['size'] > 0 ) {	
 		  	if( !file_exists(ABSPATH.IMAGE_UPLOAD_DIR) ){
 				mkdir(ABSPATH.IMAGE_UPLOAD_DIR, 0777);
@@ -126,9 +128,13 @@ class EM_Location extends EM_Object {
 			list($width, $height, $type, $attr) = getimagesize($_FILES['location_image']['tmp_name']);
 			$image_path = ABSPATH.IMAGE_UPLOAD_DIR."/location-".$this->id.".".$this->mime_types[$type];
 			if (!move_uploaded_file($_FILES['location_image']['tmp_name'], $image_path)){
-				$msg = "<p>".__('The image could not be loaded','dbem')."</p>";
+				$this->errors = __('The image could not be loaded','dbem');
+				return false;
+			}else{
+				return true;
 			}
 		}
+		return true;
 	}
 
 	function load_similar($criteria){
@@ -195,8 +201,7 @@ class EM_Location extends EM_Object {
 	function output($format, $target="html") {
 		$location_string = $format;
 		preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
-		foreach($placeholders[0] as $result) {    
-			// echo "RESULT: $result <br>";
+		foreach($placeholders[0] as $result) {   
 			// matches alla fields placeholder
 			if (preg_match('/#_MAP/', $result)) {
 			 	$map_div = EM_Map::get_single( array('location' => $this) );
