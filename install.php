@@ -237,123 +237,173 @@ function em_create_events_page(){
 // migrate old dbem tables to new em ones
 function em_migrate_to_new_tables(){
 	global $wpdb, $current_user;
-	get_currentuserinfo();                       
-	
+	get_currentuserinfo();
+	$errors = array();                
 	// migrating events
 	$events_required = array('event_id', 'event_name','event_start_time','event_end_time','event_start_date','event_rsvp','location_id','recurrence');
 	$events = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_EVENTS_TBNAME,ARRAY_A)  ;
-	$events_values = array();
-	$events_keys = array_keys($events[0]); 
-	foreach($events as $event) {
-		foreach($event as $key => $value){
-			if($value == '' && !in_array($key,$events_required)){ $event[$key] = 'NULL'; }
-			elseif ( $value == '-1' && !in_array($key,$events_required) ) { $event[$key] = 'NULL'; } 
-			else { $event[$key] = "'".$wpdb->escape($event[$key])."'"; }
+	$event_fields = array('event_id','event_author','event_name','event_start_time','event_end_time','event_start_date','event_end_date','event_notes','event_rsvp','event_seats','event_contactperson_id','location_id','recurrence_id','event_category_id','event_attributes');
+	if( count($events) > 0 ){
+		$events_values = array();
+		$events_keys = array_keys($events[0]);
+		foreach($events as $event) {
+			foreach($event as $key => $value){
+				if( in_array($key, $event_fields) ){
+					if($value == '' && !in_array($key,$events_required)){ $event[$key] = 'NULL'; }
+					elseif ( $value == '-1' && !in_array($key,$events_required) ) { $event[$key] = 'NULL'; } 
+					else { $event[$key] = "'".$wpdb->escape($event[$key])."'"; }
+				}else{
+					unset($event[$key]);
+				}
+			}
+			$events_values[] = "\n".'('. implode(', ', $event).')';
 		}
-		$events_values[] = "\n".'('. implode(', ', $event).')';
-	}
-	if( count($events_values) > 0 ){
-		$events_sql = "INSERT INTO " . $wpdb->prefix.EVENTS_TBNAME . 
-			"(`" . implode('` ,`', $events_keys) . "`) VALUES".
-			implode(', ', $events_values);
-		$wpdb->query($events_sql);
+		if( count($events_values) > 0 ){
+			$events_sql = "INSERT INTO " . $wpdb->prefix.EVENTS_TBNAME . 
+				"(`" . implode('` ,`', $events_keys) . "`) VALUES".
+				implode(', ', $events_values);
+			$wpdb->query($events_sql);
+			if($wpdb->last_error != ''){
+				$errors[] = $wpdb->last_error;
+			}
+		}
 	}
 	
 	// inserting recurrences into events                 
 	$table_name = $wpdb->prefix.EVENTS_TBNAME;  
 	$results = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.RECURRENCE_TBNAME, ARRAY_A);
-	foreach($results as $recurrence_raw){       
-		
-		//Save copy of recurrence_id
-		$recurrence_id = $recurrence_raw['recurrence_id'];
-		//First insert the event into events table
-		$recurrence = array( //Save new array with correct indexes
-			'event_author' => $current_user->ID,                  
-			'event_name' => $recurrence_raw['recurrence_name'],
-			'event_start_date' => $recurrence_raw['recurrence_start_date'],
-			'event_end_date' => $recurrence_raw['recurrence_end_date'],
-			'event_start_time' => $recurrence_raw['recurrence_start_time'],
-			'event_end_time' => $recurrence_raw['recurrence_end_time'],
-			'event_notes' => $recurrence_raw['recurrence_notes'],
-			'location_id' => $recurrence_raw['location_id'],
-			'recurrence' => 1,
-			'recurrence_interval' => $recurrence_raw['recurrence_interval'],
-			'recurrence_freq' => $recurrence_raw['recurrence_freq'],
-	   		'recurrence_byday' => $recurrence_raw['recurrence_byday'],
-	   		'recurrence_byweekno' => $recurrence_raw['recurrence_byweekno']
-		);
-		$result = $wpdb->insert($table_name, $recurrence, array('%d','%s','%s','%s','%s','%s','%s','%d','%d','%d','%d','%d','%d'));
-		//Then change the id of all the events with recurrence_id
-		if($result == 1){    
-			$wpdb->query("UPDATE {$table_name} SET recurrence_id='{$wpdb->insert_id}' WHERE recurrence_id='{$recurrence_id}'");
-		}else{
-			//FIXME Better fallback in case of bad install 
-			_e('We could not mirgrate old recurrence data over. DONT WORRY! You can just delete the current plugin, and re-install the previous 2.2.2 version and you wont lose any of your data. Either way, please contact the developers to let them know of this bug.', 'dbem');
-		} 
-	}                                                                                        
+	if( count($results) > 0 ){
+		foreach($results as $recurrence_raw){
+			//Save copy of recurrence_id
+			$recurrence_id = $recurrence_raw['recurrence_id'];
+			//First insert the event into events table
+			$recurrence = array( //Save new array with correct indexes
+				'event_author' => $current_user->ID,                  
+				'event_name' => $recurrence_raw['recurrence_name'],
+				'event_start_date' => $recurrence_raw['recurrence_start_date'],
+				'event_end_date' => $recurrence_raw['recurrence_end_date'],
+				'event_start_time' => $recurrence_raw['recurrence_start_time'],
+				'event_end_time' => $recurrence_raw['recurrence_end_time'],
+				'event_notes' => $recurrence_raw['recurrence_notes'],
+				'location_id' => $recurrence_raw['location_id'],
+				'recurrence' => 1,
+				'recurrence_interval' => $recurrence_raw['recurrence_interval'],
+				'recurrence_freq' => $recurrence_raw['recurrence_freq'],
+		   		'recurrence_byday' => $recurrence_raw['recurrence_byday'],
+		   		'recurrence_byweekno' => $recurrence_raw['recurrence_byweekno']
+			);
+			$result = $wpdb->insert($table_name, $recurrence, array('%d','%s','%s','%s','%s','%s','%s','%d','%d','%d','%d','%d','%d'));
+			//Then change the id of all the events with recurrence_id
+			if($result == 1){    
+				$wpdb->query("UPDATE {$table_name} SET recurrence_id='{$wpdb->insert_id}' WHERE recurrence_id='{$recurrence_id}'");
+			}else{
+				//FIXME Better fallback in case of bad install 
+				_e('We could not mirgrate old recurrence data over. DONT WORRY! You can just delete the current plugin, and re-install the previous 2.2.2 version and you wont lose any of your data. Either way, please contact the developers to let them know of this bug.', 'dbem');
+			} 
+		}   
+	}                                                                                     
 	
 	// migrating locations
 	$locations_required = array('location_id', 'location_name', 'location_address', 'location_town');
 	$locations = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_LOCATIONS_TBNAME,ARRAY_A)  ;
-	$locations_values = array();
-	$locations_keys = array_keys($locations[0]); 
-	foreach($locations as $location) {
-		foreach($location as $key => $value){
-			if($value == '' && !in_array($key, $locations_required)){ $location[$key] = 'NULL'; }
-			elseif ( $value == '-1' && !in_array($key, $locations_required) ) { $location[$key] = 'NULL'; } 
-			else { $location[$key] = "'".$wpdb->escape($location[$key])."'"; }
+	$location_fields = array('location_id','location_name','location_address','location_town','location_province','location_latitude','location_longitude','location_description');
+	if( count($locations) > 0 ){
+		$locations_values = array();
+		$locations_keys = array_keys($locations[0]); 
+		foreach($locations as $location) {
+			foreach($location as $key => $value){
+				if( in_array($key, $location_fields) ){
+					if($value == '' && !in_array($key, $locations_required)){ $location[$key] = 'NULL'; }
+					elseif ( $value == '-1' && !in_array($key, $locations_required) ) { $location[$key] = 'NULL'; } 
+					else { $location[$key] = "'".$wpdb->escape($location[$key])."'"; }
+				}else{
+					unset($location[$key]);
+				}
+			}
+			$locations_values[] = "\n".'('. implode(', ', $location).')';
 		}
-		$locations_values[] = "\n".'('. implode(', ', $location).')';
-	}
-	if( count($locations_values) > 0 ){
-		$locations_sql = "INSERT INTO " . $wpdb->prefix.LOCATIONS_TBNAME . 
-			"(`" . implode('` ,`', $locations_keys) . "`) VALUES".
-			implode(', ', $locations_values);
-		$wpdb->query($locations_sql);
+		if( count($locations_values) > 0 ){
+			$locations_sql = "INSERT INTO " . $wpdb->prefix.LOCATIONS_TBNAME . 
+				"(`" . implode('` ,`', $locations_keys) . "`) VALUES".
+				implode(', ', $locations_values);
+			$wpdb->query($locations_sql);
+		}
 	}
 	
 	// migrating people
 	$people = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_PEOPLE_TBNAME,ARRAY_A)  ;
-	$people_values = array();
-	$people_keys = array_keys($people[0]); 
-	foreach($people as $person) {
-		foreach($person as $key => $value){
-			$person[$key] = "'".$wpdb->escape($person[$key])."'";
+	if( count($people) > 0 ){
+		$people_values = array();
+		$people_keys = array_keys($people[0]); 
+		$people_fields = array('person_id', 'person_name', 'person_email', 'person_phone');
+		foreach($people as $person) {
+			foreach($person as $key => $value){
+				if( in_array($key, $people_fields) ){
+					$person[$key] = "'".$wpdb->escape($person[$key])."'";
+				}else{
+					unset($person[$key]);
+				}
+			}
+			$people_values[] = "\n".'('. implode(', ', $person).')';
 		}
-		$people_values[] = "\n".'('. implode(', ', $person).')';
-	}
-	if( count($people_values) > 0 ){
-		$people_sql = "INSERT INTO " . $wpdb->prefix.PEOPLE_TBNAME . 
-			"(`" . implode('` ,`', $people_keys) . "`) VALUES".
-			implode(', ', $people_values);
-		$wpdb->query($people_sql);
+		if( count($people_values) > 0 ){
+			$people_sql = "INSERT INTO " . $wpdb->prefix.PEOPLE_TBNAME . 
+				"(`" . implode('` ,`', $people_keys) . "`) VALUES".
+				implode(', ', $people_values);
+			$wpdb->query($people_sql);
+		}
 	}
 	 
 	// migrating bookings
 	$bookings = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_BOOKINGS_TBNAME,ARRAY_A)  ;
-	$bookings_values = array();
-	$bookings_keys = array_keys($bookings[0]); 
-	foreach($bookings as $booking) {
-		foreach($booking as $key => $value){
-			if($value == '' && $key == 'booking_comment'){ $booking[$key] = 'NULL'; }
-			elseif ( $value == '-1' ) { $booking[$key] = '0'; } 
-			else { $booking[$key] = "'".$wpdb->escape($booking[$key])."'"; }
+	if( count($bookings) > 0 ){
+		$bookings_values = array();
+		$bookings_keys = array_keys($bookings[0]); 
+		$booking_fields = array('booking_id', 'event_id', 'person_id', 'booking_seats', 'booking_comment');
+		foreach($bookings as $booking) {
+			foreach($booking as $key => $value){
+				if( in_array($key, $booking_fields) ){
+					if($value == '' && $key == 'booking_comment'){ $booking[$key] = 'NULL'; }
+					elseif ( $value == '-1' ) { $booking[$key] = '0'; } 
+					else { $booking[$key] = "'".$wpdb->escape($booking[$key])."'"; }
+				}else{
+					unset($booking[$key]);
+				}
+			}
+			$bookings_values[] = "\n".'('. implode(', ', $booking).')';
 		}
-		$bookings_values[] = "\n".'('. implode(', ', $booking).')';
+		if( count($bookings_values) > 0 ){
+			$bookings_sql = "INSERT INTO " . $wpdb->prefix.BOOKINGS_TBNAME . 
+				"(`" . implode('` ,`', $bookings_keys) . "`) VALUES".
+				implode(', ', $bookings_values);
+			$wpdb->query($bookings_sql);
+		}
+		 
+		// migrating categories
+		$categories = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_CATEGORIES_TBNAME,ARRAY_A)  ;
+		$categories_fields = array('category_id', 'category_name');
+		foreach($categories as $category) {   
+			foreach($category as $key => $val){
+				if( !in_array($key, $categories_fields) ){
+					unset($category[$key]);
+				}
+			}
+			$wpdb->insert($wpdb->prefix.DBEM_CATEGORIES_TBNAME, $category);
+		} 
+	}	 
+	
+	if( count($errors) > 0 && is_array($errors) ){
+		$func = create_function('', '?>
+			<div id="em_page_error" class="error">
+				<p>SQL Errors:</p>
+				<ul>
+					<li>'. implode('</li><li>', $errors) .'</li>
+				</ul>
+			</div>
+			<?php
+		');
+		add_action ( 'admin_notices', $func);		
 	}
-	if( count($bookings_values) > 0 ){
-		$bookings_sql = "INSERT INTO " . $wpdb->prefix.BOOKINGS_TBNAME . 
-			"(`" . implode('` ,`', $bookings_keys) . "`) VALUES".
-			implode(', ', $bookings_values);
-		$wpdb->query($bookings_sql);
-	}
-	 
-	// migrating categories
-	$categories = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_CATEGORIES_TBNAME,ARRAY_A)  ;
-	foreach($categories as $c) {                
-		$wpdb->insert($wpdb->prefix.DBEM_CATEGORIES_TBNAME, $c);
-	} 
-	 
 }
 
 function em_reimport(){
@@ -370,7 +420,6 @@ function em_reimport(){
 		$wpdb->query('DROP TABLE '.$table_bookings.', '.$table_categories.', '.$table_events.', '.$table_locations.', '.$table_people.';');
 		update_option('dbem_version','2');
 		em_install();
-		return em_import_verify();
 	}
 }
 add_action('admin_init', 'em_reimport');
@@ -384,10 +433,17 @@ function em_import_verify(){
 	$p = $wpdb->prefix;
 	//Now go through each table and compare row counts, if all match (events is old recurrences + events, then we're fine
 	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.BOOKINGS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_BOOKINGS_TBNAME.";") );
-	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.DBEM_CATEGORIES_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_CATEGORIES_TBNAME.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.DBEM_CATEGORIES_TBNAME.";") ."==". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_CATEGORIES_TBNAME.";") );
 	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EVENTS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_EVENTS_TBNAME.";") + $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_RECURRENCE_TBNAME.";") );
 	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.LOCATIONS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_LOCATIONS_TBNAME.";") );
 	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.PEOPLE_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_PEOPLE_TBNAME.";") );
+	/* Debugging
+	echo "BOOKINGS : " . $wpdb->get_var("SELECT COUNT(*) FROM ".$p.BOOKINGS_TBNAME.";") ."==". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_BOOKINGS_TBNAME);
+	echo "<br/>CATEGORIES : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.DBEM_CATEGORIES_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_CATEGORIES_TBNAME.";");
+	echo "<br/>EVENTS : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EVENTS_TBNAME.";") .'=='. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_EVENTS_TBNAME.";") .'+'. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_RECURRENCE_TBNAME.";");
+	echo "<br/>LOCATIONS : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.LOCATIONS_TBNAME.";") .'=='. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_LOCATIONS_TBNAME.";");
+	echo "<br/>PEOPLE : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.PEOPLE_TBNAME.";") .'=='. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_PEOPLE_TBNAME.";");
+	*/
 	if( in_array(false, $results) ){
 		update_option( 'dbem_import_fail', 1 );
 		return false;
