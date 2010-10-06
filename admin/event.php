@@ -22,32 +22,11 @@ function dbem_event_form( $title ) {
 	$locale_code = substr ( get_locale (), 0, 2 );
 	$localised_date_format = $localised_date_formats [$locale_code];
 	
+	//FIXME time useage is very flimsy imho
 	$hours_locale_regexp = "H:i";
 	// Setting 12 hours format for those countries using it
 	if (preg_match ( "/en|sk|zh|us|uk/", $locale_code ))
 		$hours_locale_regexp = "h:iA";
-	
-	$localised_example = str_replace ( "yy", "2008", str_replace ( "mm", "11", str_replace ( "dd", "28", $localised_date_format ) ) );
-	$localised_end_example = str_replace ( "yy", "2008", str_replace ( "mm", "11", str_replace ( "dd", "28", $localised_date_format ) ) );
-	
-	if ($EM_Event->start_date != "") {
-		preg_match ( '/(\d{4})-(\d{2})-(\d{2})/', $EM_Event->start_date, $matches );
-		$year = $matches [1];
-		$month = $matches [2];
-		$day = $matches [3];
-		$localised_date = str_replace ( "yy", $year, str_replace ( "mm", $month, str_replace ( "dd", $day, $localised_date_format ) ) );
-	} else {
-		$localised_date = "";
-	}
-	if ($EM_Event->end_date != "") {
-		preg_match ( '/(\d{4})-(\d{2})-(\d{2})/', $EM_Event->end_date, $matches );
-		$end_year = $matches [1];
-		$end_month = $matches [2];
-		$end_day = $matches [3];
-		$localised_end_date = str_replace ( "yy", $end_year, str_replace ( "mm", $end_month, str_replace ( "dd", $end_day, $localised_date_format ) ) );
-	} else {
-		$localised_end_date = "";
-	}     
 	
 	$days_names = array (1 => __ ( 'Mon' ), 2 => __ ( 'Tue' ), 3 => __ ( 'Wed' ), 4 => __ ( 'Thu' ), 5 => __ ( 'Fri' ), 6 => __ ( 'Sat' ), 7 => __ ( 'Sun' ) );
 	?>

@@ -245,7 +245,6 @@ function em_migrate_to_new_tables(){
 	$event_fields = array('event_id','event_author','event_name','event_start_time','event_end_time','event_start_date','event_end_date','event_notes','event_rsvp','event_seats','event_contactperson_id','location_id','recurrence_id','event_category_id','event_attributes');
 	if( count($events) > 0 ){
 		$events_values = array();
-		$events_keys = array_keys($events[0]);
 		foreach($events as $event) {
 			foreach($event as $key => $value){
 				if( in_array($key, $event_fields) ){
@@ -258,6 +257,7 @@ function em_migrate_to_new_tables(){
 			}
 			$events_values[] = "\n".'('. implode(', ', $event).')';
 		}
+		$events_keys = array_keys($event);
 		if( count($events_values) > 0 ){
 			$events_sql = "INSERT INTO " . $wpdb->prefix.EVENTS_TBNAME . 
 				"(`" . implode('` ,`', $events_keys) . "`) VALUES".
@@ -309,7 +309,6 @@ function em_migrate_to_new_tables(){
 	$location_fields = array('location_id','location_name','location_address','location_town','location_province','location_latitude','location_longitude','location_description');
 	if( count($locations) > 0 ){
 		$locations_values = array();
-		$locations_keys = array_keys($locations[0]); 
 		foreach($locations as $location) {
 			foreach($location as $key => $value){
 				if( in_array($key, $location_fields) ){
@@ -322,6 +321,7 @@ function em_migrate_to_new_tables(){
 			}
 			$locations_values[] = "\n".'('. implode(', ', $location).')';
 		}
+		$locations_keys = array_keys($location); 
 		if( count($locations_values) > 0 ){
 			$locations_sql = "INSERT INTO " . $wpdb->prefix.LOCATIONS_TBNAME . 
 				"(`" . implode('` ,`', $locations_keys) . "`) VALUES".
@@ -333,8 +333,7 @@ function em_migrate_to_new_tables(){
 	// migrating people
 	$people = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_PEOPLE_TBNAME,ARRAY_A)  ;
 	if( count($people) > 0 ){
-		$people_values = array();
-		$people_keys = array_keys($people[0]); 
+		$people_values = array(); 
 		$people_fields = array('person_id', 'person_name', 'person_email', 'person_phone');
 		foreach($people as $person) {
 			foreach($person as $key => $value){
@@ -346,6 +345,7 @@ function em_migrate_to_new_tables(){
 			}
 			$people_values[] = "\n".'('. implode(', ', $person).')';
 		}
+		$people_keys = array_keys($person);
 		if( count($people_values) > 0 ){
 			$people_sql = "INSERT INTO " . $wpdb->prefix.PEOPLE_TBNAME . 
 				"(`" . implode('` ,`', $people_keys) . "`) VALUES".
@@ -358,7 +358,6 @@ function em_migrate_to_new_tables(){
 	$bookings = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_BOOKINGS_TBNAME,ARRAY_A)  ;
 	if( count($bookings) > 0 ){
 		$bookings_values = array();
-		$bookings_keys = array_keys($bookings[0]); 
 		$booking_fields = array('booking_id', 'event_id', 'person_id', 'booking_seats', 'booking_comment');
 		foreach($bookings as $booking) {
 			foreach($booking as $key => $value){
@@ -372,6 +371,7 @@ function em_migrate_to_new_tables(){
 			}
 			$bookings_values[] = "\n".'('. implode(', ', $booking).')';
 		}
+		$bookings_keys = array_keys($booking); 
 		if( count($bookings_values) > 0 ){
 			$bookings_sql = "INSERT INTO " . $wpdb->prefix.BOOKINGS_TBNAME . 
 				"(`" . implode('` ,`', $bookings_keys) . "`) VALUES".
