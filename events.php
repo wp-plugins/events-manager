@@ -34,7 +34,7 @@ function em_content($data) {
 			// Multiple events page
 			$scope = ($_REQUEST['scope']) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
 			if (get_option ( 'dbem_display_calendar_in_events_page' )){
-				return EM_Calendar::get('full=1');
+				return EM_Calendar::get( array('full'=>1) );
 			}else{
 				return EM_Events::output ( array('limit'=>10,'scope'=>$scope, 'order'=>"ASC") );
 			}

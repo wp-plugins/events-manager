@@ -31,32 +31,32 @@ class EM_Object {
 		//TODO decide on search defaults shared across all objects and then validate here
 		$defaults = array_merge($super_defaults, $defaults);
 		
-		//TODO accept all objects as search options as well as ids (e.g. location vs. location_id, person vs. person_id)
-		//If there's a location, then remove it and turn it into location_id
-		if( array_key_exists('location', $array)){
-			if ( is_numeric($array['location']) ) {
-				$array['location'] = (int) $array['location'];
-			} elseif( preg_match('/^([0-9],?)+$/', $array['location']) ) {
-				$array['location'] = explode(',', $array['location']);
-			}else{
-				//No format we accept
-				unset($array['location']);
-			}
-		}
-		//Category - for now we just make both keys have an id number
-		if( array_key_exists('category', $array)){
-			if ( is_numeric($array['category']) ) {
-				$array['category'] = (int) $array['category'];
-			} elseif( preg_match('/^([0-9],?)+$/', $array['category']) ) {
-				$array['category'] = explode(',', $array['category']);
-			}else{
-				//No format we accept
-				unset($array['category']);
-			}
-		}
-		//TODO validate search query array
-		//Clean the supplied array, so we only have allowed keys
 		if(is_array($array)){
+			//TODO accept all objects as search options as well as ids (e.g. location vs. location_id, person vs. person_id)
+			//If there's a location, then remove it and turn it into location_id
+			if( array_key_exists('location', $array)){
+				if ( is_numeric($array['location']) ) {
+					$array['location'] = (int) $array['location'];
+				} elseif( preg_match('/^([0-9],?)+$/', $array['location']) ) {
+					$array['location'] = explode(',', $array['location']);
+				}else{
+					//No format we accept
+					unset($array['location']);
+				}
+			}
+			//Category - for now we just make both keys have an id number
+			if( array_key_exists('category', $array)){
+				if ( is_numeric($array['category']) ) {
+					$array['category'] = (int) $array['category'];
+				} elseif( preg_match('/^([0-9],?)+$/', $array['category']) ) {
+					$array['category'] = explode(',', $array['category']);
+				}else{
+					//No format we accept
+					unset($array['category']);
+				}
+			}
+			//TODO validate search query array
+			//Clean the supplied array, so we only have allowed keys
 			foreach( array_keys($array) as $key){
 				if( !array_key_exists($key, $defaults) ) unset($array[$key]);		
 			}
