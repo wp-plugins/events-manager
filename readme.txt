@@ -12,7 +12,7 @@ Manage events and display them in your blog. Includes recurring events, location
 
 Events Manager 3.0 is a full-featured event management solution for Wordpress. Events Manager supports recurring events, venues data, RSVP and maps. With Events Manager you can plan and publish your tour, or let people reserve spaces for your weekly meetings. You can then add events list, calendars and description to your blog using a sidebar widget or shortcodes; if you’re web designer you can simply employ the template tags provided by Events Manager. 
 
-Events Manager integrates with Google Maps; thanks the geocoding, Events Manager can find the location of your events, and accordingly display a map. To enable Google Maps integration, you need a Google maps API key, which you can obtain freely at the [Google Maps API Signup Page](http://code.google.com/apis/maps/signup.html).
+Events Manager integrates with Google Maps; thanks the geocoding, Events Manager can find the location of your events, and accordingly display a map. Now there's no need for Google Maps API keys, as we are now using their new v3 API.
 
 Events Manager provides also a RSS feed, to keep your subscribers updated about the events you're organising.
 
@@ -24,9 +24,14 @@ For more information visit the [Documentation Page](http://davidebenini.it/wordp
 
 == Installation ==
 
-1. Upload the `events-manager` folder to the `/wp-content/plugins/` directory
-2. Activate the plugin through the 'Plugins' menu in WordPress
-3. Add events list or calendars following the instructions in the Usage section.
+= Installing or Upgrading from 2.x =
+
+1. Back up your database if upgrading is recommended, as with any plugin or wordpress upgrade.
+2. Upload the `events-manager` folder to the `/wp-content/plugins/` directory
+3. Activate the plugin through the 'Plugins' menu in WordPress
+4. Add events list or calendars following the instructions in the Usage section.
+
+= Upgrading from 1.* only =
 
 Events Manager 1.* adopters should:
 
@@ -36,10 +41,6 @@ Events Manager 1.* adopters should:
 4. activate Events Manager 2.* 
 5. Download and activate Events Manager 3.*
     
-If you migrate from 2.* to 3.* and something goes wrong in your database, in the Settings page there's a link to revert to v. 2.2 ; this will enable you to use the old version until we fine tune the migration script.
-
-Events Manager should take care of your events database migration automatically, but it's always much better to perform a database backup, as previously suggested. 
-
 == Usage == 
 
 After the installation, Events Manager add a top level "Events" menu to your Wordpress Administration.
@@ -50,14 +51,15 @@ After the installation, Events Manager add a top level "Events" menu to your Wor
 *  The *Locations* page lets you add, delete and edit locations directly. Locations are automatically added with events if not present, but this interface lets you customise your locations data and add a picture. 
 *  The *People* page serves as a gathering point for the information about the people who reserved a space in your events.
 *  The *Settings* page allows a fine-grained control over the plugin. Here you can set the [format](#formatting-events) of events in the Events page.
+* The *Help* page will provide you with information on troubleshooting and where to ask for support.
 
 Events list and calendars can be added to your blogs through widgets, shortcodes and template tags. See the full documentation at the [Events Manager Support Page](http://davidebenini.it/wordpress-plugins/events-manager/).
  
 == Frequently Asked Questions ==
 
-= I enabled the Google Maps integration, but instead of the map there is a green background. What should I do? =
+= I enabled the Google Maps integration, but instead of the map there is a green/gray background. What should I do? =
 
-I call that "the green screen of death", but it's quite easy to fix your issue. If you see that green background, your theme has a little problem that should be fixed. Open the `header.php` page of your theme; if your theme hasn't any `header.php` page, just open the `index.php page` and/or any page containing the `<head>` section of the html code. Make sure that the page contains a line like this:              
+If your event pages aren't loading maps properly, it may be that your theme is not set up correctly. Open the `header.php` page of your theme; if your theme hasn't any `header.php` page, just open the `index.php page` and/or any page containing the `<head>` section of the html code. Make sure that the page contains a line like this:              
 
     <?php wp_head(); ?>              
 
