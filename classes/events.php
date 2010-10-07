@@ -16,10 +16,10 @@ class EM_Events extends EM_Object {
 	function get( $args = array() ) {
 		global $wpdb;
 		$events_table = $wpdb->prefix . EVENTS_TBNAME;
-			$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
+		$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
-		if( parent::array_is_numeric($args) && count() ){ //Array of numbers, assume they are event IDs to retreive
+		if( self::array_is_numeric($args) && count() ){ //Array of numbers, assume they are event IDs to retreive
 			//We can just get all the events here and return them
 			$sql = "
 				SELECT * FROM $events_table
@@ -39,10 +39,9 @@ class EM_Events extends EM_Object {
 		$args = self::get_default_search($args);
 		$scope = $args['scope'];//undefined variable warnings in ZDE, could just delete this (but dont pls!)
 		$offset = $args['offset'];
+		$recurring = $args['recurring'];
 		$recurrence = $args['recurrence'];
-		$recurrence_id = $args['recurrence_id'];
-		$category_id = $args['category_id'];
-		$location_id = $args['location_id'];
+		$category = $args['category'];
 		$location = $args['location'];
 		$day = $args['day'];
 		$month = $args['month'];
@@ -57,10 +56,10 @@ class EM_Events extends EM_Object {
 		//Create the WHERE statement
 		
 		//Recurrences
-		if( $recurrence ){
+		if( $recurring ){
 			$conditions = array("`recurrence`=1");
-		}elseif( $recurrence_id > 0 ){
-			$conditions = array("`recurrence_id`=$recurrence_id");
+		}elseif( $recurrence > 0 ){
+			$conditions = array("`recurrence_id`=$recurrence");
 		}else{
 			$conditions = array("`recurrence`=0");			
 		}
@@ -102,14 +101,13 @@ class EM_Events extends EM_Object {
 		}
 		
 		//Filter by Location - can be object, array, or id
-		if ( is_numeric($location_id) && $location_id > 0 ) { //Location ID takes precedence
-			$conditions [] = " {$locations_table}.location_id = $location_id";
-		}elseif ( parent::array_is_numeric($location_id) ){
-			$conditions [] = "( {$locations_table}.location_id = " . implode(" OR {$locations_table}.location_id = ", $location_id) .' )';
+		if ( is_numeric($location) && $location > 0 ) { //Location ID takes precedence
+			$conditions [] = " {$locations_table}.location_id = $location";
+		}elseif ( self::array_is_numeric($location) ){
+			$conditions [] = "( {$locations_table}.location_id = " . implode(" OR {$locations_table}.location_id = ", $location) .' )';
 		}elseif ( is_object($location) && get_class($location)=='EM_Location' ){ //Now we deal with objects
-			$conditions [] = " location_id = $location->id";
-		}elseif ( is_array($location) ){ //we can accept array of ids or EM_Location objects
-			//assume it is an array of EM_Location objects
+			$conditions [] = " {$locations_table}.location_id = $location->id";
+		}elseif ( is_array($location) && @get_class(current($location)=='EM_Location') ){ //we can accept array of ids or EM_Location objects
 			foreach($location as $EM_Location){
 				$location_ids[] = $EM_Location->id;
 			}
@@ -119,10 +117,10 @@ class EM_Events extends EM_Object {
 		//Add conditions for category selection
 		//Filter by category, can be id or comma seperated ids
 		//TODO create an exclude category option
-		if ( $category_id != '' && is_numeric($category_id) ){
-			$conditions [] = " event_category_id = $category_id";
-		}elseif( parent::array_is_numeric($category_id) ){
-			$conditions [] = "( event_category_id = ". implode(' OR event_category_id = ', $category_id).")";
+		if ( $category != '' && is_numeric($category) ){
+			$conditions [] = " event_category_id = $category";
+		}elseif( self::array_is_numeric($category) ){
+			$conditions [] = "( event_category_id = ". implode(' OR event_category_id = ', $category).")";
 		}
 		
 		//Put it all together
@@ -174,7 +172,7 @@ class EM_Events extends EM_Object {
 		}else{
 			$event_ids = $array;
 		}
-		if(parent::array_is_numeric($event_ids)){
+		if(self::array_is_numeric($event_ids)){
 			$condition = implode(" OR event_id=", $event_ids);
 			//Delete all the bookings
 			$result_bookings = $wpdb->query("DELETE FROM ". $wpdb->prefix . BOOKINGS_TBNAME ." WHERE event_id=$condition;");
@@ -186,34 +184,31 @@ class EM_Events extends EM_Object {
 	
 	
 	/**
-	 * Try to avoid using this, this is only for backwards compatability and is not efficient!
-	 * @param $args
-	 * @return unknown_type
+	 * Output a set of matched of events
+	 * @param array $args
+	 * @return string
 	 */
 	function output( $args ){
 		global $EM_Event;
-		$old_EM_Event = $EM_Event;
-		//TODO add shortcode conversion also
+		$old_EM_Event = $EM_Event; //When looping, we can replace EM_Event global with the current event in the loop
 		//Can be either an array for the get search or an array of EM_Event objects
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Event' ){
 			$events = $args;
 		}else{
-			if ( $args['format'] == ''){
-				$orig_format = true;
-				$format = get_option ( 'dbem_event_list_item_format' );
-			}
 			$events = self::get( $args );
 		}
+		//What format shall we output this to, or use default
+		$format = ( $args['format'] == '') ? get_option( 'dbem_event_list_item_format' ) : $args['format'] ;
 		
 		$output = "";
 		if ( count($events) > 0 ) {
 			foreach ( $events as $event ) {
 				$EM_Event = $event;
 				/* @var EM_Event $event */
-				$output .= $event->output_list();
+				$output .= $event->output($format);
 			}
 			//Add headers and footers to output
-			if( $orig_format ){
+			if( $format == get_option ( 'dbem_event_list_item_format' ) ){
 				$single_event_format_header = get_option ( 'dbem_event_list_item_format_header' );
 				$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='dbem_events_list'>";
 				$single_event_format_footer = get_option ( 'dbem_event_list_item_format_footer' );
@@ -221,7 +216,7 @@ class EM_Events extends EM_Object {
 				$output =  $single_event_format_header .  $output . $single_event_format_footer;
 			}
 		} else {
-			$output = "<li class='dbem-no-events'>" . get_option ( 'dbem_no_events_message' ) . "</li>";
+			$output = get_option ( 'dbem_no_events_message' );
 		}
 		//TODO check if reference is ok when restoring object, due to changes in php5 v 4
 		$old_EM_Event = $EM_Event;
@@ -240,11 +235,11 @@ class EM_Events extends EM_Object {
 			'scope' => 'all', 
 			'order' => 'ASC', 
 			'format' => '', 
-			'category_id' => 0, 
-			'location_id' => 0, 
+			'category' => 0, 
+			'location' => 0, 
 			'offset'=>0, 
-			'recurrence_id'=>0, 
-			'recurrence'=>false ,
+			'recurrence'=>0, 
+			'recurring'=>false ,
 			'month'=>'', //If this is set, month must be set
 			'year'=>'' //If this is set, takes precedence over scope
 		);

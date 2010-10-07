@@ -20,11 +20,11 @@ class EM_Object {
 			'scope' => 'all', 
 			'order' => 'DESC', 
 			'format' => '', 
-			'category_id' => 0, 
-			'location_id' => 0, 
+			'category' => 0, 
+			'location' => 0, 
 			'offset'=>0, 
-			'recurrence_id'=>0, 
-			'recurrence'=>false,
+			'recurrence'=>0, 
+			'recurring'=>false,
 			'month'=>'',
 			'year'=>''
 		);
@@ -35,19 +35,24 @@ class EM_Object {
 		//If there's a location, then remove it and turn it into location_id
 		if( array_key_exists('location', $array)){
 			if ( is_numeric($array['location']) ) {
-				$array['location_id'] = $array['location'];
-				unset($array['location']);
-			} elseif( preg_match('/^([0-9],?)+$/', $array['location_id']) ) {
-				$array['location_id'] = explode(',', $array['location_id']);
-				unset($array['location']);
-			} elseif ( @get_class(current($array)) != 'EM_Location' ) {
+				$array['location'] = (int) $array['location'];
+			} elseif( preg_match('/^([0-9],?)+$/', $array['location']) ) {
+				$array['location'] = explode(',', $array['location']);
+			}else{
+				//No format we accept
 				unset($array['location']);
 			}
 		}
 		//Category - for now we just make both keys have an id number
 		if( array_key_exists('category', $array)){
-			$array['category_id'] = $array['category']; 
-			unset($array['category']);
+			if ( is_numeric($array['category']) ) {
+				$array['category'] = (int) $array['category'];
+			} elseif( preg_match('/^([0-9],?)+$/', $array['category']) ) {
+				$array['category'] = explode(',', $array['category']);
+			}else{
+				//No format we accept
+				unset($array['category']);
+			}
 		}
 		//TODO validate search query array
 		//Clean the supplied array, so we only have allowed keys

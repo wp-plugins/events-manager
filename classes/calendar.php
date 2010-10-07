@@ -212,6 +212,7 @@ class EM_Calendar extends EM_Object {
 			$year_pre=$year;
 			$year_post=$year;
 		}
+		//TODO expand by including category, location, etc. criteria
 		$events = EM_Events::get( array('year'=>array($year_pre, $year_post), 'month'=>array($month_pre, $month_post)) );
 	
 		$eventful_days= array();

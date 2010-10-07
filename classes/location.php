@@ -188,11 +188,6 @@ class EM_Location extends EM_Object {
 		return (count($affected_events) > 0);
 	}
 	
-	function get_events($args = array()) {
-		$args['location_id'] = $this->id;
-		return EM_Events::get($args);
-	}	
-	
 	function output_single($target = 'html'){
 		$format = get_option ( 'dbem_single_location_format' );
 		return $this->output($format, $target);	
@@ -245,7 +240,7 @@ class EM_Location extends EM_Object {
 				if ($result == '#_PASTEVENTS'){ $scope = 'past'; }
 				elseif ( $result == '#_NEXTEVENTS' ){ $scope = 'future'; }
 				else{ $scope = 'all'; }
-				$events = EM_Events::get( array('location_id'=>$this->id, 'scope'=>$scope) );
+				$events = EM_Events::get( array('location'=>$this->id, 'scope'=>$scope) );
 				$list = '';
 				if ( count($events) > 0 ){
 					foreach($events as $event){
@@ -254,14 +249,6 @@ class EM_Location extends EM_Object {
 				} else {
 					$list = get_option('dbem_location_no_events_message');
 				}
-			 	$location_string = str_replace($result, $list , $location_string ); 
-			}
-			if (preg_match('/#_NEXTEVENTS/', $result)) {
-			 	$list = $this->get_events();
-			 	$location_string = str_replace($result, $list , $location_string ); 
-			}
-			if (preg_match('/#_ALLEVENTS/', $result)) {
-			 	$list = $this->get_events( array('scope'=>'all') );
 			 	$location_string = str_replace($result, $list , $location_string ); 
 			}	
 			if (preg_match('/#_IMAGE$/', $result)) {
