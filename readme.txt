@@ -10,7 +10,7 @@ Manage events and display them in your blog. Includes recurring events, location
              
 == Description ==
 
-Events Manager 2.0 is a full-featured event management solution for Wordpress. Events Manager supports recurring events, venues data, RSVP and maps. With Events Manager you can plan and publish your tour, or let people reserve spaces for your weekly meetings. You can then add events list, calendars and description to your blog using a sidebar widget or shortcodes; if you’re web designer you can simply employ the template tags provided by Events Manager. 
+Events Manager 3.0 is a full-featured event management solution for Wordpress. Events Manager supports recurring events, venues data, RSVP and maps. With Events Manager you can plan and publish your tour, or let people reserve spaces for your weekly meetings. You can then add events list, calendars and description to your blog using a sidebar widget or shortcodes; if you’re web designer you can simply employ the template tags provided by Events Manager. 
 
 Events Manager integrates with Google Maps; thanks the geocoding, Events Manager can find the location of your events, and accordingly display a map. To enable Google Maps integration, you need a Google maps API key, which you can obtain freely at the [Google Maps API Signup Page](http://code.google.com/apis/maps/signup.html).
 
