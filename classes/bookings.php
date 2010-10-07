@@ -155,27 +155,29 @@ class EM_Bookings extends EM_Object{
 		global $EM_Event, $EM_Mailer;
 		
 		$contact_id = ( $EM_Event->contactperson_id != "") ? $EM_Event->contactperson_id : get_option('dbem_default_contact_person');
-		 
-		$contact_body = $EM_Event->output(get_option('dbem_contactperson_email_body'));
-		$booker_body = $EM_Event->output(get_option('dbem_respondent_email_body'));
+				 
+		$contact_body = get_option('dbem_contactperson_email_body');
+		$booker_body = get_option('dbem_respondent_email_body');
 		
 		// email specific placeholders
-		// TODO pre 3.1 this is probably not needed anymore...
+		// TODO make placeholders for RSVP consistent, we shouldn't need some of these as they're on the main events output function
 		$placeholders = array(
-			'#_CONTACTPERSON'=> $EM_Event->contact->display_name,
+			'#_CONTACTEMAIL'=> $EM_Event->contact->user_email,
 			'#_RESPNAME' =>  $EM_Booking->person->name,
 			'#_RESPEMAIL' => $EM_Booking->person->email,
 			'#_RESPPHONE' => $EM_Booking->person->phone,
 			'#_SPACES' => $EM_Booking->seats,
 			'#_COMMENT' => $EM_Booking->comment,
-			'#_RESERVEDSPACES' => $this->get_available_seats(),
-			'#_AVAILABLESPACES' => $this->get_booked_seats()
-		);
-		 
+			'#_RESERVEDSPACES' => $this->get_booked_seats(),
+			'#_AVAILABLESPACES' => $this->get_available_seats()
+		);		 
 		foreach($placeholders as $key => $value) {
 			$contact_body= str_replace($key, $value, $contact_body);  
 			$booker_body= str_replace($key, $value, $booker_body);
 		}
+		
+		$contact_body = $EM_Event->output( $contact_body );
+		$booker_body = $EM_Event->output( $booker_body );
 		
 		//TODO offer subject changes
 		if( !$EM_Mailer->send(__('Reservation confirmed','dbem'),$booker_body, $EM_Booking->person->email) ){
