@@ -19,11 +19,11 @@ function em_admin_support(){
 			<div class="updated">
 				<h2>Troubleshooting upgrades from version 2.x to 3.x</h2>
 				<p>We notice that you upgraded from version 2, as we are now using new database tables, and we do not delete the old tables in case something went wrong with this upgrade.</p>
-		   		<p>If something went wrong with the update to version 3 you have two options:</p>
-		   		<h3>IF the plugin is working, but for some reason the old events weren't imported</h3>
+		   		<p>If something went wrong with the update to version 3, read on:</p>
+		   		<h3>Scenario 1: the plugin is working, but for some reason the old events weren't imported</h3>
 		   		<p>You can safely reimport your old events from the previous tables without any risk of deleting them. However, if you click the button below <b>YOU WILL OVERWRITE ANY NEW EVENTS YOU CREATED IN VERSION 3</b></p>
 				<a onclick="return confirm('Are you sure you want to do this? Any new changes made since updating will be overwritten by your old ones, and this cannot be undone');" href="<?php echo wp_nonce_url( get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-support&em_reimport=1', 'em_reimport' ) ?>">Reimport Events from version 2</a>
-				<h3>IF the plugin is working, I want to go back to version 2!</h3>
+				<h3>Scenario 2: the plugin is not working, I want to go back to version 2!</h3>
 				<p>You can safely downgrade and will not lose any information.</p>
 				<ol> 
 					<li>First of all, <a href='http://downloads.wordpress.org/plugin/events-manager.2.2.2.zip'>dowload a copy of version 2.2</a></li>
