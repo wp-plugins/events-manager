@@ -1,18 +1,4 @@
 <?php
-function dbem_intercept_locations_actions() {
-	if(isset($_GET['page']) && $_GET['page'] == "locations") {
-	  	if(isset($_GET['doaction2']) && $_GET['doaction2'] == "Delete") {
-		  	if(isset($_GET['action2']) && $_GET['action2'] == "delete") {
-				$locations = $_GET['locations'];
-				foreach($locations as $location_id) {
-				 	dbem_delete_location($location_id);
-				}
-			}
-		}
-	}
-}
-add_action('init', 'dbem_intercept_locations_actions');
-
 /**
  * Looks at the request values, saves/updates and then displays the right menu in the admin
  * @return null
@@ -20,6 +6,23 @@ add_action('init', 'dbem_intercept_locations_actions');
 function dbem_locations_page() {  
 	//TODO EM_Location is globalized, use it fully here
 	global $EM_Location;
+	
+	//First Delete any locations
+	if(isset($_GET['page']) && $_GET['page'] == "locations") {
+	  	if(isset($_GET['doaction2']) && $_GET['doaction2'] == "Delete") {
+		  	if(isset($_GET['action2']) && $_GET['action2'] == "delete") {
+				$locations = $_GET['locations'];
+				foreach($locations as $location_id) {
+				 	$EM_Location = new EM_Location($location_id);
+					$EM_Location->delete();
+				}
+				?>
+				<div id='message' class='updated'><p><?php _e( "Locations Deleted", "dbem" ) ?></p></div>
+				<?php
+			}
+		}
+	}
+	//Now take further actions
 	if(isset($_GET['action']) && $_GET['action'] == "edit") { 
 		// edit location  
 		dbem_admin_location();
@@ -32,9 +35,16 @@ function dbem_locations_page() {
 				$EM_Location->save();
 				$message = __('The location has been updated.', 'dbem');
 				$locations = EM_Locations::get();
-				dbem_admin_locations($locations, null, $message);
+				dbem_admin_locations($message);
 			} else {
-				$message = $validation_result;   
+				?>
+				<div id='message' class='error '>
+					<p>
+						<strong><?php _e( "Ach, there's a problem here:", "dbem" ) ?></strong><br /><br /><?php echo implode('<br />', $EM_Location->errors); ?>
+					</p>
+				</div>
+				<?php  
+				unset($EM_Location);
 				dbem_admin_location($message);
 			}
 		} elseif(isset($_POST['action']) && $_POST['action'] == "addlocation") {    
@@ -42,14 +52,8 @@ function dbem_locations_page() {
 			$EM_Location->get_post();
 			$validation_result = $EM_Location->validate();
 			if ($validation_result) {   
-				$EM_Location->save(); 
-				?>
-				<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
-					<p><?php _e('The location has been added.', 'dbem') ?></p>
-				</div>
-				<?php
-				$locations = EM_Locations::get();
-				dbem_admin_locations($locations, null);
+				$EM_Location->save();
+				dbem_admin_locations(__('The location has been added.', 'dbem'));
 			} else {
 				?>
 				<div id='message' class='error '>
@@ -58,27 +62,33 @@ function dbem_locations_page() {
 					</p>
 				</div>
 				<?php
-				$locations = EM_Locations::get();
-				dbem_admin_locations($locations, $EM_Location, $message);
+				dbem_admin_locations('', true);
 			}
 		} else {  
 			// no action, just a locations list
-			$locations = EM_Locations::get();
-			dbem_admin_locations($locations, $message);
+			dbem_admin_locations();
   		}
 	} 
 }  
 
-function dbem_admin_locations($locations, $new_location, $message = "") {
+function dbem_admin_locations($message='', $fill_fields = false) {
+	global $EM_Location;
+	$locations = EM_Locations::get();
+	$new_location = (get_class($EM_Location) == 'EM_Location' && $fill_fields ) ? $EM_Location->to_array() : array(); //let's avoid php warning for empty object
 	$destination = get_bloginfo('wpurl')."/wp-admin/admin.php";
-	$new_location = (get_class($new_location) == 'EM_Location') ? $new_location->to_array() : array();
 	?>
 		<div class='wrap'>
 			<div id='icon-edit' class='icon32'>
 				<br/>
 			</div>
  	 		<h2><?php _e('Locations', 'dbem'); ?></h2>  
-	 		
+
+			<?php if($message != "") : ?>
+				<div id='message' class='updated fade below-h2'>
+					<p><?php echo $message ?></p>
+				</div>
+			<?php endif; ?>
+			 		
 			<div id='col-container'>
 				<div id='col-right'>
 			 	 <div class='col-wrap'>       

@@ -42,12 +42,7 @@ function dbem_insert_location($location) {
 	$EM_Location = new EM_Location($location);
 	$EM_Location->insert();
 	return $EM_Location->to_array();
-}
-
-function dbem_delete_location($location) {
-	$EM_Location = new EM_Location($location);
-	$EM_Location->delete();
-}          
+}         
 
 function dbem_location_has_events($location_id) {
 	$EM_Location = new EM_Location($location_id);

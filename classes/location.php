@@ -72,7 +72,6 @@ class EM_Location extends EM_Object {
 	}
 	
 	function save(){
-		//FIXME location images not working
 		global $wpdb;
 		$table = $wpdb->prefix.LOCATIONS_TBNAME;
 		$data = $this->to_array();
