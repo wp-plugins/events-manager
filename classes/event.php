@@ -487,7 +487,7 @@ class EM_Event extends EM_Object{
 				if ($field == "notes" || $field == "excerpt") {
 					if ($target == "html"){
 						//If excerpt, we use more link text
-						if($field == "event_excerpt"){
+						if($field == "excerpt"){
 							$matches = explode('<!--more-->', $this->notes);
 							$field_value = $matches[0];
 							$field_value = apply_filters('dbem_notes_excerpt', $field_value);
