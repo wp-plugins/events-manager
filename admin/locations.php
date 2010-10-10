@@ -34,7 +34,6 @@ function dbem_locations_page() {
 			if ( $validation_result ) {
 				$EM_Location->save();
 				$message = __('The location has been updated.', 'dbem');
-				$locations = EM_Locations::get();
 				dbem_admin_locations($message);
 			} else {
 				?>

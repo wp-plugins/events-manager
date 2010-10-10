@@ -94,11 +94,11 @@ function dbem_options_subpanel() {
 				 	$em_disable_filter = true;     
 				 	$get_pages = get_pages();
 				 	$events_page_options = array();
+				 	$events_page_options[0] = __('[No Events Page]');
 				 	//TODO Add the hierarchy style ddm, like when choosing page parents
 				 	foreach($get_pages as $page){
 				 		$events_page_options[$page->ID] = $page->post_title;
-				 	} 
-				 	$events_page_options[0] = __('No Events Page');
+				 	}
 				   	dbem_options_select ( __( 'Events page' ), 'dbem_events_page', $events_page_options, __( 'This option allows you to select which page to use as an events page','dbem' ) );
 					$em_disable_filter = false;
 					//Rest

@@ -6,7 +6,10 @@
  */
 
 function dbem_get_locations($eventful = false) { 
-	return EM_Locations::get($eventful, false);
+	$EM_Locations = EM_Locations::get(array('eventful'=>$eventful));
+	foreach ($EM_Locations as $key => $EM_Location){
+		$EM_Locations[$key] = $EM_Location->to_array();
+	}
 }
 
 function dbem_get_location($location_id) {

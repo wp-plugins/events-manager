@@ -19,7 +19,8 @@ function em_ajax_actions() {
 		die();  
 	}  
 	if(isset($_REQUEST['query']) && $_REQUEST['query'] == 'GlobalMapData') { 
-		$locations = EM_Locations::get(array('eventful' => 1));
+		$eventful = ($_GET['eventful'] == true);
+		$locations = EM_Locations::get(array('eventful' => $eventful));
 		$json_locations = array();
 		foreach($locations as $location_key => $location) {
 			$json_locations[$location_key] = $location->to_array();

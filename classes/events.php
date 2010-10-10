@@ -34,94 +34,13 @@ class EM_Events extends EM_Object {
 			return $events; //We return all the events matched as an EM_Event array. 
 		}
 		
-		//Format the arguments passed on
 		//We assume it's either an empty array or array of search arguments to merge with defaults			
 		$args = self::get_default_search($args);
-		$scope = $args['scope'];//undefined variable warnings in ZDE, could just delete this (but dont pls!)
-		$offset = $args['offset'];
-		$recurring = $args['recurring'];
-		$recurrence = $args['recurrence'];
-		$category = $args['category'];
-		$location = $args['location'];
-		$day = $args['day'];
-		$month = $args['month'];
-		$year = $args['year'];
-		extract($args, EXTR_SKIP);
-		$today = date( 'Y-m-d' );
-		$limit = ( $limit && is_numeric($limit)) ? "LIMIT $limit" : '';
-		$offset = ( $limit != "" && is_numeric($offset) ) ? "OFFSET $offset" : '';
-		//TODO order by?
-		$order = ($order == "DESC") ? "DESC" : "ASC";
+		$limit = ( $args['limit'] && is_numeric($args['limit'])) ? "LIMIT {$args['limit']}" : '';
+		$offset = ( $limit != "" && is_numeric($args['offset']) ) ? "OFFSET {$args['offset']}" : '';
 		
-		//Create the WHERE statement
-		
-		//Recurrences
-		if( $recurring ){
-			$conditions = array("`recurrence`=1");
-		}elseif( $recurrence > 0 ){
-			$conditions = array("`recurrence_id`=$recurrence");
-		}else{
-			$conditions = array("`recurrence`=0");			
-		}
-		//Dates - first check 'month', and 'year'
-		if( !($month=='' && $year=='') ){
-			//Sort out month range, if supplied an array of array(month,month), it'll check between these two months
-			if( self::array_is_numeric($month) ){
-				$date_month_start = $month[0];
-				$date_month_end = $month[1];
-			}else{
-				$date_month_start = $date_month_end = $month;
-			}
-			//Sort out year range, if supplied an array of array(year,year), it'll check between these two years
-			if( self::array_is_numeric($year) ){
-				$date_year_start = $year[0];
-				$date_year_end = $year[1];
-			}else{
-				$date_year_start = $date_year_end = $year;
-			}
-			$date_start = date('Y-m-d', mktime(0,0,0,$date_month_start,1,$date_year_start));
-			$date_end = date('Y-m-t', mktime(0,0,0,$date_month_end,1,$date_year_end));
-			$conditions[] = " ((event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)))";
-			$search_by_date = true;
-		}
-		if( !isset($search_by_date) ){
-			//No date requested, so let's look at scope
-			if ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
-				//Scope can also be a specific date. However, if 'day', 'month', or 'year' are set, that will take precedence
-				$conditions [] = " ( (event_start_date = CAST('$scope' AS DATE)) OR (event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE)) )";
-			} else {
-				if ($scope == "past"){
-					$conditions [] = " event_start_date < '$today'";  
-				}elseif ($scope == "today"){
-					$conditions [] = " ( (event_start_date = CAST('$today' AS DATE)) OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE)) )";
-				}elseif ($scope == "future" || $scope != 'all'){
-					$conditions [] = " (event_start_date >= CAST('$today' AS DATE) OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
-				}
-			}
-		}
-		
-		//Filter by Location - can be object, array, or id
-		if ( is_numeric($location) && $location > 0 ) { //Location ID takes precedence
-			$conditions [] = " {$locations_table}.location_id = $location";
-		}elseif ( self::array_is_numeric($location) ){
-			$conditions [] = "( {$locations_table}.location_id = " . implode(" OR {$locations_table}.location_id = ", $location) .' )';
-		}elseif ( is_object($location) && get_class($location)=='EM_Location' ){ //Now we deal with objects
-			$conditions [] = " {$locations_table}.location_id = $location->id";
-		}elseif ( is_array($location) && @get_class(current($location)=='EM_Location') ){ //we can accept array of ids or EM_Location objects
-			foreach($location as $EM_Location){
-				$location_ids[] = $EM_Location->id;
-			}
-			$conditions[] = "( {$locations_table}.location_id=". implode(" {$locations_table}.location_id=", $location_ids) ." )";
-		}	
-				
-		//Add conditions for category selection
-		//Filter by category, can be id or comma seperated ids
-		//TODO create an exclude category option
-		if ( $category != '' && is_numeric($category) ){
-			$conditions [] = " event_category_id = $category";
-		}elseif( self::array_is_numeric($category) ){
-			$conditions [] = "( event_category_id = ". implode(' OR event_category_id = ', $category).")";
-		}
+		//Get the default conditions
+		$conditions = self::build_sql_conditions($args);
 		
 		//Put it all together
 		$where = ( count($conditions) > 0 ) ? " WHERE " . implode ( " AND ", $conditions ):'';
@@ -131,10 +50,16 @@ class EM_Events extends EM_Object {
 			SELECT * FROM $events_table
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
-			ORDER BY event_start_date $order , event_start_time $order
+			ORDER BY event_start_date {$args['order']} , event_start_time {$args['order']}
 			$limit $offset
-		";
-		$results = $wpdb->get_results ( $sql, ARRAY_A );
+		";		
+	
+		$results = $wpdb->get_results($sql, ARRAY_A);
+
+		//If we want results directly in an array, why not have a shortcut here?
+		if( $args['array'] == true ){
+			return $results;
+		}
 		
 		//Make returned results EM_Event objects
 		$events = array();

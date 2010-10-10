@@ -201,7 +201,7 @@ class EM_Location extends EM_Object {
 			 	$map_div = EM_Map::get_single( array('location' => $this) );
 			 	$location_string = str_replace($result, $map_div , $location_string );
 			}
-			if ( preg_match('/#_(LOC)?(NOTES|EXCERPT)/', $result) ) {
+			if ( preg_match('/#_(LOC(ATION)?)?(NOTES|EXCERPT)/', $result) ) {
 				if ($target == "html"){
 					//If excerpt, we use more link text
 					if($result == "#_LOCEXCERPT" || $result == "#_EXCERPT"){
@@ -258,11 +258,17 @@ class EM_Location extends EM_Object {
         		}
 				$location_string = str_replace($result, $location_image , $location_string ); 
 			}
-			if (preg_match('/#_(LOCATIONPAGEURL)/', $result)) { 
+			if (preg_match('/#_(LOCATION(PAGE)?URL)/', $result)) { 
 				$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
 				$venue_page_link = EM_URI.$joiner."location_id=".$this->id;
 		       	$location_string = str_replace($result, $venue_page_link , $location_string ); 
-			}	  
+			}	 
+			if (preg_match('/#_(LOCATIONLINK)/', $result)) { 
+				$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
+				$venue_page_link = EM_URI.$joiner."location_id=".$this->id;
+				$venue_page_link = '<a href="'.$venue_page_link.'">'.$this->name.'</a>';
+		       	$location_string = str_replace($result, $venue_page_link , $location_string ); 
+			}	 
 			if (preg_match('/#_(ADDRESS|TOWN|PROVINCE)/', $result)) { //TODO province in location is not being used
 				$field = ltrim(strtolower($result), "#_");
 				if ($target == "html") {    
