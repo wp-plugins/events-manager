@@ -4,7 +4,7 @@ Donate link: http://davidebenini.it
 Tags: events, manager, calendar, gigs, concert, maps, geotagging, rsvp  
 Requires at least: 2.7   
 Tested up to: 3.0.1   
-Stable tag: 3.0.1   
+Stable tag: 3.0.2  
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
@@ -234,11 +234,14 @@ Bugfix: fixed all major js bugs preventing the use with Wordpress 3.0
 Restyling of the Settings page    
 Added a setting to revert to 2.2
 
-3.0.1
+=3.0.1=
 * Fixed spelling typos
 * Fixed warnings for bad location image uploads (e.g. too big etc.)
 * Fixed error for #_EXCERPT not showing
 
-3.0.2
+=3.0.2=
+* Fixed major recurrence bug
+
+=3.0.3=
 * Adding location widget
 * optimizing EM_Locations and removing redundant code across objects
