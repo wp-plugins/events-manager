@@ -17,20 +17,19 @@ function em_actions_bookings() {
 	if( @get_class($EM_Event) == 'EM_Event' ){
 		//ADD/EDIT Booking
 		if (isset($_POST['eventAction']) && $_POST['eventAction'] == 'add_booking') {
-			$EM_Event->get_bookings();
-			if( $EM_Event->bookings->add( new EM_Booking($_POST) ) ){
-				$dbem_form_messages_booking_add['success'] = $EM_Event->bookings->feedback_message;
+			//$EM_Event->get_bookings();
+			if( $EM_Event->get_bookings()->add( new EM_Booking($_POST) ) ){
+				$dbem_form_messages_booking_add['success'] = $EM_Event->get_bookings()->feedback_message;
 			}else{
-				$dbem_form_messages_booking_add['error'] = implode('<br />', $EM_Event->bookings->errors);
+				$dbem_form_messages_booking_add['error'] = implode('<br />', $EM_Event->get_bookings()->errors);
 			}		
 	  	}
 	  	//DELETE Booking
 		if (isset($_POST['eventAction']) && $_POST['eventAction'] == 'delete_booking') {
-			$EM_Event->get_bookings();
 			$EM_Person = new EM_Person();
 			if( $EM_Person->get(array('person_name' => $_POST['person_name'], 'person_email' => $_POST['person_email'])) ){
 				$deleted = 0;
-				foreach($EM_Event->bookings->bookings as $EM_Booking){
+				foreach($EM_Event->get_bookings()->get_bookings() as $EM_Booking){
 					if($EM_Booking->person->id == $EM_Person->id ){
 						$EM_Booking->delete();
 						$deleted++;

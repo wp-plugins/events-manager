@@ -179,6 +179,7 @@ function em_add_options() {
 	'dbem_location_page_title_format' => DEFAULT_LOCATION_PAGE_TITLE_FORMAT,
 	'dbem_location_baloon_format' => DEFAULT_LOCATION_BALOON_FORMAT,
 	'dbem_location_event_list_item_format' => DEFAULT_LOCATION_EVENT_LIST_ITEM_FORMAT,
+	'dbem_location_list_item_format' => DEFAULT_LOCATION_LIST_ITEM_FORMAT,
 	'dbem_location_no_events_message' => DEFAULT_LOCATION_NO_EVENTS_MESSAGE,
 	'dbem_single_location_format' => DEFAULT_SINGLE_LOCATION_FORMAT,
 	'dbem_map_text_format' => DEFAULT_MAP_TEXT_FORMAT,

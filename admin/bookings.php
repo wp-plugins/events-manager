@@ -46,7 +46,7 @@ function dbem_bookings_table() {
 				</thead>
 				<tbody>
 					<?php 
-					foreach ($EM_Event->bookings->bookings as $EM_Booking) {
+					foreach ($EM_Event->get_bookings()->bookings as $EM_Booking) {
 						?>
 						<tr>
 							<td><input type='checkbox' value='<?php echo $EM_Booking->id ?>' name='bookings[]'/></td>
@@ -62,11 +62,11 @@ function dbem_bookings_table() {
 				<tfoot>
 					<tr>
 						<th scope='row' colspan='4'>Booked seats:</th>
-						<td class='booking-result' id='booked-seats'><?php echo $EM_Event->bookings->get_booked_seats() ?></td>
+						<td class='booking-result' id='booked-seats'><?php echo $EM_Event->get_bookings()->get_booked_seats() ?></td>
 					</tr>            
 					<tr>
 						<th scope='row' colspan='4'>Available seats:</th>
-						<td class='booking-result' id='available-seats'><?php echo $EM_Event->bookings->get_booked_seats() ?></td>
+						<td class='booking-result' id='available-seats'><?php echo $EM_Event->get_bookings()->get_booked_seats() ?></td>
 					</tr>
 				</tfoot>
 			</table>

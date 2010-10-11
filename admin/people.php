@@ -42,7 +42,7 @@ function dbem_printable_booking_report() {
 					<th scope='col'><?php _e('Seats', 'dbem')?></th>
 					<th scope='col'><?php _e('Comment', 'dbem')?></th>
 				</tr> 
-				<?php foreach($EM_Event->bookings->bookings as $EM_Booking) {       ?>
+				<?php foreach($EM_Event->get_bookings()->bookings as $EM_Booking) {       ?>
 				<tr>
 					
 					<td><?php echo $EM_Booking->person->name ?></td> 
@@ -55,12 +55,12 @@ function dbem_printable_booking_report() {
 			  	<tr id='booked-seats'>
 					<td colspan='3'>&nbsp;</td>
 					<td class='total-label'><?php _e('Booked', 'dbem')?>:</td>
-					<td class='seats-number'><?php echo $EM_Event->bookings->get_booked_seats(); ?></td>
+					<td class='seats-number'><?php echo $EM_Event->get_bookings()->get_booked_seats(); ?></td>
 				</tr>
 				<tr id='available-seats'>
 					<td colspan='3'>&nbsp;</td> 
 					<td class='total-label'><?php _e('Available', 'dbem')?>:</td>  
-					<td class='seats-number'><?php echo $EM_Event->bookings->get_available_seats(); ?></td>
+					<td class='seats-number'><?php echo $EM_Event->get_bookings()->get_available_seats(); ?></td>
 				</tr>
 			</table>  
 			</div>

@@ -94,7 +94,7 @@ class EM_Bookings extends EM_Object{
 	}
 	
 	/**
-	 * Delete all numbers
+	 * Delete bookings on this id
 	 * @return boolean
 	 */
 	function delete(){

@@ -86,7 +86,7 @@ if( is_admin() ){
 
 
 // Setting constants
-define('EM_VERSION', 3); //self expanatory
+define('EM_VERSION', 3.02); //self expanatory
 define('DBEM_CATEGORIES_TBNAME', 'em_categories'); //TABLE NAME
 define('EVENTS_TBNAME','em_events'); //TABLE NAME
 define('RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME   
@@ -112,6 +112,7 @@ define('DEFAULT_SINGLE_LOCATION_FORMAT', '<p>#_ADDRESS</p><p>#_TOWN</p>');
 define('DEFAULT_LOCATION_PAGE_TITLE_FORMAT', '#_NAME'); 
 define('DEFAULT_LOCATION_BALOON_FORMAT', "<strong>#_NAME</strong><br/>#_ADDRESS - #_TOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>");
 define('DEFAULT_LOCATION_EVENT_LIST_ITEM_FORMAT', "<li>#_NAME - #j #M #Y - #H:#i</li>");
+define('DEFAULT_LOCATION_LIST_ITEM_FORMAT','#_LOCATIONLINK<ul><li>#_ADDRESS</li><li>#_TOWN</li></ul>');
 define('DEFAULT_LOCATION_NO_EVENTS_MESSAGE', __('<li>No events in this location</li>', 'dbem'));
 define("IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
 define('DEFAULT_IMAGE_MAX_WIDTH', 700);  

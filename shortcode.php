@@ -29,11 +29,21 @@ add_shortcode('locations-map', 'em_get_locations_map_shortcode'); //Depreciate t
  */
 function em_get_events_list_shortcode($atts) {
 	//TODO sort out attributes so it's consistent everywhere
-	$atts = shortcode_atts ( array ('limit' => 3, 'scope' => 'future', 'order' => 'ASC', 'format' => '', 'category' => '', 'location'=>'' ), $atts );
+	$atts = (array)$atts;
 	$result = EM_Events::output ( $atts );
 	return $result;
 }
 add_shortcode ( 'events_list', 'em_get_events_list_shortcode' );
+
+/**
+ * Returns list of locations according to given specifications 
+ */
+function em_get_locations_list_shortcode( $atts ){
+	$atts = (array)$atts;
+	$result = EM_Locations::output( $atts );
+	return $result;
+}
+add_shortcode('locations_list', 'em_get_locations_list_shortcode');
 
 /**
  * DO NOT DOCUMENT! This should be replaced with shortcodes events-link and events_uri

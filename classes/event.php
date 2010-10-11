@@ -277,8 +277,10 @@ class EM_Event extends EM_Object{
 			//Delete the recurrences then this recurrence event
 			$this->delete_events();
 		}
-		$bookings_result = $this->delete_bookings();
 		$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". $wpdb->prefix . EVENTS_TBNAME ." WHERE event_id=%d", $this->id) );
+		if($result !== false){
+			$bookings_result = $this->get_bookings()->delete();
+		}
 	}
 	
 	/**
@@ -343,7 +345,7 @@ class EM_Event extends EM_Object{
 	}
 	
 	/**
-	 * Shortcut function for $this->bookings->delete(), because using the EM_Bookings requires loading previous bookings, which isn't neceesary. 
+	 * Shortcut function for $this->get_bookings()->delete(), because using the EM_Bookings requires loading previous bookings, which isn't neceesary. 
 	 */
 	function delete_bookings(){
 		global $wpdb;
@@ -454,9 +456,8 @@ class EM_Event extends EM_Object{
 			}
 			if (preg_match('/#_AVAILABLESEATS/', $result)) {
 			 	$rsvp_is_active = get_option('dbem_rsvp_enabled');
-			 	$this->get_bookings(); 
 				if ($this->rsvp) {
-				   $availble_seats = $this->bookings->get_available_seats();
+				   $availble_seats = $this->get_bookings()->get_available_seats();
 				} else {
 					$availble_seats = "0";
 				}
@@ -629,7 +630,15 @@ class EM_Event extends EM_Object{
 	 */
 	function delete_events(){
 		global $wpdb;
-		EM_Events::delete( EM_Events::get( array('recurrence_id'=>$this->id) ) );
+		//So we don't do something we'll regret later, we could just supply the get directly into the delete, but this is safer
+		$EM_Events = EM_Events::get( array('recurrence_id'=>$this->id) );
+		$event_ids = array();
+		foreach($EM_Events as $EM_Event){
+			if($EM_Event->recurrence_id == $this->id){
+				$event_ids[] = $EM_Event->id; //ONLY ADD if id's match - hard coded
+			}
+		}
+		EM_Events::delete( $event_ids );
 	}
 	
 	/**

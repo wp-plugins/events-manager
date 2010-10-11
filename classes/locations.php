@@ -63,6 +63,46 @@ class EM_Locations extends EM_Object {
 			$locations[] = new EM_Location($location);
 		}
 		return $locations;
+	}	
+	
+	/**
+	 * Output a set of matched of events
+	 * @param array $args
+	 * @return string
+	 */
+	function output( $args ){
+		global $EM_Location;
+		$EM_Location_old = $EM_Location; //When looping, we can replace EM_Location global with the current event in the loop
+		//Can be either an array for the get search or an array of EM_Location objects
+		if( is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
+			$locations = $args;
+		}else{
+			$locations = self::get( $args );
+		}
+		//What format shall we output this to, or use default
+		$format = ( $args['format'] == '' ) ? get_option( 'dbem_location_list_item_format' ) : $args['format'] ;
+		
+		$output = "";
+		if ( count($locations) > 0 ) {
+			foreach ( $locations as $location ) {
+				$EM_Location = $location;
+				/* @var EM_Event $event */
+				$output .= $location->output($format);
+			}
+			//Add headers and footers to output
+			if( $format == get_option ( 'dbem_location_list_item_format' ) ){
+				$single_event_format_header = get_option ( 'dbem_location_list_item_format_header' );
+				$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='dbem_events_list'>";
+				$single_event_format_footer = get_option ( 'dbem_location_list_item_format_footer' );
+				$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
+				$output =  $single_event_format_header .  $output . $single_event_format_footer;
+			}
+		} else {
+			$output = get_option ( 'dbem_no_events_message' );
+		}
+		//FIXME check if reference is ok when restoring object, due to changes in php5 v 4
+		$EM_Location_old= $EM_Location;
+		return $output;		
 	}
 	
 	//TODO for all the static plural classes like this one, we might benefit from bulk actions like delete/add/save etc.... just a random thought.

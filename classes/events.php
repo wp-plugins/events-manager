@@ -115,7 +115,7 @@ class EM_Events extends EM_Object {
 	 */
 	function output( $args ){
 		global $EM_Event;
-		$old_EM_Event = $EM_Event; //When looping, we can replace EM_Event global with the current event in the loop
+		$EM_Event_old = $EM_Event; //When looping, we can replace EM_Event global with the current event in the loop
 		//Can be either an array for the get search or an array of EM_Event objects
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Event' ){
 			$events = $args;
@@ -144,7 +144,7 @@ class EM_Events extends EM_Object {
 			$output = get_option ( 'dbem_no_events_message' );
 		}
 		//TODO check if reference is ok when restoring object, due to changes in php5 v 4
-		$old_EM_Event = $EM_Event;
+		$EM_Event_old = $EM_Event;
 		return $output;		
 	}
 	

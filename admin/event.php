@@ -176,11 +176,10 @@ function dbem_event_form( $title ) {
 										<!-- START RSVP Stats -->
 										<?php
 											if ($EM_Event->rsvp ) {
-												$EM_Event->get_bookings(); //Load bookings since we'll display this info later.
-												$available_seats = $EM_Event->bookings->get_available_seats();
-												$booked_seats = $EM_Event->bookings->get_booked_seats();
+												$available_seats = $EM_Event->get_bookings()->get_available_seats();
+												$booked_seats = $EM_Event->get_bookings()->get_booked_seats();
 													
-												if ( count($EM_Event->bookings->bookings) > 0 ) {
+												if ( count($EM_Event->get_bookings()->bookings) > 0 ) {
 													?>
 													<div class='wrap'>
 														<h4><?php echo $booked_seats ?> <?php echo  __('responses so far') ?></h4>  
@@ -201,7 +200,7 @@ function dbem_event_form( $title ) {
 															</tfoot>
 															<tbody>
 																<?php
-																foreach ($EM_Event->bookings->bookings as $EM_Booking) { 
+																foreach ($EM_Event->get_bookings()->bookings as $EM_Booking) { 
 																	?>
 																	<tr id='booking-<?php echo $EM_Booking->id ?>'> 
 																		<td>

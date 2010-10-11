@@ -22,7 +22,7 @@ function dbem_events_subpanel() {
 	$event_table_name = $wpdb->prefix . EVENTS_TBNAME;	
 
 	// DELETE action
-	if ($action == 'deleteEvents') {
+	if ( $action == 'deleteEvents' && EM_Object::array_is_numeric($selectedEvents) ) {
 		EM_Events::delete( $selectedEvents );
 		dbem_events_table ( EM_Events::get( array('scope'=>$scope) ), "Future events" );
 	}
