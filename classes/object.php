@@ -32,6 +32,11 @@ class EM_Object {
 		//TODO decide on search defaults shared across all objects and then validate here
 		$defaults = array_merge($super_defaults, $defaults);
 		
+		//We are still dealing with recurrence_id, location_id, category_id in some place, so we do a quick replace here just in case
+		if( array_key_exists('recurrence_id', $array) && !array_key_exists('recurrence', $array) ) { $array['recurrence'] = $array['recurrence_id']; }
+		if( array_key_exists('location_id', $array) && !array_key_exists('location', $array) ) { $array['location'] = $array['location_id']; }
+		if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
+		
 		if(is_array($array)){
 			//TODO accept all objects as search options as well as ids (e.g. location vs. location_id, person vs. person_id)
 			//If there's a location, then remove it and turn it into location_id
