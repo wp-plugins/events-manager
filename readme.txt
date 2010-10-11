@@ -233,3 +233,11 @@ Bugfix: fixed all major php bugs preventing the use with Wordpress 3.0
 Bugfix: fixed all major js bugs preventing the use with Wordpress 3.0
 Restyling of the Settings page    
 Added a setting to revert to 2.2
+
+=3.0.1=
+* Fixed spelling typos
+* Fixed warnings for bad location image uploads (e.g. too big etc.)
+* Fixed error for #_EXCERPT not showing
+
+=3.0.2=
+* Fixed major recurrence bug
