@@ -75,7 +75,9 @@ jQuery(document).ready( function($) {
 	if( $('#date-to-submit').length > 0 ){
 		$("#localised-date").datepicker({
 			altField: "#date-to-submit", 
-			altFormat: "yy-mm-dd"
+			altFormat: "yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
 		});
 		$("#localised-end-date").datepicker({
 			altField: "#end-date-to-submit", 
