@@ -1,0 +1,63 @@
+<table>
+	<tr>
+		<th style="width:150px;">When? </th>
+		<td>
+			Date(s) - #j #M #Y #@_{ \u\n\t\i\l j M Y}<br />
+			Time (24h Format) - #_24HSTARTTIME - #_24HENDTIME<br />
+			Time (12h Format) - #_12HSTARTTIME - #_12HENDTIME
+		</td>
+	</tr>
+	<tr>
+		<th>What? </th>
+		<td>
+			<h3>#_NAME</h3>
+			#_NOTES
+		</td>
+	</tr>
+	<tr>
+		<th>
+			Price<br />
+			Dress Code<br />
+			Available Seats
+		</th>
+		<td>
+			#_ATT{Price}{Free}<br />
+			#_ATT{Dress Code}{Informal}<br />
+			#_AVAILABLESEATS / #_SEATS
+		</td>
+	</tr>
+	<tr>
+		<th>Who? </th>
+		<td>
+			#_CONTACTNAME (aka #_CONTACTPERSON)<br />
+			#_CONTACTEMAIL<br />
+			#_CONTACTPHONE
+		</td>
+	</tr>
+	<tr>
+		<td colspan="2">
+			<p>#_ADDBOOKINGFORM</p>
+			<p>#_REMOVEBOOKINGFORM</p>
+		</td>
+	</tr>
+	<tr>
+		<th>Where? </th>
+		<td>
+			#_LOCATION, #_ADDRESS, #_TOWN
+			<br />
+			#_LOCEXCERPT
+			<br />
+			#_MAP
+			<br />
+			<h3>Upcoming Events at #_LOCATION</h3>
+			#_NEXTEVENTS			
+			<br />
+			<h3>Previous Events at #_LOCATION</h3>
+			#_PASTEVENTS			
+			<br />
+			<h3>All Events at #_LOCATION</h3>
+			#_ALLEVENTS
+		</td>
+	</tr>
+</table>
+#_EDITEVENTLINK
