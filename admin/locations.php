@@ -119,7 +119,7 @@ function dbem_admin_locations($message='', $fill_fields = false) {
 									<td><input type='checkbox' class ='row-selector' value='<?php echo $location->id ?>' name='locations[]'/></td>
 									<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=locations&amp;action=edit&amp;location_id=<?php echo $location->id ?>'><?php echo $location->name ?></a></td>
 									<td><?php echo $location->address ?></td>
-									<td><?php echo $location->location_town ?></td>                         
+									<td><?php echo $location->town ?></td>                         
 								</tr>
 								<?php endforeach; ?>
 							</tbody>

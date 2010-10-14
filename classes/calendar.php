@@ -10,7 +10,7 @@ class EM_Calendar extends EM_Object {
 		$full = $args['full']; //For ZDE, don't delete pls
 		$month = $args['month']; 
 		$year = $args['year'];
-		$long_events = ($args['long_events']) ? 1:0;
+		$long_events = $args['long_events'];
 		
 		$week_starts_on_sunday = get_option('dbem_week_starts_sunday');
 	   	$start_of_week = get_option('start_of_week');
@@ -128,7 +128,7 @@ class EM_Calendar extends EM_Object {
 			 $back_year = $year;
 		}  
 		$full ? $link_extra_class = "full-link" : $link_extra_class = '';
-		$previous_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;calmonth={$back_month}&amp;calyear={$back_year}&amp;longevents={$long_events}'>&lt;&lt;</a>"; 
+		$previous_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;month={$back_month}&amp;year={$back_year}&amp;long_events={$long_events}&amp;full={$full}'>&lt;&lt;</a>"; 
 	
 		if($month == 12){ 
 		   $next_month = 1;
@@ -137,7 +137,7 @@ class EM_Calendar extends EM_Object {
 		   $next_month = $month + 1;
 			 $next_year = $year;	
 		} 
-		$next_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;calmonth={$next_month}&amp;calyear={$next_year}&amp;longevents={$long_events}'>&gt;&gt;</a>";
+		$next_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;month={$next_month}&amp;year={$next_year}&amp;long_events={$long_events}&amp;full={$full}'>&gt;&gt;</a>";
 		$class = ($full) ? 'dbem-calendar-full' : 'dbem-calendar';
 		$calendar="<div class='$class'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
 		
@@ -212,8 +212,9 @@ class EM_Calendar extends EM_Object {
 			$year_pre=$year;
 			$year_post=$year;
 		}
-		//TODO expand by including category, location, etc. criteria
-		$events = EM_Events::get( array('year'=>array($year_pre, $year_post), 'month'=>array($month_pre, $month_post)) );
+		$args['year'] = array($year_pre, $year_post);
+		$args['month'] = array($month_pre, $month_post);
+		$events = EM_Events::get($args);
 	
 		$eventful_days= array();
 		if($events){
@@ -291,7 +292,7 @@ class EM_Calendar extends EM_Object {
 		   		}
 			}
 		}       
-		return $calendar;
+		return '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.$calendar.'</div>';
 	}	
 
 	/**
@@ -316,8 +317,14 @@ class EM_Calendar extends EM_Object {
 	}  
 	
 	function get_default_search($array=array()){
-		$defaults = array( 'full' => 0, 'month' => '', 'year' => '', 'long_events' => 0 );
-		return parent::get_default_search($defaults, $array);
+		$defaults = array( 
+			'full' => 0, //Will display a full calendar with event names
+			'long_events' => 0, //Events that last longer than a day
+		);
+		$atts = parent::get_default_search($defaults, $array);
+		$atts['full'] = ($atts['full']==true) ? 1:0;
+		$atts['long_events'] = ($atts['long_events']==true) ? 1:0;
+		return $atts;
 	}
 } 
 add_action('init', array('EM_Calendar', 'init'));

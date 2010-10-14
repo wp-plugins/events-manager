@@ -2,46 +2,48 @@
 //TODO add a shortcode to link for a specific event, e.g. [event id=x]text[/event]
 
 /**
- * Returns the html of an events calendar.
+ * Returns the html of an events calendar with events that match given query attributes. Accepts any event query attribute.
  * @param array $atts
  * @return string
  */
 function em_get_calendar_shortcode($atts) { 
-	$atts = shortcode_atts(array( 'full' => 0, 'month' => '', 'year' => '', 'long_events' => 0 ), $atts);
-	$return = '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">';
-	$return .= EM_Calendar::get($atts);
-	$return .= '</div>';	
-	return $return;
+	$atts = (array) $atts;
+	return EM_Calendar::get($atts);
 }
 add_shortcode('events_calendar', 'em_get_calendar_shortcode');
 
-function em_get_locations_map_shortcode( $atts ){
-	$atts = shortcode_atts( array('eventful' => 0, 'scope' => 'all', 'width' => 450, 'height' => 300), $atts ); 
+/**
+ * Generates a map of locations that match given query attributes. Accepts any location query attributes. 
+ * @param unknown_type $atts
+ * @return string
+ */
+function em_get_locations_map_shortcode($atts){
+	$clean_atts = EM_Locations::get_default_search($atts);
+	$clean_atts['width'] = ( !empty($atts['width']) ) ? $atts['width']:450;
+	$clean_atts['height'] = ( !empty($atts['height']) ) ? $atts['height']:300; 
 	return EM_Map::get_global($atts);
 }
 add_shortcode('locations_map', 'em_get_locations_map_shortcode');
 add_shortcode('locations-map', 'em_get_locations_map_shortcode'); //Depreciate this... confusing for wordpress 
 
 /**
- * Shows a list of events according to given specifications 
+ * Shows a list of events according to given specifications. Accepts any event query attribute.
  * @param array $atts
  * @return string
  */
 function em_get_events_list_shortcode($atts) {
 	//TODO sort out attributes so it's consistent everywhere
-	$atts = (array)$atts;
-	$result = EM_Events::output ( $atts );
-	return $result;
+	$atts = (array) $atts;
+	return EM_Events::output ( $atts );
 }
 add_shortcode ( 'events_list', 'em_get_events_list_shortcode' );
 
 /**
- * Returns list of locations according to given specifications 
+ * Returns list of locations according to given specifications. Accepts any location query attribute.
  */
 function em_get_locations_list_shortcode( $atts ){
-	$atts = (array)$atts;
-	$result = EM_Locations::output( $atts );
-	return $result;
+	$atts = (array) $atts;
+	return EM_Locations::output( $atts );
 }
 add_shortcode('locations_list', 'em_get_locations_list_shortcode');
 

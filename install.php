@@ -206,10 +206,10 @@ function em_add_options() {
 	'dbem_small_calendar_event_title_separator' => DEFAULT_SMALL_CALENDAR_EVENT_TITLE_SEPARATOR, 
 	'dbem_hello_to_user' => 1,
 	'dbem_use_select_for_locations' => DEFAULT_USE_SELECT_FOR_LOCATIONS,
-	'dbem_attributes_enabled', DEFAULT_ATTRIBUTES_ENABLED,
-	'dbem_recurrence_enabled', DEFAULT_RECURRENCE_ENABLED,
-	'dbem_rsvp_enabled', DEFAULT_RSVP_ENABLED,
-	'dbem_categories_enabled', DEFAULT_CATEGORIES_ENABLED);
+	'dbem_attributes_enabled' => DEFAULT_ATTRIBUTES_ENABLED,
+	'dbem_recurrence_enabled'=> DEFAULT_RECURRENCE_ENABLED,
+	'dbem_rsvp_enabled'=> DEFAULT_RSVP_ENABLED,
+	'dbem_categories_enabled'=> DEFAULT_CATEGORIES_ENABLED);
 	
 	foreach($dbem_options as $key => $value){
 		add_option($key, $value);

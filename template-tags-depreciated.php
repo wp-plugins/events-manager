@@ -17,20 +17,7 @@
  * @return unknown_type
  */
 function dbem_get_events_list($limit = "10", $scope = "future", $order = "ASC", $format = '', $echo = 1, $category = '') {
-	if (strpos ( $limit, "=" )) {
-		// allows the use of arguments without breaking the legacy code
-		$defaults = array ('limit' => 10, 'scope' => 'future', 'order' => 'ASC', 'format' => '', 'echo' => 1 , 'category' => '');
-		
-		$r = wp_parse_args ( $limit, $defaults );
-		extract ( $r, EXTR_SKIP );
-		$limit = $r ['limit'];
-		$scope = $r ['scope'];
-		$order = $r ['order'];
-		$format = $r ['format'];
-		$echo = $r ['echo'];
-		$category = ( preg_match('/^([0-9],?)+$/', $r ['category'] ) ) ? $r ['category'] : '' ;
-	}
-	$return = EM_Events::output(array('limit'=>$limit, 'scope'=>$scope, 'order'=>$order, 'category'=>$category));
+	$return = EM_Events::output(array('limit'=>$limit, 'scope'=>$scope, 'order'=>$order, 'format'=>$format, 'category'=>$category));
 	if( $echo ) echo $return;
 	return $return;
 }

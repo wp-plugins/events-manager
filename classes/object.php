@@ -70,22 +70,34 @@ class EM_Object {
 			$defaults = array_merge ( $defaults, $array ); //No point using WP's cleaning function, we're doing it already.
 		}
 		//Do some spring cleaning for known values
+		//Month & Year - may be array or single number
+		$month_regex = '/^[0-9]{1,2}$/';
+		$year_regex = '/^[0-9]{4}$/';
+		if( is_array($defaults['month']) ){
+			$defaults['month'] = ( preg_match($month_regex, $defaults['month'][0]) && preg_match($month_regex, $defaults['month'][1]) ) ? $defaults['month']:''; 
+		}else{
+			$defaults['month'] = preg_match($month_regex, $defaults['month']) ? $defaults['month']:'';	
+		}
+		if( is_array($defaults['year']) ){
+			$defaults['year'] = ( preg_match($year_regex, $defaults['year'][0]) && preg_match($year_regex, $defaults['year'][1]) ) ? $defaults['year']:'';
+		}else{
+			$defaults['year'] = preg_match($year_regex, $defaults['year']) ? $defaults['year']:'';
+		}
 		//TODO should we clean format of malicious code over here and run everything thorugh this?
 		$defaults['order'] = ($defaults['order'] == "ASC") ? "ASC" : $super_defaults['order'];
 		$defaults['array'] = ($defaults['array'] == true);
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
-		$defaults['month'] = preg_match('/^[0-9]{1,2}$/', $defaults['month']) ? $defaults['month']:'';
-		$defaults['year'] = preg_match('/^[0-9]{4}-[0-9]{2}-[0-9]$/', $defaults['year']) ? $defaults['year']:'';
 		return $defaults;
 	}
 	
 	/**
 	 * Builds an array of SQL query conditions based on regularly used arguments
 	 * @param array $args
+	 * @return array
 	 */
-	function build_sql_conditions( $args ){
+	function build_sql_conditions( $args = array() ){
 		global $wpdb;
 		$events_table = $wpdb->prefix . EVENTS_TBNAME;
 		$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
@@ -99,7 +111,7 @@ class EM_Object {
 		$day = $args['day'];
 		$month = $args['month'];
 		$year = $args['year'];
-		$today = date( 'Y-m-d' );
+		$today = date('Y-m-d');
 		//Create the WHERE statement
 		
 		//Recurrences
@@ -108,7 +120,7 @@ class EM_Object {
 		}elseif( $recurrence > 0 ){
 			$conditions = array("`recurrence_id`=$recurrence");
 		}else{
-			$conditions = array("`recurrence`=0");			
+			$conditions = array("(`recurrence`!=1 OR `recurrence` IS NULL)");			
 		}
 		//Dates - first check 'month', and 'year'
 		if( !($month=='' && $year=='') ){

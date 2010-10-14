@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 3.0.1
+Version: 3.0.3
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini, Marcus Sykes
@@ -46,10 +46,11 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 include_once('classes/object.php'); //Base object, any files below may depend on this 
 //Template Tags & Template Logic
 include_once("ajax.php");
-include_once("events.php");
-include_once("locations.php");
 include_once("bookings.php");
+include_once("events.php");
 include_once("functions.php");
+include_once("locations.php");
+include_once("rss.php");
 include_once("shortcode.php");
 include_once("template-tags.php");
 include_once("template-tags-depreciated.php"); //To depreciate
@@ -179,10 +180,10 @@ function em_load_event(){
 	$EM_Recurrences = array();
 	if( isset( $_REQUEST['event_id'] ) && is_numeric($_REQUEST['event_id']) ){
 		$EM_Event = new EM_Event($_REQUEST['event_id']);
-	}elseif( $_REQUEST['recurrence_id'] && is_numeric($_REQUEST['recurrence_id']) ){
+	}elseif( isset($_REQUEST['recurrence_id']) && is_numeric($_REQUEST['recurrence_id']) ){
 		//Eventually we can just remove this.... each event has an event_id regardless of what it is.
 		$EM_Event = new EM_Event($_REQUEST['recurrence_id']);
-	}elseif( $_REQUEST['location_id'] && is_numeric($_REQUEST['location_id']) ){
+	}elseif( isset($_REQUEST['location_id']) && is_numeric($_REQUEST['location_id']) ){
 		$EM_Location = new EM_Location($_REQUEST['location_id']);
 	}
 	$EM_Mailer = new EM_Mailer();
@@ -261,11 +262,11 @@ add_filter ( 'favorite_actions', 'em_favorite_menu' );
  */
 function em_admin_warnings() {
 	//If we're editing the events page show hello to new user
+	$events_page_id = get_option ( 'dbem_events_page' );
 	if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
 		// Disable Hello to new user if requested
 		update_option ( 'dbem_hello_to_user', 0 );
 	}else{
-		$events_page_id = get_option ( 'dbem_events_page' );
 		if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
 			$message = sprintf ( __ ( "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. ", 'dbem' ), 'admin.php?page=events-manager-options' );
 			$notice = "<div class='error'><p>$message</p></div>";
@@ -273,10 +274,10 @@ function em_admin_warnings() {
 		}
 	}
 	//If events page couldn't be created
-	if( $_GET['em_dismiss_events_page'] == '1' ){
+	if( !empty($_GET['em_dismiss_events_page']) ){
 		update_option('dbem_dismiss_events_page',1);
 	}else{
-		if ( !get_page(get_option('dbem_events_page')) && !get_option('dbem_dismiss_events_page') ){
+		if ( !get_page($events_page_id) && !get_option('dbem_dismiss_events_page') ){
 			$dismiss_link_joiner = ( count($_GET) > 0 ) ? '&amp;':'?';
 			$advice = sprintf ( __( 'Uh Oh! For some reason wordpress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">options page</a>. Sorry for the extra step! If you know what you are doing, you may have done this on purpose, if so <a href="%s">ignore this message</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1' );
 			?>
@@ -296,8 +297,7 @@ function em_activate() {
 }
 register_activation_hook( __FILE__,'em_activate');
 
-if( $_GET['em_reimport'] == '1' || get_option('dbem_import_fail') == '1' ){
+if( (isset($_GET['em_reimport']) && $_GET['em_reimport'] == '1') || get_option('dbem_import_fail') == '1' ){
 	require_once(WP_PLUGIN_DIR.'/events-manager/install.php');
 }
-
 ?>

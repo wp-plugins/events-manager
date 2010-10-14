@@ -1,7 +1,7 @@
 <?php
 // Function composing the options subpanel
 function em_options_save(){
-	if( current_user_can('activate_plugins') and  $_POST['em-submitted'] == '1' ){
+	if( current_user_can('activate_plugins') && !empty($_POST['em-submitted']) ){
 		//Build the array of options here
 		foreach ($_POST as $postKey => $postValue){
 			if( substr($postKey, 0, 5) == 'dbem_' ){
@@ -17,17 +17,7 @@ function em_options_save(){
 			<?php
 		}
 		add_action ( 'admin_notices', 'em_options_saved_notice' );
-	}              
-	if( current_user_can('activate_plugins') and  $_GET['revert-to2'] == '1' ){
-	    update_option('dbem_version',2);
-		function em_reverted_to2(){
-			?>
-			<div class="updated"><p><strong><?php _e('Succesfully reverted to 2. Now deactivate Events Manager and replace it with versione 2.2.'); ?></strong></p></div>
-			<?php
-		}
-		add_action ( 'admin_notices', 'em_reverted_to2' );
-		
-	}	
+	}   
 }
 add_action('admin_head', 'em_options_save');          
 

@@ -9,7 +9,7 @@ function dbem_admin_actions_bookings() {
 	global $wpdb;
 		
   	//DELETE Bookings
-	if( $_POST['secondaryAction'] == 'delete_bookings' ){
+	if( isset($_POST['secondaryAction']) && $_POST['secondaryAction'] == 'delete_bookings' ){
 		if( EM_Object::array_is_numeric($_GET['bookings']) && count($_GET['bookings']) > 0 ){
 			$bookings = $_GET['bookings'];
 			$sql = "DELETE FROM ". $wpdb->prefix.BOOKINGS_TBNAME ." WHERE booking_id = ". implode(' OR booking_id = ', $bookings);

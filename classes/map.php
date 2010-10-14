@@ -13,13 +13,15 @@ class EM_Map extends EM_Object {
 		//TODO Finish and document this feature, need to add balloons here
 		if (get_option('dbem_gmap_is_active') == '1') {
 			ob_start();
+			$atts['ajax'] = true;
+			$atts['query'] = 'GlobalMapData';
+			//build js array of arguments to send to event query
 			?>
 			<div id='em-locations-map' style='width:<?php echo $atts['width']; ?>px; height:<?php echo $atts['height']; ?>px'><em><?php _e('Loading Map....', 'dbem'); ?></em></div>
 			<script src='<?php echo bloginfo('wpurl') ?>/wp-content/plugins/events-manager/includes/js/em_maps.js' type='text/javascript'></script>
 			<script type='text/javascript'>
 			<!--// 
-				var eventful = <?php echo ($atts['eventful']) ? 'true':'false'; ?>; 
-				var scope = '<?php echo $atts['scope']; ?>';
+				var em_query = <?php echo EM_Object::json_encode($atts); ?>;
 				em_load_map('em_map_global');
 			//-->
 			</script> 
@@ -44,12 +46,12 @@ class EM_Map extends EM_Object {
 			ob_start();
 			?>
 	   		<div id='em-location-map' style='background: #CDCDCD; width: <?php echo $width ?>px; height: <?php echo $height ?>px'><?php _e('Loading Map....', 'dbem'); ?></div>
-   		<div id='em-location-map-info' style="display:none; visibility:hidden;"><div id="em-map-balloon" style="font-size:12px;"><div id="content"><?php echo $location->output(get_option('dbem_location_baloon_format')); ?></div></div></div>
+   			<div id='em-location-map-info' style="display:none; visibility:hidden;"><div id="em-map-balloon" style="font-size:12px;"><div id="content"><?php echo $location->output(get_option('dbem_location_baloon_format')); ?></div></div></div>
 			<script src='<?php bloginfo('wpurl'); ?>/wp-content/plugins/events-manager/includes/js/em_maps.js' type='text/javascript'></script>
 	   		<script type='text/javascript'>
 	  			<!--// 
-			  		var latitude = parseFloat('<?php echo $location->latitude; ?>');
-			  		var longitude = parseFloat('<?php echo $location->longitude; ?>');
+			  		var em_latitude = parseFloat('<?php echo $location->latitude; ?>');
+			  		var em_longitude = parseFloat('<?php echo $location->longitude; ?>');
 			  		em_load_map('em_map_single');
 				//-->
 			</script>			

@@ -19,7 +19,7 @@ class EM_Events extends EM_Object {
 		$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
-		if( self::array_is_numeric($args) && count() ){ //Array of numbers, assume they are event IDs to retreive
+		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
 			//We can just get all the events here and return them
 			$sql = "
 				SELECT * FROM $events_table
@@ -62,6 +62,7 @@ class EM_Events extends EM_Object {
 		}
 		
 		//Make returned results EM_Event objects
+		$results = (is_array($results)) ? $results:array();
 		$events = array();
 		foreach ( $results as $event ){
 			$events[] = new EM_Event($event);

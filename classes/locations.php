@@ -47,9 +47,10 @@ class EM_Locations extends EM_Object {
 			SELECT $fields FROM $locations_table
 			LEFT JOIN $events_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
+			GROUP BY location_id
 			ORDER BY location_name {$args['order']} , location_address {$args['order']}
 			$limit $offset
-		";		
+		";
 	
 		$results = $wpdb->get_results($sql, ARRAY_A);
 		
@@ -105,6 +106,39 @@ class EM_Locations extends EM_Object {
 		return $output;		
 	}
 	
+	/**
+	 * Builds an array of SQL query conditions based on regularly used arguments
+	 * @param array $args
+	 * @return array
+	 */
+	function build_sql_conditions( $args = array() ){
+		global $wpdb;
+		$events_table = $wpdb->prefix . EVENTS_TBNAME;
+		$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
+		
+		$conditions = parent::build_sql_conditions($args);
+		//eventful locations
+		if( true == $args['eventful'] ){
+			$conditions[] = "{$events_table}.event_id IS NOT NULL";
+		}elseif( true == $args['eventless'] ){
+			$conditions[] = "{$events_table}.event_id IS NULL";
+		}
+		return $conditions;
+	}
+	
+	/* 
+	 * Generate a search arguments array from defalut and user-defined.
+	 * @see wp-content/plugins/events-manager/classes/EM_Object::get_default_search()
+	 */
+	function get_default_search($args = array()){
+		$defaults = array(
+			'eventful' => false, //Locations that have an event (scope will also play a part here
+			'eventless' => false //Locations WITHOUT events, eventful takes precedence
+		);
+		$args['eventful'] = ($args['eventful'] == true);
+		$args['eventless'] = ($args['eventless'] == true);
+		return parent::get_default_search($defaults, $args);
+	}
 	//TODO for all the static plural classes like this one, we might benefit from bulk actions like delete/add/save etc.... just a random thought.
 }
 ?>

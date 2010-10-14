@@ -193,7 +193,7 @@ class EM_Location extends EM_Object {
 	}
 	
 	function output($format, $target="html") {
-		$location_string = $format;
+		$location_string = $format;		 
 		preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
 		foreach($placeholders[0] as $result) {   
 			// matches alla fields placeholder
@@ -226,15 +226,18 @@ class EM_Location extends EM_Object {
 					$field_value = apply_filters('the_content_rss', $field_value);
 				  }
 				  $location_string = str_replace($result, $field_value , $location_string );
-			}  
-			if (preg_match('/#_(LOCATION|NAME)$/', $result)) {   
-				if ($target == "html"){
-					$field_value = apply_filters('dbem_general', $this->name); 
-				}else{ 
-					$field_value = apply_filters('dbem_general_rss', $this->name);
-				} 
-				$location_string = str_replace($result, $field_value , $location_string ); 
-		 	}
+			}
+			if (preg_match('/#_(LOCATION(PAGE)?URL)/', $result)) { 
+				$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
+				$venue_page_link = EM_URI.$joiner."location_id=".$this->id;
+		       	$location_string = str_replace($result, $venue_page_link , $location_string ); 
+			}	 
+			if (preg_match('/#_(LOCATIONLINK)/', $result)) { 
+				$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
+				$venue_page_link = EM_URI.$joiner."location_id=".$this->id;
+				$venue_page_link = '<a href="'.$venue_page_link.'">'.$this->name.'</a>';
+		       	$location_string = str_replace($result, $venue_page_link , $location_string ); 
+			}
 			if (preg_match('/#_(PASTEVENTS|NEXTEVENTS|ALLEVENTS)/', $result)) {
 				if ($result == '#_PASTEVENTS'){ $scope = 'past'; }
 				elseif ( $result == '#_NEXTEVENTS' ){ $scope = 'future'; }
@@ -258,17 +261,6 @@ class EM_Location extends EM_Object {
         		}
 				$location_string = str_replace($result, $location_image , $location_string ); 
 			}
-			if (preg_match('/#_(LOCATION(PAGE)?URL)/', $result)) { 
-				$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
-				$venue_page_link = EM_URI.$joiner."location_id=".$this->id;
-		       	$location_string = str_replace($result, $venue_page_link , $location_string ); 
-			}	 
-			if (preg_match('/#_(LOCATIONLINK)/', $result)) { 
-				$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
-				$venue_page_link = EM_URI.$joiner."location_id=".$this->id;
-				$venue_page_link = '<a href="'.$venue_page_link.'">'.$this->name.'</a>';
-		       	$location_string = str_replace($result, $venue_page_link , $location_string ); 
-			}	 
 			if (preg_match('/#_(ADDRESS|TOWN|PROVINCE)/', $result)) { //TODO province in location is not being used
 				$field = ltrim(strtolower($result), "#_");
 				if ($target == "html") {    
@@ -279,6 +271,12 @@ class EM_Location extends EM_Object {
 				$location_string = str_replace($result, $field_value , $location_string ); 
 		 	}
 		}
+		//TODO all of these should just use str_replace if possible
+		//#_(LOCATION|NAME)
+		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss';
+		$location_string = str_replace('#_LOCATION', apply_filters($name_filter, $this->name) , $location_string );
+		$location_string = str_replace('#_NAME', apply_filters($name_filter, $this->name) , $location_string );
+		
 		return $location_string;	
 	}
 }
