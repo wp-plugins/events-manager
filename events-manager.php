@@ -297,7 +297,7 @@ function em_activate() {
 }
 register_activation_hook( __FILE__,'em_activate');
 
-if( (isset($_GET['em_reimport']) && $_GET['em_reimport'] == '1') || get_option('dbem_import_fail') == '1' ){
+if( !empty($_GET['em_reimport']) || get_option('dbem_import_fail') == '1' ){
 	require_once(WP_PLUGIN_DIR.'/events-manager/install.php');
 }
 ?>
