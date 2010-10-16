@@ -28,7 +28,7 @@ function dbem_event_form( $title ) {
 	if (preg_match ( "/en|sk|zh|us|uk/", $locale_code ))
 		$hours_locale_regexp = "h:iA";
 	
-	$days_names = array (1 => __ ( 'Mon' ), 2 => __ ( 'Tue' ), 3 => __ ( 'Wed' ), 4 => __ ( 'Thu' ), 5 => __ ( 'Fri' ), 6 => __ ( 'Sat' ), 7 => __ ( 'Sun' ) );
+	$days_names = array (1 => __ ( 'Mon' ), 2 => __ ( 'Tue' ), 3 => __ ( 'Wed' ), 4 => __ ( 'Thu' ), 5 => __ ( 'Fri' ), 6 => __ ( 'Sat' ), 0 => __ ( 'Sun' ) );
 	?>
 	<form id="eventForm" method="post" 	action="<?php echo $form_destination; ?>">
 		<div class="wrap">

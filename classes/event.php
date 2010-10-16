@@ -33,10 +33,10 @@ class EM_Event extends EM_Object{
 		'event_category_id' => array( 'name'=>'category_id', 'type'=>'%d' ),
 		'event_attributes' => array( 'name'=>'attributes', 'type'=>'%s' ),
 		'recurrence' => array( 'name'=>'recurrence', 'type'=>'%d' ),
-		'recurrence_interval' => array( 'name'=>'interval', 'type'=>'%d' ),
-		'recurrence_freq' => array( 'name'=>'freq', 'type'=>'%s' ),
-		'recurrence_byday' => array( 'name'=>'byday', 'type'=>'%s' ),
-		'recurrence_byweekno' => array( 'name'=>'byweekno', 'type'=>'%d' )
+		'recurrence_interval' => array( 'name'=>'interval', 'type'=>'%d' ), //every x day(s)/week(s)/month(s)
+		'recurrence_freq' => array( 'name'=>'freq', 'type'=>'%s' ), //daily,weekly,monthly?
+		'recurrence_byday' => array( 'name'=>'byday', 'type'=>'%s' ), //if weekly or monthly, what days of the week?
+		'recurrence_byweekno' => array( 'name'=>'byweekno', 'type'=>'%d' ) //if monthly which week (-1 is last)
 	);
 	
 	/**
@@ -98,9 +98,11 @@ class EM_Event extends EM_Object{
 				$this->location = new EM_Location ( $event );
 			}
 			//Sort out attributes
-			$event ['event_attributes'] = @unserialize($event ['event_attributes']);
-			$event ['event_attributes'] = (!is_array($event ['event_attributes'])) ?  array() : $event ['event_attributes'] ;
+			$event['event_attributes'] = @unserialize($event ['event_attributes']);
+			$event['event_attributes'] = (!is_array($event ['event_attributes'])) ?  array() : $event ['event_attributes'] ;
+			$event['recurrence_byday'] = ( $event['recurrence_byday'] == 7 ) ? 0:$event['recurrence_byday']; //Backward compatibility (since 3.0.3), using 0 makes more sense due to date() function
 			$this->to_object($event, true);
+			
 			//Add Contact Person
 			if($this->contactperson_id){
 				if($this->contactperson_id > 0){
@@ -112,7 +114,7 @@ class EM_Event extends EM_Object{
 				$this->contact = get_userdata($this->contactperson_id);
 			}
 			if( is_object($this->contact) ){
-	      		$this->contact->phone = get_user_meta($this->contact->ID, 'dbem_phone', true);
+	      		$this->contact->phone = get_metadata('user', $this->contact->ID, 'dbem_phone', true);
 			}
 			//Now, if this is a recurrence, get the recurring for caching to the $EM_Recurrences
 			if( $this->is_recurrence() && !array_key_exists($this->recurrence_id, $EM_Recurrences) ){
@@ -170,8 +172,12 @@ class EM_Event extends EM_Object{
 		$this->recurrence_id = ( is_numeric($_POST ['recurrence_id']) ) ? $_POST ['recurrence_id'] : 0 ;
 		if($_POST ['repeated_event']){
 			$this->recurrence = 1;
-			$this->freq = $_POST ['recurrence_freq'];
-			$this->byday = ($this->freq == 'weekly') ? implode ( ",", $_POST ['recurrence_bydays'] ) : $_POST ['recurrence_bydays'];
+			$this->freq = in_array($_POST['recurrence_freq'], array('daily','weekly','monthly')) ? $_POST['recurrence_freq']:'daily';
+			if($this->freq == 'weekly' && self::array_is_numeric($_POST ['recurrence_bydays'])){
+				$this->byday = implode ( ",", $_POST ['recurrence_bydays'] );	
+			}elseif($this->freq == 'monthly'){
+				$this->byday = $_POST ['recurrence_byday'];
+			}
 			$this->interval = ($_POST ['recurrence_interval'] == "") ? 1 : $_POST ['recurrence_interval'];
 			$this->byweekno = $_POST ['recurrence_byweekno'];
 		}
@@ -526,7 +532,7 @@ class EM_Event extends EM_Object{
 				$event_string = str_replace($result, dbem_ascii_encode($this->contact->user_email), $event_string );
 			}
 			if (preg_match('/#_CONTACTPHONE$/', $result)) {   
-	      		if( $this->contact->phone == ''){ $phone = __('N/A', 'dbem'); }
+	      		$phone = ( $this->contact->phone != '') ? $this->contact->phone : __('N/A', 'dbem');
 				$event_string = str_replace($result, $phone, $event_string );
 			}
 		
@@ -616,6 +622,7 @@ class EM_Event extends EM_Object{
 				$event['event_start_date'] = date("Y-m-d", $day);
 				$event['event_end_date'] = $event['event_start_date'];				
 				$event_saves[] = $wpdb->insert($wpdb->prefix.EVENTS_TBNAME, $event, $this->get_types($event));
+				//TODO should be EM_DEBUG, and do we really need it?
 				if( DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
 		 	}
 		 	return !in_array(false, $event_saves);
@@ -667,67 +674,108 @@ class EM_Event extends EM_Object{
 	}
 	
 	/**
-	 * Returns the days that match the recurrance array passed
+	 * Returns the days that match the recurrance array passed (unix timestamps)
 	 * @param array $recurrence
 	 * @return array
 	 */
 	function get_recurrence_days(){
 		if( $this->is_recurring() ){
-			$start_date = mktime(0, 0, 0, substr($this->start_date,5,2), substr($this->start_date,8,2), substr($this->start_date,0,4));
-			$end_date = mktime(0, 0, 0, substr($this->end_date,5,2), substr($this->end_date,8,2), substr($this->end_date,0,4));   
 			
-			$last_week_start = array(25, 22, 25, 24, 25, 24, 25, 25, 24, 25, 24, 25);			
-			$weekdays = explode(",", $this->byday);
-			
-			$weekcounter = 0;
-			$daycounter = 0; 
-			$counter = 0;
-			$cycle_date = $start_date;     
+			$start_date = strtotime($this->start_date);
+			$end_date = strtotime($this->end_date);  
+					
+			$weekdays = explode(",", $this->byday); //what days of the week (or if monthly, one value at index 0)
+			 
 			$matching_days = array(); 
-			$aDay = 86400;  // a day in seconds  
-		 
-		  
-			while (date("d-M-Y", $cycle_date) != date('d-M-Y', $end_date + $aDay)) {
-		 	 //echo (date("d-M-Y", $cycle_date));
-				$style = "";
-				$monthweek =  floor(((date("d", $cycle_date)-1)/7))+1;   
-				 if($this->freq == 'daily') {
-						
-						if($counter % $this->interval == 0 )
-							array_push($matching_days, $cycle_date);
-						$counter++;
-				}
-			    $weekday_num = date("w", $cycle_date); if ($weekday_num == 0) { $weekday_num = 7; }
-				if (in_array( $weekday_num, $weekdays )) {
-					$monthday = date("j", $cycle_date); 
-					$month = date("n", $cycle_date);      
-		
-					if($this->freq == 'weekly') {
-					
-						if($counter % $this->interval == 0 )
-							array_push($matching_days, $cycle_date);
-						$counter++;
-					}
-					if($this->freq == 'monthly') { 
-					
-				   		if(($this->byweekno == -1) && ($monthday >= $last_week_start[$month-1])) {
-							if ($counter % $this->interval == 0)
-								array_push($matching_days, $cycle_date);
-							$counter++;
-						} elseif($this->byweekno == $monthweek) {
-							if ($counter % $this->interval == 0)
-								array_push($matching_days, $cycle_date);
-							$counter++;
-					  }
-					}
-					$weekcounter++;
-			  }
-				$daycounter++;
-			  $cycle_date = $cycle_date + $aDay;         //adding a day       
-		
-			}   
+			$aDay = 86400;  // a day in seconds
+			$aWeek = $aDay * 7;		 
 				
-			return $matching_days ;
+			//TODO can this be optimized?
+			switch ( $this->freq ){
+				case 'daily':
+					//If daily, it's simple. Get start date, add interval timestamps to that and create matching day for each interval until end date.
+					$current_date = $start_date;
+					while( $current_date <= $end_date ){
+						$matching_days[] = $current_date;
+						$current_date = $current_date + ($aDay * $this->interval);
+					}
+					break;
+				case 'weekly':
+					//sort out week one, get starting days and then days that match time span of event (i.e. remove past events in week 1)
+					$start_of_week = get_option('start_of_week'); //Start of week depends on wordpress
+					//first, get the start of this week as timestamp
+					$event_start_day = date('w', $start_date);
+					$offset = 0;
+					if( $event_start_day > $start_of_week ){
+						$offset = $event_start_day - $start_of_week; //x days backwards
+					}elseif( $event_start_day < $start_of_week ){
+						$offset = $start_of_week;
+					}
+					$start_week_date = $start_date - ( ($event_start_day - $start_of_week) * $aDay );
+					//then get the timestamps of weekdays during this first week, regardless if within event range
+					$start_weekday_dates = array(); //Days in week 1 where there would events, regardless of event date range
+					for($i = 0; $i < 7; $i++){
+						$weekday_date = $start_week_date+($aDay*$i); //the date of the weekday we're currently checking
+						$weekday_day = date('w',$weekday_date); //the day of the week we're checking, taking into account wp start of week setting
+						if( in_array( $weekday_day, $weekdays) ){
+							$start_weekday_dates[] = $weekday_date; //it's in our starting week day, so add it
+						}
+					}					
+					//for each day of eventful days in week 1, add 7 days * weekly intervals
+					foreach ($start_weekday_dates as $weekday_date){
+						//Loop weeks by interval until we reach or surpass end date
+						while($weekday_date <= $end_date){
+							if( $weekday_date >= $start_date && $weekday_date <= $end_date ){
+								$matching_days[] = $weekday_date;
+							}
+							$weekday_date = $weekday_date + ($aWeek *  $this->interval);
+						}
+					}//done!
+					break;  
+				case 'monthly':
+					//loop months starting this month by intervals
+					$current_arr = getdate($start_date);
+					$end_arr = getdate($end_date);
+					$end_month_date = strtotime( date('Y-m-t', $end_date) ); //End date on last day of month
+					$current_date = strtotime( date('Y-m-1', $start_date) ); //Start date on first day of month
+					while( $current_date <= $end_month_date ){
+						$last_day_of_month = date('t', $current_date);
+						//Now find which day we're talking about
+						$current_week_day = date('w',$current_date);
+						$matching_month_days = array();
+						//Loop through days of this years month and save matching days to temp array
+						for($day = 1; $day <= $last_day_of_month; $day++){
+							if($current_week_day == $this->byday){
+								$matching_month_days[] = $day;
+							}
+							$current_week_day = ($current_week_day < 6) ? $current_week_day+1 : 0;							
+						}
+						//Now grab from the array the x day of the month
+						$matching_day = ($this->byweekno > 0) ? $matching_month_days[$this->byweekno-1] : array_pop($matching_month_days);
+						$matching_date = strtotime(date('Y-m',$current_date).'-'.$matching_day);
+						if($matching_date >= $start_date && $matching_date <= $end_date){
+							$matching_days[] = $matching_date;
+						}
+						//add the number of days in this month to make start of next month
+						$current_arr['mon'] += $this->interval;
+						if($current_arr['mon'] > 12){
+							//FIXME this won't work if interval is more than 12
+							$current_arr['mon'] = $current_arr['mon'] - 12;
+							$current_arr['year']++;
+						}
+						$current_date = strtotime("{$current_arr['year']}-{$current_arr['mon']}-1"); 
+					}
+					break;
+			}	
+			sort($matching_days);
+			//TODO delete this after testing
+			/*Delete*/
+			$test_dates = array();
+			foreach($matching_days as $matching_day){
+				$test_dates[] = date('d/m/Y', $matching_day);
+			}	
+			/*end delete*/		
+			return $matching_days;
 		}
 	}
 	
@@ -740,7 +788,7 @@ class EM_Event extends EM_Object{
 		global $EM_Recurrences;
 		if( $this->is_individual() ) return false;
 		$recurrence = $EM_Recurrences[$this->recurrence_id]->to_array();
-		$weekdays_name = array(__('Monday'),__('Tuesday'),__('Wednesday'),__('Thursday'),__('Friday'),__('Saturday'),__('Sunday'));
+		$weekdays_name = array(__('Sunday'),__('Monday'),__('Tuesday'),__('Wednesday'),__('Thursday'),__('Friday'),__('Saturday'));
 		$monthweek_name = array('1' => __('the first %s of the month', 'dbem'),'2' => __('the second %s of the month', 'dbem'), '3' => __('the third %s of the month', 'dbem'), '4' => __('the fourth %s of the month', 'dbem'), '-1' => __('the last %s of the month', 'dbem'));
 		$output = sprintf (__('From %1$s to %2$s', 'dbem'),  $recurrence['event_start_date'], $recurrence['event_end_date']).", ";
 		if ($recurrence['recurrence_freq'] == 'daily')  {
@@ -754,7 +802,7 @@ class EM_Event extends EM_Object{
 			$weekday_array = explode(",", $recurrence['recurrence_byday']);
 			$natural_days = array();
 			foreach($weekday_array as $day)
-				array_push($natural_days, $weekdays_name[$day-1]);
+				array_push($natural_days, $weekdays_name[$day]);
 			$output .= implode(" and ", $natural_days);
 			if ($recurrence['recurrence_interval'] > 1 ) {
 				$freq_desc = ", ".sprintf (__("every %s weeks", 'dbem'), $recurrence['recurrence_interval']);

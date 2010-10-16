@@ -1,5 +1,5 @@
 <?php
-function dbem_people_page() {
+function em_people_page() {
 	// Managing AJAX booking removal
  	if(isset($_GET['action']) && $_GET['action'] == 'remove_booking') {
 		if(isset($_POST['booking_id'])){
@@ -9,14 +9,14 @@ function dbem_people_page() {
 	}
 	?> 
 	<div class='wrap'> 
-	<div id="icon-users" class="icon32"><br/></div>
-	<h2>People</h2>
-	<?php dbem_people_table(); ?>
+		<div id="icon-users" class="icon32"><br/></div>
+		<h2>People</h2>
+		<?php em_people_table(); ?>
 	</div>
 	<?php
 } 
 
-function dbem_printable_booking_report() {
+function em_printable_booking_report() {
 	global $EM_Event;
 	if(isset($_GET['action']) && $_GET['action'] == 'printable' && is_object($EM_Event)){
 		?>
@@ -70,9 +70,9 @@ function dbem_printable_booking_report() {
 		die();
 	}
 } 
-add_action('init', 'dbem_printable_booking_report');
+add_action('init', 'em_printable_booking_report');
 
-function dbem_people_table() {
+function em_people_table() {
 	$EM_People = EM_People::get();
 	if (count($EM_People) < 1 ) {
 		_e("No people have responded to your events yet!", 'dbem');
@@ -114,10 +114,10 @@ function dbem_people_table() {
  * @param $array
  * @return array
  */
-function dbem_contact_methods($array){
+function em_contact_methods($array){
 	$array['dbem_phone'] = __('Phone','dbem') . ' <span class="description">('. __('Events Manager','dbem') .')</span>';
 	return $array;
 }
-add_filter( 'user_contactmethods' , 'dbem_contact_methods' , 10 , 1 );
+add_filter( 'user_contactmethods' , 'em_contact_methods' , 10 , 1 );
 
 ?>

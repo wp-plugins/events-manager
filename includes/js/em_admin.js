@@ -81,7 +81,9 @@ jQuery(document).ready( function($) {
 		});
 		$("#localised-end-date").datepicker({
 			altField: "#end-date-to-submit", 
-			altFormat: "yy-mm-dd"
+			altFormat: "yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
 		});
 		if( $('#date-to-submit').val() != '' ){
 			date_dateFormat = $("#localised-date").datepicker('option', 'dateFormat');
