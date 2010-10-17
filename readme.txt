@@ -108,9 +108,14 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 2. The events management page.
 3. The Events Manager Options page.
 
+== Upgrade Notice ==
+
+= 3.0.3 =
+This fixes some recurrence issues along with most other bugs we've been made aware of.
+
 == Change Log ==
 
-=3.0.3=
+= 3.0.3 =
 * RSS Showing up again
 * Fixed some reported fatal errors
 * Added locations widget
@@ -121,15 +126,15 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * rewrote recurrence code from scratch
 * got rid of most php notices
 
-=3.0.2=
+= 3.0.2 =
 * Recruccence bugfix
 
-=3.0.1=
+= 3.0.1 =
 * Fixed spelling typos
 * Fixed warnings for bad location image uploads (e.g. too big etc.)
 * Fixed error for #_EXCERPT not showing
 
-=3.0=
+= 3.0 =
 * Refactored all the underlying achitecture, to make it object oriented. Now classes and templates are separate.    
 * Merged the events and recurrences tables                                                   
 * Tables migration from dbem to em (to provide a fallback in case the previous merge goes wrong)
