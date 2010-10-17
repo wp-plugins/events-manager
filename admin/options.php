@@ -1,5 +1,5 @@
 <?php
-// Function composing the options subpanel
+//Function composing the options subpanel
 function em_options_save(){
 	if( current_user_can('activate_plugins') && !empty($_POST['em-submitted']) ){
 		//Build the array of options here
@@ -94,6 +94,7 @@ function dbem_options_subpanel() {
 					//Rest
 					dbem_options_radio_binary ( __( 'Show events page in lists?', 'dbem' ), 'dbem_list_events_page', __( 'Check this option if you want the events page to appear together with other pages in pages lists.', 'dbem' ) ); 
 					dbem_options_radio_binary ( __( 'Display calendar in events page?', 'dbem' ), 'dbem_display_calendar_in_events_page', __( 'This options allows to display the calendar in the events page, instead of the default list. It is recommended not to display both the calendar widget and a calendar page.','dbem' ) );
+					dbem_options_radio_binary ( __( 'Rewrite titles on event pages?', 'dbem' ), 'dbem_rewrite_the_title', __( "Some wordpress themes don't follow best practices when generating menus, if your menus aren't working correctly on the event pages, set this to No.",'dbem' ) );
 					echo $save_button;
 					?>				
 				</table>

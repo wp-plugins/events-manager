@@ -1,6 +1,7 @@
 <?php
 function em_install() {
-	if( EM_VERSION > get_option('dbem_version') ){
+	$old_version = get_option('dbem_version');
+	if( EM_VERSION > $old_version || $old_version == '' ){
 	 	// Creates the events table if necessary
 		em_create_events_table(); 
 		em_create_locations_table();
@@ -10,7 +11,6 @@ function em_install() {
 		em_add_options();
 		
 		//Migrate?
-		$old_version = get_option('dbem_version');
 		if( $old_version < 2.3 && $old_version != '' ){
 			em_migrate_to_new_tables();
 			em_import_verify();
@@ -209,7 +209,9 @@ function em_add_options() {
 	'dbem_attributes_enabled' => DEFAULT_ATTRIBUTES_ENABLED,
 	'dbem_recurrence_enabled'=> DEFAULT_RECURRENCE_ENABLED,
 	'dbem_rsvp_enabled'=> DEFAULT_RSVP_ENABLED,
-	'dbem_categories_enabled'=> DEFAULT_CATEGORIES_ENABLED);
+	'dbem_categories_enabled'=> DEFAULT_CATEGORIES_ENABLED,
+	'dbem_rewrite_the_title'=> DEFAULT_REWRITE_THE_TITLE
+	);
 	
 	foreach($dbem_options as $key => $value){
 		add_option($key, $value);

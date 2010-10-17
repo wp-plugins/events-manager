@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 3.0.3
+Version: 3.0.4
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini, Marcus Sykes
@@ -87,7 +87,7 @@ if( is_admin() ){
 
 
 // Setting constants
-define('EM_VERSION', 3.02); //self expanatory
+define('EM_VERSION', 3.04); //self expanatory
 define('DBEM_CATEGORIES_TBNAME', 'em_categories'); //TABLE NAME
 define('EVENTS_TBNAME','em_events'); //TABLE NAME
 define('RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME   
@@ -100,7 +100,7 @@ define('MIN_CAPABILITY', 'edit_posts');	// Minimum user level to access calendar
 define('SETTING_CAPABILITY', 'activate_plugins');	// Minimum user level to access calendars
 define('DEFAULT_LIST_DATE_TITLE', __('Events', 'dbem').' - #j #M #y');
 define('DEFAULT_EVENT_LIST_ITEM_FORMAT', '<li>#j #M #Y - #H:#i<br/> #_LINKEDNAME<br/>#_TOWN </li>');
-define('DEFAULT_SINGLE_EVENT_FORMAT', '<p>#j #M #Y - #H:#i</p><p>#_TOWN</p>'); 
+define('DEFAULT_SINGLE_EVENT_FORMAT', '<h3>#_NAME</h3><p>#j #M #Y - #H:#i</p><p>#_TOWN</p>'); 
 define('DEFAULT_EVENTS_PAGE_TITLE',__('Events','dbem') ) ;
 define('DEFAULT_EVENT_PAGE_TITLE_FORMAT', '#_NAME'); 
 define('DEFAULT_RSS_DESCRIPTION_FORMAT',"#j #M #y - #H:#i <br/>#_LOCATION <br/>#_ADDRESS <br/>#_TOWN");
@@ -127,6 +127,7 @@ define('DEFAULT_ATTRIBUTES_ENABLED', true);
 define('DEFAULT_RECURRENCE_ENABLED', true);
 define('DEFAULT_RSVP_ENABLED', true);
 define('DEFAULT_CATEGORIES_ENABLED', true);
+define('DEFAULT_REWRITE_THE_TITLE', false);
        
 // obsolete tables
 define('OLD_EVENTS_TBNAME','dbem_events') ; 
