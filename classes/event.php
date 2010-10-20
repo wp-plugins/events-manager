@@ -569,7 +569,7 @@ class EM_Event extends EM_Object{
 				$date = 'start_date';
 				$offset = 3;
 			}
-			if( $date == 'event_end_date' && $this->$date == $this->start_date ){
+			if( $date == 'end_date' && $this->$date == $this->start_date ){
 				$event_string = str_replace($result, '', $event_string);
 			}else{
 				$event_string = str_replace($result, mysql2date(substr($result, $offset, (strlen($result)-($offset+1)) ), $this->$date),$event_string );

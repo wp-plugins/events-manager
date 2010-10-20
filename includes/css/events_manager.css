@@ -120,7 +120,8 @@ table#dbem-location-data th {
 }          
 #dbem-location-map img {
 	max-width: none;
-}                  
+}
+#em-map-balloon #content { width:auto }
             
 
 table.dbem-calendar-table td {

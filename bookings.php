@@ -29,7 +29,7 @@ function em_actions_bookings() {
 			$EM_Person = new EM_Person();
 			if( $EM_Person->get(array('person_name' => $_POST['person_name'], 'person_email' => $_POST['person_email'])) ){
 				$deleted = 0;
-				foreach($EM_Event->get_bookings()->get_bookings() as $EM_Booking){
+				foreach($EM_Event->get_bookings()->bookings as $EM_Booking){
 					if($EM_Booking->person->id == $EM_Person->id ){
 						$EM_Booking->delete();
 						$deleted++;
