@@ -17,7 +17,7 @@ class EM_Object {
 		//Create minimal defaults array, merge it with supplied defaults array
 		$super_defaults = array(
 			'limit' => false, 
-			'scope' => 'all', 
+			'scope' => 'future', 
 			'order' => 'ASC', 
 			'format' => '', 
 			'category' => 0, 

@@ -402,163 +402,104 @@ class EM_Event extends EM_Object{
 	 */	
 	function output($format, $target="html") {
 	 	$event_string = $format;
-		preg_match_all("/#@?_?[A-Za-z0-9]+/", $format, $placeholders);
+	 	preg_match_all("/#@?_?[A-Za-z0-9]+/", $format, $placeholders);
 		foreach($placeholders[0] as $result) {
-			if (preg_match('/#_EDITEVENTLINK/', $result)) { 
-				$link = "";
-				if(is_user_logged_in()){
-					$link = "<a href=' ".get_bloginfo('wpurl')."/wp-admin/edit.php?page=events-manager/events-manager.php&action=edit_event&event_id=".$this->id."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
-					
-				}
-				$event_string = str_replace($result, $link , $event_string );		
-			}
-			if (preg_match('/#_24HSTARTTIME/', $result)) { 
-				$time = substr($this->start_time, 0,5);
-				$event_string = str_replace($result, $time , $event_string );		
-			}
-			if (preg_match('/#_24HENDTIME/', $result)) { 
-				$time = substr($this->end_time, 0,5);
-				$event_string = str_replace($result, $time , $event_string );		
-			}			
-			if (preg_match('/#_12HSTARTTIME/', $result)) {
-				$AMorPM = "AM"; 
-				$hour = substr($this->start_time, 0,2);   
-				$minute = substr($this->start_time, 3,2);
-				if ($hour > 12) {
-					$hour = $hour -12;
-					$AMorPM = "PM";
-				}
-				$time = "$hour:$minute $AMorPM";
-				$event_string = str_replace($result, $time , $event_string );		
-			}
-			if (preg_match('/#_12HENDTIME/', $result)) {
-				$AMorPM = "AM"; 
-				$hour = substr($this->end_time, 0,2);   
-				$minute = substr($this->end_time, 3,2);
-				if ($hour > 12) {
-					$hour = $hour -12;
-					$AMorPM = "PM";
-				}
-				$time = "$hour:$minute $AMorPM";
-				$event_string = str_replace($result, $time , $event_string );		
-			}			
-			if (preg_match('/#_ADDBOOKINGFORM/', $result)) {
-			 	$rsvp_is_active = get_option('dbem_rsvp_enabled'); 
-				if ($this->rsvp) {
-				   $rsvp_add_module .= em_add_booking_form();
-				} else {
-					$rsvp_add_module .= "";
-				}
-			 	$event_string = str_replace($result, $rsvp_add_module , $event_string );
-			}
-			if (preg_match('/#_REMOVEBOOKINGFORM/', $result)) {
-			 	$rsvp_is_active = get_option('dbem_rsvp_enabled'); 
-				if ($this->rsvp) {
-				   $rsvp_delete_module .= em_delete_booking_form();
-				} else {
-					$rsvp_delete_module .= "";
-				}
-			 	$event_string = str_replace($result, $rsvp_delete_module , $event_string );
-			}
-			if (preg_match('/#_AVAILABLESEATS/', $result)) {
-			 	$rsvp_is_active = get_option('dbem_rsvp_enabled');
-				if ($this->rsvp) {
-				   $availble_seats = $this->get_bookings()->get_available_seats();
-				} else {
-					$availble_seats = "0";
-				}
-			 	$event_string = str_replace($result, $availble_seats , $event_string );
-			} 
-			if (preg_match('/#_LINKEDNAME/', $result)) {
-				$events_page_id = get_option('dbem_events_page');
-				$event_page_link = get_permalink($events_page_id);
-				if (stristr($event_page_link, "?"))
-					$joiner = "&amp;";
-				else
-					$joiner = "?";
-				$event_string = str_replace($result, "<a href='".get_permalink($events_page_id).$joiner."event_id=".$this->id."'   title='".$this->name."'>".$this->name."</a>" , $event_string );
-			} 
-			if (preg_match('/#_EVENTPAGEURL(\[(.+\)]))?/', $result)) {
-				$events_page_id = get_option('dbem_events_page');
-				$event_page_link = get_permalink($events_page_id);
-				if (stristr($event_page_link, "?"))
-					$joiner = "&amp;";
-				else
-					$joiner = "?";
-				$event_string = str_replace($result, get_permalink($events_page_id).$joiner."event_id=".$this->id , $event_string );
-			}	
-		 	
-		 	if (preg_match('/#_(NAME|NOTES|SEATS|EXCERPT)/', $result)) {
-				$field = ltrim(strtolower($result), "#_");
-			 	$field_value = $this->$field;      
-				
-				if ($field == "notes" || $field == "excerpt") {
-					if ($target == "html"){
-						//If excerpt, we use more link text
-						if($field == "excerpt"){
-							$matches = explode('<!--more-->', $this->notes);
-							$field_value = $matches[0];
-							$field_value = apply_filters('dbem_notes_excerpt', $field_value);
+			$match = true;
+			$replace = '';
+			switch( $result ){
+				case '#_EDITEVENTLINK':
+					if(is_user_logged_in()){
+						$replace = "<a href=' ".get_bloginfo('wpurl')."/wp-admin/edit.php?page=events-manager/events-manager.php&action=edit_event&event_id=".$this->id."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+					}	 
+					break;
+				case '#_24HSTARTTIME':
+				case '#_24HENDTIME':
+					$time = ($result == '#_24HSTARTTIME') ? $this->start_time:$this->end_time;
+					$replace = substr($time, 0,5);
+					break;
+				case '#_12HSTARTTIME':
+				case '#_12HENDTIME':
+					$time = ($result == '#_12HSTARTTIME') ? $this->start_time:$this->end_time;
+					$replace = date('g:i A', strtotime($time));
+					break;
+				case '#_ADDBOOKINGFORM':
+				case '#_REMOVEBOOKINGFORM': 
+				case '#_BOOKINGFORM': 
+					if ($this->rsvp && get_option('dbem_rsvp_enabled')){
+						if($result == '#_BOOKINGFORM'){
+							$replace = em_add_booking_form().em_delete_booking_form();
 						}else{
-							$field_value = apply_filters('dbem_notes', $field_value);
+							$replace = ($result == '#_ADDBOOKINGFORM') ? em_add_booking_form():em_delete_booking_form();
 						}
-						//$field_value = apply_filters('the_content', $field_value); - chucks a wobbly if we do this.
-					}else{
-					  if ($target == "map"){
-						$field_value = apply_filters('dbem_notes_map', $field_value);
-					  } else {
-			  			if($field == "excerpt"){
-							$matches = explode('<!--more-->', $this->notes);
-							$field_value = htmlentities($matches[0]);
-							$field_value = apply_filters('dbem_notes_rss', $field_value);
-						}else{
-							$field_value = apply_filters('dbem_notes_rss', $field_value);
-						}
-						$field_value = apply_filters('the_content_rss', $field_value);
-					  }
 					}
-			  	} else {
-					if ($target == "html"){    
-						$field_value = apply_filters('dbem_general', $field_value); 
-			  		}else{
-						$field_value = apply_filters('dbem_general_rss', $field_value);
-			  		}
-				}
-				$event_string = str_replace($result, $field_value , $event_string ); 
-		 	}
-		 	if (preg_match('/#_(CONTACTNAME|CONTACTPERSON)$/', $result)) {
-				$event_string = str_replace($result, $this->contact->display_name, $event_string );
+					break;
+				case '#_AVAILABLESEATS':
+					if ($this->rsvp && get_option('dbem_rsvp_enabled')) {
+					   $replace = $this->get_bookings()->get_available_seats();
+					} else {
+						$replace = "0";
+					}
+					break;
+				case '#_CATEGORY':
+		      		$category = EM_Category::get($this->category_id);
+					$replace = $category['category_name'];
+					break;
+				case '#_LINKEDNAME':
+					$events_page_id = get_option('dbem_events_page');
+					$event_page_link = get_permalink($events_page_id);
+					$joiner = (stristr($event_page_link, "?")) ? "&amp;":"?";
+					$event_link = get_permalink($events_page_id).$joiner."event_id=".$this->id;
+					if($result == '#_LINKEDNAME'){
+						$replace = "<a href='{$event_link}' title='{$this->name}'>{$this->name}</a>";
+					}else{
+						$replace = $event_link;	
+					}
+					break;
+				case '#_CONTACTNAME':
+				case '#_CONTACTPERSON':
+					$replace = $this->contact->display_name;
+					break;
+				case '#_CONTACTEMAIL':
+					$replace = dbem_ascii_encode($this->contact->user_email);
+					break;
+				case '#_CONTACTPHONE':
+		      		$replace = ( $this->contact->phone != '') ? $this->contact->phone : __('N/A', 'dbem');
+					break;
+				case '#_NOTES':
+				case '#_EXCERPT':
+					//SEE AT BOTTOM FOR OLD FILTERS FROM 2.x
+					$replace = $this->notes;
+					if($result == "#_EXCERPT"){
+						$matches = explode('<!--more-->', $this->notes);
+						$replace = $matches[0];
+					}
+					break;
+				case '#_NAME':
+					$replace = $this->name;
+					break;
+				case '#_SEATS':
+					$replace = $this->seats;
+					break;
+				default:
+					$match = false;
+					break;
 			}
-			if (preg_match('/#_CONTACTEMAIL$/', $result)) {         
-				$event_string = str_replace($result, dbem_ascii_encode($this->contact->user_email), $event_string );
+			if($match){ //if true, we've got a placeholder that needs replacing
+				//TODO FILTER - placeholder filter
+				$replace = apply_filters('em_placeholder', $replace, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+				$event_string = str_replace($result, $replace , $event_string );
 			}
-			if (preg_match('/#_CONTACTPHONE$/', $result)) {   
-	      		$phone = ( $this->contact->phone != '') ? $this->contact->phone : __('N/A', 'dbem');
-				$event_string = str_replace($result, $phone, $event_string );
-			}
-		
-			// matches all PHP START date placeholders
-			if (preg_match('/^#[dDjlNSwzWFmMntLoYy]$/', $result)) {
-				$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $this->start_date),$event_string );
+		}
+		//Time placeholders
+		foreach($placeholders[0] as $result) {
+			// matches all PHP START date and time placeholders
+			if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
+				$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $this->start_date.$this->start_time),$event_string );
 			}
 			// matches all PHP END time placeholders for endtime
-			if (preg_match('/^#@[dDjlNSwzWFmMntLoYy]$/', $result)) {
-				$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $this->end_date), $event_string ); 
-		 	}
-			// matches all PHP START time placeholders
-			if (preg_match('/^#[aABgGhHisueIOPTZcrU]$/', $result)) {
-				$event_string = str_replace($result, mysql2date(ltrim($result, "#"), "2000-10-10 ".$this->start_time),$event_string );
-			}
-			// matches all PHP END time placeholders
-			if (preg_match('/^#@[aABgGhHisueIOPTZcrU]$/', $result)) {
-				$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), "2000-10-10 ".$this->end_time),$event_string );
-			}			
-			//Add a placeholder for categories
-		 	if (preg_match('/^#_CATEGORY$/', $result)) {
-	      		$category = EM_Category::get($this->category_id);
-				$event_string = str_replace($result, $category['category_name'], $event_string );
-			}
-			     
+			if (preg_match('/^#@[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
+				$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $this->end_date.$this->end_time), $event_string ); 
+		 	}    
 		}
 		//Time place holder that doesn't show if empty.
 		preg_match_all('/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/', $format, $results);
@@ -852,4 +793,35 @@ class EM_Event extends EM_Object{
 		return $event;
 	}
 }
+
+
+/**
+ * This is a temporary filter function which mimicks the old filters in the old 2.x placeholders function
+ * @param unknown_type $replace
+ * @param unknown_type $placeholder
+ * @param unknown_type $target
+ * @return mixed
+ */
+function em_placeholder_targets($replace,$placeholder,$target){
+	if( $placeholder == "#_EXCERPT" && $target == 'html' ){
+		$replace = apply_filters('dbem_notes_excerpt', $replace);
+	}elseif( $placeholder == "#_NOTES" || $placeholder == "#_EXCERPT" ){
+		if($target == 'html'){
+			$replace = apply_filters('dbem_notes', $replace);
+		}elseif($target == 'map'){
+			$replace = apply_filters('dbem_notes_map', $replace);
+		}else{
+			$replace = apply_filters('dbem_notes_rss', $replace);
+			$replace = apply_filters('the_content_rss', $replace);
+		}
+	}elseif($placeholder == "#_NAME"){
+		if ($target == "html"){    
+			$replace = apply_filters('dbem_general', $replace); 
+	  	}else{
+			$replace = apply_filters('dbem_general_rss', $replace);
+	  	}				
+	}
+	return $replace;
+}
+add_filter('em_placeholder','em_placeholder_targets',1,3);
 ?>

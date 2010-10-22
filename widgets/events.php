@@ -43,7 +43,7 @@ class EM_Widget extends WP_Widget {
     		'scope' => 'future',
     		'order' => 'ASC',
     		'limit' => 5,
-    		'format' => DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT
+    		'format' => '#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul>'
     	);
     	foreach($defaults as $key => $value){
     		if($new_instance[$key] == ''){

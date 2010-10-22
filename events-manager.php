@@ -94,39 +94,10 @@ define('RECURRENCE_TBNAME','dbem_recurrence'); //TABLE NAME
 define('LOCATIONS_TBNAME','em_locations'); //TABLE NAME  
 define('BOOKINGS_TBNAME','em_bookings'); //TABLE NAME
 define('PEOPLE_TBNAME','em_people'); //TABLE NAME  
-define('DEFAULT_EVENT_PAGE_NAME', 'Events');   
 define('DBEM_PAGE','<!--DBEM_EVENTS_PAGE-->'); //EVENTS PAGE
 define('MIN_CAPABILITY', 'edit_posts');	// Minimum user level to access calendars
-define('SETTING_CAPABILITY', 'activate_plugins');	// Minimum user level to access calendars
-define('DEFAULT_LIST_DATE_TITLE', __('Events', 'dbem').' - #j #M #y');
-define('DEFAULT_EVENT_LIST_ITEM_FORMAT', '<li>#j #M #Y - #H:#i<br/> #_LINKEDNAME<br/>#_TOWN </li>');
-define('DEFAULT_SINGLE_EVENT_FORMAT', '<h3>#_NAME</h3><p>#j #M #Y - #H:#i</p><p>#_TOWN</p>'); 
-define('DEFAULT_EVENTS_PAGE_TITLE',__('Events','dbem') ) ;
-define('DEFAULT_EVENT_PAGE_TITLE_FORMAT', '#_NAME'); 
-define('DEFAULT_RSS_DESCRIPTION_FORMAT',"#j #M #y - #H:#i <br/>#_LOCATION <br/>#_ADDRESS <br/>#_TOWN");
-define('DEFAULT_RSS_TITLE_FORMAT',"#_NAME");
-define('DEFAULT_MAP_TEXT_FORMAT', '<strong>#_LOCATION</strong><p>#_ADDRESS</p><p>#_TOWN</p>');     
-define('DEFAULT_WIDGET_EVENT_LIST_ITEM_FORMAT','#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul>');
-define('DEFAULT_WIDGET_LOCATION_LIST_ITEM_FORMAT','#_LOCATIONLINK<ul><li>#_ADDRESS</li><li>#_TOWN</li></ul>');
-define('DEFAULT_NO_EVENTS_MESSAGE', __('No events', 'dbem'));  
-define('DEFAULT_SINGLE_LOCATION_FORMAT', '<p>#_ADDRESS</p><p>#_TOWN</p>'); 
-define('DEFAULT_LOCATION_PAGE_TITLE_FORMAT', '#_NAME'); 
-define('DEFAULT_LOCATION_BALOON_FORMAT', "<strong>#_NAME</strong><br/>#_ADDRESS - #_TOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>");
-define('DEFAULT_LOCATION_EVENT_LIST_ITEM_FORMAT', "<li>#_NAME - #j #M #Y - #H:#i</li>");
-define('DEFAULT_LOCATION_LIST_ITEM_FORMAT','#_LOCATIONLINK<ul><li>#_ADDRESS</li><li>#_TOWN</li></ul>');
-define('DEFAULT_LOCATION_NO_EVENTS_MESSAGE', __('<li>No events in this location</li>', 'dbem'));
+define('SETTING_CAPABILITY', 'activate_plugins');	// Minimum user level to access calendars   
 define("IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
-define('DEFAULT_IMAGE_MAX_WIDTH', 700);  
-define('DEFAULT_IMAGE_MAX_HEIGHT', 700);  
-define('DEFAULT_IMAGE_MAX_SIZE', 204800); 
-define('DEFAULT_FULL_CALENDAR_EVENT_FORMAT', '<li>#_LINKEDNAME</li>');    
-define('DEFAULT_SMALL_CALENDAR_EVENT_TITLE_FORMAT', "#_NAME" );
-define('DEFAULT_SMALL_CALENDAR_EVENT_TITLE_SEPARATOR', ", ");  
-define('DEFAULT_USE_SELECT_FOR_LOCATIONS', false);      
-define('DEFAULT_ATTRIBUTES_ENABLED', true);
-define('DEFAULT_RECURRENCE_ENABLED', true);
-define('DEFAULT_RSVP_ENABLED', true);
-define('DEFAULT_CATEGORIES_ENABLED', true);
 //TODO reorganize how defaults are created, e.g. is it necessary to create false entries? They are false by default... less code, but maybe not verbose enough...
        
 // obsolete tables

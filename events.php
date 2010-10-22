@@ -65,7 +65,15 @@ function em_events_page_title($content) {
 			$events = EM_Events::get(array('limit'=>2,'scope'=>$_REQUEST['calendar_day']));
 			$event = $events[0];
 			if ( count($events) > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
-				$content =  $event->output( get_option ('dbem_list_date_title') );
+				//We only support dates for the calendar day list title, so we do a simple filter for the supplied calendar_day
+				$content = get_option ('dbem_list_date_title');
+				preg_match_all("/#[A-Za-z0-9]+/", $content, $placeholders);
+				foreach($placeholders[0] as $placeholder) {
+					// matches all PHP date and time placeholders
+					if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $placeholder)) {
+						$content = str_replace($placeholder, mysql2date(ltrim($placeholder, "#"), $_REQUEST['calendar_day']),$content );
+					}
+				}
 			}else{
 				$content =  $event->output( get_option('dbem_event_page_title_format') );
 			}

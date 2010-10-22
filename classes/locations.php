@@ -133,7 +133,8 @@ class EM_Locations extends EM_Object {
 	function get_default_search($args = array()){
 		$defaults = array(
 			'eventful' => false, //Locations that have an event (scope will also play a part here
-			'eventless' => false //Locations WITHOUT events, eventful takes precedence
+			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
+			'scope' => 'all'
 		);
 		$args['eventful'] = ($args['eventful'] == true);
 		$args['eventless'] = ($args['eventless'] == true);

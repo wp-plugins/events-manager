@@ -43,7 +43,7 @@ class EM_Locations_Widget extends WP_Widget {
     		'scope' => 'future',
     		'order' => 'ASC',
     		'limit' => 5,
-    		'format' => DEFAULT_WIDGET_LOCATION_LIST_ITEM_FORMAT
+    		'format' => '#_LOCATIONLINK<ul><li>#_ADDRESS</li><li>#_TOWN</li></ul>'
     	);
     	foreach($defaults as $key => $value){
     		if($new_instance[$key] == ''){
