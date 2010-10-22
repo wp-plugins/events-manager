@@ -210,7 +210,8 @@ function em_add_options() {
 	'dbem_recurrence_enabled'=> DEFAULT_RECURRENCE_ENABLED,
 	'dbem_rsvp_enabled'=> DEFAULT_RSVP_ENABLED,
 	'dbem_categories_enabled'=> DEFAULT_CATEGORIES_ENABLED,
-	'dbem_rewrite_the_title'=> DEFAULT_REWRITE_THE_TITLE
+	'dbem_disable_title_rewrites'=> false,
+	'dbem_title_html' => '<h2>#_PAGETITLE</h2>'
 	);
 	
 	foreach($dbem_options as $key => $value){

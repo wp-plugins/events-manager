@@ -127,7 +127,7 @@ define('DEFAULT_ATTRIBUTES_ENABLED', true);
 define('DEFAULT_RECURRENCE_ENABLED', true);
 define('DEFAULT_RSVP_ENABLED', true);
 define('DEFAULT_CATEGORIES_ENABLED', true);
-define('DEFAULT_REWRITE_THE_TITLE', false);
+//TODO reorganize how defaults are created, e.g. is it necessary to create false entries? They are false by default... less code, but maybe not verbose enough...
        
 // obsolete tables
 define('OLD_EVENTS_TBNAME','dbem_events') ; 

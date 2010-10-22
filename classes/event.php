@@ -480,6 +480,7 @@ class EM_Event extends EM_Object{
 			} 
 			if (preg_match('/#_EVENTPAGEURL(\[(.+\)]))?/', $result)) {
 				$events_page_id = get_option('dbem_events_page');
+				$event_page_link = get_permalink($events_page_id);
 				if (stristr($event_page_link, "?"))
 					$joiner = "&amp;";
 				else
