@@ -108,12 +108,12 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 2. The events management page.
 3. The Events Manager Options page.
 
-== Upgrade Notice ==
-
-= 3.0.3 =
-This fixes some recurrence issues along with most other bugs we've been made aware of.
-
 == Change Log ==
+
+= 3.0.4 =
+* Title rewriting workaround for themes where main menus are broken on events pages
+* Added option to show lists on calendar days regardless of whether there is only one event on that day.
+* added spanish translation
 
 = 3.0.3 =
 * RSS Showing up again
