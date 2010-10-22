@@ -546,7 +546,7 @@ class EM_Event extends EM_Object{
 				$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $this->end_date), $event_string ); 
 		 	}
 			// matches all PHP START time placeholders
-			if (preg_match('/^#[aABgGhHisueIOPTZcrU]$/', $result)) {   
+			if (preg_match('/^#[aABgGhHisueIOPTZcrU]$/', $result)) {
 				$event_string = str_replace($result, mysql2date(ltrim($result, "#"), "2000-10-10 ".$this->start_time),$event_string );
 			}
 			// matches all PHP END time placeholders

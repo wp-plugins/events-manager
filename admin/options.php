@@ -43,6 +43,17 @@ function dbem_options_subpanel() {
 					$(this).text(close_text);
 				} 
 			});
+			//For rewrite titles
+			$('input:radio[name=dbem_disable_title_rewrites]').live('change',function(){
+				checked_check = $('input:radio[name=dbem_disable_title_rewrites]:checked');
+				if( checked_check.val() == 1 ){
+					$('#dbem_title_html_row').show();
+				}else{
+					$('#dbem_title_html_row').hide();					
+				}
+			});
+			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');
+			
 		});
 	</script>
 	<div class="wrap">
