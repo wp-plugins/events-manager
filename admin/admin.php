@@ -1,17 +1,54 @@
 <?php
-//Admin javascript and style loading
+//Admin functions
+
+/**
+ * Generate warnings and notices in the admin area
+ */
+function em_admin_warnings() {
+	//If we're editing the events page show hello to new user
+	$events_page_id = get_option ( 'dbem_events_page' );
+	if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
+		// Disable Hello to new user if requested
+		update_option ( 'dbem_hello_to_user', 0 );
+	}else{
+		if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
+			$message = sprintf ( __ ( "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. ", 'dbem' ), 'admin.php?page=events-manager-options' );
+			$notice = "<div class='error'><p>$message</p></div>";
+			echo $notice;
+		}
+	}
+	//If events page couldn't be created
+	if( !empty($_GET['em_dismiss_events_page']) ){
+		update_option('dbem_dismiss_events_page',1);
+	}else{
+		if ( !get_page($events_page_id) && !get_option('dbem_dismiss_events_page') ){
+			$dismiss_link_joiner = ( count($_GET) > 0 ) ? '&amp;':'?';
+			$advice = sprintf ( __( 'Uh Oh! For some reason wordpress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">options page</a>. Sorry for the extra step! If you know what you are doing, you may have done this on purpose, if so <a href="%s">ignore this message</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1' );
+			?>
+			<div id="em_page_error" class="updated">
+				<p><?php echo $advice; ?></p>
+			</div>
+			<?php		
+		}
+	}
+}
+add_action ( 'admin_notices', 'em_admin_warnings' );
 
 /**
  * Called by admin_print_scripts-(hook|page) action, created when adding menu items in events-manager.php
  */
 function em_admin_load_scripts(){
+	//Add maps
 	if( get_option('dbem_gmap_is_active') ){
 		wp_enqueue_script('em-google-maps', 'http://maps.google.com/maps/api/js?sensor=false');	
 	}
-	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));
+	//Time Entry
+	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));	
+
 	//Load the UI items, currently date picker and autocomplete plus dependencies
 	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
 	wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/em_ui.js', array('jquery', 'jquery-ui-core'));
+	
 	//Date Picker Locale
 	$locale_code = substr ( get_locale (), 0, 2 );
 	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
@@ -19,6 +56,16 @@ function em_admin_load_scripts(){
 		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('em-ui-js'));
 	}
 	wp_enqueue_script('em-script', WP_PLUGIN_URL.'/events-manager/includes/js/em_admin.js', array('em-ui-js'));
+	
+	//TinyMCE Editor
+	add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 25 );
+	wp_enqueue_script('post');
+	if ( user_can_richedit() )
+		wp_enqueue_script('editor');
+	add_thickbox();
+	wp_enqueue_script('media-upload');
+	wp_enqueue_script('word-count');
+	wp_enqueue_script('quicktags');	
 }
 
 /**
@@ -26,7 +73,8 @@ function em_admin_load_scripts(){
  */
 function em_admin_load_styles() {
 	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
-	wp_enqueue_style('events-manager-admin', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css');
+	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css');
+	wp_enqueue_style('events-manager-admin', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager_admin.css');
 }
 
 /**

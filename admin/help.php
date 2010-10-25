@@ -2,7 +2,7 @@
 /**
  * Display function for the support page. here we can give links to forums and special upgrade instructions e.g. migration features 
  */
-function em_admin_support(){
+function em_admin_help(){
 	global $wpdb;
 	?>
 	<div class="wrap">

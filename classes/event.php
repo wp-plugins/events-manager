@@ -444,6 +444,7 @@ class EM_Event extends EM_Object{
 		      		$category = EM_Category::get($this->category_id);
 					$replace = $category['category_name'];
 					break;
+				case '#_EVENTPAGEURL':					
 				case '#_LINKEDNAME':
 					$events_page_id = get_option('dbem_events_page');
 					$event_page_link = get_permalink($events_page_id);
