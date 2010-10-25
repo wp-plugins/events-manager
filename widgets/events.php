@@ -19,16 +19,17 @@ class EM_Widget extends WP_Widget {
 	
 		$events = EM_Events::get($instance);
 		echo "<ul>";
+		$li_wrap = !preg_match('/^<li>/i', trim($instance['format']));
 		if ( count($events) > 0 ){
 			foreach($events as $event){				
-				if( strpos($instance['format'], '<li>') == 0 ){
+				if( $li_wrap ){
 					echo '<li>'. $event->output($instance['format']) .'</li>';
 				}else{
 					echo $event->output($instance['format']);
 				}
 			}
 		}else{
-			echo '<li>'._e('No events', 'dbem').'</li>';
+			echo '<li>'.__('No events', 'dbem').'</li>';
 		}
 		echo "</ul>";               
 		
@@ -43,7 +44,8 @@ class EM_Widget extends WP_Widget {
     		'scope' => 'future',
     		'order' => 'ASC',
     		'limit' => 5,
-    		'format' => '#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul>'
+    		'format' => '#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul>',
+    		'nolistwrap' => false
     	);
     	foreach($defaults as $key => $value){
     		if($new_instance[$key] == ''){

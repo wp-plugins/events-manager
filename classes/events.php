@@ -148,28 +148,5 @@ class EM_Events extends EM_Object {
 		$EM_Event_old = $EM_Event;
 		return $output;		
 	}
-	
-	/**
-	 * Takes the array and provides a clean array of search parameters, along with details
-	 * @param array $array
-	 * @return array
-	 */
-	function get_default_search($array = array()){
-		//TODO trim these defaults, the EM_Object will have some of these already
-		$defaults = array(
-			'limit' => false, 
-			'scope' => 'all', 
-			'order' => 'ASC', 
-			'format' => '', 
-			'category' => 0, 
-			'location' => 0, 
-			'offset'=>0, 
-			'recurrence'=>0, 
-			'recurring'=>false ,
-			'month'=>'', //If this is set, month must be set
-			'year'=>'' //If this is set, takes precedence over scope
-		);
-		return parent::get_default_search($defaults, $array);
-	}
 }
 ?>

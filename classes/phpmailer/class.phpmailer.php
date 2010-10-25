@@ -17,7 +17,7 @@
  * @author Brent R. Matzelle
  * @copyright 2001 - 2003 Brent R. Matzelle
  */
-class PHPMailer
+class EM_PHPMailer
 {
     /////////////////////////////////////////////////
     // PUBLIC VARIABLES
@@ -524,7 +524,7 @@ class PHPMailer
      * @return bool
      */
     function SmtpConnect() {
-        if($this->smtp == NULL) { $this->smtp = new SMTP(); }
+        if($this->smtp == NULL) { $this->smtp = new EM_SMTP(); }
 
         $this->smtp->do_debug = $this->SMTPDebug;
         $hosts = explode(";", $this->Host);

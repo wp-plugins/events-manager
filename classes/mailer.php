@@ -22,7 +22,7 @@ class EM_Mailer {
 	
 		if( preg_match('/^[_.0-9a-z-]+@([0-9a-z][0-9a-z-]+.)+[a-z]{2,3}$/i', $receiver) ){
 			$this->load_phpmailer();
-			$mail = new PHPMailer();
+			$mail = new EM_PHPMailer();
 			//$mail->SMTPDebug = true; 
 			$mail->ClearAllRecipients();
 			$mail->ClearAddresses();

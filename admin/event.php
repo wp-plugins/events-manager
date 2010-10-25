@@ -65,7 +65,7 @@ function dbem_event_form( $title ) {
 								<h3 class='hndle'><span>
 									<?php _e ( "Recurrence", 'dbem' ); ?>
 									</span></h3>
-								<div class="inside">
+									<div class="inside">
 									<?php //TODO add js warning if rescheduling, since all bookings are deleted ?>
 									<?php if ( !$EM_Event->id || $EM_Event->is_recurring() ) : ?>
 										<p>
@@ -192,12 +192,6 @@ function dbem_event_form( $title ) {
 																	<th scope='col'><?php _e('Spaces', 'dbem') ?></th>
 															 	</tr>
 															</thead>
-															<tfoot>
-																<tr>
-																	<th scope='row' colspan='2'><?php _e('Booked spaces','dbem') ?>:</th><td class='booking-result' id='booked-seats'><?php echo $booked_seats ?></td></tr>            
-														 			<tr><th scope='row' colspan='2'><?php _e('Available spaces','dbem') ?>:</th><td class='booking-result' id='available-seats'><?php echo $available_seats  ?></td>
-																</tr>
-															</tfoot>
 															<tbody>
 																<?php
 																foreach ($EM_Event->get_bookings()->bookings as $EM_Booking) { 
@@ -215,7 +209,17 @@ function dbem_event_form( $title ) {
 																	<?php
 																}
 														 		?>
-															</tbody>									
+															</tbody>
+															<tfoot>
+																<tr>
+																	<th scope='row' colspan='2'><?php _e('Booked spaces','dbem') ?>:</th>
+																	<td class='booking-result' id='booked-seats'><?php echo $booked_seats ?></td>
+																</tr>            
+														 		<tr>
+														 			<th scope='row' colspan='2'><?php _e('Available spaces','dbem') ?>:</th>
+														 			<td class='booking-result' id='available-seats'><?php echo $available_seats  ?></td>
+																</tr>
+															</tfoot>									
 												 		</table>
 												 	</div>
 													 		

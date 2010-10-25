@@ -21,7 +21,7 @@
  * @package PHPMailer
  * @author Chris Ryan
  */
-class SMTP
+class EM_SMTP
 {
     /**
      *  SMTP server port
@@ -54,7 +54,7 @@ class SMTP
      * @access public
      * @return void
      */
-    function SMTP() {
+    function EM_SMTP() {
         $this->smtp_conn = 0;
         $this->error = null;
         $this->helo_rply = null;

@@ -162,14 +162,17 @@ class EM_Bookings extends EM_Object{
 		// email specific placeholders
 		// TODO make placeholders for RSVP consistent, we shouldn't need some of these as they're on the main events output function
 		$placeholders = array(
-			'#_CONTACTEMAIL'=> $EM_Event->contact->user_email,
-			'#_RESPNAME' =>  $EM_Booking->person->name,
-			'#_RESPEMAIL' => $EM_Booking->person->email,
-			'#_RESPPHONE' => $EM_Booking->person->phone,
-			'#_SPACES' => $EM_Booking->seats,
-			'#_COMMENT' => $EM_Booking->comment,
-			'#_RESERVEDSPACES' => $this->get_booked_seats(),
-			'#_AVAILABLESPACES' => $this->get_available_seats()
+			'#_RESPNAME' =>  '#_BOOKINGNAME',//Depreciated
+			'#_RESPEMAIL' => '#_BOOKINGEMAIL',//Depreciated
+			'#_RESPPHONE' => '#_BOOKINGPHONE',//Depreciated
+			'#_SPACES' => '#_BOOKINGSPACES',//Depreciated
+			'#_COMMENT' => '#_BOOKINGCOMMENT',//Depreciated
+			'#_RESERVEDSPACES' => '#_BOOKEDSEATS',//Depreciated
+			'#_BOOKINGNAME' =>  $EM_Booking->person->name,
+			'#_BOOKINGEMAIL' => $EM_Booking->person->email,
+			'#_BOOKINGPHONE' => $EM_Booking->person->phone,
+			'#_BOOKINGSPACES' => $EM_Booking->seats,
+			'#_BOOKINGCOMMENT' => $EM_Booking->comment,
 		);		 
 		foreach($placeholders as $key => $value) {
 			$contact_body= str_replace($key, $value, $contact_body);  

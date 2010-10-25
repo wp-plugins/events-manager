@@ -114,6 +114,9 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * Title rewriting workaround for themes where main menus are broken on events pages
 * Added option to show lists on calendar days regardless of whether there is only one event on that day.
 * added spanish translation
+* fixed rsvp deletion issue
+* fixed potential phpmailer conflicts
+* CSS issue with maps fixed
 
 = 3.0.3 =
 * RSS Showing up again

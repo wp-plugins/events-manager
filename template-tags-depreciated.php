@@ -17,6 +17,12 @@
  * @return unknown_type
  */
 function dbem_get_events_list($limit = "10", $scope = "future", $order = "ASC", $format = '', $echo = 1, $category = '') {
+	if (strpos ( $limit, "=" )) {
+		// allows the use of arguments without breaking the legacy code
+		$defaults = EM_Events::get_default_search();		
+		$r = wp_parse_args ( $limit, $defaults );
+		extract ( $r, EXTR_SKIP );
+	}
 	$return = EM_Events::output(array('limit'=>$limit, 'scope'=>$scope, 'order'=>$order, 'format'=>$format, 'category'=>$category));
 	if( $echo ) echo $return;
 	return $return;
@@ -33,7 +39,6 @@ function dbem_get_events_page($justurl = 0, $echo = 1, $text = '') {
 	if (strpos ( $justurl, "=" )) {
 		// allows the use of arguments without breaking the legacy code
 		$defaults = array ('justurl' => 0, 'text' => '', 'echo' => 1 );
-		
 		$r = wp_parse_args ( $justurl, $defaults );
 		extract ( $r, EXTR_SKIP );
 		$justurl = $r ['justurl'];

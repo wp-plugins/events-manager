@@ -407,11 +407,24 @@ class EM_Event extends EM_Object{
 			$match = true;
 			$replace = '';
 			switch( $result ){
-				case '#_EDITEVENTLINK':
-					if(is_user_logged_in()){
-						$replace = "<a href=' ".get_bloginfo('wpurl')."/wp-admin/edit.php?page=events-manager/events-manager.php&action=edit_event&event_id=".$this->id."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
-					}	 
+				//Event Details
+				case '#_NAME':
+					$replace = $this->name;
 					break;
+				case '#_NOTES':
+				case '#_EXCERPT':
+					//SEE AT BOTTOM FOR OLD FILTERS FROM 2.x
+					$replace = $this->notes;
+					if($result == "#_EXCERPT"){
+						$matches = explode('<!--more-->', $this->notes);
+						$replace = $matches[0];
+					}
+					break;
+				case '#_CATEGORY':
+		      		$category = EM_Category::get($this->category_id);
+					$replace = $category['category_name'];
+					break;
+				//Times
 				case '#_24HSTARTTIME':
 				case '#_24HENDTIME':
 					$time = ($result == '#_24HSTARTTIME') ? $this->start_time:$this->end_time;
@@ -422,6 +435,24 @@ class EM_Event extends EM_Object{
 					$time = ($result == '#_12HSTARTTIME') ? $this->start_time:$this->end_time;
 					$replace = date('g:i A', strtotime($time));
 					break;
+				//Links
+				case '#_EVENTPAGEURL':					
+				case '#_LINKEDNAME':
+					$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
+					$event_link = EM_URI.$joiner."event_id=".$this->id;
+					if($result == '#_LINKEDNAME'){
+						$replace = "<a href='{$event_link}' title='{$this->name}'>{$this->name}</a>";
+					}else{
+						$replace = $event_link;	
+					}
+					break;
+				case '#_EDITEVENTLINK':
+					if(is_user_logged_in()){
+						//TODO user should have permission to edit the event
+						$replace = "<a href=' ".get_bloginfo('wpurl')."/wp-admin/edit.php?page=events-manager/events-manager.php&action=edit_event&event_id=".$this->id."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+					}	 
+					break;
+				//Bookings
 				case '#_ADDBOOKINGFORM':
 				case '#_REMOVEBOOKINGFORM': 
 				case '#_BOOKINGFORM': 
@@ -434,52 +465,36 @@ class EM_Event extends EM_Object{
 					}
 					break;
 				case '#_AVAILABLESEATS':
+				case '#_AVAILABLESPACES':
 					if ($this->rsvp && get_option('dbem_rsvp_enabled')) {
 					   $replace = $this->get_bookings()->get_available_seats();
 					} else {
 						$replace = "0";
 					}
 					break;
-				case '#_CATEGORY':
-		      		$category = EM_Category::get($this->category_id);
-					$replace = $category['category_name'];
-					break;
-				case '#_EVENTPAGEURL':					
-				case '#_LINKEDNAME':
-					$events_page_id = get_option('dbem_events_page');
-					$event_page_link = get_permalink($events_page_id);
-					$joiner = (stristr($event_page_link, "?")) ? "&amp;":"?";
-					$event_link = get_permalink($events_page_id).$joiner."event_id=".$this->id;
-					if($result == '#_LINKEDNAME'){
-						$replace = "<a href='{$event_link}' title='{$this->name}'>{$this->name}</a>";
-					}else{
-						$replace = $event_link;	
+				case '#_BOOKEDSEATS':
+				case '#_BOOKEDSPACES':
+					if ($this->rsvp && get_option('dbem_rsvp_enabled')) {
+					   $replace = $this->get_bookings()->get_booked_seats();
+					} else {
+						$replace = "0";
 					}
 					break;
+				case '#_SEATS':
+				case '#_SPACES':
+					$replace = $this->seats;
+					break;
+				//Contact Person
 				case '#_CONTACTNAME':
 				case '#_CONTACTPERSON':
 					$replace = $this->contact->display_name;
 					break;
-				case '#_CONTACTEMAIL':
+				case '#_CONTACTEMAIL': //Document This
+				case '#_CONTACTMAIL':
 					$replace = dbem_ascii_encode($this->contact->user_email);
 					break;
 				case '#_CONTACTPHONE':
 		      		$replace = ( $this->contact->phone != '') ? $this->contact->phone : __('N/A', 'dbem');
-					break;
-				case '#_NOTES':
-				case '#_EXCERPT':
-					//SEE AT BOTTOM FOR OLD FILTERS FROM 2.x
-					$replace = $this->notes;
-					if($result == "#_EXCERPT"){
-						$matches = explode('<!--more-->', $this->notes);
-						$replace = $matches[0];
-					}
-					break;
-				case '#_NAME':
-					$replace = $this->name;
-					break;
-				case '#_SEATS':
-					$replace = $this->seats;
 					break;
 				default:
 					$match = false;
@@ -804,9 +819,9 @@ class EM_Event extends EM_Object{
  * @return mixed
  */
 function em_placeholder_targets($replace,$placeholder,$target){
-	if( $placeholder == "#_EXCERPT" && $target == 'html' ){
+	if( ($placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT") && $target == 'html' ){
 		$replace = apply_filters('dbem_notes_excerpt', $replace);
-	}elseif( $placeholder == "#_NOTES" || $placeholder == "#_EXCERPT" ){
+	}elseif( $placeholder == "#_NOTES" || $placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT" ){
 		if($target == 'html'){
 			$replace = apply_filters('dbem_notes', $replace);
 		}elseif($target == 'map'){
@@ -815,7 +830,7 @@ function em_placeholder_targets($replace,$placeholder,$target){
 			$replace = apply_filters('dbem_notes_rss', $replace);
 			$replace = apply_filters('the_content_rss', $replace);
 		}
-	}elseif($placeholder == "#_NAME"){
+	}elseif( in_array($placeholder, array("#_NAME",'#_ADDRESS','#_LOCATION','#_TOWN')) ){
 		if ($target == "html"){    
 			$replace = apply_filters('dbem_general', $replace); 
 	  	}else{

@@ -19,9 +19,10 @@ class EM_Locations_Widget extends WP_Widget {
 	
 		$locations = EM_Locations::get($instance);
 		echo "<ul>";
+		$li_wrap = !preg_match('/^<li>/i', trim($instance['format']));
 		if ( count($locations) > 0 ){
 			foreach($locations as $location){
-				if( strpos($instance['format'], '<li>') == 0 ){
+				if( $li_wrap ){
 					echo '<li>'. $location->output($instance['format']) .'</li>';
 				}else{
 					echo $location->output($instance['format']);

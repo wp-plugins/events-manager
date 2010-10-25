@@ -194,89 +194,72 @@ class EM_Location extends EM_Object {
 	
 	function output($format, $target="html") {
 		$location_string = $format;		 
-		preg_match_all("/#@?_?[A-Za-z]+/", $format, $placeholders);
-		foreach($placeholders[0] as $result) {   
-			// matches alla fields placeholder
-			if (preg_match('/#_MAP/', $result)) {
-			 	$map_div = EM_Map::get_single( array('location' => $this) );
-			 	$location_string = str_replace($result, $map_div , $location_string );
-			}
-			if ( preg_match('/#_(LOC(ATION)?)?(NOTES|EXCERPT)/', $result) ) {
-				if ($target == "html"){
-					//If excerpt, we use more link text
-					if($result == "#_LOCEXCERPT" || $result == "#_EXCERPT"){
-						$matches = explode('<!--more-->', $this->notes);
-						$field_value = apply_filters('dbem_notes_excerpt', $matches[0]);
-					}else{
-						$field_value = apply_filters('dbem_notes', $this->description);
+		preg_match_all("/#_[A-Za-z]+/", $format, $placeholders);
+		foreach($placeholders[0] as $result) {
+			$match = true;
+			$replace = '';
+			switch( $result ){
+				case '#_MAP':
+			 		$replace = EM_Map::get_single( array('location' => $this) );
+					break;
+				case '#_DESCRIPTION': //To make this backwards compatible
+				case '#_EXCERPT':
+				case '#_LOCATIONNOTES':
+				case '#_LOCATIONEXCERPT':	
+					$replace = $this->description;
+					if($result == "#_EXCERPT" || $result == "#_LOCATIONEXCERPT"){
+						$matches = explode('<!--more-->', $this->description);
+						$replace = $matches[0];
 					}
-					//$field_value = apply_filters('the_content', $field_value); - chucks a wobbly if we do this.
-				}else{
-					if ($target == "map"){
-						$field_value = apply_filters('dbem_notes_map', $field_value);
-					} else {
-			  			if($result == "#_LOCEXCERPT" || $result == "#_EXCERPT"){
-							$matches = explode('<!--more-->', $this->notes);
-							$field_value = htmlentities($matches[0]);
-							$field_value = apply_filters('dbem_notes_rss', $field_value);
-						}else{
-							$field_value = apply_filters('dbem_notes_rss', $field_value);
+					break;
+				case '#_LOCATIONURL':
+				case '#_LOCATIONLINK':
+					$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
+					$link = EM_URI.$joiner."location_id=".$this->id;
+					$replace = ($result == '#_LOCATIONURL') ? $link : '<a href="'.$link.'">'.$this->name.'</a>';
+					break;
+				case '#_PASTEVENTS':
+				case '#_NEXTEVENTS':
+				case '#_ALLEVENTS':
+					if ($result == '#_PASTEVENTS'){ $scope = 'past'; }
+					elseif ( $result == '#_NEXTEVENTS' ){ $scope = 'future'; }
+					else{ $scope = 'all'; }
+					$events = EM_Events::get( array('location'=>$this->id, 'scope'=>$scope) );
+					if ( count($events) > 0 ){
+						foreach($events as $event){
+							$replace .= $event->output(get_option('dbem_location_event_list_item_format'));
 						}
+					} else {
+						$replace = get_option('dbem_location_no_events_message');
 					}
-					$field_value = apply_filters('the_content_rss', $field_value);
-				  }
-				  $location_string = str_replace($result, $field_value , $location_string );
+					break;
+				case '#_IMAGE':
+	        		if($this->image_url != ''){
+						$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+	        		}
+					break;
+				case '#_LOCATIONNAME':
+					$replace = $this->name;
+					break;
+				case '#_ADDRESS':
+					$replace = $this->address;
+					break;
+				case '#_TOWN':
+					$replace = $this->town;
+					break;
+				default:
+					$match = false;
+					break;
 			}
-			if (preg_match('/#_(LOCATION(PAGE)?URL)/', $result)) { 
-				$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
-				$venue_page_link = EM_URI.$joiner."location_id=".$this->id;
-		       	$location_string = str_replace($result, $venue_page_link , $location_string ); 
-			}	 
-			if (preg_match('/#_(LOCATIONLINK)/', $result)) { 
-				$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
-				$venue_page_link = EM_URI.$joiner."location_id=".$this->id;
-				$venue_page_link = '<a href="'.$venue_page_link.'">'.$this->name.'</a>';
-		       	$location_string = str_replace($result, $venue_page_link , $location_string ); 
+			if($match){ //if true, we've got a placeholder that needs replacing
+				//TODO FILTER - placeholder filter
+				$replace = apply_filters('em_placeholder', $replace, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+				$location_string = str_replace($result, $replace , $location_string );
 			}
-			if (preg_match('/#_(PASTEVENTS|NEXTEVENTS|ALLEVENTS)/', $result)) {
-				if ($result == '#_PASTEVENTS'){ $scope = 'past'; }
-				elseif ( $result == '#_NEXTEVENTS' ){ $scope = 'future'; }
-				else{ $scope = 'all'; }
-				$events = EM_Events::get( array('location'=>$this->id, 'scope'=>$scope) );
-				$list = '';
-				if ( count($events) > 0 ){
-					foreach($events as $event){
-						$list .= $event->output(get_option('dbem_location_event_list_item_format'));
-					}
-				} else {
-					$list = get_option('dbem_location_no_events_message');
-				}
-			 	$location_string = str_replace($result, $list , $location_string ); 
-			}	
-			if (preg_match('/#_IMAGE$/', $result)) {
-        		if($this->image_url != ''){
-					$location_image = "<img src='".$this->image_url."' alt='".$this->name."'/>";
-        		}else{
-					$location_image = "";
-        		}
-				$location_string = str_replace($result, $location_image , $location_string ); 
-			}
-			if (preg_match('/#_(ADDRESS|TOWN|PROVINCE)/', $result)) { //TODO province in location is not being used
-				$field = ltrim(strtolower($result), "#_");
-				if ($target == "html") {    
-						$field_value = apply_filters('dbem_general', $this->$field); 
-				} else { 
-						$field_value = apply_filters('dbem_general_rss', $this->$field); 
-				}
-				$location_string = str_replace($result, $field_value , $location_string ); 
-		 	}
 		}
-		//TODO all of these should just use str_replace if possible
-		//#_(LOCATION|NAME)
 		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss';
 		$location_string = str_replace('#_LOCATION', apply_filters($name_filter, $this->name) , $location_string );
 		$location_string = str_replace('#_NAME', apply_filters($name_filter, $this->name) , $location_string );
-		
 		return $location_string;	
 	}
 }
