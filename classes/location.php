@@ -199,12 +199,12 @@ class EM_Location extends EM_Object {
 			$match = true;
 			$replace = '';
 			switch( $result ){
-				case '#_MAP':
+				case '#_MAP': //Depreciated
 				case '#_LOCATIONMAP':
 			 		$replace = EM_Map::get_single( array('location' => $this) );
 					break;
-				case '#_DESCRIPTION': //To make this backwards compatible
-				case '#_EXCERPT':
+				case '#_DESCRIPTION':  //Depreciated
+				case '#_EXCERPT': //Depreciated
 				case '#_LOCATIONNOTES':
 				case '#_LOCATIONEXCERPT':	
 					$replace = $this->description;
@@ -219,11 +219,11 @@ class EM_Location extends EM_Object {
 					$link = EM_URI.$joiner."location_id=".$this->id;
 					$replace = ($result == '#_LOCATIONURL') ? $link : '<a href="'.$link.'">'.$this->name.'</a>';
 					break;
-				case '#_PASTEVENTS':
+				case '#_PASTEVENTS': //Depreciated
 				case '#_LOCATIONPASTEVENTS':
-				case '#_NEXTEVENTS':
+				case '#_NEXTEVENTS': //Depreciated
 				case '#_LOCATIONNEXTEVENTS':
-				case '#_ALLEVENTS':
+				case '#_ALLEVENTS': //Depreciated
 				case '#_LOCATIONALLEVENTS':
 					if ($result == '#_PASTEVENTS' || $result == '#_LOCATIONPASTEVENTS'){ $scope = 'past'; }
 					elseif ( $result == '#_NEXTEVENTS' || $result == '#_LOCATIONNEXTEVENTS' ){ $scope = 'future'; }
@@ -237,13 +237,13 @@ class EM_Location extends EM_Object {
 						$replace = get_option('dbem_location_no_events_message');
 					}
 					break;
-				case '#_IMAGE':
+				case '#_IMAGE': //Depreciated
 				case '#_LOCATIONIMAGE':
 	        		if($this->image_url != ''){
 						$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
 	        		}
 					break;
-				case '#_NAME':
+				case '#_NAME': //Depreciated
 				case '#_LOCATIONNAME':
 					$replace = $this->name;
 					break;
@@ -266,8 +266,7 @@ class EM_Location extends EM_Object {
 			}
 		}
 		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss';
-		$location_string = str_replace('#_LOCATION', apply_filters($name_filter, $this->name) , $location_string );
-		$location_string = str_replace('#_NAME', apply_filters($name_filter, $this->name) , $location_string );
+		$location_string = str_replace('#_LOCATION', apply_filters($name_filter, $this->name) , $location_string ); //Depreciated
 		return $location_string;	
 	}
 }
