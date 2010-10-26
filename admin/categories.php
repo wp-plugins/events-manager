@@ -7,7 +7,7 @@ function dbem_categories_subpanel() {
 		dbem_categories_edit_layout();
 	} else {
 		// Insert/Update/Delete Record
-		$categories_table = $wpdb->prefix.DBEM_CATEGORIES_TBNAME;
+		$categories_table = $wpdb->prefix.EM_CATEGORIES_TABLE;
 		if( isset($_POST['action']) && $_POST['action'] == "edit" ) {
 			// category update required  
 			$category = array();

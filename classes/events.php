@@ -15,8 +15,8 @@ class EM_Events extends EM_Object {
 	 */
 	function get( $args = array() ) {
 		global $wpdb;
-		$events_table = $wpdb->prefix . EVENTS_TBNAME;
-		$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
+		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
+		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
@@ -78,7 +78,7 @@ class EM_Events extends EM_Object {
 	 */
 	function count_date($date){
 		global $wpdb;
-		$table_name = $wpdb->prefix . EVENTS_TBNAME;
+		$table_name = $wpdb->prefix . EM_EVENTS_TABLE;
 		$sql = "SELECT COUNT(*) FROM  $table_name WHERE (event_start_date  like '$date') OR (event_start_date <= '$date' AND event_end_date >= '$date');";
 		return $wpdb->get_var ( $sql );
 	}
@@ -101,9 +101,9 @@ class EM_Events extends EM_Object {
 		if(self::array_is_numeric($event_ids)){
 			$condition = implode(" OR event_id=", $event_ids);
 			//Delete all the bookings
-			$result_bookings = $wpdb->query("DELETE FROM ". $wpdb->prefix . BOOKINGS_TBNAME ." WHERE event_id=$condition;");
+			$result_bookings = $wpdb->query("DELETE FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE event_id=$condition;");
 			//Now delete the events
-			$result = $wpdb->query ( "DELETE FROM ". $wpdb->prefix . EVENTS_TBNAME ." WHERE event_id=$condition;" );
+			$result = $wpdb->query ( "DELETE FROM ". $wpdb->prefix . EM_EVENTS_TABLE ." WHERE event_id=$condition;" );
 		}
 		return true;
 	}

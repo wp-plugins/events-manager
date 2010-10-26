@@ -37,7 +37,7 @@ class EM_Bookings extends EM_Object{
 			global $wpdb;
 			$this->event_id = $event->id;
 			$this->seats = $event->seats;
-			$sql = "SELECT * FROM ". $wpdb->prefix . BOOKINGS_TBNAME ." b, ". $wpdb->prefix . PEOPLE_TBNAME ." p WHERE event_id ='{$this->event_id}' AND p.person_id=b.person_id";
+			$sql = "SELECT * FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." b, ". $wpdb->prefix . EM_PEOPLE_TABLE ." p WHERE event_id ='{$this->event_id}' AND p.person_id=b.person_id";
 			$bookings = $wpdb->get_results($sql, ARRAY_A);
 			foreach ($bookings as $booking){
 				$this->bookings[] = new EM_Booking($booking);
@@ -99,7 +99,7 @@ class EM_Bookings extends EM_Object{
 	 */
 	function delete(){
 		global $wpdb;
-		$result = $wpdb->query("DELETE FROM ".$wpdb->prefix.BOOKINGS_TBNAME." WHERE event_id='{$this->event_id}'");
+		$result = $wpdb->query("DELETE FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE event_id='{$this->event_id}'");
 		return ($result);
 	}
 

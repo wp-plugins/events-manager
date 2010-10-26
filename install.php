@@ -1,4 +1,13 @@
 <?php
+// obsolete tables
+define('EM_OLD_EVENTS_TABLE','dbem_events') ; 
+define('EM_OLD_RECURRENCE_TABLE','dbem_recurrence'); //TABLE NAME   
+define('EM_OLD_LOCATIONS_TABLE','dbem_locations'); //TABLE NAME  
+define('EM_OLD_BOOKINGS_TABLE','dbem_bookings'); //TABLE NAME
+define('EM_OLD_PEOPLE_TABLE','dbem_people'); //TABLE NAME  
+define('EM_OLD_BOOKING_PEOPLE_TABLE','dbem_bookings_people'); //TABLE NAME   
+define('EM_OLD_CATEGORIES_TABLE', 'dbem_categories'); //TABLE NAME
+
 function em_install() {
 	$old_version = get_option('dbem_version');
 	if( EM_VERSION > $old_version || $old_version == '' ){
@@ -19,8 +28,8 @@ function em_install() {
 	  	update_option('dbem_version', EM_VERSION); 
 	  	
 		// wp-content must be chmodded 777. Maybe just wp-content.
-		if(!file_exists("../".IMAGE_UPLOAD_DIR))
-			mkdir("../".IMAGE_UPLOAD_DIR, 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
+		if(!file_exists("../".EM_IMAGE_UPLOAD_DIR))
+			mkdir("../".EM_IMAGE_UPLOAD_DIR, 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
 		
 		em_create_events_page(); 
 	}
@@ -31,7 +40,7 @@ function em_create_events_table() {
 	get_currentuserinfo();
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php'); 
 	
-	$table_name = $wpdb->prefix.EVENTS_TBNAME; 
+	$table_name = $wpdb->prefix.EM_EVENTS_TABLE; 
 	$sql = "CREATE TABLE ".$table_name." (
 		event_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		event_author bigint(20) unsigned DEFAULT NULL,
@@ -56,7 +65,7 @@ function em_create_events_table() {
 		UNIQUE KEY (event_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
-	$old_table_name = $wpdb->prefix.OLD_EVENTS_TBNAME; 
+	$old_table_name = $wpdb->prefix.EM_OLD_EVENTS_TABLE; 
 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);		
@@ -76,7 +85,7 @@ function em_create_events_table() {
 function em_create_locations_table() {
 	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.LOCATIONS_TBNAME;
+	$table_name = $wpdb->prefix.EM_LOCATIONS_TABLE;
 
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
@@ -93,7 +102,7 @@ function em_create_locations_table() {
 		
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
-	$old_table_name = $wpdb->prefix.OLD_LOCATIONS_TBNAME;     
+	$old_table_name = $wpdb->prefix.EM_OLD_LOCATIONS_TABLE;     
 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);		
@@ -109,7 +118,7 @@ function em_create_locations_table() {
 function em_create_bookings_table() {
 	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.BOOKINGS_TBNAME;
+	$table_name = $wpdb->prefix.EM_BOOKINGS_TABLE;
 		
 	$sql = "CREATE TABLE ".$table_name." (
 		booking_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -127,7 +136,7 @@ function em_create_bookings_table() {
 function em_create_people_table() {
 	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.PEOPLE_TBNAME;
+	$table_name = $wpdb->prefix.EM_PEOPLE_TABLE;
 
 	$sql = "CREATE TABLE ".$table_name." (
 		person_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -144,7 +153,7 @@ function em_create_people_table() {
 function em_create_categories_table() {
 	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.DBEM_CATEGORIES_TBNAME;
+	$table_name = $wpdb->prefix.EM_CATEGORIES_TABLE;
 
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
@@ -154,7 +163,7 @@ function em_create_categories_table() {
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
-	$old_table_name = $wpdb->prefix.OLD_CATEGORIES_TBNAME;     
+	$old_table_name = $wpdb->prefix.EM_OLD_CATEGORIES_TABLE;     
 	
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);
@@ -246,7 +255,7 @@ function em_migrate_to_new_tables(){
 	$errors = array();                
 	// migrating events
 	$events_required = array('event_id', 'event_name','event_start_time','event_end_time','event_start_date','event_rsvp','location_id','recurrence');
-	$events = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_EVENTS_TBNAME,ARRAY_A)  ;
+	$events = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.EM_OLD_EVENTS_TABLE,ARRAY_A)  ;
 	$event_fields = array('event_id','event_author','event_name','event_start_time','event_end_time','event_start_date','event_end_date','event_notes','event_rsvp','event_seats','event_contactperson_id','location_id','recurrence_id','event_category_id','event_attributes');
 	if( count($events) > 0 ){
 		$events_values = array();
@@ -264,7 +273,7 @@ function em_migrate_to_new_tables(){
 		}
 		$events_keys = array_keys($event);
 		if( count($events_values) > 0 ){
-			$events_sql = "INSERT INTO " . $wpdb->prefix.EVENTS_TBNAME . 
+			$events_sql = "INSERT INTO " . $wpdb->prefix.EM_EVENTS_TABLE . 
 				"(`" . implode('` ,`', $events_keys) . "`) VALUES".
 				implode(', ', $events_values);
 			$wpdb->query($events_sql);
@@ -275,8 +284,8 @@ function em_migrate_to_new_tables(){
 	}
 	
 	// inserting recurrences into events                 
-	$table_name = $wpdb->prefix.EVENTS_TBNAME;  
-	$results = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.RECURRENCE_TBNAME, ARRAY_A);
+	$table_name = $wpdb->prefix.EM_EVENTS_TABLE;  
+	$results = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.EM_RECURRENCE_TABLE, ARRAY_A);
 	if( count($results) > 0 ){
 		foreach($results as $recurrence_raw){
 			//Save copy of recurrence_id
@@ -310,7 +319,7 @@ function em_migrate_to_new_tables(){
 	
 	// migrating locations
 	$locations_required = array('location_id', 'location_name', 'location_address', 'location_town');
-	$locations = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_LOCATIONS_TBNAME,ARRAY_A)  ;
+	$locations = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.EM_OLD_LOCATIONS_TABLE,ARRAY_A)  ;
 	$location_fields = array('location_id','location_name','location_address','location_town','location_province','location_latitude','location_longitude','location_description');
 	if( count($locations) > 0 ){
 		$locations_values = array();
@@ -328,7 +337,7 @@ function em_migrate_to_new_tables(){
 		}
 		$locations_keys = array_keys($location); 
 		if( count($locations_values) > 0 ){
-			$locations_sql = "INSERT INTO " . $wpdb->prefix.LOCATIONS_TBNAME . 
+			$locations_sql = "INSERT INTO " . $wpdb->prefix.EM_LOCATIONS_TABLE . 
 				"(`" . implode('` ,`', $locations_keys) . "`) VALUES".
 				implode(', ', $locations_values);
 			$wpdb->query($locations_sql);
@@ -336,7 +345,7 @@ function em_migrate_to_new_tables(){
 	}
 	
 	// migrating people
-	$people = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_PEOPLE_TBNAME,ARRAY_A)  ;
+	$people = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.EM_OLD_PEOPLE_TABLE,ARRAY_A)  ;
 	if( count($people) > 0 ){
 		$people_values = array(); 
 		$people_fields = array('person_id', 'person_name', 'person_email', 'person_phone');
@@ -352,7 +361,7 @@ function em_migrate_to_new_tables(){
 		}
 		$people_keys = array_keys($person);
 		if( count($people_values) > 0 ){
-			$people_sql = "INSERT INTO " . $wpdb->prefix.PEOPLE_TBNAME . 
+			$people_sql = "INSERT INTO " . $wpdb->prefix.EM_PEOPLE_TABLE . 
 				"(`" . implode('` ,`', $people_keys) . "`) VALUES".
 				implode(', ', $people_values);
 			$wpdb->query($people_sql);
@@ -360,7 +369,7 @@ function em_migrate_to_new_tables(){
 	}
 	 
 	// migrating bookings
-	$bookings = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_BOOKINGS_TBNAME,ARRAY_A)  ;
+	$bookings = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.EM_OLD_BOOKINGS_TABLE,ARRAY_A)  ;
 	if( count($bookings) > 0 ){
 		$bookings_values = array();
 		$booking_fields = array('booking_id', 'event_id', 'person_id', 'booking_seats', 'booking_comment');
@@ -378,14 +387,14 @@ function em_migrate_to_new_tables(){
 		}
 		$bookings_keys = array_keys($booking); 
 		if( count($bookings_values) > 0 ){
-			$bookings_sql = "INSERT INTO " . $wpdb->prefix.BOOKINGS_TBNAME . 
+			$bookings_sql = "INSERT INTO " . $wpdb->prefix.EM_BOOKINGS_TABLE . 
 				"(`" . implode('` ,`', $bookings_keys) . "`) VALUES".
 				implode(', ', $bookings_values);
 			$wpdb->query($bookings_sql);
 		}
 		 
 		// migrating categories
-		$categories = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.OLD_CATEGORIES_TBNAME,ARRAY_A)  ;
+		$categories = $wpdb->get_results('SELECT * FROM '.$wpdb->prefix.EM_OLD_CATEGORIES_TABLE,ARRAY_A)  ;
 		$categories_fields = array('category_id', 'category_name');
 		foreach($categories as $category) {   
 			foreach($category as $key => $val){
@@ -393,7 +402,7 @@ function em_migrate_to_new_tables(){
 					unset($category[$key]);
 				}
 			}
-			$wpdb->insert($wpdb->prefix.DBEM_CATEGORIES_TBNAME, $category);
+			$wpdb->insert($wpdb->prefix.EM_CATEGORIES_TABLE, $category);
 		} 
 	}	 
 	
@@ -417,11 +426,11 @@ function em_reimport(){
 	if($_GET['em_reimport'] == 1 ){
 		check_admin_referer( 'em_reimport' );
 		$p = $wpdb->prefix;
-		$table_bookings = $p.BOOKINGS_TBNAME;
-		$table_categories = $p.DBEM_CATEGORIES_TBNAME;
-		$table_events = $p.EVENTS_TBNAME;
-		$table_locations = $p.LOCATIONS_TBNAME;
-		$table_people = $p.PEOPLE_TBNAME;
+		$table_bookings = $p.EM_BOOKINGS_TABLE;
+		$table_categories = $p.EM_CATEGORIES_TABLE;
+		$table_events = $p.EM_EVENTS_TABLE;
+		$table_locations = $p.EM_LOCATIONS_TABLE;
+		$table_people = $p.EM_PEOPLE_TABLE;
 		$wpdb->query('DROP TABLE '.$table_bookings.', '.$table_categories.', '.$table_events.', '.$table_locations.', '.$table_people.';');
 		update_option('dbem_version','2');
 		em_install();
@@ -437,17 +446,17 @@ function em_import_verify(){
 	global $wpdb;
 	$p = $wpdb->prefix;
 	//Now go through each table and compare row counts, if all match (events is old recurrences + events, then we're fine
-	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.BOOKINGS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_BOOKINGS_TBNAME.";") );
-	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.DBEM_CATEGORIES_TBNAME.";") ."==". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_CATEGORIES_TBNAME.";") );
-	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EVENTS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_EVENTS_TBNAME.";") + $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_RECURRENCE_TBNAME.";") );
-	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.LOCATIONS_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_LOCATIONS_TBNAME.";") );
-	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.PEOPLE_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_PEOPLE_TBNAME.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_BOOKINGS_TABLE.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_BOOKINGS_TABLE.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_CATEGORIES_TABLE.";") ."==". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_CATEGORIES_TABLE.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_EVENTS_TABLE.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_EVENTS_TABLE.";") + $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_RECURRENCE_TABLE.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_LOCATIONS_TABLE.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_LOCATIONS_TABLE.";") );
+	$results[] = ( $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_PEOPLE_TABLE.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_PEOPLE_TABLE.";") );
 	/* Debugging
-	echo "BOOKINGS : " . $wpdb->get_var("SELECT COUNT(*) FROM ".$p.BOOKINGS_TBNAME.";") ."==". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_BOOKINGS_TBNAME);
-	echo "<br/>CATEGORIES : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.DBEM_CATEGORIES_TBNAME.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_CATEGORIES_TBNAME.";");
-	echo "<br/>EVENTS : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EVENTS_TBNAME.";") .'=='. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_EVENTS_TBNAME.";") .'+'. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_RECURRENCE_TBNAME.";");
-	echo "<br/>LOCATIONS : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.LOCATIONS_TBNAME.";") .'=='. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_LOCATIONS_TBNAME.";");
-	echo "<br/>PEOPLE : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.PEOPLE_TBNAME.";") .'=='. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.OLD_PEOPLE_TBNAME.";");
+	echo "BOOKINGS : " . $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_BOOKINGS_TABLE.";") ."==". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_BOOKINGS_TABLE);
+	echo "<br/>CATEGORIES : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_CATEGORIES_TABLE.";") == $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_CATEGORIES_TABLE.";");
+	echo "<br/>EVENTS : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_EVENTS_TABLE.";") .'=='. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_EVENTS_TABLE.";") .'+'. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_RECURRENCE_TABLE.";");
+	echo "<br/>LOCATIONS : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_LOCATIONS_TABLE.";") .'=='. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_LOCATIONS_TABLE.";");
+	echo "<br/>PEOPLE : ". $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_PEOPLE_TABLE.";") .'=='. $wpdb->get_var("SELECT COUNT(*) FROM ".$p.EM_OLD_PEOPLE_TABLE.";");
 	*/
 	if( in_array(false, $results) ){
 		update_option( 'dbem_import_fail', 1 );

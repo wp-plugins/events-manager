@@ -26,7 +26,7 @@ class EM_Person extends EM_Object{
 			}elseif( $person_data > 0 ){
 				//Retreiving from the database		
 				global $wpdb;			
-				$sql = "SELECT * FROM ". $wpdb->prefix . PEOPLE_TBNAME ." WHERE person_id ='$person_data'";   
+				$sql = "SELECT * FROM ". $wpdb->prefix . EM_PEOPLE_TABLE ." WHERE person_id ='$person_data'";   
 			  	$person = $wpdb->get_row($sql, ARRAY_A);
 			}
 			//Save into the object
@@ -48,7 +48,7 @@ class EM_Person extends EM_Object{
 				$conds[] = "`$key`='$value'";
 			} 
 		}
-		$sql = "SELECT * FROM ". $wpdb->prefix.PEOPLE_TBNAME ." WHERE " . implode(' AND ', $conds) ;
+		$sql = "SELECT * FROM ". $wpdb->prefix.EM_PEOPLE_TABLE ." WHERE " . implode(' AND ', $conds) ;
 		$result = $wpdb->get_row($sql, ARRAY_A);
 		if($result){
 			$this->to_object($result);
@@ -63,7 +63,7 @@ class EM_Person extends EM_Object{
 		if($this->validate()){
 			//Does this person already exist?
 			$this->load_similar();
-			$table = $wpdb->prefix.PEOPLE_TBNAME;
+			$table = $wpdb->prefix.EM_PEOPLE_TABLE;
 			$data = $this->to_array();
 			unset($data['person_id']);
 			if($this->id != ''){
@@ -93,7 +93,7 @@ class EM_Person extends EM_Object{
 	 */
 	function find_similar(){
 		global $wpdb;
-		$sql = "SELECT * FROM ". $wpdb->prefix.PEOPLE_TBNAME ." WHERE person_name='%s' AND person_email='%s' AND person_phone='%s'";
+		$sql = "SELECT * FROM ". $wpdb->prefix.EM_PEOPLE_TABLE ." WHERE person_name='%s' AND person_email='%s' AND person_phone='%s'";
 		$row = $wpdb->get_row( $wpdb->prepare($sql, array($this->name, $this->email, $this->phone)), ARRAY_A );
 		if( is_array($row) ){
 			return $row['person_id'];

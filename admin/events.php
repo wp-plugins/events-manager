@@ -19,7 +19,7 @@ function dbem_events_subpanel() {
 	if ($order == ""){
 		$order = "ASC";
 	}		
-	$event_table_name = $wpdb->prefix . EVENTS_TBNAME;	
+	$event_table_name = $wpdb->prefix . EM_EVENTS_TABLE;	
 
 	// DELETE action
 	if ( $action == 'deleteEvents' && EM_Object::array_is_numeric($selectedEvents) ) {

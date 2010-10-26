@@ -16,14 +16,14 @@ class EM_Object {
 	function get_default_search($defaults=array(), $array = array()){
 		//Create minimal defaults array, merge it with supplied defaults array
 		$super_defaults = array(
-			'limit' => false, 
+			'limit' => false,
 			'scope' => 'future', 
 			'order' => 'ASC', 
 			'format' => '', 
 			'category' => 0, 
 			'location' => 0, 
 			'offset'=>0, 
-			'recurrence'=>0, 
+			'recurrence'=>0,
 			'recurring'=>false,
 			'month'=>'',
 			'year'=>'',
@@ -99,8 +99,8 @@ class EM_Object {
 	 */
 	function build_sql_conditions( $args = array() ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EVENTS_TBNAME;
-		$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
+		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
+		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
 		
 		//Format the arguments passed on
 		$scope = $args['scope'];//undefined variable warnings in ZDE, could just delete this (but dont pls!)

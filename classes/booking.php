@@ -35,7 +35,7 @@ class EM_Booking extends EM_Object{
 			}elseif( $booking_data > 0 ){
 				//Retreiving from the database		
 				global $wpdb;			
-				$sql = "SELECT * FROM ". $wpdb->prefix . BOOKINGS_TBNAME ." WHERE booking_id ='$booking_data'";   
+				$sql = "SELECT * FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE booking_id ='$booking_data'";   
 			  	$booking = $wpdb->get_row($sql, ARRAY_A);
 			  	//Get the person for this booking
 			  	$this->person = new EM_Person($booking['person_id']);
@@ -51,7 +51,7 @@ class EM_Booking extends EM_Object{
 	 */
 	function save(){
 		global $wpdb;
-		$table = $wpdb->prefix.BOOKINGS_TBNAME;
+		$table = $wpdb->prefix.EM_BOOKINGS_TABLE;
 		//First the person
 		//Does this person exist?
 		$person_result = $this->person->save();
@@ -100,7 +100,7 @@ class EM_Booking extends EM_Object{
 				$conds[] = "`$key`='$value'";
 			} 
 		}
-		$sql = "SELECT * FROM ". $wpdb->BOOKINGS_TBNAME ." WHERE " . implode(' AND ', $conds) ;
+		$sql = "SELECT * FROM ". $wpdb->EM_BOOKINGS_TABLE ." WHERE " . implode(' AND ', $conds) ;
 		$result = $wpdb->get_row($sql, ARRAY_A);
 		if($result){
 			$this->to_object($result);
@@ -116,7 +116,7 @@ class EM_Booking extends EM_Object{
 	 */
 	function delete(){
 		global $wpdb;
-		$sql = $wpdb->prepare("DELETE FROM ". $wpdb->prefix.BOOKINGS_TBNAME . " WHERE booking_id=%d", $this->id);
+		$sql = $wpdb->prepare("DELETE FROM ". $wpdb->prefix.EM_BOOKINGS_TABLE . " WHERE booking_id=%d", $this->id);
 		return ( $wpdb->query( $sql ) !== false );
 	}
 	

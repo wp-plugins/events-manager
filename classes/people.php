@@ -8,7 +8,7 @@ class EM_People extends EM_Object {
 	 */
 	function get( $return_people = true ) {
 		global $wpdb; 
-		$sql = "SELECT *  FROM ". $wpdb->prefix.PEOPLE_TBNAME ;    
+		$sql = "SELECT *  FROM ". $wpdb->prefix.EM_PEOPLE_TABLE ;    
 		$result = $wpdb->get_results($sql, ARRAY_A);
 		if( $return_people ){
 			//Return people as EM_Person objects

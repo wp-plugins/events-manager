@@ -44,7 +44,7 @@ class EM_Location extends EM_Object {
 			}elseif( $location_data > 0 ){
 				//Retreiving from the database		
 				global $wpdb;
-				$sql = "SELECT * FROM ". $wpdb->prefix.LOCATIONS_TBNAME ." WHERE location_id ='{$location_data}'";   
+				$sql = "SELECT * FROM ". $wpdb->prefix.EM_LOCATIONS_TABLE ." WHERE location_id ='{$location_data}'";   
 			  	$location = $wpdb->get_row($sql, ARRAY_A);
 			}
 			//If gmap is turned off, values may not be returned and set, so we set it here
@@ -73,7 +73,7 @@ class EM_Location extends EM_Object {
 	
 	function save(){
 		global $wpdb;
-		$table = $wpdb->prefix.LOCATIONS_TBNAME;
+		$table = $wpdb->prefix.EM_LOCATIONS_TABLE;
 		$data = $this->to_array();
 		unset($data['location_id']);
 		unset($data['location_image_url']);
@@ -90,7 +90,7 @@ class EM_Location extends EM_Object {
 	
 	function delete(){
 		global $wpdb;	
-		$table_name = $wpdb->prefix.LOCATIONS_TBNAME;
+		$table_name = $wpdb->prefix.EM_LOCATIONS_TABLE;
 		$sql = "DELETE FROM $table_name WHERE location_id = '{$this->id}';";
 		$wpdb->query($sql);
 		$this->image_delete();	
@@ -99,7 +99,7 @@ class EM_Location extends EM_Object {
 	function get_image_url(){
 		if($this->image_url == ''){
 		  	foreach($this->mime_types as $type) { 
-				$file_path = "/".IMAGE_UPLOAD_DIR."/location-{$this->id}.$type";
+				$file_path = "/".EM_IMAGE_UPLOAD_DIR."/location-{$this->id}.$type";
 				if( file_exists( ABSPATH . $file_path) ) {
 					$result = get_bloginfo('wpurl').$file_path;
 		  			$this->image_url = $result;
@@ -110,7 +110,7 @@ class EM_Location extends EM_Object {
 	}
 	
 	function image_delete() {
-		$file_name= ABSPATH.IMAGE_UPLOAD_DIR."/location-".$this->id;
+		$file_name= ABSPATH.EM_IMAGE_UPLOAD_DIR."/location-".$this->id;
 		foreach($this->mime_types as $type) { 
 			if (file_exists($file_name.".".$type))
 	  		unlink($file_name.".".$type);
@@ -120,12 +120,12 @@ class EM_Location extends EM_Object {
 	function image_upload(){	
 		//TODO better image upload error handling
 		if ($_FILES['location_image']['size'] > 0 ) {	
-		  	if( !file_exists(ABSPATH.IMAGE_UPLOAD_DIR) ){
-				mkdir(ABSPATH.IMAGE_UPLOAD_DIR, 0777);
+		  	if( !file_exists(ABSPATH.EM_IMAGE_UPLOAD_DIR) ){
+				mkdir(ABSPATH.EM_IMAGE_UPLOAD_DIR, 0777);
 		  	}
 			$this->image_delete();   
 			list($width, $height, $type, $attr) = getimagesize($_FILES['location_image']['tmp_name']);
-			$image_path = ABSPATH.IMAGE_UPLOAD_DIR."/location-".$this->id.".".$this->mime_types[$type];
+			$image_path = ABSPATH.EM_IMAGE_UPLOAD_DIR."/location-".$this->id.".".$this->mime_types[$type];
 			if (!move_uploaded_file($_FILES['location_image']['tmp_name'], $image_path)){
 				$this->errors = __('The image could not be loaded','dbem');
 				return false;
@@ -138,7 +138,7 @@ class EM_Location extends EM_Object {
 
 	function load_similar($criteria){
 		global $wpdb;
-		$locations_table = $wpdb->prefix.LOCATIONS_TBNAME; 
+		$locations_table = $wpdb->prefix.EM_LOCATIONS_TABLE; 
 		$prepared_sql = $wpdb->prepare("SELECT * FROM $locations_table WHERE location_name = %s AND location_address = %s AND location_town = %s", stripcslashes($criteria['location_name']), stripcslashes($criteria['location_address']), stripcslashes($criteria['location_town']) );
 		//$wpdb->show_errors(true);
 		$location = $wpdb->get_row($prepared_sql, ARRAY_A);
@@ -181,7 +181,7 @@ class EM_Location extends EM_Object {
 	
 	function has_events(){
 		global $wpdb;	
-		$events_table = $wpdb->prefix.EVENTS_TBNAME;
+		$events_table = $wpdb->prefix.EM_EVENTS_TABLE;
 		$sql = "SELECT event_id FROM $events_table WHERE location_id = {$this->id}";   
 	 	$affected_events = $wpdb->get_results($sql);
 		return (count($affected_events) > 0);
@@ -200,6 +200,7 @@ class EM_Location extends EM_Object {
 			$replace = '';
 			switch( $result ){
 				case '#_MAP':
+				case '#_LOCATIONMAP':
 			 		$replace = EM_Map::get_single( array('location' => $this) );
 					break;
 				case '#_DESCRIPTION': //To make this backwards compatible
@@ -219,10 +220,13 @@ class EM_Location extends EM_Object {
 					$replace = ($result == '#_LOCATIONURL') ? $link : '<a href="'.$link.'">'.$this->name.'</a>';
 					break;
 				case '#_PASTEVENTS':
+				case '#_LOCATIONPASTEVENTS':
 				case '#_NEXTEVENTS':
+				case '#_LOCATIONNEXTEVENTS':
 				case '#_ALLEVENTS':
-					if ($result == '#_PASTEVENTS'){ $scope = 'past'; }
-					elseif ( $result == '#_NEXTEVENTS' ){ $scope = 'future'; }
+				case '#_LOCATIONALLEVENTS':
+					if ($result == '#_PASTEVENTS' || $result == '#_LOCATIONPASTEVENTS'){ $scope = 'past'; }
+					elseif ( $result == '#_NEXTEVENTS' || $result == '#_LOCATIONNEXTEVENTS' ){ $scope = 'future'; }
 					else{ $scope = 'all'; }
 					$events = EM_Events::get( array('location'=>$this->id, 'scope'=>$scope) );
 					if ( count($events) > 0 ){
@@ -234,17 +238,21 @@ class EM_Location extends EM_Object {
 					}
 					break;
 				case '#_IMAGE':
+				case '#_LOCATIONIMAGE':
 	        		if($this->image_url != ''){
 						$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
 	        		}
 					break;
+				case '#_NAME':
 				case '#_LOCATIONNAME':
 					$replace = $this->name;
 					break;
-				case '#_ADDRESS':
+				case '#_ADDRESS': //Depreciated
+				case '#_LOCATIONADDRESS': 
 					$replace = $this->address;
 					break;
-				case '#_TOWN':
+				case '#_TOWN': //Depreciated
+				case '#_LOCATIONTOWN':
 					$replace = $this->town;
 					break;
 				default:

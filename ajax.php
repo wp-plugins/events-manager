@@ -5,7 +5,7 @@ function em_ajax_actions() {
  	if(isset($_REQUEST['dbem_ajax_action']) && $_REQUEST['dbem_ajax_action'] == 'booking_data') {
 		if(isset($_REQUEST['id'])){
 			$EM_Event = new EM_Event($_REQUEST['id']);
-	     	echo "[ {bookedSeats:".$EM_Event->get_bookings()->get_booked_seats().", availableSeats:".$EM_Event->get_bookings()->get_available_seats()."}]";
+	     	echo "[{bookedSeats:".$EM_Event->get_bookings()->get_booked_seats().", availableSeats:".$EM_Event->get_bookings()->get_available_seats()."}]";
 		} 
 		die();
 	}  

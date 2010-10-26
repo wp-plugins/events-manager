@@ -13,8 +13,8 @@ class EM_Locations extends EM_Object {
 	 */
 	function get( $args = array() ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EVENTS_TBNAME;
-		$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
+		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
+		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		if( self::array_is_numeric($args) && count() ){ //Array of numbers, assume they are event IDs to retreive
@@ -113,8 +113,8 @@ class EM_Locations extends EM_Object {
 	 */
 	function build_sql_conditions( $args = array() ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EVENTS_TBNAME;
-		$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
+		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
+		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
 		
 		$conditions = parent::build_sql_conditions($args);
 		//eventful locations

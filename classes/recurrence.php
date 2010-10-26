@@ -50,7 +50,7 @@ class EM_Recurrence extends EM_Object{
 			}elseif( is_numeric($event_data) || isset($event_data['recurrence_id']) ){
 				//$event_data is recurrence_id -  Retreiving from the database
 				$recurrence_id = (is_array($event_data)) ? $event_data['recurrence_id']:$event_data;
-				$sql = "SELECT * FROM ". $wpdb->prefix . RECURRENCE_TBNAME ." WHERE recurrence_id = $recurrence_id";
+				$sql = "SELECT * FROM ". $wpdb->prefix . EM_RECURRENCE_TABLE ." WHERE recurrence_id = $recurrence_id";
 				$result = $wpdb->get_row( $sql, ARRAY_A );
 				if($result){
 					$this->location = new EM_Location ( $recurrence ['location_id'] );
@@ -68,7 +68,7 @@ class EM_Recurrence extends EM_Object{
 	 */
 	function delete() {
 		global $wpdb;
-		$sql = "DELETE FROM ".$wpdb->prefix.RECURRENCE_TBNAME." WHERE recurrence_id = '{$this->id}';";
+		$sql = "DELETE FROM ".$wpdb->prefix.EM_RECURRENCE_TABLE." WHERE recurrence_id = '{$this->id}';";
 		$wpdb->query($sql);
 	}
 

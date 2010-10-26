@@ -7,7 +7,7 @@ require_once('../../../../wp-load.php');
 
 global $wpdb;
 
-$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
+$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
 
 $term = (isset($_GET['term'])) ? '%'.$_GET['term'].'%' : '%'.$_GET['q'].'%';
 $sql = $wpdb->prepare("

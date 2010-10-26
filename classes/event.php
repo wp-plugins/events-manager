@@ -86,8 +86,8 @@ class EM_Event extends EM_Object{
 				$this->location = new EM_Location( $event );
 			}elseif( is_numeric($event_data) && $event_data > 0 ){
 				//Retreiving from the database  
-				$events_table = $wpdb->prefix . EVENTS_TBNAME;
-				$locations_table = $wpdb->prefix . LOCATIONS_TBNAME;
+				$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
+				$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
 				$sql = "
 					SELECT * FROM $events_table
 					LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id 
@@ -201,7 +201,7 @@ class EM_Event extends EM_Object{
 		//FIXME Event doesn't save title when inserting first time
 		global $wpdb, $current_user;
    		get_currentuserinfo();;
-		$events_table = $wpdb->prefix.EVENTS_TBNAME;
+		$events_table = $wpdb->prefix.EM_EVENTS_TABLE;
 		//First let's save the location, no location no event!
 		if ( !$this->location->id && !$this->location->save() ){ //shouldn't try to save if location exists
 			$this->errors[] = __ ( 'There was a problem saving the location so event was not saved.', 'dbem' );
@@ -283,7 +283,7 @@ class EM_Event extends EM_Object{
 			//Delete the recurrences then this recurrence event
 			$this->delete_events();
 		}
-		$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". $wpdb->prefix . EVENTS_TBNAME ." WHERE event_id=%d", $this->id) );
+		$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". $wpdb->prefix . EM_EVENTS_TABLE ." WHERE event_id=%d", $this->id) );
 		if($result !== false){
 			$bookings_result = $this->get_bookings()->delete();
 		}
@@ -296,7 +296,7 @@ class EM_Event extends EM_Object{
 	function duplicate(){
 		global $wpdb, $EZSQL_ERROR;
 		//First, duplicate.
-		$event_table_name = $wpdb->prefix . EVENTS_TBNAME;
+		$event_table_name = $wpdb->prefix . EM_EVENTS_TABLE;
 		$eventArray = $this->to_array();
 		unset($eventArray['event_id']);
 		$result = $wpdb->insert($event_table_name, $eventArray);
@@ -345,7 +345,7 @@ class EM_Event extends EM_Object{
 	 */
 	function get_category() { 
 		global $wpdb; 
-		$sql = "SELECT category_id, category_name FROM ".$wpdb->prefix.EVENTS_TBNAME." LEFT JOIN ".$wpdb->prefix.DBEM_CATEGORIES_TBNAME." ON category_id=event_category_id WHERE event_id ='".$this->id."'";
+		$sql = "SELECT category_id, category_name FROM ".$wpdb->prefix.EM_EVENTS_TABLE." LEFT JOIN ".$wpdb->prefix.EM_CATEGORIES_TABLE." ON category_id=event_category_id WHERE event_id ='".$this->id."'";
 	 	$category = $wpdb->get_row($sql, ARRAY_A);
 		return $category;
 	}
@@ -355,7 +355,7 @@ class EM_Event extends EM_Object{
 	 */
 	function delete_bookings(){
 		global $wpdb;
-		return $wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix.BOOKINGS_TBNAME." WHERE event_id=%d", $this->id) );
+		return $wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE event_id=%d", $this->id) );
 	}
 	
 	/**
@@ -413,7 +413,7 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_NOTES':
 				case '#_EXCERPT':
-					//SEE AT BOTTOM FOR OLD FILTERS FROM 2.x
+					//SEE AT BOTTOM OF FILE FOR OLD TARGET FILTERS FROM 2.x
 					$replace = $this->notes;
 					if($result == "#_EXCERPT"){
 						$matches = explode('<!--more-->', $this->notes);
@@ -436,11 +436,13 @@ class EM_Event extends EM_Object{
 					$replace = date('g:i A', strtotime($time));
 					break;
 				//Links
-				case '#_EVENTPAGEURL':					
-				case '#_LINKEDNAME':
+				case '#_EVENTPAGEURL': //Depreciated	
+				case '#_LINKEDNAME': //Depreciated
+				case '#_EVENTURL': //Just the URL
+				case '#_EVENTLINK': //HTML Link
 					$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
 					$event_link = EM_URI.$joiner."event_id=".$this->id;
-					if($result == '#_LINKEDNAME'){
+					if($result == '#_LINKEDNAME' || $result == '#_EVENTLINK'){
 						$replace = "<a href='{$event_link}' title='{$this->name}'>{$this->name}</a>";
 					}else{
 						$replace = $event_link;	
@@ -454,8 +456,8 @@ class EM_Event extends EM_Object{
 					break;
 				//Bookings
 				case '#_ADDBOOKINGFORM':
-				case '#_REMOVEBOOKINGFORM': 
-				case '#_BOOKINGFORM': 
+				case '#_REMOVEBOOKINGFORM':
+				case '#_BOOKINGFORM':
 					if ($this->rsvp && get_option('dbem_rsvp_enabled')){
 						if($result == '#_BOOKINGFORM'){
 							$replace = em_add_booking_form().em_delete_booking_form();
@@ -464,7 +466,7 @@ class EM_Event extends EM_Object{
 						}
 					}
 					break;
-				case '#_AVAILABLESEATS':
+				case '#_AVAILABLESEATS': //Depreciated
 				case '#_AVAILABLESPACES':
 					if ($this->rsvp && get_option('dbem_rsvp_enabled')) {
 					   $replace = $this->get_bookings()->get_available_seats();
@@ -472,7 +474,7 @@ class EM_Event extends EM_Object{
 						$replace = "0";
 					}
 					break;
-				case '#_BOOKEDSEATS':
+				case '#_BOOKEDSEATS': //Depreciated
 				case '#_BOOKEDSPACES':
 					if ($this->rsvp && get_option('dbem_rsvp_enabled')) {
 					   $replace = $this->get_bookings()->get_booked_seats();
@@ -480,17 +482,17 @@ class EM_Event extends EM_Object{
 						$replace = "0";
 					}
 					break;
-				case '#_SEATS':
+				case '#_SEATS': //Depreciated
 				case '#_SPACES':
 					$replace = $this->seats;
 					break;
 				//Contact Person
 				case '#_CONTACTNAME':
-				case '#_CONTACTPERSON':
+				case '#_CONTACTPERSON': //Depreciated (your call, I think name is better)
 					$replace = $this->contact->display_name;
 					break;
-				case '#_CONTACTEMAIL': //Document This
-				case '#_CONTACTMAIL':
+				case '#_CONTACTEMAIL':
+				case '#_CONTACTMAIL': //Depreciated
 					$replace = dbem_ascii_encode($this->contact->user_email);
 					break;
 				case '#_CONTACTPHONE':
@@ -579,7 +581,7 @@ class EM_Event extends EM_Object{
 			foreach( $matching_days as $day ) {
 				$event['event_start_date'] = date("Y-m-d", $day);
 				$event['event_end_date'] = $event['event_start_date'];				
-				$event_saves[] = $wpdb->insert($wpdb->prefix.EVENTS_TBNAME, $event, $this->get_types($event));
+				$event_saves[] = $wpdb->insert($wpdb->prefix.EM_EVENTS_TABLE, $event, $this->get_types($event));
 				//TODO should be EM_DEBUG, and do we really need it?
 				if( DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
 		 	}
@@ -810,7 +812,7 @@ class EM_Event extends EM_Object{
 	}
 }
 
-
+//TODO placeholder targets filtering could be streamlined better
 /**
  * This is a temporary filter function which mimicks the old filters in the old 2.x placeholders function
  * @param unknown_type $replace

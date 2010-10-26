@@ -12,7 +12,7 @@ function dbem_admin_actions_bookings() {
 	if( isset($_POST['secondaryAction']) && $_POST['secondaryAction'] == 'delete_bookings' ){
 		if( EM_Object::array_is_numeric($_GET['bookings']) && count($_GET['bookings']) > 0 ){
 			$bookings = $_GET['bookings'];
-			$sql = "DELETE FROM ". $wpdb->prefix.BOOKINGS_TBNAME ." WHERE booking_id = ". implode(' OR booking_id = ', $bookings);
+			$sql = "DELETE FROM ". $wpdb->prefix.EM_BOOKINGS_TABLE ." WHERE booking_id = ". implode(' OR booking_id = ', $bookings);
 			$wpdb->query($sql);
 			$dbem_form_delete_message = __('Bookings deleted', 'dbem');
 		}
