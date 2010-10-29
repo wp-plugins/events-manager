@@ -42,13 +42,20 @@ class EM_Locations extends EM_Object {
 		$fields = $locations_table .".". implode(", {$locations_table}.", array_keys($EM_Location->fields));
 		$where = ( count($conditions) > 0 ) ? " WHERE " . implode ( " AND ", $conditions ):'';
 		
+		//Get ordering instructions
+		$accepted_fields = $EM_Location->get_fields(true);
+		$orderby = self::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order'));
+		//Now, build orderby sql
+		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
+		
+		
 		//Create the SQL statement and execute
 		$sql = "
 			SELECT $fields FROM $locations_table
 			LEFT JOIN $events_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
 			GROUP BY location_id
-			ORDER BY location_name {$args['order']} , location_address {$args['order']}
+			$orderby_sql
 			$limit $offset
 		";
 	

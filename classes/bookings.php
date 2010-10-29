@@ -51,7 +51,7 @@ class EM_Bookings extends EM_Object{
 	 * @return boolean
 	 */
 	function add( $EM_Booking ){
-		global $wpdb; 
+		global $wpdb,$EM_Mailer; 
 		if ( $this->get_available_seats() >= $EM_Booking->seats ) {  
 			$EM_Booking->event_id = $this->event_id;
 			// checking whether the booker has already booked places
@@ -79,7 +79,11 @@ class EM_Bookings extends EM_Object{
 				if(!$email){
 					$this->feedback_message .= ' '.__('However, we were not able to send you an email.', 'dbem');
 					if( current_user_can('activate_plugins') ){
-						$this->feedback_message .= '<br/><strong>Errors:</strong> (only admins see this)<br/><ul><li>'. implode('</li><li>', $EM_Mailer->errors).'</li></ul>';
+						if( is_array($this->errors) ){
+							$this->feedback_message .= '<br/><strong>Errors:</strong> (only admins see this message)<br/><ul><li>'. implode('</li><li>', $EM_Mailer->errors).'</li></ul>';
+						}else{
+							$this->feedback_message .= '<br/><strong>No errors returned by mailer</strong> (only admins see this message)';
+						}
 					}
 				}
 				return true;
@@ -184,10 +188,16 @@ class EM_Bookings extends EM_Object{
 		
 		//TODO offer subject changes
 		if( !$EM_Mailer->send(__('Reservation confirmed','dbem'),$booker_body, $EM_Booking->person->email) ){
+			foreach($EM_Mailer->errors as $error){
+				$this->errors[] = $error;
+			}
 			return false;
 		}
 		if( !$EM_Mailer->send(__("New booking",'dbem'), $contact_body, $EM_Event->contact->user_email) && current_user_can('activate_plugins')){
-			$EM_Mailer->errors[] = 'Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).';
+			foreach($EM_Mailer->errors as $error){
+				$this->errors[] = $error;
+			}
+			$this->errors[] = 'Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).';
 			return false;
 		}
 		

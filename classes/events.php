@@ -41,18 +41,24 @@ class EM_Events extends EM_Object {
 		
 		//Get the default conditions
 		$conditions = self::build_sql_conditions($args);
-		
 		//Put it all together
 		$where = ( count($conditions) > 0 ) ? " WHERE " . implode ( " AND ", $conditions ):'';
+		
+		//Get ordering instructions
+		$EM_Event = new EM_Event();
+		$accepted_fields = $EM_Event->get_fields(true);
+		$orderby = self::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order'));
+		//Now, build orderby sql
+		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
 		
 		//Create the SQL statement and execute
 		$sql = "
 			SELECT * FROM $events_table
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
-			ORDER BY event_start_date {$args['order']} , event_start_time {$args['order']}
+			$orderby_sql
 			$limit $offset
-		";		
+		";	
 	
 		$results = $wpdb->get_results($sql, ARRAY_A);
 
@@ -147,6 +153,21 @@ class EM_Events extends EM_Object {
 		//TODO check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Event_old = $EM_Event;
 		return $output;		
+	}
+
+	/* 
+	 * Adds custom Events search defaults
+	 * @param array $args
+	 * @return array
+	 * @uses EM_Object#get_default_search()
+	 */
+	function get_default_search( $array = array() ){
+		$defaults = array(
+			'limit'=>get_option('dbem_events_default_limit'),					
+			'orderby' => get_option('dbem_events_default_orderby'),
+			'order' => get_option('dbem_events_default_order')
+		);
+		return parent::get_default_search($defaults,$array);
 	}
 }
 ?>

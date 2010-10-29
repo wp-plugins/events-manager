@@ -221,7 +221,10 @@ function em_add_options() {
 		'dbem_rsvp_enabled'=> true,
 		'dbem_categories_enabled'=> true,
 		'dbem_disable_title_rewrites'=> false,
-		'dbem_title_html' => '<h2>#_PAGETITLE</h2>'
+		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
+		'dbem_events_default_orderby' => 'start_date',
+		'dbem_events_default_order' => 'ASC',
+		'dbem_events_default_limit' => 10
 	);
 	
 	foreach($dbem_options as $key => $value){

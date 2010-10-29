@@ -18,7 +18,8 @@ class EM_Object {
 		$super_defaults = array(
 			'limit' => false,
 			'scope' => 'future', 
-			'order' => 'ASC', 
+			'order' => 'ASC', //hard-coded at end of this function
+			'orderby' => false,
 			'format' => '', 
 			'category' => 0, 
 			'location' => 0, 
@@ -61,6 +62,12 @@ class EM_Object {
 					unset($array['category']);
 				}
 			}
+			//OrderBy - can be a comma-seperated array of field names to order by (field names of object, not db)
+			if( array_key_exists('orderby', $array)){
+				if( preg_match('/,/', $array['orderby']) ) {
+					$array['orderby'] = explode(',', $array['orderby']);
+				}
+			}
 			//TODO validate search query array
 			//Clean the supplied array, so we only have allowed keys
 			foreach( array_keys($array) as $key){
@@ -83,10 +90,14 @@ class EM_Object {
 		}else{
 			$defaults['year'] = preg_match($year_regex, $defaults['year']) ? $defaults['year']:'';
 		}
+		//Order - it's either ASC or DESC, so let's just validate
+		if( preg_match('/^([A-Za-z],?)+$/', $array['order']) ) {
+			$defaults['order'] = explode(',', $array['order']);
+		}elseif( !in_array($defaults['order'], array('ASC','DESC')) ){
+			$defaults['order'] = $super_defaults['order'];
+		}
 		//TODO should we clean format of malicious code over here and run everything thorugh this?
-		$defaults['order'] = ($defaults['order'] == "ASC") ? "ASC" : $super_defaults['order'];
 		$defaults['array'] = ($defaults['array'] == true);
-		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
 		return $defaults;
@@ -141,11 +152,17 @@ class EM_Object {
 			$date_start = date('Y-m-d', mktime(0,0,0,$date_month_start,1,$date_year_start));
 			$date_end = date('Y-m-t', mktime(0,0,0,$date_month_end,1,$date_year_end));
 			$conditions[] = " ((event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)))";
-			$search_by_date = true;
+			$search_by_monthyear = true;
 		}
-		if( !isset($search_by_date) ){
+		if( !isset($search_by_monthyear) ){
 			//No date requested, so let's look at scope
-			if ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
+			if ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
+				//This is an array, let's split it up
+				$dates = explode(',', $scope);
+				$date_start = $dates[0];
+				$date_end = $dates[1];
+				$conditions[] = " ((event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)))";
+			} elseif ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
 				//Scope can also be a specific date. However, if 'day', 'month', or 'year' are set, that will take precedence
 				$conditions [] = " ( (event_start_date = CAST('$scope' AS DATE)) OR (event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE)) )";
 			} else {
@@ -185,6 +202,37 @@ class EM_Object {
 		return $conditions;
 	}
 	
+	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+		//First, ORDER BY
+		$orderby = array();
+		if(is_array($args['orderby'])){
+			//Clean orderby array so we only have accepted values
+			foreach( $args['orderby'] as $key => $field ){
+				if( !array_key_exists($field, $accepted_fields) ){
+					unset($args['orderby'][$key]);
+				}else{
+					$orderby[] = $accepted_fields[$field];
+				}
+			}
+		}elseif( array_key_exists($args['orderby'], $accepted_fields) ){
+			$orderby[] = $accepted_fields[$args['orderby']];
+		}
+		//ORDER
+		//If order is an array, we'll go through the orderby array and match the order values (in order of array) with orderby values
+		//If orders don't match up, or it's not ASC/DESC, the default events search in EM settings/options page will be used.
+		foreach($orderby as $i => $field){
+			$orderby[$i] .= ' ';
+			if(is_array($args['order'])){
+				if( in_array($args['order'][$i], array('ASC','DESC')) ){
+					$orderby[$i] .= $args['order'][$i];
+				}else{
+					$orderby[$i] .= $default_order;
+				}
+			}else{
+				$orderby[$i] .= ( in_array($args['order'], array('ASC','DESC')) ) ? $args['order'] : $default_order;
+			}
+		}
+	}
 
 	/**
 	 * Save an array into this class.
@@ -237,6 +285,21 @@ class EM_Object {
 		}
 		return $types;
 	}	
+	
+	function get_fields( $inverted_array=false ){
+		if( is_array($this->fields) ){
+			$return = array();
+			foreach($this->fields as $fieldName => $fieldArray){
+				if($inverted_array){
+					$return[$fieldArray['name']] = $fieldName;
+				}else{
+					$return[$fieldName] = $fieldArray['name'];
+				}
+			}
+			return $return;
+		}
+		return array();
+	}
 
 	/**
 	 * Sanitize text before inserting into database

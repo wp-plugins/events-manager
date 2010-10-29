@@ -110,6 +110,15 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 
 == Change Log ==
 
+= 3.0.5 =
+* Fixed 12pm bug
+* Re-added #_LOCATIONPAGEURL (although officially it's depreciated)
+* Added default order by settings in options page
+* Added default event list limits in options page
+* Added orderby attribute for shortcode
+* scope attribute now also allows searching between dates, e.g. "2010-01-01,2010-01-31"
+* Fixed booking email reporting bug
+
 = 3.0.4 =
 * Title rewriting workaround for themes where main menus are broken on events pages
 * Added option to show lists on calendar days regardless of whether there is only one event on that day.

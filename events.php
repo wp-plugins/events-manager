@@ -16,7 +16,7 @@ function em_content($content) {
 		//TODO any loop should put the current $EM_Event etc. into the global variable
 		if ( isset( $_REQUEST['calendar_day'] ) && $_REQUEST['calendar_day'] != '' ) {
 			//Events for a specific day
-			$events = EM_Events::get( array('limit'=>10,'scope'=>$_REQUEST['calendar_day'],'order'=>"ASC") );
+			$events = EM_Events::get( array( 'scope'=>$_REQUEST['calendar_day'] ) );
 			if ( count($events) > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
 				$content =  EM_Events::output($events);
 			} else {
@@ -37,7 +37,7 @@ function em_content($content) {
 			if (get_option ( 'dbem_display_calendar_in_events_page' )){
 				$content =  EM_Calendar::get( array('full'=>1) );
 			}else{
-				$content =  EM_Events::output ( array('limit'=>10,'scope'=>$scope, 'order'=>"ASC") );
+				$content =  EM_Events::output( array( 'scope' => $scope ) );
 			}
 		}
 		//If disable rewrite flag is on, then we need to add a placeholder here

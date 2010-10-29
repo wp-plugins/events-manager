@@ -5,10 +5,15 @@ function em_options_save(){
 		//Build the array of options here
 		foreach ($_POST as $postKey => $postValue){
 			if( substr($postKey, 0, 5) == 'dbem_' ){
-				//For now, no validation, since this is in admin area.
-				//TODO slashes being added?
-				//$postValue = EM_Object::sanitize($postValue)
-				update_option($postKey, stripslashes($postValue));
+				//TODO some more validation/reporting
+				$numeric_options = array('dbem_locations_default_limit','dbem_events_default_limit');
+				if( in_array($postKey,$numeric_options) && !is_numeric($postValue) ){
+					//Do nothing, keep old setting.
+				}else{
+					//TODO slashes being added?
+					//$postValue = EM_Object::sanitize($postValue)
+					update_option($postKey, stripslashes($postValue));
+				}
 			}
 		}
 		function em_options_saved_notice(){
@@ -107,6 +112,31 @@ function dbem_options_subpanel() {
 					dbem_options_radio_binary ( __( 'Display calendar in events page?', 'dbem' ), 'dbem_display_calendar_in_events_page', __( 'This options allows to display the calendar in the events page, instead of the default list. It is recommended not to display both the calendar widget and a calendar page.','dbem' ) );
 					dbem_options_radio_binary ( __( 'Disable title rewriting?', 'dbem' ), 'dbem_disable_title_rewrites', __( "Some wordpress themes don't follow best practices when generating navigation menus, and so the automatic title rewriting feature may cause problems, if your menus aren't working correctly on the event pages, try setting this to 'Yes', and provide an appropriate HTML title format below.",'dbem' ) );
 					dbem_options_input_text ( __( 'Event Manager titles', 'dbem' ), 'dbem_title_html', __( "This only setting only matters if you selected 'Yes' to above. You will notice the events page titles aren't being rewritten, and you have a new title underneath the default page name. This is where you control the HTML of this title. Make sure you keep the #_PAGETITLE placeholder here, as that's what is rewritten by events manager. To control what's rewritten in this title, see settings further down for page titles.", 'dbem' ) );
+					dbem_options_input_text ( __( 'Event List Limits', 'dbem' ), 'dbem_events_default_limit', __( "This will control how many events are shown on one list by default.", 'dbem' ) );
+					?>
+					<tr valign="top" id='dbem_events_default_orderby_row'>
+				   		<th scope="row"><?php _e('Default event list ordering','dbem'); ?></th>
+				   		<td>   
+							<select name="dbem_events_default_orderby" >
+								<?php $EM_Event = new EM_Event(); //TODO once php5 strict, this may be ok as a static call and avoid constcurting ?>
+								<?php foreach($EM_Event->get_fields() as $value) : ?>   
+				 				<option value='<?php echo $value ?>' <?php echo ("$value" == get_option('dbem_events_default_orderby')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo $value; ?>
+				 				</option>
+								<?php endforeach; ?>
+							</select> 
+							<select name="dbem_events_default_order" >
+								<?php foreach( array(__('Ascending','dbem')=>'ASC',__('Descending','dbem')=>'DESC') as $key => $value) : ?>   
+				 				<option value='<?php echo $value ?>' <?php echo ("$value" == get_option('dbem_events_default_order')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo $key; ?>
+				 				</option>
+								<?php endforeach; ?>
+							</select>
+							<br/>
+							<?php _e('When Events Manager displays lists of events the default behaviour is ordering by start date in ascending order. To change this, modify the values above.','dbem'); ?>
+						</td>
+				   	</tr>
+					<?php
 					echo $save_button;
 					?>				
 				</table>

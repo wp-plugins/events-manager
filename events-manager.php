@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 3.0.4
+Version: 3.0.5
 Plugin URI: http://davidebenini.it/wordpress-plugins/events-manager/
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini, Marcus Sykes
@@ -86,7 +86,7 @@ if( is_admin() ){
 
 
 // Setting constants
-define('EM_VERSION', 3.04); //self expanatory
+define('EM_VERSION', 3.05); //self expanatory
 define('EM_CATEGORIES_TABLE', 'em_categories'); //TABLE NAME
 define('EM_EVENTS_TABLE','em_events'); //TABLE NAME
 define('EM_RECURRENCE_TABLE','dbem_recurrence'); //TABLE NAME   
