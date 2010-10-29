@@ -1,0 +1,59 @@
+http://davidebenini.it/events-manager-forum/topic.php?id=912&replies=2#post-2804
+Map not working
+
+location automcomplete, duplicates?
+droipdorn or autocomplete, is it working?
+Weekly view?                                        
+                  
+
+http://davidebenini.it/events-manager-forum/topic.php?id=916            
+Mail line endings                                             
+
+http://davidebenini.it/events-manager-forum/topic.php?id=917
+"It seems since he last used the plug-in, he's lost the ability to assign a contact person to events. Has this option been removed in a recent update? Is there a way around this?"   
+
+http://davidebenini.it/events-manager-forum/topic.php?id=911&replies=2#post-2805
+events with NO limit? Is it possible?    
+
+http://davidebenini.it/events-manager-forum/topic.php?id=910
+Weekly view? Is it possible?
+
+ 
+http://davidebenini.it/events-manager-forum/topic.php?id=898
+confirmation email, RSVP problems
+
+http://davidebenini.it/events-manager-forum/topic.php?id=918
+table encoding bug
+liebedex suggestion:
+ALTER TABLE wp_dbem_events CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+ALTER TABLE wp_dbem_locations CONVERT TO CHARACTER SET utf8 COLLATE utf8_general_ci;
+
+#_NOTES problem and fix:
+http://davidebenini.it/events-manager-forum/topic.php?id=597         
+
+http://davidebenini.it/events-manager-forum/topic.php?id=803
+curious.... NSBP                                            
+
+
+http://davidebenini.it/events-manager-forum/topic.php?id=893 
+fields missing in the db?                                   
+
+http://davidebenini.it/events-manager-forum/topic.php?id=614  
+130 seats limit
+
+http://davidebenini.it/events-manager-forum/topic.php?id=896
+Group of Events on not periodical dates
+
+http://davidebenini.it/events-manager-forum/topic.php?id=913 
+PAge and vavbar MAJOR BUG?
+
+    
+http://davidebenini.it/events-manager-forum/topic.php?id=158
+locations-map shortcode not working
+
+PATCHES:                                                    
+Location related bug
+http://davidebenini.it/events-manager-forum/topic.php?id=31
+
+Export to excel
+http://davidebenini.it/events-manager-forum/topic.php?id=906
