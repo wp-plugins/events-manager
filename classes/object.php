@@ -214,7 +214,7 @@ class EM_Object {
 					$orderby[] = $accepted_fields[$field];
 				}
 			}
-		}elseif( array_key_exists($args['orderby'], $accepted_fields) ){
+		}elseif( $args['orderby'] != '' && array_key_exists($args['orderby'], $accepted_fields) ){
 			$orderby[] = $accepted_fields[$args['orderby']];
 		}
 		//ORDER
