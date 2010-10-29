@@ -140,13 +140,21 @@ class EM_Event extends EM_Object{
 		//TODO make time handling less painful
 		$match = array();
 		if( preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_start_time'], $match ) ){
-			$match[1] = ($match[3] == 'PM') ? 12+$match[1] : $match[1]; 
+			if( $match[3] == 'PM' && $match[1] != 12 ){
+				$match[1] = 12+$match[1];
+			}elseif( $match[3] == 'AM' && $match[1] == 12 ){
+				$match[1] = '00';
+			} 
 			$this->start_time = $match[1].":".$match[2].":00";
 		}else{
 			$this->start_time = "00:00:00";
 		}
 		if( preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_end_time'], $match ) ){
-			$match[1] = ($match[3] == 'PM') ? 12+$match[1] : $match[1]; 
+			if( $match[3] == 'PM' && $match[1] != 12 ){
+				$match[1] = 12+$match[1];
+			}elseif( $match[3] == 'AM' && $match[1] == 12 ){
+				$match[1] = '00';
+			}  
 			$this->end_time = $match[1].":".$match[2].":00";
 		}else{
 			$this->end_time = $this->start_time;
