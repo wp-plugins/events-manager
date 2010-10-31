@@ -424,7 +424,7 @@ class EM_Event extends EM_Object{
 					//SEE AT BOTTOM OF FILE FOR OLD TARGET FILTERS FROM 2.x
 					$replace = $this->notes;
 					if($result == "#_EXCERPT"){
-						$matches = explode('<!--more-->', $this->notes);
+						$matches = explode('<!--more', $this->notes);
 						$replace = $matches[0];
 					}
 					break;

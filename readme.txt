@@ -109,6 +109,8 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 3. The Events Manager Options page.
 
 == Change Log ==
+= 3.0.6 =
+* Added revised German translation, thanks to 
 
 = 3.0.5 =
 * Fixed 12pm bug

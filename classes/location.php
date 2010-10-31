@@ -209,7 +209,7 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONEXCERPT':	
 					$replace = $this->description;
 					if($result == "#_EXCERPT" || $result == "#_LOCATIONEXCERPT"){
-						$matches = explode('<!--more-->', $this->description);
+						$matches = explode('<!--more', $this->description);
 						$replace = $matches[0];
 					}
 					break;
