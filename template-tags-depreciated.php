@@ -21,7 +21,7 @@ function dbem_get_events_list($limit = "10", $scope = "future", $order = "ASC", 
 		// allows the use of arguments without breaking the legacy code
 		$defaults = EM_Events::get_default_search();		
 		$r = wp_parse_args ( $limit, $defaults );
-		extract ( $r, EXTR_SKIP );
+		extract ( $r, EXTR_OVERWRITE );
 	}
 	$return = EM_Events::output(array('limit'=>$limit, 'scope'=>$scope, 'order'=>$order, 'format'=>$format, 'category'=>$category));
 	if( $echo ) echo $return;
@@ -40,10 +40,7 @@ function dbem_get_events_page($justurl = 0, $echo = 1, $text = '') {
 		// allows the use of arguments without breaking the legacy code
 		$defaults = array ('justurl' => 0, 'text' => '', 'echo' => 1 );
 		$r = wp_parse_args ( $justurl, $defaults );
-		extract ( $r, EXTR_SKIP );
-		$justurl = $r ['justurl'];
-		$text = $r ['text'];
-		$echo = $r ['echo'];
+		extract ( $r, EXTR_OVERWRITE );
 	}
 	
 	$page_link = get_permalink ( get_option ( "dbem_events_page" ) );
@@ -93,7 +90,7 @@ function dbem_rss_link($justurl = 0, $echo = 1, $text = "RSS") {
 		$defaults = array ('justurl' => 0, 'echo' => 1, 'text' => 'RSS' );
 		
 		$r = wp_parse_args ( $justurl, $defaults );
-		extract ( $r, EXTR_SKIP );
+		extract ( $r, EXTR_OVERWRITE );
 		$justurl = $r ['justurl'];
 		$echo = $r ['echo'];
 		$text = $r ['text'];

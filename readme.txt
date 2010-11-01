@@ -110,7 +110,10 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 
 == Change Log ==
 = 3.0.6 =
-* Added revised German translation, thanks to 
+* Added revised German translation
+* Fixed ordering issue
+* Fixed old template tag attributes not being read
+* Changed map ballon wrapper id to class
 
 = 3.0.5 =
 * Fixed 12pm bug

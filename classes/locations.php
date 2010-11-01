@@ -43,7 +43,9 @@ class EM_Locations extends EM_Object {
 		$where = ( count($conditions) > 0 ) ? " WHERE " . implode ( " AND ", $conditions ):'';
 		
 		//Get ordering instructions
+		$EM_Event = new EM_Event(); //blank event for below
 		$accepted_fields = $EM_Location->get_fields(true);
+		$accepted_fields = array_merge($accepted_fields, $EM_Event->get_fields(true));
 		$orderby = self::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order'));
 		//Now, build orderby sql
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';

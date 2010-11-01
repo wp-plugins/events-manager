@@ -232,6 +232,7 @@ class EM_Object {
 				$orderby[$i] .= ( in_array($args['order'], array('ASC','DESC')) ) ? $args['order'] : $default_order;
 			}
 		}
+		return $orderby;
 	}
 
 	/**

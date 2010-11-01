@@ -45,7 +45,7 @@ function em_map_global() {
 			        map: map
 			    });
 			    marker.setTitle(data[i].location_name);
-				var myContent = '<div id="em-map-balloon"><div id="content">'+ data[i].location_balloon +'</div></div>';
+				var myContent = '<div class="em-map-balloon"><div id="content">'+ data[i].location_balloon +'</div></div>';
 				em_map_infobox(marker, myContent);
 				
 				//Get min and max long/lats

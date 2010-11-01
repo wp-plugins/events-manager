@@ -58,7 +58,7 @@ class EM_Events extends EM_Object {
 			$where
 			$orderby_sql
 			$limit $offset
-		";	
+		";
 	
 		$results = $wpdb->get_results($sql, ARRAY_A);
 
