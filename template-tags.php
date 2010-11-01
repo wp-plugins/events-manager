@@ -45,10 +45,10 @@ function dbem_are_events_available($scope = "future"){ em_are_events_available($
  * @return boolean
  */
 function em_is_events_page() {
-	$events_page_id = get_option ( 'dbem_events_page' );
-	return is_page ( $events_page_id );
+	global $post;
+	return ($post->ID == get_option('dbem_events_page'));
 }
-function dbem_is_events_page(){ em_is_events_page(); }
+function dbem_is_events_page(){ em_is_events_page(); } //Depreciated
 
 
 /**
@@ -58,7 +58,7 @@ function dbem_is_events_page(){ em_is_events_page(); }
 function em_is_single_event_page() {
 	return (em_is_events_page () && (isset ( $_REQUEST ['event_id'] ) && $_REQUEST ['event_id'] != ''));
 }
-function dbem_is_single_event_page(){ em_is_single_event_page(); }
+function dbem_is_single_event_page(){ em_is_single_event_page(); } //Depreciated
 
 
 /**
@@ -69,7 +69,7 @@ function em_is_multiple_events_page() {
 	//FIXME this will also show true if it's not a locations page
 	return ( em_is_events_page () && !em_is_single_event_page() );
 }
-function dbem_is_multiple_events_page(){ em_is_multiple_events_page(); }
+function dbem_is_multiple_events_page(){ em_is_multiple_events_page(); } //Depreciated
 
 
 /**
@@ -81,6 +81,6 @@ function em_is_event_rsvpable() {
 	global $EM_Event;
 	return ( em_is_single_event_page() && is_numeric($EM_Event->id) && $EM_Event->rsvp );
 }
-function dbem_is_event_rsvpable(){ em_is_event_rsvpable(); }
+function dbem_is_event_rsvpable(){ em_is_event_rsvpable(); } //Depreciated
 
 ?>

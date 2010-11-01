@@ -5,7 +5,7 @@ class EM_Calendar extends EM_Object {
 		add_action('wp_head', array('EM_Calendar', 'insert_js'));
 	}
 	
-	function get($args = array()) {
+	function output($args = array()) {
 		$args = self::get_default_search($args);
 		$full = $args['full']; //For ZDE, don't delete pls
 		$month = $args['month']; 
@@ -293,7 +293,7 @@ class EM_Calendar extends EM_Object {
 			}
 		}       
 		return '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.$calendar.'</div>';
-	}	
+	}
 
 	/**
 	 * Echoes the calendar external JS contents directly into the head of the document

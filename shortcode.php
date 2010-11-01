@@ -8,7 +8,7 @@
  */
 function em_get_calendar_shortcode($atts) { 
 	$atts = (array) $atts;
-	return EM_Calendar::get($atts);
+	return EM_Calendar::output($atts);
 }
 add_shortcode('events_calendar', 'em_get_calendar_shortcode');
 
@@ -77,10 +77,10 @@ add_shortcode ( 'events_link', 'em_get_link_shortcode');
  * Returns the uri of the events page only
  * @return string
  */
-function em_get_uri_shortcode(){
+function em_get_url_shortcode(){
 	return EM_URI;
 }
-add_shortcode ( 'events_uri', 'em_get_uri_shortcode');
+add_shortcode ( 'events_url', 'em_get_url_shortcode');
 
 /**
  * CHANGE DOCUMENTATION! if you just want the url you should use shortcode events_rss_uri
@@ -101,7 +101,7 @@ add_shortcode ( 'events_rss_link', 'em_get_rss_link_shortcode' );
  * Returns the uri of the events rss page only, takes no attributes.
  * @return string
  */
-function em_get_rss_uri_shortcode(){
+function em_get_rss_url_shortcode(){
 	return EM_RSS_URI;
 }
-add_shortcode ( 'events_rss_uri', 'em_get_rss_uri_shortcode');
+add_shortcode ( 'events_rss_url', 'em_get_rss_url_shortcode');

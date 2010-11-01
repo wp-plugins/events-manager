@@ -59,7 +59,7 @@ function dbem_get_events_page($justurl = 0, $echo = 1, $text = '') {
 }
 
 /**
- * TOTALLY DEPRECIATED (NOT ALTERNATIVE TAG) - use EM_Calendar::get($args); for now (this will also change though)
+ * TOTALLY DEPRECIATED (NOT ALTERNATIVE TAG) - use EM_Calendar::output($args); for now (this will also change though)
  * @param unknown_type $args
  */
 function dbem_get_calendar($args=""){
@@ -70,7 +70,7 @@ function dbem_get_calendar($args=""){
 		'long_events' => 0
 	);           
 	$args_array = wp_parse_args( $args, $defaults );
-	$result = EM_Calendar::get($args_array);	
+	$result = EM_Calendar::output($args_array);	
 	if ( $args_array['echo'] )
 		echo $result;
 	else

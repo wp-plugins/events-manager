@@ -218,7 +218,7 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONPAGEURL': //Depreciated
 					$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
 					$link = EM_URI.$joiner."location_id=".$this->id;
-					$replace = ($result == '#_LOCATIONURL') ? $link : '<a href="'.$link.'">'.$this->name.'</a>';
+					$replace = ($result == '#_LOCATIONURL' || $result == '#_LOCATIONPAGEURL') ? $link : '<a href="'.$link.'">'.$this->name.'</a>';
 					break;
 				case '#_PASTEVENTS': //Depreciated
 				case '#_LOCATIONPASTEVENTS':

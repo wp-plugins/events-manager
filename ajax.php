@@ -31,7 +31,7 @@ function em_ajax_actions() {
 
 	if(isset($_REQUEST['ajaxCalendar']) && $_REQUEST['ajaxCalendar']) {
 		//FIXME if long events enabled originally, this won't show up on ajax call
-		echo EM_Calendar::get($_REQUEST);
+		echo EM_Calendar::output($_REQUEST);
 		die();
 	}
 }  

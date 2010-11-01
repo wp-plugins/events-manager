@@ -20,7 +20,7 @@ class EM_Widget_Calendar extends WP_Widget {
 	    //Our Widget Content  
 		$instance['month'] = date("m");
 		echo '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">';
-	    echo EM_Calendar::get($instance);
+	    echo EM_Calendar::output($instance);
 		echo '</div>';
 	    
 	    echo $args['after_widget'];
