@@ -91,10 +91,14 @@ class EM_Object {
 			$defaults['year'] = preg_match($year_regex, $defaults['year']) ? $defaults['year']:'';
 		}
 		//Order - it's either ASC or DESC, so let's just validate
-		if( preg_match('/^([A-Za-z],?)+$/', $array['order']) ) {
-			$defaults['order'] = explode(',', $array['order']);
+		if( preg_match('/,/', $defaults['order']) ) {
+			$defaults['order'] = explode(',', $defaults['order']);
 		}elseif( !in_array($defaults['order'], array('ASC','DESC')) ){
 			$defaults['order'] = $super_defaults['order'];
+		}
+		//ORDER BY, split if an array
+		if( preg_match('/,/', $defaults['orderby']) ) {
+			$defaults['orderby'] = explode(',', $defaults['orderby']);
 		}
 		//TODO should we clean format of malicious code over here and run everything thorugh this?
 		$defaults['array'] = ($defaults['array'] == true);
@@ -208,14 +212,18 @@ class EM_Object {
 		if(is_array($args['orderby'])){
 			//Clean orderby array so we only have accepted values
 			foreach( $args['orderby'] as $key => $field ){
-				if( !array_key_exists($field, $accepted_fields) ){
-					unset($args['orderby'][$key]);
-				}else{
+				if( array_key_exists($field, $accepted_fields) ){
 					$orderby[] = $accepted_fields[$field];
+				}elseif( in_array($field,$accepted_fields) ){
+					$orderby[] = $field;
+				}else{
+					unset($args['orderby'][$key]);
 				}
 			}
 		}elseif( $args['orderby'] != '' && array_key_exists($args['orderby'], $accepted_fields) ){
 			$orderby[] = $accepted_fields[$args['orderby']];
+		}elseif( $args['orderby'] != '' && in_array($args['orderby'], $accepted_fields) ){
+			$orderby[] = $args['orderby'];
 		}
 		//ORDER
 		//If order is an array, we'll go through the orderby array and match the order values (in order of array) with orderby values

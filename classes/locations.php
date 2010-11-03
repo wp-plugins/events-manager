@@ -45,7 +45,7 @@ class EM_Locations extends EM_Object {
 		//Get ordering instructions
 		$EM_Event = new EM_Event(); //blank event for below
 		$accepted_fields = $EM_Location->get_fields(true);
-		$accepted_fields = array_merge($accepted_fields, $EM_Event->get_fields(true));
+		$accepted_fields = array_merge($EM_Event->get_fields(true),$accepted_fields);
 		$orderby = self::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order'));
 		//Now, build orderby sql
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
@@ -143,6 +143,7 @@ class EM_Locations extends EM_Object {
 		$defaults = array(
 			'eventful' => false, //Locations that have an event (scope will also play a part here
 			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
+			'orderby' => 'name',
 			'scope' => 'all'
 		);
 		$args['eventful'] = ($args['eventful'] == true);

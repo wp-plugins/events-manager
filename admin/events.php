@@ -42,7 +42,7 @@ function dbem_events_subpanel() {
 					<p><?php echo $EM_Event->feedback_message ?></p>
 				</div>
 				<?php
-				dbem_events_table ( EM_Events::get( array('scope'=>$scope) ), "Future events" );
+				dbem_events_table ( EM_Events::get( array('limit'=>0,'scope'=>$scope) ), "Future events" );
 			}else{
 				// saving unsuccessful		
 				?>
@@ -87,7 +87,7 @@ function dbem_events_subpanel() {
 			dbem_event_form ( $title );
 		}else{
 			echo "<div class='error'><p>There was an error duplicating the event. Try again maybe?</div>";
-			dbem_events_table ( EM_Events::get(array('scope'=>$scope)), $title );
+			dbem_events_table ( EM_Events::get(array('limit'=>0,'scope'=>$scope)), $title );
 		}
 	}
 	
@@ -104,7 +104,7 @@ function dbem_events_subpanel() {
 				$title = __ ( 'Future Events', 'dbem' );
 				$scope = "future";
 		}
-		$events = EM_Events::get( array('scope'=>$scope, 'order'=>$order ) );		
+		$events = EM_Events::get( array('scope'=>$scope, 'limit'=>0, 'order'=>$order ) );		
 		dbem_events_table ( $events, $title );	
 	}
 }

@@ -1,10 +1,68 @@
 <?php
 /*
  * Template Tags
- * These template tags were used up until EM 2.2 they have been modified to use the new OOP structure
- * of EM, but still provide the same values as before for backward compatability.
- * If you'd like to port over to the new template functions, check out the tag you want and see how we did it (or view the new docs)
+ * If you know what you're doing, you're probably better off using the EM Objects directly.
  */
+
+/**
+ * Returns a html list of events filtered by the array or query-string of arguments supplied. 
+ * @param array|string $args
+ * @return string
+ */
+function em_get_events( $args = array() ){
+	if (strpos ( $args, "=" )) {
+		// allows the use of arguments without breaking the legacy code
+		$defaults = EM_Events::get_default_search();		
+		$args = wp_parse_args ( $args, $defaults );
+	}
+	return EM_Events::output( $args );
+}
+/**
+ * Prints out a list of events, takes same arguments as em_get_events.
+ * @param array|string $args
+ * @uses em_get_events()
+ */
+function em_events( $args = array() ){ echo em_get_events($args); }
+
+/**
+ * Returns a html list of locations filtered by the array or query-string of arguments supplied. 
+ * @param array|string $args
+ * @return string
+ */
+function em_get_locations( $args = array() ){
+	if (strpos ( $args, "=" )) {
+		// allows the use of arguments without breaking the legacy code
+		$defaults = EM_Locations::get_default_search();		
+		$args = wp_parse_args ( $args, $defaults );
+	}
+	return EM_Locations::output( $args );
+}
+/**
+ * Prints out a list of locations, takes same arguments as em_get_locations.
+ * @param array|string $args
+ * @uses em_get_locations()
+ */
+function em_locations( $args = array() ){ echo em_get_locations($args); }
+
+/**
+ * Returns an html calendar of events filtered by the array or query-string of arguments supplied. 
+ * @param array|string $args
+ * @return string
+ */
+function em_get_calendar( $args = array() ){
+	if (strpos ( $args, "=" )) {
+		// allows the use of arguments without breaking the legacy code
+		$defaults = EM_Calendar::get_default_search();		
+		$args = wp_parse_args ( $args, $defaults );
+	}
+	return EM_Calendar::output($args);
+}
+/**
+ * Prints out an html calendar, takes same arguments as em_get_calendar.
+ * @param array|string $args
+ * @uses em_get_calendar()
+ */
+function em_calendar( $args = array() ){ echo em_get_calendar($args); }
 
 /**
  * Creates an html link to the events page.
@@ -16,6 +74,12 @@ function em_get_link( $text = '' ) {
 	$text = ($text == '') ? __('Events','dbem') : $text; //In case options aren't there....
 	return "<a href='".EM_URI."' title='$text'>$text</a>";
 }
+/**
+ * Prints the result of em_get_link()
+ * @param string $text
+ * @uses em_get_link()
+ */
+function em_link($text = ''){ echo em_get_link($text); }
 
 /**
  * Creates an html link to the RSS feed
@@ -26,6 +90,12 @@ function em_get_rss_link($text = "RSS") {
 	$text = ($text == '') ? 'RSS' : $text;
 	return "<a href='".EM_RSS_URI."'>$text</a>";
 }
+/**
+ * Prints the result of em_get_rss_link()
+ * @param string $text
+ * @uses em_get_rss_link()
+ */
+function em_rss_link($text = "RSS"){ echo em_get_rss_link($text); }
 
 /**
  * Returns true if there are any events that exist in the given scope (default is future events).

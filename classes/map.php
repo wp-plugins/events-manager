@@ -39,6 +39,7 @@ class EM_Map extends EM_Object {
 	 */
 	function get_single($args) {
 		//TODO do some validation here of defaults
+		//FIXME change baloon to balloon for consistent spelling
 		$location = $args['location'];
 		if ( get_option('dbem_gmap_is_active') && ( is_object($location) && $location->latitude != 0 && $location->longitude != 0 ) ) {
 			$width = (isset($args['width'])) ? $args['width']:'400';

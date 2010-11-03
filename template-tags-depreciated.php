@@ -68,7 +68,7 @@ function dbem_get_calendar($args=""){
 		'month' => '',
 		'echo' => 1,
 		'long_events' => 0
-	);           
+	); 
 	$args_array = wp_parse_args( $args, $defaults );
 	$result = EM_Calendar::output($args_array);	
 	if ( $args_array['echo'] )
