@@ -1,0 +1,1665 @@
+# Translation of the WordPress plugin Events Manager 3.0.4 by Davide Benini, Marcus Sykes.
+# Copyright (C) 2010 Davide Benini, Marcus Sykes
+# This file is distributed under the same license as the Events Manager package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2010.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: Events Manager 3.0.4\n"
+"Report-Msgid-Bugs-To: http://wordpress.org/tag/events-manager\n"
+"POT-Creation-Date: 2010-10-22 13:29+0000\n"
+"PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin/admin.php:125 admin/categories.php:76 admin/categories.php:83
+#: admin/event.php:279 admin/events.php:192 admin/locations.php:103
+#: admin/locations.php:111 admin/people.php:39 bookings.php:78
+#: bookings.php:149
+msgid "Name"
+msgstr ""
+
+#: admin/admin.php:126
+msgid "Date"
+msgstr ""
+
+#: admin/admin.php:127 admin/event.php:338 admin/events.php:194
+msgid "Location"
+msgstr ""
+
+#: admin/admin.php:128 admin/locations.php:104 admin/locations.php:112
+msgid "Address"
+msgstr ""
+
+#: admin/admin.php:129 admin/locations.php:105 admin/locations.php:113
+msgid "Town"
+msgstr ""
+
+#: admin/admin.php:143
+msgid "Some required fields are missing:"
+msgstr ""
+
+#: admin/admin.php:146
+msgid "Since the event is repeated, you must specify an end date"
+msgstr ""
+
+#: admin/bookings.php:17
+msgid "Bookings deleted"
+msgstr ""
+
+#: admin/categories.php:56 events-manager.php:227
+msgid "Categories"
+msgstr ""
+
+#: admin/categories.php:75 admin/categories.php:82
+msgid "ID"
+msgstr ""
+
+#: admin/categories.php:106
+msgid "No categories have been inserted yet!"
+msgstr ""
+
+#: admin/categories.php:118 admin/categories.php:126
+msgid "Add category"
+msgstr ""
+
+#: admin/categories.php:122 admin/categories.php:164
+msgid "Category name"
+msgstr ""
+
+#: admin/categories.php:124 admin/categories.php:166
+msgid "The name of the category"
+msgstr ""
+
+#: admin/categories.php:148
+msgid "Edit category"
+msgstr ""
+
+#: admin/categories.php:169
+msgid "Update category"
+msgstr ""
+
+#: admin/event.php:4 admin/events.php:72
+msgid "Insert New Event"
+msgstr ""
+
+#: admin/event.php:31
+msgid "Mon"
+msgstr ""
+
+#: admin/event.php:31
+msgid "Tue"
+msgstr ""
+
+#: admin/event.php:31
+msgid "Wed"
+msgstr ""
+
+#: admin/event.php:31
+msgid "Thu"
+msgstr ""
+
+#: admin/event.php:31
+msgid "Fri"
+msgstr ""
+
+#: admin/event.php:31
+msgid "Sat"
+msgstr ""
+
+#: admin/event.php:31
+msgid "Sun"
+msgstr ""
+
+#: admin/event.php:42
+msgid "WARNING: This is a recurring event."
+msgstr ""
+
+#: admin/event.php:44
+msgid ""
+"Modifying these data all the events linked to this recurrence will be "
+"rescheduled"
+msgstr ""
+
+#: admin/event.php:46
+msgid "and all booking information will be deleted!"
+msgstr ""
+
+#: admin/event.php:49
+msgid "WARNING: This is a recurrence."
+msgstr ""
+
+#: admin/event.php:51
+msgid ""
+"If you change these data and save, this will become an independent event."
+msgstr ""
+
+#: admin/event.php:66
+msgid "Recurrence"
+msgstr ""
+
+#: admin/event.php:73
+msgid "Repeated event"
+msgstr ""
+
+#: admin/event.php:80
+msgid "Daily"
+msgstr ""
+
+#: admin/event.php:80
+msgid "Weekly"
+msgstr ""
+
+#: admin/event.php:80
+msgid "Monthly"
+msgstr ""
+
+#: admin/event.php:86 admin/event.php:109
+msgid "Every"
+msgstr ""
+
+#: admin/event.php:89
+msgid "day"
+msgstr ""
+
+#: admin/event.php:91
+msgid "days"
+msgstr ""
+
+#: admin/event.php:93
+msgid "week"
+msgstr ""
+
+#: admin/event.php:95
+msgid "weeks"
+msgstr ""
+
+#: admin/event.php:97
+msgid "month"
+msgstr ""
+
+#: admin/event.php:99
+msgid "months"
+msgstr ""
+
+#: admin/event.php:112
+msgid "first"
+msgstr ""
+
+#: admin/event.php:112
+msgid "second"
+msgstr ""
+
+#: admin/event.php:112
+msgid "third"
+msgstr ""
+
+#: admin/event.php:112
+msgid "fourth"
+msgstr ""
+
+#: admin/event.php:112
+msgid "last"
+msgstr ""
+
+#: admin/event.php:123
+msgid ""
+"Check if your event happens more than once according to a regular pattern"
+msgstr ""
+
+#: admin/event.php:130 admin/events.php:36 admin/events.php:255
+msgid "Reschedule"
+msgstr ""
+
+#: admin/event.php:135
+msgid "This is't a recurrent event"
+msgstr ""
+
+#: admin/event.php:147
+msgid "Contact Person"
+msgstr ""
+
+#: admin/event.php:150
+msgid "Contact"
+msgstr ""
+
+#: admin/event.php:151
+msgid "Select..."
+msgstr ""
+
+#: admin/event.php:158
+msgid "RSVP"
+msgstr ""
+
+#: admin/event.php:162
+msgid "Enable registration for this event"
+msgstr ""
+
+#: admin/event.php:173 admin/event.php:192
+msgid "Spaces"
+msgstr ""
+
+#: admin/event.php:185
+msgid "responses so far"
+msgstr ""
+
+#: admin/event.php:191
+msgid "Responder"
+msgstr ""
+
+#: admin/event.php:197
+msgid "Booked spaces"
+msgstr ""
+
+#: admin/event.php:198
+msgid "Available spaces"
+msgstr ""
+
+#: admin/event.php:208
+msgid "Comment:"
+msgstr ""
+
+#: admin/event.php:226
+msgid "Printable view"
+msgstr ""
+
+#: admin/event.php:234
+msgid "No responses yet!"
+msgstr ""
+
+#: admin/event.php:251 admin/events.php:228
+msgid "Category"
+msgstr ""
+
+#: admin/event.php:254
+msgid "Category:"
+msgstr ""
+
+#: admin/event.php:284
+msgid "The event name. Example: Birthday party"
+msgstr ""
+
+#: admin/event.php:289
+msgid "Event date"
+msgstr ""
+
+#: admin/event.php:292
+msgid "Recurrence dates"
+msgstr ""
+
+#: admin/event.php:302
+msgid "The event date."
+msgstr ""
+
+#: admin/event.php:305
+msgid ""
+"When not reoccurring, this event spans between the beginning and end date."
+msgstr ""
+
+#: admin/event.php:310
+msgid "The recurrence beginning and end date."
+msgstr ""
+
+#: admin/event.php:316
+msgid "Event time"
+msgstr ""
+
+#: admin/event.php:323
+msgid "The time of the event beginning and end"
+msgstr ""
+
+#: admin/event.php:328
+msgid "Coordinates"
+msgstr ""
+
+#: admin/event.php:347
+msgid "Location:"
+msgstr ""
+
+#: admin/event.php:364
+msgid ""
+"The name of the location where the event takes place. You can use the name "
+"of a venue, a square, etc"
+msgstr ""
+
+#: admin/event.php:369
+msgid "Name:"
+msgstr ""
+
+#: admin/event.php:372
+msgid "Select a location for your event"
+msgstr ""
+
+#: admin/event.php:376
+msgid "Address:"
+msgstr ""
+
+#: admin/event.php:379
+msgid ""
+"The address of the location where the event takes place. Example: 21, "
+"Dominick Street"
+msgstr ""
+
+#: admin/event.php:383
+msgid "Town:"
+msgstr ""
+
+#: admin/event.php:386
+msgid ""
+"The town where the location is located. If you're using the Google Map "
+"integration and want to avoid geotagging ambiguities include the country in "
+"the town field. Example: Verona, Italy."
+msgstr ""
+
+#: admin/event.php:395 admin/locations.php:181 admin/locations.php:265
+msgid "Location not found"
+msgstr ""
+
+#: admin/event.php:406
+msgid "Details"
+msgstr ""
+
+#: admin/event.php:413
+msgid "Details about the event"
+msgstr ""
+
+#: admin/event.php:420
+msgid "Attributes"
+msgstr ""
+
+#: admin/event.php:475
+msgid "Not defined in templates"
+msgstr ""
+
+#: admin/event.php:519
+msgid ""
+"In order to use attributes, you must define some in your templates, "
+"otherwise they'll never show. Go to Events > Settings to add attribute "
+"placeholders."
+msgstr ""
+
+#: admin/event.php:531
+msgid "Submit Event"
+msgstr ""
+
+#: admin/event.php:542
+msgid ""
+"Are you sure you want to reschedule this recurring event? If you do this, "
+"you will lose all booking information and the old recurring events will be "
+"deleted."
+msgstr ""
+
+#: admin/event.php:552
+msgid ""
+"Are you sure you want to disable bookings? If you do this and save, you will "
+"lose all previous bookings. If you wish to prevent further bookings, reduce "
+"the number of seats available to the amount of bookings you currently have"
+msgstr ""
+
+#: admin/events.php:51 admin/events.php:61 admin/locations.php:42
+#: admin/locations.php:60
+msgid "Ach, there's a problem here:"
+msgstr ""
+
+#: admin/events.php:74 admin/events.php:85
+msgid "Edit Event"
+msgstr ""
+
+#: admin/events.php:98
+msgid "Past Events"
+msgstr ""
+
+#: admin/events.php:101
+msgid "All Events"
+msgstr ""
+
+#: admin/events.php:104
+msgid "Future Events"
+msgstr ""
+
+#: admin/events.php:116 admin/events.php:136 widgets/events.php:72
+msgid "Past events"
+msgstr ""
+
+#: admin/events.php:117 admin/events.php:137 widgets/events.php:71
+msgid "All events"
+msgstr ""
+
+#: admin/events.php:118 admin/events.php:138 widgets/events.php:70
+msgid "Future events"
+msgstr ""
+
+#: admin/events.php:143
+msgid "Total"
+msgstr ""
+
+#: admin/events.php:151
+msgid "Bulk Actions"
+msgstr ""
+
+#: admin/events.php:152
+msgid "Delete selected"
+msgstr ""
+
+#: admin/events.php:154
+msgid "Apply"
+msgstr ""
+
+#: admin/events.php:165
+msgid "Filter"
+msgstr ""
+
+#: admin/events.php:171
+msgid "Previous Page"
+msgstr ""
+
+#: admin/events.php:173
+msgid "Next Page"
+msgstr ""
+
+#: admin/events.php:182
+msgid "no events"
+msgstr ""
+
+#: admin/events.php:195
+msgid "Date and time"
+msgstr ""
+
+#: admin/events.php:207 admin/events.php:208
+msgid "D d M Y"
+msgstr ""
+
+#: admin/events.php:232
+msgid "Duplicate this event"
+msgstr ""
+
+#: admin/locations.php:20
+msgid "Locations Deleted"
+msgstr ""
+
+#: admin/locations.php:36
+msgid "The location has been updated."
+msgstr ""
+
+#: admin/locations.php:55
+msgid "The location has been added."
+msgstr ""
+
+#: admin/locations.php:83 events-manager.php:225
+msgid "Locations"
+msgstr ""
+
+#: admin/locations.php:138
+msgid "No venues have been inserted yet!"
+msgstr ""
+
+#: admin/locations.php:148 admin/locations.php:203
+msgid "Add location"
+msgstr ""
+
+#: admin/locations.php:152 admin/locations.php:235
+msgid "Location name"
+msgstr ""
+
+#: admin/locations.php:154 admin/locations.php:237
+msgid "The name of the location"
+msgstr ""
+
+#: admin/locations.php:158 admin/locations.php:241
+msgid "Location address"
+msgstr ""
+
+#: admin/locations.php:160 admin/locations.php:243
+msgid "The address of the location"
+msgstr ""
+
+#: admin/locations.php:164 admin/locations.php:248
+msgid "Location town"
+msgstr ""
+
+#: admin/locations.php:166
+msgid "The town of the location"
+msgstr ""
+
+#: admin/locations.php:189 admin/locations.php:285
+msgid "Location image"
+msgstr ""
+
+#: admin/locations.php:191
+msgid "Select an image to upload"
+msgstr ""
+
+#: admin/locations.php:195 admin/locations.php:274
+msgid "Location description"
+msgstr ""
+
+#: admin/locations.php:200 admin/locations.php:280
+msgid "A description of the Location. You may include any kind of info here."
+msgstr ""
+
+#: admin/locations.php:221
+msgid "Edit location"
+msgstr ""
+
+#: admin/locations.php:250
+msgid "The town where the location is located"
+msgstr ""
+
+#: admin/locations.php:262
+msgid "Location map"
+msgstr ""
+
+#: admin/locations.php:290
+msgid "No image uploaded for this location yet"
+msgstr ""
+
+#: admin/locations.php:295
+msgid "Upload/change picture"
+msgstr ""
+
+#: admin/locations.php:299
+msgid "Update location"
+msgstr ""
+
+#: admin/options.php:16
+msgid "Changes saved."
+msgstr ""
+
+#: admin/options.php:28 admin/options.php:240
+msgid "Save Changes"
+msgstr ""
+
+#: admin/options.php:28
+msgid "All"
+msgstr ""
+
+#: admin/options.php:32
+msgid "Collapse All"
+msgstr ""
+
+#: admin/options.php:33
+msgid "Expand All"
+msgstr ""
+
+#: admin/options.php:51
+msgid "Event Manager Options"
+msgstr ""
+
+#: admin/options.php:61 admin/options.php:78 admin/options.php:106
+#: admin/options.php:125 admin/options.php:140 admin/options.php:156
+#: admin/options.php:171 admin/options.php:192 admin/options.php:208
+#: admin/options.php:227
+msgid "Click to toggle"
+msgstr ""
+
+#: admin/options.php:61
+msgid "General options"
+msgstr ""
+
+#: admin/options.php:65
+msgid "Use dropdown for locations?"
+msgstr ""
+
+#: admin/options.php:65
+msgid ""
+"Select yes to select location from a drow-down menu; location selection will "
+"be faster, but you will lose the ability to insert locations with events"
+msgstr ""
+
+#: admin/options.php:66
+msgid "Use recurrence?"
+msgstr ""
+
+#: admin/options.php:66
+msgid "Select yes to enable the recurrence features feature"
+msgstr ""
+
+#: admin/options.php:67
+msgid "Use RSVP?"
+msgstr ""
+
+#: admin/options.php:67
+msgid "Select yes to enable the RSVP feature"
+msgstr ""
+
+#: admin/options.php:68
+msgid "Use categories?"
+msgstr ""
+
+#: admin/options.php:68
+msgid "Select yes to enable the category features"
+msgstr ""
+
+#: admin/options.php:69
+msgid "Use attributes?"
+msgstr ""
+
+#: admin/options.php:69
+msgid "Select yes to enable the attributes feature"
+msgstr ""
+
+#: admin/options.php:78 admin/options.php:92
+msgid "Events page"
+msgstr ""
+
+#: admin/options.php:87
+msgid "[No Events Page]"
+msgstr ""
+
+#: admin/options.php:92
+msgid "This option allows you to select which page to use as an events page"
+msgstr ""
+
+#: admin/options.php:95
+msgid "Show events page in lists?"
+msgstr ""
+
+#: admin/options.php:95
+msgid ""
+"Check this option if you want the events page to appear together with other "
+"pages in pages lists."
+msgstr ""
+
+#: admin/options.php:96
+msgid "Display calendar in events page?"
+msgstr ""
+
+#: admin/options.php:96
+msgid ""
+"This options allows to display the calendar in the events page, instead of "
+"the default list. It is recommended not to display both the calendar widget "
+"and a calendar page."
+msgstr ""
+
+#: admin/options.php:97
+msgid "Disable title rewriting?"
+msgstr ""
+
+#: admin/options.php:97
+msgid ""
+"Some wordpress themes don't follow best practices when generating navigation "
+"menus, and so the automatic title rewriting feature may cause problems, if "
+"your menus aren't working correctly on the event pages, try setting this to "
+"'Yes', and provide an appropriate HTML title format below."
+msgstr ""
+
+#: admin/options.php:98
+msgid "Event Manager titles"
+msgstr ""
+
+#: admin/options.php:98
+msgid ""
+"This only setting only matters if you selected 'Yes' to above. You will "
+"notice the events page titles aren't being rewritten, and you have a new "
+"title underneath the default page name. This is where you control the HTML "
+"of this title. Make sure you keep the #_PAGETITLE placeholder here, as "
+"that's what is rewritten by events manager. To control what's rewritten in "
+"this title, see settings further down for page titles."
+msgstr ""
+
+#: admin/options.php:106
+msgid "Events format"
+msgstr ""
+
+#: admin/options.php:110
+msgid "Default event list format header"
+msgstr ""
+
+#: admin/options.php:110
+msgid ""
+"This content will appear just above your code for the default event list "
+"format. Default is blank"
+msgstr ""
+
+#: admin/options.php:111
+msgid "Default event list format"
+msgstr ""
+
+#: admin/options.php:111
+msgid ""
+"The format of any events in a list.<br/>Insert one or more of the following "
+"placeholders: <code>#_NAME</code>, <code>#_LOCATION</code>, <code>#_ADDRESS</"
+"code>, <code>#_TOWN</code>, <code>#_NOTES</code>.<br/> Use <code>#_EXCERPT</"
+"code> to show <code>#_NOTES</code> until you place a &lt;!&ndash;&ndash; "
+"more &ndash;&ndash;&gt; marker.<br/> Use <code>#_LINKEDNAME</code> for the "
+"event name with a link to the given event page.<br/> Use "
+"<code>#_EVENTPAGEURL</code> to print the event page URL and make your own "
+"customised links.<br/> Use <code>#_LOCATIONPAGEURL</code> to print the "
+"location page URL and make your own customised links.<br/>Use "
+"<code>#_EDITEVENTLINK</code> to add add a link to edit page for the event, "
+"which will appear only when a user is logged in.<br/>To insert date and time "
+"values, use <a href=\"http://www.php.net/manual/en/function.date.php\">PHP "
+"time format characters</a>  with a <code>#</code> symbol before them, i.e. "
+"<code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/> For the end "
+"time, put <code>#@</code> in front of the character, ie. <code>#@h</code>, "
+"<code>#@i</code>, etc.<br/> You can also create a date format without "
+"prepending <code>#</code> by wrapping it in #_{} or #@_{} (e.g. <code>#_{d/m/"
+"Y}</code>). If there is no end date, the value is not shown.<br/>Feel free "
+"to use HTML tags as <code>li</code>, <code>br</code> and so on.<br/>For "
+"custom attributes, you use <code>#_ATT{key}{alternative text}</code>, the "
+"second braces are optional and will appear if the attribute is not defined "
+"or left blank for that event. This key will appear as an option when adding "
+"attributes to your event."
+msgstr ""
+
+#: admin/options.php:112
+msgid "Default event list format footer"
+msgstr ""
+
+#: admin/options.php:112
+msgid ""
+"This content will appear just below your code for the default event list "
+"format. Default is blank"
+msgstr ""
+
+#: admin/options.php:113
+msgid "Single event page title format"
+msgstr ""
+
+#: admin/options.php:113
+msgid ""
+"The format of a single event page title. Follow the previous formatting "
+"instructions."
+msgstr ""
+
+#: admin/options.php:114
+msgid "Default single event format"
+msgstr ""
+
+#: admin/options.php:114
+msgid ""
+"The format of a single event page.<br/>Follow the previous formatting "
+"instructions. <br/>Use <code>#_MAP</code> to insert a map.<br/>Use "
+"<code>#_CONTACTNAME</code>, <code>#_CONTACTEMAIL</code>, "
+"<code>#_CONTACTPHONE</code> to insert respectively the name, e-mail address "
+"and phone number of the designated contact person. <br/>Use "
+"<code>#_ADDBOOKINGFORM</code> to insert a form to allow the user to respond "
+"to your events reserving one or more places (RSVP).<br/> Use "
+"<code>#_REMOVEBOOKINGFORM</code> to insert a form where users, inserting "
+"their name and e-mail address, can remove their bookings."
+msgstr ""
+
+#: admin/options.php:115
+msgid "Events page title"
+msgstr ""
+
+#: admin/options.php:115
+msgid "The title on the multiple events page."
+msgstr ""
+
+#: admin/options.php:116
+msgid "No events message"
+msgstr ""
+
+#: admin/options.php:116
+msgid "The message displayed when no events are available."
+msgstr ""
+
+#: admin/options.php:117
+msgid "List events by date title"
+msgstr ""
+
+#: admin/options.php:117
+msgid ""
+"If viewing a page for events on a specific dates, this is the title that "
+"would show up. To insert date values, use <a href=\"http://www.php.net/"
+"manual/en/function.date.php\">PHP time format characters</a>  with a "
+"<code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, "
+"<code>#j</code>, etc.<br/>"
+msgstr ""
+
+#: admin/options.php:125
+msgid "Calendar format"
+msgstr ""
+
+#: admin/options.php:129
+msgid "Small calendar title"
+msgstr ""
+
+#: admin/options.php:129
+msgid ""
+"The format of the title, corresponding to the text that appears when "
+"hovering on an eventful calendar day."
+msgstr ""
+
+#: admin/options.php:130
+msgid "Small calendar title separator"
+msgstr ""
+
+#: admin/options.php:130
+msgid ""
+"The separator appearing on the above title when more than one events are "
+"taking place on the same day."
+msgstr ""
+
+#: admin/options.php:131
+msgid "Full calendar events format"
+msgstr ""
+
+#: admin/options.php:131
+msgid ""
+"The format of each event when displayed in the full calendar. Remember to "
+"include <code>li</code> tags before and after the event."
+msgstr ""
+
+#: admin/options.php:132
+msgid "Show list on day with single event?"
+msgstr ""
+
+#: admin/options.php:132
+msgid ""
+"By default, if a calendar day only has one event, it display a single event "
+"when clicking on the link of that calendar date. If you select Yes here, you "
+"will get always see a list of events."
+msgstr ""
+
+#: admin/options.php:140
+msgid "Locations format"
+msgstr ""
+
+#: admin/options.php:144
+msgid "Single location page title format"
+msgstr ""
+
+#: admin/options.php:144
+msgid ""
+"The format of a single location page title.<br/>Follow the previous "
+"formatting instructions."
+msgstr ""
+
+#: admin/options.php:145
+msgid "Default single location page format"
+msgstr ""
+
+#: admin/options.php:145
+msgid ""
+"The format of a single location page.<br/>Insert one or more of the "
+"following placeholders: <code>#_NAME</code>, <code>#_ADDRESS</code>, "
+"<code>#_TOWN</code>, <code>#_DESCRIPTION</code>.<br/> Use <code>#_MAP</code> "
+"to display a map of the event location, and <code>#_IMAGE</code> to display "
+"an image of the location.<br/> Use <code>#_NEXTEVENTS</code> to insert a "
+"list of the upcoming events, <code>#_PASTEVENTS</code> for a list of past "
+"events, <code>#_ALLEVENTS</code> for a list of all events taking place in "
+"this location."
+msgstr ""
+
+#: admin/options.php:146
+msgid "Default location baloon format"
+msgstr ""
+
+#: admin/options.php:146
+msgid ""
+"The format of of the text appearing in the baloon describing the location in "
+"the map.<br/>Insert one or more of the following placeholders: <code>#_NAME</"
+"code>, <code>#_ADDRESS</code>, <code>#_TOWN</code>, <code>#_DESCRIPTION</"
+"code> or <code>#_IMAGE</code>."
+msgstr ""
+
+#: admin/options.php:147
+msgid "Default location event list format"
+msgstr ""
+
+#: admin/options.php:147
+msgid ""
+"The format of the events the list inserted in the location page through the "
+"<code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</"
+"code> element. <br/> Follow the events formatting instructions"
+msgstr ""
+
+#: admin/options.php:148
+msgid "Default no events message"
+msgstr ""
+
+#: admin/options.php:148
+msgid ""
+"The message to be displayed in the list generated by <code>#_NEXTEVENTS</"
+"code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events "
+"are available."
+msgstr ""
+
+#: admin/options.php:156
+msgid "RSS feed format"
+msgstr ""
+
+#: admin/options.php:160
+msgid "RSS main title"
+msgstr ""
+
+#: admin/options.php:160
+msgid "The main title of your RSS events feed."
+msgstr ""
+
+#: admin/options.php:161
+msgid "RSS main description"
+msgstr ""
+
+#: admin/options.php:161
+msgid "The main description of your RSS events feed."
+msgstr ""
+
+#: admin/options.php:162
+msgid "RSS title format"
+msgstr ""
+
+#: admin/options.php:162
+msgid "The format of the title of each item in the events RSS feed."
+msgstr ""
+
+#: admin/options.php:163
+msgid "RSS description format"
+msgstr ""
+
+#: admin/options.php:163
+msgid ""
+"The format of the description of each item in the events RSS feed. Follow "
+"the previous formatting instructions."
+msgstr ""
+
+#: admin/options.php:171
+msgid "Maps and geotagging"
+msgstr ""
+
+#: admin/options.php:176
+msgid "Enable Google Maps integration?"
+msgstr ""
+
+#: admin/options.php:178 functions.php:114
+msgid "Yes"
+msgstr ""
+
+#: admin/options.php:179 functions.php:115
+msgid "No"
+msgstr ""
+
+#: admin/options.php:180
+msgid "Check this option to enable Goggle Map integration."
+msgstr ""
+
+#: admin/options.php:184
+msgid "Map text format"
+msgstr ""
+
+#: admin/options.php:184
+msgid ""
+"The format the text appearing in the event page map cloud.<br/>Follow the "
+"previous formatting instructions."
+msgstr ""
+
+#: admin/options.php:192
+msgid "RSVP and bookings"
+msgstr ""
+
+#: admin/options.php:196
+msgid "Default contact person"
+msgstr ""
+
+#: admin/options.php:196
+msgid ""
+"Select the default contact person. This user will be employed whenever a "
+"contact person is not explicitly specified for an event"
+msgstr ""
+
+#: admin/options.php:197
+msgid "Enable the RSVP e-mail notifications?"
+msgstr ""
+
+#: admin/options.php:197
+msgid ""
+"Check this option if you want to receive an email when someone books places "
+"for your events."
+msgstr ""
+
+#: admin/options.php:198 admin/options.php:199
+msgid "Contact person email format"
+msgstr ""
+
+#: admin/options.php:198
+msgid ""
+"The format or the email which will be sent to  the contact person. Follow "
+"the events formatting instructions. <br/>Use <code>#_RESPNAME</code>, "
+"<code>#_RESPEMAIL</code> and <code>#_RESPPHONE</code> to display "
+"respectively the name, e-mail, address and phone of the respondent.<br/>Use "
+"<code>#_SPACES</code> to display the number of spaces reserved by the "
+"respondent. Use <code>#_COMMENT</code> to display the respondent's comment. "
+"<br/> Use <code>#_BOOKEDSEATS</code> and <code>#_AVAILABLESEATS</code> to "
+"display respectively the number of booked and available seats."
+msgstr ""
+
+#: admin/options.php:199
+msgid ""
+"The format or the email which will be sent to reposdent. Follow the events "
+"formatting instructions. <br/>Use <code>#_RESPNAME</code> to display the "
+"name of the respondent.<br/>Use <code>#_CONTACTNAME</code> and "
+"<code>#_CONTACTEMAIL</code> a to display respectively the name and e-mail of "
+"the contact person.<br/>Use <code>#_SPACES</code> to display the number of "
+"spaces reserved by the respondent. Use <code>#_COMMENT</code> to display the "
+"respondent's comment."
+msgstr ""
+
+#: admin/options.php:200
+msgid "Default notification receiver address"
+msgstr ""
+
+#: admin/options.php:200
+msgid "Insert the address of the receiver of your notifications"
+msgstr ""
+
+#: admin/options.php:208
+msgid "Email Settings"
+msgstr ""
+
+#: admin/options.php:212
+msgid "Notification sender name"
+msgstr ""
+
+#: admin/options.php:212
+msgid "Insert the display name of the notification sender."
+msgstr ""
+
+#: admin/options.php:213
+msgid "Notification sender address"
+msgstr ""
+
+#: admin/options.php:213
+msgid ""
+"Insert the address of the notification sender. It must corresponds with your "
+"gmail account user"
+msgstr ""
+
+#: admin/options.php:214
+msgid ""
+"The port through which you e-mail notifications will be sent. Make sure the "
+"firewall doesn't block this port"
+msgstr ""
+
+#: admin/options.php:215
+msgid "Mail sending method"
+msgstr ""
+
+#: admin/options.php:215
+msgid "PHP mail function"
+msgstr ""
+
+#: admin/options.php:215
+msgid "Select the method to send email notification."
+msgstr ""
+
+#: admin/options.php:216
+msgid "Use SMTP authentication?"
+msgstr ""
+
+#: admin/options.php:216
+msgid ""
+"SMTP authenticatio is often needed. If you use GMail, make sure to set this "
+"parameter to Yes"
+msgstr ""
+
+#: admin/options.php:217
+msgid ""
+"The SMTP host. Usually it corresponds to 'localhost'. If you use GMail, set "
+"this value to 'ssl://smtp.gmail.com:465'."
+msgstr ""
+
+#: admin/options.php:218
+msgid "SMTP username"
+msgstr ""
+
+#: admin/options.php:218
+msgid "Insert the username to be used to access your SMTP server."
+msgstr ""
+
+#: admin/options.php:219
+msgid "SMTP password"
+msgstr ""
+
+#: admin/options.php:219
+msgid "Insert the password to be used to access your SMTP server"
+msgstr ""
+
+#: admin/options.php:227
+msgid "Images size"
+msgstr ""
+
+#: admin/options.php:231
+msgid "Maximum width (px)"
+msgstr ""
+
+#: admin/options.php:231
+msgid "The maximum allowed width for images uploades"
+msgstr ""
+
+#: admin/options.php:232
+msgid "Maximum height (px)"
+msgstr ""
+
+#: admin/options.php:232
+msgid "The maximum allowed width for images uploaded, in pixels"
+msgstr ""
+
+#: admin/options.php:233
+msgid "Maximum size (bytes)"
+msgstr ""
+
+#: admin/options.php:233
+msgid "The maximum allowed size for images uploaded, in pixels"
+msgstr ""
+
+#: admin/people.php:36
+msgid "Bookings data"
+msgstr ""
+
+#: admin/people.php:40
+msgid "E-mail"
+msgstr ""
+
+#: admin/people.php:41 bookings.php:80
+msgid "Phone number"
+msgstr ""
+
+#: admin/people.php:42 bookings.php:82
+msgid "Seats"
+msgstr ""
+
+#: admin/people.php:43 bookings.php:93
+msgid "Comment"
+msgstr ""
+
+#: admin/people.php:57
+msgid "Booked"
+msgstr ""
+
+#: admin/people.php:62
+msgid "Available"
+msgstr ""
+
+#: admin/people.php:78
+msgid "No people have responded to your events yet!"
+msgstr ""
+
+#: admin/people.php:81
+msgid ""
+"This table collects the data about the people who responded to your events"
+msgstr ""
+
+#: admin/people.php:118
+msgid "Phone"
+msgstr ""
+
+#. #-#-#-#-#  plugin.pot (Events Manager 3.0.4)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: admin/people.php:118
+msgid "Events Manager"
+msgstr ""
+
+#: admin/support.php:10 events-manager.php:229
+msgid "Getting Help for Events Manager"
+msgstr ""
+
+#: bookings.php:40
+msgid "Booking deleted"
+msgstr ""
+
+#: bookings.php:42
+msgid "There are no bookings associated to this name and e-mail"
+msgstr ""
+
+#: bookings.php:66
+msgid "Book now!"
+msgstr ""
+
+#: bookings.php:79 bookings.php:152
+msgid "E-Mail"
+msgstr ""
+
+#: bookings.php:96
+msgid "Send your booking"
+msgstr ""
+
+#: bookings.php:105 bookings.php:111
+msgid "Hide cancellation form"
+msgstr ""
+
+#: bookings.php:105 bookings.php:107 bookings.php:110 bookings.php:114
+msgid "Cancel a booking"
+msgstr ""
+
+#: bookings.php:136 bookings.php:157
+msgid "Cancel your booking"
+msgstr ""
+
+#: classes/booking.php:74
+msgid "There was a problem saving the booking."
+msgstr ""
+
+#: classes/booking.php:80
+msgid "Your booking has been recorded"
+msgstr ""
+
+#: classes/bookings.php:78
+msgid "Booking successful."
+msgstr ""
+
+#: classes/bookings.php:80
+msgid "However, we were not able to send you an email."
+msgstr ""
+
+#: classes/bookings.php:88
+msgid "Booking could not be created"
+msgstr ""
+
+#: classes/bookings.php:91
+msgid "Booking cannot be made, not enough seats available!"
+msgstr ""
+
+#: classes/bookings.php:183
+msgid "Reservation confirmed"
+msgstr ""
+
+#: classes/bookings.php:186
+msgid "New booking"
+msgstr ""
+
+#: classes/event.php:207
+msgid "There was a problem saving the location so event was not saved."
+msgstr ""
+
+#: classes/event.php:227 classes/event.php:255
+msgid "Something went wrong with the recurrence update..."
+msgstr ""
+
+#: classes/event.php:228 classes/event.php:256
+msgid "There was a problem saving the recurring events."
+msgstr ""
+
+#: classes/event.php:233
+msgid "New recurrent event inserted!"
+msgstr ""
+
+#: classes/event.php:237
+msgid "New event successfully inserted!"
+msgstr ""
+
+#: classes/event.php:240 classes/event.php:263
+msgid "Could not save the event details due to a database error."
+msgstr ""
+
+#: classes/event.php:259
+msgid "Recurrence updated!"
+msgstr ""
+
+#: classes/event.php:267
+msgid "updated"
+msgstr ""
+
+#: classes/event.php:329
+msgid "Missing fields: "
+msgstr ""
+
+#: classes/event.php:332
+msgid "Since the event is repeated, you must specify an event date."
+msgstr ""
+
+#: classes/event.php:410 events-manager.php:223
+msgid "Edit"
+msgstr ""
+
+#: classes/event.php:410
+msgid "Event"
+msgstr ""
+
+#: classes/event.php:536
+msgid "N/A"
+msgstr ""
+
+#: classes/event.php:792
+msgid "Sunday"
+msgstr ""
+
+#: classes/event.php:792
+msgid "Monday"
+msgstr ""
+
+#: classes/event.php:792
+msgid "Tuesday"
+msgstr ""
+
+#: classes/event.php:792
+msgid "Wednesday"
+msgstr ""
+
+#: classes/event.php:792
+msgid "Thursday"
+msgstr ""
+
+#: classes/event.php:792
+msgid "Friday"
+msgstr ""
+
+#: classes/event.php:792
+msgid "Saturday"
+msgstr ""
+
+#: classes/event.php:793
+#, php-format
+msgid "the first %s of the month"
+msgstr ""
+
+#: classes/event.php:793
+#, php-format
+msgid "the second %s of the month"
+msgstr ""
+
+#: classes/event.php:793
+#, php-format
+msgid "the third %s of the month"
+msgstr ""
+
+#: classes/event.php:793
+#, php-format
+msgid "the fourth %s of the month"
+msgstr ""
+
+#: classes/event.php:793
+#, php-format
+msgid "the last %s of the month"
+msgstr ""
+
+#: classes/event.php:794
+#, php-format
+msgid "From %1$s to %2$s"
+msgstr ""
+
+#: classes/event.php:797
+msgid "everyday"
+msgstr ""
+
+#: classes/event.php:799
+#, php-format
+msgid "every %s days"
+msgstr ""
+
+#: classes/event.php:809
+#, php-format
+msgid "every %s weeks"
+msgstr ""
+
+#: classes/event.php:820
+#, php-format
+msgid "every %s months"
+msgstr ""
+
+#: classes/location.php:39
+msgid "The location name"
+msgstr ""
+
+#: classes/location.php:39
+msgid "The location address"
+msgstr ""
+
+#: classes/location.php:39
+msgid "The location town"
+msgstr ""
+
+#: classes/location.php:130
+msgid "The image could not be loaded"
+msgstr ""
+
+#: classes/location.php:158
+msgid " is missing!"
+msgstr ""
+
+#: classes/location.php:166
+msgid "The image file is too big! Maximum size:"
+msgstr ""
+
+#: classes/location.php:172
+msgid "The image is too big! Maximum size allowed:"
+msgstr ""
+
+#: classes/location.php:175
+msgid "The image is in a wrong format!"
+msgstr ""
+
+#: classes/mailer.php:61
+msgid "Please supply a valid email format."
+msgstr ""
+
+#: classes/map.php:20 classes/map.php:48
+msgid "Loading Map...."
+msgstr ""
+
+#: classes/map.php:61
+msgid "Map Unavailable"
+msgstr ""
+
+#: classes/person.php:84
+msgid "Please provide a valid email address."
+msgstr ""
+
+#: events-manager.php:101 events-manager.php:104 events-manager.php:220
+#: install.php:186 install.php:187 template-tags.php:16 widgets/events.php:42
+msgid "Events"
+msgstr ""
+
+#: events-manager.php:111 install.php:178 widgets/events.php:31
+msgid "No events"
+msgstr ""
+
+#: events-manager.php:117
+msgid "<li>No events in this location</li>"
+msgstr ""
+
+#: events-manager.php:208 events-manager.php:228
+msgid "Settings"
+msgstr ""
+
+#: events-manager.php:224
+msgid "Add new"
+msgstr ""
+
+#: events-manager.php:226
+msgid "People"
+msgstr ""
+
+#: events-manager.php:227
+msgid "Event Categories"
+msgstr ""
+
+#: events-manager.php:228
+msgid "Events Manager Settings"
+msgstr ""
+
+#: events-manager.php:229
+msgid "Help"
+msgstr ""
+
+#: events-manager.php:256
+msgid "Add an event"
+msgstr ""
+
+#: events-manager.php:272
+#, php-format
+msgid ""
+"This page corresponds to <strong>Events Manager</strong> events page. Its "
+"content will be overriden by <strong>Events Manager</strong>. If you want to "
+"display your content, you can can assign another page to <strong>Events "
+"Manager</strong> in the the <a href='%s'>Settings</a>. "
+msgstr ""
+
+#: events-manager.php:283
+#, php-format
+msgid ""
+"Uh Oh! For some reason wordpress could not create an events page for you (or "
+"you just deleted it). Not to worry though, all you have to do is create an "
+"empty page, name it whatever you want, and select it as your events page in "
+"your <a href=\"%s\">options page</a>. Sorry for the extra step! If you know "
+"what you are doing, you may have done this on purpose, if so <a href=\"%s"
+"\">ignore this message</a>"
+msgstr ""
+
+#: functions.php:5
+#, php-format
+msgid ""
+"<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We "
+"hope you like it around here.</p> \r\n"
+"\t\t<p>Now it's time to insert events lists through  <a href='%s' "
+"title='Widgets page'>widgets</a>, <a href='%s' title='Template tags "
+"documentation'>template tags</a> or <a href='%s' title='Shortcodes "
+"documentation'>shortcodes</a>.</p>\r\n"
+"\t\t<p>By the way, have you taken a look at the <a href='%s' title='Change "
+"settings'>Settings page</a>? That's where you customize the way events and "
+"locations are displayed.</p>\r\n"
+"\t\t<p>What? Tired of seeing this advice? I hear you, <a href='%s' "
+"title='Don't show this advice again'>click here</a> and you won't see this "
+"again!</p>"
+msgstr ""
+
+#: install.php:161
+msgid "Uncategorized"
+msgstr ""
+
+#: install.php:169
+msgid ""
+"#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to "
+"reserve #_SPACES spaces.<br/> Now there are #_RESERVEDSPACES spaces "
+"reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/"
+">Events Manager"
+msgstr ""
+
+#: install.php:170
+msgid ""
+"Dear #_RESPNAME, <br/>you have successfully reserved #_SPACES space/spaces "
+"for #_NAME.<br/>Yours faithfully,<br/> #_CONTACTPERSON"
+msgstr ""
+
+#: install.php:305
+msgid ""
+"We could not mirgrate old recurrence data over. DONT WORRY! You can just "
+"delete the current plugin, and re-install the previous 2.2.2 version and you "
+"wont lose any of your data. Either way, please contact the developers to let "
+"them know of this bug."
+msgstr ""
+
+#: install.php:467
+msgid ""
+"Events Manager successfully imported your events, please check your records "
+"to verify."
+msgstr ""
+
+#: install.php:483
+#, php-format
+msgid ""
+"Something has gone wrong when importing your old event. See the <a href=\"%s"
+"\">support page</a> for more information. <a href=\"%s\">Dismiss this "
+"message</a>"
+msgstr ""
+
+#: locations.php:35
+msgid "Ach, some problems here:"
+msgstr ""
+
+#: widgets/calendar.php:9
+msgid "Display your events in a calendar widget."
+msgstr ""
+
+#: widgets/calendar.php:10
+msgid "Events Calendar"
+msgstr ""
+
+#: widgets/calendar.php:32
+msgid "Calendar"
+msgstr ""
+
+#: widgets/calendar.php:41 widgets/events.php:60 widgets/locations.php:60
+msgid "Title"
+msgstr ""
+
+#: widgets/calendar.php:45
+msgid "Show Long Events?"
+msgstr ""
+
+#: widgets/events.php:9
+msgid "Display a list of events on Events Manager."
+msgstr ""
+
+#: widgets/events.php:64
+msgid "Number of events"
+msgstr ""
+
+#: widgets/events.php:68
+msgid "Scope of the events"
+msgstr ""
+
+#: widgets/events.php:76
+msgid "Order of the events"
+msgstr ""
+
+#: widgets/events.php:78 widgets/locations.php:78
+msgid "Ascendant"
+msgstr ""
+
+#: widgets/events.php:79 widgets/locations.php:79
+msgid "Descendant"
+msgstr ""
+
+#: widgets/events.php:83 widgets/locations.php:83
+msgid "List item format"
+msgstr ""
+
+#: widgets/locations.php:9
+msgid "Display a list of event locations on Events Manager."
+msgstr ""
+
+#: widgets/locations.php:31
+msgid "No locations"
+msgstr ""
+
+#: widgets/locations.php:42
+msgid "Event Locations"
+msgstr ""
+
+#: widgets/locations.php:64
+msgid "Show number of locations"
+msgstr ""
+
+#: widgets/locations.php:68
+msgid "Scope of the locations"
+msgstr ""
+
+#: widgets/locations.php:70
+msgid "Locations with upcoming events"
+msgstr ""
+
+#: widgets/locations.php:71
+msgid "All locations"
+msgstr ""
+
+#: widgets/locations.php:72
+msgid "Locations with past events "
+msgstr ""
+
+#: widgets/locations.php:76
+msgid "Order of the locations"
+msgstr ""
+
+#. Plugin URI of the plugin/theme
+msgid "http://davidebenini.it/wordpress-plugins/events-manager/"
+msgstr ""
+
+#. Description of the plugin/theme
+msgid ""
+"Manage events specifying precise spatial data (Location, Town, Province, "
+"etc)."
+msgstr ""
+
+#. Author of the plugin/theme
+msgid "Davide Benini, Marcus Sykes"
+msgstr ""
+
+#. Author URI of the plugin/theme
+msgid "http://www.davidebenini.it/blog"
+msgstr ""
