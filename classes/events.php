@@ -117,6 +117,7 @@ class EM_Events extends EM_Object {
 	
 	/**
 	 * Output a set of matched of events
+	 * Note that you can pass a 'pagination' boolean attribute to enable pagination, default is enabled (true) 
 	 * @param array $args
 	 * @return string
 	 */
@@ -127,17 +128,27 @@ class EM_Events extends EM_Object {
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Event' ){
 			$events = $args;
 		}else{
+			//Firstly, let's check for a limit/offset here, because if there is we need to remove it and manually do this
+			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
+			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:false;			
+			$args['limit'] = false;
+			$args['offset'] = false;			
 			$events = self::get( $args );
 		}
 		//What format shall we output this to, or use default
 		$format = ( $args['format'] == '') ? get_option( 'dbem_event_list_item_format' ) : $args['format'] ;
 		
 		$output = "";
-		if ( count($events) > 0 ) {
-			foreach ( $events as $event ) {
-				$EM_Event = $event;
-				/* @var EM_Event $event */
-				$output .= $event->output($format);
+		$events_count = count($events);
+		if ( $events_count > 0 ) {
+			$event_count = 0;
+			$events_shown = 0;
+			foreach ( $events as $EM_Event ) {
+				if( $events_shown < $limit && ($event_count >= $offset || $offset === 0) ){
+					$output .= $EM_Event->output($format);
+					$events_shown++;
+				}
+				$event_count++;
 			}
 			//Add headers and footers to output
 			if( $format == get_option ( 'dbem_event_list_item_format' ) ){
@@ -147,11 +158,19 @@ class EM_Events extends EM_Object {
 				$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
 				$output =  $single_event_format_header .  $output . $single_event_format_footer;
 			}
+			//Pagination (if needed/requested)
+			if( (!empty($args['pagination']) && $args['pagination'] !== false || empty($args['pagination'])) && $events_count >= $limit ){
+				//Calculate the page number by offset/limit
+				$page = ($offset > 0) ? floor($offset/$limit)+1 : 1;
+				//Show the pagination links (unless there's less than 10 events
+				$event_page_link = get_permalink(get_option('dbem_events_page'));
+				$output .= em_paginate(em_add_get_params($event_page_link, array_merge($_GET, array('page'=>'%PAGE%'))), $events_count, $limit, $page);
+			}
 		} else {
 			$output = get_option ( 'dbem_no_events_message' );
 		}
 		//TODO check if reference is ok when restoring object, due to changes in php5 v 4
-		$EM_Event_old = $EM_Event;
+		$EM_Event = $EM_Event_old;
 		return $output;		
 	}
 
@@ -162,8 +181,7 @@ class EM_Events extends EM_Object {
 	 * @uses EM_Object#get_default_search()
 	 */
 	function get_default_search( $array = array() ){
-		$defaults = array(
-			'limit'=>get_option('dbem_events_default_limit'),					
+		$defaults = array(				
 			'orderby' => get_option('dbem_events_default_orderby'),
 			'order' => get_option('dbem_events_default_order')
 		);

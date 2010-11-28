@@ -35,9 +35,18 @@ function em_content($content) {
 			// Multiple events page
 			$scope = ($_REQUEST['scope']) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
 			if (get_option ( 'dbem_display_calendar_in_events_page' )){
-				$content =  EM_Calendar::output( array('full'=>1) );
+				$content =  EM_Calendar::output( array('full'=>1,'long_events'=>get_option('dbem_full_calendar_long_events')) );
 			}else{
-				$content =  EM_Events::output( array( 'scope' => $scope ) );
+				//If we have a $_GET['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
+				$page = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
+				$args = array(
+					'limit'=> get_option('dbem_events_default_limit'),					
+					'orderby' => get_option('dbem_events_default_orderby'),
+					'order' => get_option('dbem_events_default_order'),
+					'scope' => $scope				
+				);
+				$args['offset'] = $args['limit'] * ($page-1);
+				$content =  EM_Events::output( $args );
 			}
 		}
 		//If disable rewrite flag is on, then we need to add a placeholder here
@@ -46,7 +55,7 @@ function em_content($content) {
 		}
 		//TODO FILTER - filter em page content before display
 	}
-	return $content;
+	return '<div id="em-wrapper">'.$content.'</div>';
 }
 add_filter ( 'the_content', 'em_content' );
 

@@ -73,7 +73,7 @@ function dbem_locations_page() {
 function dbem_admin_locations($message='', $fill_fields = false) {
 	global $EM_Location;
 	$locations = EM_Locations::get();
-	$new_location = (get_class($EM_Location) == 'EM_Location' && $fill_fields ) ? $EM_Location->to_array() : array(); //let's avoid php warning for empty object
+	$new_location = (is_object($EM_Location) && get_class($EM_Location) == 'EM_Location' && $fill_fields ) ? $EM_Location->to_array() : array(); //let's avoid php warning for empty object
 	$destination = get_bloginfo('wpurl')."/wp-admin/admin.php";
 	?>
 		<div class='wrap'>

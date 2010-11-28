@@ -38,16 +38,16 @@ add_action ( 'admin_notices', 'em_admin_warnings' );
  * Called by admin_print_scripts-(hook|page) action, created when adding menu items in events-manager.php
  */
 function em_admin_load_scripts(){
+	//Load the UI items, currently date picker and autocomplete plus dependencies
+	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
+	wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/em_ui.js', array('jquery', 'jquery-ui-core'));
+	
 	//Add maps
 	if( get_option('dbem_gmap_is_active') ){
 		wp_enqueue_script('em-google-maps', 'http://maps.google.com/maps/api/js?sensor=false');	
 	}
 	//Time Entry
 	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));	
-
-	//Load the UI items, currently date picker and autocomplete plus dependencies
-	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
-	wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/em_ui.js', array('jquery', 'jquery-ui-core'));
 	
 	//Date Picker Locale
 	$locale_code = substr ( get_locale (), 0, 2 );
@@ -72,6 +72,7 @@ function em_admin_load_scripts(){
  * Called by admin_print_styles-(hook|page) action, created when adding menu items in events-manager.php  
  */
 function em_admin_load_styles() {
+	add_thickbox();
 	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
 	wp_enqueue_style('events-manager-admin', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager_admin.css');
 }

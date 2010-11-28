@@ -110,8 +110,9 @@ function dbem_events_subpanel() {
 }
 
 function dbem_events_table($events, $title) {
-	$offset = ($_GET ['offset'] == '') ? 0 : $_GET ['offset'];
-	$limit = ($_GET ['limit'] > 0) ? $_GET['limit'] : 20;//Default limit
+	$limit = ( !empty($_GET['limit']) ) ? $_GET['limit'] : 20;//Default limit
+	$page = ( !empty($_GET['p']) ) ? $_GET['p']:1;
+	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
 	$scope_names = array (
 		'past' => __ ( 'Past events', 'dbem' ),
 		'all' => __ ( 'All events', 'dbem' ),
@@ -119,9 +120,6 @@ function dbem_events_table($events, $title) {
 	);
 	$scope = ( array_key_exists( $_GET ['scope'], $scope_names) ) ? $_GET ['scope']:'future';
 	$events_count = count ( $events );
-	
-	if (isset ( $_GET ['offset'] ))
-		$offset = $_GET ['offset'];
 	
 	$use_events_end = get_option ( 'dbem_use_event_end' );
 	?>
@@ -163,15 +161,15 @@ function dbem_events_table($events, $title) {
 						?>
 					</select> 
 					<input id="post-query-submit" class="button-secondary" type="submit" value="<?php _e ( 'Filter' )?>" />
-					<?php
-						$events_nav = '';
-						$backward = ($offset - $limit < 0) ? 0 : $offset - $limit;
-						$forward = $offset + $limit;
-						if ($offset > 0)
-							$events_nav .= " <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;limit=$limit&amp;scope=$scope&amp;offset=$backward'>&lt;&lt; ".__('Previous Page','dbem')."</a> ";
-						if ($events_count > $limit+$offset)
-							$events_nav .= "<a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;limit=$limit&amp;scope=$scope&amp;offset=$forward'>".__('Next Page','dbem')." &gt;&gt;</a>";
-						echo $events_nav;
+					<?php 
+						//Pagination (if needed/requested)
+						if( $events_count >= $limit ){
+							//Show the pagination links (unless there's less than 10 events
+							$page_link_template = preg_replace('/p=\d+/i','',$_SERVER['REQUEST_URI']);
+							$page_link_template = em_add_get_params($page_link_template, array('p'=>'%PAGE%'));
+							$events_nav = em_paginate( $page_link_template, $events_count, $limit, $page);
+							echo $events_nav;
+						}
 					?>
 				</div>
 				<div class="clear"></div>

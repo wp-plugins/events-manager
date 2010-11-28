@@ -23,7 +23,7 @@ class EM_Calendar extends EM_Object {
 			$year = date('Y');
 		}
 		
-		$date = mktime(0,0,0,$month, date('d'), $year); 
+		$date = mktime(0,0,0,$month, date('d', current_time('timestamp')), $year); 
 		$day = date('d', $date); 
 		// $month = date('m', $date); 
 		// $year = date('Y', $date);       

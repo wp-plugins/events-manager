@@ -15,16 +15,11 @@ class EM_Map extends EM_Object {
 			ob_start();
 			$atts['ajax'] = true;
 			$atts['query'] = 'GlobalMapData';
+			$rand = substr(md5(rand().rand()),0,5);
 			//build js array of arguments to send to event query
 			?>
-			<div id='em-locations-map' style='width:<?php echo $atts['width']; ?>px; height:<?php echo $atts['height']; ?>px'><em><?php _e('Loading Map....', 'dbem'); ?></em></div>
-			<script src='<?php echo bloginfo('wpurl') ?>/wp-content/plugins/events-manager/includes/js/em_maps.js' type='text/javascript'></script>
-			<script type='text/javascript'>
-			<!--// 
-				var em_query = <?php echo EM_Object::json_encode($atts); ?>;
-				em_load_map('em_map_global');
-			//-->
-			</script> 
+			<div class='em-locations-map' id='em-locations-map-<?php echo $rand; ?>' style='width:<?php echo $atts['width']; ?>px; height:<?php echo $atts['height']; ?>px'><em><?php _e('Loading Map....', 'dbem'); ?></em></div>
+			<div class='em-locations-map-coords' id='em-locations-map-coords-<?php echo $rand; ?>' style="display:none; visibility:hidden;"><?php echo EM_Object::json_encode($atts); ?></div>
 			<?php
 			return ob_get_clean();
 		}
@@ -45,17 +40,14 @@ class EM_Map extends EM_Object {
 			$width = (isset($args['width'])) ? $args['width']:'400';
 			$height = (isset($args['height'])) ? $args['height']:'300';
 			ob_start();
+			$rand = substr(md5(rand().rand()),0,5);
 			?>
-	   		<div id='em-location-map' style='background: #CDCDCD; width: <?php echo $width ?>px; height: <?php echo $height ?>px'><?php _e('Loading Map....', 'dbem'); ?></div>
-   			<div id='em-location-map-info' style="display:none; visibility:hidden;"><div class="em-map-balloon" style="font-size:12px;"><div id="content"><?php echo $location->output(get_option('dbem_location_baloon_format')); ?></div></div></div>
-			<script src='<?php bloginfo('wpurl'); ?>/wp-content/plugins/events-manager/includes/js/em_maps.js' type='text/javascript'></script>
-	   		<script type='text/javascript'>
-	  			<!--// 
-			  		var em_latitude = parseFloat('<?php echo $location->latitude; ?>');
-			  		var em_longitude = parseFloat('<?php echo $location->longitude; ?>');
-			  		em_load_map('em_map_single');
-				//-->
-			</script>			
+	   		<div class='em-location-map' id='em-location-map-<?php echo $rand ?>' style='background: #CDCDCD; width: <?php echo $width ?>px; height: <?php echo $height ?>px'><?php _e('Loading Map....', 'dbem'); ?></div>
+   			<div class='em-location-map-info' id='em-location-map-info-<?php echo $rand ?>' style="display:none; visibility:hidden;"><div class="em-map-balloon" style="font-size:12px;"><div class="em-map-balloon-content" ><?php echo $location->output(get_option('dbem_location_baloon_format')); ?></div></div></div>
+			<div class='em-location-map-coords' id='em-location-map-coords-<?php echo $rand ?>' style="display:none; visibility:hidden;">
+				<span class="lat"><?php echo $location->latitude; ?></span>
+				<span class="lng"><?php echo $location->longitude; ?></span>
+			</div>			
 			<?php
 			return ob_get_clean();
 		}

@@ -14,9 +14,58 @@ function em_hello_to_new_user() {
 	}
 }
 
+/**
+ * Takes a few params and determins a pagination link structure
+ * @param string $link
+ * @param int $total
+ * @param int $limit
+ * @param int $page
+ * @param int $pagesToShow
+ * @return string
+ */
+function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
+	$maxPages = ceil($total/$limit); //Total number of pages
+	$startPage = ($page <= $pagesToShow) ? 1 : $pagesToShow * (floor($page/$pagesToShow)) ; //Which page to start the pagination links from (in case we're on say page 12 and $pagesToShow is 10 pages)
+	$placeholder = urlencode('%PAGE%');
+	$link = str_replace('%PAGE%', urlencode('%PAGE%'), $link); //To avoid url encoded/non encoded placeholders
+    //Add the back and first buttons
+	    $string = ($page>1) ? '<a href="'.str_replace($placeholder,1,$link).'">&lt;&lt;</a> ' : '&lt;&lt; ';
+	    $string .= ($page>1) ? ' <a href="'.str_replace($placeholder,$page-1,$link).'">&lt;</a> ' : '&lt; ';
+	//Loop each page and create a link or just a bold number if its the current page
+	    for ($i = $startPage ; $i < $startPage+$pagesToShow && $i <= $maxPages ; $i++){
+            if($i == $page){
+                $string .= " <strong>$i</strong>";
+            }else{
+                $string .= ' <a href="'.str_replace($placeholder,$i,$link).'">'.$i.'</a> ';                
+            }
+	    }
+	//Add the forward and last buttons
+	    $string .= ($page<$total) ? ' <a href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' &gt; ' ;
+	    $string .= ($page<$total) ? ' <a href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : '&gt;&gt; ';
+	//Return the string
+	    return $string;
+}
 
-function url_exists($url) {
-	
+/**
+ * Takes a url and appends GET params (supplied as an assoc array), it automatically detects if you already have a querystring there
+ * @param string $url
+ * @param array $params
+ */
+function em_add_get_params($url, $params=array()){
+	$has_querystring = (stristr($url, "?"));	
+	$count = 0;
+	foreach($params as $key=>$value){
+		if( $count == 0 && !$has_querystring ){
+			$url .= "?{$key}=".urlencode($value);
+		}else{
+			$url .= "&amp;{$key}=".urlencode($value);
+		}
+		$count++;
+	}
+	return $url;
+}
+
+function url_exists($url) {	
 	if ((strpos ( $url, "http" )) === false)
 		$url = "http://" . $url;
 		// FIXME ripristina la linea seguente e VEDI DI SISTEMARE!!!!

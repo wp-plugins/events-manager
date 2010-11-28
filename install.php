@@ -212,6 +212,7 @@ function em_add_options() {
 		'dbem_image_max_size' => 204800,
 		'dbem_list_date_title' => __('Events', 'dbem').' - #j #M #y',
 		'dbem_full_calendar_event_format' => '<li>#_LINKEDNAME</li>',
+		'dbem_full_calendar_long_events' => '0',
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ", 
 		'dbem_hello_to_user' => 1,

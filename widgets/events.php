@@ -45,7 +45,8 @@ class EM_Widget extends WP_Widget {
     		'order' => 'ASC',
     		'limit' => 5,
     		'format' => '#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul>',
-    		'nolistwrap' => false
+    		'nolistwrap' => false,
+    		'orderby' => 'start_date,start_time,name'
     	);
     	foreach($defaults as $key => $value){
     		if($new_instance[$key] == ''){
@@ -75,10 +76,37 @@ class EM_Widget extends WP_Widget {
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Order of the events','dbem'); ?>:</label><br/>
-			<select id="<?php echo $this->get_field_id('order'); ?>" name="<?php echo $this->get_field_name('order'); ?>" >
-				<option value="ASC" <?php echo ($instance['order'] == 'ASC') ? 'selected="selected"':''; ?>><?php _e('Ascendant','dbem'); ?></option>
-				<option value="DESC" <?php echo ($instance['order'] == 'DESC') ? 'selected="selected"':''; ?>><?php _e('Descendant','dbem'); ?></option>
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Order By','dbem'); ?>: </label>
+			<select  id="<?php echo $this->get_field_id('orderby'); ?>" name="<?php echo $this->get_field_name('orderby'); ?>">
+				<?php 
+					$orderby_options = apply_filters('em_widget_orderby_ddm', array(
+						'start_date,start_time,name' => __('start date, start time, event name','dbem'),
+						'name,start_date,start_time' => __('name, start date, start time','dbem'),
+						'name,end_date,end_time' => __('name, end date, end time','dbem'),
+						'end_date,end_time,name' => __('end date, end time, event name','dbem'),
+					)); 
+				?>
+				<?php foreach($orderby_options as $key => $value) : ?>   
+	 			<option value='<?php echo $key ?>' <?php echo ($key == $instance['orderby']) ? "selected='selected'" : ''; ?>>
+	 				<?php echo $value; ?>
+	 			</option>
+				<?php endforeach; ?>
+			</select> 
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Order','dbem'); ?>: </label>
+			<select id="<?php echo $this->get_field_id('order'); ?>" name="<?php echo $this->get_field_name('order'); ?>">
+				<?php 
+				$order_options = apply_filters('em_widget_order_ddm', array(
+					'ASC' => __('Ascending','dbem'),
+					'DESC' => __('Descending','dbem')
+				)); 
+				?>
+				<?php foreach( $order_options as $key => $value) : ?>   
+	 			<option value='<?php echo $key ?>' <?php echo ($key == $instance['order']) ? "selected='selected'" : ''; ?>>
+	 				<?php echo $value; ?>
+	 			</option>
+				<?php endforeach; ?>
 			</select>
 		</p>
 		<p>

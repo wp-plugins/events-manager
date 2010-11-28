@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 3.0.7
+Version: 3.0.8
 Plugin URI: http://wp-events-plugin.com
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini, Marcus Sykes
@@ -86,7 +86,7 @@ if( is_admin() ){
 
 
 // Setting constants
-define('EM_VERSION', 3.05); //self expanatory
+define('EM_VERSION', 3.06); //self expanatory
 define('EM_CATEGORIES_TABLE', 'em_categories'); //TABLE NAME
 define('EM_EVENTS_TABLE','em_events'); //TABLE NAME
 define('EM_RECURRENCE_TABLE','dbem_recurrence'); //TABLE NAME   
@@ -201,6 +201,7 @@ add_action('admin_menu','em_create_events_submenu');
  */
 function em_enqueue_public() {
 	wp_enqueue_script ( 'jquery' ); //make sure we have jquery loaded
+	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/em_maps.js', array('jquery'));
 	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
 }
 add_action ( 'template_redirect', 'em_enqueue_public' );
