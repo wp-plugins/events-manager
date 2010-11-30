@@ -103,6 +103,10 @@ class EM_Event extends EM_Object{
 			$event['recurrence_byday'] = ( $event['recurrence_byday'] == 7 ) ? 0:$event['recurrence_byday']; //Backward compatibility (since 3.0.3), using 0 makes more sense due to date() function
 			$this->to_object($event, true);
 			
+			//Start/End times should be available as timestamp
+			$this->start = strtotime($this->start_date." ".$this->start_time);
+			$this->end = strtotime($this->end_date." ".$this->end_time);
+			
 			//Add Contact Person
 			if($this->contactperson_id){
 				if($this->contactperson_id > 0){
@@ -130,16 +134,16 @@ class EM_Event extends EM_Object{
 	function get_post(){
 		//Build Event Array
 		$post = $_POST;
-		$this->name = stripslashes ( $_POST ["event_name"] );
-		$this->start_date = $_POST ["event_start_date"];
-		$this->end_date = ($_POST ['event_end_date'] == '') ? $this->start_date : $_POST ["event_end_date"]; 
-		$this->rsvp = ( $_POST ['event_rsvp'] == 1 ) ? 1:0;
-		$this->seats = ( is_numeric($_POST ['event_seats']) ) ? $_POST ['event_seats']:0;
-		$this->notes = stripslashes ( $_POST ['content'] ); //WP TinyMCE field
+		$this->name = ( !empty($_POST['event_name']) ) ? stripslashes($_POST['event_name']) : '' ;
+		$this->start_date = ( !empty($_POST['event_start_date']) ) ? $_POST['event_start_date'] : '';
+		$this->end_date = ( !empty($_POST['event_end_date']) ) ? $_POST['event_end_date'] : $this->start_date; 
+		$this->rsvp = ( !empty($_POST['event_rsvp']) ) ? 1:0;
+		$this->seats = ( !empty($_POST['event_seats']) && is_numeric($_POST['event_seats']) ) ? $_POST['event_seats']:0;
+		$this->notes = ( !empty($_POST['content']) ) ? stripslashes($_POST['content']) : ''; //WP TinyMCE field
 		//Sort out time
 		//TODO make time handling less painful
 		$match = array();
-		if( preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_start_time'], $match ) ){
+		if( !empty($_POST['event_start_time']) && preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_start_time'], $match ) ){
 			if( $match[3] == 'PM' && $match[1] != 12 ){
 				$match[1] = 12+$match[1];
 			}elseif( $match[3] == 'AM' && $match[1] == 12 ){
@@ -149,7 +153,7 @@ class EM_Event extends EM_Object{
 		}else{
 			$this->start_time = "00:00:00";
 		}
-		if( preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_end_time'], $match ) ){
+		if( !empty($_POST['event_end_time']) && preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_end_time'], $match ) ){
 			if( $match[3] == 'PM' && $match[1] != 12 ){
 				$match[1] = 12+$match[1];
 			}elseif( $match[3] == 'AM' && $match[1] == 12 ){
@@ -159,39 +163,42 @@ class EM_Event extends EM_Object{
 		}else{
 			$this->end_time = $this->start_time;
 		}
+		//Start/End times should be available as timestamp
+		$this->start = strtotime($this->start_date." ".$this->start_time);
+		$this->end = strtotime($this->end_date." ".$this->end_time);
 		//Contact Person
-		if ( is_numeric($_POST['event_contactperson_id']) ) {		
+		if ( !empty($_POST['event_contactperson_id']) && is_numeric($_POST['event_contactperson_id']) ) {		
 			//TODO contactperson choices needs limiting depending on role	
-			$this->contactperson_id = $_POST ['event_contactperson_id'];
+			$this->contactperson_id = $_POST['event_contactperson_id'];
 		}
 		//category
-		if( is_numeric($_POST ['event_category_id']) ){
-			$this->category_id = $_POST ['event_category_id'];
+		if( !empty($_POST['event_category_id']) && is_numeric($_POST['event_category_id']) ){
+			$this->category_id = $_POST['event_category_id'];
 		}	
 		//Attributes
 		$event_attributes = array();
-		for($i=1 ; trim($_POST["mtm_{$i}_ref"])!='' ; $i++ ){
-	 		if(trim($_POST["mtm_{$i}_name"]) != ''){
+		for($i=1 ; !empty($_POST["mtm_{$i}_ref"]) && trim($_POST["mtm_{$i}_ref"]) != '' ; $i++ ){
+	 		if( !empty($_POST["mtm_{$i}_name"]) && trim($_POST["mtm_{$i}_name"]) != '' ){
 		 		$event_attributes[$_POST["mtm_{$i}_ref"]] = stripslashes($_POST["mtm_{$i}_name"]);
 	 		}
 	 	}
 	 	$this->attributes = $event_attributes;
 		//Recurrence data
-		$this->recurrence_id = ( is_numeric($_POST ['recurrence_id']) ) ? $_POST ['recurrence_id'] : 0 ;
-		if($_POST ['repeated_event']){
+		$this->recurrence_id = ( !empty($_POST['recurrence_id']) && is_numeric($_POST['recurrence_id']) ) ? $_POST['recurrence_id'] : 0 ;
+		if( !empty($_POST['repeated_event']) ){
 			$this->recurrence = 1;
-			$this->freq = in_array($_POST['recurrence_freq'], array('daily','weekly','monthly')) ? $_POST['recurrence_freq']:'daily';
-			if($this->freq == 'weekly' && self::array_is_numeric($_POST ['recurrence_bydays'])){
-				$this->byday = implode ( ",", $_POST ['recurrence_bydays'] );	
-			}elseif($this->freq == 'monthly'){
-				$this->byday = $_POST ['recurrence_byday'];
+			$this->freq = ( !empty($_POST['recurrence_freq']) && in_array($_POST['recurrence_freq'], array('daily','weekly','monthly')) ) ? $_POST['recurrence_freq']:'daily';
+			if( !empty($_POST['recurrence_bydays']) && $this->freq == 'weekly' && self::array_is_numeric($_POST['recurrence_bydays']) ){
+				$this->byday = implode ( ",", $_POST['recurrence_bydays'] );	
+			}elseif( !empty($_POST['recurrence_byday']) && $this->freq == 'monthly' ){
+				$this->byday = $_POST['recurrence_byday'];
 			}
-			$this->interval = ($_POST ['recurrence_interval'] == "") ? 1 : $_POST ['recurrence_interval'];
-			$this->byweekno = $_POST ['recurrence_byweekno'];
+			$this->interval = ( !empty($_POST['recurrence_interval']) ) ? $_POST['recurrence_interval']:1;
+			$this->byweekno = ( !empty($_POST['recurrence_byweekno']) ) ? $_POST['recurrence_byweekno']:'';
 		}
 		
 		//Add location information, or just link to previous location, this is a requirement...
-		if( isset($_POST['location-select-id']) && $_POST['location-select-id'] != "" ) {
+		if( !empty($_POST['location-select-id']) ) {
 			$this->location = new EM_Location($_POST['location-select-id']);
 		} else {
 			$this->location = new EM_Location($_POST); 
@@ -336,7 +343,7 @@ class EM_Event extends EM_Object{
 			// TODO Create friendly equivelant names for missing fields notice in validation 
 			$this->errors[] = __ ( 'Missing fields: ' ) . implode ( ", ", $missing_fields ) . ". ";
 		}
-		if ( $_POST ['repeated_event'] == "1" && $this->end_date == "" ){
+		if ( !empty($_POST['repeated_event']) && $_POST['repeated_event'] == "1" && $this->end_date == "" ){
 			$this->errors[] = __ ( 'Since the event is repeated, you must specify an event date.', 'dbem' );
 		}
 		if( !$this->location->validate() ){
@@ -459,7 +466,7 @@ class EM_Event extends EM_Object{
 				case '#_EDITEVENTLINK':
 					if(is_user_logged_in()){
 						//TODO user should have permission to edit the event
-						$replace = "<a href=' ".get_bloginfo('wpurl')."/wp-admin/edit.php?page=events-manager/events-manager.php&action=edit_event&event_id=".$this->id."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+						$replace = "<a href=' ".get_bloginfo('wpurl')."/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=".$this->id."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
 					}	 
 					break;
 				//Bookings
@@ -501,7 +508,7 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_CONTACTEMAIL':
 				case '#_CONTACTMAIL': //Depreciated
-					$replace = dbem_ascii_encode($this->contact->user_email);
+					$replace = em_ascii_encode($this->contact->user_email);
 					break;
 				case '#_CONTACTPHONE':
 		      		$replace = ( $this->contact->phone != '') ? $this->contact->phone : __('N/A', 'dbem');
@@ -520,12 +527,12 @@ class EM_Event extends EM_Object{
 		foreach($placeholders[0] as $result) {
 			// matches all PHP START date and time placeholders
 			if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-				$event_string = str_replace($result, mysql2date(ltrim($result, "#"), $this->start_date.$this->start_time),$event_string );
+				$event_string = str_replace($result, date(ltrim($result, "#"), $this->start),$event_string );
 			}
 			// matches all PHP END time placeholders for endtime
 			if (preg_match('/^#@[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-				$event_string = str_replace($result, mysql2date(ltrim($result, "#@"), $this->end_date.$this->end_time), $event_string ); 
-		 	}    
+				$event_string = str_replace($result, date(ltrim($result, "#@"), $this->end), $event_string ); 
+		 	}
 		}
 		//Time place holder that doesn't show if empty.
 		preg_match_all('/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/', $format, $results);
@@ -650,7 +657,7 @@ class EM_Event extends EM_Object{
 		if( $this->is_recurring() ){
 			
 			$start_date = strtotime($this->start_date);
-			$end_date = strtotime($this->end_date);  
+			$end_date = strtotime($this->end_date);
 					
 			$weekdays = explode(",", $this->byday); //what days of the week (or if monthly, one value at index 0)
 			 
@@ -760,7 +767,6 @@ class EM_Event extends EM_Object{
 		$monthweek_name = array('1' => __('the first %s of the month', 'dbem'),'2' => __('the second %s of the month', 'dbem'), '3' => __('the third %s of the month', 'dbem'), '4' => __('the fourth %s of the month', 'dbem'), '-1' => __('the last %s of the month', 'dbem'));
 		$output = sprintf (__('From %1$s to %2$s', 'dbem'),  $recurrence['event_start_date'], $recurrence['event_end_date']).", ";
 		if ($recurrence['recurrence_freq'] == 'daily')  {
-		  
 			$freq_desc =__('everyday', 'dbem');
 			if ($recurrence['recurrence_interval'] > 1 ) {
 				$freq_desc = sprintf (__("every %s days", 'dbem'), $recurrence['recurrence_interval']);
@@ -769,20 +775,23 @@ class EM_Event extends EM_Object{
 		if ($recurrence['recurrence_freq'] == 'weekly')  {
 			$weekday_array = explode(",", $recurrence['recurrence_byday']);
 			$natural_days = array();
-			foreach($weekday_array as $day)
+			foreach($weekday_array as $day){
 				array_push($natural_days, $weekdays_name[$day]);
+			}
 			$output .= implode(" and ", $natural_days);
+			$freq_desc = ", " . __("every week", 'dbem');
 			if ($recurrence['recurrence_interval'] > 1 ) {
 				$freq_desc = ", ".sprintf (__("every %s weeks", 'dbem'), $recurrence['recurrence_interval']);
 			}
 			
 		} 
 		if ($recurrence['recurrence_freq'] == 'monthly')  {
-			 $weekday_array = explode(",", $recurrence['recurrence_byday']);
-				$natural_days = array();
-				foreach($weekday_array as $day)
-					array_push($natural_days, $weekdays_name[$day-1]);
-				$freq_desc = sprintf (($monthweek_name[$recurrence['recurrence_byweekno']]), implode(" and ", $natural_days));
+			$weekday_array = explode(",", $recurrence['recurrence_byday']);
+			$natural_days = array();
+			foreach($weekday_array as $day){
+				array_push($natural_days, $weekdays_name[$day]);
+			}
+			$freq_desc = sprintf (($monthweek_name[$recurrence['recurrence_byweekno']]), implode(" and ", $natural_days));
 			if ($recurrence['recurrence_interval'] > 1 ) {
 				$freq_desc .= ", ".sprintf (__("every %s months",'dbem'), $recurrence['recurrence_interval']);
 			}

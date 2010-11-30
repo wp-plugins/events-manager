@@ -4,17 +4,17 @@
  * Determines whether to show event page or events page, and saves any updates to the event or events
  * @return null
  */
-function dbem_events_subpanel() {
+function em_events_subpanel() {
 	//TODO Simplify panel for events, use form flags to detect certain actions (e.g. submitted, etc)
 	global $wpdb;
 	global $EM_Event;
-	$action = $_GET ['action'];
-	$action2 = $_GET ['action2'];
-	$event_ID = $_GET ['event_id'];
-	$recurrence_ID = $_GET ['recurrence_id'];
-	$scope = ($_GET ['scope'] != '') ? $_GET['scope']:'future';
-	$order = $_GET ['order']; //FIXME order not used consistently in admin area
-	$selectedEvents = $_GET ['events'];
+	$action = ( !empty($_GET ['action']) ) ? $_GET ['action']:'';
+	$action2 = ( !empty($_GET ['action2']) ) ? $_GET ['action2']:'';
+	$event_ID = ( !empty($_GET ['event_id']) ) ? $_GET ['event_id']:'';
+	$recurrence_ID = ( !empty($_GET ['recurrence_id']) ) ? $_GET ['recurrence_id']:'';
+	$scope = ( !empty($_GET ['scope']) ) ? $_GET['scope']:'future';
+	$order = ( !empty($_GET ['order']) ) ? $_GET ['order']:''; //FIXME order not used consistently in admin area
+	$selectedEvents = ( !empty($_GET ['events']) ) ? $_GET ['events']:'';
 	
 	if ($order == ""){
 		$order = "ASC";
@@ -24,7 +24,7 @@ function dbem_events_subpanel() {
 	// DELETE action
 	if ( $action == 'deleteEvents' && EM_Object::array_is_numeric($selectedEvents) ) {
 		EM_Events::delete( $selectedEvents );
-		dbem_events_table ( EM_Events::get( array('scope'=>$scope) ), "Future events" );
+		em_events_table ( EM_Events::get( array('scope'=>$scope) ), "Future events" );
 	}
 	// UPDATE or CREATE action
 	if ($action == 'update_event') {
@@ -42,7 +42,7 @@ function dbem_events_subpanel() {
 					<p><?php echo $EM_Event->feedback_message ?></p>
 				</div>
 				<?php
-				dbem_events_table ( EM_Events::get( array('limit'=>0,'scope'=>$scope) ), "Future events" );
+				em_events_table ( EM_Events::get( array('limit'=>0,'scope'=>$scope) ), "Future events" );
 			}else{
 				// saving unsuccessful		
 				?>
@@ -52,7 +52,7 @@ function dbem_events_subpanel() {
 					</p>
 				</div>
 				<?php
-				dbem_event_form ( $title );
+				em_event_form ( $title );
 			}	
 		} else {
 			// validation unsuccessful			
@@ -61,7 +61,7 @@ function dbem_events_subpanel() {
 				<p><?php echo "<strong>" . __( "Ach, there's a problem here:", "dbem" ) . "</strong><br /><br />" . implode('<br />', $EM_Event->errors); ?></p>
 			</div>
 			<?php			
-			dbem_event_form ( $title );		
+			em_event_form ( $title );		
 		}
 	}
 	
@@ -74,7 +74,7 @@ function dbem_events_subpanel() {
 			$title = __ ( "Edit Event", 'dbem' ) . " '" . $EM_Event->name . "'";
 		}		
 		//Generate Event Form
-		dbem_event_form ( $title );	
+		em_event_form ( $title );	
 	}
 	
 	//Copy the event
@@ -84,10 +84,10 @@ function dbem_events_subpanel() {
 			//Now we edit the duplicated item
 			$title = __ ( "Edit Event", 'dbem' ) . " '" . $EM_Event->name . "'";
 			echo "<div id='message' class='updated below-h2'>You are now editing the duplicated event.</div>";
-			dbem_event_form ( $title );
+			em_event_form ( $title );
 		}else{
 			echo "<div class='error'><p>There was an error duplicating the event. Try again maybe?</div>";
-			dbem_events_table ( EM_Events::get(array('limit'=>0,'scope'=>$scope)), $title );
+			em_events_table ( EM_Events::get(array('limit'=>0,'scope'=>$scope)), $title );
 		}
 	}
 	
@@ -105,11 +105,11 @@ function dbem_events_subpanel() {
 				$scope = "future";
 		}
 		$events = EM_Events::get( array('scope'=>$scope, 'limit'=>0, 'order'=>$order ) );		
-		dbem_events_table ( $events, $title );	
+		em_events_table ( $events, $title );	
 	}
 }
 
-function dbem_events_table($events, $title) {
+function em_events_table($events, $title) {
 	$limit = ( !empty($_GET['limit']) ) ? $_GET['limit'] : 20;//Default limit
 	$page = ( !empty($_GET['p']) ) ? $_GET['p']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
@@ -118,7 +118,7 @@ function dbem_events_table($events, $title) {
 		'all' => __ ( 'All events', 'dbem' ),
 		'future' => __ ( 'Future events', 'dbem' )
 	);
-	$scope = ( array_key_exists( $_GET ['scope'], $scope_names) ) ? $_GET ['scope']:'future';
+	$scope = ( !empty($_GET ['scope']) && array_key_exists($_GET ['scope'], $scope_names) ) ? $_GET ['scope']:'future';
 	$events_count = count ( $events );
 	
 	$use_events_end = get_option ( 'dbem_use_event_end' );
@@ -165,14 +165,14 @@ function dbem_events_table($events, $title) {
 						//Pagination (if needed/requested)
 						if( $events_count >= $limit ){
 							//Show the pagination links (unless there's less than 10 events
-							$page_link_template = preg_replace('/p=\d+/i','',$_SERVER['REQUEST_URI']);
+							$page_link_template = preg_replace('/(&|\?)p=\d+/i','',$_SERVER['REQUEST_URI']);
 							$page_link_template = em_add_get_params($page_link_template, array('p'=>'%PAGE%'));
 							$events_nav = em_paginate( $page_link_template, $events_count, $limit, $page);
 							echo $events_nav;
 						}
 					?>
 				</div>
-				<div class="clear"></div>
+				<br class="clear" />
 				
 				<?php
 				if (empty ( $events )) {
@@ -270,7 +270,7 @@ function dbem_events_table($events, $title) {
 				
 				<div class='tablenav'>
 					<div class="alignleft actions">
-						<?php echo $events_nav; ?>
+						<?php echo ( !empty($events_nav) ) ? $events_nav:''; ?>
 					<br class='clear' />
 					</div>
 					<br class='clear' />

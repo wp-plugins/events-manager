@@ -1,9 +1,9 @@
 <?php
-function dbem_new_event_page() {
+function em_new_event_page() {
 	global $EM_Event;
 	$title = __ ( "Insert New Event", 'dbem' );
 	$EM_Event = new EM_Event(); //Empty event
-	dbem_event_form ( $title );
+	em_event_form ( $title );
 }
 
 /**
@@ -11,7 +11,7 @@ function dbem_new_event_page() {
  * @param $title
  * @return null
  */
-function dbem_event_form( $title ) {
+function em_event_form( $title ) {
 	global $EM_Event;
 	global $localised_date_formats;    
 	$use_select_for_locations = get_option('dbem_use_select_for_locations');
@@ -78,7 +78,7 @@ function dbem_event_form( $title ) {
 												<select id="recurrence-frequency" name="recurrence_freq">
 													<?php
 														$freq_options = array ("daily" => __ ( 'Daily', 'dbem' ), "weekly" => __ ( 'Weekly', 'dbem' ), "monthly" => __ ( 'Monthly', 'dbem' ) );
-														dbem_option_items ( $freq_options, $EM_Event->freq ); 
+														em_option_items ( $freq_options, $EM_Event->freq ); 
 													?>
 												</select>
 											</p>
@@ -102,7 +102,7 @@ function dbem_event_form( $title ) {
 											<p class="alternate-selector" id="weekly-selector">
 												<?php
 													$saved_bydays = ($EM_Event->is_recurring()) ? explode ( ",", $EM_Event->byday ) : array(); 
-													dbem_checkbox_items ( 'recurrence_bydays[]', $days_names, $saved_bydays ); 
+													em_checkbox_items ( 'recurrence_bydays[]', $days_names, $saved_bydays ); 
 												?>
 											</p>
 											<p class="alternate-selector" id="monthly-selector">
@@ -110,11 +110,11 @@ function dbem_event_form( $title ) {
 												<select id="monthly-modifier" name="recurrence_byweekno">
 													<?php
 														$weekno_options = array ("1" => __ ( 'first', 'dbem' ), '2' => __ ( 'second', 'dbem' ), '3' => __ ( 'third', 'dbem' ), '4' => __ ( 'fourth', 'dbem' ), '-1' => __ ( 'last', 'dbem' ) ); 
-														dbem_option_items ( $weekno_options, $EM_Event->byweekno  ); 
+														em_option_items ( $weekno_options, $EM_Event->byweekno  ); 
 													?>
 												</select>
 												<select id="recurrence-weekday" name="recurrence_byday">
-													<?php dbem_option_items ( $days_names, $EM_Event->byday  ); ?>
+													<?php em_option_items ( $days_names, $EM_Event->byday  ); ?>
 												</select>
 												&nbsp;
 											</p>

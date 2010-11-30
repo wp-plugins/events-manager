@@ -40,8 +40,8 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
             }
 	    }
 	//Add the forward and last buttons
-	    $string .= ($page<$total) ? ' <a href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' &gt; ' ;
-	    $string .= ($page<$total) ? ' <a href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : '&gt;&gt; ';
+	    $string .= ($i < $maxPages) ? ' <a href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' &gt; ' ;
+	    $string .= ($i < $maxPages) ? ' <a href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : '&gt;&gt; ';
 	//Return the string
 	    return $string;
 }
@@ -95,7 +95,7 @@ function em_get_wp_users() {
  * previously dbem_UI_helpers.php functions
  */
 
-function dbem_option_items($array, $saved_value) {
+function em_option_items($array, $saved_value) {
 	$output = "";
 	foreach($array as $key => $item) {    
 		$selected ='';
@@ -107,7 +107,7 @@ function dbem_option_items($array, $saved_value) {
 	echo $output;
 }
 
-function dbem_checkbox_items($name, $array, $saved_values, $horizontal = true) { 
+function em_checkbox_items($name, $array, $saved_values, $horizontal = true) { 
 	$output = "";
 	foreach($array as $key => $item) {
 		$checked = "";
@@ -121,7 +121,7 @@ function dbem_checkbox_items($name, $array, $saved_values, $horizontal = true) {
 	
 }
 
-function dbem_options_input_text($title, $name, $description) {
+function em_options_input_text($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
 		<th scope="row"><?php _e($title, 'dbem') ?></th>
@@ -132,7 +132,7 @@ function dbem_options_input_text($title, $name, $description) {
 		</tr>
 	<?php
 }
-function dbem_options_input_password($title, $name, $description) {
+function em_options_input_password($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
 		<th scope="row"><?php _e($title, 'dbem') ?></th>
@@ -144,7 +144,7 @@ function dbem_options_input_password($title, $name, $description) {
 	<?php
 }
 
-function dbem_options_textarea($title, $name, $description) {
+function em_options_textarea($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
 		<th scope="row"><?php _e($title,'dbem')?></th>
@@ -154,7 +154,7 @@ function dbem_options_textarea($title, $name, $description) {
 	<?php
 }
 
-function dbem_options_radio_binary($title, $name, $description) {
+function em_options_radio_binary($title, $name, $description) {
 		$list_events_page = get_option($name); ?>
 		 
 	   	<tr valign="top" id='<?php echo $name;?>_row'>
@@ -167,7 +167,7 @@ function dbem_options_radio_binary($title, $name, $description) {
 	   	</tr>
 <?php	
 }  
-function dbem_options_select($title, $name, $list, $description) {
+function em_options_select($title, $name, $list, $description) {
 	$option_value = get_option($name);
 	if( $name == 'dbem_events_page' && !is_object(get_page($option_value)) ){
 		$option_value = 0; //Special value
@@ -189,7 +189,7 @@ function dbem_options_select($title, $name, $list, $description) {
 	<?php	
 }
 // got from http://davidwalsh.name/php-email-encode-prevent-spam
-function dbem_ascii_encode($e)  
+function em_ascii_encode($e)  
 {  
     for ($i = 0; $i < strlen($e); $i++) { $output .= '&#'.ord($e[$i]).';'; }  
     return $output;  

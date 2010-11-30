@@ -61,13 +61,13 @@ class EM_Location extends EM_Object {
 	function get_post(){
 		//We are getting the values via POST or GET
 		$location = array();
-		$location['location_id'] = $_POST['location_id'];
-		$location['location_name'] = stripslashes($_POST['location_name']);
-		$location['location_address'] = stripslashes($_POST['location_address']); 
-		$location['location_town'] = stripslashes($_POST['location_town']); 
-		$location['location_latitude'] = $_POST['location_latitude'];
-		$location['location_longitude'] = $_POST['location_longitude'];
-		$location['location_description'] = stripslashes($_POST['content']);
+		$location['location_id'] = ( !empty($_POST['location_id']) ) ? $_POST['location_id']:'';
+		$location['location_name'] = ( !empty($_POST['location_name']) ) ? stripslashes($_POST['location_name']):'';
+		$location['location_address'] = ( !empty($_POST['location_address']) ) ? stripslashes($_POST['location_address']):'';
+		$location['location_town'] = ( !empty($_POST['location_town']) ) ? stripslashes($_POST['location_town']):'';
+		$location['location_latitude'] = ( !empty($_POST['location_latitude']) ) ? $_POST['location_latitude']:'';
+		$location['location_longitude'] = ( !empty($_POST['location_longitude']) ) ? $_POST['location_longitude']:'';
+		$location['location_description'] = ( !empty($_POST['content']) ) ? stripslashes($_POST['content']):'';
 		$this->to_object($location);
 	}
 	
@@ -158,7 +158,7 @@ class EM_Location extends EM_Object {
 				$this->errors[] = $description.__(" is missing!", "dbem");
 			}       
 		}
-		if ($_FILES['location_image']['size'] > 0 ) { 
+		if ( !empty($_FILES['location_image']) && $_FILES['location_image']['size'] > 0 ) { 
 			if (is_uploaded_file($_FILES['location_image']['tmp_name'])) {
 	 	 		$mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
 				$maximum_size = get_option('dbem_image_max_size'); 

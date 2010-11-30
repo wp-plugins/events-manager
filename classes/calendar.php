@@ -222,8 +222,8 @@ class EM_Calendar extends EM_Object {
 			foreach($events as $event) {   
 				if( $long_events ){
 					//If $long_events is set then show a date as eventful if there is an multi-day event which runs during that day
-					$event_start_date = strtotime($event->start_date);
-					$event_end_date = strtotime($event->end_date);
+					$event_start_date = apply_filters('em_calendar_loop_date_start', strtotime($event->start));
+					$event_end_date = apply_filters('em_calendar_loop_date_end', strtotime($event->end));
 					if( $event_end_date == '' ) $event_end_date = $event_start_date;
 					while( $event_start_date <= $event_end_date ){
 						$event_eventful_date = date('Y-m-d', $event_start_date);
@@ -309,7 +309,7 @@ class EM_Calendar extends EM_Object {
 
 
 	function days_in_month($month, $year) {
-		return cal_days_in_month(CAL_GREGORIAN, $month, $year);
+		return date('t', strtotime("$year-$month-1"));
 	}
 	 
 	function translate_and_trim($string, $length = 1) {

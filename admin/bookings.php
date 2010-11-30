@@ -3,7 +3,7 @@
  * Check if there's any actions to take for bookings
  * @return null
  */
-function dbem_admin_actions_bookings() {
+function em_admin_actions_bookings() {
   	global $dbem_form_add_message;   
 	global $dbem_form_delete_message; 
 	global $wpdb;
@@ -18,13 +18,13 @@ function dbem_admin_actions_bookings() {
 		}
 	}
 }
-add_action('init','dbem_admin_actions_bookings');
+add_action('init','em_admin_actions_bookings');
 
 /**
  * Shows table of bookings for an event
  * @return null
  */
-function dbem_bookings_table() {
+function em_bookings_table() {
 	global $EM_Event; 
 	?>
 	<form id='bookings-filter' method='get' action='<?php bloginfo('wpurl') ?>/wp-admin/edit.php'>

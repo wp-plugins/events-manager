@@ -34,7 +34,7 @@ add_shortcode('locations-map', 'em_get_locations_map_shortcode'); //Depreciate t
 function em_get_events_list_shortcode($atts) {
 	//TODO sort out attributes so it's consistent everywhere
 	$atts = (array) $atts;
-	return EM_Events::output ( $atts );
+	return EM_Events::output( $atts );
 }
 add_shortcode ( 'events_list', 'em_get_events_list_shortcode' );
 

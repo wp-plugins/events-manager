@@ -14,6 +14,7 @@ class EM_Object {
 	 * @return array
 	 */
 	function get_default_search($defaults=array(), $array = array()){
+		//TODO accept all objects as search options as well as ids (e.g. location vs. location_id, person vs. person_id)
 		//Create minimal defaults array, merge it with supplied defaults array
 		$super_defaults = array(
 			'limit' => false,
@@ -28,8 +29,13 @@ class EM_Object {
 			'recurring'=>false,
 			'month'=>'',
 			'year'=>'',
+			'pagination'=>false,
 			'array'=>false
 		);
+		//Return default if nothing passed
+		if( empty($defaults) && empty($array) ){
+			return $super_defaults;
+		}
 		//TODO decide on search defaults shared across all objects and then validate here
 		$defaults = array_merge($super_defaults, $defaults);
 		
@@ -39,7 +45,6 @@ class EM_Object {
 		if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
 		
 		if(is_array($array)){
-			//TODO accept all objects as search options as well as ids (e.g. location vs. location_id, person vs. person_id)
 			//If there's a location, then remove it and turn it into location_id
 			if( array_key_exists('location', $array)){
 				if ( is_numeric($array['location']) ) {
@@ -91,20 +96,22 @@ class EM_Object {
 			$defaults['year'] = preg_match($year_regex, $defaults['year']) ? $defaults['year']:'';
 		}
 		//Order - it's either ASC or DESC, so let's just validate
-		if( preg_match('/,/', $defaults['order']) ) {
+		if( !is_array($defaults['order']) && preg_match('/,/', $defaults['order']) ) {
 			$defaults['order'] = explode(',', $defaults['order']);
 		}elseif( !in_array($defaults['order'], array('ASC','DESC')) ){
 			$defaults['order'] = $super_defaults['order'];
 		}
 		//ORDER BY, split if an array
-		if( preg_match('/,/', $defaults['orderby']) ) {
+		if( !is_array($defaults['orderby']) && preg_match('/,/', $defaults['orderby']) ) {
 			$defaults['orderby'] = explode(',', $defaults['orderby']);
 		}
 		//TODO should we clean format of malicious code over here and run everything thorugh this?
 		$defaults['array'] = ($defaults['array'] == true);
+		$defaults['pagination'] = ($defaults['pagination'] == true);
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
-		return $defaults;
+		
+		return apply_filters('em_object_default_search', $defaults);
 	}
 	
 	/**
@@ -117,25 +124,27 @@ class EM_Object {
 		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
 		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
 		
+		$args = apply_filters('em_object_sql_conditions_args',$args);
+		
 		//Format the arguments passed on
 		$scope = $args['scope'];//undefined variable warnings in ZDE, could just delete this (but dont pls!)
 		$recurring = $args['recurring'];
 		$recurrence = $args['recurrence'];
 		$category = $args['category'];
 		$location = $args['location'];
-		$day = $args['day'];
 		$month = $args['month'];
 		$year = $args['year'];
-		$today = date('Y-m-d');
+		$today = date('Y-m-d', current_time('timestamp'));
 		//Create the WHERE statement
 		
 		//Recurrences
+		$conditions = array();
 		if( $recurring ){
-			$conditions = array("`recurrence`=1");
+			$conditions['recurring'] = "`recurrence`=1";
 		}elseif( $recurrence > 0 ){
-			$conditions = array("`recurrence_id`=$recurrence");
+			$conditions['recurrence'] = "`recurrence_id`=$recurrence";
 		}else{
-			$conditions = array("(`recurrence`!=1 OR `recurrence` IS NULL)");			
+			$conditions['recurring'] = "(`recurrence`!=1 OR `recurrence` IS NULL)";			
 		}
 		//Dates - first check 'month', and 'year'
 		if( !($month=='' && $year=='') ){
@@ -155,7 +164,7 @@ class EM_Object {
 			}
 			$date_start = date('Y-m-d', mktime(0,0,0,$date_month_start,1,$date_year_start));
 			$date_end = date('Y-m-t', mktime(0,0,0,$date_month_end,1,$date_year_end));
-			$conditions[] = " ((event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)))";
+			$conditions['scope'] = " ((event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)))";
 			$search_by_monthyear = true;
 		}
 		if( !isset($search_by_monthyear) ){
@@ -165,49 +174,50 @@ class EM_Object {
 				$dates = explode(',', $scope);
 				$date_start = $dates[0];
 				$date_end = $dates[1];
-				$conditions[] = " ((event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)))";
+				$conditions['scope'] = " ((event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)))";
 			} elseif ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
 				//Scope can also be a specific date. However, if 'day', 'month', or 'year' are set, that will take precedence
-				$conditions [] = " ( (event_start_date = CAST('$scope' AS DATE)) OR (event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE)) )";
+				$conditions['scope'] = " ( (event_start_date = CAST('$scope' AS DATE)) OR (event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE)) )";
 			} else {
 				if ($scope == "past"){
-					$conditions [] = " event_start_date < '$today'";  
+					$conditions['scope'] = " event_start_date < '$today'";  
 				}elseif ($scope == "today"){
-					$conditions [] = " ( (event_start_date = CAST('$today' AS DATE)) OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE)) )";
+					$conditions['scope'] = " ( (event_start_date = CAST('$today' AS DATE)) OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE)) )";
 				}elseif ($scope == "future" || $scope != 'all'){
-					$conditions [] = " (event_start_date >= CAST('$today' AS DATE) OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
+					$conditions['scope'] = " (event_start_date >= CAST('$today' AS DATE) OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
 				}
 			}
 		}
 		
 		//Filter by Location - can be object, array, or id
 		if ( is_numeric($location) && $location > 0 ) { //Location ID takes precedence
-			$conditions [] = " {$locations_table}.location_id = $location";
+			$conditions['location'] = " {$locations_table}.location_id = $location";
 		}elseif ( self::array_is_numeric($location) ){
-			$conditions [] = "( {$locations_table}.location_id = " . implode(" OR {$locations_table}.location_id = ", $location) .' )';
+			$conditions['location'] = "( {$locations_table}.location_id = " . implode(" OR {$locations_table}.location_id = ", $location) .' )';
 		}elseif ( is_object($location) && get_class($location)=='EM_Location' ){ //Now we deal with objects
-			$conditions [] = " {$locations_table}.location_id = $location->id";
+			$conditions['location'] = " {$locations_table}.location_id = $location->id";
 		}elseif ( is_array($location) && @get_class(current($location)=='EM_Location') ){ //we can accept array of ids or EM_Location objects
 			foreach($location as $EM_Location){
 				$location_ids[] = $EM_Location->id;
 			}
-			$conditions[] = "( {$locations_table}.location_id=". implode(" {$locations_table}.location_id=", $location_ids) ." )";
-		}	
+			$conditions['location'] = "( {$locations_table}.location_id=". implode(" {$locations_table}.location_id=", $location_ids) ." )";
+		}
 				
 		//Add conditions for category selection
 		//Filter by category, can be id or comma seperated ids
 		//TODO create an exclude category option
 		if ( $category != '' && is_numeric($category) ){
-			$conditions [] = " event_category_id = $category";
+			$conditions['category'] = " event_category_id = $category";
 		}elseif( self::array_is_numeric($category) ){
-			$conditions [] = "( event_category_id = ". implode(' OR event_category_id = ', $category).")";
+			$conditions['category'] = "( event_category_id = ". implode(' OR event_category_id = ', $category).")";
 		}
 		
-		return $conditions;
+		return apply_filters('em_object_sql_conditions', $conditions);
 	}
 	
 	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
 		//First, ORDER BY
+		$args = apply_filters('em_object_sql_orderby_args', $args);
 		$orderby = array();
 		if(is_array($args['orderby'])){
 			//Clean orderby array so we only have accepted values
@@ -240,7 +250,7 @@ class EM_Object {
 				$orderby[$i] .= ( in_array($args['order'], array('ASC','DESC')) ) ? $args['order'] : $default_order;
 			}
 		}
-		return $orderby;
+		return apply_filters('em_object_sql_orderby', $orderby);
 	}
 
 	/**
@@ -251,6 +261,7 @@ class EM_Object {
 	 */
 	function to_object( $array = array(), $addslashes = false ){
 		//Save core data
+		$array = apply_filters('em_to_object', $array);
 		foreach ( $this->fields as $key => $val ) {
 			if(array_key_exists($key, $array)){
 				if( !is_object($array[$key]) && !is_array($array[$key]) ){
@@ -265,12 +276,12 @@ class EM_Object {
 	 * Returns this object in the form of an array, useful for saving directly into a database table.
 	 * @return array
 	 */
-	function to_array(){ 
+	function to_array(){
 		$array = array();
 		foreach ( $this->fields as $key => $val ) {
 			$array[$key] = $this->$val['name'];
 		}
-		return $array;
+		return apply_filters('em_to_array', $array);
 	}
 	
 

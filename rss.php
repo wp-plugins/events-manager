@@ -3,36 +3,31 @@ function em_rss() {
 	if ( !empty( $_REQUEST ['dbem_rss'] ) ) {
 		header ( "Content-type: text/xml" );
 		echo "<?xml version='1.0'?>\n";
-		
-		$events_page_id = get_option ( 'dbem_events_page' );
-		$events_page_link = get_permalink ( $events_page_id );
-		$joiner = ( stristr($events_page_link, "?") ) ? "&amp;":"?";
 		?>
 <rss version="2.0">
 	<channel>
 		<title><?php echo get_option ( 'dbem_rss_main_title' ); ?></title>
-		<link><?php	echo $events_page_link; ?></link>
+		<link><?php	echo get_permalink ( get_option('dbem_events_page') ); ?></link>
 		<description><?php echo get_option ( 'dbem_rss_main_description' ); ?></description>
-		<docs>
-		http://blogs.law.harvard.edu/tech/rss
-		</docs>
-		<generator>
-		Weblog Editor 2.0
-		</generator>
+		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
+		<generator>Weblog Editor 2.0</generator>
+				
 		<?php
-		$title_format = get_option ( 'dbem_rss_title_format' );
 		$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_rss_description_format' ) ) );
 		$events = EM_Events::get( array('limit'=>5) );
 		foreach ( $events as $event ) {
-			$title = $event->output( $title_format, "rss" );
-			$description = $event->output( $description_format, "rss");
-			echo "<item>";
-			echo "<title>$title</title>\n";
-			echo "<link>$events_page_link" . $joiner . "event_id=" . $event->id . "</link>\n ";
-			echo "<description>$description </description>\n";
-			echo "</item>";
+			$description = $event->output( get_option ( 'dbem_rss_description_format' ), "rss");
+			$description = ent2ncr(convert_chars(strip_tags($description))); //Some RSS filtering
+			?>
+			<item>
+				<title><?php echo $event->output( get_option('dbem_rss_title_format'), "rss" ); ?></title>
+				<link><?php echo $event->output('#_EVENTURL'); ?></link>
+				<description><?php echo $description; ?></description>
+			</item>
+			<?php
 		}
 		?>
+		
 	</channel>
 </rss>
 		<?php

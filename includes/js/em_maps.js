@@ -45,22 +45,24 @@ function em_maps() {
 				  var maxLatLngArr = [0,0];
 				  
 				  for (var i = 0; i < data.length; i++) {
-					var latitude = parseFloat( data[i].location_latitude );
-					var longitude = parseFloat( data[i].location_longitude );
-					var location = new google.maps.LatLng( latitude, longitude );
-				    var marker = new google.maps.Marker({
-				        position: location, 
-				        map: maps[map_id]
-				    });
-				    marker.setTitle(data[i].location_name);
-					var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
-					em_map_infobox(marker, myContent, maps[map_id]);
-					
-					//Get min and max long/lats
-					minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
-					minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
-					maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
-					maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];		
+					  if( !(data[i].location_latitude == 0 && data[i].location_longitude == 0) ){
+						var latitude = parseFloat( data[i].location_latitude );
+						var longitude = parseFloat( data[i].location_longitude );
+						var location = new google.maps.LatLng( latitude, longitude );
+						var marker = new google.maps.Marker({
+						    position: location, 
+						    map: maps[map_id]
+						});
+						marker.setTitle(data[i].location_name);
+						var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
+						em_map_infobox(marker, myContent, maps[map_id]);
+						
+						//Get min and max long/lats
+						minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
+						minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
+						maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
+						maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];
+					  }
 				  }
 				  // Zoom in to the bounds
 				  var minLatLng = new google.maps.LatLng(minLatLngArr[0],minLatLngArr[1]);

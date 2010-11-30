@@ -14,26 +14,35 @@ function em_content($content) {
 		global $wpdb, $EM_Event;
 		//TODO FILTER - filter em page content before placeholder replacing
 		//TODO any loop should put the current $EM_Event etc. into the global variable
-		if ( isset( $_REQUEST['calendar_day'] ) && $_REQUEST['calendar_day'] != '' ) {
+		if ( !empty($_REQUEST['calendar_day']) ) {
 			//Events for a specific day
-			$events = EM_Events::get( array( 'scope'=>$_REQUEST['calendar_day'] ) );
-			if ( count($events) > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
-				$content =  EM_Events::output($events);
+			$args = array(					
+				'orderby' => get_option('dbem_events_default_orderby'),
+				'order' => get_option('dbem_events_default_order'),
+				'scope'=> $_REQUEST['calendar_day'],
+				'pagination' => 1
+			);
+			$page = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
+			$events = EM_Events::get( $args ); //Get events first, so we know how many there are in advance
+			if ( count($events) > 1 || $page > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
+				$args['limit'] = get_option('dbem_events_default_limit');
+				$args['offset'] = $args['limit'] * ($page-1);
+				$content =  EM_Events::output($events, $args);
 			} else {
 				$EM_Event = $events[0];
 				$content =  $EM_Event->output_single();
 			}
-		} elseif ( is_numeric($_REQUEST['location_id']) ) {
+		} elseif ( !empty($_REQUEST['location_id']) && is_numeric($_REQUEST['location_id']) ) {
 			//Just a single location
 			$location = new EM_Location($_REQUEST['location_id']);
 			$content =  $location->output_single();
-		} elseif ( is_numeric($_REQUEST['event_id']) ) {
+		} elseif ( !empty($_REQUEST['event_id']) && is_numeric($_REQUEST['event_id']) ) {
 			// single event page
 			$event = new EM_Event( $_REQUEST['event_id'] );
 			$content =  $event->output_single();
 		} else {
 			// Multiple events page
-			$scope = ($_REQUEST['scope']) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
+			$scope = (!empty($_REQUEST['scope'])) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
 			if (get_option ( 'dbem_display_calendar_in_events_page' )){
 				$content =  EM_Calendar::output( array('full'=>1,'long_events'=>get_option('dbem_full_calendar_long_events')) );
 			}else{
@@ -43,7 +52,8 @@ function em_content($content) {
 					'limit'=> get_option('dbem_events_default_limit'),					
 					'orderby' => get_option('dbem_events_default_orderby'),
 					'order' => get_option('dbem_events_default_order'),
-					'scope' => $scope				
+					'scope' => $scope,
+					'pagination' => 1			
 				);
 				$args['offset'] = $args['limit'] * ($page-1);
 				$content =  EM_Events::output( $args );

@@ -1,10 +1,10 @@
 <?php
-function dbem_categories_subpanel() {      
+function em_categories_subpanel() {      
 	global $wpdb;
 	
 	if(isset($_GET['action']) && $_GET['action'] == "edit") { 
 		// edit category  
-		dbem_categories_edit_layout();
+		em_categories_edit_layout();
 	} else {
 		// Insert/Update/Delete Record
 		$categories_table = $wpdb->prefix.EM_CATEGORIES_TABLE;
@@ -34,18 +34,18 @@ function dbem_categories_subpanel() {
 		//die(print_r($_POST));
 		if ( is_numeric($validation_result) ) {
 			$message = (isset($message)) ? $message : __("Successfully {$_POST['action']}ed category", "dbem");
-			dbem_categories_table_layout($message);
+			em_categories_table_layout($message);
 		} elseif ( $validation_result === false ) {
 			$message = (isset($message)) ? $message : __("There was a problem {$_POST['action']}ing your category, please try again.");						   
-			dbem_categories_table_layout($message);
+			em_categories_table_layout($message);
 		} else {
 			// no action, just a categories list
-			dbem_categories_table_layout();	
+			em_categories_table_layout();	
 		}
 	}
 } 
 
-function dbem_categories_table_layout($message = "") {
+function em_categories_table_layout($message = "") {
 	$categories = EM_Category::get();
 	$destination = get_bloginfo('url')."/wp-admin/admin.php"; 
 	?>
@@ -136,7 +136,7 @@ function dbem_categories_table_layout($message = "") {
 }
 
 
-function dbem_categories_edit_layout($message = "") {
+function em_categories_edit_layout($message = "") {
 	$category_id = $_GET['category_ID'];
 	$category = EM_Category::get($category_id);
 	?>

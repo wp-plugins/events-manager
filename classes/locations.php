@@ -144,10 +144,10 @@ class EM_Locations extends EM_Object {
 			'eventful' => false, //Locations that have an event (scope will also play a part here
 			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
 			'orderby' => 'name',
-			'scope' => 'all'
+			'scope' => 'all' //we probably want to search all locations by default, not like events
 		);
-		$args['eventful'] = ($args['eventful'] == true);
-		$args['eventless'] = ($args['eventless'] == true);
+		$args['eventful'] = ( !empty($args['eventful']) && $args['eventful'] == true );
+		$args['eventless'] = ( !empty($args['eventless']) && $args['eventless'] == true );
 		return parent::get_default_search($defaults, $args);
 	}
 	//TODO for all the static plural classes like this one, we might benefit from bulk actions like delete/add/save etc.... just a random thought.

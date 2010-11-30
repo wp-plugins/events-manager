@@ -109,6 +109,11 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 3. The Events Manager Options page.
 
 == Change Log ==
+= 3.0.81 =
+* Fixed pagination bugs
+* Global locations map won't show locations with 0-0 coords
+* Fixed bug in recurrence description
+
 = 3.0.8 =
 * Event lists now have pagination links for both admin and public areas!
 * Fixed timezone issue with calendars, now taking time from WP settings, not server
