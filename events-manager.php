@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 3.0.8
+Version: 3.0.81
 Plugin URI: http://wp-events-plugin.com
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini, Marcus Sykes
@@ -43,45 +43,44 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 // INCLUDES 
-include_once('classes/object.php'); //Base object, any files below may depend on this 
+include_once('classes/em-object.php'); //Base object, any files below may depend on this 
 //Template Tags & Template Logic
-include_once("ajax.php");
-include_once("bookings.php");
-include_once("events.php");
-include_once("functions.php");
-include_once("locations.php");
-include_once("rss.php");
-include_once("shortcode.php");
-include_once("template-tags.php");
-include_once("template-tags-depreciated.php"); //To depreciate
+include_once("em-ajax.php");
+include_once("em-bookings.php");
+include_once("em-events.php");
+include_once("em-functions.php");
+include_once("em-rss.php");
+include_once("em-shortcode.php");
+include_once("em-template-tags.php");
+include_once("em-template-tags-depreciated.php"); //To depreciate
 //Widgets
-include_once("widgets/events.php");
-include_once("widgets/locations.php");
-include_once("widgets/calendar.php");
+include_once("widgets/em-events.php");
+include_once("widgets/em-locations.php");
+include_once("widgets/em-calendar.php");
 //Classes
-include_once('classes/booking.php');
-include_once('classes/bookings.php');
-include_once('classes/calendar.php');
-include_once('classes/category.php');
-include_once('classes/event.php');
-include_once('classes/events.php');
-include_once('classes/location.php');
-include_once('classes/locations.php');
-include_once("classes/mailer.php") ;
-include_once('classes/map.php');
-include_once('classes/people.php');
-include_once('classes/person.php');
+include_once('classes/em-booking.php');
+include_once('classes/em-bookings.php');
+include_once('classes/em-calendar.php');
+include_once('classes/em-category.php');
+include_once('classes/em-event.php');
+include_once('classes/em-events.php');
+include_once('classes/em-location.php');
+include_once('classes/em-locations.php');
+include_once("classes/em-mailer.php") ;
+include_once('classes/em-map.php');
+include_once('classes/em-people.php');
+include_once('classes/em-person.php');
 //Admin Files
 if( is_admin() ){
-	include_once('admin/admin.php');
-	include_once('admin/bookings.php');
-	include_once('admin/categories.php');
-	include_once('admin/event.php');
-	include_once('admin/events.php');
-	include_once('admin/help.php');
-	include_once('admin/locations.php');
-	include_once('admin/options.php');
-	include_once('admin/people.php');
+	include_once('admin/em-admin.php');
+	include_once('admin/em-bookings.php');
+	include_once('admin/em-categories.php');
+	include_once('admin/em-event.php');
+	include_once('admin/em-events.php');
+	include_once('admin/em-help.php');
+	include_once('admin/em-locations.php');
+	include_once('admin/em-options.php');
+	include_once('admin/em-people.php');
 }
 
 
@@ -220,12 +219,12 @@ add_filter ( 'favorite_actions', 'em_favorite_menu' );
 
 /* Creating the wp_events table to store event data*/
 function em_activate() {
-	require_once(WP_PLUGIN_DIR.'/events-manager/install.php');
+	require_once(WP_PLUGIN_DIR.'/events-manager/em-install.php');
 	em_install();
 }
 register_activation_hook( __FILE__,'em_activate');
 
 if( !empty($_GET['em_reimport']) || get_option('dbem_import_fail') == '1' ){
-	require_once(WP_PLUGIN_DIR.'/events-manager/install.php');
+	require_once(WP_PLUGIN_DIR.'/events-manager/em-install.php');
 }
 ?>

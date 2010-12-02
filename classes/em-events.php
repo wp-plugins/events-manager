@@ -26,7 +26,7 @@ class EM_Events extends EM_Object {
 				LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 				WHERE event_id=".implode(" OR event_id=", $args)."
 			";
-			$results = $wpdb->get_results($sql);
+			$results = $wpdb->get_results(apply_filters('em_events_get_sql',$sql));
 			$events = array();
 			foreach($results as $result){
 				$events[$result['event_id']] = new EM_Event($result);
@@ -60,7 +60,7 @@ class EM_Events extends EM_Object {
 			$limit $offset
 		";
 	
-		$results = $wpdb->get_results($sql, ARRAY_A);
+		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){
@@ -74,7 +74,7 @@ class EM_Events extends EM_Object {
 			$events[] = new EM_Event($event);
 		}
 		
-		return $events;
+		return apply_filters('em_events_get', $events);
 	}
 	
 	/**
@@ -86,7 +86,7 @@ class EM_Events extends EM_Object {
 		global $wpdb;
 		$table_name = $wpdb->prefix . EM_EVENTS_TABLE;
 		$sql = "SELECT COUNT(*) FROM  $table_name WHERE (event_start_date  like '$date') OR (event_start_date <= '$date' AND event_end_date >= '$date');";
-		return $wpdb->get_var ( $sql );
+		return apply_filters('em_events_count_date', $wpdb->get_var($sql));
 	}
 	
 	/**
@@ -105,13 +105,16 @@ class EM_Events extends EM_Object {
 			$event_ids = $array;
 		}
 		if(self::array_is_numeric($event_ids)){
+			apply_filters('em_events_delete', $event_ids);
 			$condition = implode(" OR event_id=", $event_ids);
 			//Delete all the bookings
 			$result_bookings = $wpdb->query("DELETE FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE event_id=$condition;");
 			//Now delete the events
 			$result = $wpdb->query ( "DELETE FROM ". $wpdb->prefix . EM_EVENTS_TABLE ." WHERE event_id=$condition;" );
+			do_action('em_events_delete', $event_ids);
 		}
-		return true;
+		//TODO add error detection on events delete fails
+		return apply_filters('em_events_delete', true, $event_ids);
 	}
 	
 	
@@ -130,10 +133,12 @@ class EM_Events extends EM_Object {
 			$func_args = func_get_args();
 			$events = $func_args[0];
 			$args = $func_args[1];
+			$args = apply_filters('em_events_output_args', $args, $events);
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:false;
 		}else{
 			//Firstly, let's check for a limit/offset here, because if there is we need to remove it and manually do this
+			$args = apply_filters('em_events_output_args', $args);
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:false;			
 			$args['limit'] = false;
@@ -145,6 +150,8 @@ class EM_Events extends EM_Object {
 		
 		$output = "";
 		$events_count = count($events);
+		$events = apply_filters('em_events_output_events', $events);
+		
 		if ( $events_count > 0 ) {
 			$event_count = 0;
 			$events_shown = 0;
@@ -170,19 +177,33 @@ class EM_Events extends EM_Object {
 				//Show the pagination links (unless there's less than 10 events
 				$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
 				$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
-				$output .= em_paginate( $page_link_template, $events_count, $limit, $page);
+				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $events_count, $limit, $page), $page_link_template, $events_count, $limit, $page);
 			}
 		} else {
 			$output = get_option ( 'dbem_no_events_message' );
 		}
 		//TODO check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Event = $EM_Event_old;
-		return $output;		
+		return apply_filters('em_events_output', $output, $events, $args);		
 	}
 
+	/* Overrides EM_Object method to apply a filter to result
+	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
+	 */
+	function build_sql_conditions( $args = array() ){
+		return apply_filters( 'em_events_build_sql_conditions', parent::build_sql_conditions($args), $args );
+	}
+	
+	/* Overrides EM_Object method to apply a filter to result
+	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
+	 */
+	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+		return apply_filters( 'em_events_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order')), $args, $accepted_fields, $default_order );
+	}
+	
 	/* 
 	 * Adds custom Events search defaults
-	 * @param array $args
+	 * @param array $array
 	 * @return array
 	 * @uses EM_Object#get_default_search()
 	 */
@@ -191,7 +212,7 @@ class EM_Events extends EM_Object {
 			'orderby' => get_option('dbem_events_default_orderby'),
 			'order' => get_option('dbem_events_default_order')
 		);
-		return parent::get_default_search($defaults,$array);
+		return apply_filters('em_events_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
 }
 ?>

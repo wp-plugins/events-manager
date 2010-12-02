@@ -23,11 +23,11 @@ function em_content($content) {
 				'pagination' => 1
 			);
 			$page = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
-			$events = EM_Events::get( $args ); //Get events first, so we know how many there are in advance
+			$events = EM_Events::get( apply_filters('em_content_calendar_day_args', $args) ); //Get events first, so we know how many there are in advance
 			if ( count($events) > 1 || $page > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
 				$args['limit'] = get_option('dbem_events_default_limit');
 				$args['offset'] = $args['limit'] * ($page-1);
-				$content =  EM_Events::output($events, $args);
+				$content =  EM_Events::output($events, apply_filters('em_content_calendar_day_output_args', $args) );
 			} else {
 				$EM_Event = $events[0];
 				$content =  $EM_Event->output_single();
@@ -44,7 +44,8 @@ function em_content($content) {
 			// Multiple events page
 			$scope = (!empty($_REQUEST['scope'])) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
 			if (get_option ( 'dbem_display_calendar_in_events_page' )){
-				$content =  EM_Calendar::output( array('full'=>1,'long_events'=>get_option('dbem_full_calendar_long_events')) );
+				$args = array('full'=>1,'long_events'=>get_option('dbem_full_calendar_long_events'));
+				$content =  EM_Calendar::output( apply_filters('em_content_calendar_args', $args) );
 			}else{
 				//If we have a $_GET['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
 				$page = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
@@ -56,7 +57,7 @@ function em_content($content) {
 					'pagination' => 1			
 				);
 				$args['offset'] = $args['limit'] * ($page-1);
-				$content =  EM_Events::output( $args );
+				$content =  EM_Events::output( apply_filters('em_content_events_args', $args) );
 			}
 		}
 		//If disable rewrite flag is on, then we need to add a placeholder here
@@ -65,7 +66,7 @@ function em_content($content) {
 		}
 		//TODO FILTER - filter em page content before display
 	}
-	return '<div id="em-wrapper">'.$content.'</div>';
+	return apply_filters('em_content', '<div id="em-wrapper">'.$content.'</div>');
 }
 add_filter ( 'the_content', 'em_content' );
 
@@ -108,7 +109,7 @@ function em_events_page_title($content) {
 		}
 		//TODO FILTER - filter titles before em output
 	}
-	return $content;
+	return apply_filters('em_events_page_title', $content);
 }
 add_filter ( 'single_post_title', 'em_events_page_title' ); //Filter for the wp_title of page, can directly reference page title function
 
@@ -125,7 +126,7 @@ function em_wp_the_title($data){
 			return em_events_page_title($data) ;
 		}
 	}
-	return $data ;
+	return apply_filters('em_wp_the_title', $data) ;
 }
 add_filter ( 'the_title', 'em_wp_the_title' );
 
@@ -145,9 +146,9 @@ function em_filter_get_pages($data) {
 				$output[] = $page;
 			}
 		}
-		return $output;
+		return apply_filters('em_filter_get_pages', $output);
 	}
-	return $data;
+	return apply_filters('em_filter_get_pages', $data);
 }
 add_filter ( 'get_pages', 'em_filter_get_pages' );
 

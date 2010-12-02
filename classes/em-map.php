@@ -21,9 +21,10 @@ class EM_Map extends EM_Object {
 			<div class='em-locations-map' id='em-locations-map-<?php echo $rand; ?>' style='width:<?php echo $atts['width']; ?>px; height:<?php echo $atts['height']; ?>px'><em><?php _e('Loading Map....', 'dbem'); ?></em></div>
 			<div class='em-locations-map-coords' id='em-locations-map-coords-<?php echo $rand; ?>' style="display:none; visibility:hidden;"><?php echo EM_Object::json_encode($atts); ?></div>
 			<?php
-			return ob_get_clean();
+			return apply_filters('em_map_get_global', ob_get_clean());
+		}else{
+			return '';	
 		}
-		return '';
 	}
 	
 	
@@ -50,7 +51,10 @@ class EM_Map extends EM_Object {
 			</div>			
 			<?php
 			return ob_get_clean();
+		}elseif( is_object($location) && $location->latitude == 0 && $location->longitude == 0 ){
+			return '<i>'. __('Map Unavailable', 'dbem') .'</i>';
+		}else{
+			return '';
 		}
-		return '<i>'. __('Map Unavailable', 'dbem') .'</i>';
 	}	
 }

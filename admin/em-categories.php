@@ -32,10 +32,10 @@ function em_categories_subpanel() {
 			}
 		}
 		//die(print_r($_POST));
-		if ( is_numeric($validation_result) ) {
+		if ( isset($validation_result) && is_numeric($validation_result) ) {
 			$message = (isset($message)) ? $message : __("Successfully {$_POST['action']}ed category", "dbem");
 			em_categories_table_layout($message);
-		} elseif ( $validation_result === false ) {
+		} elseif ( isset($validation_result) && $validation_result === false ) {
 			$message = (isset($message)) ? $message : __("There was a problem {$_POST['action']}ing your category, please try again.");						   
 			em_categories_table_layout($message);
 		} else {

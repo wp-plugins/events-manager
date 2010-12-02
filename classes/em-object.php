@@ -111,7 +111,7 @@ class EM_Object {
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
 		
-		return apply_filters('em_object_default_search', $defaults);
+		return apply_filters('em_object_get_default_search', $defaults, $array, $super_defaults);
 	}
 	
 	/**
@@ -124,7 +124,7 @@ class EM_Object {
 		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
 		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
 		
-		$args = apply_filters('em_object_sql_conditions_args',$args);
+		$args = apply_filters('em_object_build_sql_conditions_args',$args);
 		
 		//Format the arguments passed on
 		$scope = $args['scope'];//undefined variable warnings in ZDE, could just delete this (but dont pls!)
@@ -212,12 +212,12 @@ class EM_Object {
 			$conditions['category'] = "( event_category_id = ". implode(' OR event_category_id = ', $category).")";
 		}
 		
-		return apply_filters('em_object_sql_conditions', $conditions);
+		return apply_filters('em_object_build_sql_conditions', $conditions);
 	}
 	
 	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
 		//First, ORDER BY
-		$args = apply_filters('em_object_sql_orderby_args', $args);
+		$args = apply_filters('em_object_build_sql_orderby_args', $args);
 		$orderby = array();
 		if(is_array($args['orderby'])){
 			//Clean orderby array so we only have accepted values
@@ -250,7 +250,7 @@ class EM_Object {
 				$orderby[$i] .= ( in_array($args['order'], array('ASC','DESC')) ) ? $args['order'] : $default_order;
 			}
 		}
-		return apply_filters('em_object_sql_orderby', $orderby);
+		return apply_filters('em_object_build_sql_orderby', $orderby);
 	}
 
 	/**
@@ -303,7 +303,7 @@ class EM_Object {
 				$types[] = $field['type'];
 			}
 		}
-		return $types;
+		return apply_filters('em_object_get_types', $types, $this, $array);
 	}	
 	
 	function get_fields( $inverted_array=false ){
@@ -316,9 +316,9 @@ class EM_Object {
 					$return[$fieldName] = $fieldArray['name'];
 				}
 			}
-			return $return;
+			return apply_filters('em_object_get_fields', $return, $this, $inverted_array);
 		}
-		return array();
+		return apply_filters('em_object_get_fields', array(), $this, $inverted_array);
 	}
 
 	/**
@@ -337,7 +337,7 @@ class EM_Object {
 		} else {
 	      $value = addslashes( $value );
 		}
-		return $value;
+		return apply_filters('em_object_sanitize', $value);
 	}
 	
 	/**
@@ -352,7 +352,7 @@ class EM_Object {
 				$results[] = (is_numeric($item)&&is_numeric($key));
 			}
 		}
-		return ( !in_array(false, $results) && count($results) > 0 );
+		return (!in_array(false, $results) && count($results) > 0);
 	}
 	
 	/**
@@ -369,7 +369,7 @@ class EM_Object {
 		if( isset($_GET['callback']) ){
 			$return = $_GET['callback']."($return)";
 		}
-		return $return;
+		return apply_filters('em_object_json_encode', $return, $array);
 	}	
 	
 	/**

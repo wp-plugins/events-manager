@@ -72,7 +72,7 @@ class EM_Locations extends EM_Object {
 		foreach ($results as $location){
 			$locations[] = new EM_Location($location);
 		}
-		return $locations;
+		return apply_filters('em_locations_get', $locations, $args);
 	}	
 	
 	/**
@@ -107,12 +107,13 @@ class EM_Locations extends EM_Object {
 				$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
 				$output =  $single_event_format_header .  $output . $single_event_format_footer;
 			}
+			//TODO pagination for locations
 		} else {
 			$output = get_option ( 'dbem_no_events_message' );
 		}
 		//FIXME check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Location_old= $EM_Location;
-		return $output;		
+		return apply_filters('em_locations_output', $output, $locations, $args);		
 	}
 	
 	/**
@@ -128,27 +129,34 @@ class EM_Locations extends EM_Object {
 		$conditions = parent::build_sql_conditions($args);
 		//eventful locations
 		if( true == $args['eventful'] ){
-			$conditions[] = "{$events_table}.event_id IS NOT NULL";
+			$conditions['eventful'] = "{$events_table}.event_id IS NOT NULL";
 		}elseif( true == $args['eventless'] ){
-			$conditions[] = "{$events_table}.event_id IS NULL";
+			$conditions['eventless'] = "{$events_table}.event_id IS NULL";
 		}
-		return $conditions;
+		return apply_filters('em_locations_build_sql_conditions', $conditions, $args);
+	}
+	
+	/* Overrides EM_Object method to apply a filter to result
+	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
+	 */
+	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+		return apply_filters( 'em_locations_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order')), $args, $accepted_fields, $default_order );
 	}
 	
 	/* 
 	 * Generate a search arguments array from defalut and user-defined.
 	 * @see wp-content/plugins/events-manager/classes/EM_Object::get_default_search()
 	 */
-	function get_default_search($args = array()){
+	function get_default_search($array = array()){
 		$defaults = array(
 			'eventful' => false, //Locations that have an event (scope will also play a part here
 			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
 			'orderby' => 'name',
 			'scope' => 'all' //we probably want to search all locations by default, not like events
 		);
-		$args['eventful'] = ( !empty($args['eventful']) && $args['eventful'] == true );
-		$args['eventless'] = ( !empty($args['eventless']) && $args['eventless'] == true );
-		return parent::get_default_search($defaults, $args);
+		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
+		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );
+		return apply_filters('em_locations_get_default_search', parent::get_default_search($defaults, $array), $array, $defaults);
 	}
 	//TODO for all the static plural classes like this one, we might benefit from bulk actions like delete/add/save etc.... just a random thought.
 }

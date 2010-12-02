@@ -60,16 +60,18 @@ class EM_Bookings extends EM_Object{
 			if ( is_object($previous_booking) ) { 
 				//Previously booked, so we add these seats to the booking
 				$new_seats = $EM_Booking->seats;
-				$EM_Booking = $previous_booking;
-				$EM_Booking->seats += $new_seats;	
+				$EM_Booking = $previous_booking;	
 				$result = $EM_Booking->save();
 				if($result){
+					$this->bookings[] = $EM_Booking;
 					$email = $this->email($EM_Booking);
+					$EM_Booking->seats += $new_seats;
 				}
 			} else {
 				//New booking, so let's save the booking
 				$result = $EM_Booking->save();
 				if($result){
+					$this->bookings[] = $EM_Booking;
 					$email = $this->email($EM_Booking);
 				}
 			}
@@ -169,9 +171,8 @@ class EM_Bookings extends EM_Object{
 			'#_RESPNAME' =>  '#_BOOKINGNAME',//Depreciated
 			'#_RESPEMAIL' => '#_BOOKINGEMAIL',//Depreciated
 			'#_RESPPHONE' => '#_BOOKINGPHONE',//Depreciated
-			'#_SPACES' => '#_BOOKINGSPACES',//Depreciated
 			'#_COMMENT' => '#_BOOKINGCOMMENT',//Depreciated
-			'#_RESERVEDSPACES' => '#_BOOKEDSEATS',//Depreciated
+			'#_RESERVEDSPACES' => '#_BOOKEDSPACES',//Depreciated
 			'#_BOOKINGNAME' =>  $EM_Booking->person->name,
 			'#_BOOKINGEMAIL' => $EM_Booking->person->email,
 			'#_BOOKINGPHONE' => $EM_Booking->person->phone,

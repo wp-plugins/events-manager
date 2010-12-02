@@ -60,6 +60,7 @@ class EM_Location extends EM_Object {
 	
 	function get_post(){
 		//We are getting the values via POST or GET
+		do_action('em_location_get_post_pre', $this);
 		$location = array();
 		$location['location_id'] = ( !empty($_POST['location_id']) ) ? $_POST['location_id']:'';
 		$location['location_name'] = ( !empty($_POST['location_name']) ) ? stripslashes($_POST['location_name']):'';
@@ -68,11 +69,12 @@ class EM_Location extends EM_Object {
 		$location['location_latitude'] = ( !empty($_POST['location_latitude']) ) ? $_POST['location_latitude']:'';
 		$location['location_longitude'] = ( !empty($_POST['location_longitude']) ) ? $_POST['location_longitude']:'';
 		$location['location_description'] = ( !empty($_POST['content']) ) ? stripslashes($_POST['content']):'';
-		$this->to_object($location);
+		$this->to_object( apply_filters('em_location_get_post', $location, $this) );
 	}
 	
 	function save(){
 		global $wpdb;
+		do_action('em_location_save_pre', $this);
 		$table = $wpdb->prefix.EM_LOCATIONS_TABLE;
 		$data = $this->to_array();
 		unset($data['location_id']);
@@ -85,15 +87,17 @@ class EM_Location extends EM_Object {
 		    $this->id = $wpdb->insert_id;   
 		}
 		$image_upload = $this->image_upload();
-		return ( $this->id > 0 && $image_upload );
+		return apply_filters('em_location_save', ( $this->id > 0 && $image_upload ), $this, $image_upload);
 	}
 	
 	function delete(){
 		global $wpdb;	
+		do_action('em_location_delete_pre', $this);
 		$table_name = $wpdb->prefix.EM_LOCATIONS_TABLE;
 		$sql = "DELETE FROM $table_name WHERE location_id = '{$this->id}';";
-		$wpdb->query($sql);
-		$this->image_delete();	
+		$result = $wpdb->query($sql);
+		$result = $this->image_delete() && $result;
+		return apply_filters('em_location_delete', $result, $this);
 	}
 	
 	function get_image_url(){
@@ -106,19 +110,23 @@ class EM_Location extends EM_Object {
 				}
 			}
 		}
-		return $this->image_url;
+		return apply_filters('em_location_get_image_url', $this->image_url, $this);
 	}
 	
 	function image_delete() {
 		$file_name= ABSPATH.EM_IMAGE_UPLOAD_DIR."/location-".$this->id;
+		$result = false;
 		foreach($this->mime_types as $type) { 
 			if (file_exists($file_name.".".$type))
-	  		unlink($file_name.".".$type);
+	  		$result = unlink($file_name.".".$type);
 		}
+		return apply_filters('em_location_image_delete', $result, $this);
 	}
 	
 	function image_upload(){	
 		//TODO better image upload error handling
+		do_action('em_location_image_upload_pre', $this);
+		$result = true;
 		if ($_FILES['location_image']['size'] > 0 ) {	
 		  	if( !file_exists(ABSPATH.EM_IMAGE_UPLOAD_DIR) ){
 				mkdir(ABSPATH.EM_IMAGE_UPLOAD_DIR, 0777);
@@ -128,12 +136,12 @@ class EM_Location extends EM_Object {
 			$image_path = ABSPATH.EM_IMAGE_UPLOAD_DIR."/location-".$this->id.".".$this->mime_types[$type];
 			if (!move_uploaded_file($_FILES['location_image']['tmp_name'], $image_path)){
 				$this->errors = __('The image could not be loaded','dbem');
-				return false;
+				$result = false;
 			}else{
-				return true;
+				$result = true;
 			}
 		}
-		return true;
+		return apply_filters('em_location_image_upload', $result, $this);
 	}
 
 	function load_similar($criteria){
@@ -145,7 +153,7 @@ class EM_Location extends EM_Object {
 		if( is_array($location) ){
 			$this->to_object($location);
 		}
-		return $location;
+		return apply_filters('em_location_load_similar', $location, $this);
 	}
 
 	/**
@@ -176,7 +184,7 @@ class EM_Location extends EM_Object {
 			  	}
 	  		}
 		}
-		return ( count($this->errors) == 0 );
+		return apply_filters('em_location_validate', ( count($this->errors) == 0 ), $this);
 	}
 	
 	function has_events(){
@@ -184,12 +192,12 @@ class EM_Location extends EM_Object {
 		$events_table = $wpdb->prefix.EM_EVENTS_TABLE;
 		$sql = "SELECT event_id FROM $events_table WHERE location_id = {$this->id}";   
 	 	$affected_events = $wpdb->get_results($sql);
-		return (count($affected_events) > 0);
+		return apply_filters('em_location_has_events', (count($affected_events) > 0), $this);
 	}
 	
 	function output_single($target = 'html'){
 		$format = get_option ( 'dbem_single_location_format' );
-		return $this->output($format, $target);	
+		return apply_filters('em_location_output_single', $this->output($format, $target), $this, $target);	
 	}
 	
 	function output($format, $target="html") {
@@ -262,12 +270,12 @@ class EM_Location extends EM_Object {
 			}
 			if($match){ //if true, we've got a placeholder that needs replacing
 				//TODO FILTER - placeholder filter
-				$replace = apply_filters('em_placeholder', $replace, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+				$replace = apply_filters('em_location_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
 				$location_string = str_replace($result, $replace , $location_string );
 			}
 		}
-		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss';
+		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
 		$location_string = str_replace('#_LOCATION', apply_filters($name_filter, $this->name) , $location_string ); //Depreciated
-		return $location_string;	
+		return apply_filters('em_location_output', $location_string, $this, $format, $target);	
 	}
 }

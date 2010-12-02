@@ -510,7 +510,7 @@ function em_event_form( $title ) {
 															<a href="#" rel="<?php echo $count ?>">Remove</a>
 														</td>
 														<td>
-															<input type="text" name="mtm_<?php echo $count ?>_name" value="<?php echo htmlspecialchars($value, ENT_QUOTES); ?>" />
+															<input type="text" name="mtm_<?php echo $count ?>_name" />
 														</td>
 													</tr>
 													<?php

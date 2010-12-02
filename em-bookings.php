@@ -56,7 +56,7 @@ function em_add_booking_form() {
 	$destination = "?".$_SERVER['QUERY_STRING']."#dbem-rsvp";
 	$booked_places_options = array();
 	for ( $i = 1; $i <= 10; $i++ ) {
-		$booking_seats = ($_POST['booking_seats'] == $i) ? 'selected="selected"':'';
+		$booking_seats = (!empty($_POST['booking_seats']) && $_POST['booking_seats'] == $i) ? 'selected="selected"':'';
 		array_push($booked_places_options, "<option value='$i' $booking_seats>$i</option>");
 	}
 	ob_start();
@@ -75,9 +75,9 @@ function em_add_booking_form() {
 		
 		<form id='dbem-rsvp-form' name='booking-form' method='post' action='<?php echo $destination ?>'>
 				<table class='dbem-rsvp-form'>
-					<tr><th scope='row'><?php _e('Name', 'dbem') ?>:</th><td><input type='text' name='person_name' value='<?php echo $_POST['person_name'] ?>'/></td></tr>
-					<tr><th scope='row'><?php _e('E-Mail', 'dbem') ?>:</th><td><input type='text' name='person_email' value='<?php echo $_POST['person_email'] ?>'/></td></tr>
-					<tr><th scope='row'><?php _e('Phone number', 'dbem') ?>:</th><td><input type='text' name='person_phone' value='<?php echo $_POST['person_phone'] ?>'/></td></tr>
+					<tr><th scope='row'><?php _e('Name', 'dbem') ?>:</th><td><input type='text' name='person_name' value='<?php echo !empty($_POST['person_name']) ? $_POST['person_name'] : ''; ?>'/></td></tr>
+					<tr><th scope='row'><?php _e('E-Mail', 'dbem') ?>:</th><td><input type='text' name='person_email' value='<?php echo !empty($_POST['person_email']) ? $_POST['person_email'] : ''; ?>'/></td></tr>
+					<tr><th scope='row'><?php _e('Phone number', 'dbem') ?>:</th><td><input type='text' name='person_phone' value='<?php echo !empty($_POST['person_phone']) ? $_POST['person_phone'] : ''; ?>'/></td></tr>
 					<tr>
 						<th scope='row'><?php _e('Seats', 'dbem') ?>:</th>
 						<td>
@@ -90,7 +90,7 @@ function em_add_booking_form() {
 							</select>
 						</td>
 					</tr>
-					<tr><th scope='row'><?php _e('Comment', 'dbem') ?>:</th><td><textarea name='booking_comment'><?php echo $_POST['booking_comment'] ?></textarea></td></tr>
+					<tr><th scope='row'><?php _e('Comment', 'dbem') ?>:</th><td><textarea name='booking_comment'><?php echo !empty($_POST['booking_comment']) ? $_POST['booking_comment']:'' ?></textarea></td></tr>
 			</table>
 			<p>
 				<input type='submit' value='<?php _e('Send your booking', 'dbem') ?>'/>&nbsp;&nbsp;&nbsp;&nbsp;
@@ -146,10 +146,10 @@ function em_delete_booking_form() {
 		<form name='booking-delete-form' method='post' action='<?php echo $destination ?>#dbem-booking-delete'>
 			<table class='dbem-rsvp-form'>
 				<tr>
-					<th scope='row'><?php _e('Name', 'dbem') ?>:</th><td><input type='text' name='person_name' value='<?php echo $_POST['person_name'] ?>'/></td>
+					<th scope='row'><?php _e('Name', 'dbem') ?>:</th><td><input type='text' name='person_name' value='<?php echo !empty($_POST['person_name']) ? $_POST['person_name'] : ''; ?>'/></td>
 				</tr>
 			  	<tr>
-			  		<th scope='row'><?php _e('E-Mail', 'dbem') ?>:</th><td><input type='text' name='person_email' value='<?php echo $_POST['person_email'] ?>'/></td>
+			  		<th scope='row'><?php _e('E-Mail', 'dbem') ?>:</th><td><input type='text' name='person_email' value='<?php echo !empty($_POST['person_email']) ? $_POST['person_email'] : ''; ?>'/></td>
 			  	</tr>
 			</table>
 			<input type='hidden' name='eventAction' value='delete_booking'/>

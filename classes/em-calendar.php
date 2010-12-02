@@ -292,7 +292,7 @@ class EM_Calendar extends EM_Object {
 		   		}
 			}
 		}       
-		return '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.$calendar.'</div>';
+		return apply_filters('em_calendar_output', '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.$calendar.'</div>');
 	}
 
 	/**
@@ -326,7 +326,7 @@ class EM_Calendar extends EM_Object {
 		$atts = parent::get_default_search($defaults, $array);
 		$atts['full'] = ($atts['full']==true) ? 1:0;
 		$atts['long_events'] = ($atts['long_events']==true) ? 1:0;
-		return $atts;
+		return apply_filters('em_calendar_get_default_search', $atts, $array, $defaults);
 	}
 } 
 add_action('init', array('EM_Calendar', 'init'));

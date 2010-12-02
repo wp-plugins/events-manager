@@ -24,26 +24,28 @@ function em_hello_to_new_user() {
  * @return string
  */
 function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
-	$maxPages = ceil($total/$limit); //Total number of pages
-	$startPage = ($page <= $pagesToShow) ? 1 : $pagesToShow * (floor($page/$pagesToShow)) ; //Which page to start the pagination links from (in case we're on say page 12 and $pagesToShow is 10 pages)
-	$placeholder = urlencode('%PAGE%');
-	$link = str_replace('%PAGE%', urlencode('%PAGE%'), $link); //To avoid url encoded/non encoded placeholders
-    //Add the back and first buttons
-	    $string = ($page>1) ? '<a href="'.str_replace($placeholder,1,$link).'">&lt;&lt;</a> ' : '&lt;&lt; ';
-	    $string .= ($page>1) ? ' <a href="'.str_replace($placeholder,$page-1,$link).'">&lt;</a> ' : '&lt; ';
-	//Loop each page and create a link or just a bold number if its the current page
-	    for ($i = $startPage ; $i < $startPage+$pagesToShow && $i <= $maxPages ; $i++){
-            if($i == $page){
-                $string .= " <strong>$i</strong>";
-            }else{
-                $string .= ' <a href="'.str_replace($placeholder,$i,$link).'">'.$i.'</a> ';                
-            }
-	    }
-	//Add the forward and last buttons
-	    $string .= ($i < $maxPages) ? ' <a href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' &gt; ' ;
-	    $string .= ($i < $maxPages) ? ' <a href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : '&gt;&gt; ';
-	//Return the string
-	    return $string;
+	if($limit > 0){
+		$maxPages = ceil($total/$limit); //Total number of pages
+		$startPage = ($page <= $pagesToShow) ? 1 : $pagesToShow * (floor($page/$pagesToShow)) ; //Which page to start the pagination links from (in case we're on say page 12 and $pagesToShow is 10 pages)
+		$placeholder = urlencode('%PAGE%');
+		$link = str_replace('%PAGE%', urlencode('%PAGE%'), $link); //To avoid url encoded/non encoded placeholders
+	    //Add the back and first buttons
+		    $string = ($page>1) ? '<a href="'.str_replace($placeholder,1,$link).'">&lt;&lt;</a> ' : '&lt;&lt; ';
+		    $string .= ($page>1) ? ' <a href="'.str_replace($placeholder,$page-1,$link).'">&lt;</a> ' : '&lt; ';
+		//Loop each page and create a link or just a bold number if its the current page
+		    for ($i = $startPage ; $i < $startPage+$pagesToShow && $i <= $maxPages ; $i++){
+	            if($i == $page){
+	                $string .= " <strong>$i</strong>";
+	            }else{
+	                $string .= ' <a href="'.str_replace($placeholder,$i,$link).'">'.$i.'</a> ';                
+	            }
+		    }
+		//Add the forward and last buttons
+		    $string .= ($i < $maxPages) ? ' <a href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' &gt; ' ;
+		    $string .= ($i < $maxPages) ? ' <a href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : '&gt;&gt; ';
+		//Return the string
+		    return $string;
+	}
 }
 
 /**
@@ -189,8 +191,8 @@ function em_options_select($title, $name, $list, $description) {
 	<?php	
 }
 // got from http://davidwalsh.name/php-email-encode-prevent-spam
-function em_ascii_encode($e)  
-{  
+function em_ascii_encode($e){  
+	$output = '';
     for ($i = 0; $i < strlen($e); $i++) { $output .= '&#'.ord($e[$i]).';'; }  
     return $output;  
 }

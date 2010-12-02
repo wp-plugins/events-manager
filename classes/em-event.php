@@ -40,6 +40,18 @@ class EM_Event extends EM_Object{
 	);
 	
 	/**
+	 * Timestamp of start date/time
+	 * @var int
+	 */
+	var $start;
+	
+	/**
+	 * Timestamp of end date/time
+	 * @var int
+	 */
+	var $end;
+	
+	/**
 	 * @var EM_Location
 	 */
 	var $location;
@@ -133,7 +145,7 @@ class EM_Event extends EM_Object{
 	 */
 	function get_post(){
 		//Build Event Array
-		$post = $_POST;
+		do_action('em_event_get_post_pre', $this);
 		$this->name = ( !empty($_POST['event_name']) ) ? stripslashes($_POST['event_name']) : '' ;
 		$this->start_date = ( !empty($_POST['event_start_date']) ) ? $_POST['event_start_date'] : '';
 		$this->end_date = ( !empty($_POST['event_end_date']) ) ? $_POST['event_end_date'] : $this->start_date; 
@@ -204,7 +216,7 @@ class EM_Event extends EM_Object{
 			$this->location = new EM_Location($_POST); 
 			$this->location->load_similar($_POST);                
 		}
-		return $this->validate();
+		return apply_filters('em_event_get_post', $this->validate(), $this);
 	}
 	
 	/**
@@ -215,12 +227,13 @@ class EM_Event extends EM_Object{
 	function save(){
 		//FIXME Event doesn't save title when inserting first time
 		global $wpdb, $current_user;
-   		get_currentuserinfo();;
+		do_action('em_event_save_pre', $this);
+   		get_currentuserinfo();
 		$events_table = $wpdb->prefix.EM_EVENTS_TABLE;
 		//First let's save the location, no location no event!
 		if ( !$this->location->id && !$this->location->save() ){ //shouldn't try to save if location exists
 			$this->errors[] = __ ( 'There was a problem saving the location so event was not saved.', 'dbem' );
-	 		return false;
+	 		return apply_filters('em_event_save', false, $this);
 		}
 		$this->location_id = $this->location->id;
 		//TODO make contactperson_id NULL if not used
@@ -242,15 +255,15 @@ class EM_Event extends EM_Object{
 						$this->errors[] = 	__ ( 'Something went wrong with the recurrence update...', 'dbem' ).
 											__ ( 'There was a problem saving the recurring events.', 'dbem' );
 						$this->delete();
-				 		return false;
+				 		return apply_filters('em_event_save', false, $this);
 				 	}
 				 	//All good! Event Saved
 					$this->feedback_message = __ ( 'New recurrent event inserted!', 'dbem' );
-					return true;
+					return apply_filters('em_event_save', true, $this);
 				}
 				//Successful individual save
 				$this->feedback_message = __ ( 'New event successfully inserted!', 'dbem' );
-				return true;
+				return apply_filters('em_event_save', true, $this);
 			}else{
 				$this->errors[] = 	__ ( 'Could not save the event details due to a database error.', 'dbem' );
 			}
@@ -269,39 +282,42 @@ class EM_Event extends EM_Object{
 					if( !$this->save_events() ){
 						$this->errors[] = 	__ ( 'Something went wrong with the recurrence update...', 'dbem' ).
 											__ ( 'There was a problem saving the recurring events.', 'dbem' );
-						return false;
+						return apply_filters('em_event_save', false, $this);
 					}
 					$this->feedback_message = __ ( 'Recurrence updated!', 'dbem' );
-					return true;			
+					return apply_filters('em_event_save', true, $this);			
 				}
 			}else{
 				$this->errors[] = __('Could not save the event details due to a database error.', 'dbem');
-				return false;
+				return apply_filters('em_event_save', false, $this);
 			}
 			//Successful individual or recurrence save
 			$this->feedback_message = "'{$this->name}' " . __ ( 'updated', 'dbem' ) . "!";
 			if($this->rsvp == 0){
 				$this->delete_bookings();
 			}
-			return true;
+			return apply_filters('em_event_save', true, $this);
 		}
 	}
 	
 	/**
 	 * Delete whole event, including recurrence and recurring data
 	 * @param $recurrence_id
-	 * @return null
+	 * @return boolean
 	 */
 	function delete(){
 		global $wpdb;
+		//TODO when only php5, no need to pass by reference
+		do_action('em_event_delete_pre', $this);
 		if( $this->is_recurring() ){
 			//Delete the recurrences then this recurrence event
 			$this->delete_events();
 		}
 		$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". $wpdb->prefix . EM_EVENTS_TABLE ." WHERE event_id=%d", $this->id) );
 		if($result !== false){
-			$bookings_result = $this->get_bookings()->delete();
+			$result = $this->get_bookings()->delete();
 		}
+		return apply_filters('em_event_delete', $result, $this);
 	}
 	
 	/**
@@ -319,10 +335,10 @@ class EM_Event extends EM_Object{
 			//Get the ID of the new item
 			$event_ID = $wpdb->insert_id;
 			$EM_Event = new EM_Event( $event_ID );
-			return $EM_Event;
+			return apply_filters('em_event_duplicate', $EM_Event, $this);
 		}else{
 			//TODO add error notifications for duplication failures.
-			return false;
+			return apply_filters('em_event_duplicate', false, $this);;
 		}
 	}
 	
@@ -350,7 +366,7 @@ class EM_Event extends EM_Object{
 			$this->errors = array_merge($this->errors, $this->location->errors);
 		}
 		//TODO validate recurrence during event validate
-		return ( count($this->errors) == 0 );
+		return apply_filters('em_event_validate', count($this->errors) == 0, $this );
 	}
 
 	
@@ -362,7 +378,7 @@ class EM_Event extends EM_Object{
 		global $wpdb; 
 		$sql = "SELECT category_id, category_name FROM ".$wpdb->prefix.EM_EVENTS_TABLE." LEFT JOIN ".$wpdb->prefix.EM_CATEGORIES_TABLE." ON category_id=event_category_id WHERE event_id ='".$this->id."'";
 	 	$category = $wpdb->get_row($sql, ARRAY_A);
-		return $category;
+		return apply_filters('em_event_get_category', $category, $this);
 	}
 	
 	/**
@@ -370,7 +386,9 @@ class EM_Event extends EM_Object{
 	 */
 	function delete_bookings(){
 		global $wpdb;
-		return $wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE event_id=%d", $this->id) );
+		do_action('em_event_delete_bookings_pre', $this);
+		$result = $wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE event_id=%d", $this->id) );
+		return apply_filters('em_event_delete_bookings', $result, $this);
 	}
 	
 	/**
@@ -384,7 +402,7 @@ class EM_Event extends EM_Object{
 				$this->bookings = new EM_Bookings($this);
 			}
 		}
-		return $this->bookings;
+		return apply_filters('em_event_get_bookings', $this->bookings, $this);
 	}
 	
 	/**
@@ -395,7 +413,7 @@ class EM_Event extends EM_Object{
 	 */
 	function output_single($target='html'){
 		$format = get_option ( 'dbem_single_event_format' );
-		return $this->output($format, $target);
+		return apply_filters('em_event_output_single', $this->output($format, $target), $this, $target);
 	}
 
 	/**
@@ -406,7 +424,7 @@ class EM_Event extends EM_Object{
 	 */
 	function output_list($target='html'){
 		$format = get_option ( 'dbem_event_list_item_format' );
-		return $this->output($format, $target);
+		return apply_filters('em_event_output_list', $this->output($format, $target), $this, $target);
 	}
 	
 	/**
@@ -519,7 +537,7 @@ class EM_Event extends EM_Object{
 			}
 			if($match){ //if true, we've got a placeholder that needs replacing
 				//TODO FILTER - placeholder filter
-				$replace = apply_filters('em_placeholder', $replace, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+				$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
 				$event_string = str_replace($result, $replace , $event_string );
 			}
 		}
@@ -527,11 +545,15 @@ class EM_Event extends EM_Object{
 		foreach($placeholders[0] as $result) {
 			// matches all PHP START date and time placeholders
 			if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-				$event_string = str_replace($result, date(ltrim($result, "#"), $this->start),$event_string );
+				$replace = date(ltrim($result, "#"), $this->start);
+				$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
+				$event_string = str_replace($result, $replace, $event_string );
 			}
 			// matches all PHP END time placeholders for endtime
 			if (preg_match('/^#@[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-				$event_string = str_replace($result, date(ltrim($result, "#@"), $this->end), $event_string ); 
+				$replace = date(ltrim($result, "#@"), $this->end);
+				$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
+				$event_string = str_replace($result, $replace, $event_string ); 
 		 	}
 		}
 		//Time place holder that doesn't show if empty.
@@ -555,17 +577,19 @@ class EM_Event extends EM_Object{
 		foreach($results[0] as $resultKey => $result) {
 			//Strip string of placeholder and just leave the reference
 			$attRef = substr( substr($result, 0, strpos($result, '}')), 6 );
-			$attString = $this->attributes[$attRef];
-			if( trim($attString) == '' && $results[1][$resultKey] != '' ){
-				//Check to see if we have a second set of braces;
-				$attString = substr( $results[1][$resultKey], 1, strlen(trim($results[1][$resultKey]))-2 );
+			if( array_key_exists($attRef, $this->attributes) ){
+				$attString = $this->attributes[$attRef];
+				if( trim($attString) == '' && $results[1][$resultKey] != '' ){
+					//Check to see if we have a second set of braces;
+					$attString = substr( $results[1][$resultKey], 1, strlen(trim($results[1][$resultKey]))-2 );
+				}
 			}
 			$event_string = str_replace($result, $attString ,$event_string );
 		}
 		
 		//Now do dependent objects
 		$event_string = $this->location->output($event_string, $target);		
-		return $event_string;		
+		return apply_filters('em_event_output', $event_string, $this, $target);
 	}
 	
 	/**********************************************************
@@ -578,6 +602,7 @@ class EM_Event extends EM_Object{
 	 */
 	function save_events() {
 		if( $this->is_recurring() ){
+			do_action('em_event_save_events_pre', $this); //actions/filters only run if event is recurring
 			global $wpdb;
 			$event_saves = array();
 			$matching_days = $this->get_recurrence_days(); //Get days where events recur
@@ -600,7 +625,7 @@ class EM_Event extends EM_Object{
 				//TODO should be EM_DEBUG, and do we really need it?
 				if( DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
 		 	}
-		 	return !in_array(false, $event_saves);
+		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves), $this);
 		}
 		return false;
 	}
@@ -612,6 +637,7 @@ class EM_Event extends EM_Object{
 	 */
 	function delete_events(){
 		global $wpdb;
+		do_action('em_event_delete_events_pre', $this);
 		//So we don't do something we'll regret later, we could just supply the get directly into the delete, but this is safer
 		$EM_Events = EM_Events::get( array('recurrence_id'=>$this->id) );
 		$event_ids = array();
@@ -832,31 +858,32 @@ class EM_Event extends EM_Object{
 //TODO placeholder targets filtering could be streamlined better
 /**
  * This is a temporary filter function which mimicks the old filters in the old 2.x placeholders function
- * @param unknown_type $replace
- * @param unknown_type $placeholder
- * @param unknown_type $target
+ * @param string $result
+ * @param EM_Event $event
+ * @param string $placeholder
+ * @param string $target
  * @return mixed
  */
-function em_placeholder_targets($replace,$placeholder,$target){
+function em_event_output_placeholder($result,$event,$placeholder,$target='html'){
 	if( ($placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT") && $target == 'html' ){
-		$replace = apply_filters('dbem_notes_excerpt', $replace);
+		$result = apply_filters('dbem_notes_excerpt', $result);
 	}elseif( $placeholder == "#_NOTES" || $placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT" ){
 		if($target == 'html'){
-			$replace = apply_filters('dbem_notes', $replace);
+			$result = apply_filters('dbem_notes', $result);
 		}elseif($target == 'map'){
-			$replace = apply_filters('dbem_notes_map', $replace);
+			$result = apply_filters('dbem_notes_map', $result);
 		}else{
-			$replace = apply_filters('dbem_notes_rss', $replace);
-			$replace = apply_filters('the_content_rss', $replace);
+			$result = apply_filters('dbem_notes_rss', $result);
+			$result = apply_filters('the_content_rss', $result);
 		}
 	}elseif( in_array($placeholder, array("#_NAME",'#_ADDRESS','#_LOCATION','#_TOWN')) ){
 		if ($target == "html"){    
-			$replace = apply_filters('dbem_general', $replace); 
+			$result = apply_filters('dbem_general', $result); 
 	  	}else{
-			$replace = apply_filters('dbem_general_rss', $replace);
+			$result = apply_filters('dbem_general_rss', $result);
 	  	}				
 	}
-	return $replace;
+	return $result;
 }
-add_filter('em_placeholder','em_placeholder_targets',1,3);
+add_filter('em_event_output_placeholder','em_event_output_placeholder',1,3);
 ?>
