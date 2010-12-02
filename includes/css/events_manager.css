@@ -1,0 +1,146 @@
+table#dbem-bookings-table tfoot td.booking-result {
+	font-weight: bold;
+   	background:#6D6D6D url(../../../wp-admin/images/menu-bits.gif) repeat-x scroll left top;      
+	color: #eee;
+}
+
+table#dbem-bookings-table tfoot th {
+	text-align: right;
+	padding-right: 1em;
+}    
+
+table.dbem-rsvp-form  {
+	width: 80%;
+}  
+table.dbem-rsvp-form th { 
+	text-align: left;
+	width: 30%;
+}
+
+table.dbem-rsvp-form td { 
+	padding-left: 1em;
+	text-align: left;
+}      
+
+table.dbem-rsvp-form td input { 
+	margin:0px;
+}
+
+div.dbem-rsvp-message {     
+	margin-bottom: 1em;
+	background-color: #FDDD73;
+	padding: 5px;
+	border: 2px solid #FF9100;
+}
+
+div.dbem-rsvp-message-success {     
+	margin-bottom: 1em;
+	background-color: #5BBF58;
+	padding: 5px;
+	border: 2px solid #499B47;
+}
+
+div.dbem-rsvp-message-error {     
+	margin-bottom: 1em;
+	background-color: #DF9477;
+	padding: 5px;
+	border: 2px solid #C34F33;
+}
+     
+/* Printable stuff */
+body#printable {
+	font-family: Gill Sans, Helvetica, Arial, sans-serif;  
+	text-align: center;
+}  
+body#printable #container { 
+	margin: 0 auto; 
+	width: 780px;
+	text-align: left;
+}                                                                   
+table#bookings-table {
+	width: 600px;     
+	border-spacing: 0px;
+
+}
+table#bookings-table td {
+	padding: 5px 0;
+}
+table#bookings-table td.seats-number {
+	text-align: right;
+	padding-right: 20px;
+}
+table#bookings-table th {
+	text-align: left;
+	margin-left: 5px;
+}   
+table#bookings-table tr#booked-seats td{
+	border-top: 2px solid #999;    
+}      
+
+table#bookings-table td.total-label {
+	text-align: right;
+}                                  
+
+table#bookings-table tr#booked-seats td.seats-number, table#bookings-table tr#available-seats td.seats-number {
+	font-weight: bold;
+}
+
+table#dbem-location-data th {
+	text-align: right;   
+	width: 50px;
+}            
+
+table.dbem-calendar-table td {
+	padding: 2px 4px; 
+	text-align: center;
+}
+table.dbem-calendar.table tr.days-names {
+	font-weight: bold;
+} 
+table.dbem-calendar-table td.eventless-pre, .dbem-calendar td.eventless-post {
+	color: #ccc;
+}
+table.dbem-calendar-table td.eventful-pre a, table.dbem-calendar-table td.eventful-post a{
+	color: #aaa;
+	text-decoration:underline;
+}
+table.dbem-calendar-table td.eventful a, table.dbem-calendar-table td.eventful-today a {
+  font-weight: bold;
+  color: #FD7E29;
+}
+ table.dbem-calendar-table td.eventless-today {
+   background-color: #CFCFCF;  
+}
+table.dbem-calendar-table thead {
+	font-size: 120%;  
+	font-weight: bold;  
+}
+table.fullcalendar {
+	border-collapse: collapse;
+}
+table.fullcalendar td {
+	text-align: left;
+	width: 50px;  
+	height: 50px;             
+	border: 1px solid #888;
+}
+.dbem-calendar-full ul {
+	font-size: 80%;     
+	list-style: none;
+}
+
+/*
+Maps - if the info balloons don't look right on your site, chances are it's a CSS issue. 
+Google is VERY sensitive to CSS rules for the infowindows, making it hard to accommodate every theme in WP. 
+Please edit your theme's CSS to override this 
+*/
+.em-map-balloon .em-map-balloon-content  { 
+	margin:0px 0px 0px 0px !important; 
+	padding:0px 0px 20px 0px !important; 
+	font-size:12px !important; 
+	width:auto !important; 
+	max-width:none !important;
+	height:auto !important;
+	max-height:none !important;
+}
+.em-location-map img, .em-locations-map img { max-width:none !important; }

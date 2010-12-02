@@ -1,0 +1,53 @@
+#location_info td { vertical-align:top; text-align:left; }
+#location_info th { vertical-align:top; text-align:left; padding:5px 10px 0 0; }
+
+p#recurrence_warning {
+	border: 2px solid #FD0000;
+	background: #FF7146;
+	color: #fff;
+	font-weight: bold;
+	padding: 5px;
+}
+.debug{
+	color: green;
+	background: #B7F98C;
+	margin: 15px;
+	padding: 10px;
+	border: 1px solid #629948;
+}
+.switch-tab {
+	background: #aaa;
+	width: 100px;
+	float: right;
+	text-align: center;
+	margin: 3px 1px 0 5px;
+	padding: 2px;
+}
+.switch-tab a {
+	color: #fff;
+	text-decoration: none;
+}
+.switch-tab a:hover {
+	color: #D54E21;
+	
+} 
+#events-pagination {
+	text-align: center; 
+	
+}
+#events-pagination a {
+	margin: 0 20px 0 20px;
+	text-decoration: none;
+	width: 80px;
+	padding: 3px 0; 
+	background: #FAF4B7;
+	border: 1px solid #ccc;
+	border-top: none;
+} 
+#new-event {
+	float: left;
+ 
+}
+div#icon-events{
+	background:url('../images/calendar-32.png') no-repeat center;
+}
