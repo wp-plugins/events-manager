@@ -3,7 +3,7 @@ Contributors: nutsmuggler, netweblogic
 Donate link: http://wp-events-plugin.com
 Tags: events, manager, calendar, gigs, concert, maps, geotagging, rsvp  
 Requires at least: 2.9   
-Tested up to: 3.0.1
+Tested up to: 3.0.2
 Stable tag: 3.0.8
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
@@ -113,6 +113,9 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * Fixed pagination bugs
 * Global locations map won't show locations with 0-0 coords
 * Fixed bug in recurrence description
+* Removed most (if not all) php warnings
+* Fixed booked seats calculation errors
+* Removed dependence on php calendar
 
 = 3.0.8 =
 * Event lists now have pagination links for both admin and public areas!
