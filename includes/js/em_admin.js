@@ -5,11 +5,11 @@ jQuery(document).ready( function($) {
 		idToRemove = (jQuery(this).parents('tr:first').attr('id').split("-"))[1];     
 		$.ajax({
 	  	  type: "POST",
-		    url: "admin.php?page=people&action=remove_booking",
+		    url: "admin.php?page=events-manager-people&action=remove_booking",
 		    data: "booking_id="+ idToRemove,
 		    success: function(){	
 				$('tr#booking-' + idToRemove).fadeOut('slow');
-			  	$.getJSON("admin.php?page=people&dbem_ajax_action=booking_data",{id: eventId, ajax: 'true'}, function(data){
+			  	$.getJSON("admin.php?page=events-manager-people&dbem_ajax_action=booking_data",{id: eventId, ajax: 'true'}, function(data){
 			  	  	booked = data[0].bookedSeats;
 			  	    available = data[0].availableSeats; 
 					$('td#booked-seats').text(booked);

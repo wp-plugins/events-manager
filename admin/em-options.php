@@ -28,7 +28,7 @@ add_action('admin_head', 'em_options_save');
 
 
 
-function em_options_subpanel() {
+function em_admin_options_page() {
 	//TODO place all options into an array
 	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes' ) .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
 	?>	

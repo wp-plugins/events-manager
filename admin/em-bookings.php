@@ -28,10 +28,9 @@ function em_bookings_table() {
 	global $EM_Event; 
 	?>
 	<form id='bookings-filter' method='get' action='<?php bloginfo('wpurl') ?>/wp-admin/edit.php'>
-		<input type='hidden' name='page' value='events-manager/events-manager.php'/>
-		<input type='hidden' name='action' value='edit_event'/>
+		<input type='hidden' name='page' value='events-manager-bookings'/>
 		<input type='hidden' name='event_id' value='<?php echo $EM_Event->id ?>'/>
-		<input type='hidden' name='secondaryAction' value='delete_bookings'/>
+		<input type='hidden' name='action' value='delete'/>
 		<div class='wrap'>
 			<h2>Bookings</h2>
 			<table id='dbem-bookings-table' class='widefat post fixed'>

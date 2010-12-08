@@ -1,5 +1,5 @@
 <?php
-function em_categories_subpanel() {      
+function em_admin_categories_page() {      
 	global $wpdb;
 	
 	if(isset($_GET['action']) && $_GET['action'] == "edit") { 

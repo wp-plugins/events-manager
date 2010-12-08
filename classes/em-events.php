@@ -132,17 +132,19 @@ class EM_Events extends EM_Object {
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Event' ){
 			$func_args = func_get_args();
 			$events = $func_args[0];
-			$args = $func_args[1];
-			$args = apply_filters('em_events_output_args', $args, $events);
+			$args = apply_filters('em_events_output_args', self::get_default_search($func_args[1]), $events);
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
-			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:false;
+			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
 		}else{
 			//Firstly, let's check for a limit/offset here, because if there is we need to remove it and manually do this
-			$args = apply_filters('em_events_output_args', $args);
+			$args = apply_filters('em_events_output_args', self::get_default_search($args) );
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
-			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:false;			
+			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
 			$args['limit'] = false;
 			$args['offset'] = false;
+			$args['page'] = false;
 			$events = self::get( $args );
 		}
 		//What format shall we output this to, or use default
@@ -172,8 +174,6 @@ class EM_Events extends EM_Object {
 			}
 			//Pagination (if needed/requested)
 			if( !empty($args['pagination']) && !empty($limit) && $events_count >= $limit ){
-				//Calculate the page number by offset/limit
-				$page = ($offset > 0) ? floor($offset/$limit)+1:1;
 				//Show the pagination links (unless there's less than 10 events
 				$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
 				$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));

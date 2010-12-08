@@ -23,8 +23,10 @@ class EM_Object {
 			'orderby' => false,
 			'format' => '', 
 			'category' => 0, 
-			'location' => 0, 
-			'offset'=>0, 
+			'location' => 0,
+			'event' => 0, 
+			'offset'=>0,
+			'page'=>0,//basically, if greater than 0, calculates offset at end
 			'recurrence'=>0,
 			'recurring'=>false,
 			'month'=>'',
@@ -45,31 +47,12 @@ class EM_Object {
 		if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
 		
 		if(is_array($array)){
-			//If there's a location, then remove it and turn it into location_id
-			if( array_key_exists('location', $array)){
-				if ( is_numeric($array['location']) ) {
-					$array['location'] = (int) $array['location'];
-				} elseif( preg_match('/^([0-9],?)+$/', $array['location']) ) {
-					$array['location'] = explode(',', $array['location']);
-				}else{
-					//No format we accept
-					unset($array['location']);
-				}
-			}
-			//Category - for now we just make both keys have an id number
-			if( array_key_exists('category', $array)){
-				if ( is_numeric($array['category']) ) {
-					$array['category'] = (int) $array['category'];
-				} elseif( preg_match('/^([0-9],?)+$/', $array['category']) ) {
-					$array['category'] = explode(',', $array['category']);
-				}else{
-					//No format we accept
-					unset($array['category']);
-				}
-			}
+			//Clean all id lists
+			$array = self::clean_id_atts($array, array('location', 'event', 'category'));
+			
 			//OrderBy - can be a comma-seperated array of field names to order by (field names of object, not db)
 			if( array_key_exists('orderby', $array)){
-				if( preg_match('/,/', $array['orderby']) ) {
+				if( !is_array($array['orderby']) && preg_match('/,/', $array['orderby']) ) {
 					$array['orderby'] = explode(',', $array['orderby']);
 				}
 			}
@@ -109,8 +92,14 @@ class EM_Object {
 		$defaults['array'] = ($defaults['array'] == true);
 		$defaults['pagination'] = ($defaults['pagination'] == true);
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
+		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['limit']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
-		
+		//Calculate offset in event page is set
+		if($defaults['page'] > 0){
+			$defaults['offset'] = $defaults['limit'] * ($defaults['page']-1);	
+		}else{
+			$defaults['page'] = ($defaults['limit'] > 0 ) ? floor($defaults['offset']/$defaults['limit']) + 1 : 1;
+		}
 		return apply_filters('em_object_get_default_search', $defaults, $array, $super_defaults);
 	}
 	
@@ -132,6 +121,7 @@ class EM_Object {
 		$recurrence = $args['recurrence'];
 		$category = $args['category'];
 		$location = $args['location'];
+		$event = $args['event'];
 		$month = $args['month'];
 		$year = $args['year'];
 		$today = date('Y-m-d', current_time('timestamp'));
@@ -146,7 +136,7 @@ class EM_Object {
 		}else{
 			$conditions['recurring'] = "(`recurrence`!=1 OR `recurrence` IS NULL)";			
 		}
-		//Dates - first check 'month', and 'year'
+		//Dates - first check 'month', and 'year', and adjust scope if needed
 		if( !($month=='' && $year=='') ){
 			//Sort out month range, if supplied an array of array(month,month), it'll check between these two months
 			if( self::array_is_numeric($month) ){
@@ -162,30 +152,27 @@ class EM_Object {
 			}else{
 				$date_year_start = $date_year_end = $year;
 			}
-			$date_start = date('Y-m-d', mktime(0,0,0,$date_month_start,1,$date_year_start));
-			$date_end = date('Y-m-t', mktime(0,0,0,$date_month_end,1,$date_year_end));
-			$conditions['scope'] = " ((event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)))";
-			$search_by_monthyear = true;
+			$date_start = $date_year_start."-".$date_month_start."-01";
+			$date_end = date('Y-m-t', strtotime($date_year_end."-".$date_month_end."-01"));
+			$scope = "$date_start,$date_end"; //just modify the scope here
 		}
-		if( !isset($search_by_monthyear) ){
-			//No date requested, so let's look at scope
-			if ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
-				//This is an array, let's split it up
-				$dates = explode(',', $scope);
-				$date_start = $dates[0];
-				$date_end = $dates[1];
-				$conditions['scope'] = " ((event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)))";
-			} elseif ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
-				//Scope can also be a specific date. However, if 'day', 'month', or 'year' are set, that will take precedence
-				$conditions['scope'] = " ( (event_start_date = CAST('$scope' AS DATE)) OR (event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE)) )";
-			} else {
-				if ($scope == "past"){
-					$conditions['scope'] = " event_start_date < '$today'";  
-				}elseif ($scope == "today"){
-					$conditions['scope'] = " ( (event_start_date = CAST('$today' AS DATE)) OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE)) )";
-				}elseif ($scope == "future" || $scope != 'all'){
-					$conditions['scope'] = " (event_start_date >= CAST('$today' AS DATE) OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
-				}
+		//No date requested, so let's look at scope
+		if ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
+			//This is an array, let's split it up
+			$dates = explode(',', $scope);
+			$date_start = $dates[0];
+			$date_end = $dates[1];
+			$conditions['scope'] = " ( ( event_start_date <= CAST('$date_end' AS DATE) AND event_end_date >= CAST('$date_start' AS DATE) ) OR (event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) )";
+		} elseif ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
+			//Scope can also be a specific date. However, if 'day', 'month', or 'year' are set, that will take precedence
+			$conditions['scope'] = " ( event_start_date = CAST('$scope' AS DATE) OR ( event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE) ) )";
+		} else {
+			if ($scope == "past"){
+				$conditions['scope'] = " event_start_date < '$today'";  
+			}elseif ($scope == "today"){
+				$conditions['scope'] = " ( (event_start_date = CAST('$today' AS DATE)) OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE)) )";
+			}elseif ($scope == "future" || $scope != 'all'){
+				$conditions['scope'] = " (event_start_date >= CAST('$today' AS DATE) OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
 			}
 		}
 		
@@ -201,12 +188,26 @@ class EM_Object {
 				$location_ids[] = $EM_Location->id;
 			}
 			$conditions['location'] = "( {$locations_table}.location_id=". implode(" {$locations_table}.location_id=", $location_ids) ." )";
+		}	
+		
+		//Filter by Event - can be object, array, or id
+		if ( is_numeric($event) && $event > 0 ) { //event ID takes precedence
+			$conditions['event'] = " {$events_table}.event_id = $event";
+		}elseif ( self::array_is_numeric($event) ){ //array of ids
+			$conditions['event'] = "( {$events_table}.event_id = " . implode(" OR {$events_table}.event_id = ", $event) .' )';
+		}elseif ( is_object($event) && get_class($event)=='EM_Event' ){ //Now we deal with objects
+			$conditions['event'] = " {$events_table}.event_id = $event->id";
+		}elseif ( is_array($event) && @get_class(current($event)=='EM_Event') ){ //we can accept array of ids or EM_event objects
+			foreach($event as $EM_Event){
+				$event_ids[] = $EM_Event->id;
+			}
+			$conditions['event'] = "( {$events_table}.event_id=". implode(" {$events_table}.event_id=", $event_ids) ." )";
 		}
 				
 		//Add conditions for category selection
 		//Filter by category, can be id or comma seperated ids
 		//TODO create an exclude category option
-		if ( $category != '' && is_numeric($category) ){
+		if ( is_numeric($category) && $category > 0 ){
 			$conditions['category'] = " event_category_id = $category";
 		}elseif( self::array_is_numeric($category) ){
 			$conditions['category'] = "( event_category_id = ". implode(' OR event_category_id = ', $category).")";
@@ -338,6 +339,32 @@ class EM_Object {
 	      $value = addslashes( $value );
 		}
 		return apply_filters('em_object_sanitize', $value);
+	}
+	
+	/**
+	 * Cleans arrays that contain id lists. Takes an array of items and will clean the keys passed in second argument so that if they keep numbers, explode comma-seperated numbers, and unsets the key if there's any other value
+	 * @param array $array
+	 * @param array $id_atts
+	 */
+	function clean_id_atts( $array = array(), $id_atts = array() ){
+		if( is_array($array) && is_array($id_atts) ){
+			foreach( $array as $key => $string ){
+				if( in_array($key, $id_atts) ){
+					//This is in the list of atts we want cleaned
+					if( is_numeric($string) ){
+						$array[$key] = (int) $string;
+					}elseif( self::array_is_numeric($string) ){
+						$array[$key] = $string;
+					}elseif( preg_match('/^([0-9],?)+$/', $string) ){
+						$array[$key] = explode(',', $string);
+					}else{
+						//No format we accept
+						unset($array[$key]);
+					}
+				}
+			}
+		}
+		return $array;
 	}
 	
 	/**

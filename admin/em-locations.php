@@ -3,7 +3,7 @@
  * Looks at the request values, saves/updates and then displays the right menu in the admin
  * @return null
  */
-function em_locations_page() {  
+function em_admin_locations_page() {  
 	//TODO EM_Location is globalized, use it fully here
 	global $EM_Location;
 				

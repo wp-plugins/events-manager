@@ -219,13 +219,14 @@ class EM_Calendar extends EM_Object {
 		$eventful_days= array();
 		if($events){
 			//Go through the events and slot them into the right d-m index
-			foreach($events as $event) {   
+			foreach($events as $event) {
+				$event = apply_filters('em_calendar_output_loop_start', $event);
 				if( $long_events ){
 					//If $long_events is set then show a date as eventful if there is an multi-day event which runs during that day
-					$event_start_date = apply_filters('em_calendar_loop_date_start', strtotime($event->start));
-					$event_end_date = apply_filters('em_calendar_loop_date_end', strtotime($event->end));
+					$event_start_date = strtotime("{$year_pre}-{$month_pre}-1");
+					$event_end_date = strtotime( date('Y-m-t', strtotime("{$year_post}-{$month_post}-1")) );
 					if( $event_end_date == '' ) $event_end_date = $event_start_date;
-					while( $event_start_date <= $event_end_date ){
+					while( $event_start_date <= $event->end ){
 						$event_eventful_date = date('Y-m-d', $event_start_date);
 						if( array_key_exists($event_eventful_date, $eventful_days) && is_array($eventful_days[$event_eventful_date]) ){
 							$eventful_days[$event_eventful_date][] = $event; 
@@ -242,6 +243,7 @@ class EM_Calendar extends EM_Object {
 						$eventful_days[$event->start_date] = array($event);  
 					}
 				}
+				$event = apply_filters('em_calendar_output_loop_end', $event);
 			}
 		}
 	   
@@ -253,12 +255,13 @@ class EM_Calendar extends EM_Object {
 			//Set the date into the key
 			$event_start_date = explode('-', $day_key);
 			$cells[$day_key]['day'] = ltrim($event_start_date[2],'0');  
-			$cells[$day_key]['month'] = $event_start_date[1];
+			$cells[$day_key]['month'] = $event_start_date[1];  
+			$cells[$day_key]['year'] = $event_start_date[0];
 			$events_titles = array();
 			foreach($events as $event) { 
 				$events_titles[] = $event->output($event_title_format);
 			}   
-			$link_title = implode($event_title_separator_format,$events_titles);       
+			$link_title = EM_Events::output($events, array('format'=>$event_title_format));       
 			
 			$events_page_id = get_option('dbem_events_page');
 			$event_page_link = get_permalink($events_page_id);
@@ -285,9 +288,9 @@ class EM_Calendar extends EM_Object {
 				 	$calendar=str_replace("<td class='eventless-pre'>".$cell['day']."</td>","<td class='eventful-pre'>".$cell['cell']."</td>",$calendar);
 				} elseif($cell['month'] == $month_post) {
 				 	$calendar=str_replace("<td class='eventless-post'>".$cell['day']."</td>","<td class='eventful-post'>".$cell['cell']."</td>",$calendar);
-				} elseif($cell['day'] == $day && $cell['month'] == date('m')) {
+				} elseif($cell['day'] == date('d') && $cell['month'] == date('m') && $cell['year'] == date('Y')) {
 	  			 	$calendar=str_replace("<td class='eventless-today'>".$cell['day']."</td>","<td class='eventful-today'>".$cell['cell']."</td>",$calendar);
-				} elseif( $cell['month'] == $month ){   
+				} elseif( $cell['month'] == $month && $cell['year'] == $year){   
 			    	$calendar=str_replace("<td class='eventless'>".$cell['day']."</td>","<td class='eventful'>".$cell['cell']."</td>",$calendar);
 		   		}
 			}

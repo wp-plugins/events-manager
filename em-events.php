@@ -43,20 +43,20 @@ function em_content($content) {
 		} else {
 			// Multiple events page
 			$scope = (!empty($_REQUEST['scope'])) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
+			//If we have a $_GET['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
+			$args = array(				
+				'orderby' => get_option('dbem_events_default_orderby'),
+				'order' => get_option('dbem_events_default_order'),
+				'scope' => $scope
+			);
 			if (get_option ( 'dbem_display_calendar_in_events_page' )){
-				$args = array('full'=>1,'long_events'=>get_option('dbem_full_calendar_long_events'));
+				$args['full'] = 1;
+				$args['long_events'] = get_option('dbem_full_calendar_long_events');
 				$content =  EM_Calendar::output( apply_filters('em_content_calendar_args', $args) );
 			}else{
-				//If we have a $_GET['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
-				$page = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
-				$args = array(
-					'limit'=> get_option('dbem_events_default_limit'),					
-					'orderby' => get_option('dbem_events_default_orderby'),
-					'order' => get_option('dbem_events_default_order'),
-					'scope' => $scope,
-					'pagination' => 1			
-				);
-				$args['offset'] = $args['limit'] * ($page-1);
+				$args['limit'] = get_option('dbem_events_default_limit');
+				$args['pagination'] = 1;	
+				$args['page'] = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
 				$content =  EM_Events::output( apply_filters('em_content_events_args', $args) );
 			}
 		}
@@ -83,8 +83,7 @@ function em_events_page_title($content) {
 	if ( $post->ID == $events_page_id && $events_page_id != 0 ) {
 		if (isset ( $_REQUEST['calendar_day'] ) && $_REQUEST['calendar_day'] != '') {
 			$events = EM_Events::get(array('limit'=>2,'scope'=>$_REQUEST['calendar_day']));
-			$event = $events[0];
-			if ( count($events) > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
+			if ( count($events) != 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
 				//We only support dates for the calendar day list title, so we do a simple filter for the supplied calendar_day
 				$content = get_option ('dbem_list_date_title');
 				preg_match_all("/#[A-Za-z0-9]+/", $content, $placeholders);
@@ -95,6 +94,7 @@ function em_events_page_title($content) {
 					}
 				}
 			}else{
+				$event = array_shift($events);
 				$content =  $event->output( get_option('dbem_event_page_title_format') );
 			}
 		}elseif (isset ( $_REQUEST ['location_id'] ) && $_REQUEST ['location_id'] |= '') {

@@ -38,6 +38,27 @@ class EM_Event extends EM_Object{
 		'recurrence_byday' => array( 'name'=>'byday', 'type'=>'%s' ), //if weekly or monthly, what days of the week?
 		'recurrence_byweekno' => array( 'name'=>'byweekno', 'type'=>'%d' ) //if monthly which week (-1 is last)
 	);
+	/* Field Names  - see above for matching DB field names and other field meta data */
+	var $id;
+	var $author;
+	var $name;
+	var $start_time;
+	var $end_time;
+	var $start_date;
+	var $end_date;
+	var $notes;
+	var $rsvp;
+	var $seats;
+	var $contactperson_id;
+	var $location_id;
+	var $recurrence_id;
+	var $category_id;
+	var $attributes;
+	var $recurrence;
+	var $interval;
+	var $freq;
+	var $byday;
+	var $byweekno;
 	
 	/**
 	 * Timestamp of start date/time
@@ -94,7 +115,6 @@ class EM_Event extends EM_Object{
 			if( is_array($event_data) ){
 				//Accepts a raw array that'll just be imported directly into the object with no DB lookups (same for event and recurrence)
 				$event = $event_data;
-				//FIXME this could lead to potential blank locations, if not supplied in array... do we load or not?
 				$this->location = new EM_Location( $event );
 			}elseif( is_numeric($event_data) && $event_data > 0 ){
 				//Retreiving from the database  
@@ -110,8 +130,12 @@ class EM_Event extends EM_Object{
 				$this->location = new EM_Location ( $event );
 			}
 			//Sort out attributes
-			$event['event_attributes'] = @unserialize($event ['event_attributes']);
-			$event['event_attributes'] = (!is_array($event ['event_attributes'])) ?  array() : $event ['event_attributes'] ;
+			if( !empty($event['event_attributes']) ){
+				if( is_serialized($event['event_attributes']) ){
+					$event['event_attributes'] = @unserialize($event['event_attributes']);					
+				}
+				$event['event_attributes'] = (!is_array($event['event_attributes'])) ?  array() : $event['event_attributes'] ;
+			}
 			$event['recurrence_byday'] = ( $event['recurrence_byday'] == 7 ) ? 0:$event['recurrence_byday']; //Backward compatibility (since 3.0.3), using 0 makes more sense due to date() function
 			$this->to_object($event, true);
 			
@@ -136,6 +160,8 @@ class EM_Event extends EM_Object{
 			if( $this->is_recurrence() && !array_key_exists($this->recurrence_id, $EM_Recurrences) ){
 				$EM_Recurrences[$this->recurrence_id] = new EM_Event($this->recurrence_id);
 			}
+		}else{
+			$this->location = new EM_Location(); //blank location
 		}
 	}
 	
@@ -292,7 +318,7 @@ class EM_Event extends EM_Object{
 				return apply_filters('em_event_save', false, $this);
 			}
 			//Successful individual or recurrence save
-			$this->feedback_message = "'{$this->name}' " . __ ( 'updated', 'dbem' ) . "!";
+			$this->feedback_message = "{$this->name} " . __ ( 'updated', 'dbem' ) . "!";
 			if($this->rsvp == 0){
 				$this->delete_bookings();
 			}
@@ -328,13 +354,11 @@ class EM_Event extends EM_Object{
 		global $wpdb, $EZSQL_ERROR;
 		//First, duplicate.
 		$event_table_name = $wpdb->prefix . EM_EVENTS_TABLE;
-		$eventArray = $this->to_array();
+		$eventArray = $this->to_array(true);
 		unset($eventArray['event_id']);
-		$result = $wpdb->insert($event_table_name, $eventArray);
-		if($result !== false){
-			//Get the ID of the new item
-			$event_ID = $wpdb->insert_id;
-			$EM_Event = new EM_Event( $event_ID );
+		$EM_Event = new EM_Event( $eventArray );
+		if( $EM_Event->save() ){
+			$EM_Event->feedback_message = __("You are now viewing the duplicated event", 'dbem');
 			return apply_filters('em_event_duplicate', $EM_Event, $this);
 		}else{
 			//TODO add error notifications for duplication failures.
@@ -484,7 +508,7 @@ class EM_Event extends EM_Object{
 				case '#_EDITEVENTLINK':
 					if(is_user_logged_in()){
 						//TODO user should have permission to edit the event
-						$replace = "<a href=' ".get_bloginfo('wpurl')."/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=".$this->id."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+						$replace = "<a href='".get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}'>".__('Edit').' '.__('Event', 'dbem')."</a>";
 					}	 
 					break;
 				//Bookings
@@ -557,6 +581,7 @@ class EM_Event extends EM_Object{
 		 	}
 		}
 		//Time place holder that doesn't show if empty.
+		//TODO add filter here too
 		preg_match_all('/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/', $format, $results);
 		foreach($results[0] as $result) {
 			if(substr($result, 0, 3 ) == "#@_"){
@@ -577,6 +602,7 @@ class EM_Event extends EM_Object{
 		foreach($results[0] as $resultKey => $result) {
 			//Strip string of placeholder and just leave the reference
 			$attRef = substr( substr($result, 0, strpos($result, '}')), 6 );
+			$attString = '';
 			if( array_key_exists($attRef, $this->attributes) ){
 				$attString = $this->attributes[$attRef];
 				if( trim($attString) == '' && $results[1][$resultKey] != '' ){

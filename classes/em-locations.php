@@ -85,19 +85,38 @@ class EM_Locations extends EM_Object {
 		$EM_Location_old = $EM_Location; //When looping, we can replace EM_Location global with the current event in the loop
 		//Can be either an array for the get search or an array of EM_Location objects
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
-			$locations = $args;
+			$func_args = func_get_args();
+			$locations = $func_args[0];
+			$args = apply_filters('em_locations_output_args', self::get_default_search($func_args[1]), $locations);
+			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
+			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
 		}else{
+			$args = apply_filters('em_locations_output_args', self::get_default_search($args) );
+			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
+			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
+			$args['limit'] = false;
+			$args['offset'] = false;
+			$args['page'] = false;
 			$locations = self::get( $args );
 		}
 		//What format shall we output this to, or use default
 		$format = ( $args['format'] == '' ) ? get_option( 'dbem_location_list_item_format' ) : $args['format'] ;
 		
 		$output = "";
+		$locations_count = count($locations);
+		$locations = apply_filters('em_locations_output_locations', $locations);
+		
 		if ( count($locations) > 0 ) {
-			foreach ( $locations as $location ) {
-				$EM_Location = $location;
-				/* @var EM_Event $event */
-				$output .= $location->output($format);
+			$location_count = 0;
+			$locations_shown = 0;
+			foreach ( $locations as $EM_Location ) {
+				if( ($locations_shown < $limit || empty($limit)) && ($location_count >= $offset || $offset === 0) ){
+					$output .= $EM_Location->output($format);
+					$locations_shown++;
+				}
+				$location_count++;
 			}
 			//Add headers and footers to output
 			if( $format == get_option ( 'dbem_location_list_item_format' ) ){
@@ -107,7 +126,13 @@ class EM_Locations extends EM_Object {
 				$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
 				$output =  $single_event_format_header .  $output . $single_event_format_footer;
 			}
-			//TODO pagination for locations
+			//Pagination (if needed/requested)
+			if( !empty($args['pagination']) && !empty($limit) && $locations_count >= $limit ){
+				//Show the pagination links (unless there's less than 10 events
+				$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
+				$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
+				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $locations_count, $limit, $page), $page_link_template, $locations_count, $limit, $page);
+			}
 		} else {
 			$output = get_option ( 'dbem_no_events_message' );
 		}

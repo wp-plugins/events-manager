@@ -31,21 +31,60 @@ add_shortcode('locations-map', 'em_get_locations_map_shortcode'); //Depreciate t
  * @param array $atts
  * @return string
  */
-function em_get_events_list_shortcode($atts) {
-	//TODO sort out attributes so it's consistent everywhere
+function em_get_events_list_shortcode($atts, $format='') {
 	$atts = (array) $atts;
+	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
+	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
+	$atts['page'] = ( !empty($atts['page']) && is_numeric($atts['page']) )? $atts['page'] : 1;
+	$atts['page'] = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : $atts['page'];
 	return EM_Events::output( $atts );
 }
 add_shortcode ( 'events_list', 'em_get_events_list_shortcode' );
 
 /**
+ * Shows a list of events according to given specifications. Accepts any event query attribute.
+ * @param array $atts
+ * @return string
+ */
+function em_get_event_shortcode($atts, $format='') {
+	$atts = (array) $atts;
+	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
+	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
+	if( !empty($atts['event']) && is_numeric($atts['event']) ){
+		$EM_Event = new EM_Event($atts['event']);
+		return ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
+	}
+}
+add_shortcode ( 'event', 'em_get_event_shortcode' );
+
+/**
  * Returns list of locations according to given specifications. Accepts any location query attribute.
  */
-function em_get_locations_list_shortcode( $atts ){
+function em_get_locations_list_shortcode( $atts, $format='' ) {
 	$atts = (array) $atts;
+	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
+	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
+	$atts['page'] = ( !empty($atts['page']) && is_numeric($atts['page']) )? $atts['page'] : 1;
+	$atts['page'] = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : $atts['page'];
 	return EM_Locations::output( $atts );
 }
 add_shortcode('locations_list', 'em_get_locations_list_shortcode');
+
+/**
+ * Shows a single location according to given specifications. Accepts any event query attribute.
+ * @param array $atts
+ * @return string
+ */
+function em_get_location_shortcode($atts, $format='') {
+	$atts = (array) $atts;
+	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
+	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
+	if( !empty($atts['location']) && is_numeric($atts['location']) ){
+		$EM_Location = new EM_Location($atts['location']);
+		return ( !empty($atts['format']) ) ? $EM_Location->output($atts['format']) : $EM_Location->output_single();
+	}
+}
+add_shortcode ( 'location', 'em_get_location_shortcode' );
 
 /**
  * DO NOT DOCUMENT! This should be replaced with shortcodes events-link and events_uri

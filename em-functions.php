@@ -5,7 +5,7 @@ function em_hello_to_new_user() {
 		$advice = sprintf ( __ ( "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> 
 		<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>
 		<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>
-		<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>", 'dbem' ), $current_user->display_name, get_bloginfo ( 'url' ) . '/wp-admin/widgets.php', 'http://wp-events-plugin.com/documentation/template-tags/', 'http://wp-events-plugin.com/documentation/shortcodes/', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager/events-manager.php&disable_hello_to_user=true' );
+		<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>", 'dbem' ), $current_user->display_name, get_bloginfo ( 'url' ) . '/wp-admin/widgets.php', 'http://wp-events-plugin.com/documentation/template-tags/', 'http://wp-events-plugin.com/documentation/shortcodes/', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager&disable_hello_to_user=true' );
 		?>
 		<div id="message" class="updated">
 			<?php echo $advice; ?>
@@ -53,14 +53,15 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
  * @param string $url
  * @param array $params
  */
-function em_add_get_params($url, $params=array()){
+function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 	$has_querystring = (stristr($url, "?"));	
 	$count = 0;
 	foreach($params as $key=>$value){
+		$value = ($encode) ? urlencode($value):$value;
 		if( $count == 0 && !$has_querystring ){
-			$url .= "?{$key}=".urlencode($value);
+			$url .= "?{$key}=".$value;
 		}else{
-			$url .= "&amp;{$key}=".urlencode($value);
+			$url .= ($html) ? "&amp;{$key}=".$value:"&{$key}=".$value;
 		}
 		$count++;
 	}

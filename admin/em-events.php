@@ -4,112 +4,12 @@
  * Determines whether to show event page or events page, and saves any updates to the event or events
  * @return null
  */
-function em_events_subpanel() {
+function em_admin_events_page() {
 	//TODO Simplify panel for events, use form flags to detect certain actions (e.g. submitted, etc)
 	global $wpdb;
 	global $EM_Event;
 	$action = ( !empty($_GET ['action']) ) ? $_GET ['action']:'';
-	$action2 = ( !empty($_GET ['action2']) ) ? $_GET ['action2']:'';
-	$event_ID = ( !empty($_GET ['event_id']) ) ? $_GET ['event_id']:'';
-	$recurrence_ID = ( !empty($_GET ['recurrence_id']) ) ? $_GET ['recurrence_id']:'';
-	$scope = ( !empty($_GET ['scope']) ) ? $_GET['scope']:'future';
-	$order = ( !empty($_GET ['order']) ) ? $_GET ['order']:''; //FIXME order not used consistently in admin area
-	$selectedEvents = ( !empty($_GET ['events']) ) ? $_GET ['events']:'';
-	
-	if ($order == ""){
-		$order = "ASC";
-	}		
-	$event_table_name = $wpdb->prefix . EM_EVENTS_TABLE;	
-
-	// DELETE action
-	if ( $action == 'deleteEvents' && EM_Object::array_is_numeric($selectedEvents) ) {
-		EM_Events::delete( $selectedEvents );
-		em_events_table ( EM_Events::get( array('scope'=>$scope) ), "Future events" );
-	}
-	// UPDATE or CREATE action
-	if ($action == 'update_event') {
-		
-		if( !is_object($EM_Event) ){
-			$EM_Event = new EM_Event();
-		}
-		$validation = $EM_Event->get_post();
-		$title = ($EM_Event->is_recurring()) ? __( "Reschedule", 'dbem' )." '{$EM_Event->name}'" : "Edit event {$EM_Event->name}" ;	
-		if ( $validation ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
-			//Save
-			if( $EM_Event->save() ) {
-				?>
-				<div id='message' class='updated fade'>
-					<p><?php echo $EM_Event->feedback_message ?></p>
-				</div>
-				<?php
-				em_events_table ( EM_Events::get( array('limit'=>0,'scope'=>$scope) ), "Future events" );
-			}else{
-				// saving unsuccessful		
-				?>
-				<div id='message' class='error '>
-					<p>
-						<?php echo "<strong>" . __( "Ach, there's a problem here:", "dbem" ) . "</strong><br /><br />" .implode('<br />', $EM_Event->errors); ?>
-					</p>
-				</div>
-				<?php
-				em_event_form ( $title );
-			}	
-		} else {
-			// validation unsuccessful			
-			?>
-			<div id='message' class='error '>
-				<p><?php echo "<strong>" . __( "Ach, there's a problem here:", "dbem" ) . "</strong><br /><br />" . implode('<br />', $EM_Event->errors); ?></p>
-			</div>
-			<?php			
-			em_event_form ( $title );		
-		}
-	}
-	
-	//Add or Edit Events
-	if ($action == 'edit_event') {
-		if( !is_object($EM_Event) ){
-			$EM_Event = new EM_Event();
-			$title = __ ( "Insert New Event", 'dbem' );
-		} else {
-			$title = __ ( "Edit Event", 'dbem' ) . " '" . $EM_Event->name . "'";
-		}		
-		//Generate Event Form
-		em_event_form ( $title );	
-	}
-	
-	//Copy the event
-	if ($action == 'duplicate_event') {
-		global $EZSQL_ERROR;
-		if( $EM_Event->duplicate() ){
-			//Now we edit the duplicated item
-			$title = __ ( "Edit Event", 'dbem' ) . " '" . $EM_Event->name . "'";
-			echo "<div id='message' class='updated below-h2'>You are now editing the duplicated event.</div>";
-			em_event_form ( $title );
-		}else{
-			echo "<div class='error'><p>There was an error duplicating the event. Try again maybe?</div>";
-			em_events_table ( EM_Events::get(array('limit'=>0,'scope'=>$scope)), $title );
-		}
-	}
-	
-	if ($action == "-1" || $action == "") {
-		// No action, only showing the events list
-		switch ($scope) {
-			case "past" :
-				$title = __ ( 'Past Events', 'dbem' );
-				break;
-			case "all" :
-				$title = __ ( 'All Events', 'dbem' );
-				break;
-			default :
-				$title = __ ( 'Future Events', 'dbem' );
-				$scope = "future";
-		}
-		$events = EM_Events::get( array('scope'=>$scope, 'limit'=>0, 'order'=>$order ) );		
-		em_events_table ( $events, $title );	
-	}
-}
-
-function em_events_table($events, $title) {
+	$order = ( !empty($_GET ['order']) ) ? $_GET ['order']:'ASC';
 	$limit = ( !empty($_GET['limit']) ) ? $_GET['limit'] : 20;//Default limit
 	$page = ( !empty($_GET['p']) ) ? $_GET['p']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
@@ -119,6 +19,26 @@ function em_events_table($events, $title) {
 		'future' => __ ( 'Future events', 'dbem' )
 	);
 	$scope = ( !empty($_GET ['scope']) && array_key_exists($_GET ['scope'], $scope_names) ) ? $_GET ['scope']:'future';
+	$selectedEvents = ( !empty($_GET ['events']) ) ? $_GET ['events']:'';
+	
+	// DELETE action
+	if ( $action == 'deleteEvents' && EM_Object::array_is_numeric($selectedEvents) ) {
+		EM_Events::delete( $selectedEvents );
+	}
+	
+	// No action, only showing the events list
+	switch ($scope) {
+		case "past" :
+			$title = __ ( 'Past Events', 'dbem' );
+			break;
+		case "all" :
+			$title = __ ( 'All Events', 'dbem' );
+			break;
+		default :
+			$title = __ ( 'Future Events', 'dbem' );
+			$scope = "future";
+	}
+	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>0, 'order'=>$order ) );
 	$events_count = count ( $events );
 	
 	$use_events_end = get_option ( 'dbem_use_event_end' );
@@ -131,15 +51,23 @@ function em_events_table($events, $title) {
 			em_hello_to_new_user ();
 				
 			$link = array ();
-			$link ['past'] = "<a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=past&amp;order=desc'>" . __ ( 'Past events', 'dbem' ) . "</a>";
-			$link ['all'] = " <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=all&amp;order=desc'>" . __ ( 'All events', 'dbem' ) . "</a>";
-			$link ['future'] = "  <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/edit.php?page=events-manager/events-manager.php&amp;scope=future'>" . __ ( 'Future events', 'dbem' ) . "</a>";
+			$link ['past'] = "<a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/admin.php?page=events-manager&amp;scope=past&amp;order=desc'>" . __ ( 'Past events', 'dbem' ) . "</a>";
+			$link ['all'] = " <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/admin.php?page=events-manager&amp;scope=all&amp;order=desc'>" . __ ( 'All events', 'dbem' ) . "</a>";
+			$link ['future'] = "  <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/admin.php?page=events-manager&amp;scope=future'>" . __ ( 'Future events', 'dbem' ) . "</a>";
 		?> 
-				
-		<form id="posts-filter" action="" method="get"><input type='hidden' name='page' value='events-manager/events-manager.php' />
+		<?php if ( !empty($_GET['error']) ) : ?>
+		<div id='message' class='error'>
+			<p><?php echo $_GET['error']; ?></p>
+		</div>
+		<?php endif; ?>
+		<?php if ( !empty($_GET['message']) ) : ?>
+		<div id='message' class='updated fade'>
+			<p><?php echo $_GET['message']; ?></p>
+		</div>
+		<?php endif; ?>
+		<form id="posts-filter" action="" method="get"><input type='hidden' name='page' value='events-manager' />
 			<ul class="subsubsub">
-				<li><a href='edit.php' class="current"><?php _e ( 'Total', 'dbem' ); ?> <span
-					class="count">(<?php echo (count ( $events )); ?>)</span></a></li>
+				<li><a href='#' class="current"><?php _e ( 'Total', 'dbem' ); ?> <span class="count">(<?php echo (count ( $events )); ?>)</span></a></li>
 			</ul>
 			
 			<div class="tablenav">
@@ -220,14 +148,14 @@ function em_events_table($events, $title) {
 									</td>
 									<td>
 										<strong>
-										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $event->id ?>"><?php echo ($event->name); ?></a>
+										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>"><?php echo ($event->name); ?></a>
 										</strong>
 										<?php if($category) : ?>
 										<br/><span title='<?php _e( 'Category', 'dbem' ).": ".$category['category_name'] ?>'><?php $category['category_name'] ?></span> 
 										<?php endif; ?>
 									</td>
 									<td>
-							 	    	<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=duplicate_event&amp;event_id=<?php echo $event->id; ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
+							 	    	<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;action=duplicate&amp;event_id=<?php echo $event->id; ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
 							 	    		<strong>+</strong>
 							 	    	</a>
 							  	   	</td>
@@ -250,7 +178,7 @@ function em_events_table($events, $title) {
 											?>
 											<strong>
 											<?php echo $event->get_recurrence_description(); ?> <br />
-											<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+											<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->recurrence_id ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
 											</strong>
 											<?php
 										}

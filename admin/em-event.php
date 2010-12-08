@@ -1,23 +1,67 @@
 <?php
-function em_new_event_page() {
-	global $EM_Event;
-	$title = __ ( "Insert New Event", 'dbem' );
-	$EM_Event = new EM_Event(); //Empty event
-	em_event_form ( $title );
+function em_admin_event_actions(){
+	if( current_user_can(EM_MIN_CAPABILITY) && !empty($_GET['page']) && $_GET['page'] == 'events-manager-event' && !empty($_REQUEST ['action']) ){
+		global $wpdb;
+		global $EM_Event;
+
+		//if dealing with new event, we still want an event object
+		if( !is_object($EM_Event) ){
+			$EM_Event = new EM_Event();
+		}
+
+		// UPDATE or CREATE action
+		if ($_REQUEST['action'] == 'save') {
+			$validation = $EM_Event->get_post();
+			if ( $validation ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
+				//Save
+				if( $EM_Event->save() ) {
+					$page = !empty($_REQUEST['p']) ? $_REQUEST['p']:'';
+					$scope = !empty($_REQUEST['scope']) ? $_REQUEST['scope']:'';
+					wp_redirect( get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager&p='.$page.'&scope='.$scope.'&message='.urlencode($EM_Event->feedback_message));
+				}
+			}//errors added automatically to event global object
+		}
+		
+		//Copy the event
+		if ($_REQUEST['action'] == 'duplicate') {
+			global $EZSQL_ERROR;
+			$EM_Event = $EM_Event->duplicate();
+			if( $EM_Event === false ){
+				$redirect_url = em_add_get_params($_SERVER['HTTP_REFERER'], array('error' => __('There was an error duplicating the event. Try again maybe?', 'dbem'), 'message'=>''), false);
+				wp_redirect($redirect_url);
+			}else{
+				$page = !empty($_REQUEST['p']) ? $_REQUEST['p']:'';
+				$scope = !empty($_REQUEST['scope']) ? $_REQUEST['scope']:'';
+				wp_redirect( get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-event&event_id='.$EM_Event->id.'&p='.$page.'&scope='.$scope.'&message='.urlencode($EM_Event->feedback_message));
+			}
+		}
+	}
 }
+add_action('admin_init', 'em_admin_event_actions');
 
 /**
  * Generates Event Admin page, for adding and updating a single (or recurring) event.
  * @param $title
  * @return null
  */
-function em_event_form( $title ) {
+function em_admin_event_page() {
 	global $EM_Event;
-	global $localised_date_formats;    
+	global $localised_date_formats;   
+	
+	if( is_object($EM_Event) && $EM_Event->id > 0 ){
+		if($EM_Event->is_recurring()){
+			$title = __( "Reschedule", 'dbem' )." '{$EM_Event->name}'";
+		}else{
+			$title = __ ( "Edit Event", 'dbem' ) . " '" . $EM_Event->name . "'";
+		}
+	} else {
+		$EM_Event = new EM_Event();
+		$title = __ ( "Insert New Event", 'dbem' );
+	}
+	
 	$use_select_for_locations = get_option('dbem_use_select_for_locations');
 	// change prefix according to event/recurrence
 	$pref = "event_";	
-	$form_destination = "edit.php?page=events-manager/events-manager.php&amp;action=update_event&amp;event_id=" . $EM_Event->id;
 	
 	$locale_code = substr ( get_locale (), 0, 2 );
 	$localised_date_format = $localised_date_formats [$locale_code];
@@ -30,7 +74,22 @@ function em_event_form( $title ) {
 	
 	$days_names = array (1 => __ ( 'Mon' ), 2 => __ ( 'Tue' ), 3 => __ ( 'Wed' ), 4 => __ ( 'Thu' ), 5 => __ ( 'Fri' ), 6 => __ ( 'Sat' ), 0 => __ ( 'Sun' ) );
 	?>
-	<form id="eventForm" method="post" 	action="<?php echo $form_destination; ?>">
+	<?php if ( count($EM_Event->errors) > 0 || !empty($_GET['error']) ) : ?>
+	<div id='message' class='error '>
+		<p>
+			<?php if( count($EM_Event->errors) ){ ?>
+			<strong><?php echo __( "Ach, there's a problem here:", "dbem" ) ?></strong><br /><br />
+			<?php echo implode('<br />', $EM_Event->errors); ?>
+			<?php } else { echo $_GET['error']; } ?>
+		</p>
+	</div>
+	<?php endif; ?>
+	<?php if ( !empty($EM_Event->feedback_message) || !empty($_GET['message']) ) : ?>
+	<div id='message' class='updated fade'>
+		<p><?php echo !empty($EM_Event->feedback_message) ? $EM_Event->feedback_message : $_GET['message']; ?></p>
+	</div>
+	<?php endif; ?>
+	<form id="eventForm" method="post" 	action="">
 		<div class="wrap">
 			<div id="icon-events" class="icon32"><br /></div>
 			<h2><?php echo $title; ?></h2>
@@ -126,7 +185,7 @@ function em_event_form( $title ) {
 											<p>
 												<?php echo $EM_Event->get_recurrence_description(); ?>
 												<br />
-												<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager/events-manager.php&amp;action=edit_event&amp;event_id=<?php echo $EM_Event->recurrence_id; ?>">
+												<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager&amp;action=edit_event&amp;event_id=<?php echo $EM_Event->recurrence_id; ?>">
 												<?php _e ( 'Reschedule', 'dbem' ); ?>
 												</a>
 												<input type="hidden" name="recurrence_id" value="<?php echo $EM_Event->recurrence_id; ?>" />
@@ -227,7 +286,7 @@ function em_event_form( $title ) {
 											 	    
 											 	 	<div id='major-publishing-actions'>  
 														<div id='publishing-action'> 
-															<a id='printable'  target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=people&action=printable&event_id=".$EM_Event->id ?>'><?php _e('Printable view','dbem')?></a>
+															<a id='printable'  target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-people&action=printable&event_id=".$EM_Event->id ?>'><?php _e('Printable view','dbem')?></a>
 															<br class='clear'/>             
 												        </div>
 														<br class='clear'/>    
@@ -534,6 +593,9 @@ function em_event_form( $title ) {
 					<p class="submit">
 						<input type="submit" name="events_update" value="<?php _e ( 'Submit Event', 'dbem' ); ?> &raquo;" />
 					</p>
+					<input type="hidden" name="p" value="<?php echo ( !empty($_REQUEST['p']) ) ? $_REQUEST['p']:''; ?>" /><a>
+					<input type="hidden" name="scope" value="<?php echo ( !empty($_REQUEST['scope']) ) ? $_REQUEST['scope']:'' ?>" /></a>
+					<input type="hidden" name="action" value="save" />
 				</div>
 			</div>
 		</div>

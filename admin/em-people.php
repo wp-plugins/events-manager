@@ -1,5 +1,5 @@
 <?php
-function em_people_page() {
+function em_admin_people_page() {
 	// Managing AJAX booking removal
  	if(isset($_GET['action']) && $_GET['action'] == 'remove_booking') {
 		if(isset($_POST['booking_id'])){

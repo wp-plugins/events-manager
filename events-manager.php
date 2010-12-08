@@ -175,16 +175,16 @@ add_filter( 'plugin_row_meta', 'em_set_plugin_meta', 10, 2 );
 function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//TODO Add flexible permissions
-	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),EM_MIN_CAPABILITY,__FILE__,'em_events_subpanel', '../wp-content/plugins/events-manager/includes/images/calendar-16.png');
+	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem'),EM_MIN_CAPABILITY,'events-manager','em_admin_events_page', '../wp-content/plugins/events-manager/includes/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu:
 	   		$plugin_pages = array(); 
-			$plugin_pages[] = add_submenu_page(__FILE__, __('Edit'),__('Edit'),EM_MIN_CAPABILITY,__FILE__,'em_events_subpanel');
-			$plugin_pages[] = add_submenu_page(__FILE__, __('Add new', 'dbem'), __('Add new','dbem'), EM_MIN_CAPABILITY, 'new_event', "em_new_event_page");
-			$plugin_pages[] = add_submenu_page(__FILE__, __('Locations', 'dbem'), __('Locations', 'dbem'), EM_MIN_CAPABILITY, 'locations', "em_locations_page");
-			$plugin_pages[] = add_submenu_page(__FILE__, __('People', 'dbem'), __('People', 'dbem'), EM_MIN_CAPABILITY, 'people', "em_people_page");
-			$plugin_pages[] = add_submenu_page(__FILE__, __('Event Categories','dbem'),__('Categories','dbem'), EM_SETTING_CAPABILITY, "events-manager-categories", 'em_categories_subpanel');
-			$plugin_pages[] = add_submenu_page(__FILE__, __('Events Manager Settings','dbem'),__('Settings','dbem'), EM_SETTING_CAPABILITY, "events-manager-options", 'em_options_subpanel');
-			$plugin_pages[] = add_submenu_page(__FILE__, __('Getting Help for Events Manager','dbem'),__('Help','dbem'), EM_SETTING_CAPABILITY, "events-manager-help", 'em_admin_help');
+			$plugin_pages[] = add_submenu_page('events-manager', __('Edit'),__('Edit'),EM_MIN_CAPABILITY,'events-manager','em_admin_events_page');
+			$plugin_pages[] = add_submenu_page('events-manager', __('Add new', 'dbem'), __('Add new','dbem'), EM_MIN_CAPABILITY, 'events-manager-event', "em_admin_event_page");
+			$plugin_pages[] = add_submenu_page('events-manager', __('Locations', 'dbem'), __('Locations', 'dbem'), EM_MIN_CAPABILITY, 'locations', "em_admin_locations_page");
+			$plugin_pages[] = add_submenu_page('events-manager', __('People', 'dbem'), __('People', 'dbem'), EM_MIN_CAPABILITY, 'people', "em_admin_people_page");
+			$plugin_pages[] = add_submenu_page('events-manager', __('Event Categories','dbem'),__('Categories','dbem'), EM_SETTING_CAPABILITY, "events-manager-categories", 'em_admin_categories_page');
+			$plugin_pages[] = add_submenu_page('events-manager', __('Events Manager Settings','dbem'),__('Settings','dbem'), EM_SETTING_CAPABILITY, "events-manager-options", 'em_admin_options_page');
+			$plugin_pages[] = add_submenu_page('events-manager', __('Getting Help for Events Manager','dbem'),__('Help','dbem'), EM_SETTING_CAPABILITY, "events-manager-help", 'em_admin_help_page');
 			foreach($plugin_pages as $plugin_page){
 				add_action( 'admin_print_scripts-'. $plugin_page, 'em_admin_load_scripts' );
 				add_action( 'admin_head-'. $plugin_page, 'em_admin_general_script' );
@@ -212,7 +212,7 @@ add_action ( 'template_redirect', 'em_enqueue_public' );
  */
 function em_favorite_menu($actions) {
 	// add quick link to our favorite plugin
-	$actions ['admin.php?page=new_event'] = array (__ ( 'Add an event', 'dbem' ), EM_MIN_CAPABILITY );
+	$actions ['admin.php?page=events-manager-event'] = array (__ ( 'Add an event', 'dbem' ), EM_MIN_CAPABILITY );
 	return $actions;
 }
 add_filter ( 'favorite_actions', 'em_favorite_menu' );

@@ -127,7 +127,7 @@ class EM_Location extends EM_Object {
 		//TODO better image upload error handling
 		do_action('em_location_image_upload_pre', $this);
 		$result = true;
-		if ($_FILES['location_image']['size'] > 0 ) {	
+		if ( !empty($_FILES['location_image']['size']) ) {	
 		  	if( !file_exists(ABSPATH.EM_IMAGE_UPLOAD_DIR) ){
 				mkdir(ABSPATH.EM_IMAGE_UPLOAD_DIR, 0777);
 		  	}
@@ -146,14 +146,17 @@ class EM_Location extends EM_Object {
 
 	function load_similar($criteria){
 		global $wpdb;
-		$locations_table = $wpdb->prefix.EM_LOCATIONS_TABLE; 
-		$prepared_sql = $wpdb->prepare("SELECT * FROM $locations_table WHERE location_name = %s AND location_address = %s AND location_town = %s", stripcslashes($criteria['location_name']), stripcslashes($criteria['location_address']), stripcslashes($criteria['location_town']) );
-		//$wpdb->show_errors(true);
-		$location = $wpdb->get_row($prepared_sql, ARRAY_A);
-		if( is_array($location) ){
-			$this->to_object($location);
+		if( !empty($criteria['location_name']) && !empty($criteria['location_name']) && !empty($criteria['location_name']) ){
+			$locations_table = $wpdb->prefix.EM_LOCATIONS_TABLE; 
+			$prepared_sql = $wpdb->prepare("SELECT * FROM $locations_table WHERE location_name = %s AND location_address = %s AND location_town = %s", stripcslashes($criteria['location_name']), stripcslashes($criteria['location_address']), stripcslashes($criteria['location_town']) );
+			//$wpdb->show_errors(true);
+			$location = $wpdb->get_row($prepared_sql, ARRAY_A);
+			if( is_array($location) ){
+				$this->to_object($location);
+			}
+			return apply_filters('em_location_load_similar', $location, $this);
 		}
-		return apply_filters('em_location_load_similar', $location, $this);
+		return apply_filters('em_location_load_similar', false, $this);
 	}
 
 	/**

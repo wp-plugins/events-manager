@@ -109,6 +109,14 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 3. The Events Manager Options page.
 
 == Change Log ==
+= 3.0.9 =
+* Fixed small calendar discrepencies
+* added event and location single shortcodes
+* shortcodes now accept html within format attribute or within the shortcode tags [like]<p>this</p>[/like]
+* fixed pagination functionality (or lack thereof) in shortcodes
+* improved user experience when navigating/editing events in admin area
+
+
 = 3.0.81 =
 * Fixed pagination bugs
 * Global locations map won't show locations with 0-0 coords
