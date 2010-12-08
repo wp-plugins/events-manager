@@ -41,8 +41,8 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
 	            }
 		    }
 		//Add the forward and last buttons
-		    $string .= ($i < $maxPages) ? ' <a href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' &gt; ' ;
-		    $string .= ($i < $maxPages) ? ' <a href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : '&gt;&gt; ';
+		    $string .= ($page < $maxPages) ? ' <a href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' &gt; ' ;
+		    $string .= ($i-1 < $maxPages) ? ' <a href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : '&gt;&gt; ';
 		//Return the string
 		    return $string;
 	}

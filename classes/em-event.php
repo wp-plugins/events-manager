@@ -569,13 +569,13 @@ class EM_Event extends EM_Object{
 		foreach($placeholders[0] as $result) {
 			// matches all PHP START date and time placeholders
 			if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-				$replace = date(ltrim($result, "#"), $this->start);
+				$replace = __(date(ltrim($result, "#"), $this->start));
 				$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
 				$event_string = str_replace($result, $replace, $event_string );
 			}
 			// matches all PHP END time placeholders for endtime
 			if (preg_match('/^#@[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-				$replace = date(ltrim($result, "#@"), $this->end);
+				$replace = __(date(ltrim($result, "#@"), $this->end));
 				$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
 				$event_string = str_replace($result, $replace, $event_string ); 
 		 	}
