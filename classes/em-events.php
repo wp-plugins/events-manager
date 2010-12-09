@@ -173,8 +173,8 @@ class EM_Events extends EM_Object {
 				$output = $single_event_format_header .  $output . $single_event_format_footer;
 			}
 			//Pagination (if needed/requested)
-			if( !empty($args['pagination']) && !empty($limit) && $events_count >= $limit ){
-				//Show the pagination links (unless there's less than 10 events
+			if( !empty($args['pagination']) && !empty($limit) && $events_count > $limit ){
+				//Show the pagination links (unless there's less than $limit events)
 				$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
 				$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
 				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $events_count, $limit, $page), $page_link_template, $events_count, $limit, $page);
@@ -184,7 +184,8 @@ class EM_Events extends EM_Object {
 		}
 		//TODO check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Event = $EM_Event_old;
-		return apply_filters('em_events_output', $output, $events, $args);		
+		$output = apply_filters('em_events_output', $output, $events, $args);
+		return $output;		
 	}
 
 	/* Overrides EM_Object method to apply a filter to result

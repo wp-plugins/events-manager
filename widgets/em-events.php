@@ -49,7 +49,7 @@ class EM_Widget extends WP_Widget {
     		'orderby' => 'start_date,start_time,name'
     	);
     	foreach($defaults as $key => $value){
-    		if($new_instance[$key] == ''){
+    		if( !empty($new_instance[$key]) ){
     			$new_instance[$key] = $value;
     		}
     	}
@@ -87,7 +87,7 @@ class EM_Widget extends WP_Widget {
 					)); 
 				?>
 				<?php foreach($orderby_options as $key => $value) : ?>   
-	 			<option value='<?php echo $key ?>' <?php echo ($key == $instance['orderby']) ? "selected='selected'" : ''; ?>>
+	 			<option value='<?php echo $key ?>' <?php echo ( !empty($instance['orderby']) && $key == $instance['orderby']) ? "selected='selected'" : ''; ?>>
 	 				<?php echo $value; ?>
 	 			</option>
 				<?php endforeach; ?>

@@ -64,7 +64,7 @@ function em_admin_locations($message='', $fill_fields = false) {
 			</div>
  	 		<h2>
  	 			<?php _e('Locations', 'dbem'); ?>
- 	 			<a href="admin.php?page=locations&action=add" class="button add-new-h2"><?php _e('Add New') ?></a>
+ 	 			<a href="admin.php?page=events-manager-locations&action=add" class="button add-new-h2"><?php _e('Add New') ?></a>
  	 		</h2>  
 
 			<?php if($message != "") : ?>
@@ -120,7 +120,7 @@ function em_admin_locations($message='', $fill_fields = false) {
 							<?php if( $i >= $offset && $i <= $offset+$limit ): ?>
 								<tr>
 									<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Location->id ?>' name='locations[]'/></td>
-									<td><a href='admin.php?page=locations&amp;action=edit&amp;location_id=<?php echo $EM_Location->id ?>'><?php echo $EM_Location->name ?></a></td>
+									<td><a href='admin.php?page=events-manager-locations&amp;action=edit&amp;location_id=<?php echo $EM_Location->id ?>'><?php echo $EM_Location->name ?></a></td>
 									<td><?php echo $EM_Location->address ?></td>
 									<td><?php echo $EM_Location->town ?></td>                         
 								</tr>
@@ -159,7 +159,7 @@ function em_admin_location($message = "") {
 		<?php endif; ?>
 		<div id='ajax-response'></div>
 
-		<form enctype='multipart/form-data' name='editcat' id='locationForm' method='post' action='admin.php?page=locations' class='validate'>
+		<form enctype='multipart/form-data' name='editcat' id='locationForm' method='post' action='admin.php?page=events-manager-locations' class='validate'>
 			<input type='hidden' name='action' value='save' />
 			<input type='hidden' name='location_id' value='<?php echo $EM_Location->id ?>'/>
 			<table class='form-table'>

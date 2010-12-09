@@ -592,10 +592,11 @@ class EM_Event extends EM_Object{
 				$offset = 3;
 			}
 			if( $date == 'end_date' && $this->$date == $this->start_date ){
-				$event_string = str_replace($result, '', $event_string);
+				$replace = __( apply_filters('em_event_output_placeholder', '', $this, $result, $target) );
 			}else{
-				$event_string = str_replace($result, mysql2date(substr($result, $offset, (strlen($result)-($offset+1)) ), $this->$date),$event_string );
+				$replace = __( apply_filters('em_event_output_placeholder', mysql2date(substr($result, $offset, (strlen($result)-($offset+1)) ), $this->$date), $this, $result, $target) );
 			}
+			$event_string = str_replace($result,$replace,$event_string );
 		}
 		//This is for the custom attributes
 		preg_match_all('/#_ATT\{.+?\}(\{.+?\})?/', $format, $results);

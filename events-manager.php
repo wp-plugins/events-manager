@@ -180,8 +180,8 @@ function em_create_events_submenu () {
 	   		$plugin_pages = array(); 
 			$plugin_pages[] = add_submenu_page('events-manager', __('Edit'),__('Edit'),EM_MIN_CAPABILITY,'events-manager','em_admin_events_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Add new', 'dbem'), __('Add new','dbem'), EM_MIN_CAPABILITY, 'events-manager-event', "em_admin_event_page");
-			$plugin_pages[] = add_submenu_page('events-manager', __('Locations', 'dbem'), __('Locations', 'dbem'), EM_MIN_CAPABILITY, 'locations', "em_admin_locations_page");
-			$plugin_pages[] = add_submenu_page('events-manager', __('People', 'dbem'), __('People', 'dbem'), EM_MIN_CAPABILITY, 'people', "em_admin_people_page");
+			$plugin_pages[] = add_submenu_page('events-manager', __('Locations', 'dbem'), __('Locations', 'dbem'), EM_MIN_CAPABILITY, 'events-manager-locations', "em_admin_locations_page");
+			$plugin_pages[] = add_submenu_page('events-manager', __('People', 'dbem'), __('People', 'dbem'), EM_MIN_CAPABILITY, 'events-manager-people', "em_admin_people_page");
 			$plugin_pages[] = add_submenu_page('events-manager', __('Event Categories','dbem'),__('Categories','dbem'), EM_SETTING_CAPABILITY, "events-manager-categories", 'em_admin_categories_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Events Manager Settings','dbem'),__('Settings','dbem'), EM_SETTING_CAPABILITY, "events-manager-options", 'em_admin_options_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Getting Help for Events Manager','dbem'),__('Help','dbem'), EM_SETTING_CAPABILITY, "events-manager-help", 'em_admin_help_page');

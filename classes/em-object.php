@@ -26,7 +26,7 @@ class EM_Object {
 			'location' => 0,
 			'event' => 0, 
 			'offset'=>0,
-			'page'=>0,//basically, if greater than 0, calculates offset at end
+			'page'=>1,//basically, if greater than 0, calculates offset at end
 			'recurrence'=>0,
 			'recurring'=>false,
 			'month'=>'',
@@ -95,7 +95,7 @@ class EM_Object {
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['limit']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
 		//Calculate offset in event page is set
-		if($defaults['page'] > 0){
+		if($defaults['page'] > 1){
 			$defaults['offset'] = $defaults['limit'] * ($defaults['page']-1);	
 		}else{
 			$defaults['page'] = ($defaults['limit'] > 0 ) ? floor($defaults['offset']/$defaults['limit']) + 1 : 1;

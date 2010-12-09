@@ -65,8 +65,9 @@ function em_content($content) {
 			$content = str_replace('#_PAGETITLE', em_events_page_title(''), get_option('dbem_title_html')) . $content;
 		}
 		//TODO FILTER - filter em page content before display
+		return apply_filters('em_content', '<div id="em-wrapper">'.$content.'</div>');
 	}
-	return apply_filters('em_content', '<div id="em-wrapper">'.$content.'</div>');
+	return $content;
 }
 add_filter ( 'the_content', 'em_content' );
 

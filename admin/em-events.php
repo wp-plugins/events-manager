@@ -46,7 +46,10 @@ function em_admin_events_page() {
 	<div class="wrap">
 		<div id="icon-events" class="icon32"><br />
 		</div>
-		<h2><?php echo $title; ?></h2>
+		<h2>	
+			<?php echo $title; ?>
+ 	 		<a href="admin.php?page=events-manager-event" class="button add-new-h2"><?php _e('Add New') ?></a>
+ 	 	</h2>
 		<?php
 			em_hello_to_new_user ();
 				
@@ -123,10 +126,10 @@ function em_admin_events_page() {
 					</thead>
 					<tbody>
 				  	  	<?php 
-				  	  	$i = 1;
 				  	  	$rowno = 0;
+						$event_count = 0;
 						foreach ( $events as $event ) {
-							if( $i >= $offset && $i <= $offset+$limit ) {
+							if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
 								$rowno++;
 								$class = ($rowno % 2) ? ' class="alternate"' : '';
 								// FIXME set to american
@@ -187,7 +190,7 @@ function em_admin_events_page() {
 								</tr>
 								<?php
 							}
-							$i ++;
+							$event_count++;
 						}
 						?>
 					</tbody>
