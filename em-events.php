@@ -42,13 +42,14 @@ function em_content($content) {
 			$content =  $event->output_single();
 		} else {
 			// Multiple events page
-			$scope = (!empty($_REQUEST['scope'])) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
+			$scope = ( !empty($_REQUEST['scope']) ) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
 			//If we have a $_GET['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
 			$args = array(				
 				'orderby' => get_option('dbem_events_default_orderby'),
 				'order' => get_option('dbem_events_default_order'),
 				'scope' => $scope
 			);
+			if ( !empty($_REQUEST['category_id']) ) $args['category'] = $_REQUEST['category_id'];
 			if (get_option ( 'dbem_display_calendar_in_events_page' )){
 				$args['full'] = 1;
 				$args['long_events'] = get_option('dbem_full_calendar_long_events');
