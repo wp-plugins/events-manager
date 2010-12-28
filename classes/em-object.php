@@ -92,7 +92,7 @@ class EM_Object {
 		$defaults['array'] = ($defaults['array'] == true);
 		$defaults['pagination'] = ($defaults['pagination'] == true);
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
-		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['limit']:$super_defaults['offset'];
+		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
 		//Calculate offset in event page is set
 		if($defaults['page'] > 1){

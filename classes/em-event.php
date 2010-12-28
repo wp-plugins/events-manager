@@ -555,6 +555,9 @@ class EM_Event extends EM_Object{
 				case '#_CONTACTPHONE':
 		      		$replace = ( $this->contact->phone != '') ? $this->contact->phone : __('N/A', 'dbem');
 					break;
+				case '#_CONTACTAVATAR': 
+					$replace = get_avatar( $this->contact->ID, $size = '50' ); 
+					break;
 				default:
 					$match = false;
 					break;

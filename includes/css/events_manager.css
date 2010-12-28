@@ -129,6 +129,10 @@ table.fullcalendar td {
 	list-style: none;
 }
 
+div.em-calendar-wrapper { position:relative; }
+div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80)}
+
+
 /*
 Maps - if the info balloons don't look right on your site, chances are it's a CSS issue. 
 Google is VERY sensitive to CSS rules for the infowindows, making it hard to accommodate every theme in WP. 
@@ -143,4 +147,4 @@ Please edit your theme's CSS to override this
 	height:auto !important;
 	max-height:none !important;
 }
-.em-location-map img, .em-locations-map img { max-width:none !important; }
+.em-location-map img, .em-locations-map img { max-width:none !important; background:none !important; border:none !important; margin:0 !important; padding:0 !important; height:auto !important; width:auto !important;   }

@@ -34,29 +34,35 @@ class EM_Mailer {
 			$mail->port = get_option('dbem_rsvp_mail_port');
 			$mail->Username = get_option('dbem_smtp_username');  
 			$mail->Password = get_option('dbem_smtp_password');  
-			$mail->From = get_option('dbem_mail_sender_address');
-		
-			//Protocols
-		 	if( get_option('dbem_rsvp_mail_send_method') == 'qmail' ){       
-				$mail->IsQmail(); 
-			} else {
-				$mail->Mailer = get_option('dbem_rsvp_mail_send_method');	
-			}                     
-			if(get_option('dbem_rsvp_mail_SMTPAuth') == '1'){
-				$mail->SMTPAuth = TRUE;
-		 	}       
-		
+			$mail->From = get_option('dbem_mail_sender_address');			
 			$mail->FromName = get_option('dbem_mail_sender_name'); // This is the from name in the email, you can put anything you like here
 			$mail->Body = $body;
 			$mail->Subject = $subject;  
 			$mail->AddAddress($receiver);  
 		
-			if(!$mail->Send()){   
-				$this->errors[] = $mail->ErrorInfo;
-				return false;
+			//Protocols
+			if ( get_option('dbem_rsvp_mail_send_method') == 'wp_mail' ){
+				$mail->Mailer = 'wp_mail';
+				$send = wp_mail($receiver, $subject, $body);
+				if(!$send){
+					global $phpmailer;
+					$this->errors[] = $phpmailer->ErrorInfo;
+				}
 			}else{
-				return true;
-			}
+			 	if( get_option('dbem_rsvp_mail_send_method') == 'qmail' ){       
+					$mail->IsQmail();
+				}else {
+					$mail->Mailer = get_option('dbem_rsvp_mail_send_method');
+				}                     
+				if(get_option('dbem_rsvp_mail_SMTPAuth') == '1'){
+					$mail->SMTPAuth = TRUE;
+			 	}
+			 	$send = $mail->Send();
+				if(!$send){
+					$this->errors[] = $mail->ErrorInfo;
+				}  
+			}		
+			return $send;
 		}else{
 			$this->errors = __('Please supply a valid email format.', 'dbem');
 			return false;
