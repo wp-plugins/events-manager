@@ -3,7 +3,7 @@ Contributors: nutsmuggler, netweblogic
 Donate link: http://wp-events-plugin.com
 Tags: events, manager, calendar, gigs, concert, maps, geotagging, rsvp  
 Requires at least: 2.9   
-Tested up to: 3.0.2
+Tested up to: 3.0.3
 Stable tag: 3.0.81
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
@@ -20,7 +20,7 @@ Events manager is fully customisable; you can customise the amount of data displ
 
 Events Manager is fully localisable and already localised in Italian, Spanish, German and Swedish.
 
-For more information visit the [Documentation Page](http://wp-events-plugin.com/documentation/) and [Support Forum](http://davidebenini.it/events-manager-forum/).
+For more information visit the [Documentation Page](http://wp-events-plugin.com/documentation/) and [Support Forum](http://wp-events-plugin.com/forums/).
 
 == Installation ==
 
@@ -53,7 +53,7 @@ After the installation, Events Manager add a top level "Events" menu to your Wor
 *  The *Settings* page allows a fine-grained control over the plugin. Here you can set the [format](#formatting-events) of events in the Events page.
 * The *Help* page will provide you with information on troubleshooting and where to ask for support.
 
-Events list and calendars can be added to your blogs through widgets, shortcodes and template tags. See the full documentation at the [Events Manager Support Page](http://davidebenini.it/wordpress-plugins/events-manager/).
+Events list and calendars can be added to your blogs through widgets, shortcodes and template tags. See the full documentation at the [Events Manager Support Pages](http://wp-events-plugin.com).
  
 == Frequently Asked Questions ==
 
@@ -109,6 +109,14 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 3. The Events Manager Options page.
 
 == Change Log ==
+= 3.0.9 =
+* Fixed small calendar discrepencies
+* added event and location single shortcodes
+* shortcodes now accept html within format attribute or within the shortcode tags [like]<p>this</p>[/like]
+* fixed pagination functionality (or lack thereof) in shortcodes
+* improved user experience when navigating/editing events in admin area
+
+
 = 3.0.81 =
 * Fixed pagination bugs
 * Global locations map won't show locations with 0-0 coords
