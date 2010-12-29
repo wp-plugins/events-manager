@@ -28,9 +28,11 @@ function em_content($content) {
 				$args['limit'] = get_option('dbem_events_default_limit');
 				$args['offset'] = $args['limit'] * ($page-1);
 				$content =  EM_Events::output($events, apply_filters('em_content_calendar_day_output_args', $args) );
-			} else {
+			} elseif( count($events) == 1 ) {
 				$EM_Event = $events[0];
 				$content =  $EM_Event->output_single();
+			} else {
+				$content = get_option('dbem_no_events_message');
 			}
 		} elseif ( !empty($_REQUEST['location_id']) && is_numeric($_REQUEST['location_id']) ) {
 			//Just a single location

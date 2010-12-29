@@ -115,7 +115,9 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * shortcodes now accept html within format attribute or within the shortcode tags [like]<p>this</p>[/like]
 * fixed pagination functionality (or lack thereof) in shortcodes
 * improved user experience when navigating/editing events in admin area
-
+* added #_CONTACTAVATAR placeholder - avatar for contact person
+* ajax loading spinner added to calendars
+* internal wp_mail support added
 
 = 3.0.81 =
 * Fixed pagination bugs

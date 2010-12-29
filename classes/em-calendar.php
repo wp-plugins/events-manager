@@ -6,6 +6,8 @@ class EM_Calendar extends EM_Object {
 	}
 	
 	function output($args = array()) {
+	 	global $wpdb; 
+	 	
 		$args = self::get_default_search($args);
 		$full = $args['full']; //For ZDE, don't delete pls
 		$month = $args['month']; 
@@ -14,24 +16,18 @@ class EM_Calendar extends EM_Object {
 		
 		$week_starts_on_sunday = get_option('dbem_week_starts_sunday');
 	   	$start_of_week = get_option('start_of_week');
-	
-	 	global $wpdb;    
+		
 		if( !(is_numeric($month) && $month <= 12 && $month > 0) )   {
 			$month = date('m'); 
 		}
 		if( !( is_numeric($year) ) ){
 			$year = date('Y');
-		}
-		
-		$date = mktime(0,0,0,$month, date('d', current_time('timestamp')), $year); 
-		$day = date('d', $date); 
-		// $month = date('m', $date); 
-		// $year = date('Y', $date);       
+		}  
+		  
 		// Get the first day of the month 
 		$month_start = mktime(0,0,0,$month, 1, $year);
-		// Get friendly month name  
-		
-		$month_name = mysql2date('M', "$year-$month-$day 00:00:00");
+		// Get friendly month name 		
+		$month_name = date('M',$month_start);
 		// Figure out which day of the week 
 		// the month starts on. 
 		$month_start_day = date('D', $month_start);
@@ -45,17 +41,22 @@ class EM_Calendar extends EM_Object {
 			case "Fri": $offset = 5; break; 
 			case "Sat": $offset = 6; break;
 		}       
-	   
+		//We need to go back to the WP defined day when the week started, in case the event day is near the end
 		$offset -= $start_of_week;
 		if($offset<0)
 			$offset += 7;
 		
-		// determine how many days are in the last month. 
+		// determine how many days are in the last month.
+		$month_last = $month-1;
+		$month_next = $month+1;
+		$year_last = $year; 
+		$year_next = $year;
 		if($month == 1) { 
-		   $num_days_last = self::days_in_month(12, ($year -1)); 
-		} else { 
-		  $num_days_last = self::days_in_month(($month-1), $year); 
+		   $month_last = 12;
+		   $year_last = $year -1;
 		}
+		$num_days_last = self::days_in_month($month_last, $year_last);
+		 
 		// determine how many days are in the current month. 
 		$num_days_current = self::days_in_month($month, $year);
 		// Build an array for the current days 
@@ -66,7 +67,7 @@ class EM_Calendar extends EM_Object {
 		// Build an array for the number of days 
 		// in last month 
 		for($i = 1; $i <= $num_days_last; $i++){ 
-		    $num_days_last_array[] = $i; 
+		    $num_days_last_array[] = mktime(0,0,0,$month_last, $i, $year_last); 
 		}
 		// If the $offset from the starting day of the 
 		// week happens to be Sunday, $offset would be 0, 
@@ -76,10 +77,7 @@ class EM_Calendar extends EM_Object {
 		    $offset_correction = array_slice($num_days_last_array, -$offset, $offset); 
 		    $new_count = array_merge($offset_correction, $num_days_array); 
 		    $offset_count = count($offset_correction); 
-		} 
-	
-		// The else statement is to prevent building the $offset array. 
-		else { 
+		} else { // The else statement is to prevent building the $offset array. 
 		    $offset_count = 0; 
 		    $new_count = $num_days_array;
 		}
@@ -108,7 +106,7 @@ class EM_Calendar extends EM_Object {
 		} 
 		// Outset Correction 
 		for($i = 1; $i <= $outset; $i++){ 
-		   $new_count[] = $i; 
+		   $new_count[] = mktime(0,0,0,$month_next, $i, $year_next);  
 		}
 		// Now let's "chunk" the $all_days array 
 		// into weeks. Each week has 7 days 
@@ -167,33 +165,32 @@ class EM_Calendar extends EM_Object {
 		// into a week and create a new table row for each 
 		// week with the days of that week in the table data 
 	  
-		$i = 0; 
-		foreach($weeks as $week){ 
-			$calendar .= "<tr>\n"; 
-		   foreach($week as $d){ 
-		   	if($i < $offset_count){ //if it is PREVIOUS month
-		      	$calendar .= "<td class='eventless-pre'>$d</td>\n"; 
-		      }
-			   if(($i >= $offset_count) && ($i < ($num_weeks * 7) - $outset)){ // if it is THIS month
-		      	$fullday=$d;
-					$d=date('j', $d);
-					$day_link = "$d";
-				  	if($d == date('j') && $month == date('m') && $year == date('Y')) {
-		        		$calendar .= "<td class='eventless-today'>$d</td>\n"; 
-		        	} else { 
-		         		$calendar .= "<td class='eventless'>$day_link</td>\n"; 
-		        	} 
-		        	} elseif(($outset > 0)) { //if it is NEXT month
-		         	if(($i >= ($num_weeks * 7) - $outset)){ 
-		            	$calendar .= "<td class='eventless-post'>$d</td>\n"; 
-		           } 
-		        	} 
-		        	$i++; 
-		      } 
-		      $calendar .= "</tr>\n";    
-			} 
+		$i = 0;
+		foreach ( $weeks as $week ) {
+			$calendar .= "<tr>\n";
+			foreach ( $week as $d ) {
+				if ($i < $offset_count) { //if it is PREVIOUS month
+					$calendar .= "<td class='eventless-pre'>" . date ( 'j', $d ) . "</td>\n";
+				}
+				if (($i >= $offset_count) && ($i < ($num_weeks * 7) - $outset)) { // if it is THIS month
+					$fullday = $d;
+					$d = date ( 'j', $d );
+					if ($d == date ( 'j' ) && $month == date ( 'm' ) && $year == date ( 'Y' )) {
+						$calendar .= "<td class='eventless-today'>$d</td>\n";
+					} else {
+						$calendar .= "<td class='eventless'>$d</td>\n";
+					}
+				} elseif (($outset > 0)) { //if it is NEXT month
+					if (($i >= ($num_weeks * 7) - $outset)) {
+						$calendar .= "<td class='eventless-post'>" . date ( 'j', $d ) . "</td>\n";
+					}
+				}
+				$i ++;
+			}
+			$calendar .= "</tr>\n";
+		} 
 		
-		  	$calendar .= " </table>\n</div>";
+		$calendar .= " </table>\n</div>";
 		
 			// query the database for events in this time span
 		if ($month == 1) {
@@ -223,17 +220,20 @@ class EM_Calendar extends EM_Object {
 				$event = apply_filters('em_calendar_output_loop_start', $event);
 				if( $long_events ){
 					//If $long_events is set then show a date as eventful if there is an multi-day event which runs during that day
-					$event_start_date = strtotime("{$year_pre}-{$month_pre}-1");
-					$event_end_date = strtotime( date('Y-m-t', strtotime("{$year_post}-{$month_post}-1")) );
+					$event_start_date = mktime(0,0,0,$month_pre,1,$year_pre);
+					$event_end_date = mktime(0,0,0,$month_post,date('t', $event_start_date),$year_post );
 					if( $event_end_date == '' ) $event_end_date = $event_start_date;
 					while( $event_start_date <= $event->end ){
-						$event_eventful_date = date('Y-m-d', $event_start_date);
-						if( array_key_exists($event_eventful_date, $eventful_days) && is_array($eventful_days[$event_eventful_date]) ){
-							$eventful_days[$event_eventful_date][] = $event; 
-						} else {
-							$eventful_days[$event_eventful_date] = array($event);  
+						//Ensure date is within event dates, if so add to eventful days array
+						if( $event_start_date > $event->start - (86400) ){ //subtract a day since start may be later in day
+							$event_eventful_date = date('Y-m-d', $event_start_date);
+							if( array_key_exists($event_eventful_date, $eventful_days) && is_array($eventful_days[$event_eventful_date]) ){
+								$eventful_days[$event_eventful_date][] = $event; 
+							} else {
+								$eventful_days[$event_eventful_date] = array($event);  
+							}	
 						}	
-						$event_start_date += (60*60*24);				
+						$event_start_date += (86400); //add a day		
 					}
 				}else{
 					//Only show events on the day that they start
@@ -304,15 +304,15 @@ class EM_Calendar extends EM_Object {
 	 */
 	function insert_js() { 
 		?>
-		<script type='text/javascript'>
+<script type='text/javascript'>
 		<?php include(WP_PLUGIN_DIR.'/events-manager/includes/js/em_calendar_ajax.js'); ?>	
 		</script>
-		<?php
+<?php
 	}
 
 
 	function days_in_month($month, $year) {
-		return date('t', strtotime("$year-$month-1"));
+		return date('t', mktime(0,0,0,$month,1,$year));
 	}
 	 
 	function translate_and_trim($string, $length = 1) {

@@ -153,7 +153,7 @@ class EM_Object {
 				$date_year_start = $date_year_end = $year;
 			}
 			$date_start = $date_year_start."-".$date_month_start."-01";
-			$date_end = date('Y-m-t', strtotime($date_year_end."-".$date_month_end."-01"));
+			$date_end = date('Y-m-t', mktime(0,0,0,$date_month_end,1,$date_year_end));
 			$scope = "$date_start,$date_end"; //just modify the scope here
 		}
 		//No date requested, so let's look at scope

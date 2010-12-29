@@ -31,7 +31,12 @@ class EM_Widget extends WP_Widget {
 		}else{
 			echo '<li>'.__('No events', 'dbem').'</li>';
 		}
-		echo "</ul>";               
+		if ( !empty($instance['all_events']) ){
+			$events_link = (!empty($instance['all_events_link'])) ? em_get_link($instance['all_events_link']) : em_get_link(__('all events','dbem'));
+			echo '<li>'.$events_link.'</li>';
+		}
+		echo "</ul>";
+
 		
 	    echo $args['after_widget'];
     }
@@ -65,7 +70,17 @@ class EM_Widget extends WP_Widget {
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php _e('Number of events','dbem'); ?>: </label>
-			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" value="<?php echo $instance['limit']; ?>" />
+			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" size="3" value="<?php echo $instance['limit']; ?>" />
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id('limit_time'); ?>"><?php _e('Time Limit','dbem'); ?>: </label><br/>
+			<select id="<?php echo $this->get_field_id('time_scope'); ?>" name="<?php echo $this->get_field_name('time_scope'); ?>" >
+				<option value="this-month" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == 'this-month') ? 'selected="selected"':''; ?>><?php _e('This Month','dbem'); ?></option>
+				<option value="two-months" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == 'two-months') ? 'selected="selected"':''; ?>><?php _e('Next two months','dbem'); ?></option>
+				<option value="three-months" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == 'three-months') ? 'selected="selected"':''; ?>><?php _e('Next three month','dbem'); ?></option>
+				<option value="six-months" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == 'six-months') ? 'selected="selected"':''; ?>><?php _e('Next six month','dbem'); ?></option>
+				<option value="twelve-months" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == 'twelve-months') ? 'selected="selected"':''; ?>><?php _e('Next twelve month','dbem'); ?></option>
+			</select>
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope of the events','dbem'); ?>:</label><br/>
@@ -112,6 +127,14 @@ class EM_Widget extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id('format'); ?>"><?php _e('List item format','dbem'); ?>: </label>
 			<textarea rows="5" cols="24" id="<?php echo $this->get_field_id('format'); ?>" name="<?php echo $this->get_field_name('format'); ?>"><?php echo $instance['format']; ?></textarea>
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php _e('Show all events link at bottom?','dbem'); ?>: </label>
+			<input type="checkbox" id="<?php echo $this->get_field_id('all_events'); ?>" name="<?php echo $this->get_field_name('all_events'); ?>" <?php echo (!empty($instance['all_events']) && $instance['all_events']) ? 'checked':''; ?> >
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php _e('All events link text?','dbem'); ?>: </label>
+			<input type="text" id="<?php echo $this->get_field_id('all_events_text'); ?>" name="<?php echo $this->get_field_name('all_events_text'); ?>" value="<?php echo (!empty($instance['all_events_text'])) ? $instance['all_events_text']:__('all events','dbem'); ?>" >
 		</p>
         <?php 
     }

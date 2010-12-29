@@ -111,7 +111,7 @@ jQuery(document).ready( function($) {
 			}
 		});
 		*/
-		$( "#eventForm input#location-name" ).autocomplete( '../wp-content/plugins/events-manager/admin/locations-search.php', {
+		$( "#eventForm input#location-name" ).autocomplete( '../wp-content/plugins/events-manager/admin/em-locations-search.php', {
 			multiple: true,
 			width: 350,
 			scroll:false,
