@@ -572,13 +572,13 @@ class EM_Event extends EM_Object{
 		foreach($placeholders[0] as $result) {
 			// matches all PHP START date and time placeholders
 			if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-				$replace = __(date(ltrim($result, "#"), $this->start));
+				$replace = date_i18n(ltrim($result, "#"), $this->start);
 				$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
 				$event_string = str_replace($result, $replace, $event_string );
 			}
 			// matches all PHP END time placeholders for endtime
 			if (preg_match('/^#@[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
-				$replace = __(date(ltrim($result, "#@"), $this->end));
+				$replace = date_i18n(ltrim($result, "#@"), $this->end);
 				$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
 				$event_string = str_replace($result, $replace, $event_string ); 
 		 	}
@@ -594,7 +594,7 @@ class EM_Event extends EM_Object{
 				$date = 'start_date';
 				$offset = 3;
 			}
-			if( $date == 'end_date' && $this->$date == $this->start_date ){
+			if( $date == 'end_date' && $this->end_date == $this->start_date ){
 				$replace = __( apply_filters('em_event_output_placeholder', '', $this, $result, $target) );
 			}else{
 				$replace = __( apply_filters('em_event_output_placeholder', mysql2date(substr($result, $offset, (strlen($result)-($offset+1)) ), $this->$date), $this, $result, $target) );

@@ -155,7 +155,7 @@ class EM_Calendar extends EM_Object {
 		// Build the heading portion of the calendar table 
 		$calendar .=  "<table class='dbem-calendar-table $fullclass'>\n". 
 		   	"<thead>\n<tr>\n".
-			"<td>$previous_link</td><td class='month_name' colspan='5'>$month_name $year</td><td>$next_link</td>\n". 
+			"<td>$previous_link</td><td class='month_name' colspan='5'>". ucfirst(date_i18n('M', $month_start))." $year</td><td>$next_link</td>\n". 
 			"</tr>\n</thead>\n".	
 		    "<tr class='days-names'>\n". 
 		    $days_initials. 
@@ -175,7 +175,7 @@ class EM_Calendar extends EM_Object {
 				if (($i >= $offset_count) && ($i < ($num_weeks * 7) - $outset)) { // if it is THIS month
 					$fullday = $d;
 					$d = date ( 'j', $d );
-					if ($d == date ( 'j' ) && $month == date ( 'm' ) && $year == date ( 'Y' )) {
+					if ( date('Y-m-d', current_time('timestamp')) == "$year-$month-$d" ) {						
 						$calendar .= "<td class='eventless-today'>$d</td>\n";
 					} else {
 						$calendar .= "<td class='eventless'>$d</td>\n";
@@ -285,13 +285,13 @@ class EM_Calendar extends EM_Object {
 		if($events){
 			foreach($cells as $cell) {  
 				if ($cell['month'] == $month_pre) {
-				 	$calendar=str_replace("<td class='eventless-pre'>".$cell['day']."</td>","<td class='eventful-pre'>".$cell['cell']."</td>",$calendar);
+				 	$calendar = str_replace("<td class='eventless-pre'>".$cell['day']."</td>","<td class='eventful-pre'>".$cell['cell']."</td>",$calendar);
 				} elseif($cell['month'] == $month_post) {
-				 	$calendar=str_replace("<td class='eventless-post'>".$cell['day']."</td>","<td class='eventful-post'>".$cell['cell']."</td>",$calendar);
-				} elseif($cell['day'] == date('d') && $cell['month'] == date('m') && $cell['year'] == date('Y')) {
-	  			 	$calendar=str_replace("<td class='eventless-today'>".$cell['day']."</td>","<td class='eventful-today'>".$cell['cell']."</td>",$calendar);
+				 	$calendar = str_replace("<td class='eventless-post'>".$cell['day']."</td>","<td class='eventful-post'>".$cell['cell']."</td>",$calendar);
+				} elseif( date('Y-m-d', current_time('timestamp')) == $cell['year']."-".$cell['month']."-".$cell['day'] ) {
+	  			 	$calendar = str_replace("<td class='eventless-today'>".$cell['day']."</td>","<td class='eventful-today'>".$cell['cell']."</td>",$calendar);
 				} elseif( $cell['month'] == $month && $cell['year'] == $year){   
-			    	$calendar=str_replace("<td class='eventless'>".$cell['day']."</td>","<td class='eventful'>".$cell['cell']."</td>",$calendar);
+			    	$calendar = str_replace("<td class='eventless'>".$cell['day']."</td>","<td class='eventful'>".$cell['cell']."</td>",$calendar);
 		   		}
 			}
 		}       

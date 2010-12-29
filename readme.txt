@@ -118,6 +118,7 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * added #_CONTACTAVATAR placeholder - avatar for contact person
 * ajax loading spinner added to calendars
 * internal wp_mail support added
+* added "all events" link to events widget
 
 = 3.0.81 =
 * Fixed pagination bugs

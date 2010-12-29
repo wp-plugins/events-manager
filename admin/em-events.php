@@ -133,8 +133,8 @@ function em_admin_events_page() {
 								$rowno++;
 								$class = ($rowno % 2) ? ' class="alternate"' : '';
 								// FIXME set to american
-								$localised_start_date = mysql2date ( __ ( 'D d M Y' ), $event->start_date );
-								$localised_end_date = mysql2date ( __ ( 'D d M Y' ), $event->end_date );
+								$localised_start_date = date_i18n('D d M Y', $event->start);
+								$localised_end_date = date_i18n('D d M Y', $event->end);
 								$style = "";
 								$today = date ( "Y-m-d" );
 								$location_summary = "<b>" . $event->location->name . "</b><br/>" . $event->location->address . " - " . $event->location->town;
