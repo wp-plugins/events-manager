@@ -130,9 +130,9 @@ function em_options_input_text($title, $name, $description) {
 		<th scope="row"><?php _e($title, 'dbem') ?></th>
 	    <td>
 			<input name="<?php echo $name ?>" type="text" id="<?php echo $title ?>" style="width: 95%" value="<?php echo htmlspecialchars(get_option($name), ENT_QUOTES); ?>" size="45" /><br />
-						<?php _e($description, 'dbem') ?>
-			</td>
-		</tr>
+			<em><?php echo $description; ?></em>
+		</td>
+	</tr>
 	<?php
 }
 function em_options_input_password($title, $name, $description) {
@@ -141,9 +141,9 @@ function em_options_input_password($title, $name, $description) {
 		<th scope="row"><?php _e($title, 'dbem') ?></th>
 	    <td>
 			<input name="<?php echo $name ?>" type="password" id="<?php echo $title ?>" style="width: 95%" value="<?php echo get_option($name); ?>" size="45" /><br />
-						<?php echo $description; ?>
-			</td>
-		</tr>
+			<em><?php echo $description; ?></em>
+		</td>
+	</tr>
 	<?php
 }
 
@@ -151,8 +151,10 @@ function em_options_textarea($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
 		<th scope="row"><?php _e($title,'dbem')?></th>
-			<td><textarea name="<?php echo $name ?>" id="<?php echo $name ?>" rows="6" cols="60"><?php echo htmlspecialchars(get_option($name), ENT_QUOTES);?></textarea><br/>
-				<?php echo $description; ?></td>
+			<td>
+				<textarea name="<?php echo $name ?>" id="<?php echo $name ?>" rows="6" cols="60"><?php echo htmlspecialchars(get_option($name), ENT_QUOTES);?></textarea><br/>
+				<em><?php echo $description; ?></em>
+			</td>
 		</tr>
 	<?php
 }
@@ -162,10 +164,10 @@ function em_options_radio_binary($title, $name, $description) {
 		 
 	   	<tr valign="top" id='<?php echo $name;?>_row'>
 	   		<th scope="row"><?php _e($title,'dbem'); ?></th>
-	   		<td>   
-				<input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> /><?php _e('Yes'); ?> <br />
-				<input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> /><?php _e('No'); ?> <br />
-				<?php echo $description; ?>
+	   		<td>  
+	   			<?php _e('Yes'); ?> <input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
+				<?php _e('No'); ?> <input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
+				<br/><em><?php echo $description; ?></em>
 			</td>
 	   	</tr>
 <?php	
@@ -186,7 +188,7 @@ function em_options_select($title, $name, $list, $description) {
  				</option>
 				<?php endforeach; ?>
 			</select> <br/>
-			<?php echo $description; ?>
+			<em><?php echo $description; ?></em>
 		</td>
    	</tr>
 	<?php	

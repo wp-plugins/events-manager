@@ -72,6 +72,7 @@ class EM_Widget extends WP_Widget {
 			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php _e('Number of events','dbem'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" size="3" value="<?php echo $instance['limit']; ?>" />
 		</p>
+		<!-- 
 		<p>
 			<label for="<?php echo $this->get_field_id('limit_time'); ?>"><?php _e('Time Limit','dbem'); ?>: </label><br/>
 			<select id="<?php echo $this->get_field_id('time_scope'); ?>" name="<?php echo $this->get_field_name('time_scope'); ?>" >
@@ -82,6 +83,7 @@ class EM_Widget extends WP_Widget {
 				<option value="twelve-months" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == 'twelve-months') ? 'selected="selected"':''; ?>><?php _e('Next twelve month','dbem'); ?></option>
 			</select>
 		</p>
+		-->
 		<p>
 			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope of the events','dbem'); ?>:</label><br/>
 			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >

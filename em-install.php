@@ -62,7 +62,7 @@ function em_create_events_table() {
 		recurrence_freq tinytext NULL DEFAULT NULL,
 		recurrence_byday tinytext NULL DEFAULT NULL,
 		recurrence_byweekno int(4) NULL DEFAULT NULL,  		
-		UNIQUE KEY (event_id)
+		PRIMARY KEY  (event_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	$old_table_name = $wpdb->prefix.EM_OLD_EVENTS_TABLE; 
@@ -97,7 +97,7 @@ function em_create_locations_table() {
 		location_latitude float DEFAULT NULL,
 		location_longitude float DEFAULT NULL,
 		location_description text DEFAULT NULL,
-		UNIQUE KEY (location_id)
+		PRIMARY KEY  (location_id)
 		) DEFAULT CHARSET=utf8 ;";
 		
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -127,7 +127,7 @@ function em_create_bookings_table() {
 		booking_seats int(5) NOT NULL,
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		UNIQUE KEY  (booking_id)
+		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
@@ -143,7 +143,7 @@ function em_create_people_table() {
 		person_name tinytext NOT NULL, 
 		person_email tinytext NOT NULL,
 		person_phone tinytext NOT NULL,
-		UNIQUE KEY (person_id)
+		PRIMARY KEY  (person_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
@@ -175,31 +175,31 @@ function em_create_categories_table() {
 
 
 function em_add_options() {
-	$contact_person_email_body_localizable = __("#_RESPNAME (#_RESPEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_SPACES spaces.<br/> Now there are #_RESERVEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager",'dbem') ;
-	$respondent_email_body_localizable = __("Dear #_RESPNAME, <br/>you have successfully reserved #_SPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/> #_CONTACTPERSON",'dbem');
+	$contact_person_email_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager",'dbem') ;
+	$respondent_email_body_localizable = __("Dear #_BOOKINGNAME, <br/>you have successfully reserved #_BOOKEDSPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem');
 	
 	$dbem_options = array(
-		'dbem_event_list_item_format' => '<li>#j #M #Y - #H:#i<br/> #_LINKEDNAME<br/>#_TOWN </li>',
+		'dbem_event_list_item_format' => '<li>#j #M #Y - #H:#i<br/> #_EVENTLINK<br/>#_LOCATIONTOWN </li>',
 		'dbem_display_calendar_in_events_page' => 0,
-		'dbem_single_event_format' => '<h3>#_NAME</h3><p>#j #M #Y - #H:#i</p><p>#_TOWN</p>',
+		'dbem_single_event_format' => '<h3>#_NAME</h3><p>#j #M #Y - #H:#i</p><p>#_LOCATIONTOWN</p>',
 		'dbem_event_page_title_format' => '#_NAME',
 		'dbem_list_events_page' => 1,   
 		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_no_events_message' => __('No events','dbem'),
-		'dbem_location_page_title_format' => '#_NAME',
-		'dbem_location_baloon_format' =>  "<strong>#_NAME</strong><br/>#_ADDRESS - #_TOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>",
-		'dbem_location_event_list_item_format' => "<li>#_NAME - #j #M #Y - #H:#i</li>",
-		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_ADDRESS</li><li>#_TOWN</li></ul>',
+		'dbem_location_page_title_format' => '#_LOCATIONNAME',
+		'dbem_location_baloon_format' =>  "<strong>#_LOCATIONNAME</strong><br/>#_LOCATIONADDRESS - #_LOCATIONTOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>",
+		'dbem_location_event_list_item_format' => "<li>#_LOCATIONNAME - #j #M #Y - #H:#i</li>",
+		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_LOCATIONADDRESS</li><li>#_LOCATIONTOWN</li></ul>',
 		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
-		'dbem_single_location_format' => '<p>#_ADDRESS</p><p>#_TOWN</p>',
-		'dbem_map_text_format' => '<strong>#_LOCATION</strong><p>#_ADDRESS</p><p>#_TOWN</p>',
+		'dbem_single_location_format' => '<p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
+		'dbem_map_text_format' => '<strong>#_LOCATION</strong><p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
 		'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events'),
 		'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events'),
-		'dbem_rss_description_format' => "#j #M #y - #H:#i <br/>#_LOCATION <br/>#_ADDRESS <br/>#_TOWN",
+		'dbem_rss_description_format' => "#j #M #y - #H:#i <br/>#_LOCATION <br/>#_LOCATIONADDRESS <br/>#_LOCATIONTOWN",
 		'dbem_rss_title_format' => "#_NAME",
 		'dbem_gmap_is_active'=> 1,
 		'dbem_default_contact_person' => 1,
-		'dbem_rsvp_mail_notify_is_active' => 0 ,
+		'dbem_rsvp_notify_contact' => 1 ,
 		'dbem_contactperson_email_body' => __(str_replace("<br/>", "\n\r", $contact_person_email_body_localizable)),        
 		'dbem_respondent_email_body' => __(str_replace("<br/>", "\n\r", $respondent_email_body_localizable)),
 		'dbem_rsvp_mail_port' => 465,
@@ -211,7 +211,7 @@ function em_add_options() {
 		'dbem_image_max_height' => 700,
 		'dbem_image_max_size' => 204800,
 		'dbem_list_date_title' => __('Events', 'dbem').' - #j #M #y',
-		'dbem_full_calendar_event_format' => '<li>#_LINKEDNAME</li>',
+		'dbem_full_calendar_event_format' => '<li>#_EVENTLINK</li>',
 		'dbem_full_calendar_long_events' => '0',
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ", 
@@ -225,13 +225,18 @@ function em_add_options() {
 		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
 		'dbem_events_default_orderby' => 'start_date,start_time,name',
 		'dbem_events_default_order' => 'ASC',
-		'dbem_events_default_limit' => 10
+		'dbem_events_default_limit' => 10,
+		//'dbem_bookings_approval' => 1,
+		'dbem_bookings_notify_admin' => ''
 	);
 	
 	foreach($dbem_options as $key => $value){
 		add_option($key, $value);
 	}
-		
+	//Customization for new options on updated plugins (not new installs)
+	if( get_option('dbem_version') != '' ){
+		//update_option('dbem_bookings_approval',0); //Previously in <3.0.9 bookings were never approvable
+	}
 }     
 
 function em_create_events_page(){

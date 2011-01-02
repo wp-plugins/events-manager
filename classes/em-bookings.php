@@ -60,12 +60,16 @@ class EM_Bookings extends EM_Object{
 			if ( is_object($previous_booking) ) { 
 				//Previously booked, so we add these seats to the booking
 				$new_seats = $EM_Booking->seats;
-				$EM_Booking = $previous_booking;	
+				$EM_Booking = $previous_booking;
+				$EM_Booking->seats += $new_seats;
 				$result = $EM_Booking->save();
 				if($result){
+					//remove old booking
+					foreach($this->bookings as $key=>$booking){
+						if($booking->id == $EM_Booking->id){ unset($this->bookings[$key]); }
+					}
 					$this->bookings[] = $EM_Booking;
 					$email = $this->email($EM_Booking);
-					$EM_Booking->seats += $new_seats;
 				}
 			} else {
 				//New booking, so let's save the booking
@@ -79,9 +83,9 @@ class EM_Bookings extends EM_Object{
 				//Success
 				$this->feedback_message = __('Booking successful.', 'dbem');
 				if(!$email){
-					$this->feedback_message .= ' '.__('However, we were not able to send you an email.', 'dbem');
+					$this->feedback_message .= ' '.__('However, there were some problems whilst sending confirmation emails to you and/or the event contact person. You may want to contact them directly and letting them know of this error.', 'dbem');
 					if( current_user_can('activate_plugins') ){
-						if( is_array($this->errors) ){
+						if( is_array($this->errors) && count($this->errors) > 0 ){
 							$this->feedback_message .= '<br/><strong>Errors:</strong> (only admins see this message)<br/><ul><li>'. implode('</li><li>', $EM_Mailer->errors).'</li></ul>';
 						}else{
 							$this->feedback_message .= '<br/><strong>No errors returned by mailer</strong> (only admins see this message)';
@@ -91,7 +95,7 @@ class EM_Bookings extends EM_Object{
 				return true;
 			}else{
 				//Failure
-				$this->errors[] = "<strong>".__('Booking could not be created').":</strong><br />". implode('<br />', $EM_Booking->errors);
+				$this->errors[] = "<strong>".__('Booking could not be created','dbem').":</strong><br />". implode('<br />', $EM_Booking->errors);
 			}
 		} else {
 			 $this->errors[] = __('Booking cannot be made, not enough seats available!', 'dbem');
@@ -184,8 +188,8 @@ class EM_Bookings extends EM_Object{
 			$booker_body= str_replace($key, $value, $booker_body);
 		}
 		
-		$contact_body = $EM_Event->output( $contact_body );
 		$booker_body = $EM_Event->output( $booker_body );
+		$contact_body = ( get_option('dbem_bookings_notify_admin') || get_option('dbem_rsvp_notify_contact') ) ? $EM_Event->output( $contact_body ):$contact_body;
 		
 		//TODO offer subject changes
 		if( !$EM_Mailer->send(__('Reservation confirmed','dbem'),$booker_body, $EM_Booking->person->email) ){
@@ -194,12 +198,25 @@ class EM_Bookings extends EM_Object{
 			}
 			return false;
 		}
-		if( !$EM_Mailer->send(__("New booking",'dbem'), $contact_body, $EM_Event->contact->user_email) && current_user_can('activate_plugins')){
-			foreach($EM_Mailer->errors as $error){
-				$this->errors[] = $error;
+
+		if( get_option('dbem_rsvp_notify_contact') == 1 ){
+			if( !$EM_Mailer->send(__("New booking",'dbem'), $contact_body, $EM_Event->contact->user_email) && current_user_can('activate_plugins')){
+				foreach($EM_Mailer->errors as $error){
+					$this->errors[] = $error;
+				}
+				$this->errors[] = __('Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).','dbem');
+				return false;
 			}
-			$this->errors[] = 'Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).';
-			return false;
+		}
+
+		if( get_option('dbem_bookings_notify_admin') != '' && preg_match('/^[_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3}$/', get_option('dbem_bookings_notify_admin')) ){
+			if( !$EM_Mailer->send(__("New booking",'dbem'), $contact_body, get_option('dbem_bookings_notify_admin')) ){
+				foreach($EM_Mailer->errors as $error){
+					$this->errors[] = $error;
+				}
+				$this->errors[] = __('Confirmation email could not be sent to admin. Registrant should have gotten their email (only admin see this warning).','dbem');
+				return false;
+			}
 		}
 		
 		//TODO need error checking for booking mail send

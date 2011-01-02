@@ -51,3 +51,11 @@ p#recurrence_warning {
 div#icon-events{
 	background:url('../images/calendar-32.png') no-repeat center;
 }
+
+/*Help Docs*/
+.em-docs h3 a { font-size:16px; padding:20px 0px 10px; text-decoration:underline; display:block; }
+.em-docs dl, .em-docs h2, .em-docs h3, .em-docs h4, .em-docs dl { clear:left; }
+.em-docs dl dt { display:block; float:left; min-width:160px; margin-right:10px; }
+.em-docs dl dd { display:block; margin-left:170px; }		
+.em-docs-atts dl dt { min-width:110px !important; }
+.em-docs-atts dl dd { margin-left:120px !important; }

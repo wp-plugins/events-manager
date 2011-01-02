@@ -9,13 +9,24 @@ function em_admin_help_page(){
 		<div id="icon-events" class="icon32"><br /></div>
 		<h2><?php _e('Getting Help for Events Manager','dbem'); ?></h2>
 		<p>
-			If you require further support or encounter any bugs please visit us at our <a href="http://davidebenini.it/events-manager-forum/">Forum</a>. We ask that you give the documentation a good read first, as this answers many common questions. 
+			For further information on using this plugin, please view the <a href="http://wp-events-plugin.com/documentation/">documentation pages</a>. If you can't find what you're looking for in the documentation, you may find help on our <a href="http://wp-events-plugin.com/forums/">support forums</a>. 
 		</p>
+		<div class="em-docs">
+			<h2><?php _e('Placeholders for customizing event pages','dbem'); ?></h2>
+			<p><?php echo sprintf( __("In the <a href='%s'>settings page</a>, you'll find various textboxes where you can edit how event information looks, such as for event and location lists. Using the placeholders below, you can choose what information should be displayed.",'dbem'), 'admin.php?page=events-manager-options'); ?></p>
+			<h3><a name="event-placeholders"><?php _e('Event Related Placeholders','dbem'); ?></a></h3>
+			<?php echo em_docs_placeholders( array('type'=>'events') ); ?>
+			<h3><a name="location-placeholders"><?php _e('Location Related Placeholders','dbem'); ?></a></h3>
+			<?php echo em_docs_placeholders( array('type'=>'locations') ); ?>
+			<h3><a name="booking-placeholders"><?php _e('Booking Related Placeholders','dbem'); ?></a></h3>
+			<?php echo em_docs_placeholders( array('type'=>'bookings') ); ?>
+		</div>
 		<?php
 		//Is this a previously imported installation? 
 		$old_table_name = $wpdb->prefix.'dbem_events';
 		if( $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") == $old_table_name ){
 			?>
+			<hr style="margin:30px 10px;" />
 			<div class="updated">
 				<h3>Troubleshooting upgrades from version 2.x to 3.x</h3>
 				<p>We notice that you upgraded from version 2, as we are now using new database tables, and we do not delete the old tables in case something went wrong with this upgrade.</p>

@@ -6,13 +6,15 @@ class EM_Booking extends EM_Object{
 	var $person_id;
 	var $seats;
 	var $comment;
+	var $approved = 0;
 	//Other Vars
 	var $fields = array(
 		'booking_id' => array('name'=>'id','type'=>'%d'),
 		'event_id' => array('name'=>'event_id','type'=>'%d'),
 		'person_id' => array('name'=>'person_id','type'=>'%d'),
 		'booking_seats' => array('name'=>'seats','type'=>'%d'),
-		'booking_comment' => array('name'=>'comment','type'=>'%s')
+		'booking_comment' => array('name'=>'comment','type'=>'%s'),
+		'booking_approved' => array('name'=>'approved','type'=>'%d')
 	);
 	var $person;
 	var $required_fields = array('booking_id', 'event_id', 'person_id', 'booking_seats');
@@ -121,14 +123,22 @@ class EM_Booking extends EM_Object{
 	}
 	
 	/**
+	 * Approve a booking.
+	 */
+	function approve(){
+		$this->approved = 1;
+		return $this->save();
+	}
+	
+	/**
 	 * Returns this object in the form of an array
 	 * @return array
 	 */
 	function to_array($person = false){
 		$booking = array();
-		//Core Event Data
+		//Core Data
 		$booking = parent::to_array();
-		//Location Data
+		//Person Data
 		if($person && is_object($this->person)){
 			$person = $this->person->to_array();
 			$booking = array_merge($booking, $person);
