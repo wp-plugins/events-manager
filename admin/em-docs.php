@@ -101,9 +101,13 @@ function em_docs_init(){
 						'desc' => 'The values here are taken from the chosen contact for the specific event, or the default contact in the settings page.',
 						'placeholders' => array(
 							'#_CONTACTNAME' => array( 'desc' => 'Name of the contact person for this event (as shown in the dropdown when adding an event).' ),
+							'#_CONTACTUSERNAME' => array( 'desc' => 'Contact person\'s username.' ),
 							'#_CONTACTEMAIL' => array( 'desc' => 'E-mail of the contact person for this event.' ),
 							'#_CONTACTPHONE' => array( 'desc' => 'Phone number of the contact person for this event. Can be set in the user profile page.' ),
-							'#_CONTACTAVATAR' => array( 'desc' => 'Contact person\'s avatar.' )
+							'#_CONTACTAVATAR' => array( 'desc' => 'Contact person\'s avatar.' ),
+							'#_CONTACTPRIFILELINK' => array( 'desc' => 'Contact person\'s "Profile" link. Only works with BuddyPress enabled.' ),
+							'#_CONTACTPRIFILEURL' => array( 'desc' => 'Contact person\'s profile url. Only works with BuddyPress enabled.' ),
+							''
 						)
 					),			
 				),

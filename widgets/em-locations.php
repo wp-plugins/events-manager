@@ -47,7 +47,7 @@ class EM_Locations_Widget extends WP_Widget {
     		'format' => '#_LOCATIONLINK<ul><li>#_ADDRESS</li><li>#_TOWN</li></ul>'
     	);
     	foreach($defaults as $key => $value){
-    		if($new_instance[$key] == ''){
+    		if( empty($new_instance[$key]) ){
     			$new_instance[$key] = $value;
     		}
     	}

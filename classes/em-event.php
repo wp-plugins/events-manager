@@ -548,6 +548,9 @@ class EM_Event extends EM_Object{
 				case '#_CONTACTPERSON': //Depreciated (your call, I think name is better)
 					$replace = $this->contact->display_name;
 					break;
+				case '#_CONTACTUSERNAME':
+					$replace = $this->contact->user_login;
+					break;
 				case '#_CONTACTEMAIL':
 				case '#_CONTACTMAIL': //Depreciated
 					$replace = em_ascii_encode($this->contact->user_email);
@@ -557,6 +560,15 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_CONTACTAVATAR': 
 					$replace = get_avatar( $this->contact->ID, $size = '50' ); 
+					break;
+				case '#_CONTACTPROFILELINK':
+				case '#_CONTACTPROFILEURL':
+					if( function_exists('bp_loggedin_user_link') ){
+						$replace = bp_get_loggedin_user_link();
+						if( $result == '#_CONTACTPROFILELINK' ){
+							$replace = '<a href="'.$replace.'">'.__('Profile').'</a>';
+						}
+					}
 					break;
 				default:
 					$match = false;

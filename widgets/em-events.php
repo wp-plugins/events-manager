@@ -54,7 +54,7 @@ class EM_Widget extends WP_Widget {
     		'orderby' => 'start_date,start_time,name'
     	);
     	foreach($defaults as $key => $value){
-    		if( !empty($new_instance[$key]) ){
+    		if( empty($new_instance[$key]) ){
     			$new_instance[$key] = $value;
     		}
     	}
