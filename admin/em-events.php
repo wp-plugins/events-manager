@@ -72,7 +72,11 @@ function em_admin_events_page() {
 			<ul class="subsubsub">
 				<li><a href='#' class="current"><?php _e ( 'Total', 'dbem' ); ?> <span class="count">(<?php echo (count ( $events )); ?>)</span></a></li>
 			</ul>
-			
+			<p class="search-box">
+				<label class="screen-reader-text" for="post-search-input"><?php _e('Search Events','dbem'); ?>:</label>
+				<input type="text" id="post-search-input" name="em_search" value="<?php echo (!empty($_GET['em_search'])) ? $_GET['em_search']:''; ?>" />
+				<input type="submit" value="<?php _e('Search Events','dbem'); ?>" class="button" />
+			</p>			
 			<div class="tablenav">
 			
 				<div class="alignleft actions">
@@ -92,122 +96,139 @@ function em_admin_events_page() {
 						?>
 					</select> 
 					<input id="post-query-submit" class="button-secondary" type="submit" value="<?php _e ( 'Filter' )?>" />
+				</div>
+				<!--
+				<div class="view-switch">
+					<a href="/wp-admin/edit.php?mode=list"><img class="current" id="view-switch-list" src="http://wordpress.lan/wp-includes/images/blank.gif" width="20" height="20" title="List View" alt="List View" name="view-switch-list" /></a> <a href="/wp-admin/edit.php?mode=excerpt"><img id="view-switch-excerpt" src="http://wordpress.lan/wp-includes/images/blank.gif" width="20" height="20" title="Excerpt View" alt="Excerpt View" name="view-switch-excerpt" /></a>
+				</div>
+				-->
+				<?php 
+				if ( $events_count >= $limit ) {
+					$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('p'=>'%PAGE%'));
+					$events_nav .= em_admin_paginate( $page_link_template, $events_count, $limit, $page, 5);
+					echo $events_nav;
+				}
+				?>
+				<br class="clear" />
+			</div>
+				
+			<?php
+			if (empty ( $events )) {
+				// TODO localize
+				_e ( 'no events','dbem' );
+			} else {
+			?>
+					
+			<table class="widefat">
+				<thead>
+					<tr>
+						<th class='manage-column column-cb check-column' scope='col'>
+							<input class='select-all' type="checkbox" value='1' />
+						</th>
+						<th><?php _e ( 'Name', 'dbem' ); ?></th>
+						<th>&nbsp;</th>
+						<th><?php _e ( 'Location', 'dbem' ); ?></th>
+						<th colspan="2"><?php _e ( 'Date and time', 'dbem' ); ?></th>
+					</tr>
+				</thead>
+				<tbody>
 					<?php 
-						//Pagination (if needed/requested)
-						if( $events_count >= $limit ){
-							//Show the pagination links (unless there's less than 10 events
-							$page_link_template = preg_replace('/(&|\?)p=\d+/i','',$_SERVER['REQUEST_URI']);
-							$page_link_template = em_add_get_params($page_link_template, array('p'=>'%PAGE%'));
-							$events_nav = em_paginate( $page_link_template, $events_count, $limit, $page);
-							echo $events_nav;
+					$rowno = 0;
+					$event_count = 0;
+					foreach ( $events as $event ) {
+						/* @var $event EM_Event */
+						if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
+							$rowno++;
+							$class = ($rowno % 2) ? ' class="alternate"' : '';
+							// FIXME set to american
+							$localised_start_date = date_i18n('D d M Y', $event->start);
+							$localised_end_date = date_i18n('D d M Y', $event->end);
+							$style = "";
+							$today = date ( "Y-m-d" );
+							$location_summary = "<b>" . $event->location->name . "</b><br/>" . $event->location->address . " - " . $event->location->town;
+							$category = EM_Category::get($event->category_id);
+							
+							if ($event->start_date < $today && $event->end_date < $today){
+								$style = "style ='background-color: #FADDB7;'";
+							}							
+							?>
+							<tr <?php echo "$class $style"; ?>>
+				
+								<td>
+									<input type='checkbox' class='row-selector' value='<?php echo $event->id; ?>' name='events[]' />
+								</td>
+								<td>
+									<strong>
+										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>"><?php echo ($event->name); ?></a>
+									</strong>
+									<?php if( is_array($category) ) : ?>
+									<br/><span title='<?php echo __( 'Category', 'dbem' ).": ".$category['category_name'] ?>'><?php echo $category['category_name'] ?></span>
+									<?php endif; ?>
+									<?php 
+									if( get_option('dbem_rsvp_enabled') == 1 && $event->rsvp == 1 ){
+										echo "<br/>";
+										echo __("Booked Seats",'dbem').": ". $event->get_bookings()->get_booked_seats()."/".$event->seats;
+										if( get_option('dbem_bookings_approval') == 1 ){
+											echo " | ". __("Pending",'dbem').": ". $event->get_bookings()->get_pending_seats();
+										}
+									}
+									?>
+								</td>
+								<td>
+									<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;action=duplicate&amp;event_id=<?php echo $event->id; ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
+										<strong>+</strong>
+									</a>
+								</td>
+								<td>
+									<?php echo $location_summary; ?>
+								</td>
+						
+								<td>
+									<?php echo $localised_start_date; ?>
+									<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
+									<br />
+									<?php
+										//TODO Should 00:00 - 00:00 be treated as an all day event? 
+										echo substr ( $event->start_time, 0, 5 ) . " - " . substr ( $event->end_time, 0, 5 ); 
+									?>
+								</td>
+								<td>
+									<?php 
+									if ( $event->is_recurrence() ) {
+										?>
+										<strong>
+										<?php echo $event->get_recurrence_description(); ?> <br />
+										<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->recurrence_id ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+										</strong>
+										<?php
+									}
+									?>
+								</td>
+							</tr>
+							<?php
 						}
+						$event_count++;
+					}
+					?>
+				</tbody>
+			</table>  
+			<?php
+			} // end of table
+			?>
+			<div class='tablenav'>
+				<div class="alignleft actions">
+				<br class='clear' />
+				</div>
+				<?php if ( $events_count >= $limit ) : ?>
+				<div class="tablenav-pages">
+					<?php
+					echo $events_nav;
 					?>
 				</div>
-				<br class="clear" />
-				
-				<?php
-				if (empty ( $events )) {
-					// TODO localize
-					_e ( 'no events','dbem' );
-				} else {
-				?>
-						
-				<table class="widefat">
-					<thead>
-						<tr>
-							<th class='manage-column column-cb check-column' scope='col'>
-								<input class='select-all' type="checkbox" value='1' />
-							</th>
-							<th><?php _e ( 'Name', 'dbem' ); ?></th>
-				  	   		<th>&nbsp;</th>
-				  	   		<th><?php _e ( 'Location', 'dbem' ); ?></th>
-							<th colspan="2"><?php _e ( 'Date and time', 'dbem' ); ?></th>
-						</tr>
-					</thead>
-					<tbody>
-				  	  	<?php 
-				  	  	$rowno = 0;
-						$event_count = 0;
-						foreach ( $events as $event ) {
-							if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
-								$rowno++;
-								$class = ($rowno % 2) ? ' class="alternate"' : '';
-								// FIXME set to american
-								$localised_start_date = date_i18n('D d M Y', $event->start);
-								$localised_end_date = date_i18n('D d M Y', $event->end);
-								$style = "";
-								$today = date ( "Y-m-d" );
-								$location_summary = "<b>" . $event->location->name . "</b><br/>" . $event->location->address . " - " . $event->location->town;
-								$category = EM_Category::get($event->id);
-								
-								if ($event->start_date < $today && $event->end_date < $today){
-									$style = "style ='background-color: #FADDB7;'";
-								}							
-								?>
-								<tr <?php echo "$class $style"; ?>>
-					
-									<td>
-										<input type='checkbox' class='row-selector' value='<?php echo $event->id; ?>' name='events[]' />
-									</td>
-									<td>
-										<strong>
-										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>"><?php echo ($event->name); ?></a>
-										</strong>
-										<?php if($category) : ?>
-										<br/><span title='<?php _e( 'Category', 'dbem' ).": ".$category['category_name'] ?>'><?php $category['category_name'] ?></span> 
-										<?php endif; ?>
-									</td>
-									<td>
-							 	    	<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;action=duplicate&amp;event_id=<?php echo $event->id; ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
-							 	    		<strong>+</strong>
-							 	    	</a>
-							  	   	</td>
-									<td>
-						  	 			<?php echo $location_summary; ?>
-									</td>
-							
-									<td>
-							  	    	<?php echo $localised_start_date; ?>
-							  	    	<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
-							  	    	<br />
-							  	    	<?php
-							  	    		//TODO Should 00:00 - 00:00 be treated as an all day event? 
-							  	    		echo substr ( $event->start_time, 0, 5 ) . " - " . substr ( $event->end_time, 0, 5 ); 
-							  	    	?>
-									</td>
-									<td>
-										<?php 
-										if ( $event->is_recurrence() ) {
-											?>
-											<strong>
-											<?php echo $event->get_recurrence_description(); ?> <br />
-											<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->recurrence_id ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
-											</strong>
-											<?php
-										}
-										?>
-									</td>
-								</tr>
-								<?php
-							}
-							$event_count++;
-						}
-						?>
-					</tbody>
-				</table>  
-				<?php
-				} // end of table
-				?>
-				
-				<div class='tablenav'>
-					<div class="alignleft actions">
-						<?php echo ( !empty($events_nav) ) ? $events_nav:''; ?>
-					<br class='clear' />
-					</div>
-					<br class='clear' />
-				</div>
+				<?php endif; ?>
+				<br class='clear' />
 			</div>
-		</form>		
+		</form>
 	</div>
 	<?php
 }

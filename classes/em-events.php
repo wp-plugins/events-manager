@@ -26,7 +26,7 @@ class EM_Events extends EM_Object {
 				LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 				WHERE event_id=".implode(" OR event_id=", $args)."
 			";
-			$results = $wpdb->get_results(apply_filters('em_events_get_sql',$sql));
+			$results = $wpdb->get_results(apply_filters('em_events_get_sql',$sql),ARRAY_A);
 			$events = array();
 			foreach($results as $result){
 				$events[$result['event_id']] = new EM_Event($result);
@@ -192,7 +192,11 @@ class EM_Events extends EM_Object {
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */
 	function build_sql_conditions( $args = array() ){
-		return apply_filters( 'em_events_build_sql_conditions', parent::build_sql_conditions($args), $args );
+		$conditions = apply_filters( 'em_events_build_sql_conditions', parent::build_sql_conditions($args), $args );
+		if( !empty($args['rsvp']) ){
+			$conditions['rsvp'] = 'event_rsvp=1';
+		}
+		return $conditions;
 	}
 	
 	/* Overrides EM_Object method to apply a filter to result
@@ -211,7 +215,8 @@ class EM_Events extends EM_Object {
 	function get_default_search( $array = array() ){
 		$defaults = array(				
 			'orderby' => get_option('dbem_events_default_orderby'),
-			'order' => get_option('dbem_events_default_order')
+			'order' => get_option('dbem_events_default_order'),
+			'rsvp' => false //if set to true, only events with bookings enabled are returned
 		);
 		return apply_filters('em_events_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}

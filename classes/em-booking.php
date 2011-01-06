@@ -34,7 +34,7 @@ class EM_Booking extends EM_Object{
 				$booking = $booking_data;
 				//Also create a person out of this...
 			  	$this->person = new EM_Person($booking_data);
-			}elseif( $booking_data > 0 ){
+			}elseif( is_numeric($booking_data) ){
 				//Retreiving from the database		
 				global $wpdb;			
 				$sql = "SELECT * FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE booking_id ='$booking_data'";   
@@ -124,9 +124,28 @@ class EM_Booking extends EM_Object{
 	
 	/**
 	 * Approve a booking.
+	 * @return bool
 	 */
 	function approve(){
 		$this->approved = 1;
+		return $this->save();
+	}
+	
+	/**
+	 * Reject a booking and save
+	 * @return bool
+	 */
+	function reject(){
+		$this->approved = 2;
+		return $this->save();
+	}
+	
+	/**
+	 * Unpprove a booking.
+	 * @return bool
+	 */
+	function unapprove(){
+		$this->approved = 0;
 		return $this->save();
 	}
 	

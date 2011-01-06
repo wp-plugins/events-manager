@@ -23,7 +23,7 @@ class EM_Person extends EM_Object{
 			$person = array();
 			if( is_array($person_data) ){
 				$person = $person_data;
-			}elseif( $person_data > 0 ){
+			}elseif( is_numeric($person_data) ){
 				//Retreiving from the database		
 				global $wpdb;			
 				$sql = "SELECT * FROM ". $wpdb->prefix . EM_PEOPLE_TABLE ." WHERE person_id ='$person_data'";   
@@ -85,6 +85,16 @@ class EM_Person extends EM_Object{
 			return false;
 		}
 		return true;
+	}
+	
+	function get_bookings(){
+		global $wpdb;
+		$results = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE person_id={$this->id}",ARRAY_A);
+		$bookings = array();
+		foreach($results as $booking_data){
+			$bookings[] = new EM_Booking($booking_data);
+		}
+		return $bookings;
 	}
 	
 	/**

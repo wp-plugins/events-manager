@@ -30,19 +30,19 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
 		$placeholder = urlencode('%PAGE%');
 		$link = str_replace('%PAGE%', urlencode('%PAGE%'), $link); //To avoid url encoded/non encoded placeholders
 	    //Add the back and first buttons
-		    $string = ($page>1) ? '<a href="'.str_replace($placeholder,1,$link).'">&lt;&lt;</a> ' : '&lt;&lt; ';
-		    $string .= ($page>1) ? ' <a href="'.str_replace($placeholder,$page-1,$link).'">&lt;</a> ' : '&lt; ';
+		    $string = ($page>1 && $startPage != 1) ? '<a class="prev page-numbers" href="'.str_replace($placeholder,1,$link).'">&lt;&lt;</a> ' : '';
+		    $string .= ($page>1) ? ' <a class="prev page-numbers" href="'.str_replace($placeholder,$page-1,$link).'">&lt;</a> ' : '';
 		//Loop each page and create a link or just a bold number if its the current page
 		    for ($i = $startPage ; $i < $startPage+$pagesToShow && $i <= $maxPages ; $i++){
 	            if($i == $page){
-	                $string .= " <strong>$i</strong>";
+	                $string .= ' <strong><span class="page-numbers current">'.$i.'</span></strong>';
 	            }else{
-	                $string .= ' <a href="'.str_replace($placeholder,$i,$link).'">'.$i.'</a> ';                
+	                $string .= ' <a class="page-numbers" href="'.str_replace($placeholder,$i,$link).'">'.$i.'</a> ';                
 	            }
 		    }
 		//Add the forward and last buttons
-		    $string .= ($page < $maxPages) ? ' <a href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' &gt; ' ;
-		    $string .= ($i-1 < $maxPages) ? ' <a href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : '&gt;&gt; ';
+		    $string .= ($page < $maxPages) ? ' <a class="next page-numbers" href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' ' ;
+		    $string .= ($i-1 < $maxPages) ? ' <a class="next page-numbers" href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : ' ';
 		//Return the string
 		    return $string;
 	}
@@ -52,13 +52,37 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
  * Takes a url and appends GET params (supplied as an assoc array), it automatically detects if you already have a querystring there
  * @param string $url
  * @param array $params
+ * @param bool $html
+ * @param bool $encode
+ * @return string
  */
-function em_add_get_params($url, $params=array(), $html=true, $encode=true){
-	$has_querystring = (stristr($url, "?"));	
+function em_add_get_params($url, $params=array(), $html=true, $encode=true){	
+	//Splig the url up to get the params and the page location
+	$url_parts = explode('?', $url);
+	$url = $url_parts[0];
+	$url_params_dirty = array();
+	if(count($url_parts) > 1){
+		$url_params_dirty = $url_parts[1];
+	}
+	//get the get params as an array
+	if( strstr($url_params_dirty, '&amp;') !== false ){
+		$url_params_dirty = explode('&amp;', $url_params_dirty);
+	}else{
+		$url_params_dirty = explode('&', $url_params_dirty);		
+	}
+	//split further into associative array
+	$url_params = array();
+	foreach($url_params_dirty as $url_param){
+		$url_param = explode('=', $url_param);
+		$url_params[$url_param[0]] = $url_param[1];
+	}
+	//Merge it together
+	$params = array_merge($url_params, $params);
+	//Now build the array back up.
 	$count = 0;
 	foreach($params as $key=>$value){
 		$value = ($encode) ? urlencode($value):$value;
-		if( $count == 0 && !$has_querystring ){
+		if( $count == 0 ){
 			$url .= "?{$key}=".$value;
 		}else{
 			$url .= ($html) ? "&amp;{$key}=".$value:"&{$key}=".$value;

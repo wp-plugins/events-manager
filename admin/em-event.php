@@ -241,8 +241,10 @@ function em_admin_event_page() {
 												if ( count($EM_Event->get_bookings()->bookings) > 0 ) {
 													?>
 													<div class='wrap'>
-														<h4><?php echo $booked_seats ?> <?php echo  __('responses so far') ?></h4>  
-													  
+														<p><strong><?php echo __('Available Spaces','dbem').': '.$EM_Event->get_bookings()->get_available_seats(); ?></strong>
+														<p><strong><?php echo __('Confirmed Spaces','dbem').': '.$EM_Event->get_bookings()->get_booked_seats(); ?></strong></p>
+														<p><strong><?php echo __('Pending Spaces','dbem').': '.$EM_Event->get_bookings()->get_pending_seats(); ?></strong></p>
+														
 														<table id='dbem-bookings-table-<?php echo $EM_Event->id ?>' class='widefat post fixed'>
 															<thead>
 																<tr>
@@ -286,7 +288,8 @@ function em_admin_event_page() {
 											 	    
 											 	 	<div id='major-publishing-actions'>  
 														<div id='publishing-action'> 
-															<a id='printable'  target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-people&action=printable&event_id=".$EM_Event->id ?>'><?php _e('Printable view','dbem')?></a>
+															<a id='printable'  target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-people&action=printable&event_id=".$EM_Event->id ?>'><?php _e('manage bookings','dbem')?></a><br />
+															<a id='printable'  target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-people&action=printable&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a>
 															<br class='clear'/>             
 												        </div>
 														<br class='clear'/>    

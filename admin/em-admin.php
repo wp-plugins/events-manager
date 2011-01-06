@@ -35,6 +35,28 @@ function em_admin_warnings() {
 add_action ( 'admin_notices', 'em_admin_warnings' );
 
 /**
+ * Creates a wp-admin style navigation. All this does is wrap some html around the em_paginate function result to make it style correctly in the admin area.
+ * @param string $link
+ * @param int $total
+ * @param int $limit
+ * @param int $page
+ * @param int $pagesToShow
+ * @return string
+ * @uses em_paginate()
+ */
+function em_admin_paginate($link, $total, $limit, $page=1, $pagesToShow=5){					
+	$return = '<div class="tablenav-pages">';
+	$return .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>', 
+		number_format_i18n( ( $page - 1 ) * $limit + 1 ),
+		number_format_i18n( min( $page * $limit, $total ) ),
+		number_format_i18n( $total )
+	);
+	$return .= em_paginate($link, $total, $limit, $page, $pagesToShow);
+	$return .= '</div>';
+	return $return;
+}
+
+/**
  * Called by admin_print_scripts-(hook|page) action, created when adding menu items in events-manager.php
  */
 function em_admin_load_scripts(){

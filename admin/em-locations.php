@@ -8,8 +8,8 @@ function em_admin_locations_page() {
 	global $EM_Location;
 				
 	//Take actions
-	if( !empty($_REQUEST['action']) ){
-		if( $_REQUEST['action'] == "edit" || $_REQUEST['action'] == "add" ) { 
+	if( !empty($_REQUEST['action']) || !empty($_REQUEST['location_id']) ){
+		if( $_REQUEST['action'] == "edit" || $_REQUEST['action'] == "add" || !empty($_REQUEST['location_id']) ) { 
 			//edit/add location  
 			em_admin_location();
 		} elseif( $_REQUEST['action'] == "delete" ){

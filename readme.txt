@@ -109,6 +109,9 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 3. The Events Manager Options page.
 
 == Change Log ==
+= 3.0.91 =
+* widget bug fixed
+
 = 3.0.9 =
 * Fixed small calendar discrepencies
 * added event and location single shortcodes

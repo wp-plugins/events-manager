@@ -20,7 +20,7 @@ class EM_Locations extends EM_Object {
 		if( self::array_is_numeric($args) && count() ){ //Array of numbers, assume they are event IDs to retreive
 			//We can just get all the events here and return them
 			$sql = "SELECT * FROM $locations_table WHERE location_id=".implode(" OR location_id=", $args);
-			$results = $wpdb->get_results($sql);
+			$results = $wpdb->get_results($sql,ARRAY_A);
 			$events = array();
 			foreach($results as $result){
 				$locations[$result['location_id']] = new EM_Location($result);

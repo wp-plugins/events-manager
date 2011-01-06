@@ -1,11 +1,11 @@
 jQuery(document).ready( function($) {
-    // Managing bookings delete operations 
+    // Managing bookings delete operations -old
 	$('a.bookingdelbutton').click( function(){
 		eventId = (jQuery(this).parents('table:first').attr('id').split("-"))[3]; 
 		idToRemove = (jQuery(this).parents('tr:first').attr('id').split("-"))[1];     
 		$.ajax({
 	  	  type: "POST",
-		    url: "admin.php?page=events-manager-people&action=remove_booking",
+		    url: "admin.php?page=events-manager-bookings&action=remove_booking",
 		    data: "booking_id="+ idToRemove,
 		    success: function(){	
 				$('tr#booking-' + idToRemove).fadeOut('slow');
@@ -18,6 +18,41 @@ jQuery(document).ready( function($) {
 		   	}
 		});
 	});
+	
+	//Manageing Bookings
+		//Widgets and filter submissions
+		$('.em_bookings_events_table form, .em_bookings_pending_table form').live('submit', function(e){
+			var el = $(this);
+			var url = em_ajaxify( el.attr('action') );			
+			el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
+			$.get( url, el.serializeArray(), function(data){
+				el.parents('.wrap').first().replaceWith(data);
+			});
+			return false;
+		});
+		//Pagination link clicks
+		$('.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a').live('click', function(){		
+			var el = $(this);
+			var url = em_ajaxify( el.attr('href') );	
+			el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
+			$.get( url, function(data){
+				el.parents('.wrap').first().replaceWith(data);
+			});
+			return false;
+		});
+		//Approve/Reject Links
+		$('.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete').live('click', function(){
+			var el = $(this); 
+			console.log(el);
+			if( el.hasClass('em-bookings-delete') ){
+				if( !confirm("Are you sure you want to delete?") ){ return false; }
+			}
+			var url = em_ajaxify( el.attr('href'));		
+			var td = el.parents('td').first();
+			td.html("Loading...");
+			td.load( url );
+			return false;
+		});
 	
 	//Attributes
 	$('#mtm_add_tag').click( function(event){
@@ -219,3 +254,16 @@ jQuery(document).ready( function($) {
 		$("input#location-town, select#location-select-id").triggerHandler('change');
 	}
 });
+
+
+//Take a url and add em_ajax param to it
+function em_ajaxify(url){
+	if ( url.search('em_ajax=0') != -1){
+		url = url.replace('em_ajax=0','em_ajax=1');
+	}else if( url.search(/\?/) != -1 ){
+		url = url + "&em_ajax=1";
+	}else{
+		url = url + "?em_ajax=1";
+	}
+	return url;
+}

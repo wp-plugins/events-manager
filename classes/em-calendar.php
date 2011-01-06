@@ -261,7 +261,7 @@ class EM_Calendar extends EM_Object {
 			foreach($events as $event) { 
 				$events_titles[] = $event->output($event_title_format);
 			}   
-			$link_title = EM_Events::output($events, array('format'=>$event_title_format));       
+			$link_title = implode( $event_title_separator_format, $events_titles);  
 			
 			$events_page_id = get_option('dbem_events_page');
 			$event_page_link = get_permalink($events_page_id);

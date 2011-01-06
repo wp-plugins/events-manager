@@ -51,6 +51,11 @@ p#recurrence_warning {
 div#icon-events{
 	background:url('../images/calendar-32.png') no-repeat center;
 }
+/* Widget Tables CSS */
+.em_obj .table-wrap{
+	position:relative;
+}
+.em_obj #em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80)}
 
 /*Help Docs*/
 .em-docs h3 a { font-size:16px; padding:20px 0px 10px; text-decoration:underline; display:block; }

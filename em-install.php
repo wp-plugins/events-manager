@@ -127,6 +127,7 @@ function em_create_bookings_table() {
 		booking_seats int(5) NOT NULL,
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		booking_approved bool NOT NULL DEFAULT 1,
 		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -177,65 +178,89 @@ function em_create_categories_table() {
 function em_add_options() {
 	$contact_person_email_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager",'dbem') ;
 	$respondent_email_body_localizable = __("Dear #_BOOKINGNAME, <br/>you have successfully reserved #_BOOKEDSPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem');
+	$respondent_email_pending_body_localizable = __("Dear #_BOOKINGNAME, <br/>You have requested #_BOOKEDSPACES space/spaces for #_NAME.<br/>Your booking is currently pending approval by our administrators. Once approved you will receive an automatic confrimation.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem'); 
 	
 	$dbem_options = array(
+		//Event List Options
+		'dbem_events_default_orderby' => 'start_date,start_time,name',
+		'dbem_events_default_order' => 'ASC',
+		'dbem_events_default_limit' => 10,
+		'dbem_events_ownership' => 1, //can others view other's events
+		'dbem_list_events_page' => 1,
+		//Event Formatting
+		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_event_list_item_format' => '<li>#j #M #Y - #H:#i<br/> #_EVENTLINK<br/>#_LOCATIONTOWN </li>',
 		'dbem_display_calendar_in_events_page' => 0,
 		'dbem_single_event_format' => '<h3>#_NAME</h3><p>#j #M #Y - #H:#i</p><p>#_LOCATIONTOWN</p>',
 		'dbem_event_page_title_format' => '#_NAME',
-		'dbem_list_events_page' => 1,   
-		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_no_events_message' => __('No events','dbem'),
+		//Location Formatting
 		'dbem_location_page_title_format' => '#_LOCATIONNAME',
-		'dbem_location_baloon_format' =>  "<strong>#_LOCATIONNAME</strong><br/>#_LOCATIONADDRESS - #_LOCATIONTOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>",
 		'dbem_location_event_list_item_format' => "<li>#_LOCATIONNAME - #j #M #Y - #H:#i</li>",
 		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_LOCATIONADDRESS</li><li>#_LOCATIONTOWN</li></ul>',
 		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
 		'dbem_single_location_format' => '<p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
-		'dbem_map_text_format' => '<strong>#_LOCATION</strong><p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
+		//RSS Stuff
 		'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events'),
 		'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events'),
 		'dbem_rss_description_format' => "#j #M #y - #H:#i <br/>#_LOCATION <br/>#_LOCATIONADDRESS <br/>#_LOCATIONTOWN",
 		'dbem_rss_title_format' => "#_NAME",
+		//Google Maps
 		'dbem_gmap_is_active'=> 1,
-		'dbem_default_contact_person' => 1,
-		'dbem_rsvp_notify_contact' => 1 ,
-		'dbem_contactperson_email_body' => __(str_replace("<br/>", "\n\r", $contact_person_email_body_localizable)),        
-		'dbem_respondent_email_body' => __(str_replace("<br/>", "\n\r", $respondent_email_body_localizable)),
+		'dbem_location_baloon_format' =>  "<strong>#_LOCATIONNAME</strong><br/>#_LOCATIONADDRESS - #_LOCATIONTOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>",
+		'dbem_map_text_format' => '<strong>#_LOCATION</strong><p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
+		//Email Config
 		'dbem_rsvp_mail_port' => 465,
 		'dbem_smtp_host' => 'localhost',
 		'dbem_mail_sender_name' => '',
 		'dbem_rsvp_mail_send_method' => 'smtp',  
 		'dbem_rsvp_mail_SMTPAuth' => 1,
+		//Image Manipulation
 		'dbem_image_max_width' => 700,
 		'dbem_image_max_height' => 700,
 		'dbem_image_max_size' => 204800,
+		//Calendar Options
 		'dbem_list_date_title' => __('Events', 'dbem').' - #j #M #y',
 		'dbem_full_calendar_event_format' => '<li>#_EVENTLINK</li>',
 		'dbem_full_calendar_long_events' => '0',
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ", 
-		'dbem_hello_to_user' => 1,
+		//General Settings
 		'dbem_use_select_for_locations' => false,
 		'dbem_attributes_enabled' => true,
 		'dbem_recurrence_enabled'=> true,
 		'dbem_rsvp_enabled'=> true,
 		'dbem_categories_enabled'=> true,
+		//Title rewriting compatability
 		'dbem_disable_title_rewrites'=> false,
 		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
-		'dbem_events_default_orderby' => 'start_date,start_time,name',
-		'dbem_events_default_order' => 'ASC',
-		'dbem_events_default_limit' => 10,
-		//'dbem_bookings_approval' => 1,
-		'dbem_bookings_notify_admin' => ''
+		//Bookings
+		'dbem_bookings_approval' => 1,
+		'dbem_bookings_notify_admin' => '',
+		'dbem_default_contact_person' => 1,
+		'dbem_rsvp_notify_contact' => 1 ,
+		'dbem_contactperson_email_subject' => __("New booking",'dbem'),
+		'dbem_contactperson_email_body' => str_replace("<br/>", "\n\r", $contact_person_email_body_localizable),
+		'dbem_bookings_email_pending_subject' => __("Reservation pending",'dbem'),
+		'dbem_bookings_email_pending_body' => str_replace("<br/>", "\n\r", $respondent_email_pending_body_localizable),
+		'dbem_bookings_email_confirmed_subject' => __('Booking confirmed','dbem'),
+		'dbem_bookings_email_confirmed_body' => str_replace("<br/>", "\n\r", $respondent_email_body_localizable),
+		//Flags
+		'dbem_hello_to_user' => 1,
 	);
 	
 	foreach($dbem_options as $key => $value){
 		add_option($key, $value);
 	}
 	//Customization for new options on updated plugins (not new installs)
-	if( get_option('dbem_version') != '' ){
-		//update_option('dbem_bookings_approval',0); //Previously in <3.0.9 bookings were never approvable
+	if( get_option('dbem_version') != '' && get_option('dbem_version') <= 3.09){
+		update_option('dbem_bookings_approval',0); //Previously in <3.0.9 bookings were never approvable
+		update_option('dbem_bookings_approval_warning',1); //One off warning for old EM users to activate this new feature
+		if( get_option('dbem_respondent_email_body') != '' ){
+			update_option('dbem_bookings_email_confirmed_body', get_option('dbem_respondent_email_body'));
+		}
+		update_option('dbem_events_ownership',0);
+		update_option('dbem_events_ownership_warning',1);
 	}
 }     
 

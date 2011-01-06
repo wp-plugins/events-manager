@@ -265,9 +265,14 @@ function em_admin_options_page() {
 				<table class='form-table'>
 					<?php
 					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users (), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
+					em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Email contact person?', 'dbem' ), 'dbem_rsvp_notify_contact', __( 'Check this option if you want the event contact to receive an email when someone books places.', 'dbem' ) );
-					em_options_textarea ( __( 'Contact person email format', 'dbem' ), 'dbem_contactperson_email_body', __( 'The format of the email which will be sent to  the contact person.', 'dbem' ).$bookings_placeholder_tip );
-					em_options_textarea ( __( 'Booking email format', 'dbem' ), 'dbem_respondent_email_body', __( 'The format of the email which will be sent to respondent.', 'dbem' ).$bookings_placeholder_tip );
+					em_options_input_text ( __( 'Contact person email subject', 'dbem' ), 'dbem_contactperson_email_subject', __( "The subject of the email that will be sent to the event contact.", 'dbem' ).$bookings_placeholder_tip );
+					em_options_textarea ( __( 'Contact person email', 'dbem' ), 'dbem_contactperson_email_body', __( 'The format of the email which will be sent to the event contact.', 'dbem' ).$bookings_placeholder_tip );
+					em_options_input_text ( __( 'Booking pending email subject', 'dbem' ), 'dbem_bookings_email_pending_subject', __( "The subject of the email sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don't require approval.", 'dbem' ).$bookings_placeholder_tip );
+					em_options_textarea ( __( 'Booking pending email', 'dbem' ), 'dbem_bookings_email_pending_body', __( 'The body of the email which will be sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don\'t require approval.', 'dbem' ).$bookings_placeholder_tip );
+					em_options_input_text ( __( 'Booking confirmed email subject', 'dbem' ), 'dbem_bookings_email_confirmed_subject', __( "The subject of the email which will be sent to person making a booking. This will be sent automatically if approvals are required and the booking is approved.", 'dbem' ).$bookings_placeholder_tip );
+					em_options_textarea ( __( 'Booking confirmed email', 'dbem' ), 'dbem_bookings_email_confirmed_body', __( 'The body of the email which will be sent to the person making a booking. This will be sent automatically if approvals are required and the booking is approved.', 'dbem' ).$bookings_placeholder_tip );
 					em_options_input_text ( __( 'Email events admin?', 'dbem' ), 'dbem_bookings_notify_admin', __( "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email).", 'dbem' ) );
 					echo $save_button;
 					?>

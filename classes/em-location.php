@@ -193,8 +193,8 @@ class EM_Location extends EM_Object {
 	function has_events(){
 		global $wpdb;	
 		$events_table = $wpdb->prefix.EM_EVENTS_TABLE;
-		$sql = "SELECT event_id FROM $events_table WHERE location_id = {$this->id}";   
-	 	$affected_events = $wpdb->get_results($sql);
+		$sql = "SELECT count(event_id) as events_no FROM $events_table WHERE location_id = {$this->id}";   
+	 	$affected_events = $wpdb->get_row($sql);
 		return apply_filters('em_location_has_events', (count($affected_events) > 0), $this);
 	}
 	

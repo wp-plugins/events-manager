@@ -5,7 +5,6 @@
  *
  */
 class EM_Bookings extends EM_Object{
-	//TODO Bookings needs redoing
 	
 	/**
 	 * Array of EM_Booking objects for a specific event
@@ -32,7 +31,6 @@ class EM_Bookings extends EM_Object{
 	 * @return null
 	 */
 	function EM_Bookings( $event ){
-		//TODO maybe not load bookings here (for speed), and have an init() function called by all functions?
 		if( is_object($event) && get_class($event) == "EM_Event" ){ //Creates a blank bookings object if needed
 			global $wpdb;
 			$this->event_id = $event->id;
@@ -81,7 +79,9 @@ class EM_Bookings extends EM_Object{
 			}
 			if($result){
 				//Success
-				$this->feedback_message = __('Booking successful.', 'dbem');
+				if($EM_Booking->approved == 1 || get_option() ){
+					$this->feedback_message = __('Booking successful.', 'dbem');					
+				}
 				if(!$email){
 					$this->feedback_message .= ' '.__('However, there were some problems whilst sending confirmation emails to you and/or the event contact person. You may want to contact them directly and letting them know of this error.', 'dbem');
 					if( current_user_can('activate_plugins') ){
@@ -114,28 +114,99 @@ class EM_Bookings extends EM_Object{
 	}
 
 	/**
-	 * Returns number of available seats for this event
+	 * Returns number of available seats for this event. If approval of bookings is on, will include pending bookings depending on em option.
 	 * @return int
 	 */
 	function get_available_seats(){
 		$booked_seats = 0;
-		foreach ( $this->bookings as $booking ){
-			$booked_seats += $booking->seats;
+		if( get_option('dbem_bookings_approval_reserved') == 1 ){
+			return $this->seats - $this->get_booked_seats() - $this->get_pending_seats();
+		}else{	
+			return $this->seats - $this->get_booked_seats();	
 		}
-		return $this->seats - $booked_seats;
 	}
 
 	/**
-	 * Returns number of booked seats for this event
+	 * Returns number of booked seats for this event. If approval of bookings is on, will return number of booked confirmed seats.
 	 * @return int
 	 */
 	function get_booked_seats(){
 		$booked_seats = 0;
 		foreach ( $this->bookings as $booking ){
-			$booked_seats += $booking->seats;
+			if( get_option('dbem_bookings_approval') == 0 || $booking->approved == 1 ){
+				$booked_seats += $booking->seats;
+			}
 		}
 		return $booked_seats;
 	}
+	
+	/**
+	 * Gets number of pending seats awaiting approval. Will return 0 if booking approval is not enabled.
+	 * @return int
+	 */
+	function get_pending_seats(){
+		if( get_option('dbem_bookings_approval') == 0 ){
+			return 0;
+		}
+		$pending = 0;
+		foreach ( $this->bookings as $booking ){
+			if($booking->approved == 0){
+				$pending += $booking->seats;
+			}
+		}
+		return $pending;
+	}
+	
+	/**
+	 * Gets number of bookings (not seats). If booking approval is enabled, only the number of approved bookings will be shown.
+	 * @return array EM_Booking
+	 */
+	function get_bookings(){
+		if( get_option('dbem_bookings_approval') == 0 ){
+			return $this->bookings;
+		}
+		$confirmed = array();
+		foreach ( $this->bookings as $booking ){
+			if($booking->approved == 1){
+				$confirmed[] = $booking;
+			}
+		}
+		return $confirmed;		
+	}
+	
+	/**
+	 * Get pending bookings. If booking approval is disabled, will return no bookings. 
+	 * @return array EM_Booking
+	 */
+	function get_pending_bookings(){
+		if( get_option('dbem_bookings_approval') == 0 ){
+			return array();
+		}
+		$pending = array();
+		foreach ( $this->bookings as $booking ){
+			if($booking->approved == 0){
+				$pending[] = $booking;
+			}
+		}
+		return $pending;
+	}	
+	
+	/**
+	 * Get rejected bookings. If booking approval is disabled, will return no bookings. 
+	 * @return array EM_Booking
+	 */
+	function get_rejected_bookings(){
+		if( get_option('dbem_bookings_approval') == 0 ){
+			return array();
+		}
+		$pending = array();
+		foreach ( $this->bookings as $booking ){
+			if($booking->approved == 2){
+				$pending[] = $booking;
+			}
+		}
+		return $pending;
+	}	
 	
 	/**
 	 * Checks if a person with similar details has booked for this before
@@ -165,12 +236,18 @@ class EM_Bookings extends EM_Object{
 		global $EM_Event, $EM_Mailer;
 		
 		$contact_id = ( $EM_Event->contactperson_id != "") ? $EM_Event->contactperson_id : get_option('dbem_default_contact_person');
-				 
+
+		$contact_subject = get_option('dbem_bookings_email_confirmed_subject');
 		$contact_body = get_option('dbem_contactperson_email_body');
-		$booker_body = get_option('dbem_respondent_email_body');
+		if( get_option('dbem_bookings_approval') == 0 || $EM_Booking->approved == 1 ){
+			$booker_subject = get_option('dbem_bookings_email_confirmed_subject');
+			$booker_body = get_option('dbem_bookings_email_confirmed_body');
+		}else{
+			$booker_subject = get_option('dbem_bookings_email_pending_subject');
+			$booker_body = get_option('dbem_bookings_email_pending_body');
+		}
 		
 		// email specific placeholders
-		// TODO make placeholders for RSVP consistent, we shouldn't need some of these as they're on the main events output function
 		$placeholders = array(
 			'#_RESPNAME' =>  '#_BOOKINGNAME',//Depreciated
 			'#_RESPEMAIL' => '#_BOOKINGEMAIL',//Depreciated
@@ -184,44 +261,158 @@ class EM_Bookings extends EM_Object{
 			'#_BOOKINGCOMMENT' => $EM_Booking->comment,
 		);		 
 		foreach($placeholders as $key => $value) {
-			$contact_body= str_replace($key, $value, $contact_body);  
-			$booker_body= str_replace($key, $value, $booker_body);
+			$contact_subject = str_replace($key, $value, $contact_subject);
+			$contact_body = str_replace($key, $value, $contact_body); 
+			$booker_subject = str_replace($key, $value, $booker_subject); 
+			$booker_body = str_replace($key, $value, $booker_body);
 		}
 		
+		$booker_subject = $EM_Event->output( $booker_subject ); 
 		$booker_body = $EM_Event->output( $booker_body );
-		$contact_body = ( get_option('dbem_bookings_notify_admin') || get_option('dbem_rsvp_notify_contact') ) ? $EM_Event->output( $contact_body ):$contact_body;
 		
-		//TODO offer subject changes
-		if( !$EM_Mailer->send(__('Reservation confirmed','dbem'),$booker_body, $EM_Booking->person->email) ){
+		//Send to the person booking
+		if( !$this->email_send( $booker_subject,$booker_body, $EM_Booking->person->email) ){
+			return false;
+		}
+		
+		//Send admin emails
+		if( (get_option('dbem_bookings_approval') == 0 || $EM_Booking->approved == 0) && (get_option('dbem_rsvp_notify_contact') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
+			//Only gets sent if this is a pending booking, unless approvals are disabled.
+			$contact_subject = $EM_Event->output( $contact_subject );
+			$contact_body = $EM_Event->output( $contact_body );
+			
+			if( get_option('dbem_rsvp_notify_contact') == 1 ){
+				$subject = get_option('dbem_contactperson_email_subject');
+				if( !$this->email_send( $subject, $contact_body, $EM_Event->contact->user_email) && current_user_can('activate_plugins')){
+					$this->errors[] = __('Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).','dbem');
+					return false;
+				}
+			}
+	
+			if( get_option('dbem_bookings_notify_admin') != '' && preg_match('/^[_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3}$/', get_option('dbem_bookings_notify_admin')) ){
+				$subject = get_option('dbem_contactperson_email_subject');
+				if( !$this->email_send(__("New booking",'dbem'), $contact_body, get_option('dbem_bookings_notify_admin')) ){
+					$this->errors[] = __('Confirmation email could not be sent to admin. Registrant should have gotten their email (only admin see this warning).','dbem');
+					return false;
+				}
+			}
+		}		
+		//TODO need error checking for booking mail send
+		return true;
+	}
+	
+	/**
+	 * Send an email and log errors in this object
+	 * @param string $subject
+	 * @param string $body
+	 * @param string $email
+	 * @return string
+	 */
+	function email_send($subject, $body, $email){
+		global $EM_Mailer;
+		if( !$EM_Mailer->send($subject,$body,$email) ){
 			foreach($EM_Mailer->errors as $error){
 				$this->errors[] = $error;
 			}
 			return false;
 		}
-
-		if( get_option('dbem_rsvp_notify_contact') == 1 ){
-			if( !$EM_Mailer->send(__("New booking",'dbem'), $contact_body, $EM_Event->contact->user_email) && current_user_can('activate_plugins')){
-				foreach($EM_Mailer->errors as $error){
-					$this->errors[] = $error;
-				}
-				$this->errors[] = __('Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).','dbem');
-				return false;
-			}
-		}
-
-		if( get_option('dbem_bookings_notify_admin') != '' && preg_match('/^[_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3}$/', get_option('dbem_bookings_notify_admin')) ){
-			if( !$EM_Mailer->send(__("New booking",'dbem'), $contact_body, get_option('dbem_bookings_notify_admin')) ){
-				foreach($EM_Mailer->errors as $error){
-					$this->errors[] = $error;
-				}
-				$this->errors[] = __('Confirmation email could not be sent to admin. Registrant should have gotten their email (only admin see this warning).','dbem');
-				return false;
-			}
-		}
-		
-		//TODO need error checking for booking mail send
 		return true;
 	}
 	
+	/**
+	 * Will approve all supplied booking ids, which must be in the form of a numeric array or a single number.
+	 * @param array|int $booking_ids
+	 * @return boolean
+	 */
+	function approve( $booking_ids ){
+		//FIXME there is a vulnerability where any user can approve/reject bookings if they know the ID
+		if( EM_Object::array_is_numeric($booking_ids) ){
+			//Get all the bookings
+			$results = array();
+			foreach( $booking_ids as $booking_id ){
+				$booking = new EM_Booking($booking_id);
+				$results[] = $booking->approve(); 
+			}
+			return !in_array('false',$results);
+		}elseif( is_numeric($booking_ids) ){
+			$booking = new EM_Booking($booking_ids);
+			return $booking->approve();
+		}
+		return false;
+	}
+	
+	/**
+	 * Will reject all supplied booking ids, which must be in the form of a numeric array or a single number.
+	 * @param array|int $booking_ids
+	 * @return boolean
+	 */
+	function reject( $booking_ids ){
+		if( EM_Object::array_is_numeric($booking_ids) ){
+			//Get all the bookings
+			$results = array();
+			foreach( $booking_ids as $booking_id ){
+				$booking = new EM_Booking($booking_id);
+				$results[] = $booking->reject(); 
+			}
+			return !in_array('false',$results);
+		}elseif( is_numeric($booking_ids) ){
+			$booking = new EM_Booking($booking_ids);
+			return $booking->reject();
+		}
+		return false;
+	}
+	
+	/**
+	 * Will unapprove all supplied booking ids, which must be in the form of a numeric array or a single number.
+	 * @param array|int $booking_ids
+	 * @return boolean
+	 */
+	function unapprove( $booking_ids ){
+		//FIXME there is a vulnerability where any user can unapprove/reject bookings if they know the ID
+		if( EM_Object::array_is_numeric($booking_ids) ){
+			//Get all the bookings
+			$results = array();
+			foreach( $booking_ids as $booking_id ){
+				$booking = new EM_Booking($booking_id);
+				$results[] = $booking->unapprove(); 
+			}
+			return !in_array('false',$results);
+		}elseif( is_numeric($booking_ids) ){
+			$booking = new EM_Booking($booking_ids);
+			return $booking->unapprove();
+		}
+		return false;
+	}
+	
+	/**
+	 * Get all pending bookings for this event  
+	 */
+	function get_pending(){
+		$pending = array();
+		foreach($this->bookings as $booking){
+			if($booking->approved == 0){
+				$pending[] = $booking;
+			}
+		}
+		return $pending;
+	}
+	
+	/**
+	 * Gets the pending number of bookings as a raw associative array.
+	 * @return array 
+	 */
+	function get_pending_raw(){
+		global $wpdb,$current_user;
+		$bookings_table = $wpdb->prefix . EM_BOOKINGS_TABLE;
+		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
+		$people_table = $wpdb->prefix . EM_PEOPLE_TABLE;
+		if( get_option('dbem_events_ownership') == 1 && !current_user_can('activate_plugins') ){
+			$sql = "SELECT * FROM $bookings_table b LEFT JOIN $events_table e ON e.event_id=b.event_id LEFT JOIN $people_table p ON p.person_id=b.person_id WHERE booking_approved = 0 AND event_author=".$current_user->ID;
+		} else {
+			$sql = "SELECT * FROM $bookings_table b LEFT JOIN $events_table e ON e.event_id=b.event_id LEFT JOIN $people_table p ON p.person_id=b.person_id WHERE booking_approved = 0";
+		}
+		$bookings_array = $wpdb->get_results($sql, ARRAY_A);
+		return $bookings_array;
+	}
 }
 ?>

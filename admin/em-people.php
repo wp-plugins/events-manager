@@ -1,17 +1,45 @@
 <?php
 function em_admin_people_page() {
-	// Managing AJAX booking removal
- 	if(isset($_GET['action']) && $_GET['action'] == 'remove_booking') {
-		if(isset($_POST['booking_id'])){
-			$EM_Booking = new EM_Booking($_POST['booking_id']);
-			$EM_Booking->delete();
-		}      
-	}
 	?> 
 	<div class='wrap'> 
 		<div id="icon-users" class="icon32"><br/></div>
 		<h2>People</h2>
-		<?php em_people_table(); ?>
+		<?php
+		$EM_People = EM_People::get();
+		if (count($EM_People) < 1 ) {
+			_e("No people have responded to your events yet!", 'dbem');
+		} else { 
+			?>
+			<p><?php _e('This table collects the data about the people who responded to your events', 'dbem') ?></p>	
+			<table id='dbem-people-table' class='widefat post fixed'>
+				<thead>
+					<tr>
+						<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>
+						<th class='manage-column ' scope='col'>Name</th>
+						<th scope='col'>E-mail</th>
+						<th scope='col'>Phone number</th>
+				 </tr>
+				</thead>
+				<tfoot>
+					<tr>
+						<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>
+						<th class='manage-column ' scope='col'>Name</th>
+						<th scope='col'>E-mail</th>
+						<th scope='col'>Phone number</th>
+				 </tr>
+				</tfoot>
+				<?php foreach ($EM_People as $EM_Person): ?>
+					<tr> 
+						<td>&nbsp;</td>
+						<td><?php echo $EM_Person->name ?></td>
+						<td><?php echo $EM_Person->email ?></td>
+						<td><?php echo $EM_Person->phone ?></td>
+					</tr>
+				<?php endforeach; ?>
+			</table>
+			<?php   
+		}
+		?>
 	</div>
 	<?php
 } 
@@ -71,43 +99,6 @@ function em_printable_booking_report() {
 	}
 } 
 add_action('init', 'em_printable_booking_report');
-
-function em_people_table() {
-	$EM_People = EM_People::get();
-	if (count($EM_People) < 1 ) {
-		_e("No people have responded to your events yet!", 'dbem');
-	} else { 
-		?>
-		<p><?php _e('This table collects the data about the people who responded to your events', 'dbem') ?></p>	
-		<table id='dbem-people-table' class='widefat post fixed'>
-			<thead>
-				<tr>
-					<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>
-					<th class='manage-column ' scope='col'>Name</th>
-					<th scope='col'>E-mail</th>
-					<th scope='col'>Phone number</th>
-			 </tr>
-			</thead>
-			<tfoot>
-				<tr>
-					<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>
-					<th class='manage-column ' scope='col'>Name</th>
-					<th scope='col'>E-mail</th>
-					<th scope='col'>Phone number</th>
-			 </tr>
-			</tfoot>
-			<?php foreach ($EM_People as $EM_Person): ?>
-				<tr> 
-					<td>&nbsp;</td>
-					<td><?php echo $EM_Person->name ?></td>
-					<td><?php echo $EM_Person->email ?></td>
-					<td><?php echo $EM_Person->phone ?></td>
-				</tr>
-			<?php endforeach; ?>
-		</table>
-		<?php   
-	}
-}
 
 /**
  * Adds phone number to contact info of users, compatible with previous phone field method

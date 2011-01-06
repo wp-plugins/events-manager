@@ -32,11 +32,10 @@ class EM_Widget extends WP_Widget {
 			echo '<li>'.__('No events', 'dbem').'</li>';
 		}
 		if ( !empty($instance['all_events']) ){
-			$events_link = (!empty($instance['all_events_link'])) ? em_get_link($instance['all_events_link']) : em_get_link(__('all events','dbem'));
+			$events_link = (!empty($instance['all_events_text'])) ? em_get_link($instance['all_events_text']) : em_get_link(__('all events','dbem'));
 			echo '<li>'.$events_link.'</li>';
 		}
 		echo "</ul>";
-
 		
 	    echo $args['after_widget'];
     }
