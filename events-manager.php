@@ -46,7 +46,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 include_once('classes/em-object.php'); //Base object, any files below may depend on this 
 //Template Tags & Template Logic
 include_once("em-ajax.php");
-//include_once("em-bookings.php");
+include_once("em-bookings.php");
 include_once("em-events.php");
 include_once("em-functions.php");
 include_once("em-rss.php");
