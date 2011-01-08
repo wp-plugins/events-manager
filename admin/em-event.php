@@ -45,7 +45,7 @@ add_action('admin_init', 'em_admin_event_actions');
  * @return null
  */
 function em_admin_event_page() {
-	global $EM_Event;
+	global $EM_Event, $current_user;
 	global $localised_date_formats; 
 	
 	//check that user can access this page
@@ -215,7 +215,18 @@ function em_admin_event_page() {
 									</span></h3>
 								<div class="inside">
 									<p><?php _e('Contact','dbem'); ?>
-										<?php wp_dropdown_users ( array ('name' => 'event_contactperson_id', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->contactperson_id  ) ); ?>
+										<?php
+											if( em_verify_admin() ){
+												wp_dropdown_users ( array ('name' => 'event_contactperson_id', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->contactperson_id  ) );
+											}else{
+												?>
+												: <?php echo $current_user->display_name ?>
+												<input type="hidden" name="event_contactperson_id" value="<?php get_current_user_id() ?>" />
+												<br />
+												<i><?php _e('You can only change the contact person if you a events administrator.','dbem'); ?></i>
+												<?php
+											}
+										?>
 									</p>
 								</div>
 							</div>
@@ -290,7 +301,7 @@ function em_admin_event_page() {
 									<p><?php _e ( 'Category:', 'dbem' ); ?> 
 										<select name="event_category_id">
 											<?php 
-											$categories = EM_Categories::get();
+											$categories = EM_Categories::get(array('owner'=>false));
 											foreach ( $categories as $EM_Category ){
 												$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
 												?>

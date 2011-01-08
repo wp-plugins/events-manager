@@ -96,7 +96,7 @@ class EM_Object {
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
-		if( !get_option('dbem_disable_ownership') && is_admin() && !em_verify_admin() ){
+		if( !get_option('dbem_disable_ownership') && is_admin() && !em_verify_admin() && $array['owner'] !== false ){
 			$defaults['owner'] = get_current_user_id();
 		}
 		$defaults['owner'] = (is_numeric($defaults['owner'])) ? $defaults['owner']:$super_defaults['owner'];
