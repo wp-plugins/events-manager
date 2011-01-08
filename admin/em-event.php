@@ -249,55 +249,17 @@ function em_admin_event_page() {
 												if ( count($EM_Event->get_bookings()->bookings) > 0 ) {
 													?>
 													<div class='wrap'>
-														<p><strong><?php echo __('Available Spaces','dbem').': '.$EM_Event->get_bookings()->get_available_seats(); ?></strong>
+														<p><strong><?php echo __('Available Spaces','dbem').': '.$EM_Event->get_bookings()->get_available_seats(); ?></strong></p>
 														<p><strong><?php echo __('Confirmed Spaces','dbem').': '.$EM_Event->get_bookings()->get_booked_seats(); ?></strong></p>
 														<p><strong><?php echo __('Pending Spaces','dbem').': '.$EM_Event->get_bookings()->get_pending_seats(); ?></strong></p>
-														
-														<table id='dbem-bookings-table-<?php echo $EM_Event->id ?>' class='widefat post fixed'>
-															<thead>
-																<tr>
-																	<th class='manage-column column-cb check-column' scope='col'>&nbsp;</th>
-																	<th class='manage-column ' scope='col'><?php _e('Responder', 'dbem') ?></th>
-																	<th scope='col'><?php _e('Spaces', 'dbem') ?></th>
-															 	</tr>
-															</thead>
-															<tbody>
-																<?php
-																foreach ($EM_Event->get_bookings()->bookings as $EM_Booking) { 
-																	?>
-																	<tr id='booking-<?php echo $EM_Booking->id ?>'> 
-																		<td>
-																			<?php if($EM_Booking->comment) : ?>
-																			<img src='../wp-content/plugins/events-manager/includes/images/baloon.png' title='<?php _e('Comment:','dbem'); ?> <?php echo $EM_Booking->comment ?>' alt='comment'/>
-																			<?php endif; ?>
-																			<a id='booking-check-<?php echo $EM_Booking->id ?>' class='bookingdelbutton'>X</a>
-																		</td>
-																		<td><a title='<?php echo $EM_Booking->person->email ?> - <?php echo $EM_Booking->person->phone ?>'><?php echo $EM_Booking->person->name ?></a></td>
-																		<td><?php echo $EM_Booking->seats ?></td>
-																	</tr>
-																	<?php
-																}
-														 		?>
-															</tbody>
-															<tfoot>
-																<tr>
-																	<th scope='row' colspan='2'><?php _e('Booked spaces','dbem') ?>:</th>
-																	<td class='booking-result' id='booked-seats'><?php echo $booked_seats ?></td>
-																</tr>            
-														 		<tr>
-														 			<th scope='row' colspan='2'><?php _e('Available spaces','dbem') ?>:</th>
-														 			<td class='booking-result' id='available-seats'><?php echo $available_seats  ?></td>
-																</tr>
-															</tfoot>									
-												 		</table>
 												 	</div>
 													 		
 											 	    <br class='clear'/>
 											 	    
 											 	 	<div id='major-publishing-actions'>  
 														<div id='publishing-action'> 
-															<a id='printable'  target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-people&action=printable&event_id=".$EM_Event->id ?>'><?php _e('manage bookings','dbem')?></a><br />
-															<a id='printable'  target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-people&action=printable&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a>
+															<a id='printable' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&event_id=".$EM_Event->id ?>'><?php _e('manage bookings','dbem')?></a><br />
+															<a id='printable' target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_report&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a>
 															<br class='clear'/>             
 												        </div>
 														<br class='clear'/>    
@@ -328,7 +290,7 @@ function em_admin_event_page() {
 									<p><?php _e ( 'Category:', 'dbem' ); ?> 
 										<select name="event_category_id">
 											<?php 
-											$categories = EM_Category::get();
+											$categories = EM_Categories::get();
 											foreach ( $categories as $EM_Category ){
 												$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
 												?>

@@ -117,7 +117,14 @@ function em_admin_people_page() {
 
 function em_printable_booking_report() {
 	global $EM_Event;
-	if(isset($_GET['action']) && $_GET['action'] == 'printable' && is_object($EM_Event)){
+	//check that user can access this page
+	if( isset($_GET['page']) && $_GET['page']=='events-manager-bookings' && isset($_GET['action']) && $_GET['action'] == 'bookings_report' && is_object($EM_Event)){
+		if( is_object($EM_Event) && !$EM_Event->can_manage() ){
+			?>
+			<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
+			<?php
+			return false;
+		}
 		?>
 		<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
 			"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
@@ -169,7 +176,7 @@ function em_printable_booking_report() {
 		die();
 	}
 } 
-add_action('init', 'em_printable_booking_report');
+add_action('admin_init', 'em_printable_booking_report');
 
 /**
  * Adds phone number to contact info of users, compatible with previous phone field method
