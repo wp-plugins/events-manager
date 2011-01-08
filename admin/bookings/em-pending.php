@@ -24,15 +24,14 @@ function em_bookings_pending_table($event_id = false){
 		$bookings = $EM_Event->get_bookings()->get_pending();
 	}else{
 		//To optimize performance, we can do one query here for all pending bookings to show.
-		$bookings_array = EM_Bookings::get_pending_raw();
+		$bookings = EM_Bookings::get(array('status'=>0));
 		$events = array();
 		//Now let's create events and bookings for this:
-		foreach($bookings_array as $booking_array){
+		foreach($bookings as $EM_Booking){
 			//create event
-			if( !array_key_exists($booking_array['event_id'],$events) ){
-				$events[$booking_array['event_id']] = new EM_Event($booking_array);
+			if( !array_key_exists($EM_Booking->event_id,$events) ){
+				$events[$EM_Booking->event_id] = new EM_Event($EM_Booking->event_id);
 			}
-			$bookings[] = new EM_Booking($booking_array); 
 		}
 	}
 	$bookings_count = (is_array($bookings)) ? count($bookings):0;

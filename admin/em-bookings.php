@@ -8,10 +8,6 @@ function em_admin_actions_bookings() {
 	global $dbem_form_delete_message; 
 	global $wpdb, $EM_Booking;
 	
-	if( !get_option('dbem_events_disable_ownership') && !em_verify_admin() ){
-		$args['owner'] = get_current_user_id();
-	}	
-
 	if( current_user_can(EM_MIN_CAPABILITY) && is_object($EM_Booking) && !empty($_REQUEST['action']) ) {
 		if( $_REQUEST['action'] == 'bookings_delete' ){
 			//Delete
@@ -89,6 +85,13 @@ function em_bookings_dashboard(){
  */
 function em_bookings_event(){
 	global $EM_Event,$EM_Person;
+	//check that user can access this page
+	if( is_object($EM_Event) && !$EM_Event->can_manage() ){
+		?>
+		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
+		<?php
+		return false;
+	}
 	$localised_start_date = date_i18n('D d M Y', $EM_Event->start);
 	$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
 	?>
@@ -129,6 +132,13 @@ function em_bookings_event(){
  */
 function em_bookings_single(){
 	global $EM_Booking;
+	//check that user can access this page
+	if( is_object($EM_Booking) && !$EM_Booking->can_manage() ){
+		?>
+		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
+		<?php
+		return false;
+	}
 	?>
 	<div class='wrap'>
 		<div id='icon-users' class='icon32'>

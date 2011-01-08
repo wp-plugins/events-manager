@@ -39,7 +39,7 @@ function em_admin_events_page() {
 			$scope = "future";
 	}
 	$args = array('scope'=>$scope, 'limit'=>0, 'order'=>$order );
-	if( !get_option('dbem_events_disable_ownership') && !em_verify_admin() ){
+	if( !get_option('dbem_disable_ownership') && !em_verify_admin() ){
 		$args['owner'] = get_current_user_id();
 	}	
 	$events = EM_Events::get( $args );
@@ -150,7 +150,7 @@ function em_admin_events_page() {
 							$style = "";
 							$today = date ( "Y-m-d" );
 							$location_summary = "<b>" . $event->location->name . "</b><br/>" . $event->location->address . " - " . $event->location->town;
-							$category = EM_Category::get($event->category_id);
+							$category = new EM_Category($event->category_id);
 							
 							if ($event->start_date < $today && $event->end_date < $today){
 								$style = "style ='background-color: #FADDB7;'";
@@ -165,8 +165,8 @@ function em_admin_events_page() {
 									<strong>
 										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>"><?php echo ($event->name); ?></a>
 									</strong>
-									<?php if( is_array($category) ) : ?>
-									<br/><span title='<?php echo __( 'Category', 'dbem' ).": ".$category['category_name'] ?>'><?php echo $category['category_name'] ?></span>
+									<?php if( is_object($category) ) : ?>
+									<br/><span title='<?php echo __( 'Category', 'dbem' ).": ".$category->name ?>'><?php echo $category->name ?></span>
 									<?php endif; ?>
 									<?php 
 									if( get_option('dbem_rsvp_enabled') == 1 && $event->rsvp == 1 ){

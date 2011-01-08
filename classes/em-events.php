@@ -192,14 +192,7 @@ class EM_Events extends EM_Object {
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */
 	function build_sql_conditions( $args = array() ){
-		$conditions = apply_filters( 'em_events_build_sql_conditions', parent::build_sql_conditions($args), $args );
-		if( !empty($args['rsvp']) ){
-			$conditions['rsvp'] = 'event_rsvp=1';
-		}
-		if( !empty($args['owner']) && is_numeric($args['owner']) ){
-			$conditions['event_author'] = 'event_author='.$args['owner'];
-		}
-		return $conditions;
+		return apply_filters( 'em_events_build_sql_conditions', parent::build_sql_conditions($args), $args );
 	}
 	
 	/* Overrides EM_Object method to apply a filter to result

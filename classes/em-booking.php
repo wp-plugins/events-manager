@@ -44,6 +44,9 @@ class EM_Booking extends EM_Object{
 				$booking = $booking_data;
 				//Also create a person out of this...
 			  	$this->person = new EM_Person($booking_data);
+			  	if($booking['person_id'] != $this->person->id){
+			  		$this->person = new EM_Person($booking['booking_id']);
+			  	}
 			}elseif( is_numeric($booking_data) ){
 				//Retreiving from the database		
 				global $wpdb;			
@@ -304,6 +307,13 @@ class EM_Booking extends EM_Object{
 		return false;
 		//TODO need error checking for booking mail send
 	}	
+	
+	/**
+	 * Can the user manage this event? 
+	 */
+	function can_manage(){
+		return ( get_option('dbem_disable_ownership') || $this->get_event()->author == get_current_user_id() || em_verify_admin() );
+	}
 	
 	/**
 	 * Returns this object in the form of an array

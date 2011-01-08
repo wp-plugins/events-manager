@@ -87,7 +87,7 @@ function em_admin_options_page() {
 			<div class="inside">
 	            <table class="form-table">
 					<?php 
-					em_options_radio_binary ( __( 'Disable event ownership?' ), 'dbem_events_disable_ownership', __( 'Other event editors can only manage bookings they\'ve created. Administrators can view all bookings. If you disable this behaviour all event editors will have access to every single event and booking details.','dbem' ) );
+					em_options_radio_binary ( __( 'Disable event ownership?' ), 'dbem_disable_ownership', __( 'Other event editors can only manage bookings they\'ve created. Administrators can view all bookings. If you disable this behaviour all event editors will have access to every single event and booking details.','dbem' ) );
 					em_options_radio_binary ( __( 'Use dropdown for locations?' ), 'dbem_use_select_for_locations', __( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );  
 					em_options_radio_binary ( __( 'Use recurrence?' ), 'dbem_recurrence_enabled', __( 'Select yes to enable the recurrence features feature','dbem' ) ); 
 					em_options_radio_binary ( __( 'Use RSVP?' ), 'dbem_rsvp_enabled', __( 'Select yes to enable the RSVP feature','dbem' ) );     

@@ -3,12 +3,14 @@
 class EM_Person extends EM_Object{
 	//DB Fields
 	var $id = '';
+	var $owner = '';
 	var $name = '';
 	var $email = '';
 	var $phone = '';
 	//Other Vars
 	var $fields = array( 
 		'person_id' => array('name'=>'id','type'=>'%d'), 
+		'person_owner' => array('name'=>'owner','type'=>'%d'), 
 		'person_name' => array('name'=>'name','type'=>'%s'), 
 		'person_email' => array('name'=>'email','type'=>'%s'),
 		'person_phone' => array('name'=>'phone','type'=>'%s')
@@ -141,6 +143,13 @@ class EM_Person extends EM_Object{
 			return true;
 		}
 		return false;
+	}	
+	
+	/**
+	 * Can the user manage this event? 
+	 */
+	function can_manage(){
+		return ( get_option('dbem_disable_ownership') || $this->owner == get_current_user_id() || em_verify_admin() );
 	}
 }
 ?>

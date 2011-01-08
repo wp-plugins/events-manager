@@ -33,7 +33,8 @@ class EM_Object {
 			'year'=>'',
 			'pagination'=>false,
 			'array'=>false,
-			'owner'=>false
+			'owner'=>false,
+			'rsvp'=>false
 		);
 		//Return default if nothing passed
 		if( empty($defaults) && empty($array) ){
@@ -95,6 +96,9 @@ class EM_Object {
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
+		if( !get_option('dbem_disable_ownership') && is_admin() && !em_verify_admin() ){
+			$defaults['owner'] = get_current_user_id();
+		}
 		$defaults['owner'] = (is_numeric($defaults['owner'])) ? $defaults['owner']:$super_defaults['owner'];
 		//Calculate offset in event page is set
 		if($defaults['page'] > 1){
@@ -123,6 +127,8 @@ class EM_Object {
 		$recurrence = $args['recurrence'];
 		$category = $args['category'];
 		$location = $args['location'];
+		$rsvp = $args['rsvp'];
+		$owner = $args['owner'];
 		$event = $args['event'];
 		$month = $args['month'];
 		$year = $args['year'];
@@ -214,7 +220,15 @@ class EM_Object {
 		}elseif( self::array_is_numeric($category) ){
 			$conditions['category'] = "( event_category_id = ". implode(' OR event_category_id = ', $category).")";
 		}
-		
+	
+		//If we want rsvped items, we usually check the event
+		if( $rsvp == 1 ){
+			$conditions['rsvp'] = 'event_rsvp=1';
+		}
+		//Default ownership belongs to an event, child objects can just overwrite this if needed.
+		if( is_numeric($owner) ){
+			$conditions['owner'] = 'event_author='.$owner;
+		}
 		return apply_filters('em_object_build_sql_conditions', $conditions);
 	}
 	

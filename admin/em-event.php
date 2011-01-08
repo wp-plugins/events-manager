@@ -329,11 +329,11 @@ function em_admin_event_page() {
 										<select name="event_category_id">
 											<?php 
 											$categories = EM_Category::get();
-											foreach ( $categories as $category ){
-												$selected = ($category['category_id'] == $EM_Event->category_id) ? "selected='selected'": ''; 
+											foreach ( $categories as $EM_Category ){
+												$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
 												?>
-												<option value="<?php echo $category['category_id'] ?>" <?php echo $selected ?>>
-												<?php echo $category['category_name'] ?>
+												<option value="<?php echo $EM_Category->id ?>" <?php echo $selected ?>>
+												<?php echo $EM_Category->name ?>
 												</option>
 												<?php 
 											} ?>

@@ -115,6 +115,67 @@ class EM_Bookings extends EM_Object{
 		return ($result);
 	}
 
+	
+	/**
+	 * Will approve all supplied booking ids, which must be in the form of a numeric array or a single number.
+	 * @param array|int $booking_ids
+	 * @return boolean
+	 */
+	function approve( $booking_ids ){
+		$this->set_status(1, $booking_ids);
+		return false;
+	}
+	
+	/**
+	 * Will reject all supplied booking ids, which must be in the form of a numeric array or a single number.
+	 * @param array|int $booking_ids
+	 * @return boolean
+	 */
+	function reject( $booking_ids ){
+		return $this->set_status(2, $booking_ids);
+	}
+	
+	/**
+	 * Will unapprove all supplied booking ids, which must be in the form of a numeric array or a single number.
+	 * @param array|int $booking_ids
+	 * @return boolean
+	 */
+	function unapprove( $booking_ids ){
+		return $this->set_status(0, $booking_ids);
+	}
+	
+	/**
+	 * @param int $status
+	 * @param array|int $booking_ids
+	 * @return bool
+	 */
+	function set_status($status, $booking_ids){
+		//FIXME there is a vulnerability where any user can approve/reject bookings if they know the ID
+		if( EM_Object::array_is_numeric($booking_ids) ){
+			//Get all the bookings
+			$results = array();
+			$mails = array();
+			foreach( $booking_ids as $booking_id ){
+				$EM_Booking = new EM_Booking($booking_id);
+				$results[] = $EM_Booking->set_status($status);
+			}
+			if( !in_array('false',$results) ){
+				$this->feedback_message = __('Bookings %s. Mails Sent.', 'dbem');
+				return true;
+			}else{
+				//TODO Better error handling needed if some bookings fail approval/failure
+				$this->feedback_message = __('An error occurred.', 'dbem');
+				return false;
+			}
+		}elseif( is_numeric($booking_ids) || is_object($booking_ids) ){
+			$EM_Booking = ( is_object($booking_ids) && get_class($booking_ids) == 'EM_Booking') ? $booking_ids : new EM_Booking($booking_ids);
+			$result = $EM_Booking->set_status($status);
+			$this->feedback_message = $EM_Booking->feedback_message;
+			return $result;
+		}
+		return false;	
+	}
+	
 	/**
 	 * Returns number of available seats for this event. If approval of bookings is on, will include pending bookings depending on em option.
 	 * @return int
@@ -230,65 +291,6 @@ class EM_Bookings extends EM_Object{
 		return false;
 	}
 	
-	/**
-	 * Will approve all supplied booking ids, which must be in the form of a numeric array or a single number.
-	 * @param array|int $booking_ids
-	 * @return boolean
-	 */
-	function approve( $booking_ids ){
-		$this->set_status(1, $booking_ids);
-		return false;
-	}
-	
-	/**
-	 * Will reject all supplied booking ids, which must be in the form of a numeric array or a single number.
-	 * @param array|int $booking_ids
-	 * @return boolean
-	 */
-	function reject( $booking_ids ){
-		return $this->set_status(2, $booking_ids);
-	}
-	
-	/**
-	 * Will unapprove all supplied booking ids, which must be in the form of a numeric array or a single number.
-	 * @param array|int $booking_ids
-	 * @return boolean
-	 */
-	function unapprove( $booking_ids ){
-		return $this->set_status(0, $booking_ids);
-	}
-	
-	/**
-	 * @param int $status
-	 * @param array|int $booking_ids
-	 * @return bool
-	 */
-	function set_status($status, $booking_ids){
-		//FIXME there is a vulnerability where any user can approve/reject bookings if they know the ID
-		if( EM_Object::array_is_numeric($booking_ids) ){
-			//Get all the bookings
-			$results = array();
-			$mails = array();
-			foreach( $booking_ids as $booking_id ){
-				$EM_Booking = new EM_Booking($booking_id);
-				$results[] = $EM_Booking->set_status($status);
-			}
-			if( !in_array('false',$results) ){
-				$this->feedback_message = __('Bookings %s. Mails Sent.', 'dbem');
-				return true;
-			}else{
-				//TODO Better error handling needed if some bookings fail approval/failure
-				$this->feedback_message = __('An error occurred.', 'dbem');
-				return false;
-			}
-		}elseif( is_numeric($booking_ids) || is_object($booking_ids) ){
-			$EM_Booking = ( is_object($booking_ids) && get_class($booking_ids) == 'EM_Booking') ? $booking_ids : new EM_Booking($booking_ids);
-			$result = $EM_Booking->set_status($status);
-			$this->feedback_message = $EM_Booking->feedback_message;
-			return $result;
-		}
-		return false;	
-	}
 	
 	/**
 	 * Get all pending bookings for this event  
@@ -307,18 +309,104 @@ class EM_Bookings extends EM_Object{
 	 * Gets the pending number of bookings as a raw associative array.
 	 * @return array 
 	 */
-	function get_pending_raw(){
+	function get( $args = array() ){
 		global $wpdb,$current_user;
 		$bookings_table = $wpdb->prefix . EM_BOOKINGS_TABLE;
 		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
 		$people_table = $wpdb->prefix . EM_PEOPLE_TABLE;
-		if( get_option('dbem_events_disable_ownership') && !current_user_can('activate_plugins') ){
-			$sql = "SELECT * FROM $bookings_table b LEFT JOIN $events_table e ON e.event_id=b.event_id LEFT JOIN $people_table p ON p.person_id=b.person_id WHERE booking_status = 0 AND event_author=".$current_user->ID;
-		} else {
-			$sql = "SELECT * FROM $bookings_table b LEFT JOIN $events_table e ON e.event_id=b.event_id LEFT JOIN $people_table p ON p.person_id=b.person_id WHERE booking_status = 0";
+		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		
+		//Quick version, we can accept an array of IDs, which is easy to retrieve
+		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
+			//We can just get all the events here and return them
+			$sql = "
+				SELECT * FROM $bookings_table b 
+				LEFT JOIN $events_table e ON e.event_id=b.event_id 
+				LEFT JOIN $people_table p ON p.person_id=b.person_id 
+				WHERE booking_id".implode(" OR booking_id=", $args);
+			$results = $wpdb->get_results(apply_filters('em_bookings_get_sql',$sql),ARRAY_A);
+			$bookings = array();
+			foreach($results as $result){
+				$bookings[$result['event_id']] = new EM_Event($result);
+			}
+			return $bookings; //We return all the events matched as an EM_Event array. 
 		}
-		$bookings_array = $wpdb->get_results($sql, ARRAY_A);
-		return $bookings_array;
+		
+		//We assume it's either an empty array or array of search arguments to merge with defaults			
+		$args = self::get_default_search($args);
+		$limit = ( $args['limit'] && is_numeric($args['limit'])) ? "LIMIT {$args['limit']}" : '';
+		$offset = ( $limit != "" && is_numeric($args['offset']) ) ? "OFFSET {$args['offset']}" : '';
+		
+		//Get the default conditions
+		$conditions = self::build_sql_conditions($args);
+		//Put it all together
+		$where = ( count($conditions) > 0 ) ? " WHERE " . implode ( " AND ", $conditions ):'';
+		
+		//Get ordering instructions
+		$EM_Booking = new EM_Booking();
+		$accepted_fields = $EM_Booking->get_fields(true);
+		$orderby = self::build_sql_orderby($args, $accepted_fields);
+		//Now, build orderby sql
+		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
+		
+		//Create the SQL statement and execute
+		$sql = "
+			SELECT * FROM $bookings_table 
+			LEFT JOIN $events_table ON {$events_table}.event_id={$bookings_table}.event_id 
+			LEFT JOIN $people_table ON {$people_table}.person_id={$bookings_table}.person_id 
+			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
+			$where
+			$orderby_sql
+			$limit $offset
+		";
+	
+		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
+
+		//If we want results directly in an array, why not have a shortcut here?
+		if( $args['array'] == true ){
+			return $results;
+		}
+		
+		//Make returned results EM_Booking objects
+		$results = (is_array($results)) ? $results:array();
+		$bookings = array();
+		foreach ( $results as $booking ){
+			$bookings[] = new EM_Booking($booking);
+		}
+		
+		return apply_filters('em_bookings_get', $bookings);
+	}
+	
+	/* Overrides EM_Object method to apply a filter to result
+	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
+	 */
+	function build_sql_conditions( $args = array() ){
+		$conditions = apply_filters( 'em_bookings_build_sql_conditions', parent::build_sql_conditions($args), $args );
+		if( is_numeric($args['status']) ){
+			$conditions['status'] = 'booking_status='.$args['status'];
+		}
+		return apply_filters('em_bookings_build_sql_conditions', $conditions, $args);
+	}
+	
+	/* Overrides EM_Object method to apply a filter to result
+	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
+	 */
+	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+		return apply_filters( 'em_bookings_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order')), $args, $accepted_fields, $default_order );
+	}
+	
+	/* 
+	 * Adds custom Events search defaults
+	 * @param array $array
+	 * @return array
+	 * @uses EM_Object#get_default_search()
+	 */
+	function get_default_search( $array = array() ){
+		$defaults = array(
+			'status' => false,
+			'person' => true //to add later, search by person's bookings...
+		);
+		return apply_filters('em_bookings_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
 }
 ?>

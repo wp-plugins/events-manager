@@ -201,7 +201,7 @@ class EM_Location extends EM_Object {
 	}
 	
 	function can_manage(){
-		return ( get_option('dbem_events_disable_ownership') || $this->owner == get_current_user_id() || empty($this->id) );
+		return ( get_option('dbem_disable_ownership') || $this->owner == get_current_user_id() || empty($this->id) || em_verify_admin() );
 	}
 	
 	function output_single($target = 'html'){

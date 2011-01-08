@@ -86,6 +86,11 @@ class EM_Event extends EM_Object{
 	 */
 	var $contact;
 	/**
+	 * The category object
+	 * @var EM_Category
+	 */
+	var $category;
+	/**
 	 * If there are any errors, they will be added here.
 	 * @var array
 	 */
@@ -398,7 +403,16 @@ class EM_Event extends EM_Object{
 	 * Returns an array with category id and name (in that order) of the EM_Event instance.
 	 * @return array
 	 */
-	function get_category() { 
+	function get_category() {
+		global $EM_Category;
+		if( is_object($this->category) && get_class($this->category)=='EM_Category' && $this->category_id == $this->category->id ){
+			return $this->category;
+		}elseif( is_object($EM_Category) && $EM_Category->id == $this->category_id ){
+			$this->category = $EM_Category;
+		}else{
+			$this->category = new EM_Category($this->category_id);
+		}
+		return $this->event; 
 		global $wpdb; 
 		$sql = "SELECT category_id, category_name FROM ".$wpdb->prefix.EM_EVENTS_TABLE." LEFT JOIN ".$wpdb->prefix.EM_CATEGORIES_TABLE." ON category_id=event_category_id WHERE event_id ='".$this->id."'";
 	 	$category = $wpdb->get_row($sql, ARRAY_A);
@@ -720,7 +734,7 @@ class EM_Event extends EM_Object{
 	 * Can the user manage this event? 
 	 */
 	function can_manage(){
-		return ( get_option('dbem_events_disable_ownership') || $this->author == get_current_user_id() || empty($this->id) );
+		return ( get_option('dbem_disable_ownership') || $this->author == get_current_user_id() || empty($this->id) );
 	}
 	
 	/**

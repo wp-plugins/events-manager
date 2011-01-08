@@ -1,52 +1,42 @@
 <?php
 function em_admin_categories_page() {      
-	global $wpdb;
+	global $wpdb, $EM_Category;
 	
-	if(isset($_GET['action']) && $_GET['action'] == "edit") { 
-		// edit category  
-		em_categories_edit_layout();
-	} else {
-		// Insert/Update/Delete Record
-		$categories_table = $wpdb->prefix.EM_CATEGORIES_TABLE;
-		if( isset($_POST['action']) && $_POST['action'] == "edit" ) {
-			// category update required  
-			$category = array();
-			$category['category_name'] = $_POST['category_name'];
-			$validation_result = $wpdb->update( $categories_table, $category, array('category_id' => $_POST['category_ID']) );
-		} elseif( isset($_POST['action']) && $_POST['action'] == "add" ) {
-			// Add a new category
-			$category = array();
-			$category['category_name'] = $_POST['category_name'];
-			$validation_result = $wpdb->insert($categories_table, $category);
-		} elseif( isset($_POST['action']) && $_POST['action'] == "delete" ) {
-			// Delete category or multiple
-			$categories = $_POST['categories'];
-			if(is_array($categories)){
-				//Run the query if we have an array of category ids with at least one value
-				if( EM_Object::array_is_numeric($categories) ){
-					$validation_result = $wpdb->query( "DELETE FROM $categories_table WHERE category_id =". implode(" OR category_id =", $categories) );
-				}else{
-					$validation_result = false;
-					$message = "Couldn't delete the categories. Incorrect category IDs supplied. Please try agian.";
-				}
+	if( !empty($_REQUEST['action']) ){
+		if( $_REQUEST['action'] == "save") {
+			// save (add/update) category
+			if( empty($EM_Category) || !is_object($EM_Category) ){
+				$EM_Category = new EM_Category(); //blank category
+				$success_message = __('The category has been added.', 'dbem');
+			}else{
+				$success_message = __('The category has been updated.', 'dbem');
 			}
-		}
-		//die(print_r($_POST));
-		if ( isset($validation_result) && is_numeric($validation_result) ) {
-			$message = (isset($message)) ? $message : __("Successfully {$_POST['action']}ed category", "dbem");
-			em_categories_table_layout($message);
-		} elseif ( isset($validation_result) && $validation_result === false ) {
-			$message = (isset($message)) ? $message : __("There was a problem {$_POST['action']}ing your category, please try again.");						   
-			em_categories_table_layout($message);
-		} else {
-			// no action, just a categories list
-			em_categories_table_layout();	
+			$EM_Category->get_post();
+			if ( $EM_Category->validate() ) {
+				$EM_Category->save(); //FIXME better handling of db write fails when saving category
+				$message = $success_message;
+			} else {
+				?>
+				<div id='message' class='error '>
+					<p>
+						<strong><?php _e( "Ach, there's a problem here:", "dbem" ) ?></strong><br /><br /><?php echo implode('<br />', $EM_Category->errors); ?>
+					</p>
+				</div>
+				<?php  
+				unset($EM_Category);
+			}
+		} elseif( $_REQUEST['action'] == "delete" ){
+			//delelte category
+			EM_Categories::delete($_REQUEST['categories']);
+			//FIXME no result verification when deleting various categories
+			$message = __('Categories Deleted', "dbem" );
 		}
 	}
+	em_categories_table_layout($message);
 } 
 
 function em_categories_table_layout($message = "") {
-	$categories = EM_Category::get();
+	$categories = EM_Categories::get();
 	$destination = get_bloginfo('url')."/wp-admin/admin.php"; 
 	?>
 	<div class='wrap nosubsub'>
@@ -84,11 +74,11 @@ function em_categories_table_layout($message = "") {
 									</tr>             
 								</tfoot>
 								<tbody>
-									<?php foreach ($categories as $this_category) : ?>
+									<?php foreach ($categories as $EM_Category) : ?>
 									<tr>
-										<td><input type='checkbox' class ='row-selector' value='<?php echo $this_category['category_id'] ?>' name='categories[]'/></td>
-										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=<?php echo $this_category['category_id'] ?>'><?php echo htmlspecialchars($this_category['category_id'], ENT_QUOTES); ?></a></td>
-										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_ID=<?php echo $this_category['category_id'] ?>'><?php echo htmlspecialchars($this_category['category_name'], ENT_QUOTES); ?></a></td>
+										<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Category->id ?>' name='categories[]'/></td>
+										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_id=<?php echo $EM_Category->id ?>'><?php echo htmlspecialchars($EM_Category->id, ENT_QUOTES); ?></a></td>
+										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_id=<?php echo $EM_Category->id ?>'><?php echo htmlspecialchars($EM_Category->name, ENT_QUOTES); ?></a></td>
 									</tr>
 									<?php endforeach; ?>
 								</tbody>
@@ -117,7 +107,7 @@ function em_categories_table_layout($message = "") {
 						<div id='ajax-response'>
 					  		<h3><?php echo __('Add category', 'dbem') ?></h3>
 							<form name='add' id='add' method='post' action='admin.php?page=events-manager-categories' class='add:the-list: validate'>
-								<input type='hidden' name='action' value='add' />
+								<input type='hidden' name='action' value='save' />
 								<div class='form-field form-required'>
 									<label for='category_name'><?php echo __('Category name', 'dbem') ?></label>
 									<input id='category-name' name='category_name' id='category_name' type='text' size='40' />
@@ -137,8 +127,17 @@ function em_categories_table_layout($message = "") {
 
 
 function em_categories_edit_layout($message = "") {
-	$category_id = $_GET['category_ID'];
-	$category = EM_Category::get($category_id);
+	global $EM_Category;
+	if( !is_object($EM_Category) ){
+		$EM_Category = new EM_Category();
+	}
+	//check that user can access this page
+	if( is_object($EM_Category) && !$EM_Category->can_manage() ){
+		?>
+		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
+		<?php
+		return false;
+	}
 	?>
 	<div class='wrap'>
 		<div id='icon-edit' class='icon32'>
@@ -156,13 +155,13 @@ function em_categories_edit_layout($message = "") {
 		<div id='ajax-response'></div>
 
 		<form name='editcat' id='editcat' method='post' action='admin.php?page=events-manager-categories' class='validate'>
-			<input type='hidden' name='action' value='edit' />
-			<input type='hidden' name='category_ID' value='<?php echo $category['category_id'] ?>'/>
+			<input type='hidden' name='action' value='save' />
+			<input type='hidden' name='category_ID' value='<?php echo $EM_Category->id ?>'/>
 		
 			<table class='form-table'>
 				<tr class='form-field form-required'>
 					<th scope='row' valign='top'><label for='category_name'><?php echo __('Category name', 'dbem') ?></label></th>
-					<td><input name='category_name' id='category-name' type='text' value='<?php echo $category['category_name'] ?>' size='40'  /><br />
+					<td><input name='category_name' id='category-name' type='text' value='<?php echo $EM_Category->name ?>' size='40'  /><br />
 		           <?php echo __('The name of the category', 'dbem') ?></td>
 				</tr>
 			</table>

@@ -62,6 +62,7 @@ include_once('classes/em-booking.php');
 include_once('classes/em-bookings.php');
 include_once('classes/em-calendar.php');
 include_once('classes/em-category.php');
+include_once('classes/em-categories.php');
 include_once('classes/em-event.php');
 include_once('classes/em-events.php');
 include_once('classes/em-location.php');
@@ -142,7 +143,7 @@ load_plugin_textdomain('dbem', false, dirname( plugin_basename( __FILE__ ) ).'/i
  * @return null
  */
 function em_load_event(){
-	global $EM_Event, $EM_Recurrences, $EM_Location, $EM_Mailer, $EM_Person, $EM_Booking;
+	global $EM_Event, $EM_Recurrences, $EM_Location, $EM_Mailer, $EM_Person, $EM_Booking, $EM_Category;
 	$EM_Recurrences = array();
 	if( isset( $_REQUEST['event_id'] ) && is_numeric($_REQUEST['event_id']) ){
 		$EM_Event = new EM_Event($_REQUEST['event_id']);
@@ -159,6 +160,9 @@ function em_load_event(){
 	}
 	if( isset($_REQUEST['booking_id']) && is_numeric($_REQUEST['booking_id']) ){
 		$EM_Booking = new EM_Booking($_REQUEST['booking_id']);
+	}
+	if( isset($_REQUEST['category_id']) && is_numeric($_REQUEST['category_id']) ){
+		$EM_Category = new EM_Category($_REQUEST['category_id']);
 	}
 	$EM_Mailer = new EM_Mailer();
 	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
@@ -191,9 +195,8 @@ function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//Count pending bookings
 		$num = '';
-		if( get_option('dbem_bookings_approval') == 1){
-			$bookings_pending_array = EM_Bookings::get_pending_raw();
-			$bookings_pending_count = count($bookings_pending_array);
+		if( get_option('dbem_bookings_approval') == 1){ 
+			$bookings_pending_count = count(EM_Bookings::get(array('status'=>0)));
 			//TODO Add flexible permissions
 			if($bookings_pending_count > 0){
 				$num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';

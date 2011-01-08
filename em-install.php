@@ -142,6 +142,7 @@ function em_create_people_table() {
 
 	$sql = "CREATE TABLE ".$table_name." (
 		person_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		person_owner bigint(20) unsigned DEFAULT 0 NOT NULL,
 		person_name tinytext NOT NULL, 
 		person_email tinytext NOT NULL,
 		person_phone tinytext NOT NULL,
@@ -160,6 +161,7 @@ function em_create_categories_table() {
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
 		category_id bigint(20) unsigned NOT NULL auto_increment,
+		category_owner bigint(20) unsigned DEFAULT 0 NOT NULL,
 		category_name tinytext NOT NULL,
 		PRIMARY KEY  (category_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -187,7 +189,7 @@ function em_add_options() {
 		'dbem_events_default_orderby' => 'start_date,start_time,name',
 		'dbem_events_default_order' => 'ASC',
 		'dbem_events_default_limit' => 10,
-		'dbem_events_disable_ownership' => 0, //can others view other's events
+		'dbem_disable_ownership' => 0, //can others view other's events
 		'dbem_list_events_page' => 1,
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
@@ -228,7 +230,7 @@ function em_add_options() {
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ", 
 		//General Settings
-		'dbem_events_disable_ownership' => 0,
+		'dbem_disable_ownership' => 0,
 		'dbem_use_select_for_locations' => 0,
 		'dbem_attributes_enabled' => 1,
 		'dbem_recurrence_enabled'=> 1,
@@ -262,7 +264,7 @@ function em_add_options() {
 		//New options, defaults for updates
 		update_option('dbem_bookings_approval',0); //Previously in <3.0.9 bookings were never approvable
 		update_option('dbem_bookings_approval_warning',1); //One off warning for old EM users to activate this new feature
-		update_option('dbem_events_disable_ownership',1); //set to true, so updaters don't get a surprise!
+		update_option('dbem_disable_ownership',1); //set to true, so updaters don't get a surprise!
 		update_option('dbem_events_ownership_warning',1); //one off warn updaters about ownership feature
 		//Contact person email flag
 		update_option('dbem_bookings_contact_email',get_option('dbem_rsvp_notify_contact'));
