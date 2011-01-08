@@ -4,10 +4,10 @@
  * or will search for events by name via the GET "q" variable.
  */
 require_once('../../../../wp-load.php');
-
 global $wpdb;
 
 $locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+$location_cond = ( !get_option('dbem_disable_ownership') || !em_verify_admin() ) ? "AND location_owner=".get_current_user_id() : '';
 
 $term = (isset($_GET['term'])) ? '%'.$_GET['term'].'%' : '%'.$_GET['q'].'%';
 $sql = $wpdb->prepare("
@@ -18,11 +18,10 @@ $sql = $wpdb->prepare("
 		location_town AS `town`, 
 		location_id AS `id`
 	FROM $locations_table 
-	WHERE ( `location_name` LIKE %s ) LIMIT 10
+	WHERE ( `location_name` LIKE %s ) $location_cond LIMIT 10
 ", $term);
 
 $locations_array = $wpdb->get_results($sql);
-
 echo EM_Object::json_encode($locations_array);
 /*
 $return_string_array = array();
