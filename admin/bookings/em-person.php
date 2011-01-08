@@ -103,14 +103,7 @@ function em_bookings_person_table(){
 									<th scope="row" class="check-column" style="padding:7px 0px 7px;"><input type='checkbox' value='<?php echo $EM_Booking->id ?>' name='bookings[]'/></th>
 									<td><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->id ?>"><?php echo ($EM_Event->name); ?></a></td>
 									<td><?php echo $EM_Booking->seats ?></td>
-									<td>
-										<?php 
-											switch($EM_Booking->approved){
-												case '0': _e('Unconfirmed','dbem'); break;
-												case '1': _e('Approved','dbem'); break;
-												case '2': _e('Rejected','dbem'); break;
-											}
-										?>
+									<td><?php echo $EM_Booking->status_array[$EM_Booking->status]; ?>
 									</td>
 									<td>
 										<?php
@@ -119,15 +112,16 @@ function em_bookings_person_table(){
 										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'bookings'=>$EM_Booking->id));
 										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'bookings'=>$EM_Booking->id));
 										?>
-										<?php if( $EM_Booking->approved == 0 || $EM_Booking->approved == 2 ): ?>
+										<?php if( $EM_Booking->status == 0 || $EM_Booking->status == 2 ): ?>
 										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Approve','dbem'); ?></a> |
 										<?php endif; ?>
-										<?php if( $EM_Booking->approved == 2 ): ?>
+										<?php if( $EM_Booking->status == 2 ): ?>
 										<a class="em-bookings-unapprove" href="<?php echo $unapprove_url ?>"><?php _e('Unapprove','dbem'); ?></a> |
 										<?php endif; ?>
-										<?php if( $EM_Booking->approved == 0 || $EM_Booking->approved == 1 ): ?>
+										<?php if( $EM_Booking->status == 0 || $EM_Booking->status == 1 ): ?>
 										<a class="em-bookings-reject" href="<?php echo $reject_url ?>"><?php _e('Reject','dbem'); ?></a> |
 										<?php endif; ?>
+										<a class="em-bookings-edit" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;booking_id=<?php echo $EM_Booking->id; ?>"><?php _e('Edit'); ?></a> |
 										<a class="em-bookings-delete" href="<?php echo $delete_url ?>"><?php _e('Delete','dbem'); ?></a>
 									</td>
 								</tr>

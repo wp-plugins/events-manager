@@ -92,7 +92,7 @@ if( is_admin() ){
 
 
 // Setting constants
-define('EM_VERSION', 3.1); //self expanatory
+define('EM_VERSION', 3.11); //self expanatory
 define('EM_CATEGORIES_TABLE', 'em_categories'); //TABLE NAME
 define('EM_EVENTS_TABLE','em_events'); //TABLE NAME
 define('EM_RECURRENCE_TABLE','dbem_recurrence'); //TABLE NAME   
@@ -142,7 +142,7 @@ load_plugin_textdomain('dbem', false, dirname( plugin_basename( __FILE__ ) ).'/i
  * @return null
  */
 function em_load_event(){
-	global $EM_Event, $EM_Recurrences, $EM_Location, $EM_Mailer, $EM_Person;
+	global $EM_Event, $EM_Recurrences, $EM_Location, $EM_Mailer, $EM_Person, $EM_Booking;
 	$EM_Recurrences = array();
 	if( isset( $_REQUEST['event_id'] ) && is_numeric($_REQUEST['event_id']) ){
 		$EM_Event = new EM_Event($_REQUEST['event_id']);
@@ -156,6 +156,9 @@ function em_load_event(){
 	}
 	if( isset($_REQUEST['person_id']) && is_numeric($_REQUEST['person_id']) ){
 		$EM_Person = new EM_Person($_REQUEST['person_id']);
+	}
+	if( isset($_REQUEST['booking_id']) && is_numeric($_REQUEST['booking_id']) ){
+		$EM_Booking = new EM_Booking($_REQUEST['booking_id']);
 	}
 	$EM_Mailer = new EM_Mailer();
 	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
@@ -202,7 +205,6 @@ function em_create_events_submenu () {
 			$plugin_pages[] = add_submenu_page('events-manager', __('Edit'),__('Edit'),EM_MIN_CAPABILITY,'events-manager','em_admin_events_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Add new', 'dbem'), __('Add new','dbem'), EM_MIN_CAPABILITY, 'events-manager-event', "em_admin_event_page");
 			$plugin_pages[] = add_submenu_page('events-manager', __('Locations', 'dbem'), __('Locations', 'dbem'), EM_MIN_CAPABILITY, 'events-manager-locations', "em_admin_locations_page");
-			$plugin_pages[] = add_submenu_page('events-manager', __('People', 'dbem'), __('People', 'dbem'), EM_MIN_CAPABILITY, 'events-manager-people', "em_admin_people_page");
 			if(get_option('dbem_rsvp_enabled') == 1){
 				$plugin_pages[] = add_submenu_page('events-manager', __('Bookings', 'dbem'), __('Bookings', 'dbem').$num, EM_MIN_CAPABILITY, 'events-manager-bookings', "em_bookings_page");
 			}

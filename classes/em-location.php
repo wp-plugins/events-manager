@@ -13,6 +13,7 @@ class EM_Location extends EM_Object {
 	var $longitude = '';
 	var $description = '';
 	var $image_url = '';
+	var $owner = '';
 	//Other Vars
 	var $fields = array( 
 		'location_id' => array('name'=>'id','type'=>'%d'), 
@@ -22,7 +23,8 @@ class EM_Location extends EM_Object {
 		//Not Used - 'location_province' => array('name'=>'province','type'=>'%s'),
 		'location_latitude' =>  array('name'=>'latitude','type'=>'%f'),
 		'location_longitude' => array('name'=>'longitude','type'=>'%f'),
-		'location_description' => array('name'=>'description','type'=>'%s')
+		'location_description' => array('name'=>'description','type'=>'%s'),
+		'location_owner' => array('name'=>'owner','type'=>'%d')
 	);
 	var $required_fields;
 	var $feedback_message = "";
@@ -196,6 +198,10 @@ class EM_Location extends EM_Object {
 		$sql = "SELECT count(event_id) as events_no FROM $events_table WHERE location_id = {$this->id}";   
 	 	$affected_events = $wpdb->get_row($sql);
 		return apply_filters('em_location_has_events', (count($affected_events) > 0), $this);
+	}
+	
+	function can_manage(){
+		return ( get_option('dbem_events_disable_ownership') || $this->owner == get_current_user_id() || empty($this->id) );
 	}
 	
 	function output_single($target = 'html'){

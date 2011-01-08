@@ -34,9 +34,10 @@ function em_admin_options_page() {
 	//TODO place all options into an array
 	$events_placeholders = '<a href="admin.php?page=events-manager-help#event-placeholders">'. __('Event Related Placeholders','dbem') .'</a>';
 	$locations_placeholders = '<a href="admin.php?page=events-manager-help#location-placeholders">'. __('Location Related Placeholders','dbem') .'</a>';
+	$bookings_placeholders = '<a href="admin.php?page=events-manager-help#booking-placeholders">'. __('Booking Related Placeholders','dbem') .'</a>';
 	$events_placeholder_tip = " ". sprintf(__('This textbox accepts %s and %s placeholders.','dbem'),$events_placeholders, $locations_placeholders);
 	$locations_placeholder_tip = " ". sprintf(__('This textbox accepts %s placeholders.','dbem'), $locations_placeholders);
-	$bookings_placeholder_tip = " ". sprintf(__('This textbox accepts %s placeholders.','dbem'), $bookings_placeholders);
+	$bookings_placeholder_tip = " ". sprintf(__('This textbox accepts %s, %s and %s placeholders.','dbem'), $bookings_placeholders, $events_placeholders, $locations_placeholders);
 	
 	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes' ) .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
 	?>	
@@ -86,6 +87,7 @@ function em_admin_options_page() {
 			<div class="inside">
 	            <table class="form-table">
 					<?php 
+					em_options_radio_binary ( __( 'Disable event ownership?' ), 'dbem_events_disable_ownership', __( 'Other event editors can only manage bookings they\'ve created. Administrators can view all bookings. If you disable this behaviour all event editors will have access to every single event and booking details.','dbem' ) );
 					em_options_radio_binary ( __( 'Use dropdown for locations?' ), 'dbem_use_select_for_locations', __( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );  
 					em_options_radio_binary ( __( 'Use recurrence?' ), 'dbem_recurrence_enabled', __( 'Select yes to enable the recurrence features feature','dbem' ) ); 
 					em_options_radio_binary ( __( 'Use RSVP?' ), 'dbem_rsvp_enabled', __( 'Select yes to enable the RSVP feature','dbem' ) );     
@@ -266,14 +268,28 @@ function em_admin_options_page() {
 					<?php
 					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users (), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
 					em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
-					em_options_radio_binary ( __( 'Email contact person?', 'dbem' ), 'dbem_rsvp_notify_contact', __( 'Check this option if you want the event contact to receive an email when someone books places.', 'dbem' ) );
-					em_options_input_text ( __( 'Contact person email subject', 'dbem' ), 'dbem_contactperson_email_subject', __( "The subject of the email that will be sent to the event contact.", 'dbem' ).$bookings_placeholder_tip );
-					em_options_textarea ( __( 'Contact person email', 'dbem' ), 'dbem_contactperson_email_body', __( 'The format of the email which will be sent to the event contact.', 'dbem' ).$bookings_placeholder_tip );
-					em_options_input_text ( __( 'Booking pending email subject', 'dbem' ), 'dbem_bookings_email_pending_subject', __( "The subject of the email sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don't require approval.", 'dbem' ).$bookings_placeholder_tip );
-					em_options_textarea ( __( 'Booking pending email', 'dbem' ), 'dbem_bookings_email_pending_body', __( 'The body of the email which will be sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don\'t require approval.', 'dbem' ).$bookings_placeholder_tip );
+					em_options_input_text ( __( 'Email events admin?', 'dbem' ), 'dbem_bookings_notify_admin', __( "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email).", 'dbem' ) );
+					?>
+					<tr><td><h4><?php _e('Contact person email options','dbem') ?></h4></td></tr>
+					<?php
+					em_options_radio_binary ( __( 'Email contact person?', 'dbem' ), 'dbem_bookings_contact_email', __( 'Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)', 'dbem' ) );
+					em_options_input_text ( __( 'Contact person email subject', 'dbem' ), 'dbem_bookings_contact_email_subject', __( "The subject of the email that will be sent to the event contact.", 'dbem' ).$bookings_placeholder_tip );
+					em_options_textarea ( __( 'Contact person email', 'dbem' ), 'dbem_bookings_contact_email_body', __( 'The format of the email which will be sent to the event contact.', 'dbem' ).$bookings_placeholder_tip );
+					?>
+					<tr><td><h4><?php _e('Confirmed booking email','dbem') ?></h4></td></tr>
+					<?php
 					em_options_input_text ( __( 'Booking confirmed email subject', 'dbem' ), 'dbem_bookings_email_confirmed_subject', __( "The subject of the email which will be sent to person making a booking. This will be sent automatically if approvals are required and the booking is approved.", 'dbem' ).$bookings_placeholder_tip );
 					em_options_textarea ( __( 'Booking confirmed email', 'dbem' ), 'dbem_bookings_email_confirmed_body', __( 'The body of the email which will be sent to the person making a booking. This will be sent automatically if approvals are required and the booking is approved.', 'dbem' ).$bookings_placeholder_tip );
-					em_options_input_text ( __( 'Email events admin?', 'dbem' ), 'dbem_bookings_notify_admin', __( "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email).", 'dbem' ) );
+					?>
+					<tr><td><h4><?php _e('Pending booking email','dbem') ?></h4></td></tr>
+					<?php
+					em_options_input_text ( __( 'Booking pending email subject', 'dbem' ), 'dbem_bookings_email_pending_subject', __( "The subject of the email sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don't require approval.", 'dbem' ).$bookings_placeholder_tip );
+					em_options_textarea ( __( 'Booking pending email', 'dbem' ), 'dbem_bookings_email_pending_body', __( 'The body of the email which will be sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don\'t require approval.', 'dbem' ).$bookings_placeholder_tip );
+					?>
+					<tr><td><h4><?php _e('Rejected booking email','dbem') ?></h4></td></tr>
+					<?php
+					em_options_input_text ( __( 'Booking rejected email subject', 'dbem' ), 'dbem_bookings_email_rejected_subject', __( "The subject of the email sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don't require approval.", 'dbem' ).$bookings_placeholder_tip );
+					em_options_textarea ( __( 'Booking rejected email', 'dbem' ), 'dbem_bookings_email_rejected_body', __( 'The body of the email which will be sent to the person if the booking is rejected. Not relevant if bookings don\'t require approval.', 'dbem' ).$bookings_placeholder_tip );
 					echo $save_button;
 					?>
 				</table>

@@ -16,8 +16,8 @@ function em_ajax_actions() {
 				$location_array = $EM_Location->to_array();
 				$location_array['location_balloon'] = $EM_Location->output(get_option('dbem_location_baloon_format'));
 		     	echo EM_Object::json_encode($location_array);
-			} 
-			die();  
+			}
+			die();
 		}  
 		if(isset($_REQUEST['query']) && $_REQUEST['query'] == 'GlobalMapData') {
 			$locations = EM_Locations::get( $_REQUEST );
@@ -40,53 +40,44 @@ function em_ajax_actions() {
 		if( is_admin() ){
 			//Admin operations
 			//Booking Actions
-			if( $_REQUEST['action'] == 'bookings_approve' ){
-				$booking_ids = $_REQUEST['bookings'];
-				$result = EM_Bookings::approve($booking_ids);
-				if( $result ){
-					echo __('Booking Approved','dbem');
-				}else{
-					echo '<span style="color:red">'.__('Booking approval unsuccessful','dbem').'</span>';
+			global $EM_Booking;
+			if( !empty($_REQUEST['bookings']) || is_object($EM_Booking) ){
+				if( is_object($EM_Booking) ){
+					$_REQUEST['bookings'] = $EM_Booking; //small hack to prevent unecessary db reads
 				}
-				die();
-			}elseif($_REQUEST['action'] == 'bookings_reject'){
-				$booking_ids = $_REQUEST['bookings'];
-				$result = EM_Bookings::reject($booking_ids);
-				if( $result ){
-					echo __('Booking Rejected','dbem');
-				}else{
-					echo '<span style="color:red">'.__('Booking rejection unsuccessful','dbem').'</span>';
-				}	
-				die();			
-			}elseif($_REQUEST['action'] == 'bookings_unapprove'){
-				$booking_ids = $_REQUEST['bookings'];
-				$result = EM_Bookings::unapprove($booking_ids);
-				if( $result ){
-					echo __('Booking Unapproved','dbem');
-				}else{
-					echo '<span style="color:red">'.__('Booking unapproval unsuccessful','dbem').'</span>';
-				}	
-				die();			
-			}elseif($_REQUEST['action'] == 'bookings_delete'){
-				$booking_ids = $_REQUEST['bookings'];
-				//Just do it here, since we may be deleting bookings of different events.
-				if(EM_Object::array_is_numeric($booking_ids)){
-					$results = array();
-					foreach($booking_ids as $booking_id){
+				$EM_Bookings = new EM_Bookings(); //Empty, not bound to event.
+				if( $_REQUEST['action'] == 'bookings_approve' ){
+					$EM_Bookings->approve($_REQUEST['bookings']);
+					echo $EM_Bookings->feedback_message;
+					die();
+				}elseif($_REQUEST['action'] == 'bookings_reject'){
+					$EM_Bookings->reject($_REQUEST['bookings']);
+					echo $EM_Bookings->feedback_message;	
+					die();			
+				}elseif($_REQUEST['action'] == 'bookings_unapprove'){
+					$EM_Bookings->unapprove($_REQUEST['bookings']);
+					echo $EM_Bookings->feedback_message;	
+					die();			
+				}elseif($_REQUEST['action'] == 'bookings_delete'){
+					//Just do it here, since we may be deleting bookings of different events.
+					if(EM_Object::array_is_numeric($_REQUEST['bookings'])){
+						$results = array();
+						foreach($booking_ids as $booking_id){
+							$EM_Booking = new EM_Booking($booking_ids);
+							$results[] = $EM_Booking->delete();
+						}
+						$result = !in_array(false,$results);
+					}elseif(is_numeric($booking_ids)){
 						$EM_Booking = new EM_Booking($booking_ids);
-						$results[] = $EM_Booking->delete();
+						$result = $EM_Booking->delete();
 					}
-					$result = !in_array(false,$results);
-				}elseif(is_numeric($booking_ids)){
-					$EM_Booking = new EM_Booking($booking_ids);
-					$result = $EM_Booking->delete();
+					if( $result ){
+						echo __('Booking Deleted','dbem');
+					}else{
+						echo '<span style="color:red">'.__('Booking deletion unsuccessful','dbem').'</span>';
+					}	
+					die();			
 				}
-				if( $result ){
-					echo __('Booking Deleted','dbem');
-				}else{
-					echo '<span style="color:red">'.__('Booking deletion unsuccessful','dbem').'</span>';
-				}	
-				die();			
 			}
 			//Specific Oject Ajax
 			if( !empty($_REQUEST['em_obj']) ){

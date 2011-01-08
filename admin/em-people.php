@@ -1,4 +1,75 @@
 <?php
+/**
+ * Check for flags to save personal data 
+ */
+function em_person_actions(){
+	global $EM_Person;
+	if( !empty($_REQUEST['action']) && is_object($EM_Person) ){
+		if( $_REQUEST['action'] == 'edit_person' ){
+			$validation = $EM_Person->get_post();
+			if ( $validation ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
+				//Save
+				if( $EM_Person->save() ) {
+					function em_person_save_notification(){
+						global $EM_Person;
+						?><div class="updated"><p><strong><?php echo $EM_Person->feedback_message; ?></strong></p></div><?php
+					}		
+				}else{
+					function em_person_save_notification(){
+						global $EM_Person;
+						?><div class="error"><p><strong><?php echo $EM_Person->feedback_message; ?></strong></p></div><?php
+					}
+				}
+			}else{
+				//TODO make errors clearer when saving person
+				function em_person_save_notification(){
+					global $EM_Person;
+					?><div class="error"><p><strong><?php echo $EM_Person->feedback_message; ?></strong></p></div><?php
+				}
+			}
+			add_action ( 'admin_notices', 'em_person_save_notification' );
+		}
+		if( $_REQUEST['action'] == 'person_delete' ){
+			if( $EM_Person->delete() ){
+				//TODO delete person needs confirmation
+				wp_redirect( get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-bookings');
+				exit();
+			}else{
+				function em_person_delete_notification(){
+					global $EM_Person;
+					?><div class="error"><p><strong><?php echo $EM_Person->feedback_message; ?></strong></p></div><?php
+				}
+			}
+			add_action ( 'admin_notices', 'em_person_delete_notification' );
+		}		
+	}
+}
+add_action('admin_init','em_person_actions');
+
+/**
+ * Generate an edit form for person details. 
+ */
+function em_person_edit_form(){
+	global $EM_Person;
+	?>
+	<form action="" method="post" id="em-person-form">
+		<table>
+			<tr><td><strong><?php _e('Name','dbem'); ?></strong></td><td><input type="text" name="person_name" size="60" value="<?php echo $EM_Person->name; ?>" /></td></tr>
+			<tr><td><strong><?php _e('Phone','dbem'); ?></strong></td><td><input type="text" name="person_phone" size="60" value="<?php echo $EM_Person->phone; ?>" /></td></tr>
+			<tr><td><strong><?php _e('E-mail','dbem'); ?></strong></td><td><input type="text" name="person_email" size="60" value="<?php echo $EM_Person->email; ?>" /></td></tr>
+		</table>
+		<p class="submit">
+			<input type="submit" name="events_update" value="<?php _e ( 'Save' ); ?> &raquo;" />
+		</p>
+		<input type="hidden" name="action" value="person_edit" />
+		<input type="hidden" name="person_id" value="<?php echo $EM_Person->id; ?>" />
+	</form>
+	<?php
+}
+
+/**
+ * Depreciated page... for now at least. 
+ */
 function em_admin_people_page() {
 	?> 
 	<div class='wrap'> 
@@ -54,7 +125,7 @@ function em_printable_booking_report() {
 		<head>
 			<meta http-equiv="Content-type" content="text/html; charset=utf-8" />
 			<title>Bookings for <?php echo $EM_Event->name; ?></title>
-			 <link rel="stylesheet" href="<?php echo bloginfo('wpurl') ?>/wp-content/plugins/events-manager/includes/css/events_manager.css" type="text/css" media="screen" />
+			<link rel="stylesheet" href="<?php echo bloginfo('wpurl') ?>/wp-content/plugins/events-manager/includes/css/events_manager.css" type="text/css" media="screen" />
 		</head>
 		<body id="printable">
 			<div id="container">

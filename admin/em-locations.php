@@ -9,7 +9,7 @@ function em_admin_locations_page() {
 				
 	//Take actions
 	if( !empty($_REQUEST['action']) || !empty($_REQUEST['location_id']) ){
-		if( $_REQUEST['action'] == "edit" || $_REQUEST['action'] == "add" || !empty($_REQUEST['location_id']) ) { 
+		if( $_REQUEST['action'] == "edit" || $_REQUEST['action'] == "add" ) { 
 			//edit/add location  
 			em_admin_location();
 		} elseif( $_REQUEST['action'] == "delete" ){
@@ -55,7 +55,11 @@ function em_admin_locations($message='', $fill_fields = false) {
 	$limit = ( !empty($_REQUEST['limit']) ) ? $_REQUEST['limit'] : 20;//Default limit
 	$page = ( !empty($_REQUEST['p']) ) ? $_REQUEST['p']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
-	$locations = EM_Locations::get();
+	$args = array();
+	if( !get_option('dbem_events_disable_ownership') && !em_verify_admin() ){
+		$args['owner'] = get_current_user_id();
+	}	
+	$locations = EM_Locations::get($args);
 	$locations_count = count($locations);
 	?>
 		<div class='wrap'>
@@ -139,6 +143,14 @@ function em_admin_locations($message='', $fill_fields = false) {
 
 function em_admin_location($message = "") {
 	global $EM_Location;
+	//check that user can access this page
+	if( is_object($EM_Location) && !$EM_Location->can_manage() ){
+		?>
+		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
+		<?php
+		return false;
+	}
+	
 	if( empty($EM_Location) || !is_object($EM_Location) ){
 		$title = __('Add location', 'dbem');
 		$EM_Location = new EM_Location();

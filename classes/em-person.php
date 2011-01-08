@@ -58,8 +58,16 @@ class EM_Person extends EM_Object{
 		}
 	}
 	
+	function get_post(){
+		$this->name = ( !empty($_REQUEST['person_name']) ) ? stripslashes($_REQUEST['person_name']) : '' ;
+		$this->email = ( !empty($_REQUEST['person_email']) ) ? $_REQUEST['person_email'] : '';
+		$this->phone = ( !empty($_REQUEST['person_phone']) ) ? $_REQUEST['person_phone'] : '';
+		return apply_filters('em_person_get_post', $this->validate(), $this);
+	}
+	
 	function save(){
 		global $wpdb;
+		do_action('em_person_save_pre',$this);
 		if($this->validate()){
 			//Does this person already exist?
 			$this->load_similar();
@@ -68,15 +76,26 @@ class EM_Person extends EM_Object{
 			unset($data['person_id']);
 			if($this->id != ''){
 				$where = array( 'person_id' => $this->id );  
-				$wpdb->update($table, $data, $where);
+				$result = $wpdb->update($table, $data, $where);
 			}else{
-				$wpdb->insert($table, $data);
+				$result = $wpdb->insert($table, $data);
 			    $this->id = $wpdb->insert_id;   
 			}
-			return ($wpdb->insert_id);
+			$this->feedback_message = ($result) ? __('Changes saved.'):  __('Could not edit person details.','dbem');
+			return apply_filters('em_save_delete', $result, $this);
 		}else{
-			return false;
+			$this->feedback_message = __('Could not edit person details.','dbem');
+			return apply_filters('em_save_delete', false, $this);
 		}
+	}
+	
+	function delete(){
+		global $wpdb;
+		do_action('em_person_delete_pre', $this);
+		$results = array();
+		$results[] = $wpdb->query ( $wpdb->prepare("DELETE FROM ". $wpdb->prefix . EM_PEOPLE_TABLE ." WHERE person_id=%d", $this->id) );
+		$results[] = $wpdb->query ( $wpdb->prepare("DELETE FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE person_id=%d", $this->id) );
+		return apply_filters('em_event_delete', !in_array(false,$results), $this);
 	}
 	
 	function validate(){

@@ -38,7 +38,11 @@ function em_admin_events_page() {
 			$title = __ ( 'Future Events', 'dbem' );
 			$scope = "future";
 	}
-	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>0, 'order'=>$order ) );
+	$args = array('scope'=>$scope, 'limit'=>0, 'order'=>$order );
+	if( !get_option('dbem_events_disable_ownership') && !em_verify_admin() ){
+		$args['owner'] = get_current_user_id();
+	}	
+	$events = EM_Events::get( $args );
 	$events_count = count ( $events );
 	
 	$use_events_end = get_option ( 'dbem_use_event_end' );

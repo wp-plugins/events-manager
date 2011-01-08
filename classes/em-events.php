@@ -196,6 +196,9 @@ class EM_Events extends EM_Object {
 		if( !empty($args['rsvp']) ){
 			$conditions['rsvp'] = 'event_rsvp=1';
 		}
+		if( !empty($args['owner']) && is_numeric($args['owner']) ){
+			$conditions['event_author'] = 'event_author='.$args['owner'];
+		}
 		return $conditions;
 	}
 	
@@ -213,7 +216,7 @@ class EM_Events extends EM_Object {
 	 * @uses EM_Object#get_default_search()
 	 */
 	function get_default_search( $array = array() ){
-		$defaults = array(				
+		$defaults = array(
 			'orderby' => get_option('dbem_events_default_orderby'),
 			'order' => get_option('dbem_events_default_order'),
 			'rsvp' => false //if set to true, only events with bookings enabled are returned

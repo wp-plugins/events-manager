@@ -2,11 +2,20 @@
 //Admin functions
 
 /**
+ * Currently, just is_super_admin() but allows scalability of permissions now.
+ * @return boolean
+ */
+function em_verify_admin(){
+	return is_super_admin();
+}
+
+/**
  * Generate warnings and notices in the admin area
  */
 function em_admin_warnings() {
 	//If we're editing the events page show hello to new user
 	$events_page_id = get_option ( 'dbem_events_page' );
+	$dismiss_link_joiner = ( count($_GET) > 0 ) ? '&amp;':'?';
 	if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
 		// Disable Hello to new user if requested
 		update_option ( 'dbem_hello_to_user', 0 );
@@ -22,11 +31,21 @@ function em_admin_warnings() {
 		update_option('dbem_dismiss_events_page',1);
 	}else{
 		if ( !get_page($events_page_id) && !get_option('dbem_dismiss_events_page') ){
-			$dismiss_link_joiner = ( count($_GET) > 0 ) ? '&amp;':'?';
-			$advice = sprintf ( __( 'Uh Oh! For some reason wordpress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">options page</a>. Sorry for the extra step! If you know what you are doing, you may have done this on purpose, if so <a href="%s">ignore this message</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1' );
 			?>
 			<div id="em_page_error" class="updated">
-				<p><?php echo $advice; ?></p>
+				<p><?php echo sprintf ( __( 'Uh Oh! For some reason wordpress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">settings page</a>. Sorry for the extra step! If you know what you are doing, you may have done this on purpose, if so <a href="%s">ignore this message</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1' ); ?></p>
+			</div>
+			<?php		
+		}
+	}
+	//If events page couldn't be created
+	if( !empty($_GET['em_dismiss_bookings_approval_warning']) ){
+		delete_option('dbem_bookings_approval_warning');
+	}else{
+		if ( get_option('dbem_bookings_approval_warning') ){
+			?>
+			<div class="updated">
+				<p><?php echo sprintf ( __( 'Events Manager now has booking approvals! Bookings can now be approved before they count towards your event\'s space allocations.<br/><br/>This is enabled by default, but since you upgraded it has been disabled to maintain the previous plugin behaviour. You can re-enable it from the <a href="%s">settings page</a>. <a href="%s">Dismiss</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_bookings_approval_warning=1' ); ?></p>
 			</div>
 			<?php		
 		}

@@ -19,7 +19,6 @@ function em_bookings_pending_table($event_id = false){
 	$limit = ( $action_scope && !empty($_GET['limit']) ) ? $_GET['limit'] : 20;//Default limit
 	$page = ( $action_scope && !empty($_GET['p']) ) ? $_GET['p']:1;
 	$offset = ( $action_scope && $page > 1 ) ? ($page-1)*$limit : 0;
-	//echo "Action $action <br>Order $order<br>Limit $limit<br>Page $page <br>Offset $offset<br><br>";
 	
 	if( is_object($EM_Event) ){
 		$bookings = $EM_Event->get_bookings()->get_pending();
@@ -124,11 +123,12 @@ function em_bookings_pending_table($event_id = false){
 									<td><?php echo $EM_Booking->seats ?></td>
 									<td>
 										<?php
-										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'bookings'=>$EM_Booking->id));
-										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'bookings'=>$EM_Booking->id));
+										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'booking_id'=>$EM_Booking->id));
+										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'booking_id'=>$EM_Booking->id));
 										?>
 										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Approve','dbem'); ?></a> |
-										<a class="em-bookings-reject" href="<?php echo $reject_url ?>"><?php _e('Reject','dbem'); ?></a>
+										<a class="em-bookings-reject" href="<?php echo $reject_url ?>"><?php _e('Reject','dbem'); ?></a> |
+										<a class="em-bookings-edit" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;booking_id=<?php echo $EM_Booking->id; ?>"><?php _e('Edit'); ?></a>
 									</td>
 								</tr>
 								<?php

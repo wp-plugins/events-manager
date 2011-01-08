@@ -46,7 +46,15 @@ add_action('admin_init', 'em_admin_event_actions');
  */
 function em_admin_event_page() {
 	global $EM_Event;
-	global $localised_date_formats;   
+	global $localised_date_formats; 
+	
+	//check that user can access this page
+	if( is_object($EM_Event) && !$EM_Event->can_manage() ){
+		?>
+		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
+		<?php
+		return false;
+	}
 	
 	if( is_object($EM_Event) && $EM_Event->id > 0 ){
 		if($EM_Event->is_recurring()){
@@ -64,7 +72,7 @@ function em_admin_event_page() {
 	$pref = "event_";	
 	
 	$locale_code = substr ( get_locale (), 0, 2 );
-	$localised_date_format = $localised_date_formats [$locale_code];
+	$localised_date_format = $localised_date_formats[$locale_code];
 	
 	//FIXME time useage is very flimsy imho
 	$hours_locale_regexp = "H:i";

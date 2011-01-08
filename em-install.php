@@ -91,6 +91,7 @@ function em_create_locations_table() {
 	$sql = "CREATE TABLE ".$table_name." (
 		location_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		location_name tinytext NOT NULL,
+		location_owner bigint(20) unsigned DEFAULT 0 NOT NULL,
 		location_address tinytext NOT NULL,
 		location_town tinytext NOT NULL,
 		location_province tinytext,
@@ -127,7 +128,7 @@ function em_create_bookings_table() {
 		booking_seats int(5) NOT NULL,
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		booking_approved bool NOT NULL DEFAULT 1,
+		booking_status bool NOT NULL DEFAULT 1,
 		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -176,16 +177,17 @@ function em_create_categories_table() {
 
 
 function em_add_options() {
-	$contact_person_email_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_NAME on #m #d, #Y. He wants to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager",'dbem') ;
-	$respondent_email_body_localizable = __("Dear #_BOOKINGNAME, <br/>you have successfully reserved #_BOOKEDSPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem');
-	$respondent_email_pending_body_localizable = __("Dear #_BOOKINGNAME, <br/>You have requested #_BOOKEDSPACES space/spaces for #_NAME.<br/>Your booking is currently pending approval by our administrators. Once approved you will receive an automatic confrimation.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem'); 
+	$contact_person_email_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_NAME on #F #j, #Y. He wants to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
+	$respondent_email_body_localizable = __("Dear #_BOOKINGNAME, <br/>you have successfully reserved #_BOOKINGSPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Events powered by <a href="http://wp-events-plugin.com">Events Manager</a>','dbem');
+	$respondent_email_pending_body_localizable = __("Dear #_BOOKINGNAME, <br/>You have requested #_BOOKEDSPACES space/spaces for #_NAME.<br/>Your booking is currently pending approval by our administrators. Once approved you will receive an automatic confrimation.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
+	$respondent_email_rejected_body_localizable = __("Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_NAME on #F #j, #Y has been rejected.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	
 	$dbem_options = array(
 		//Event List Options
 		'dbem_events_default_orderby' => 'start_date,start_time,name',
 		'dbem_events_default_order' => 'ASC',
 		'dbem_events_default_limit' => 10,
-		'dbem_events_ownership' => 1, //can others view other's events
+		'dbem_events_disable_ownership' => 0, //can others view other's events
 		'dbem_list_events_page' => 1,
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
@@ -226,24 +228,27 @@ function em_add_options() {
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ", 
 		//General Settings
-		'dbem_use_select_for_locations' => false,
-		'dbem_attributes_enabled' => true,
-		'dbem_recurrence_enabled'=> true,
-		'dbem_rsvp_enabled'=> true,
-		'dbem_categories_enabled'=> true,
+		'dbem_events_disable_ownership' => 0,
+		'dbem_use_select_for_locations' => 0,
+		'dbem_attributes_enabled' => 1,
+		'dbem_recurrence_enabled'=> 1,
+		'dbem_rsvp_enabled'=> 1,
+		'dbem_categories_enabled'=> 1,
 		//Title rewriting compatability
 		'dbem_disable_title_rewrites'=> false,
 		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
 		//Bookings
 		'dbem_bookings_approval' => 1,
-		'dbem_bookings_notify_admin' => '',
+		'dbem_bookings_notify_admin' => 0,
 		'dbem_default_contact_person' => 1,
-		'dbem_rsvp_notify_contact' => 1 ,
+		'dbem_bookings_contact_email' => 1,
 		'dbem_contactperson_email_subject' => __("New booking",'dbem'),
 		'dbem_contactperson_email_body' => str_replace("<br/>", "\n\r", $contact_person_email_body_localizable),
-		'dbem_bookings_email_pending_subject' => __("Reservation pending",'dbem'),
+		'dbem_bookings_email_pending_subject' => __("Reservation Pending",'dbem'),
 		'dbem_bookings_email_pending_body' => str_replace("<br/>", "\n\r", $respondent_email_pending_body_localizable),
-		'dbem_bookings_email_confirmed_subject' => __('Booking confirmed','dbem'),
+		'dbem_bookings_email_rejected_subject' => __("Reservation Rejected",'dbem'),
+		'dbem_bookings_email_rejected_body' => str_replace("<br/>", "\n\r", $respondent_email_rejected_body_localizable),
+		'dbem_bookings_email_confirmed_subject' => __('Booking Confirmed','dbem'),
 		'dbem_bookings_email_confirmed_body' => str_replace("<br/>", "\n\r", $respondent_email_body_localizable),
 		//Flags
 		'dbem_hello_to_user' => 1,
@@ -254,13 +259,25 @@ function em_add_options() {
 	}
 	//Customization for new options on updated plugins (not new installs)
 	if( get_option('dbem_version') != '' && get_option('dbem_version') <= 3.09){
+		//New options, defaults for updates
 		update_option('dbem_bookings_approval',0); //Previously in <3.0.9 bookings were never approvable
 		update_option('dbem_bookings_approval_warning',1); //One off warning for old EM users to activate this new feature
+		update_option('dbem_events_disable_ownership',1); //set to true, so updaters don't get a surprise!
+		update_option('dbem_events_ownership_warning',1); //one off warn updaters about ownership feature
+		//Contact person email flag
+		update_option('dbem_bookings_contact_email',get_option('dbem_rsvp_notify_contact'));
+		//Booking emails
 		if( get_option('dbem_respondent_email_body') != '' ){
 			update_option('dbem_bookings_email_confirmed_body', get_option('dbem_respondent_email_body'));
 		}
-		update_option('dbem_events_ownership',0);
-		update_option('dbem_events_ownership_warning',1);
+		update_option('dbem_bookings_contact_email_subject', get_option('dbem_contactperson_email_subject'));
+		update_option('dbem_bookings_contact_email_body', get_option('dbem_contactperson_email_body'));
+		/* deleted options (won't do this in case some need to revert)
+		delete_option('dbem_rsvp_notify_contact');
+		delete_option('dbem_contactperson_email_subject');
+		delete_option('dbem_contactperson_email_body');
+		delete_option('dbem_respondent_email_body');
+		 */
 	}
 }     
 

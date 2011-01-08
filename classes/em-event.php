@@ -553,7 +553,7 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_CONTACTEMAIL':
 				case '#_CONTACTMAIL': //Depreciated
-					$replace = em_ascii_encode($this->contact->user_email);
+					$replace = $this->contact->user_email;
 					break;
 				case '#_CONTACTPHONE':
 		      		$replace = ( $this->contact->phone != '') ? $this->contact->phone : __('N/A', 'dbem');
@@ -714,6 +714,13 @@ class EM_Event extends EM_Object{
 	 */
 	function is_individual(){
 		return ( !$this->is_recurring() && !$this->is_recurrence() );
+	}
+	
+	/**
+	 * Can the user manage this event? 
+	 */
+	function can_manage(){
+		return ( get_option('dbem_events_disable_ownership') || $this->author == get_current_user_id() || empty($this->id) );
 	}
 	
 	/**
@@ -906,9 +913,11 @@ class EM_Event extends EM_Object{
  * @param string $target
  * @return mixed
  */
-function em_event_output_placeholder($result,$event,$placeholder,$target='html'){
+function em_event_output_placeholder($result,$event,$placeholder,$target='html'){	
 	if( ($placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT") && $target == 'html' ){
 		$result = apply_filters('dbem_notes_excerpt', $result);
+	}elseif( $placeholder == '#_CONTACTEMAIL' && $target == 'html' ){
+		$result = em_ascii_encode($event->contact->user_email);
 	}elseif( $placeholder == "#_NOTES" || $placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT" ){
 		if($target == 'html'){
 			$result = apply_filters('dbem_notes', $result);
@@ -927,5 +936,5 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 	}
 	return $result;
 }
-add_filter('em_event_output_placeholder','em_event_output_placeholder',1,3);
+add_filter('em_event_output_placeholder','em_event_output_placeholder',1,4);
 ?>

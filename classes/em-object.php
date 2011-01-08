@@ -18,7 +18,7 @@ class EM_Object {
 		//Create minimal defaults array, merge it with supplied defaults array
 		$super_defaults = array(
 			'limit' => false,
-			'scope' => 'future', 
+			'scope' => 'future',
 			'order' => 'ASC', //hard-coded at end of this function
 			'orderby' => false,
 			'format' => '', 
@@ -32,7 +32,8 @@ class EM_Object {
 			'month'=>'',
 			'year'=>'',
 			'pagination'=>false,
-			'array'=>false
+			'array'=>false,
+			'owner'=>false
 		);
 		//Return default if nothing passed
 		if( empty($defaults) && empty($array) ){
@@ -94,6 +95,7 @@ class EM_Object {
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
+		$defaults['owner'] = (is_numeric($defaults['owner'])) ? $defaults['owner']:$super_defaults['owner'];
 		//Calculate offset in event page is set
 		if($defaults['page'] > 1){
 			$defaults['offset'] = $defaults['limit'] * ($defaults['page']-1);	
@@ -262,13 +264,15 @@ class EM_Object {
 	 */
 	function to_object( $array = array(), $addslashes = false ){
 		//Save core data
-		$array = apply_filters('em_to_object', $array);
-		foreach ( $this->fields as $key => $val ) {
-			if(array_key_exists($key, $array)){
-				if( !is_object($array[$key]) && !is_array($array[$key]) ){
-					$array[$key] = ($addslashes) ? stripslashes($array[$key]):$array[$key];
+		if( is_array($array) ){
+			$array = apply_filters('em_to_object', $array);
+			foreach ( $this->fields as $key => $val ) {
+				if(array_key_exists($key, $array)){
+					if( !is_object($array[$key]) && !is_array($array[$key]) ){
+						$array[$key] = ($addslashes) ? stripslashes($array[$key]):$array[$key];
+					}
+					$this->$val['name'] = $array[$key];
 				}
-				$this->$val['name'] = $array[$key];
 			}
 		}
 	}
@@ -365,6 +369,24 @@ class EM_Object {
 			}
 		}
 		return $array;
+	}
+		
+	/**
+	 * Send an email and log errors in this object
+	 * @param string $subject
+	 * @param string $body
+	 * @param string $email
+	 * @return string
+	 */
+	function email_send($subject, $body, $email){
+		global $EM_Mailer;
+		if( !$EM_Mailer->send($subject,$body,$email) ){
+			foreach($EM_Mailer->errors as $error){
+				$this->errors[] = $error;
+			}
+			return false;
+		}
+		return true;
 	}
 	
 	/**

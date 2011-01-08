@@ -158,6 +158,10 @@ class EM_Locations extends EM_Object {
 		}elseif( true == $args['eventless'] ){
 			$conditions['eventless'] = "{$events_table}.event_id IS NULL";
 		}
+		//owner lookup
+		if( !empty($args['owner']) ){
+			$conditions['owner'] = "location_owner=".get_current_user_id();
+		}
 		return apply_filters('em_locations_build_sql_conditions', $conditions, $args);
 	}
 	
