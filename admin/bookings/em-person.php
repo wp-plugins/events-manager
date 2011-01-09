@@ -9,7 +9,7 @@ function em_bookings_person_table(){
 	global $wpdb, $current_user,$EM_Person;
 	if(!is_object($EM_Person)){
 		return false;
-	}	
+	}
 	$action_scope = ( !empty($_REQUEST['em_obj']) && $_REQUEST['em_obj'] == 'em_bookings_confirmed_table' );
 	$action = ( $action_scope && !empty($_GET ['action']) ) ? $_GET ['action']:'';
 	$order = ( $action_scope && !empty($_GET ['order']) ) ? $_GET ['order']:'ASC';
@@ -95,8 +95,8 @@ function em_bookings_person_table(){
 						$rowno = 0;
 						$event_count = 0;
 						foreach ($bookings as $EM_Booking) {
-							$EM_Event = $events[$EM_Booking->event_id];
-							if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
+							$EM_Event = $events[$EM_Booking->event_id];							
+							if( $EM_Event->can_manage() && ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
 								$rowno++;
 								?>
 								<tr>
