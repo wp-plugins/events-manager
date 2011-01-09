@@ -492,8 +492,8 @@ class EM_Event extends EM_Object{
 					}
 					break;
 				case '#_CATEGORY':
-		      		$category = EM_Category::get($this->category_id);
-					$replace = $category['category_name'];
+		      		$category = new EM_Category($this->category_id);
+					$replace = $category->name;
 					break;
 				//Times
 				case '#_24HSTARTTIME':
