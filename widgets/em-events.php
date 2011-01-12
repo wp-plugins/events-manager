@@ -50,14 +50,11 @@ class EM_Widget extends WP_Widget {
     		'limit' => 5,
     		'format' => '#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul>',
     		'nolistwrap' => false,
-    		'orderby' => 'start_date,start_time,name'
+    		'orderby' => 'start_date,start_time,name',
+			'all_events' => 0,
+			'all_events_text' => __('all events', 'dbem')
     	);
-    	foreach($defaults as $key => $value){
-    		if( empty($new_instance[$key]) ){
-    			$new_instance[$key] = $value;
-    		}
-    	}
-    	return $new_instance;
+		return array_merge($defaults, $new_instance);
     }
 
     /** @see WP_Widget::form */
