@@ -520,7 +520,7 @@ class EM_Event extends EM_Object{
 					}
 					break;
 				case '#_EDITEVENTLINK':
-					if(is_user_logged_in()){
+					if( $this->can_manage() ){
 						//TODO user should have permission to edit the event
 						$replace = "<a href='".get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}'>".__('Edit').' '.__('Event', 'dbem')."</a>";
 					}	 
@@ -577,22 +577,19 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_CONTACTPROFILELINK':
 				case '#_CONTACTPROFILEURL':
-					if( function_exists('bp_loggedin_user_link') ){
-						$replace = bp_get_loggedin_user_link();
+					if( function_exists('bp_core_get_user_domain') ){
+						$replace = bp_core_get_user_domain($this->contact->ID);
 						if( $result == '#_CONTACTPROFILELINK' ){
 							$replace = '<a href="'.$replace.'">'.__('Profile').'</a>';
 						}
 					}
 					break;
 				default:
-					$match = false;
+					$replace = $result;
 					break;
 			}
-			if($match){ //if true, we've got a placeholder that needs replacing
-				//TODO FILTER - placeholder filter
-				$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
-				$event_string = str_replace($result, $replace , $event_string );
-			}
+			$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
+			$event_string = str_replace($result, $replace , $event_string );
 		}
 		//Time placeholders
 		foreach($placeholders[0] as $result) {

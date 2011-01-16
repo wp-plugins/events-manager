@@ -196,7 +196,7 @@ class EM_Bookings extends EM_Object{
 	function get_booked_seats(){
 		$booked_seats = 0;
 		foreach ( $this->bookings as $booking ){
-			if( get_option('dbem_bookings_approval') == 0 || $booking->status == 1 ){
+			if( $booking->status != 3 && (get_option('dbem_bookings_approval') == 0 || $booking->status == 1) ){
 				$booked_seats += $booking->seats;
 			}
 		}
@@ -225,12 +225,9 @@ class EM_Bookings extends EM_Object{
 	 * @return array EM_Booking
 	 */
 	function get_bookings(){
-		if( get_option('dbem_bookings_approval') == 0 ){
-			return $this->bookings;
-		}
 		$confirmed = array();
 		foreach ( $this->bookings as $booking ){
-			if($booking->status == 1){
+			if( $booking->status == 1 || (get_option('dbem_bookings_approval') == 0 && $booking->status != 3) ){
 				$confirmed[] = $booking;
 			}
 		}
@@ -270,6 +267,20 @@ class EM_Bookings extends EM_Object{
 		}
 		return $pending;
 	}	
+	
+	/**
+	 * Get cancelled bookings. 
+	 * @return array EM_Booking
+	 */
+	function get_cancelled_bookings(){
+		$pending = array();
+		foreach ( $this->bookings as $booking ){
+			if($booking->status == 3){
+				$pending[] = $booking;
+			}
+		}
+		return $pending;
+	}
 	
 	/**
 	 * Checks if a person with similar details has booked for this before

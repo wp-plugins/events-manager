@@ -84,6 +84,7 @@ if( is_admin() ){
 	include_once('admin/em-options.php');
 	include_once('admin/em-people.php');
 	//bookings folder
+		include_once('admin/bookings/em-cancelled.php');
 		include_once('admin/bookings/em-confirmed.php');
 		include_once('admin/bookings/em-events.php');
 		include_once('admin/bookings/em-rejected.php');

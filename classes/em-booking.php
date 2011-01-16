@@ -62,7 +62,8 @@ class EM_Booking extends EM_Object{
 		$this->status_array = array(
 			0 => __('Pending','dbem'),
 			1 => __('Approved','dbem'),
-			2 => __('Rejected','dbem')
+			2 => __('Rejected','dbem'),
+			3 => __('Cacncelled','dbem')
 		);
 	}
 	
@@ -174,7 +175,17 @@ class EM_Booking extends EM_Object{
 	function delete(){
 		global $wpdb;
 		$sql = $wpdb->prepare("DELETE FROM ". $wpdb->prefix.EM_BOOKINGS_TABLE . " WHERE booking_id=%d", $this->id);
-		return ( $wpdb->query( $sql ) !== false );
+		$result = $wpdb->query( $sql );
+		if( $result !== false ){
+			$this->previous_status = $this->status;
+			$this->status == false;
+			$this->email();
+		}
+		return ( $result !== false );
+	}
+	
+	function cancel(){
+		return $this->set_status(3);
 	}
 	
 	/**
@@ -237,7 +248,7 @@ class EM_Booking extends EM_Object{
 		global $EM_Mailer;
 		$EM_Event = $this->get_event(); //We NEED event details here.
 		//Make sure event matches booking, and that booking used to be approved.
-		if( $this->previous_status == 0 ){
+		if( $this->previous_status == 0 || $this->status == 3 ){
 			$contact_id = ( $EM_Event->contactperson_id != "") ? $EM_Event->contactperson_id : get_option('dbem_default_contact_person');
 	
 			$contact_subject = get_option('dbem_bookings_contact_email_subject');
@@ -252,6 +263,11 @@ class EM_Booking extends EM_Object{
 			}elseif( $this->status == 2 ){
 				$booker_subject = get_option('dbem_bookings_email_rejected_subject');
 				$booker_body = get_option('dbem_bookings_email_rejected_body');
+			}elseif( $this->status == 3 ){
+				$booker_subject = get_option('dbem_bookings_email_cancelled_subject');
+				$booker_body = get_option('dbem_bookings_email_cancelled_body');
+				$contact_subject = get_option('dbem_contactperson_email_cancelled_subject');
+				$contact_body = get_option('dbem_contactperson_email_cancelled_body');
 			}
 			
 			// email specific placeholders

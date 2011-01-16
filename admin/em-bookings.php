@@ -32,7 +32,7 @@ function em_admin_actions_bookings() {
 			add_action ( 'admin_notices', 'em_booking_save_notification' );
 		}elseif( $_REQUEST['action'] == 'bookings_approve' || $_REQUEST['action'] == 'bookings_reject' || $_REQUEST['action'] == 'bookings_unapprove' ){
 			//Booking Approvals
-			$status_array = array('bookings_unapprove' => 0,'bookings_approve' => 1,'bookings_reject' => 2);
+			$status_array = array('bookings_unapprove' => 0,'bookings_approve' => 1,'bookings_reject' => 2, 'bookings_cancel' => 3);
 			if( $EM_Booking->set_status( $status_array[$_REQUEST['action']] ) ) {
 				function em_booking_save_notification(){ global $EM_Booking; ?><div class="updated"><p><strong><?php echo $EM_Booking->feedback_message; ?></strong></p></div><?php }		
 			}else{
@@ -123,6 +123,8 @@ function em_bookings_event(){
 		<?php em_bookings_confirmed_table(); ?>
 		<h2><?php _e('Rejected Bookings','dbem'); ?></h2>
 		<?php em_bookings_rejected_table(); ?>
+		<h2><?php _e('Cancelled Bookings','dbem'); ?></h2>
+		<?php em_bookings_cancelled_table(); ?>
 	</div>
 	<?php
 }

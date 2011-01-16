@@ -31,7 +31,7 @@ function em_actions_bookings() {
 				$deleted = 0;
 				foreach($EM_Event->get_bookings()->bookings as $EM_Booking){
 					if($EM_Booking->person->id == $EM_Person->id ){
-						$EM_Booking->delete();
+						$EM_Booking->cancel();
 						$deleted++;
 					}
 				}

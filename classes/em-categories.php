@@ -44,7 +44,6 @@ class EM_Categories extends EM_Object {
 			$limit $offset GROUP BY category_id
 		";
 		$results = $wpdb->get_results( apply_filters('em_categories_get_sql',$sql, $args), ARRAY_A);
-		echo $sql;
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){
 			return $results;
