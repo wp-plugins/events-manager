@@ -301,7 +301,7 @@ function em_admin_event_page() {
 									<p><?php _e ( 'Category:', 'dbem' ); ?> 
 										<select name="event_category_id">
 											<?php 
-											$categories = EM_Categories::get(array('owner'=>false));
+											$categories = EM_Categories::get(array('owner'=>false, 'orderby'=>'category_name'));
 											foreach ( $categories as $EM_Category ){
 												$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
 												?>

@@ -40,8 +40,9 @@ class EM_Categories extends EM_Object {
 			SELECT * FROM $categories_table
 			LEFT JOIN $events_table ON {$events_table}.event_category_id={$categories_table}.category_id
 			$where
+			GROUP BY category_id
 			$orderby_sql
-			$limit $offset GROUP BY category_id
+			$limit $offset
 		";
 		$results = $wpdb->get_results( apply_filters('em_categories_get_sql',$sql, $args), ARRAY_A);
 		//If we want results directly in an array, why not have a shortcut here?
