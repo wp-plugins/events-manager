@@ -60,6 +60,13 @@ function em_content($content) {
 				$args['limit'] = get_option('dbem_events_default_limit');
 				$args['pagination'] = 1;	
 				$args['page'] = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
+				
+				/*calculate event list time range */
+				$time_limit = get_option('dbem_events_display_time_limit');
+				if ( $time_limit != 'no-limit' && is_numeric($time_limit) ){
+				  $args['scope'] = date('Y-m-d').",".date('Y-m-d', strtotime('+'.$time_limit.' month'));
+				}
+				
 				$content =  EM_Events::output( apply_filters('em_content_events_args', $args) );
 			}
 		}
