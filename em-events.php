@@ -64,7 +64,6 @@ function em_content($content) {
 				/*calculate event list time range */
 				$time_limit = get_option('dbem_events_page_time_limit');
 				if ( is_numeric($time_limit) && $time_limit > 0 ){
-					
 					$args['scope'] = date('Y-m-d').",".date('Y-m-t', strtotime('+'.($time_limit-1).' month'));
 				}
 				

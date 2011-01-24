@@ -65,6 +65,17 @@ function em_admin_event_page() {
 	} else {
 		$EM_Event = new EM_Event();
 		$title = __ ( "Insert New Event", 'dbem' );
+		//Give a default location
+		$default_cat = get_option('dbem_default_category');
+		$default_loc = get_option('dbem_default_location');
+		if( is_numeric($default_cat) && $default_cat > 0 ){
+			$EM_Event->category_id = $default_cat;
+			$EM_Event->category = new EM_Category($default_cat);
+		}
+		if( is_numeric($default_loc) && $default_loc > 0 ){
+			$EM_Event->location_id = $default_loc;
+			$EM_Event->location = new EM_Location($default_loc);
+		}
 	}
 	
 	$use_select_for_locations = get_option('dbem_use_select_for_locations');
@@ -298,20 +309,26 @@ function em_admin_event_page() {
 									<?php _e ( 'Category', 'dbem' ); ?>
 									</span></h3>
 								<div class="inside">
-									<p><?php _e ( 'Category:', 'dbem' ); ?> 
-										<select name="event_category_id">
-											<?php 
-											$categories = EM_Categories::get(array('owner'=>false, 'orderby'=>'category_name'));
-											foreach ( $categories as $EM_Category ){
-												$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
+									<?php $categories = EM_Categories::get(array('owner'=>false, 'orderby'=>'category_name')); ?>
+									<?php if( count($categories) > 0 ): ?>
+										<p><?php _e ( 'Category:', 'dbem' ); ?>
+											<select name="event_category_id">
+												<option value="" <?php echo ($EM_Event->category_id == '') ? "selected='selected'":'' ?>><?php _e('no category','dbem') ?></option>	
+												<?php
+												foreach ( $categories as $EM_Category ){
+													$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
+													?>
+													<option value="<?php echo $EM_Category->id ?>" <?php echo $selected ?>>
+													<?php echo $EM_Category->name ?>
+													</option>
+													<?php 
+												}
 												?>
-												<option value="<?php echo $EM_Category->id ?>" <?php echo $selected ?>>
-												<?php echo $EM_Category->name ?>
-												</option>
-												<?php 
-											} ?>
-										</select>
-									</p>
+											</select>
+										</p>
+									<?php else: ?>
+										<p><?php sprintf(__('No categories available, <a href="%s">create one here first</a>','dbem'), get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-categories'); ?></p>
+									<?php endif; ?>
 								</div>
 							</div> 
 							<!-- END Categories -->

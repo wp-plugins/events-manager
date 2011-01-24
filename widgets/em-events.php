@@ -75,6 +75,14 @@ class EM_Widget extends WP_Widget {
 			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" size="3" value="<?php echo $instance['limit']; ?>" />
 		</p>
 		<p>
+			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope of the events','dbem'); ?>:</label><br/>
+			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >
+				<option value="future" <?php echo ($instance['scope'] == 'future') ? 'selected="selected"':''; ?>><?php _e('Future events','dbem'); ?></option>
+				<option value="all" <?php echo ($instance['scope'] == 'all') ? 'selected="selected"':''; ?>><?php _e('All events','dbem'); ?></option>
+				<option value="past" <?php echo ($instance['scope'] == 'past') ? 'selected="selected"':''; ?>><?php _e('Past events','dbem'); ?></option>
+			</select>
+		</p>
+		<p>
 			<label for="<?php echo $this->get_field_id('time_limit'); ?>"><?php _e('Time Limit','dbem'); ?>: </label><br/>
 			<select id="<?php echo $this->get_field_id('time_limit'); ?>" name="<?php echo $this->get_field_name('time_limit'); ?>" >
 				<option value="no-limit" <?php echo ( empty($instance['time_limit']) ) ? 'selected="selected"':''; ?>><?php _e('no limit','dbem'); ?></option>
@@ -85,14 +93,17 @@ class EM_Widget extends WP_Widget {
 				<option value="12" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '12') ? 'selected="selected"':''; ?>><?php _e('Next twelve month','dbem'); ?></option>
 			</select>
 		</p>
-		<p>
-			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope of the events','dbem'); ?>:</label><br/>
-			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >
-				<option value="future" <?php echo ($instance['scope'] == 'future') ? 'selected="selected"':''; ?>><?php _e('Future events','dbem'); ?></option>
-				<option value="all" <?php echo ($instance['scope'] == 'all') ? 'selected="selected"':''; ?>><?php _e('All events','dbem'); ?></option>
-				<option value="past" <?php echo ($instance['scope'] == 'past') ? 'selected="selected"':''; ?>><?php _e('Past events','dbem'); ?></option>
-			</select>
-		</p>
+		<script type="text/javascript">
+			jQuery(document).ready( function($) {
+				$('#<?php echo $this->get_field_id('scope'); ?>').change(function(e){
+					if( $(this).val() == 'future' ){
+						$('#<?php echo $this->get_field_id('time_limit'); ?>').parent().show();
+					}else{
+						$('#<?php echo $this->get_field_id('time_limit'); ?>').parent().hide();
+					}
+				}).trigger('change');				
+			});
+		</script>
 		<p>
 			<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Order By','dbem'); ?>: </label>
 			<select  id="<?php echo $this->get_field_id('orderby'); ?>" name="<?php echo $this->get_field_name('orderby'); ?>">
