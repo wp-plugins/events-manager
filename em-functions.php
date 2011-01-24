@@ -1,4 +1,17 @@
 <?php
+
+
+/**
+ * Currently, just is_super_admin() but allows scalability of permissions now.
+ * @return boolean
+ */
+function em_verify_admin(){
+	return is_super_admin();
+}
+
+/**
+ * Intro paragraph to new users. 
+ */
 function em_hello_to_new_user() {
 	if ( get_option ( 'dbem_hello_to_user' ) == 1 ) {
 		$current_user = wp_get_current_user ();

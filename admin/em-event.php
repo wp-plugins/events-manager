@@ -63,7 +63,7 @@ function em_admin_event_page() {
 			$title = __ ( "Edit Event", 'dbem' ) . " '" . $EM_Event->name . "'";
 		}
 	} else {
-		$EM_Event = new EM_Event();
+		$EM_Event = ( is_object($EM_Event) && get_class($EM_Event) == 'EM_Event') ? $EM_Event : new EM_Event();
 		$title = __ ( "Insert New Event", 'dbem' );
 		//Give a default location
 		$default_cat = get_option('dbem_default_category');
@@ -218,6 +218,7 @@ function em_admin_event_page() {
 						<?php endif; ?>          
 						<?php if(get_option('dbem_rsvp_enabled')) : ?>
 							<!-- START RSVP -->
+							<?php if ( em_verify_admin() ): ?>
 							<div class="postbox ">
 								<div class="handlediv" title="Fare clic per cambiare."><br />
 								</div>
@@ -227,20 +228,14 @@ function em_admin_event_page() {
 								<div class="inside">
 									<p><?php _e('Contact','dbem'); ?>
 										<?php
-											if( em_verify_admin() ){
-												wp_dropdown_users ( array ('name' => 'event_contactperson_id', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->contactperson_id  ) );
-											}else{
-												?>
-												: <?php echo $current_user->display_name ?>
-												<input type="hidden" name="event_contactperson_id" value="<?php get_current_user_id() ?>" />
-												<br />
-												<i><?php _e('You can only change the contact person if you a events administrator.','dbem'); ?></i>
-												<?php
-											}
+											wp_dropdown_users ( array ('name' => 'event_contactperson_id', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->contactperson_id  ) );
 										?>
 									</p>
 								</div>
 							</div>
+							<?php else: ?>
+							<input type="hidden" name="event_contactperson_id" value="<?php get_current_user_id() ?>" />
+							<?php endif; ?>
 							<div class="postbox ">
 								<div class="handlediv" title="Fare clic per cambiare."><br />
 								</div>

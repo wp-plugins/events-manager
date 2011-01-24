@@ -105,9 +105,9 @@ function em_docs_init(){
 							'#_CONTACTEMAIL' => array( 'desc' => 'E-mail of the contact person for this event.' ),
 							'#_CONTACTPHONE' => array( 'desc' => 'Phone number of the contact person for this event. Can be set in the user profile page.' ),
 							'#_CONTACTAVATAR' => array( 'desc' => 'Contact person\'s avatar.' ),
-							'#_CONTACTPRIFILELINK' => array( 'desc' => 'Contact person\'s "Profile" link. Only works with BuddyPress enabled.' ),
-							'#_CONTACTPRIFILEURL' => array( 'desc' => 'Contact person\'s profile url. Only works with BuddyPress enabled.' ),
-							''
+							'#_CONTACTPROFILELINK' => array( 'desc' => 'Contact person\'s "Profile" link. Only works with BuddyPress enabled.' ),
+							'#_CONTACTPROFILEURL' => array( 'desc' => 'Contact person\'s profile url. Only works with BuddyPress enabled.' ),
+							'#_CONTACTID' => array( 'desc' => 'Contact person\'s wordpress user ID.')
 						)
 					),			
 				),

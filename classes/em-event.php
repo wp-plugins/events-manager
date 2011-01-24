@@ -267,8 +267,13 @@ class EM_Event extends EM_Object{
 	 		return apply_filters('em_event_save', false, $this);
 		}
 		$this->location_id = $this->location->id;
-		//TODO make contactperson_id NULL if not used
-		$this->contactperson_id = ( $this->contactperson_id > 0 ) ? $this->contactperson_id:0;
+		//Contact person can be anyone the admin wants, but the creator if not.
+		if( em_verify_admin() ){
+			$this->contactperson_id = ( $this->contactperson_id > 0 ) ? $this->contactperson_id:0;
+		}else{
+			//force 
+			$this->contactperson_id = get_current_user_id();
+		}
 		//Now save the event
 		if ( !$this->id ) {
 			// Insert New Event
@@ -568,6 +573,9 @@ class EM_Event extends EM_Object{
 				case '#_CONTACTEMAIL':
 				case '#_CONTACTMAIL': //Depreciated
 					$replace = $this->contact->user_email;
+					break;
+				case '#_CONTACTID':
+					$replace = $this->contact_id;
 					break;
 				case '#_CONTACTPHONE':
 		      		$replace = ( $this->contact->phone != '') ? $this->contact->phone : __('N/A', 'dbem');

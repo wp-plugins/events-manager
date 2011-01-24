@@ -2,14 +2,6 @@
 //Admin functions
 
 /**
- * Currently, just is_super_admin() but allows scalability of permissions now.
- * @return boolean
- */
-function em_verify_admin(){
-	return is_super_admin();
-}
-
-/**
  * Generate warnings and notices in the admin area
  */
 function em_admin_warnings() {
