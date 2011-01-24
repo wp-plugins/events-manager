@@ -18,8 +18,8 @@ class EM_Widget extends WP_Widget {
 	    echo $args['after_title'];
 		
 		/*Compute event range*/
-		if ( $instance['time_scope'] != 'no-limit' && is_numeric($instance['time_scope']) ){
-		  $instance['scope'] = date('Y-m-d').",".date('Y-m-d', strtotime('+'.$instance['time_scope'].' month'));
+		if ( is_numeric($instance['time_limit']) && $instance['time_limit'] > 0 ){
+			$instance['scope'] = date('Y-m-d').",".date('Y-m-t', strtotime('+'.($instance['time_limit']-1).' month'));
 		}
 		/*END*/		
 	
@@ -75,14 +75,14 @@ class EM_Widget extends WP_Widget {
 			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" size="3" value="<?php echo $instance['limit']; ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('limit_time'); ?>"><?php _e('Time Limit','dbem'); ?>: </label><br/>
-			<select id="<?php echo $this->get_field_id('time_scope'); ?>" name="<?php echo $this->get_field_name('time_scope'); ?>" >
-				<option value="no-limit" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == 'no-limit') ? 'selected="selected"':''; ?>><?php _e('No Limit','dbem'); ?></option>
-				<option value="1" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == '1') ? 'selected="selected"':''; ?>><?php _e('This Month','dbem'); ?></option>
-				<option value="2" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == '2') ? 'selected="selected"':''; ?>><?php _e('Next two months','dbem'); ?></option>
-				<option value="3" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == '3') ? 'selected="selected"':''; ?>><?php _e('Next three month','dbem'); ?></option>
-				<option value="6" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == '6') ? 'selected="selected"':''; ?>><?php _e('Next six month','dbem'); ?></option>
-				<option value="12" <?php echo (!empty($instance['time_scope']) && $instance['time_scope'] == '12') ? 'selected="selected"':''; ?>><?php _e('Next twelve month','dbem'); ?></option>
+			<label for="<?php echo $this->get_field_id('time_limit'); ?>"><?php _e('Time Limit','dbem'); ?>: </label><br/>
+			<select id="<?php echo $this->get_field_id('time_limit'); ?>" name="<?php echo $this->get_field_name('time_limit'); ?>" >
+				<option value="no-limit" <?php echo ( empty($instance['time_limit']) ) ? 'selected="selected"':''; ?>><?php _e('no limit','dbem'); ?></option>
+				<option value="1" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '1') ? 'selected="selected"':''; ?>><?php _e('This month','dbem'); ?></option>
+				<option value="2" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '2') ? 'selected="selected"':''; ?>><?php _e('Next two months','dbem'); ?></option>
+				<option value="3" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '3') ? 'selected="selected"':''; ?>><?php _e('Next three month','dbem'); ?></option>
+				<option value="6" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '6') ? 'selected="selected"':''; ?>><?php _e('Next six month','dbem'); ?></option>
+				<option value="12" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '12') ? 'selected="selected"':''; ?>><?php _e('Next twelve month','dbem'); ?></option>
 			</select>
 		</p>
 		<p>

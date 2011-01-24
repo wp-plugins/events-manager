@@ -94,32 +94,24 @@ function em_admin_options_page() {
 					em_options_radio_binary ( __( 'Use categories?' ), 'dbem_categories_enabled', __( 'Select yes to enable the category features','dbem' ) );     
 					em_options_radio_binary ( __( 'Use attributes?' ), 'dbem_attributes_enabled', __( 'Select yes to enable the attributes feature','dbem' ) );
 					
-					/*Add category*/
+					/*default category*/
 					$category_options = array();
-					//$category_options[0] = __('No Category');
-					$categories = EM_Category::get();
-					foreach($categories as $cat){
-				 		$category_options[$cat['category_id']] = htmlspecialchars($cat['category_name'], ENT_QUOTES);
+					$category_options[0] = __('no default category','dbem');
+					$EM_Categories = EM_Categories::get();
+					foreach($EM_Categories as $EM_Category){
+				 		$category_options[$EM_Category->id] = $EM_Category->name;
 				 	}
-					em_options_select ( __( 'Category' ), 'dbem_category', $category_options, __( 'This option allows you to select category','dbem' ) );
+					em_options_select ( __( 'Default Category' ), 'dbem_default_category', $category_options, __( 'This option allows you to select the default category when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
 					
-					/*Add Location*/
+					/*default location*/
 					$location_options = array();
-					$location_options[0] = __('No Location');
-					$locations = EM_Locations::get();
-					foreach($locations as $loc){
-				 		$location_options[$loc->id] = $loc->name;
+					$location_options[0] = __('no default location','dbem');
+					$EM_Locations = EM_Locations::get();
+					foreach($EM_Locations as $EM_Location){
+				 		$location_options[$EM_Location->id] = $EM_Location->name;
 				 	}
-					em_options_select ( __( 'Location' ), 'dbem_location', $location_options, __( 'This option allows you to select location','dbem' ) );
-					
-					/*Add recurrence*/
-					$recurrence_options = apply_filters('em_settings_recurrence', array(
-										   'daily' => __('Daily','dbem'),
-											'weekly' => __('Weekly','dbem'),
-											'monthly' => __('Monthly','dbem')
-										)); 
-					em_options_select ( __( 'Recurrence' ), 'dbem_location', $recurrence_options, __( 'This option allows you to select recurrence','dbem' ) );					
-					
+					em_options_select ( __( 'Default Location' ), 'dbem_default_location', $location_options, __( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
+										
 					echo $save_button;
 					?>
 				</table>
@@ -191,17 +183,17 @@ function em_admin_options_page() {
 								<?php endforeach; ?>
 							</select>
 							<br/>
-							<?php _e('When Events Manager displays lists of events the default behaviour is ordering by start date in ascending order. To change this, modify the values above.','dbem'); ?>
+							<em><?php _e('When Events Manager displays lists of events the default behaviour is ordering by start date in ascending order. To change this, modify the values above.','dbem'); ?></em>
 						</td>
 				   	</tr>
 					<tr valign="top" id='dbem_events_display_time_limit'>
 				   		<th scope="row"><?php _e('Event list range limit','dbem'); ?></th>
 							<td>
-								<select name="dbem_events_display_time_limit" >
+								<select name="dbem_events_page_time_limit" >
 									<?php 
-										$limit_options = apply_filters('em_settings_events_display_time_limit', array(
-										   'no-limit' => __('No Limit','dbem'),
-											'1' => __('This Month','dbem'),
+										$limit_options = apply_filters('em_settings_events_page_time_limit_ddm', array(
+											'0' => __('no limit','dbem'),
+											'1' => __('This month','dbem'),
 											'2' => __('Next two months','dbem'),
 											'3' => __('Next three months','dbem'),
 											'6' => __('Next six months','dbem'),
@@ -209,11 +201,13 @@ function em_admin_options_page() {
 										)); 
 									?>
 									<?php foreach( $limit_options as $key => $value) : ?>   
-									<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_display_time_limit')) ? "selected='selected'" : ''; ?>>
+									<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_page_time_limit')) ? "selected='selected'" : ''; ?>>
 										<?php echo $value; ?>
 									</option>
 									<?php endforeach; ?>
 								</select>
+								<br />
+								<em><?php _e('Only show events starting within a certain time limit on the events page. Default is no time limit is applied.','dbem'); ?></em>
 							</td>
 					</tr>					
 					<?php

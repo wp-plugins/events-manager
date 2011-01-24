@@ -54,7 +54,7 @@ class EM_Categories extends EM_Object {
 		$results = (is_array($results)) ? $results:array();
 		$categories = array();
 		foreach ( $results as $category_array ){
-			$categories[] = new EM_Category($category_array);
+			$categories[$category_array['category_id']] = new EM_Category($category_array);
 		}
 		
 		return apply_filters('em_categories_get', $categories);

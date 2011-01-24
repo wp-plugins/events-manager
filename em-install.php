@@ -187,6 +187,9 @@ function em_add_options() {
 	$respondent_email_cancelled_body_localizable = __("Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_NAME on #F #j, #Y has been cancelled.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	
 	$dbem_options = array(
+		//defaults
+		'dbem_default_category'=>0,
+		'dbem_default_location'=>0,
 		//Event List Options
 		'dbem_events_default_orderby' => 'start_date,start_time,name',
 		'dbem_events_default_order' => 'ASC',
@@ -195,6 +198,7 @@ function em_add_options() {
 		'dbem_list_events_page' => 1,
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
+		'dbem_events_page_time_limit' => 0,
 		'dbem_event_list_item_format' => '<li>#j #M #Y - #H:#i<br/> #_EVENTLINK<br/>#_LOCATIONTOWN </li>',
 		'dbem_display_calendar_in_events_page' => 0,
 		'dbem_single_event_format' => '<h3>#_NAME</h3><p>#j #M #Y - #H:#i</p><p>#_LOCATIONTOWN</p>',
