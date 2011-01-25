@@ -258,6 +258,9 @@ class EM_Event extends EM_Object{
 	function save(){
 		//FIXME Event doesn't save title when inserting first time
 		global $wpdb, $current_user;
+		if( !$this->can_manage(true) ){
+			return apply_filters('em_event_save', false, $this);
+		}
 		do_action('em_event_save_pre', $this);
    		get_currentuserinfo();
 		$events_table = $wpdb->prefix.EM_EVENTS_TABLE;
@@ -343,15 +346,17 @@ class EM_Event extends EM_Object{
 	 */
 	function delete(){
 		global $wpdb;
-		//TODO when only php5, no need to pass by reference
 		do_action('em_event_delete_pre', $this);
-		if( $this->is_recurring() ){
-			//Delete the recurrences then this recurrence event
-			$this->delete_events();
-		}
-		$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". $wpdb->prefix . EM_EVENTS_TABLE ." WHERE event_id=%d", $this->id) );
-		if($result !== false){
-			$result = $this->get_bookings()->delete();
+		$result = false;
+		if( $this->can_manage(true) ){
+			if( $this->is_recurring() ){
+				//Delete the recurrences then this recurrence event
+				$this->delete_events();
+			}
+			$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". $wpdb->prefix . EM_EVENTS_TABLE ." WHERE event_id=%d", $this->id) );
+			if($result !== false){
+				$result = $this->get_bookings()->delete();
+			}
 		}
 		return apply_filters('em_event_delete', $result, $this);
 	}
@@ -363,17 +368,18 @@ class EM_Event extends EM_Object{
 	function duplicate(){
 		global $wpdb, $EZSQL_ERROR;
 		//First, duplicate.
-		$event_table_name = $wpdb->prefix . EM_EVENTS_TABLE;
-		$eventArray = $this->to_array(true);
-		unset($eventArray['event_id']);
-		$EM_Event = new EM_Event( $eventArray );
-		if( $EM_Event->save() ){
-			$EM_Event->feedback_message = __("You are now viewing the duplicated event", 'dbem');
-			return apply_filters('em_event_duplicate', $EM_Event, $this);
-		}else{
-			//TODO add error notifications for duplication failures.
-			return apply_filters('em_event_duplicate', false, $this);;
+		if( $this->can_manage(true) ){
+			$event_table_name = $wpdb->prefix . EM_EVENTS_TABLE;
+			$eventArray = $this->to_array(true);
+			unset($eventArray['event_id']);
+			$EM_Event = new EM_Event( $eventArray );
+			if( $EM_Event->save() ){
+				$EM_Event->feedback_message = __("You are now viewing the duplicated event", 'dbem');
+				return apply_filters('em_event_duplicate', $EM_Event, $this);
+			}
 		}
+		//TODO add error notifications for duplication failures.
+		return apply_filters('em_event_duplicate', false, $this);;
 	}
 	
 	
@@ -430,7 +436,10 @@ class EM_Event extends EM_Object{
 	function delete_bookings(){
 		global $wpdb;
 		do_action('em_event_delete_bookings_pre', $this);
-		$result = $wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE event_id=%d", $this->id) );
+		$result = false;
+		if( $this->can_manage(true) ){
+			$result = $wpdb->query( $wpdb->prepare("DELETE FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE event_id=%d", $this->id) );
+		}
 		return apply_filters('em_event_delete_bookings', $result, $this);
 	}
 	
@@ -484,6 +493,9 @@ class EM_Event extends EM_Object{
 			$replace = '';
 			switch( $result ){
 				//Event Details
+				case '#_EVENTID':
+					$replace = $this->name;
+					break;
 				case '#_NAME':
 					$replace = $this->name;
 					break;
@@ -662,7 +674,7 @@ class EM_Event extends EM_Object{
 	 * @return boolean
 	 */
 	function save_events() {
-		if( $this->is_recurring() ){
+		if( $this->is_recurring() && $this->can_manage() ){
 			do_action('em_event_save_events_pre', $this); //actions/filters only run if event is recurring
 			global $wpdb;
 			$event_saves = array();
@@ -688,7 +700,7 @@ class EM_Event extends EM_Object{
 		 	}
 		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves), $this);
 		}
-		return false;
+		return apply_filters('em_event_save_events', false, $this);;
 	}
 	
 	/**
@@ -700,14 +712,18 @@ class EM_Event extends EM_Object{
 		global $wpdb;
 		do_action('em_event_delete_events_pre', $this);
 		//So we don't do something we'll regret later, we could just supply the get directly into the delete, but this is safer
-		$EM_Events = EM_Events::get( array('recurrence_id'=>$this->id) );
-		$event_ids = array();
-		foreach($EM_Events as $EM_Event){
-			if($EM_Event->recurrence_id == $this->id){
-				$event_ids[] = $EM_Event->id; //ONLY ADD if id's match - hard coded
+		$result = false;
+		if( $this->can_manage(true) ){
+			$EM_Events = EM_Events::get( array('recurrence_id'=>$this->id) );
+			$event_ids = array();
+			foreach($EM_Events as $EM_Event){
+				if($EM_Event->recurrence_id == $this->id){
+					$event_ids[] = $EM_Event->id; //ONLY ADD if id's match - hard coded
+				}
 			}
+			$result = EM_Events::delete( $event_ids );
 		}
-		EM_Events::delete( $event_ids );
+		return apply_filters('delete_events', $result, $this);
 	}
 	
 	/**
@@ -738,8 +754,12 @@ class EM_Event extends EM_Object{
 	/**
 	 * Can the user manage this event? 
 	 */
-	function can_manage(){
-		return ( get_option('dbem_disable_ownership') || $this->author == get_current_user_id() || empty($this->id) || em_verify_admin() );
+	function can_manage( $error_msg = false ){
+		$can_manage = ( get_option('dbem_disable_ownership') || $this->author == get_current_user_id() || empty($this->id) || em_verify_admin() );
+		if($error_msg && !$can_manage){
+			$this->errors[] = __('You do not have permission to manage this event.','dbem');
+		}
+		return apply_filters('em_event_can_manage', $can_manage, $this);
 	}
 	
 	/**

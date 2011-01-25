@@ -54,7 +54,8 @@ function em_docs_init(){
 							'#_NAME' => array( 'desc' => 'Displays the name of the event.' ),
 							'#_NOTES' => array( 'desc' => 'Shows the description of the event.' ),
 							'#_EXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show (currently, no read more link is added).' ),
-							'#_CATEGORY' => array( 'desc' => 'Shows the category name of the event.' )
+							'#_CATEGORY' => array( 'desc' => 'Shows the category name of the event.' ),
+							'#_EVENTID' => array( 'desc' => 'Shows the event\'s corresponding ID number in the database table.' )
 						)
 					),
 					'Time' => array(
@@ -121,7 +122,8 @@ function em_docs_init(){
 							'#_LOCATIONMAP' => array( 'desc' => 'Displays a google map showing where the event is located (Will not show if maps are disabled in the settings page)' ),
 							'#_LOCATIONNOTES' => array( 'desc' => 'Shows the location description.' ),
 							'#_LOCATIONEXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your location description, only the content before this tag will show (currently, no read more link is added).' ),
-							'#_LOCATIONIMAGE' => array( 'desc' => 'Shows the location image.' )
+							'#_LOCATIONIMAGE' => array( 'desc' => 'Shows the location image.' ),
+							'#_LOCATIONID' => array( 'desc' => 'Displays the location ID number.' )
 						)
 					),
 					'Links' => array(

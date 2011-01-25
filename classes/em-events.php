@@ -105,15 +105,20 @@ class EM_Events extends EM_Object {
 			$event_ids = $array;
 		}
 		if(self::array_is_numeric($event_ids)){
-			apply_filters('em_events_delete', $event_ids);
-			$condition = implode(" OR event_id=", $event_ids);
-			//Delete all the bookings
-			$result_bookings = $wpdb->query("DELETE FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE event_id=$condition;");
-			//Now delete the events
-			$result = $wpdb->query ( "DELETE FROM ". $wpdb->prefix . EM_EVENTS_TABLE ." WHERE event_id=$condition;" );
-			do_action('em_events_delete', $event_ids);
+			//First we have to check that they're all deletable by this user.
+			if ( self::can_manage($event_ids) ) {
+				apply_filters('em_events_delete_pre', $event_ids);
+				$condition = implode(" OR event_id=", $event_ids);
+				//Delete all the bookings
+				$result_bookings = $wpdb->query("DELETE FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE event_id=$condition;");
+				//Now delete the events
+				$result = $wpdb->query ( "DELETE FROM ". $wpdb->prefix . EM_EVENTS_TABLE ." WHERE event_id=$condition;" );
+				return apply_filters('em_events_delete', true, $event_ids);
+			}else{
+				return apply_filters('em_events_delete', true, $event_ids);
+			}
 		}
-		//TODO add error detection on events delete fails
+		//TODO add better error feedback on events delete fails
 		return apply_filters('em_events_delete', true, $event_ids);
 	}
 	
@@ -186,6 +191,20 @@ class EM_Events extends EM_Object {
 		$EM_Event = $EM_Event_old;
 		$output = apply_filters('em_events_output', $output, $events, $args);
 		return $output;		
+	}
+	
+	function can_manage($event_ids){
+		global $wpdb;
+		if( em_verify_admin() ){
+			return apply_filters('em_events_can_manage', true, $event_ids);
+		}
+		if( EM_Object::array_is_numeric($event_ids) ){
+			$condition = implode(" OR event_id=", $event_ids);
+			//Delete all the bookings
+			$results = $wpdb->query("SELECT event_author FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE author_id != '". get_current_user_id() ."' event_id=$condition;");
+			return apply_filters('em_events_can_manage', (count($results) > 0), $event_ids);
+		}
+		return apply_filters('em_events_can_manage', false, $event_ids);
 	}
 
 	/* Overrides EM_Object method to apply a filter to result
