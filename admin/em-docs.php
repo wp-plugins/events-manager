@@ -54,10 +54,15 @@ function em_docs_init(){
 							'#_NAME' => array( 'desc' => 'Displays the name of the event.' ),
 							'#_NOTES' => array( 'desc' => 'Shows the description of the event.' ),
 							'#_EXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show (currently, no read more link is added).' ),
-							'#_CATEGORY' => array( 'desc' => 'Shows the category name of the event.' ),
 							'#_EVENTID' => array( 'desc' => 'Shows the event\'s corresponding ID number in the database table.' )
 						)
 					),
+					'Category Details' => array(
+						'placeholders' => array(
+							'#_CATEGORYNAME' => array( 'desc' => 'Shows the category name of the event.' ),
+							'#_CATEGORYID' => array( 'desc' => 'Shows the category ID of the event.' )
+						)
+					),					
 					'Time' => array(
 						'desc' => '',
 						'placeholders' => array(

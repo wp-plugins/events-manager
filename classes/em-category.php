@@ -23,7 +23,7 @@ class EM_Category extends EM_Object {
 	function EM_Category( $category_data = false ) {
 		//Initialize
 		$this->required_fields = array("category_name" => __('The category name', 'dbem'));
-		if( $category_data != 0 ){
+		if( $category_data != false ){
 			//Load location data
 			if( is_array($category_data) && isset($category_data['category_name']) ){
 				$category = $category_data;
@@ -99,6 +99,39 @@ class EM_Category extends EM_Object {
 	 	$affected_events = $wpdb->get_row($sql);
 		return apply_filters('em_category_has_events', (count($affected_events) > 0), $this);
 	}
+	
+	function output_single($target = 'html'){
+		$format = get_option ( 'dbem_single_category_format' );
+		return apply_filters('em_category_output_single', $this->output($format, $target), $this, $target);	
+	}
+	
+	function output($format, $target="html") {
+		$category_string = $format;		 
+		preg_match_all("/#_[A-Za-z]+/", $format, $placeholders);
+		foreach($placeholders[0] as $result) {
+			$match = true;
+			$replace = '';
+			switch( $result ){
+				case '#_CATEGORYNAME':
+					$replace = $this->name;
+					break;
+				case '#_CATEGORYID':
+					$replace = $this->id;
+					break;
+				default:
+					$match = false;
+					break;
+			}
+			if($match){ //if true, we've got a placeholder that needs replacing
+				//TODO FILTER - placeholder filter
+				$replace = apply_filters('em_category_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+				$category_string = str_replace($result, $replace , $category_string );
+			}
+		}
+		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
+		$category_string = str_replace('#_CATEGORY', apply_filters($name_filter, $this->name) , $category_string ); //Depreciated
+		return apply_filters('em_category_output', $category_string, $this, $format, $target);	
+	}	
 	
 	function can_manage(){
 		return ( get_option('dbem_disable_ownership') || $this->owner == get_current_user_id() || empty($this->id) );

@@ -273,6 +273,9 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONTOWN':
 					$replace = $this->town;
 					break;
+				case '#_LOCATIONID':
+					$replace = $this->id;
+					break;
 				default:
 					$match = false;
 					break;

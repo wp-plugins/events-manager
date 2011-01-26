@@ -52,7 +52,7 @@ function em_admin_events_page() {
 		</div>
 		<h2>	
 			<?php echo $title; ?>
- 	 		<a href="admin.php?page=events-manager-event" class="button add-new-h2"><?php _e('Add New') ?></a>
+ 	 		<a href="admin.php?page=events-manager-event" class="button add-new-h2"><?php _e('Add New','dbem'); ?></a>
  	 	</h2>
 		<?php
 			em_hello_to_new_user ();

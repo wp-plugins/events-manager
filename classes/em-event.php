@@ -121,18 +121,22 @@ class EM_Event extends EM_Object{
 				//Accepts a raw array that'll just be imported directly into the object with no DB lookups (same for event and recurrence)
 				$event = $event_data;
 				$this->location = new EM_Location( $event );
+				$this->category = new EM_Category( $event );
 			}elseif( is_numeric($event_data) && $event_data > 0 ){
 				//Retreiving from the database  
 				$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
 				$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+				$categories_table = $wpdb->prefix . EM_CATEGORIES_TABLE;
 				$sql = "
 					SELECT * FROM $events_table
 					LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id 
+					LEFT JOIN $categories_table ON {$categories_table}.category_id={$events_table}.event_category_id 
 					WHERE event_id = $event_data
 				"; //We get event and location data here to avoid extra queries
 				$event = $wpdb->get_row ( $sql, ARRAY_A );
 				//Sort Location
 				$this->location = new EM_Location ( $event );
+				$this->category = new EM_Category( $event );
 			}
 			//Sort out attributes
 			if( !empty($event['event_attributes']) ){
@@ -167,6 +171,7 @@ class EM_Event extends EM_Object{
 			}
 		}else{
 			$this->location = new EM_Location(); //blank location
+			$this->category = new EM_Category(); //blank category
 		}
 	}
 	
@@ -508,10 +513,6 @@ class EM_Event extends EM_Object{
 						$replace = $matches[0];
 					}
 					break;
-				case '#_CATEGORY':
-		      		$category = new EM_Category($this->category_id);
-					$replace = $category->name;
-					break;
 				//Times
 				case '#_24HSTARTTIME':
 				case '#_24HENDTIME':
@@ -587,7 +588,7 @@ class EM_Event extends EM_Object{
 					$replace = $this->contact->user_email;
 					break;
 				case '#_CONTACTID':
-					$replace = $this->contact_id;
+					$replace = $this->contact->ID;
 					break;
 				case '#_CONTACTPHONE':
 		      		$replace = ( $this->contact->phone != '') ? $this->contact->phone : __('N/A', 'dbem');
@@ -656,12 +657,14 @@ class EM_Event extends EM_Object{
 					//Check to see if we have a second set of braces;
 					$attString = substr( $results[1][$resultKey], 1, strlen(trim($results[1][$resultKey]))-2 );
 				}
+				$attString = apply_filters('em_event_output_placeholder', $attString, $this, $result, $target);
 			}
 			$event_string = str_replace($result, $attString ,$event_string );
 		}
 		
 		//Now do dependent objects
-		$event_string = $this->location->output($event_string, $target);		
+		$event_string = $this->location->output($event_string, $target);
+		$event_string = $this->category->output($event_string, $target);	
 		return apply_filters('em_event_output', $event_string, $this, $target);
 	}
 	

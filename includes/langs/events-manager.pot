@@ -4,211 +4,13 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Events Manager 3.0.9\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/events-manager\n"
-"POT-Creation-Date: 2011-01-12 11:16:51+00:00\n"
+"POT-Creation-Date: 2011-01-26 13:59:04+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "PO-Revision-Date: 2010-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-
-#: widgets/em-calendar.php:9
-msgid "Display your events in a calendar widget."
-msgstr ""
-
-#: widgets/em-calendar.php:10
-msgid "Events Calendar"
-msgstr ""
-
-#: widgets/em-calendar.php:32
-msgid "Calendar"
-msgstr ""
-
-#: widgets/em-calendar.php:41 widgets/em-locations.php:61
-#: widgets/em-events.php:67
-msgid "Title"
-msgstr ""
-
-#: widgets/em-calendar.php:45
-msgid "Show Long Events?"
-msgstr ""
-
-#: widgets/em-locations.php:9
-msgid "Display a list of event locations on Events Manager."
-msgstr ""
-
-#: widgets/em-locations.php:32
-msgid "No locations"
-msgstr ""
-
-#: widgets/em-locations.php:43
-msgid "Event Locations"
-msgstr ""
-
-#: widgets/em-locations.php:65
-msgid "Show number of locations"
-msgstr ""
-
-#: widgets/em-locations.php:69
-msgid "Scope of the locations"
-msgstr ""
-
-#: widgets/em-locations.php:71
-msgid "Locations with upcoming events"
-msgstr ""
-
-#: widgets/em-locations.php:72
-msgid "All locations"
-msgstr ""
-
-#: widgets/em-locations.php:73
-msgid "Locations with past events "
-msgstr ""
-
-#: widgets/em-locations.php:77
-msgid "Order of the locations"
-msgstr ""
-
-#: widgets/em-locations.php:79
-msgid "Ascendant"
-msgstr ""
-
-#: widgets/em-locations.php:80
-msgid "Descendant"
-msgstr ""
-
-#: widgets/em-locations.php:84 widgets/em-events.php:129
-msgid "List item format"
-msgstr ""
-
-#: widgets/em-events.php:9
-msgid "Display a list of events on Events Manager."
-msgstr ""
-
-#: widgets/em-events.php:32 em-install.php:200
-msgid "No events"
-msgstr ""
-
-#: widgets/em-events.php:35 widgets/em-events.php:138
-msgid "all events"
-msgstr ""
-
-#: widgets/em-events.php:47 em-template-tags.php:74 em-install.php:195
-#: em-install.php:208 em-install.php:209 em-install.php:227 em-install.php:295
-#: events-manager.php:205
-msgid "Events"
-msgstr ""
-
-#: widgets/em-events.php:71
-msgid "Number of events"
-msgstr ""
-
-#: widgets/em-events.php:76
-msgid "Time Limit"
-msgstr ""
-
-#: widgets/em-events.php:78
-msgid "This Month"
-msgstr ""
-
-#: widgets/em-events.php:79
-msgid "Next two months"
-msgstr ""
-
-#: widgets/em-events.php:80
-msgid "Next three month"
-msgstr ""
-
-#: widgets/em-events.php:81
-msgid "Next six month"
-msgstr ""
-
-#: widgets/em-events.php:82
-msgid "Next twelve month"
-msgstr ""
-
-#: widgets/em-events.php:87
-msgid "Scope of the events"
-msgstr ""
-
-#: widgets/em-events.php:89 admin/bookings/em-events.php:15
-#: admin/em-events.php:19 admin/em-events.php:63
-msgid "Future events"
-msgstr ""
-
-#: widgets/em-events.php:90 admin/bookings/em-events.php:14
-#: admin/em-events.php:18 admin/em-events.php:62
-msgid "All events"
-msgstr ""
-
-#: widgets/em-events.php:91 admin/bookings/em-events.php:13
-#: admin/em-events.php:17 admin/em-events.php:61
-msgid "Past events"
-msgstr ""
-
-#: widgets/em-events.php:95
-msgid "Order By"
-msgstr ""
-
-#: widgets/em-events.php:99
-msgid "start date, start time, event name"
-msgstr ""
-
-#: widgets/em-events.php:100
-msgid "name, start date, start time"
-msgstr ""
-
-#: widgets/em-events.php:101
-msgid "name, end date, end time"
-msgstr ""
-
-#: widgets/em-events.php:102
-msgid "end date, end time, event name"
-msgstr ""
-
-#: widgets/em-events.php:113
-msgid "Order"
-msgstr ""
-
-#: widgets/em-events.php:117 admin/em-options.php:147
-msgid "Ascending"
-msgstr ""
-
-#: widgets/em-events.php:118 admin/em-options.php:148
-msgid "Descending"
-msgstr ""
-
-#: widgets/em-events.php:133
-msgid "Show all events link at bottom?"
-msgstr ""
-
-#: widgets/em-events.php:137
-msgid "All events link text?"
-msgstr ""
-
-#: em-functions.php:5
-msgid ""
-"<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We "
-"hope you like it around here.</p> \r\n"
-"\t\t<p>Now it's time to insert events lists through  <a href='%s' "
-"title='Widgets page'>widgets</a>, <a href='%s' title='Template tags "
-"documentation'>template tags</a> or <a href='%s' title='Shortcodes "
-"documentation'>shortcodes</a>.</p>\r\n"
-"\t\t<p>By the way, have you taken a look at the <a href='%s' title='Change "
-"settings'>Settings page</a>? That's where you customize the way events and "
-"locations are displayed.</p>\r\n"
-"\t\t<p>What? Tired of seeing this advice? I hear you, <a href='%s' "
-"title='Don't show this advice again'>click here</a> and you won't see this "
-"again!</p>"
-msgstr ""
-
-#: em-functions.php:192 admin/em-options.php:251
-msgid "Yes"
-msgstr ""
-
-#: em-functions.php:193 admin/em-options.php:252
-msgid "No"
-msgstr ""
 
 #: em-ajax.php:75
 msgid "Booking Deleted"
@@ -218,56 +20,201 @@ msgstr ""
 msgid "Booking deletion unsuccessful"
 msgstr ""
 
-#: classes/em-map.php:21 classes/em-map.php:46
-msgid "Loading Map...."
+#: classes/em-booking.php:63 admin/bookings/em-events.php:136
+#: admin/em-events.php:176
+msgid "Pending"
 msgstr ""
 
-#: classes/em-map.php:55
-msgid "Map Unavailable"
+#: classes/em-booking.php:64
+msgid "Approved"
 msgstr ""
 
-#: classes/em-location.php:41
-msgid "The location name"
+#: classes/em-booking.php:65
+msgid "Rejected"
 msgstr ""
 
-#: classes/em-location.php:41
-msgid "The location address"
+#: classes/em-booking.php:66
+msgid "Cacncelled"
 msgstr ""
 
-#: classes/em-location.php:41
-msgid "The location town"
+#: classes/em-booking.php:93
+msgid "Changes saved"
 msgstr ""
 
-#: classes/em-location.php:140
-msgid "The image could not be loaded"
+#: classes/em-booking.php:97
+msgid "Your booking has been recorded"
 msgstr ""
 
-#: classes/em-location.php:171
-msgid " is missing!"
+#: classes/em-booking.php:100 classes/em-booking.php:101
+#: classes/em-booking.php:105 classes/em-booking.php:106
+msgid "There was a problem saving the booking."
 msgstr ""
 
-#: classes/em-location.php:179
-msgid "The image file is too big! Maximum size:"
+#: classes/em-booking.php:224
+msgid "Booking %s."
 msgstr ""
 
-#: classes/em-location.php:185
-msgid "The image is too big! Maximum size allowed:"
+#: classes/em-booking.php:226
+msgid "Mail Sent."
 msgstr ""
 
-#: classes/em-location.php:188
-msgid "The image is in a wrong format!"
+#: classes/em-booking.php:229
+msgid "ERROR : Mail Not Sent."
 msgstr ""
 
-#: classes/em-person.php:86 admin/em-options.php:23
-msgid "Changes saved."
+#: classes/em-booking.php:235
+msgid "Booking could not be %s."
 msgstr ""
 
-#: classes/em-person.php:86 classes/em-person.php:89
-msgid "Could not edit person details."
+#: classes/em-booking.php:309
+msgid ""
+"Confirmation email could not be sent to contact person. Registrant should "
+"have gotten their email (only admin see this warning)."
 msgstr ""
 
-#: classes/em-person.php:105
-msgid "Please provide a valid email address."
+#: classes/em-booking.php:316
+msgid ""
+"Confirmation email could not be sent to admin. Registrant should have gotten "
+"their email (only admin see this warning)."
+msgstr ""
+
+#: classes/em-event.php:269
+msgid "There was a problem saving the location so event was not saved."
+msgstr ""
+
+#: classes/em-event.php:294 classes/em-event.php:322
+msgid "Something went wrong with the recurrence update..."
+msgstr ""
+
+#: classes/em-event.php:295 classes/em-event.php:323
+msgid "There was a problem saving the recurring events."
+msgstr ""
+
+#: classes/em-event.php:300
+msgid "New recurrent event inserted!"
+msgstr ""
+
+#: classes/em-event.php:304
+msgid "New event successfully inserted!"
+msgstr ""
+
+#: classes/em-event.php:307 classes/em-event.php:330
+msgid "Could not save the event details due to a database error."
+msgstr ""
+
+#: classes/em-event.php:326
+msgid "Recurrence updated!"
+msgstr ""
+
+#: classes/em-event.php:334
+msgid "updated"
+msgstr ""
+
+#: classes/em-event.php:377
+msgid "You are now viewing the duplicated event"
+msgstr ""
+
+#: classes/em-event.php:400 classes/em-category.php:90
+msgid "Missing fields: "
+msgstr ""
+
+#: classes/em-event.php:403
+msgid "Since the event is repeated, you must specify an event date."
+msgstr ""
+
+#: classes/em-event.php:542 events-manager.php:209
+#: admin/bookings/em-rejected.php:108 admin/bookings/em-pending.php:130
+#: admin/bookings/em-cancelled.php:108 admin/bookings/em-person.php:124
+#: admin/bookings/em-confirmed.php:108
+msgid "Edit"
+msgstr ""
+
+#: classes/em-event.php:542 admin/bookings/em-events.php:101
+msgid "Event"
+msgstr ""
+
+#: classes/em-event.php:593
+msgid "N/A"
+msgstr ""
+
+#: classes/em-event.php:603
+msgid "Profile"
+msgstr ""
+
+#: classes/em-event.php:760
+msgid "You do not have permission to manage this event."
+msgstr ""
+
+#: classes/em-event.php:880
+msgid "Sunday"
+msgstr ""
+
+#: classes/em-event.php:880
+msgid "Monday"
+msgstr ""
+
+#: classes/em-event.php:880
+msgid "Tuesday"
+msgstr ""
+
+#: classes/em-event.php:880
+msgid "Wednesday"
+msgstr ""
+
+#: classes/em-event.php:880
+msgid "Thursday"
+msgstr ""
+
+#: classes/em-event.php:880
+msgid "Friday"
+msgstr ""
+
+#: classes/em-event.php:880
+msgid "Saturday"
+msgstr ""
+
+#: classes/em-event.php:881
+msgid "the first %s of the month"
+msgstr ""
+
+#: classes/em-event.php:881
+msgid "the second %s of the month"
+msgstr ""
+
+#: classes/em-event.php:881
+msgid "the third %s of the month"
+msgstr ""
+
+#: classes/em-event.php:881
+msgid "the fourth %s of the month"
+msgstr ""
+
+#: classes/em-event.php:881
+msgid "the last %s of the month"
+msgstr ""
+
+#: classes/em-event.php:882
+msgid "From %1$s to %2$s"
+msgstr ""
+
+#: classes/em-event.php:884
+msgid "everyday"
+msgstr ""
+
+#: classes/em-event.php:886
+msgid "every %s days"
+msgstr ""
+
+#: classes/em-event.php:896
+msgid "every week"
+msgstr ""
+
+#: classes/em-event.php:898
+msgid "every %s weeks"
+msgstr ""
+
+#: classes/em-event.php:910
+msgid "every %s months"
 msgstr ""
 
 #: classes/em-bookings.php:83
@@ -303,200 +250,68 @@ msgstr ""
 msgid "An error occurred."
 msgstr ""
 
-#: classes/em-booking.php:63 admin/bookings/em-events.php:136
-#: admin/em-events.php:176
-msgid "Pending"
+#: classes/em-map.php:21 classes/em-map.php:46
+msgid "Loading Map...."
 msgstr ""
 
-#: classes/em-booking.php:64
-msgid "Approved"
+#: classes/em-map.php:55
+msgid "Map Unavailable"
 msgstr ""
 
-#: classes/em-booking.php:65
-msgid "Rejected"
+#: classes/em-mailer.php:67
+msgid "Please supply a valid email format."
 msgstr ""
 
-#: classes/em-booking.php:92
-msgid "Changes saved"
+#: classes/em-person.php:86 admin/em-options.php:23
+msgid "Changes saved."
 msgstr ""
 
-#: classes/em-booking.php:96
-msgid "Your booking has been recorded"
+#: classes/em-person.php:86 classes/em-person.php:89
+msgid "Could not edit person details."
 msgstr ""
 
-#: classes/em-booking.php:99 classes/em-booking.php:100
-#: classes/em-booking.php:104 classes/em-booking.php:105
-msgid "There was a problem saving the booking."
+#: classes/em-person.php:105
+msgid "Please provide a valid email address."
 msgstr ""
 
-#: classes/em-booking.php:213
-msgid "Booking %s."
+#: classes/em-location.php:41
+msgid "The location name"
 msgstr ""
 
-#: classes/em-booking.php:215
-msgid "Mail Sent."
+#: classes/em-location.php:41
+msgid "The location address"
 msgstr ""
 
-#: classes/em-booking.php:218
-msgid "ERROR : Mail Not Sent."
+#: classes/em-location.php:41
+msgid "The location town"
 msgstr ""
 
-#: classes/em-booking.php:224
-msgid "Booking could not be %s."
+#: classes/em-location.php:140
+msgid "The image could not be loaded"
 msgstr ""
 
-#: classes/em-booking.php:293
-msgid ""
-"Confirmation email could not be sent to contact person. Registrant should "
-"have gotten their email (only admin see this warning)."
+#: classes/em-location.php:171
+msgid " is missing!"
 msgstr ""
 
-#: classes/em-booking.php:300
-msgid ""
-"Confirmation email could not be sent to admin. Registrant should have gotten "
-"their email (only admin see this warning)."
+#: classes/em-location.php:179
+msgid "The image file is too big! Maximum size:"
+msgstr ""
+
+#: classes/em-location.php:185
+msgid "The image is too big! Maximum size allowed:"
+msgstr ""
+
+#: classes/em-location.php:188
+msgid "The image is in a wrong format!"
 msgstr ""
 
 #: classes/em-category.php:25
 msgid "The category name"
 msgstr ""
 
-#: classes/em-category.php:90 classes/em-event.php:389
-msgid "Missing fields: "
-msgstr ""
-
-#: classes/em-event.php:266
-msgid "There was a problem saving the location so event was not saved."
-msgstr ""
-
-#: classes/em-event.php:286 classes/em-event.php:314
-msgid "Something went wrong with the recurrence update..."
-msgstr ""
-
-#: classes/em-event.php:287 classes/em-event.php:315
-msgid "There was a problem saving the recurring events."
-msgstr ""
-
-#: classes/em-event.php:292
-msgid "New recurrent event inserted!"
-msgstr ""
-
-#: classes/em-event.php:296
-msgid "New event successfully inserted!"
-msgstr ""
-
-#: classes/em-event.php:299 classes/em-event.php:322
-msgid "Could not save the event details due to a database error."
-msgstr ""
-
-#: classes/em-event.php:318
-msgid "Recurrence updated!"
-msgstr ""
-
-#: classes/em-event.php:326
-msgid "updated"
-msgstr ""
-
-#: classes/em-event.php:366
-msgid "You are now viewing the duplicated event"
-msgstr ""
-
-#: classes/em-event.php:392
-msgid "Since the event is repeated, you must specify an event date."
-msgstr ""
-
-#: classes/em-event.php:525 admin/bookings/em-confirmed.php:108
-#: admin/bookings/em-person.php:124 admin/bookings/em-rejected.php:108
-#: admin/bookings/em-pending.php:130 events-manager.php:208
-msgid "Edit"
-msgstr ""
-
-#: classes/em-event.php:525 admin/bookings/em-events.php:101
-msgid "Event"
-msgstr ""
-
-#: classes/em-event.php:573
-msgid "N/A"
-msgstr ""
-
-#: classes/em-event.php:583
-msgid "Profile"
-msgstr ""
-
-#: classes/em-event.php:855
-msgid "Sunday"
-msgstr ""
-
-#: classes/em-event.php:855
-msgid "Monday"
-msgstr ""
-
-#: classes/em-event.php:855
-msgid "Tuesday"
-msgstr ""
-
-#: classes/em-event.php:855
-msgid "Wednesday"
-msgstr ""
-
-#: classes/em-event.php:855
-msgid "Thursday"
-msgstr ""
-
-#: classes/em-event.php:855
-msgid "Friday"
-msgstr ""
-
-#: classes/em-event.php:855
-msgid "Saturday"
-msgstr ""
-
-#: classes/em-event.php:856
-msgid "the first %s of the month"
-msgstr ""
-
-#: classes/em-event.php:856
-msgid "the second %s of the month"
-msgstr ""
-
-#: classes/em-event.php:856
-msgid "the third %s of the month"
-msgstr ""
-
-#: classes/em-event.php:856
-msgid "the fourth %s of the month"
-msgstr ""
-
-#: classes/em-event.php:856
-msgid "the last %s of the month"
-msgstr ""
-
-#: classes/em-event.php:857
-msgid "From %1$s to %2$s"
-msgstr ""
-
-#: classes/em-event.php:859
-msgid "everyday"
-msgstr ""
-
-#: classes/em-event.php:861
-msgid "every %s days"
-msgstr ""
-
-#: classes/em-event.php:871
-msgid "every week"
-msgstr ""
-
-#: classes/em-event.php:873
-msgid "every %s weeks"
-msgstr ""
-
-#: classes/em-event.php:885
-msgid "every %s months"
-msgstr ""
-
-#: classes/em-mailer.php:67
-msgid "Please supply a valid email format."
+#: em-template-tags-depreciated.php:146
+msgid "Ach, some problems here:"
 msgstr ""
 
 #: em-bookings.php:40
@@ -512,10 +327,10 @@ msgid "Book now!"
 msgstr ""
 
 #: em-bookings.php:78 em-bookings.php:149 admin/em-categories.php:66
-#: admin/em-categories.php:73 admin/em-bookings.php:214
-#: admin/em-bookings.php:226 admin/em-admin.php:214 admin/em-locations.php:103
-#: admin/em-locations.php:111 admin/em-events.php:132 admin/em-people.php:57
-#: admin/em-people.php:145 admin/em-event.php:326
+#: admin/em-categories.php:73 admin/em-locations.php:103
+#: admin/em-locations.php:111 admin/em-event.php:338 admin/em-bookings.php:216
+#: admin/em-bookings.php:228 admin/em-people.php:57 admin/em-people.php:145
+#: admin/em-admin.php:206 admin/em-events.php:132
 msgid "Name"
 msgstr ""
 
@@ -531,7 +346,7 @@ msgstr ""
 msgid "Seats"
 msgstr ""
 
-#: em-bookings.php:93 admin/em-bookings.php:233 admin/em-people.php:149
+#: em-bookings.php:93 admin/em-bookings.php:235 admin/em-people.php:149
 msgid "Comment"
 msgstr ""
 
@@ -552,31 +367,1125 @@ msgstr ""
 msgid "Cancel your booking"
 msgstr ""
 
-#: admin/em-options.php:35 admin/em-help.php:17
+#: em-functions.php:18
+msgid ""
+"<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We "
+"hope you like it around here.</p> \r\n"
+"\t\t<p>Now it's time to insert events lists through  <a href='%s' "
+"title='Widgets page'>widgets</a>, <a href='%s' title='Template tags "
+"documentation'>template tags</a> or <a href='%s' title='Shortcodes "
+"documentation'>shortcodes</a>.</p>\r\n"
+"\t\t<p>By the way, have you taken a look at the <a href='%s' title='Change "
+"settings'>Settings page</a>? That's where you customize the way events and "
+"locations are displayed.</p>\r\n"
+"\t\t<p>What? Tired of seeing this advice? I hear you, <a href='%s' "
+"title='Don't show this advice again'>click here</a> and you won't see this "
+"again!</p>"
+msgstr ""
+
+#: em-functions.php:205 admin/em-options.php:294
+msgid "Yes"
+msgstr ""
+
+#: em-functions.php:206 admin/em-options.php:295
+msgid "No"
+msgstr ""
+
+#: events-manager.php:186 events-manager.php:216
+msgid "Settings"
+msgstr ""
+
+#: events-manager.php:206 em-template-tags.php:74 em-install.php:200
+#: em-install.php:214 em-install.php:215 em-install.php:233 em-install.php:305
+#: widgets/em-events.php:53
+msgid "Events"
+msgstr ""
+
+#: events-manager.php:210
+msgid "Add new"
+msgstr ""
+
+#: events-manager.php:211 admin/em-locations.php:65
+msgid "Locations"
+msgstr ""
+
+#: events-manager.php:213
+msgid "Bookings"
+msgstr ""
+
+#: events-manager.php:215
+msgid "Event Categories"
+msgstr ""
+
+#: events-manager.php:215 admin/em-categories.php:46
+msgid "Categories"
+msgstr ""
+
+#: events-manager.php:216
+msgid "Events Manager Settings"
+msgstr ""
+
+#: events-manager.php:217 admin/em-help.php:10
+msgid "Getting Help for Events Manager"
+msgstr ""
+
+#: events-manager.php:217
+msgid "Help"
+msgstr ""
+
+#: events-manager.php:245
+msgid "Add an event"
+msgstr ""
+
+#: em-install.php:174
+msgid "Uncategorized"
+msgstr ""
+
+#: em-install.php:182
+msgid ""
+"#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_NAME on #F #j, #Y. He wants to "
+"reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces "
+"reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/"
+">Events Manager - http://wp-events-plugin.com"
+msgstr ""
+
+#: em-install.php:182 em-install.php:183 em-install.php:184 em-install.php:185
+#: em-install.php:186 em-install.php:187
+msgid ""
+"<br/><br/>-------------------------------<br/>Powered by Events Manager - "
+"http://wp-events-plugin.com"
+msgstr ""
+
+#: em-install.php:183
+msgid ""
+"#_BOOKINGNAME (#_BOOKINGEMAIL) cancelled his booking at #_NAME on #F #j, #Y. "
+"He wanted to reserve #_BOOKINGSPACES spaces.<br/> Now there are "
+"#_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/"
+">Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com"
+msgstr ""
+
+#: em-install.php:184
+msgid ""
+"Dear #_BOOKINGNAME, <br/>you have successfully reserved #_BOOKINGSPACES "
+"space/spaces for #_NAME.<br/>Yours faithfully,<br/>#_CONTACTNAME"
+msgstr ""
+
+#: em-install.php:185
+msgid ""
+"Dear #_BOOKINGNAME, <br/>You have requested #_BOOKEDSPACES space/spaces for "
+"#_NAME.<br/>Your booking is currently pending approval by our "
+"administrators. Once approved you will receive an automatic confrimation.<br/"
+">Yours faithfully,<br/>#_CONTACTNAME"
+msgstr ""
+
+#: em-install.php:186
+msgid ""
+"Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces "
+"at #_NAME on #F #j, #Y has been rejected.<br/>Yours faithfully,<br/"
+">#_CONTACTNAME"
+msgstr ""
+
+#: em-install.php:187
+msgid ""
+"Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces "
+"at #_NAME on #F #j, #Y has been cancelled.<br/>Yours faithfully,<br/"
+">#_CONTACTNAME"
+msgstr ""
+
+#: em-install.php:206 widgets/em-events.php:38
+msgid "No events"
+msgstr ""
+
+#: em-install.php:211
+msgid "<li>No events in this location</li>"
+msgstr ""
+
+#: em-install.php:253
+msgid "New booking"
+msgstr ""
+
+#: em-install.php:255 em-install.php:263
+msgid "Booking Cancelled"
+msgstr ""
+
+#: em-install.php:257
+msgid "Reservation Pending"
+msgstr ""
+
+#: em-install.php:259
+msgid "Reservation Rejected"
+msgstr ""
+
+#: em-install.php:261
+msgid "Booking Confirmed"
+msgstr ""
+
+#. FIXME Better fallback in case of bad install
+#: em-install.php:378
+msgid ""
+"We could not mirgrate old recurrence data over. DONT WORRY! You can just "
+"delete the current plugin, and re-install the previous 2.2.2 version and you "
+"wont lose any of your data. Either way, please contact the developers to let "
+"them know of this bug."
+msgstr ""
+
+#: em-install.php:540
+msgid ""
+"Events Manager successfully imported your events, please check your records "
+"to verify."
+msgstr ""
+
+#: em-install.php:556
+msgid ""
+"Something has gone wrong when importing your old event. See the <a href=\"%s"
+"\">support page</a> for more information. <a href=\"%s\">Dismiss this "
+"message</a>"
+msgstr ""
+
+#: widgets/em-locations.php:9
+msgid "Display a list of event locations on Events Manager."
+msgstr ""
+
+#: widgets/em-locations.php:32
+msgid "No locations"
+msgstr ""
+
+#: widgets/em-locations.php:43
+msgid "Event Locations"
+msgstr ""
+
+#: widgets/em-locations.php:61 widgets/em-calendar.php:41
+#: widgets/em-events.php:70
+msgid "Title"
+msgstr ""
+
+#: widgets/em-locations.php:65
+msgid "Show number of locations"
+msgstr ""
+
+#: widgets/em-locations.php:69
+msgid "Scope of the locations"
+msgstr ""
+
+#: widgets/em-locations.php:71
+msgid "Locations with upcoming events"
+msgstr ""
+
+#: widgets/em-locations.php:72
+msgid "All locations"
+msgstr ""
+
+#: widgets/em-locations.php:73
+msgid "Locations with past events "
+msgstr ""
+
+#: widgets/em-locations.php:77
+msgid "Order of the locations"
+msgstr ""
+
+#: widgets/em-locations.php:79
+msgid "Ascendant"
+msgstr ""
+
+#: widgets/em-locations.php:80
+msgid "Descendant"
+msgstr ""
+
+#: widgets/em-locations.php:84 widgets/em-events.php:142
+msgid "List item format"
+msgstr ""
+
+#: widgets/em-calendar.php:9
+msgid "Display your events in a calendar widget."
+msgstr ""
+
+#: widgets/em-calendar.php:10
+msgid "Events Calendar"
+msgstr ""
+
+#: widgets/em-calendar.php:32
+msgid "Calendar"
+msgstr ""
+
+#: widgets/em-calendar.php:45
+msgid "Show Long Events?"
+msgstr ""
+
+#: widgets/em-events.php:9
+msgid "Display a list of events on Events Manager."
+msgstr ""
+
+#: widgets/em-events.php:41 widgets/em-events.php:61 widgets/em-events.php:151
+msgid "all events"
+msgstr ""
+
+#: widgets/em-events.php:74
+msgid "Number of events"
+msgstr ""
+
+#: widgets/em-events.php:78
+msgid "Scope of the events"
+msgstr ""
+
+#: widgets/em-events.php:80 admin/bookings/em-events.php:15
+#: admin/em-events.php:19 admin/em-events.php:63
+msgid "Future events"
+msgstr ""
+
+#: widgets/em-events.php:81 admin/bookings/em-events.php:14
+#: admin/em-events.php:18 admin/em-events.php:62
+msgid "All events"
+msgstr ""
+
+#: widgets/em-events.php:82 admin/bookings/em-events.php:13
+#: admin/em-events.php:17 admin/em-events.php:61
+msgid "Past events"
+msgstr ""
+
+#: widgets/em-events.php:86
+msgid "Time Limit"
+msgstr ""
+
+#: widgets/em-events.php:88 admin/em-options.php:195
+msgid "no limit"
+msgstr ""
+
+#: widgets/em-events.php:89 admin/em-options.php:196
+msgid "This month"
+msgstr ""
+
+#: widgets/em-events.php:90 admin/em-options.php:197
+msgid "Next two months"
+msgstr ""
+
+#: widgets/em-events.php:91
+msgid "Next three month"
+msgstr ""
+
+#: widgets/em-events.php:92
+msgid "Next six month"
+msgstr ""
+
+#: widgets/em-events.php:93
+msgid "Next twelve month"
+msgstr ""
+
+#: widgets/em-events.php:108
+msgid "Order By"
+msgstr ""
+
+#: widgets/em-events.php:112
+msgid "start date, start time, event name"
+msgstr ""
+
+#: widgets/em-events.php:113
+msgid "name, start date, start time"
+msgstr ""
+
+#: widgets/em-events.php:114
+msgid "name, end date, end time"
+msgstr ""
+
+#: widgets/em-events.php:115
+msgid "end date, end time, event name"
+msgstr ""
+
+#: widgets/em-events.php:126
+msgid "Order"
+msgstr ""
+
+#: widgets/em-events.php:130 admin/em-options.php:166
+msgid "Ascending"
+msgstr ""
+
+#: widgets/em-events.php:131 admin/em-options.php:167
+msgid "Descending"
+msgstr ""
+
+#: widgets/em-events.php:146
+msgid "Show all events link at bottom?"
+msgstr ""
+
+#: widgets/em-events.php:150
+msgid "All events link text?"
+msgstr ""
+
+#: admin/em-categories.php:10
+msgid "The category has been added."
+msgstr ""
+
+#: admin/em-categories.php:12
+msgid "The category has been updated."
+msgstr ""
+
+#: admin/em-categories.php:22 admin/em-locations.php:39 admin/em-event.php:100
+msgid "Ach, there's a problem here:"
+msgstr ""
+
+#: admin/em-categories.php:32
+msgid "Categories Deleted"
+msgstr ""
+
+#: admin/em-categories.php:65 admin/em-categories.php:72
+msgid "ID"
+msgstr ""
+
+#: admin/em-categories.php:96
+msgid "No categories have been inserted yet!"
+msgstr ""
+
+#: admin/em-categories.php:108 admin/em-categories.php:116
+msgid "Add category"
+msgstr ""
+
+#: admin/em-categories.php:112 admin/em-categories.php:163
+msgid "Category name"
+msgstr ""
+
+#: admin/em-categories.php:114 admin/em-categories.php:165
+msgid "The name of the category"
+msgstr ""
+
+#: admin/em-categories.php:137 admin/em-locations.php:144
+#: admin/em-event.php:54 admin/em-bookings.php:91 admin/em-bookings.php:140
+#: admin/em-people.php:124
+msgid "Unauthorized Access"
+msgstr ""
+
+#: admin/em-categories.php:137 admin/em-locations.php:144
+#: admin/em-event.php:54 admin/em-bookings.php:91 admin/em-bookings.php:140
+#: admin/em-people.php:124
+msgid "You do not have the rights to manage this event."
+msgstr ""
+
+#: admin/em-categories.php:147
+msgid "Edit category"
+msgstr ""
+
+#: admin/em-categories.php:168
+msgid "Update category"
+msgstr ""
+
+#: admin/em-locations.php:21
+msgid "Locations Deleted"
+msgstr ""
+
+#: admin/em-locations.php:26
+msgid "The location has been added."
+msgstr ""
+
+#: admin/em-locations.php:28
+msgid "The location has been updated."
+msgstr ""
+
+#: admin/em-locations.php:66 admin/em-events.php:55
+msgid "Add New"
+msgstr ""
+
+#: admin/em-locations.php:83 admin/bookings/em-rejected.php:45
+#: admin/bookings/em-pending.php:60 admin/bookings/em-cancelled.php:45
+#: admin/bookings/em-person.php:51 admin/bookings/em-confirmed.php:46
+#: admin/bookings/em-events.php:56 admin/em-events.php:88
+msgid "Bulk Actions"
+msgstr ""
+
+#: admin/em-locations.php:84 admin/bookings/em-events.php:57
+#: admin/em-events.php:89
+msgid "Delete selected"
+msgstr ""
+
+#: admin/em-locations.php:86 admin/bookings/em-events.php:59
+#: admin/em-events.php:91
+msgid "Apply"
+msgstr ""
+
+#: admin/em-locations.php:104 admin/em-locations.php:112
+#: admin/em-admin.php:209
+msgid "Address"
+msgstr ""
+
+#: admin/em-locations.php:105 admin/em-locations.php:113
+#: admin/em-admin.php:210
+msgid "Town"
+msgstr ""
+
+#: admin/em-locations.php:132
+msgid "No venues have been inserted yet!"
+msgstr ""
+
+#: admin/em-locations.php:149
+msgid "Add location"
+msgstr ""
+
+#: admin/em-locations.php:152
+msgid "Edit location"
+msgstr ""
+
+#: admin/em-locations.php:173
+msgid "Location name"
+msgstr ""
+
+#: admin/em-locations.php:175
+msgid "The name of the location"
+msgstr ""
+
+#: admin/em-locations.php:179
+msgid "Location address"
+msgstr ""
+
+#: admin/em-locations.php:181
+msgid "The address of the location"
+msgstr ""
+
+#: admin/em-locations.php:186
+msgid "Location town"
+msgstr ""
+
+#: admin/em-locations.php:188
+msgid "The town where the location is located"
+msgstr ""
+
+#: admin/em-locations.php:200
+msgid "Location map"
+msgstr ""
+
+#: admin/em-locations.php:203 admin/em-event.php:454
+msgid "Location not found"
+msgstr ""
+
+#: admin/em-locations.php:212
+msgid "Location description"
+msgstr ""
+
+#: admin/em-locations.php:218
+msgid "A description of the Location. You may include any kind of info here."
+msgstr ""
+
+#: admin/em-locations.php:223
+msgid "Location image"
+msgstr ""
+
+#: admin/em-locations.php:228
+msgid "No image uploaded for this location yet"
+msgstr ""
+
+#: admin/em-locations.php:233
+msgid "Upload/change picture"
+msgstr ""
+
+#: admin/em-locations.php:237
+msgid "Update location"
+msgstr ""
+
+#: admin/em-event.php:30
+msgid "There was an error duplicating the event. Try again maybe?"
+msgstr ""
+
+#: admin/em-event.php:61 admin/em-event.php:208 admin/em-events.php:205
+msgid "Reschedule"
+msgstr ""
+
+#: admin/em-event.php:63
+msgid "Edit Event"
+msgstr ""
+
+#: admin/em-event.php:67
+msgid "Insert New Event"
+msgstr ""
+
+#: admin/em-event.php:94
+msgid "Mon"
+msgstr ""
+
+#: admin/em-event.php:94
+msgid "Tue"
+msgstr ""
+
+#: admin/em-event.php:94
+msgid "Wed"
+msgstr ""
+
+#: admin/em-event.php:94
+msgid "Thu"
+msgstr ""
+
+#: admin/em-event.php:94
+msgid "Fri"
+msgstr ""
+
+#: admin/em-event.php:94
+msgid "Sat"
+msgstr ""
+
+#: admin/em-event.php:94
+msgid "Sun"
+msgstr ""
+
+#: admin/em-event.php:120
+msgid "WARNING: This is a recurring event."
+msgstr ""
+
+#: admin/em-event.php:122
+msgid ""
+"Modifying these data all the events linked to this recurrence will be "
+"rescheduled"
+msgstr ""
+
+#: admin/em-event.php:124
+msgid "and all booking information will be deleted!"
+msgstr ""
+
+#. TODO Terminology confusing with methods, maybe worth changing?
+#: admin/em-event.php:127
+msgid "WARNING: This is a recurrence."
+msgstr ""
+
+#: admin/em-event.php:129
+msgid ""
+"If you change these data and save, this will become an independent event."
+msgstr ""
+
+#: admin/em-event.php:144
+msgid "Recurrence"
+msgstr ""
+
+#: admin/em-event.php:151
+msgid "Repeated event"
+msgstr ""
+
+#: admin/em-event.php:158
+msgid "Daily"
+msgstr ""
+
+#: admin/em-event.php:158
+msgid "Weekly"
+msgstr ""
+
+#: admin/em-event.php:158
+msgid "Monthly"
+msgstr ""
+
+#: admin/em-event.php:164 admin/em-event.php:187
+msgid "Every"
+msgstr ""
+
+#: admin/em-event.php:167
+msgid "day"
+msgstr ""
+
+#: admin/em-event.php:169
+msgid "days"
+msgstr ""
+
+#: admin/em-event.php:171
+msgid "week"
+msgstr ""
+
+#: admin/em-event.php:173
+msgid "weeks"
+msgstr ""
+
+#: admin/em-event.php:175
+msgid "month"
+msgstr ""
+
+#: admin/em-event.php:177
+msgid "months"
+msgstr ""
+
+#: admin/em-event.php:190
+msgid "first"
+msgstr ""
+
+#: admin/em-event.php:190
+msgid "second"
+msgstr ""
+
+#: admin/em-event.php:190
+msgid "third"
+msgstr ""
+
+#: admin/em-event.php:190
+msgid "fourth"
+msgstr ""
+
+#: admin/em-event.php:190
+msgid "last"
+msgstr ""
+
+#: admin/em-event.php:201
+msgid ""
+"Check if your event happens more than once according to a regular pattern"
+msgstr ""
+
+#: admin/em-event.php:213
+msgid "This is't a recurrent event"
+msgstr ""
+
+#: admin/em-event.php:226
+msgid "Contact Person"
+msgstr ""
+
+#: admin/em-event.php:229
+msgid "Contact"
+msgstr ""
+
+#: admin/em-event.php:231
+msgid "Select..."
+msgstr ""
+
+#: admin/em-event.php:242
+msgid "RSVP"
+msgstr ""
+
+#: admin/em-event.php:246
+msgid "Enable registration for this event"
+msgstr ""
+
+#: admin/em-event.php:257 admin/em-bookings.php:234
+msgid "Spaces"
+msgstr ""
+
+#: admin/em-event.php:269
+msgid "Available Spaces"
+msgstr ""
+
+#: admin/em-event.php:270
+msgid "Confirmed Spaces"
+msgstr ""
+
+#: admin/em-event.php:271
+msgid "Pending Spaces"
+msgstr ""
+
+#: admin/em-event.php:278
+msgid "manage bookings"
+msgstr ""
+
+#: admin/em-event.php:279
+msgid "printable view"
+msgstr ""
+
+#: admin/em-event.php:287
+msgid "No responses yet!"
+msgstr ""
+
+#: admin/em-event.php:304 admin/em-events.php:169
+msgid "Category"
+msgstr ""
+
+#: admin/em-event.php:309
+msgid "Category:"
+msgstr ""
+
+#: admin/em-event.php:311
+msgid "no category"
+msgstr ""
+
+#: admin/em-event.php:325
+msgid "No categories available, <a href=\"%s\">create one here first</a>"
+msgstr ""
+
+#: admin/em-event.php:343
+msgid "The event name. Example: Birthday party"
+msgstr ""
+
+#: admin/em-event.php:348
+msgid "Event date"
+msgstr ""
+
+#: admin/em-event.php:351
+msgid "Recurrence dates"
+msgstr ""
+
+#: admin/em-event.php:361
+msgid "The event date."
+msgstr ""
+
+#: admin/em-event.php:364
+msgid ""
+"When not reoccurring, this event spans between the beginning and end date."
+msgstr ""
+
+#: admin/em-event.php:369
+msgid "The recurrence beginning and end date."
+msgstr ""
+
+#: admin/em-event.php:375
+msgid "Event time"
+msgstr ""
+
+#: admin/em-event.php:382
+msgid "The time of the event beginning and end"
+msgstr ""
+
+#: admin/em-event.php:387
+msgid "Coordinates"
+msgstr ""
+
+#: admin/em-event.php:397 admin/em-bookings.php:116 admin/em-admin.php:208
+#: admin/em-events.php:134
+msgid "Location"
+msgstr ""
+
+#: admin/em-event.php:406
+msgid "Location:"
+msgstr ""
+
+#: admin/em-event.php:423
+msgid ""
+"The name of the location where the event takes place. You can use the name "
+"of a venue, a square, etc"
+msgstr ""
+
+#: admin/em-event.php:428
+msgid "Name:"
+msgstr ""
+
+#: admin/em-event.php:431
+msgid "Select a location for your event"
+msgstr ""
+
+#: admin/em-event.php:435
+msgid "Address:"
+msgstr ""
+
+#: admin/em-event.php:438
+msgid ""
+"The address of the location where the event takes place. Example: 21, "
+"Dominick Street"
+msgstr ""
+
+#: admin/em-event.php:442
+msgid "Town:"
+msgstr ""
+
+#: admin/em-event.php:445
+msgid ""
+"The town where the location is located. If you're using the Google Map "
+"integration and want to avoid geotagging ambiguities include the country in "
+"the town field. Example: Verona, Italy."
+msgstr ""
+
+#: admin/em-event.php:465
+msgid "Details"
+msgstr ""
+
+#: admin/em-event.php:472
+msgid "Details about the event"
+msgstr ""
+
+#: admin/em-event.php:479
+msgid "Attributes"
+msgstr ""
+
+#: admin/em-event.php:534
+msgid "Not defined in templates"
+msgstr ""
+
+#: admin/em-event.php:578
+msgid ""
+"In order to use attributes, you must define some in your templates, "
+"otherwise they'll never show. Go to Events > Settings to add attribute "
+"placeholders."
+msgstr ""
+
+#: admin/em-event.php:590
+msgid "Submit Event"
+msgstr ""
+
+#: admin/em-event.php:604
+msgid ""
+"Are you sure you want to reschedule this recurring event? If you do this, "
+"you will lose all booking information and the old recurring events will be "
+"deleted."
+msgstr ""
+
+#: admin/em-event.php:614
+msgid ""
+"Are you sure you want to disable bookings? If you do this and save, you will "
+"lose all previous bookings. If you wish to prevent further bookings, reduce "
+"the number of seats available to the amount of bookings you currently have"
+msgstr ""
+
+#: admin/em-bookings.php:73
+msgid "Event Bookings Dashboard"
+msgstr ""
+
+#: admin/em-bookings.php:75 admin/em-bookings.php:120
+msgid "Pending Bookings"
+msgstr ""
+
+#: admin/em-bookings.php:77
+msgid "Events With Bookings Enabled"
+msgstr ""
+
+#: admin/em-bookings.php:103
+msgid "Manage %s Bookings"
+msgstr ""
+
+#: admin/em-bookings.php:104
+msgid "View/Edit Event"
+msgstr ""
+
+#: admin/em-bookings.php:107
+msgid "Event Name"
+msgstr ""
+
+#: admin/em-bookings.php:108
+msgid "Seats confirmed"
+msgstr ""
+
+#: admin/em-bookings.php:110 admin/em-admin.php:207
+msgid "Date"
+msgstr ""
+
+#: admin/em-bookings.php:122
+msgid "Confirmed Bookings"
+msgstr ""
+
+#: admin/em-bookings.php:124
+msgid "Rejected Bookings"
+msgstr ""
+
+#: admin/em-bookings.php:126
+msgid "Cancelled Bookings"
+msgstr ""
+
+#: admin/em-bookings.php:150
+msgid "Edit Booking"
+msgstr ""
+
+#: admin/em-bookings.php:157
+msgid "Booking Details"
+msgstr ""
+
+#: admin/em-bookings.php:183
+msgid "Manage Person's Booking"
+msgstr ""
+
+#: admin/em-bookings.php:184
+msgid ""
+"Are you sure you want to delete this person? All bookings corresponding to "
+"this person will be deleted and this is not reversible."
+msgstr ""
+
+#: admin/em-bookings.php:184
+msgid "Delete Person"
+msgstr ""
+
+#: admin/em-bookings.php:191
+msgid "Personal Details"
+msgstr ""
+
+#: admin/em-bookings.php:201
+msgid "Past And Present Bookings"
+msgstr ""
+
+#: admin/em-bookings.php:218
+msgid "Date/Time"
+msgstr ""
+
+#: admin/em-bookings.php:229 admin/em-people.php:58 admin/em-people.php:187
+msgid "Phone"
+msgstr ""
+
+#: admin/em-bookings.php:230 admin/em-people.php:59 admin/em-people.php:146
+msgid "E-mail"
+msgstr ""
+
+#: admin/em-bookings.php:238 admin/em-people.php:62
+msgid "Save"
+msgstr ""
+
+#: admin/bookings/em-rejected.php:34 admin/bookings/em-rejected.php:36
+#: admin/bookings/em-pending.php:49 admin/bookings/em-pending.php:51
+#: admin/bookings/em-cancelled.php:34 admin/bookings/em-cancelled.php:36
+#: admin/bookings/em-person.php:40 admin/bookings/em-person.php:42
+#: admin/bookings/em-confirmed.php:35 admin/bookings/em-confirmed.php:37
+msgid "Search"
+msgstr ""
+
+#: admin/bookings/em-rejected.php:48 admin/bookings/em-rejected.php:107
+#: admin/bookings/em-pending.php:63 admin/bookings/em-pending.php:128
+#: admin/bookings/em-cancelled.php:48 admin/bookings/em-cancelled.php:107
+#: admin/bookings/em-person.php:54 admin/bookings/em-person.php:116
+#: admin/bookings/em-confirmed.php:49
+msgid "Approve"
+msgstr ""
+
+#: admin/bookings/em-rejected.php:51 admin/bookings/em-pending.php:66
+#: admin/bookings/em-cancelled.php:51 admin/bookings/em-person.php:57
+#: admin/bookings/em-confirmed.php:52
+msgid "Decline"
+msgstr ""
+
+#: admin/bookings/em-rejected.php:109 admin/bookings/em-cancelled.php:109
+#: admin/bookings/em-person.php:125
+msgid "Delete"
+msgstr ""
+
+#: admin/bookings/em-rejected.php:121
+msgid "No rejected bookings."
+msgstr ""
+
+#: admin/bookings/em-pending.php:129 admin/bookings/em-person.php:122
+msgid "Reject"
+msgstr ""
+
+#: admin/bookings/em-pending.php:142
+msgid "No pending bookings."
+msgstr ""
+
+#: admin/bookings/em-cancelled.php:121
+msgid "No cancelled bookings."
+msgstr ""
+
+#: admin/bookings/em-person.php:119 admin/bookings/em-confirmed.php:107
+msgid "Unapprove"
+msgstr ""
+
+#: admin/bookings/em-person.php:137 admin/bookings/em-confirmed.php:120
+msgid "No confirmed bookings."
+msgstr ""
+
+#: admin/bookings/em-events.php:29 admin/em-events.php:32
+msgid "Past Events"
+msgstr ""
+
+#: admin/bookings/em-events.php:32 admin/em-events.php:35
+msgid "All Events"
+msgstr ""
+
+#: admin/bookings/em-events.php:35 admin/em-events.php:38
+msgid "Future Events"
+msgstr ""
+
+#: admin/bookings/em-events.php:50 admin/em-events.php:77
+msgid "Total"
+msgstr ""
+
+#: admin/bookings/em-events.php:71 admin/em-events.php:102
+msgid "Filter"
+msgstr ""
+
+#. TODO localize
+#. TODO localize
+#: admin/bookings/em-events.php:91 admin/em-events.php:122
+msgid "no events"
+msgstr ""
+
+#: admin/bookings/em-events.php:102 admin/em-events.php:135
+msgid "Date and time"
+msgstr ""
+
+#: admin/bookings/em-events.php:134 admin/em-events.php:174
+msgid "Booked Seats"
+msgstr ""
+
+#: admin/em-help.php:15
+msgid "Placeholders for customizing event pages"
+msgstr ""
+
+#: admin/em-help.php:16
+msgid ""
+"In the <a href='%s'>settings page</a>, you'll find various textboxes where "
+"you can edit how event information looks, such as for event and location "
+"lists. Using the placeholders below, you can choose what information should "
+"be displayed."
+msgstr ""
+
+#: admin/em-help.php:17 admin/em-options.php:35
 msgid "Event Related Placeholders"
 msgstr ""
 
-#: admin/em-options.php:36 admin/em-help.php:19
+#: admin/em-help.php:19 admin/em-options.php:36
 msgid "Location Related Placeholders"
 msgstr ""
 
-#: admin/em-options.php:37 admin/em-help.php:21
+#: admin/em-help.php:21 admin/em-options.php:37
 msgid "Booking Related Placeholders"
 msgstr ""
 
+#: admin/em-people.php:81
+msgid "No people have responded to your events yet!"
+msgstr ""
+
+#: admin/em-people.php:84
+msgid ""
+"This table collects the data about the people who responded to your events"
+msgstr ""
+
+#: admin/em-people.php:142
+msgid "Bookings data"
+msgstr ""
+
+#: admin/em-people.php:163
+msgid "Booked"
+msgstr ""
+
+#: admin/em-people.php:168
+msgid "Available"
+msgstr ""
+
+#. #-#-#-#-#  plugin.pot (Events Manager 3.0.9)  #-#-#-#-#
+#. Plugin Name of the plugin/theme
+#: admin/em-people.php:187
+msgid "Events Manager"
+msgstr ""
+
+#: admin/em-admin.php:16
+msgid ""
+"This page corresponds to <strong>Events Manager</strong> events page. Its "
+"content will be overriden by <strong>Events Manager</strong>. If you want to "
+"display your content, you can can assign another page to <strong>Events "
+"Manager</strong> in the the <a href='%s'>Settings</a>. "
+msgstr ""
+
+#: admin/em-admin.php:28
+msgid ""
+"Uh Oh! For some reason wordpress could not create an events page for you (or "
+"you just deleted it). Not to worry though, all you have to do is create an "
+"empty page, name it whatever you want, and select it as your events page in "
+"your <a href=\"%s\">settings page</a>. Sorry for the extra step! If you know "
+"what you are doing, you may have done this on purpose, if so <a href=\"%s"
+"\">ignore this message</a>"
+msgstr ""
+
+#: admin/em-admin.php:40
+msgid ""
+"Events Manager now has booking approvals! Bookings can now be approved "
+"before they count towards your event's space allocations.<br/><br/>This is "
+"enabled by default, but since you upgraded it has been disabled to maintain "
+"the previous plugin behaviour. You can re-enable it from the <a href=\"%s"
+"\">settings page</a>. <a href=\"%s\">Dismiss</a>"
+msgstr ""
+
+#: admin/em-admin.php:60
+msgid "Displaying %s&#8211;%s of %s"
+msgstr ""
+
+#: admin/em-admin.php:224
+msgid "Some required fields are missing:"
+msgstr ""
+
+#: admin/em-admin.php:227
+msgid "Since the event is repeated, you must specify an end date"
+msgstr ""
+
 #: admin/em-options.php:38
-msgid "This textbox accepts %s and %s placeholders."
+msgid "This accepts %s and %s placeholders."
 msgstr ""
 
 #: admin/em-options.php:39
-msgid "This textbox accepts %s placeholders."
+msgid "This accepts %s placeholders."
 msgstr ""
 
 #: admin/em-options.php:40
-msgid "This textbox accepts %s, %s and %s placeholders."
+msgid "This accepts %s, %s and %s placeholders."
 msgstr ""
 
-#: admin/em-options.php:42 admin/em-options.php:332
+#: admin/em-options.php:42 admin/em-options.php:391
 msgid "Save Changes"
 msgstr ""
 
@@ -596,10 +1505,10 @@ msgstr ""
 msgid "Event Manager Options"
 msgstr ""
 
-#: admin/em-options.php:86 admin/em-options.php:104 admin/em-options.php:178
-#: admin/em-options.php:197 admin/em-options.php:213 admin/em-options.php:229
-#: admin/em-options.php:244 admin/em-options.php:265 admin/em-options.php:300
-#: admin/em-options.php:319
+#: admin/em-options.php:86 admin/em-options.php:123 admin/em-options.php:221
+#: admin/em-options.php:240 admin/em-options.php:256 admin/em-options.php:272
+#: admin/em-options.php:287 admin/em-options.php:308 admin/em-options.php:359
+#: admin/em-options.php:378
 msgid "Click to toggle"
 msgstr ""
 
@@ -660,50 +1569,80 @@ msgstr ""
 msgid "Select yes to enable the attributes feature"
 msgstr ""
 
-#: admin/em-options.php:104 admin/em-options.php:118
-msgid "Events page"
+#: admin/em-options.php:99
+msgid "no default category"
+msgstr ""
+
+#: admin/em-options.php:104
+msgid "Default Category"
+msgstr ""
+
+#: admin/em-options.php:104
+msgid ""
+"This option allows you to select the default category when adding an event."
+msgstr ""
+
+#: admin/em-options.php:104 admin/em-options.php:113
+msgid "(not applicable with event ownership on presently, coming soon!)"
+msgstr ""
+
+#: admin/em-options.php:108
+msgid "no default location"
 msgstr ""
 
 #: admin/em-options.php:113
+msgid "Default Location"
+msgstr ""
+
+#: admin/em-options.php:113
+msgid ""
+"This option allows you to select the default location when adding an event."
+msgstr ""
+
+#: admin/em-options.php:123 admin/em-options.php:137
+msgid "Events page"
+msgstr ""
+
+#: admin/em-options.php:132
 msgid "[No Events Page]"
 msgstr ""
 
-#: admin/em-options.php:118
+#: admin/em-options.php:137
 msgid "This option allows you to select which page to use as an events page"
 msgstr ""
 
-#: admin/em-options.php:121
+#: admin/em-options.php:140
 msgid "Show events page in lists?"
 msgstr ""
 
-#: admin/em-options.php:121
+#: admin/em-options.php:140
 msgid ""
 "Check this option if you want the events page to appear together with other "
 "pages in pages lists."
 msgstr ""
 
-#: admin/em-options.php:122
+#: admin/em-options.php:141
 msgid "Display calendar in events page?"
 msgstr ""
 
-#: admin/em-options.php:122
+#: admin/em-options.php:141
 msgid ""
 "This options allows to display the calendar in the events page, instead of "
 "the default list. It is recommended not to display both the calendar widget "
 "and a calendar page."
 msgstr ""
 
-#: admin/em-options.php:122
+#: admin/em-options.php:141
 msgid ""
 "If you would like to show events that span over more than one day, see the "
 "Calendar section on this page."
 msgstr ""
 
-#: admin/em-options.php:123
+#: admin/em-options.php:142
 msgid "Disable title rewriting?"
 msgstr ""
 
-#: admin/em-options.php:123
+#: admin/em-options.php:142
 msgid ""
 "Some wordpress themes don't follow best practices when generating navigation "
 "menus, and so the automatic title rewriting feature may cause problems, if "
@@ -711,11 +1650,11 @@ msgid ""
 "'Yes', and provide an appropriate HTML title format below."
 msgstr ""
 
-#: admin/em-options.php:124
+#: admin/em-options.php:143
 msgid "Event Manager titles"
 msgstr ""
 
-#: admin/em-options.php:124
+#: admin/em-options.php:143
 msgid ""
 "This only setting only matters if you selected 'Yes' to above. You will "
 "notice the events page titles aren't being rewritten, and you have a new "
@@ -725,118 +1664,140 @@ msgid ""
 "this title, see settings further down for page titles."
 msgstr ""
 
-#: admin/em-options.php:125
+#: admin/em-options.php:144
 msgid "Event List Limits"
 msgstr ""
 
-#: admin/em-options.php:125
+#: admin/em-options.php:144
 msgid "This will control how many events are shown on one list by default."
 msgstr ""
 
-#: admin/em-options.php:128
+#: admin/em-options.php:147
 msgid "Default event list ordering"
 msgstr ""
 
-#: admin/em-options.php:133
+#: admin/em-options.php:152
 msgid "Order by start date, start time, then event name"
 msgstr ""
 
-#: admin/em-options.php:134
+#: admin/em-options.php:153
 msgid "Order by name, start date, then start time"
 msgstr ""
 
-#: admin/em-options.php:135
+#: admin/em-options.php:154
 msgid "Order by name, end date, then end time"
 msgstr ""
 
-#: admin/em-options.php:136
+#: admin/em-options.php:155
 msgid "Order by end date, end time, then event name"
 msgstr ""
 
-#: admin/em-options.php:150
+#: admin/em-options.php:169
 msgid "All Ascending"
 msgstr ""
 
-#: admin/em-options.php:153
+#: admin/em-options.php:172
 msgid "All Descending"
 msgstr ""
 
-#: admin/em-options.php:167
+#: admin/em-options.php:186
 msgid ""
 "When Events Manager displays lists of events the default behaviour is "
 "ordering by start date in ascending order. To change this, modify the values "
 "above."
 msgstr ""
 
-#: admin/em-options.php:178
+#: admin/em-options.php:190
+msgid "Event list range limit"
+msgstr ""
+
+#: admin/em-options.php:198
+msgid "Next three months"
+msgstr ""
+
+#: admin/em-options.php:199
+msgid "Next six months"
+msgstr ""
+
+#: admin/em-options.php:200
+msgid "Next twelve months"
+msgstr ""
+
+#: admin/em-options.php:210
+msgid ""
+"Only show events starting within a certain time limit on the events page. "
+"Default is no time limit is applied."
+msgstr ""
+
+#: admin/em-options.php:221
 msgid "Events format"
 msgstr ""
 
-#: admin/em-options.php:182
+#: admin/em-options.php:225
 msgid "Default event list format header"
 msgstr ""
 
-#: admin/em-options.php:182
+#: admin/em-options.php:225
 msgid ""
 "This content will appear just above your code for the default event list "
 "format. Default is blank"
 msgstr ""
 
-#: admin/em-options.php:183
+#: admin/em-options.php:226
 msgid "Default event list format"
 msgstr ""
 
-#: admin/em-options.php:183
+#: admin/em-options.php:226
 msgid "The format of any events in a list."
 msgstr ""
 
-#: admin/em-options.php:184
+#: admin/em-options.php:227
 msgid "Default event list format footer"
 msgstr ""
 
-#: admin/em-options.php:184
+#: admin/em-options.php:227
 msgid ""
 "This content will appear just below your code for the default event list "
 "format. Default is blank"
 msgstr ""
 
-#: admin/em-options.php:185
+#: admin/em-options.php:228
 msgid "Single event page title format"
 msgstr ""
 
-#: admin/em-options.php:185
+#: admin/em-options.php:228
 msgid "The format of a single event page title."
 msgstr ""
 
-#: admin/em-options.php:186
+#: admin/em-options.php:229
 msgid "Default single event format"
 msgstr ""
 
-#: admin/em-options.php:186
+#: admin/em-options.php:229
 msgid "The format of a single event page."
 msgstr ""
 
-#: admin/em-options.php:187
+#: admin/em-options.php:230
 msgid "Events page title"
 msgstr ""
 
-#: admin/em-options.php:187
+#: admin/em-options.php:230
 msgid "The title on the multiple events page."
 msgstr ""
 
-#: admin/em-options.php:188
+#: admin/em-options.php:231
 msgid "No events message"
 msgstr ""
 
-#: admin/em-options.php:188
+#: admin/em-options.php:231
 msgid "The message displayed when no events are available."
 msgstr ""
 
-#: admin/em-options.php:189
+#: admin/em-options.php:232
 msgid "List events by date title"
 msgstr ""
 
-#: admin/em-options.php:189
+#: admin/em-options.php:232
 msgid ""
 "If viewing a page for events on a specific date, this is the title that "
 "would show up. To insert date values, use <a href=\"http://www.php.net/"
@@ -845,1274 +1806,437 @@ msgid ""
 "<code>#j</code>, etc.<br/>"
 msgstr ""
 
-#: admin/em-options.php:197
+#: admin/em-options.php:240
 msgid "Calendar format"
 msgstr ""
 
-#: admin/em-options.php:201
+#: admin/em-options.php:244
 msgid "Small calendar title"
 msgstr ""
 
-#: admin/em-options.php:201
+#: admin/em-options.php:244
 msgid ""
 "The format of the title, corresponding to the text that appears when "
 "hovering on an eventful calendar day."
 msgstr ""
 
-#: admin/em-options.php:202
+#: admin/em-options.php:245
 msgid "Small calendar title separator"
 msgstr ""
 
-#: admin/em-options.php:202
+#: admin/em-options.php:245
 msgid ""
 "The separator appearing on the above title when more than one events are "
 "taking place on the same day."
 msgstr ""
 
-#: admin/em-options.php:203
+#: admin/em-options.php:246
 msgid "Full calendar events format"
 msgstr ""
 
-#: admin/em-options.php:203
+#: admin/em-options.php:246
 msgid ""
 "The format of each event when displayed in the full calendar. Remember to "
 "include <code>li</code> tags before and after the event."
 msgstr ""
 
-#: admin/em-options.php:204
+#: admin/em-options.php:247
 msgid "Show long events on calendar pages?"
 msgstr ""
 
-#: admin/em-options.php:204
+#: admin/em-options.php:247
 msgid ""
 "If you are showing a calendar on the events page (see Events format section "
 "on this page), you have the option of showing events that span over days on "
 "each day it occurs."
 msgstr ""
 
-#: admin/em-options.php:205
+#: admin/em-options.php:248
 msgid "Show list on day with single event?"
 msgstr ""
 
-#: admin/em-options.php:205
+#: admin/em-options.php:248
 msgid ""
 "By default, if a calendar day only has one event, it display a single event "
 "when clicking on the link of that calendar date. If you select Yes here, you "
 "will get always see a list of events."
 msgstr ""
 
-#: admin/em-options.php:213
+#: admin/em-options.php:256
 msgid "Locations format"
 msgstr ""
 
-#: admin/em-options.php:217
+#: admin/em-options.php:260
 msgid "Single location page title format"
 msgstr ""
 
-#: admin/em-options.php:217
+#: admin/em-options.php:260
 msgid "The format of a single location page title."
 msgstr ""
 
-#: admin/em-options.php:218
+#: admin/em-options.php:261
 msgid "Default single location page format"
 msgstr ""
 
-#: admin/em-options.php:218
+#: admin/em-options.php:261
 msgid "The format of a single location page."
 msgstr ""
 
-#: admin/em-options.php:219
+#: admin/em-options.php:262
 msgid "Default location balloon format"
 msgstr ""
 
-#: admin/em-options.php:219
+#: admin/em-options.php:262
 msgid ""
 "The format of of the text appearing in the baloon describing the location in "
 "the map."
 msgstr ""
 
-#: admin/em-options.php:220
+#: admin/em-options.php:263
 msgid "Default location event list format"
 msgstr ""
 
-#: admin/em-options.php:220
+#: admin/em-options.php:263
 msgid ""
 "The format of the events the list inserted in the location page through the "
 "<code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</"
 "code> element."
 msgstr ""
 
-#: admin/em-options.php:221
+#: admin/em-options.php:264
 msgid "Default no events message"
 msgstr ""
 
-#: admin/em-options.php:221
+#: admin/em-options.php:264
 msgid ""
 "The message to be displayed in the list generated by <code>#_NEXTEVENTS</"
 "code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events "
 "are available."
 msgstr ""
 
-#: admin/em-options.php:229
+#: admin/em-options.php:272
 msgid "RSS feed format"
 msgstr ""
 
-#: admin/em-options.php:233
+#: admin/em-options.php:276
 msgid "RSS main title"
 msgstr ""
 
-#: admin/em-options.php:233
+#: admin/em-options.php:276
 msgid "The main title of your RSS events feed."
 msgstr ""
 
-#: admin/em-options.php:234
+#: admin/em-options.php:277
 msgid "RSS main description"
 msgstr ""
 
-#: admin/em-options.php:234
+#: admin/em-options.php:277
 msgid "The main description of your RSS events feed."
 msgstr ""
 
-#: admin/em-options.php:235
+#: admin/em-options.php:278
 msgid "RSS title format"
 msgstr ""
 
-#: admin/em-options.php:235
+#: admin/em-options.php:278
 msgid "The format of the title of each item in the events RSS feed."
 msgstr ""
 
-#: admin/em-options.php:236
+#: admin/em-options.php:279
 msgid "RSS description format"
 msgstr ""
 
-#: admin/em-options.php:236
+#: admin/em-options.php:279
 msgid "The format of the description of each item in the events RSS feed."
 msgstr ""
 
-#: admin/em-options.php:244
+#: admin/em-options.php:287
 msgid "Maps and geotagging"
 msgstr ""
 
-#: admin/em-options.php:249
+#: admin/em-options.php:292
 msgid "Enable Google Maps integration?"
 msgstr ""
 
-#: admin/em-options.php:253
+#: admin/em-options.php:296
 msgid "Check this option to enable Goggle Map integration."
 msgstr ""
 
-#: admin/em-options.php:257
+#: admin/em-options.php:300
 msgid "Map text format"
 msgstr ""
 
-#: admin/em-options.php:257
+#: admin/em-options.php:300
 msgid "The text format inside the map balloons."
 msgstr ""
 
-#: admin/em-options.php:265
+#: admin/em-options.php:308
 msgid "RSVP and bookings"
 msgstr ""
 
-#: admin/em-options.php:269
+#: admin/em-options.php:312
 msgid "Default contact person"
 msgstr ""
 
-#: admin/em-options.php:269
+#: admin/em-options.php:312
 msgid ""
 "Select the default contact person. This user will be employed whenever a "
 "contact person is not explicitly specified for an event"
 msgstr ""
 
-#: admin/em-options.php:270
+#: admin/em-options.php:313
 msgid "Approval Required?"
 msgstr ""
 
-#: admin/em-options.php:270
+#: admin/em-options.php:313
 msgid ""
 "Bookings will not be confirmed until the event administrator approves it."
 msgstr ""
 
-#: admin/em-options.php:271
+#: admin/em-options.php:314
 msgid "Email events admin?"
 msgstr ""
 
-#: admin/em-options.php:271
+#: admin/em-options.php:314
 msgid ""
 "If you would like every event booking confirmation email sent to an "
 "administrator write their email here (leave blank to not send an email)."
 msgstr ""
 
-#: admin/em-options.php:273
-msgid "Contact person email options"
-msgstr ""
-
-#: admin/em-options.php:275
+#: admin/em-options.php:315
 msgid "Email contact person?"
 msgstr ""
 
-#: admin/em-options.php:275
+#: admin/em-options.php:315
 msgid ""
 "Check this option if you want the event contact to receive an email when "
 "someone books places. An email will be sent when a booking is first made "
 "(regardless if confirmed or pending)"
 msgstr ""
 
-#: admin/em-options.php:276
+#: admin/em-options.php:317
+msgid "Contact person booking confirmed"
+msgstr ""
+
+#: admin/em-options.php:318
+msgid ""
+"An email will be sent to the event contact when a booking is first made."
+msgstr ""
+
+#: admin/em-options.php:320
 msgid "Contact person email subject"
 msgstr ""
 
-#: admin/em-options.php:276
-msgid "The subject of the email that will be sent to the event contact."
-msgstr ""
-
-#: admin/em-options.php:277
+#: admin/em-options.php:321
 msgid "Contact person email"
 msgstr ""
 
-#: admin/em-options.php:277
-msgid "The format of the email which will be sent to the event contact."
+#: admin/em-options.php:323
+msgid "Contact person booking cancelled"
 msgstr ""
 
-#: admin/em-options.php:279
+#: admin/em-options.php:324
+msgid ""
+"An email will be sent to the event contact if someone cancels their booking."
+msgstr ""
+
+#: admin/em-options.php:326
+msgid "Contact person cancellation subject"
+msgstr ""
+
+#: admin/em-options.php:327
+msgid "Contact person cancellation email"
+msgstr ""
+
+#: admin/em-options.php:329
 msgid "Confirmed booking email"
 msgstr ""
 
-#: admin/em-options.php:281
+#: admin/em-options.php:330
+msgid ""
+"This is sent when a person's booking is confirmed. This will be sent "
+"automatically if approvals are required and the booking is approved. If "
+"approvals are disabled, this is sent out when a user first submits their "
+"booking."
+msgstr ""
+
+#: admin/em-options.php:332
 msgid "Booking confirmed email subject"
 msgstr ""
 
-#: admin/em-options.php:281
-msgid ""
-"The subject of the email which will be sent to person making a booking. This "
-"will be sent automatically if approvals are required and the booking is "
-"approved."
-msgstr ""
-
-#: admin/em-options.php:282
+#: admin/em-options.php:333
 msgid "Booking confirmed email"
 msgstr ""
 
-#: admin/em-options.php:282
-msgid ""
-"The body of the email which will be sent to the person making a booking. "
-"This will be sent automatically if approvals are required and the booking is "
-"approved."
-msgstr ""
-
-#: admin/em-options.php:284
+#: admin/em-options.php:335
 msgid "Pending booking email"
 msgstr ""
 
-#: admin/em-options.php:286
+#: admin/em-options.php:336
+msgid ""
+"This will be sent to the person when they first submit their booking. Not "
+"relevant if bookings don't require approval."
+msgstr ""
+
+#: admin/em-options.php:338
 msgid "Booking pending email subject"
 msgstr ""
 
-#: admin/em-options.php:286 admin/em-options.php:291
+#: admin/em-options.php:339
+msgid "Booking pending email"
+msgstr ""
+
+#: admin/em-options.php:341
+msgid "Rejected booking email"
+msgstr ""
+
+#: admin/em-options.php:342
+msgid ""
+"This will be sent automatically when a booking is rejected. Not relevant if "
+"bookings don't require approval."
+msgstr ""
+
+#: admin/em-options.php:344
+msgid "Booking rejected email subject"
+msgstr ""
+
+#: admin/em-options.php:344
 msgid ""
 "The subject of the email sent to the person making a booking that is "
 "awaiting administrator approval. Not relevant if bookings don't require "
 "approval."
 msgstr ""
 
-#: admin/em-options.php:287
-msgid "Booking pending email"
-msgstr ""
-
-#: admin/em-options.php:287
-msgid ""
-"The body of the email which will be sent to the person making a booking that "
-"is awaiting administrator approval. Not relevant if bookings don't require "
-"approval."
-msgstr ""
-
-#: admin/em-options.php:289
-msgid "Rejected booking email"
-msgstr ""
-
-#: admin/em-options.php:291
-msgid "Booking rejected email subject"
-msgstr ""
-
-#: admin/em-options.php:292
+#: admin/em-options.php:345
 msgid "Booking rejected email"
 msgstr ""
 
-#: admin/em-options.php:292
+#: admin/em-options.php:345
 msgid ""
 "The body of the email which will be sent to the person if the booking is "
 "rejected. Not relevant if bookings don't require approval."
 msgstr ""
 
-#: admin/em-options.php:300
+#: admin/em-options.php:348
+msgid "Booking cancelled"
+msgstr ""
+
+#: admin/em-options.php:349
+msgid "This will be sent when a user cancels their booking."
+msgstr ""
+
+#: admin/em-options.php:351
+msgid "Booking cancelled email subject"
+msgstr ""
+
+#: admin/em-options.php:352
+msgid "Booking cancelled email"
+msgstr ""
+
+#: admin/em-options.php:359
 msgid "Email Settings"
 msgstr ""
 
-#: admin/em-options.php:304
+#: admin/em-options.php:363
 msgid "Notification sender name"
 msgstr ""
 
-#: admin/em-options.php:304
+#: admin/em-options.php:363
 msgid "Insert the display name of the notification sender."
 msgstr ""
 
-#: admin/em-options.php:305
+#: admin/em-options.php:364
 msgid "Notification sender address"
 msgstr ""
 
-#: admin/em-options.php:305
+#: admin/em-options.php:364
 msgid "Insert the address of the notification sender."
 msgstr ""
 
-#: admin/em-options.php:306
+#: admin/em-options.php:365
 msgid ""
 "The port through which you e-mail notifications will be sent. Make sure the "
 "firewall doesn't block this port"
 msgstr ""
 
-#: admin/em-options.php:307
+#: admin/em-options.php:366
 msgid "Mail sending method"
 msgstr ""
 
-#: admin/em-options.php:307
+#: admin/em-options.php:366
 msgid "PHP mail function"
 msgstr ""
 
-#: admin/em-options.php:307
+#: admin/em-options.php:366
 msgid "Select the method to send email notification."
 msgstr ""
 
-#: admin/em-options.php:308
+#: admin/em-options.php:367
 msgid "Use SMTP authentication?"
 msgstr ""
 
-#: admin/em-options.php:308
+#: admin/em-options.php:367
 msgid ""
 "SMTP authentication is often needed. If you use GMail, make sure to set this "
 "parameter to Yes"
 msgstr ""
 
-#: admin/em-options.php:309
+#: admin/em-options.php:368
 msgid ""
 "The SMTP host. Usually it corresponds to 'localhost'. If you use GMail, set "
 "this value to 'ssl://smtp.gmail.com:465'."
 msgstr ""
 
-#: admin/em-options.php:310
+#: admin/em-options.php:369
 msgid "SMTP username"
 msgstr ""
 
-#: admin/em-options.php:310
+#: admin/em-options.php:369
 msgid "Insert the username to be used to access your SMTP server."
 msgstr ""
 
-#: admin/em-options.php:311
+#: admin/em-options.php:370
 msgid "SMTP password"
 msgstr ""
 
-#: admin/em-options.php:311
+#: admin/em-options.php:370
 msgid "Insert the password to be used to access your SMTP server"
 msgstr ""
 
-#: admin/em-options.php:319
+#: admin/em-options.php:378
 msgid "Images size"
 msgstr ""
 
-#: admin/em-options.php:323
+#: admin/em-options.php:382
 msgid "Maximum width (px)"
 msgstr ""
 
-#: admin/em-options.php:323
+#: admin/em-options.php:382
 msgid "The maximum allowed width for images uploades"
 msgstr ""
 
-#: admin/em-options.php:324
+#: admin/em-options.php:383
 msgid "Maximum height (px)"
 msgstr ""
 
-#: admin/em-options.php:324
+#: admin/em-options.php:383
 msgid "The maximum allowed height for images uploaded, in pixels"
 msgstr ""
 
-#: admin/em-options.php:325
+#: admin/em-options.php:384
 msgid "Maximum size (bytes)"
 msgstr ""
 
-#: admin/em-options.php:325
+#: admin/em-options.php:384
 msgid "The maximum allowed size for images uploaded, in pixels"
-msgstr ""
-
-#: admin/em-categories.php:10
-msgid "The category has been added."
-msgstr ""
-
-#: admin/em-categories.php:12
-msgid "The category has been updated."
-msgstr ""
-
-#: admin/em-categories.php:22 admin/em-locations.php:39 admin/em-event.php:89
-msgid "Ach, there's a problem here:"
-msgstr ""
-
-#: admin/em-categories.php:32
-msgid "Categories Deleted"
-msgstr ""
-
-#: admin/em-categories.php:46 events-manager.php:214
-msgid "Categories"
-msgstr ""
-
-#: admin/em-categories.php:65 admin/em-categories.php:72
-msgid "ID"
-msgstr ""
-
-#: admin/em-categories.php:96
-msgid "No categories have been inserted yet!"
-msgstr ""
-
-#: admin/em-categories.php:108 admin/em-categories.php:116
-msgid "Add category"
-msgstr ""
-
-#: admin/em-categories.php:112 admin/em-categories.php:163
-msgid "Category name"
-msgstr ""
-
-#: admin/em-categories.php:114 admin/em-categories.php:165
-msgid "The name of the category"
-msgstr ""
-
-#: admin/em-categories.php:137 admin/em-bookings.php:91
-#: admin/em-bookings.php:138 admin/em-locations.php:144
-#: admin/em-people.php:124 admin/em-event.php:54
-msgid "Unauthorized Access"
-msgstr ""
-
-#: admin/em-categories.php:137 admin/em-bookings.php:91
-#: admin/em-bookings.php:138 admin/em-locations.php:144
-#: admin/em-people.php:124 admin/em-event.php:54
-msgid "You do not have the rights to manage this event."
-msgstr ""
-
-#: admin/em-categories.php:147
-msgid "Edit category"
-msgstr ""
-
-#: admin/em-categories.php:168
-msgid "Update category"
-msgstr ""
-
-#: admin/em-bookings.php:73
-msgid "Event Bookings Dashboard"
-msgstr ""
-
-#: admin/em-bookings.php:75 admin/em-bookings.php:120
-msgid "Pending Bookings"
-msgstr ""
-
-#: admin/em-bookings.php:77
-msgid "Events With Bookings Enabled"
-msgstr ""
-
-#: admin/em-bookings.php:103
-msgid "Manage %s Bookings"
-msgstr ""
-
-#: admin/em-bookings.php:104
-msgid "View/Edit Event"
-msgstr ""
-
-#: admin/em-bookings.php:107
-msgid "Event Name"
-msgstr ""
-
-#: admin/em-bookings.php:108
-msgid "Seats confirmed"
-msgstr ""
-
-#: admin/em-bookings.php:110 admin/em-admin.php:215
-msgid "Date"
-msgstr ""
-
-#: admin/em-bookings.php:116 admin/em-admin.php:216 admin/em-events.php:134
-#: admin/em-event.php:385
-msgid "Location"
-msgstr ""
-
-#: admin/em-bookings.php:122
-msgid "Confirmed Bookings"
-msgstr ""
-
-#: admin/em-bookings.php:124
-msgid "Rejected Bookings"
-msgstr ""
-
-#: admin/em-bookings.php:148
-msgid "Edit Booking"
-msgstr ""
-
-#: admin/em-bookings.php:155
-msgid "Booking Details"
-msgstr ""
-
-#: admin/em-bookings.php:181
-msgid "Manage Person's Booking"
-msgstr ""
-
-#: admin/em-bookings.php:182
-msgid ""
-"Are you sure you want to delete this person? All bookings corresponding to "
-"this person will be deleted and this is not reversible."
-msgstr ""
-
-#: admin/em-bookings.php:182
-msgid "Delete Person"
-msgstr ""
-
-#: admin/em-bookings.php:189
-msgid "Personal Details"
-msgstr ""
-
-#: admin/em-bookings.php:199
-msgid "Past And Present Bookings"
-msgstr ""
-
-#: admin/em-bookings.php:216
-msgid "Date/Time"
-msgstr ""
-
-#: admin/em-bookings.php:227 admin/em-people.php:58 admin/em-people.php:187
-msgid "Phone"
-msgstr ""
-
-#: admin/em-bookings.php:228 admin/em-people.php:59 admin/em-people.php:146
-msgid "E-mail"
-msgstr ""
-
-#: admin/em-bookings.php:232 admin/em-event.php:251
-msgid "Spaces"
-msgstr ""
-
-#: admin/em-bookings.php:236 admin/em-people.php:62
-msgid "Save"
-msgstr ""
-
-#: admin/em-admin.php:24
-msgid ""
-"This page corresponds to <strong>Events Manager</strong> events page. Its "
-"content will be overriden by <strong>Events Manager</strong>. If you want to "
-"display your content, you can can assign another page to <strong>Events "
-"Manager</strong> in the the <a href='%s'>Settings</a>. "
-msgstr ""
-
-#: admin/em-admin.php:36
-msgid ""
-"Uh Oh! For some reason wordpress could not create an events page for you (or "
-"you just deleted it). Not to worry though, all you have to do is create an "
-"empty page, name it whatever you want, and select it as your events page in "
-"your <a href=\"%s\">settings page</a>. Sorry for the extra step! If you know "
-"what you are doing, you may have done this on purpose, if so <a href=\"%s"
-"\">ignore this message</a>"
-msgstr ""
-
-#: admin/em-admin.php:48
-msgid ""
-"Events Manager now has booking approvals! Bookings can now be approved "
-"before they count towards your event's space allocations.<br/><br/>This is "
-"enabled by default, but since you upgraded it has been disabled to maintain "
-"the previous plugin behaviour. You can re-enable it from the <a href=\"%s"
-"\">settings page</a>. <a href=\"%s\">Dismiss</a>"
-msgstr ""
-
-#: admin/em-admin.php:68
-msgid "Displaying %s&#8211;%s of %s"
-msgstr ""
-
-#: admin/em-admin.php:217 admin/em-locations.php:104
-#: admin/em-locations.php:112
-msgid "Address"
-msgstr ""
-
-#: admin/em-admin.php:218 admin/em-locations.php:105
-#: admin/em-locations.php:113
-msgid "Town"
-msgstr ""
-
-#: admin/em-admin.php:232
-msgid "Some required fields are missing:"
-msgstr ""
-
-#: admin/em-admin.php:235
-msgid "Since the event is repeated, you must specify an end date"
-msgstr ""
-
-#: admin/bookings/em-confirmed.php:35 admin/bookings/em-confirmed.php:37
-#: admin/bookings/em-person.php:40 admin/bookings/em-person.php:42
-#: admin/bookings/em-rejected.php:34 admin/bookings/em-rejected.php:36
-#: admin/bookings/em-pending.php:49 admin/bookings/em-pending.php:51
-msgid "Search"
-msgstr ""
-
-#: admin/bookings/em-confirmed.php:46 admin/bookings/em-person.php:51
-#: admin/bookings/em-rejected.php:45 admin/bookings/em-pending.php:60
-#: admin/bookings/em-events.php:56 admin/em-locations.php:83
-#: admin/em-events.php:88
-msgid "Bulk Actions"
-msgstr ""
-
-#: admin/bookings/em-confirmed.php:49 admin/bookings/em-person.php:54
-#: admin/bookings/em-person.php:116 admin/bookings/em-rejected.php:48
-#: admin/bookings/em-rejected.php:107 admin/bookings/em-pending.php:63
-#: admin/bookings/em-pending.php:128
-msgid "Approve"
-msgstr ""
-
-#: admin/bookings/em-confirmed.php:52 admin/bookings/em-person.php:57
-#: admin/bookings/em-rejected.php:51 admin/bookings/em-pending.php:66
-msgid "Decline"
-msgstr ""
-
-#: admin/bookings/em-confirmed.php:107 admin/bookings/em-person.php:119
-msgid "Unapprove"
-msgstr ""
-
-#: admin/bookings/em-confirmed.php:120 admin/bookings/em-person.php:137
-msgid "No confirmed bookings."
-msgstr ""
-
-#: admin/bookings/em-person.php:122 admin/bookings/em-pending.php:129
-msgid "Reject"
-msgstr ""
-
-#: admin/bookings/em-person.php:125 admin/bookings/em-rejected.php:109
-msgid "Delete"
-msgstr ""
-
-#: admin/bookings/em-rejected.php:121
-msgid "No rejected bookings."
-msgstr ""
-
-#: admin/bookings/em-pending.php:142
-msgid "No pending bookings."
-msgstr ""
-
-#: admin/bookings/em-events.php:29 admin/em-events.php:32
-msgid "Past Events"
-msgstr ""
-
-#: admin/bookings/em-events.php:32 admin/em-events.php:35
-msgid "All Events"
-msgstr ""
-
-#: admin/bookings/em-events.php:35 admin/em-events.php:38
-msgid "Future Events"
-msgstr ""
-
-#: admin/bookings/em-events.php:50 admin/em-events.php:77
-msgid "Total"
-msgstr ""
-
-#: admin/bookings/em-events.php:57 admin/em-locations.php:84
-#: admin/em-events.php:89
-msgid "Delete selected"
-msgstr ""
-
-#: admin/bookings/em-events.php:59 admin/em-locations.php:86
-#: admin/em-events.php:91
-msgid "Apply"
-msgstr ""
-
-#: admin/bookings/em-events.php:71 admin/em-events.php:102
-msgid "Filter"
-msgstr ""
-
-#. TODO localize
-#. TODO localize
-#: admin/bookings/em-events.php:91 admin/em-events.php:122
-msgid "no events"
-msgstr ""
-
-#: admin/bookings/em-events.php:102 admin/em-events.php:135
-msgid "Date and time"
-msgstr ""
-
-#: admin/bookings/em-events.php:134 admin/em-events.php:174
-msgid "Booked Seats"
-msgstr ""
-
-#: admin/em-locations.php:21
-msgid "Locations Deleted"
-msgstr ""
-
-#: admin/em-locations.php:26
-msgid "The location has been added."
-msgstr ""
-
-#: admin/em-locations.php:28
-msgid "The location has been updated."
-msgstr ""
-
-#: admin/em-locations.php:65 events-manager.php:210
-msgid "Locations"
-msgstr ""
-
-#: admin/em-locations.php:66 admin/em-events.php:55
-msgid "Add New"
-msgstr ""
-
-#: admin/em-locations.php:132
-msgid "No venues have been inserted yet!"
-msgstr ""
-
-#: admin/em-locations.php:149
-msgid "Add location"
-msgstr ""
-
-#: admin/em-locations.php:152
-msgid "Edit location"
-msgstr ""
-
-#: admin/em-locations.php:173
-msgid "Location name"
-msgstr ""
-
-#: admin/em-locations.php:175
-msgid "The name of the location"
-msgstr ""
-
-#: admin/em-locations.php:179
-msgid "Location address"
-msgstr ""
-
-#: admin/em-locations.php:181
-msgid "The address of the location"
-msgstr ""
-
-#: admin/em-locations.php:186
-msgid "Location town"
-msgstr ""
-
-#: admin/em-locations.php:188
-msgid "The town where the location is located"
-msgstr ""
-
-#: admin/em-locations.php:200
-msgid "Location map"
-msgstr ""
-
-#: admin/em-locations.php:203 admin/em-event.php:442
-msgid "Location not found"
-msgstr ""
-
-#: admin/em-locations.php:212
-msgid "Location description"
-msgstr ""
-
-#: admin/em-locations.php:218
-msgid "A description of the Location. You may include any kind of info here."
-msgstr ""
-
-#: admin/em-locations.php:223
-msgid "Location image"
-msgstr ""
-
-#: admin/em-locations.php:228
-msgid "No image uploaded for this location yet"
-msgstr ""
-
-#: admin/em-locations.php:233
-msgid "Upload/change picture"
-msgstr ""
-
-#: admin/em-locations.php:237
-msgid "Update location"
-msgstr ""
-
-#: admin/em-help.php:10 events-manager.php:216
-msgid "Getting Help for Events Manager"
-msgstr ""
-
-#: admin/em-help.php:15
-msgid "Placeholders for customizing event pages"
-msgstr ""
-
-#: admin/em-help.php:16
-msgid ""
-"In the <a href='%s'>settings page</a>, you'll find various textboxes where "
-"you can edit how event information looks, such as for event and location "
-"lists. Using the placeholders below, you can choose what information should "
-"be displayed."
 msgstr ""
 
 #: admin/em-events.php:80 admin/em-events.php:82
 msgid "Search Events"
 msgstr ""
 
-#: admin/em-events.php:169 admin/em-event.php:298
-msgid "Category"
-msgstr ""
-
 #: admin/em-events.php:182
 msgid "Duplicate this event"
-msgstr ""
-
-#: admin/em-events.php:205 admin/em-event.php:61 admin/em-event.php:197
-msgid "Reschedule"
-msgstr ""
-
-#: admin/em-people.php:81
-msgid "No people have responded to your events yet!"
-msgstr ""
-
-#: admin/em-people.php:84
-msgid ""
-"This table collects the data about the people who responded to your events"
-msgstr ""
-
-#: admin/em-people.php:142
-msgid "Bookings data"
-msgstr ""
-
-#: admin/em-people.php:163
-msgid "Booked"
-msgstr ""
-
-#: admin/em-people.php:168
-msgid "Available"
-msgstr ""
-
-#. #-#-#-#-#  plugin.pot (Events Manager 3.0.9)  #-#-#-#-#
-#. Plugin Name of the plugin/theme
-#: admin/em-people.php:187
-msgid "Events Manager"
-msgstr ""
-
-#: admin/em-event.php:30
-msgid "There was an error duplicating the event. Try again maybe?"
-msgstr ""
-
-#: admin/em-event.php:63
-msgid "Edit Event"
-msgstr ""
-
-#: admin/em-event.php:67
-msgid "Insert New Event"
-msgstr ""
-
-#: admin/em-event.php:83
-msgid "Mon"
-msgstr ""
-
-#: admin/em-event.php:83
-msgid "Tue"
-msgstr ""
-
-#: admin/em-event.php:83
-msgid "Wed"
-msgstr ""
-
-#: admin/em-event.php:83
-msgid "Thu"
-msgstr ""
-
-#: admin/em-event.php:83
-msgid "Fri"
-msgstr ""
-
-#: admin/em-event.php:83
-msgid "Sat"
-msgstr ""
-
-#: admin/em-event.php:83
-msgid "Sun"
-msgstr ""
-
-#: admin/em-event.php:109
-msgid "WARNING: This is a recurring event."
-msgstr ""
-
-#: admin/em-event.php:111
-msgid ""
-"Modifying these data all the events linked to this recurrence will be "
-"rescheduled"
-msgstr ""
-
-#: admin/em-event.php:113
-msgid "and all booking information will be deleted!"
-msgstr ""
-
-#. TODO Terminology confusing with methods, maybe worth changing?
-#: admin/em-event.php:116
-msgid "WARNING: This is a recurrence."
-msgstr ""
-
-#: admin/em-event.php:118
-msgid ""
-"If you change these data and save, this will become an independent event."
-msgstr ""
-
-#: admin/em-event.php:133
-msgid "Recurrence"
-msgstr ""
-
-#: admin/em-event.php:140
-msgid "Repeated event"
-msgstr ""
-
-#: admin/em-event.php:147
-msgid "Daily"
-msgstr ""
-
-#: admin/em-event.php:147
-msgid "Weekly"
-msgstr ""
-
-#: admin/em-event.php:147
-msgid "Monthly"
-msgstr ""
-
-#: admin/em-event.php:153 admin/em-event.php:176
-msgid "Every"
-msgstr ""
-
-#: admin/em-event.php:156
-msgid "day"
-msgstr ""
-
-#: admin/em-event.php:158
-msgid "days"
-msgstr ""
-
-#: admin/em-event.php:160
-msgid "week"
-msgstr ""
-
-#: admin/em-event.php:162
-msgid "weeks"
-msgstr ""
-
-#: admin/em-event.php:164
-msgid "month"
-msgstr ""
-
-#: admin/em-event.php:166
-msgid "months"
-msgstr ""
-
-#: admin/em-event.php:179
-msgid "first"
-msgstr ""
-
-#: admin/em-event.php:179
-msgid "second"
-msgstr ""
-
-#: admin/em-event.php:179
-msgid "third"
-msgstr ""
-
-#: admin/em-event.php:179
-msgid "fourth"
-msgstr ""
-
-#: admin/em-event.php:179
-msgid "last"
-msgstr ""
-
-#: admin/em-event.php:190
-msgid ""
-"Check if your event happens more than once according to a regular pattern"
-msgstr ""
-
-#: admin/em-event.php:202
-msgid "This is't a recurrent event"
-msgstr ""
-
-#: admin/em-event.php:214
-msgid "Contact Person"
-msgstr ""
-
-#: admin/em-event.php:217
-msgid "Contact"
-msgstr ""
-
-#: admin/em-event.php:220
-msgid "Select..."
-msgstr ""
-
-#: admin/em-event.php:226
-msgid "You can only change the contact person if you a events administrator."
-msgstr ""
-
-#: admin/em-event.php:236
-msgid "RSVP"
-msgstr ""
-
-#: admin/em-event.php:240
-msgid "Enable registration for this event"
-msgstr ""
-
-#: admin/em-event.php:263
-msgid "Available Spaces"
-msgstr ""
-
-#: admin/em-event.php:264
-msgid "Confirmed Spaces"
-msgstr ""
-
-#: admin/em-event.php:265
-msgid "Pending Spaces"
-msgstr ""
-
-#: admin/em-event.php:272
-msgid "manage bookings"
-msgstr ""
-
-#: admin/em-event.php:273
-msgid "printable view"
-msgstr ""
-
-#: admin/em-event.php:281
-msgid "No responses yet!"
-msgstr ""
-
-#: admin/em-event.php:301
-msgid "Category:"
-msgstr ""
-
-#: admin/em-event.php:331
-msgid "The event name. Example: Birthday party"
-msgstr ""
-
-#: admin/em-event.php:336
-msgid "Event date"
-msgstr ""
-
-#: admin/em-event.php:339
-msgid "Recurrence dates"
-msgstr ""
-
-#: admin/em-event.php:349
-msgid "The event date."
-msgstr ""
-
-#: admin/em-event.php:352
-msgid ""
-"When not reoccurring, this event spans between the beginning and end date."
-msgstr ""
-
-#: admin/em-event.php:357
-msgid "The recurrence beginning and end date."
-msgstr ""
-
-#: admin/em-event.php:363
-msgid "Event time"
-msgstr ""
-
-#: admin/em-event.php:370
-msgid "The time of the event beginning and end"
-msgstr ""
-
-#: admin/em-event.php:375
-msgid "Coordinates"
-msgstr ""
-
-#: admin/em-event.php:394
-msgid "Location:"
-msgstr ""
-
-#: admin/em-event.php:411
-msgid ""
-"The name of the location where the event takes place. You can use the name "
-"of a venue, a square, etc"
-msgstr ""
-
-#: admin/em-event.php:416
-msgid "Name:"
-msgstr ""
-
-#: admin/em-event.php:419
-msgid "Select a location for your event"
-msgstr ""
-
-#: admin/em-event.php:423
-msgid "Address:"
-msgstr ""
-
-#: admin/em-event.php:426
-msgid ""
-"The address of the location where the event takes place. Example: 21, "
-"Dominick Street"
-msgstr ""
-
-#: admin/em-event.php:430
-msgid "Town:"
-msgstr ""
-
-#: admin/em-event.php:433
-msgid ""
-"The town where the location is located. If you're using the Google Map "
-"integration and want to avoid geotagging ambiguities include the country in "
-"the town field. Example: Verona, Italy."
-msgstr ""
-
-#: admin/em-event.php:453
-msgid "Details"
-msgstr ""
-
-#: admin/em-event.php:460
-msgid "Details about the event"
-msgstr ""
-
-#: admin/em-event.php:467
-msgid "Attributes"
-msgstr ""
-
-#: admin/em-event.php:522
-msgid "Not defined in templates"
-msgstr ""
-
-#: admin/em-event.php:566
-msgid ""
-"In order to use attributes, you must define some in your templates, "
-"otherwise they'll never show. Go to Events > Settings to add attribute "
-"placeholders."
-msgstr ""
-
-#: admin/em-event.php:578
-msgid "Submit Event"
-msgstr ""
-
-#: admin/em-event.php:592
-msgid ""
-"Are you sure you want to reschedule this recurring event? If you do this, "
-"you will lose all booking information and the old recurring events will be "
-"deleted."
-msgstr ""
-
-#: admin/em-event.php:602
-msgid ""
-"Are you sure you want to disable bookings? If you do this and save, you will "
-"lose all previous bookings. If you wish to prevent further bookings, reduce "
-"the number of seats available to the amount of bookings you currently have"
-msgstr ""
-
-#: em-template-tags-depreciated.php:146
-msgid "Ach, some problems here:"
-msgstr ""
-
-#: em-install.php:174
-msgid "Uncategorized"
-msgstr ""
-
-#: em-install.php:182
-msgid ""
-"#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_NAME on #F #j, #Y. He wants to "
-"reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces "
-"reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/"
-">Events Manager"
-msgstr ""
-
-#: em-install.php:182 em-install.php:184 em-install.php:185
-msgid ""
-"<br/><br/>-------------------------------<br/>Powered by Events Manager - "
-"http://wp-events-plugin.com"
-msgstr ""
-
-#: em-install.php:183
-msgid ""
-"Dear #_BOOKINGNAME, <br/>you have successfully reserved #_BOOKINGSPACES "
-"space/spaces for #_NAME.<br/>Yours faithfully,<br/>#_CONTACTNAME"
-msgstr ""
-
-#: em-install.php:183
-msgid ""
-"<br/><br/>-------------------------------<br/>Events powered by <a href="
-"\"http://wp-events-plugin.com\">Events Manager</a>"
-msgstr ""
-
-#: em-install.php:184
-msgid ""
-"Dear #_BOOKINGNAME, <br/>You have requested #_BOOKEDSPACES space/spaces for "
-"#_NAME.<br/>Your booking is currently pending approval by our "
-"administrators. Once approved you will receive an automatic confrimation.<br/"
-">Yours faithfully,<br/>#_CONTACTNAME"
-msgstr ""
-
-#: em-install.php:185
-msgid ""
-"Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces "
-"at #_NAME on #F #j, #Y has been rejected.<br/>Yours faithfully,<br/"
-">#_CONTACTNAME"
-msgstr ""
-
-#: em-install.php:205
-msgid "<li>No events in this location</li>"
-msgstr ""
-
-#: em-install.php:247
-msgid "New booking"
-msgstr ""
-
-#: em-install.php:249
-msgid "Reservation Pending"
-msgstr ""
-
-#: em-install.php:251
-msgid "Reservation Rejected"
-msgstr ""
-
-#: em-install.php:253
-msgid "Booking Confirmed"
-msgstr ""
-
-#. FIXME Better fallback in case of bad install
-#: em-install.php:368
-msgid ""
-"We could not mirgrate old recurrence data over. DONT WORRY! You can just "
-"delete the current plugin, and re-install the previous 2.2.2 version and you "
-"wont lose any of your data. Either way, please contact the developers to let "
-"them know of this bug."
-msgstr ""
-
-#: em-install.php:530
-msgid ""
-"Events Manager successfully imported your events, please check your records "
-"to verify."
-msgstr ""
-
-#: em-install.php:546
-msgid ""
-"Something has gone wrong when importing your old event. See the <a href=\"%s"
-"\">support page</a> for more information. <a href=\"%s\">Dismiss this "
-"message</a>"
-msgstr ""
-
-#: events-manager.php:185 events-manager.php:215
-msgid "Settings"
-msgstr ""
-
-#: events-manager.php:209
-msgid "Add new"
-msgstr ""
-
-#: events-manager.php:212
-msgid "Bookings"
-msgstr ""
-
-#: events-manager.php:214
-msgid "Event Categories"
-msgstr ""
-
-#: events-manager.php:215
-msgid "Events Manager Settings"
-msgstr ""
-
-#: events-manager.php:216
-msgid "Help"
-msgstr ""
-
-#: events-manager.php:244
-msgid "Add an event"
 msgstr ""
 
 #. #-#-#-#-#  plugin.pot (Events Manager 3.0.9)  #-#-#-#-#
