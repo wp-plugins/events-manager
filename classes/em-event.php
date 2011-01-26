@@ -289,6 +289,7 @@ class EM_Event extends EM_Object{
 			$event = $this->to_array(false, true);
 			$event['event_attributes'] = serialize($this->attributes);
 			$event['recurrence_id'] = ( is_numeric($this->recurrence_id) ) ? $this->recurrence_id : 0;
+			$event = apply_filters('em_event_save_pre',$event,$this);
 			$result = $wpdb->insert ( $events_table, $event, $this->get_types($event) );
 			if($result !== false){
 				$this->id = $wpdb->insert_id;
@@ -319,6 +320,7 @@ class EM_Event extends EM_Object{
 			$this->recurrence_id = 0; // If it's saved here, it becomes individual
 			$event = $this->to_array();
 			$event['event_attributes'] = serialize($event['event_attributes']);
+			$event = apply_filters('em_event_save_pre',$event,$this);
 			$result = $wpdb->update ( $events_table, $event, array('event_id' => $this->id), $this->get_types($event) );
 			if($result !== false){ //Can't just do $result since if you don't make an actual record details change, it'll return 0 for no changes made
 				//Deal with recurrences
