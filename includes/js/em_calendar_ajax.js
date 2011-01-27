@@ -2,9 +2,9 @@
 jQuery(document).ready( function($) {
 	$('a.em-calnav, a.em-calnav').live('click', function(e){
 		e.preventDefault();
-		$(this).parents('.em-calendar-wrapper').first().prepend('<div class="loading" id="em-loading"></div>');
+		$(this).closest('.em-calendar-wrapper').prepend('<div class="loading" id="em-loading"></div>');
 		var url = em_ajaxify($(this).attr('href'));
-		$(this).parents('.em-calendar-wrapper').first().load(url);		
+		$(this).closest('.em-calendar-wrapper').load(url);
 	} );
 	var em_ajaxify = function(url){
 		if ( url.search('em_ajax=0') != -1){
