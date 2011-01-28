@@ -17,8 +17,16 @@ class EM_Widget_Calendar extends WP_Widget {
 	    echo $instance['title'];
 	    echo $args['after_title'];
 	    
+    	//Shall we show a specific month?
+		if ( !empty($_REQUEST['calendar_day']) ) {
+			$date = explode('-', $_REQUEST['calendar_day']);
+			$instance['month'] = $date[1];
+			$instance['year'] = $date[0];
+		}else{
+			$instance['month'] = date("m");
+		}
+	    
 	    //Our Widget Content  
-		$instance['month'] = date("m");
 		echo '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">';
 	    echo EM_Calendar::output($instance);
 		echo '</div>';
