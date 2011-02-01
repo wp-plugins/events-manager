@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 3.0.9
+Version: 3.0.91
 Plugin URI: http://wp-events-plugin.com
 Description: Manage events specifying precise spatial data (Location, Town, Province, etc).
 Author: Davide Benini, Marcus Sykes
