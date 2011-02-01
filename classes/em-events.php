@@ -17,6 +17,7 @@ class EM_Events extends EM_Object {
 		global $wpdb;
 		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
 		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		$categories_table = $wpdb->prefix . EM_CATEGORIES_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
@@ -24,6 +25,7 @@ class EM_Events extends EM_Object {
 			$sql = "
 				SELECT * FROM $events_table
 				LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
+				LEFT JOIN $categories_table ON {$categories_table}.category_id={$events_table}.event_category_id
 				WHERE event_id=".implode(" OR event_id=", $args)."
 			";
 			$results = $wpdb->get_results(apply_filters('em_events_get_sql',$sql),ARRAY_A);
@@ -55,6 +57,7 @@ class EM_Events extends EM_Object {
 		$sql = "
 			SELECT * FROM $events_table
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
+			LEFT JOIN $categories_table ON {$categories_table}.category_id={$events_table}.event_category_id
 			$where
 			$orderby_sql
 			$limit $offset
@@ -233,6 +236,15 @@ class EM_Events extends EM_Object {
 			'order' => get_option('dbem_events_default_order'),
 			'rsvp' => false //if set to true, only events with bookings enabled are returned
 		);
+		//figure out default owning permissions
+		switch( get_option('dbem_permissions_categories') ){
+			case 0:
+				$defaults['owner'] = get_current_user_id();
+				break;
+			case 1:
+				$defaults['owner'] = false;
+				break;
+		}
 		return apply_filters('em_events_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
 }

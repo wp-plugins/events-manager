@@ -409,6 +409,13 @@ class EM_Event extends EM_Object{
 		if ( !empty($_POST['repeated_event']) && $_POST['repeated_event'] == "1" && $this->end_date == "" ){
 			$this->errors[] = __ ( 'Since the event is repeated, you must specify an event date.', 'dbem' );
 		}
+		if( preg_match('/\d{4}-\d{2}-\d{2}/', $this->start_date) && preg_match('/\d{4}-\d{2}-\d{2}/', $this->end_date) ){
+			if( strtotime($this->start_date . $this->start_time) > strtotime($this->end_date . $this->end_time) ){
+				$this->errors[] = __('Events cannot start after they end.','dbem');
+			}
+		}else{
+			$this->errors[] = __('Dates must have correct formatting. Please use the date picker provided.','dbem');
+		}
 		if( !$this->location->validate() ){
 			$this->errors = array_merge($this->errors, $this->location->errors);
 		}
@@ -760,7 +767,7 @@ class EM_Event extends EM_Object{
 	 * Can the user manage this event? 
 	 */
 	function can_manage( $error_msg = false ){
-		$can_manage = ( get_option('dbem_disable_ownership') || $this->author == get_current_user_id() || empty($this->id) || em_verify_admin() );
+		$can_manage = ( get_option('dbem_permissions_events') || $this->author == get_current_user_id() || empty($this->id) || em_verify_admin() );
 		if($error_msg && !$can_manage){
 			$this->errors[] = __('You do not have permission to manage this event.','dbem');
 		}

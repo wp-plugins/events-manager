@@ -107,7 +107,9 @@ class EM_Categories extends EM_Object {
 		//owner lookup
 		if( is_numeric($args['owner']) ){
 			$conditions['owner'] = "category_owner=".get_current_user_id();
-		}		
+		}elseif( preg_match('/^([0-9],?)+$/', $args['owner']) ){
+			$conditions['owner'] = "category_owner IN (".explode(',', $args['owner']).")";			
+		}	
 		return apply_filters( 'em_categories_build_sql_conditions', $conditions, $args );
 	}
 	
@@ -130,6 +132,22 @@ class EM_Categories extends EM_Object {
 			'eventful' => false, //cats that have an event (scope will also play a part here
 			'eventless' => false, //cats WITHOUT events, eventful takes precedence
 		);
+		//by default, we only get categories the owner can manage
+		switch( get_option('dbem_permissions_categories') ){
+			case 0:
+				$defaults['owner'] = get_current_user_id();
+				break;
+			case 1:
+				$wp_user_search = new WP_User_Search(null, null, 'administrator');
+				$users = $wp_user_search->get_results();
+				$users[] = get_current_user_id();
+				$users[] = 0;
+				$defaults['owner'] = implode(',', $users);
+				break;
+			case 2:
+				$defaults['owner'] = false;
+				break;
+		}
 		return apply_filters('em_categories_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}	
 

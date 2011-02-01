@@ -6,7 +6,7 @@
 function em_admin_actions_bookings() {
   	global $dbem_form_add_message;   
 	global $dbem_form_delete_message; 
-	global $wpdb, $EM_Booking;
+	global $wpdb, $EM_Booking, $EM_Event;
 	
 	if( current_user_can(EM_MIN_CAPABILITY) && is_object($EM_Booking) && !empty($_REQUEST['action']) ) {
 		if( $_REQUEST['action'] == 'bookings_delete' ){
@@ -39,8 +39,17 @@ function em_admin_actions_bookings() {
 				function em_booking_save_notification(){ global $EM_Booking; ?><div class="error"><p><strong><?php echo $EM_Booking->feedback_message; ?></strong></p></div><?php }
 			}
 			add_action ( 'admin_notices', 'em_booking_save_notification' );
+		}elseif( $_REQUEST['action'] == 'bookings_add_note' ){
+			$EM_Booking->add_note($_REQUEST['booking_note']);
+			function em_booking_save_notification(){ global $EM_Booking; ?><div class="updated"><p><strong><?php echo $EM_Booking->feedback_message; ?></strong></p></div><?php }
+			add_action ( 'admin_notices', 'em_booking_save_notification' );
 		}
-	}	
+	}elseif( current_user_can(EM_MIN_CAPABILITY) && is_object($EM_Event) && !empty($_REQUEST['action']) ){
+		if( $_REQUEST['action'] == 'export_csv' ){
+			$EM_Event->get_bookings()->export_csv();
+			exit();
+		}
+	}
 }
 add_action('admin_init','em_admin_actions_bookings',100);
 
@@ -102,7 +111,8 @@ function em_bookings_event(){
   		<h2>
   			<?php echo sprintf(__('Manage %s Bookings', 'dbem'), "'{$EM_Event->name}'"); ?>
   			<a href="admin.php?page=events-manager-event&event_id=<?php echo $EM_Event->id; ?>" class="button add-new-h2"><?php _e('View/Edit Event','dbem') ?></a>
-  		</h2>  
+  		</h2>
+  		<div><a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a></div>  
 		<div>
 			<p><strong><?php _e('Event Name','dbem'); ?></strong> : <?php echo ($EM_Event->name); ?></p>
 			<p><strong>Availability :</strong> <?php echo $EM_Event->get_bookings()->get_booked_seats() . '/'. $EM_Event->seats ." ". __('Seats confirmed','dbem'); ?></p>
@@ -164,6 +174,35 @@ function em_bookings_single(){
 			</div>
 		</div>
 		<br style="clear:both;" />
+  		<div id="poststuff" class="metabox-holder has-right-sidebar">
+	  		<div id="post-body">
+				<div id="post-body-content">
+					<div id="event_name" class="stuffbox">
+						<h3>
+							<?php _e ( 'Booking Notes', 'dbem' ); ?>
+						</h3>
+						<div class="inside">
+							<p><?php _e('You can add private notes below for internal reference that only event managers will see.','dbem'); ?></p>
+							<?php foreach( $EM_Booking->notes as $note ): 
+								$user = get_userdata($note['author']);
+							?>
+							<div>
+								<?php echo date(get_option('date_format'), $note['timestamp']) .' - '. $user->display_name; ?> <?php _e('wrote','dbem'); ?>: 
+								<p style="background:#efefef; padding:5px;"><?php echo nl2br($note['note']); ?></p> 
+							</div>
+							<?php endforeach; ?>
+							<form method="post" action="" style="padding:5px;">
+								<textarea class="widefat" rows="5" name="booking_note"></textarea>
+								<input type="hidden" name="action" value="bookings_add_note" />
+								<input type="submit" value="Add Note" />
+							</form>
+						</div>
+					</div> 
+				</div>
+			</div>
+		</div>
+		<br style="clear:both;" />
+		<?php do_action('em_bookings_single_footer'); ?>
 	</div>
 	<?php
 	

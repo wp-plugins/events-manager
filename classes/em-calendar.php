@@ -117,25 +117,32 @@ class EM_Calendar extends EM_Object {
 	
 		// Build Previous and Next Links 
 		$base_link = "?".$_SERVER['QUERY_STRING']."&amp;";       
-		
+		  
+		$full ? $link_extra_class = "full-link" : $link_extra_class = '';
+		//Get an array of arguments that don't include default valued args
+		$link_args = self::get_link_args($args);
+
+		//Get the previous link
 		if($month == 1){ 
 			 $back_month = 12;
 			 $back_year = $year-1;
 		} else { 
 		   $back_month = $month -1;
 			 $back_year = $year;
-		}  
-		$full ? $link_extra_class = "full-link" : $link_extra_class = '';
-		$previous_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;month={$back_month}&amp;year={$back_year}&amp;long_events={$long_events}&amp;full={$full}'>&lt;&lt;</a>"; 
-	
+		}
+		$previous_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;month={$back_month}&amp;year={$back_year}&amp;{$link_args}'>&lt;&lt;</a>"; 
+
+		//Now the next
 		if($month == 12){ 
-		   $next_month = 1;
-			 $next_year = $year+1;
+			$next_month = 1;
+			$next_year = $year+1;
 		} else { 
-		   $next_month = $month + 1;
-			 $next_year = $year;	
+			$next_month = $month + 1;
+			$next_year = $year;	
 		} 
-		$next_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;month={$next_month}&amp;year={$next_year}&amp;long_events={$long_events}&amp;full={$full}'>&gt;&gt;</a>";
+		$next_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;month={$next_month}&amp;year={$next_year}&amp;{$link_args}'>&gt;&gt;</a>";
+		
+		
 		$class = ($full) ? 'dbem-calendar-full' : 'dbem-calendar';
 		$calendar="<div class='$class'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
 		
@@ -155,7 +162,7 @@ class EM_Calendar extends EM_Object {
 		// Build the heading portion of the calendar table 
 		$calendar .=  "<table class='dbem-calendar-table $fullclass'>\n". 
 		   	"<thead>\n<tr>\n".
-			"<td>$previous_link</td><td class='month_name' colspan='5'>". ucfirst(date_i18n('M', $month_start))." $year</td><td>$next_link</td>\n". 
+			"<td>$previous_link</td><td class='month_name' colspan='5'>". apply_filters('dbem_calendar_output_month', ucfirst(date_i18n('M', $month_start)), $month_start, $args)." $year</td><td>$next_link</td>\n". 
 			"</tr>\n</thead>\n".	
 		    "<tr class='days-names'>\n". 
 		    $days_initials. 
@@ -166,6 +173,7 @@ class EM_Calendar extends EM_Object {
 		// week with the days of that week in the table data 
 	  
 		$i = 0;
+		$current_date = date('Y-m-d', current_time('timestamp'));
 		foreach ( $weeks as $week ) {
 			$calendar .= "<tr>\n";
 			foreach ( $week as $d ) {
@@ -175,7 +183,8 @@ class EM_Calendar extends EM_Object {
 				if (($i >= $offset_count) && ($i < ($num_weeks * 7) - $outset)) { // if it is THIS month
 					$fullday = $d;
 					$d = date ( 'j', $d );
-					if ( date('Y-m-d', current_time('timestamp')) == "$year-$month-$d" ) {						
+					$month_string = ($month < 10) ? '0'.$month : $month;
+					if ( $current_date == "$year-". $month_string ."-$d" ) {						
 						$calendar .= "<td class='eventless-today'>$d</td>\n";
 					} else {
 						$calendar .= "<td class='eventless'>$d</td>\n";
@@ -280,7 +289,7 @@ class EM_Calendar extends EM_Object {
 				} 
 				$cells[$day_key]['cell'] .= "</ul>";  
 	   		}
-		}      
+		}
 		
 		if($events){
 			foreach($cells as $cell) {  
@@ -318,6 +327,25 @@ class EM_Calendar extends EM_Object {
 	function translate_and_trim($string, $length = 1) {
 		return substr(__($string), 0, $length);
 	}  
+	
+	/**
+	 * Helper function to create a link querystring from array which contains arguments with only values that aren't defuaults. 
+	 */
+	function get_link_args($args = array(), $html_entities=true){
+		unset($args['month']); unset($args['year']);
+		$default_args = self::get_default_search(array());
+		foreach($default_args as $arg_key => $arg_value){
+			if( !isset($args[$arg_key]) || $args[$arg_key] == $arg_value ){
+				unset($args[$arg_key]);				
+			}
+		}
+		$qs_array = array();
+		foreach($args as $key => $value){
+			$qs_array[] = "$key=".urlencode($value);
+		}
+		return ($html_entities) ? implode('&amp;', $qs_array) : implode('&', $qs_array);
+	}
+		
 	
 	function get_default_search($array=array()){
 		//These defaults aren't for db queries, but flags for what to display in calendar output

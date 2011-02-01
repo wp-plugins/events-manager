@@ -87,7 +87,6 @@ function em_admin_options_page() {
 			<div class="inside">
 	            <table class="form-table">
 					<?php 
-					em_options_radio_binary ( __( 'Disable event ownership?' ), 'dbem_disable_ownership', __( 'Other event editors can only manage bookings they\'ve created. Administrators can view all bookings. If you disable this behaviour all event editors will have access to every single event and booking details.','dbem' ) );
 					em_options_radio_binary ( __( 'Use dropdown for locations?' ), 'dbem_use_select_for_locations', __( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );  
 					em_options_radio_binary ( __( 'Use recurrence?' ), 'dbem_recurrence_enabled', __( 'Select yes to enable the recurrence features feature','dbem' ) ); 
 					em_options_radio_binary ( __( 'Use RSVP?' ), 'dbem_rsvp_enabled', __( 'Select yes to enable the RSVP feature','dbem' ) );     
@@ -112,12 +111,14 @@ function em_admin_options_page() {
 				 	}
 					em_options_select ( __( 'Default Location' ), 'dbem_default_location', $location_options, __( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
 										
+					em_options_textarea ( __( 'Custom Placeholders', 'dbem' ), 'dbem_placeholders_custom', sprintf(__( "You can add custom placeholders here, one per line in this format <code>#_ATT{key}</code>. They will not appear on event pages unless you insert them into another template below, but you may want to store extra information about an event for other uses. <a href='%s'>More information on placeholders.</a>", 'dbem' ), 'wp-events-plugin.com/documentation/the-em-templates-syntax/') );
+										
 					echo $save_button;
 					?>
 				</table>
 				    
 			</div> <!-- . inside --> 
-			</div> <!-- .postbox -->    
+			</div> <!-- .postbox --> 
 			
 			<div  class="postbox " >
 			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Events page', 'dbem' ); ?> </span></h3>
@@ -382,10 +383,50 @@ function em_admin_options_page() {
 					em_options_input_text ( __( 'Maximum width (px)', 'dbem' ), 'dbem_image_max_width', __( 'The maximum allowed width for images uploades', 'dbem' ) );
 					em_options_input_text ( __( 'Maximum height (px)', 'dbem' ), 'dbem_image_max_height', __( "The maximum allowed height for images uploaded, in pixels", 'dbem' ) );
 					em_options_input_text ( __( 'Maximum size (bytes)', 'dbem' ), 'dbem_image_max_size', __( "The maximum allowed size for images uploaded, in pixels", 'dbem' ) );
+					echo $save_button;
 					?>
 				</table> 
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
+
+<div  class="postbox " >
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Management Permission Options', 'dbem' ); ?> </span></h3>
+			<div class="inside">
+	            <table class="form-table">
+	            	<tr><td colspan="2">
+	            		<strong><?php _e('Warning: Changing these values may result in exposing previously hidden information to all users.')?></strong><br />
+	            		<em><?php _e('Note that currently "users" are considered as wordpress contributor users upwards, as they can create and manage events. Wordpress administrators can control all events/locations/categories/etc. on Events Manager.','dbem'); ?></em>
+	            	</td></tr>
+					<tr><th colspan="2"><strong><?php _e('Event Permissions','dbem'); ?></strong></th></tr>
+					<?php
+					$location_privacy_options = array(
+						'0' => __('Every user can create and manage their own events. Users can\'t view or modify each others\' events and booking data','dbem'),
+						'1' => __('Every user can create/edit/delete any event on this site.','dbem')
+					);
+					em_options_radio ( 'dbem_permissions_events', $location_privacy_options );  
+					?>
+					<tr><th colspan="2"><strong><?php _e('Location Permissions','dbem'); ?></strong></th></tr>
+					<?php
+					$location_privacy_options = array(
+						'0' => __('Every user can create and manage their own location.','dbem')." ".__('In future releases of Events Manager, sharing locations with more than one user will be possible in this option, as well as connecting different user defined locations to prevent duplicate listings.','dbem'),
+						'1' => __('Only event administrators can create and edit locations. User must choose from these available locations.','dbem'),
+						'2' => __('Everyone can create/edit/delete all locations on this site. (not recommended)','dbem')
+					);
+					em_options_radio ( 'dbem_permissions_locations', $location_privacy_options );  
+					?>
+					<tr><th colspan="2"><strong><?php _e('Category Permissions','dbem'); ?></strong></th></tr>
+					<?php
+					$category_privacy_options = array(
+						'0' => __('Every user can create and manage their own category.','dbem'),
+						'1' => __('Only event administrators can create and edit categories. User must choose from these available categories.','dbem'),
+						'2' => __('Everyone can create/edit/delete all categories on the system. (not recommended)','dbem')
+					);
+					em_options_radio ( 'dbem_permissions_categories', $category_privacy_options );
+					?>
+				</table>
+				    
+			</div> <!-- . inside --> 
+			</div> <!-- .postbox -->    
             
 			<p class="submit">
 				<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e ( 'Save Changes' )?>" />

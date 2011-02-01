@@ -131,10 +131,21 @@ class EM_Category extends EM_Object {
 		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
 		$category_string = str_replace('#_CATEGORY', apply_filters($name_filter, $this->name) , $category_string ); //Depreciated
 		return apply_filters('em_category_output', $category_string, $this, $format, $target);	
-	}	
+	}
 	
 	function can_manage(){
-		return ( get_option('dbem_disable_ownership') || $this->owner == get_current_user_id() || empty($this->id) );
+		return ( get_option('dbem_permissions_categories') == 2 || $this->owner == get_current_user_id() || empty($this->id) || em_verify_admin() );
+	}
+	
+	function can_use(){
+		switch( get_option('dbem_permissions_locations') ){
+			case 0:
+				return $this->owner == get_current_user_id();
+			case 1:
+				return em_verify_admin($this->owner);
+			case 2:
+				return true;
+		}
 	}
 }
 ?>

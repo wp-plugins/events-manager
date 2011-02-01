@@ -26,7 +26,7 @@ function em_maps() {
 		    position: em_LatLng,
 		    map: maps[map_id]
 		});
-		var infowindow = new google.maps.InfoWindow({ content: document.getElementById('em-location-map-info-'+map_id).firstChild });
+		var infowindow = new google.maps.InfoWindow({ content: document.getElementById('em-location-map-info-'+map_id).firstElementChild });
 		infowindow.open(maps[map_id],marker);
 	});
 	jQuery('.em-locations-map').each( function(index){

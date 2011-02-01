@@ -132,48 +132,6 @@ jQuery(document).ready( function($) {
 	
 	//Location stuff - only needed if inputs for location exist
 	if( $('select#location-select-id, input#location-name').length > 0 ){
-		//Autocomplete
-		/* for jquery-ui-1.8.5
-		$( "#eventForm input#location-name" ).autocomplete({
-			source: '../wp-content/plugins/events-manager/admin/locations-search.php',
-			minLength: 2,
-			select: function( event, ui ) {  
-				$("input#location-address").val(ui.item.address); 
-				$("input#location-town").val(ui.item.town); 
-				if($('#em-map').length > 0){
-					get_map_by_id(ui.item.id);
-				}
-			}
-		});
-		*/
-		$( "#eventForm input#location-name" ).autocomplete( '../wp-content/plugins/events-manager/admin/em-locations-search.php', {
-			multiple: true,
-			width: 350,
-			scroll:false,
-			selectFirst: false,
-			dataType: "json",
-			parse: function(data) {
-				return $.map(data, function(row) {
-					return {
-						data: row,
-						value: row.value,
-						result: row.value
-					}
-				});
-			},
-			formatItem: function(item) {
-				return item.value + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town;
-			},
-			formatResult: function(item){
-				return item.value;
-			}
-		}).result(function(e, item) {
-			e.preventDefault();
-			$( "input#location-name" ).val(item.value);
-			$('input#location-address').val(item.address);
-			$('input#location-town').val(item.town);
-			get_map_by_id(item.id);
-		});
 
 		//Load map
 		if($('#em-map').length > 0){
@@ -251,7 +209,52 @@ jQuery(document).ready( function($) {
 				});
 			}
 		});
+		
 		$("input#location-town, select#location-select-id").triggerHandler('change');
+		
+		//Finally, add autocomplete here
+		//Autocomplete
+		/* for jquery-ui-1.8.5
+		$( "#event-form input#location-name" ).autocomplete({
+			source: '../wp-content/plugins/events-manager/admin/locations-search.php',
+			minLength: 2,
+			select: function( event, ui ) {  
+				$("input#location-address").val(ui.item.address); 
+				$("input#location-town").val(ui.item.town); 
+				if($('#em-map').length > 0){
+					get_map_by_id(ui.item.id);
+				}
+			}
+		});
+		*/
+		$( "#event-form input#location-name" ).autocomplete( '../wp-content/plugins/events-manager/admin/em-locations-search.php', {
+			multiple: true,
+			width: 350,
+			scroll:false,
+			selectFirst: false,
+			dataType: "json",
+			parse: function(data) {
+				return $.map(data, function(row) {
+					return {
+						data: row,
+						value: row.value,
+						result: row.value
+					}
+				});
+			},
+			formatItem: function(item) {
+				return item.value + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town;
+			},
+			formatResult: function(item){
+				return item.value;
+			}
+		}).result(function(e, item) {
+			e.preventDefault();
+			$( "input#location-name" ).val(item.value);
+			$('input#location-address').val(item.address);
+			$('input#location-town').val(item.town);
+			get_map_by_id(item.id);
+		});
 	}
 });
 

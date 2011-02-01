@@ -39,7 +39,7 @@ function em_admin_events_page() {
 			$scope = "future";
 	}
 	$args = array('scope'=>$scope, 'limit'=>0, 'order'=>$order );
-	if( !get_option('dbem_disable_ownership') && !em_verify_admin() ){
+	if( !get_option('dbem_permissions_events') && !em_verify_admin() ){
 		$args['owner'] = get_current_user_id();
 	}	
 	$events = EM_Events::get( $args );

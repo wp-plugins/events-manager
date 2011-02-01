@@ -3,10 +3,11 @@
 
 /**
  * Currently, just is_super_admin() but allows scalability of permissions now.
+ * @param int $user_id
  * @return boolean
  */
-function em_verify_admin(){
-	return is_super_admin();
+function em_verify_admin( $user_id = false ){
+	return is_super_admin($user_id);
 }
 
 /**
@@ -196,6 +197,24 @@ function em_options_textarea($title, $name, $description) {
 	<?php
 }
 
+function em_options_radio($name, $options) {
+		$option = get_option($name); 
+		?>		 
+	   	<tr valign="top" id='<?php echo $name;?>_row'>
+	   		<td colspan="2">  
+	   			<table>
+	   			<?php foreach($options as $value => $text): ?>
+	   				<tr>
+	   					<td><input id="<?php echo $name ?>_<?php echo $value; ?>" name="<?php echo $name ?>" type="radio" value="<?php echo $value; ?>" <?php if($option == $value) echo "checked='checked'"; ?> /></td>
+	   					<td><?php echo $text ?></td>
+	   				</tr>
+				<?php endforeach; ?>
+				</table>
+			</td>
+	   	</tr>
+<?php	
+}
+
 function em_options_radio_binary($title, $name, $description) {
 		$list_events_page = get_option($name); ?>
 		 
@@ -209,6 +228,7 @@ function em_options_radio_binary($title, $name, $description) {
 	   	</tr>
 <?php	
 }  
+
 function em_options_select($title, $name, $list, $description) {
 	$option_value = get_option($name);
 	if( $name == 'dbem_events_page' && !is_object(get_page($option_value)) ){

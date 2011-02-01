@@ -75,16 +75,19 @@ class EM_Location extends EM_Object {
 	}
 	
 	function save(){
-		global $wpdb;
+		global $wpdb, $current_user;
+   		get_currentuserinfo();
 		do_action('em_location_save_pre', $this);
 		$table = $wpdb->prefix.EM_LOCATIONS_TABLE;
 		$data = $this->to_array();
 		unset($data['location_id']);
 		unset($data['location_image_url']);
 		if($this->id != ''){
-			$where = array( 'location_id' => $this->id );  
 			$wpdb->update($table, $data, $where, $this->get_types($data));
 		}else{
+			$this->owner = $current_user->ID; //Record creator of event
+			$data['location_owner'] = $this->owner;
+			$where = array( 'location_id' => $this->id );
 			$wpdb->insert($table, $data, $this->get_types($data));
 		    $this->id = $wpdb->insert_id;   
 		}
@@ -201,7 +204,18 @@ class EM_Location extends EM_Object {
 	}
 	
 	function can_manage(){
-		return ( get_option('dbem_disable_ownership') || $this->owner == get_current_user_id() || empty($this->id) || em_verify_admin() );
+		return ( get_option('dbem_permissions_locations') == 2 || $this->owner == get_current_user_id() || empty($this->id) || em_verify_admin() );
+	}
+	
+	function can_use(){
+		switch( get_option('dbem_permissions_locations') ){
+			case 0:
+				return $this->owner == get_current_user_id();
+			case 1:
+				return em_verify_admin($this->owner);
+			case 2:
+				return true;
+		}
 	}
 	
 	function output_single($target = 'html'){

@@ -160,7 +160,9 @@ class EM_Locations extends EM_Object {
 		}
 		//owner lookup
 		if( !empty($args['owner']) ){
-			$conditions['owner'] = "location_owner=".get_current_user_id();
+			if ( get_option('dbem_permissions_locations') < 1 && !em_verify_admin() ){
+				$conditions['owner'] = "location_owner=".get_current_user_id();
+			}
 		}
 		return apply_filters('em_locations_build_sql_conditions', $conditions, $args);
 	}

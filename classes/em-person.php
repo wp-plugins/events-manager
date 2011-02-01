@@ -149,7 +149,7 @@ class EM_Person extends EM_Object{
 	 * Can the user manage this event? 
 	 */
 	function can_manage(){
-		return ( get_option('dbem_disable_ownership') || $this->owner == get_current_user_id() || em_verify_admin() );
+		return ( get_option('dbem_permissions_events') || $this->owner == get_current_user_id() || em_verify_admin() );
 	}
 }
 ?>

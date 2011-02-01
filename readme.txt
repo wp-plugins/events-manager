@@ -110,7 +110,21 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 
 == Change Log ==
 = 3.0.91 =
+* Documentation finally up to date now!
 * widget bug fixed
+* added event permissions, so users can manage their own events/locations/categories
+* improved event booking UI and management tools
+* export CSV of bookings
+* booking approvals added
+* bookings can have individual notes
+* calendar widget shows selected month if clicked on 
+* custom attributes field, for atts that don't need to be in a template (e.g. pdf file url)
+* time limit for main events list and events widget (e.g. show events that occur within x months)
+* default location
+* default category
+* added extra validation so event start date/times can't be after end date/time
+* calendar navigation will pass on all arguments for following month (e.g. category, etc)
+* small map balloon fix for some rare js conflicts
 
 = 3.0.9 =
 * Fixed small calendar discrepencies

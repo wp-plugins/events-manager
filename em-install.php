@@ -13,6 +13,7 @@ function em_install() {
 	if( EM_VERSION > $old_version || $old_version == '' ){
 	 	// Creates the events table if necessary
 		em_create_events_table(); 
+		em_create_events_meta_table();
 		em_create_locations_table();
 	  	em_create_bookings_table();
 	  	em_create_people_table();
@@ -80,6 +81,28 @@ function em_create_events_table() {
 	}else{
 		dbDelta($sql);
 	}
+}
+
+function em_create_events_meta_table(){
+	global  $wpdb, $user_level;
+	$table_name = $wpdb->prefix.EM_META_TABLE;
+
+	// Creating the events table
+	$sql = "CREATE TABLE ".$table_name." (
+		meta_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+		object_id bigint(20) unsigned NOT NULL,
+		meta_key varchar(255) DEFAULT NULL,
+		meta_value longtext,
+		meta_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+		KEY post_id (object_id),
+		KEY meta_key (meta_key),
+		PRIMARY KEY  (meta_id)
+		) DEFAULT CHARSET=utf8 ";
+		
+	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
+	
+	$old_table_name = $wpdb->prefix.EM_OLD_LOCATIONS_TABLE;     
+	dbDelta($sql);	
 }
 
 function em_create_locations_table() {
@@ -194,7 +217,7 @@ function em_add_options() {
 		'dbem_events_default_orderby' => 'start_date,start_time,name',
 		'dbem_events_default_order' => 'ASC',
 		'dbem_events_default_limit' => 10,
-		'dbem_disable_ownership' => 0, //can others view other's events
+		'dbem_permissions_events' => 0, //can others view other's events
 		'dbem_list_events_page' => 1,
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
@@ -236,12 +259,16 @@ function em_add_options() {
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ", 
 		//General Settings
-		'dbem_disable_ownership' => 0,
 		'dbem_use_select_for_locations' => 0,
 		'dbem_attributes_enabled' => 1,
 		'dbem_recurrence_enabled'=> 1,
 		'dbem_rsvp_enabled'=> 1,
 		'dbem_categories_enabled'=> 1,
+		'dbem_placeholders_custom' => '',
+		//Privacy Settings
+		'dbem_permissions_events' => 0,
+		'dbem_permissions_locations' => 0,
+		'dbem_permissions_categories' => 0,	
 		//Title rewriting compatability
 		'dbem_disable_title_rewrites'=> false,
 		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
@@ -274,7 +301,9 @@ function em_add_options() {
 		//New options, defaults for updates
 		update_option('dbem_bookings_approval',0); //Previously in <3.0.9 bookings were never approvable
 		update_option('dbem_bookings_approval_warning',1); //One off warning for old EM users to activate this new feature
-		update_option('dbem_disable_ownership',1); //set to true, so updaters don't get a surprise!
+		update_option('dbem_permissions_events',1); //set to true, so updaters don't get a surprise!
+		update_option('dbem_permissions_locations',2); //set to true, so updaters don't get a surprise!
+		update_option('dbem_permissions_categories',2); //set to true, so updaters don't get a surprise!
 		update_option('dbem_events_ownership_warning',1); //one off warn updaters about ownership feature
 		//Contact person email flag
 		update_option('dbem_bookings_contact_email',get_option('dbem_rsvp_notify_contact'));

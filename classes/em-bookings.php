@@ -388,6 +388,62 @@ class EM_Bookings extends EM_Object{
 		return apply_filters('em_bookings_get', $bookings);
 	}
 	
+
+	//List of patients in the patient database, that a user can choose and go on to edit any previous treatment data, or add a new admission.
+	function export_csv() {
+		global $EM_Event;
+		if($EM_Event->id != $this->event_id ){
+			$event = new EM_Event($this->event_id);
+			$event_name = $event->name;
+		}else{
+			$event_name = $EM_Event->name;
+		}
+		// The name of the file on the user's pc
+		$file_name = sanitize_title($event_name). "-bookings.csv";
+		
+		header("Content-Type: application/octet-stream");
+		header("Content-Disposition: Attachment; filename=$file_name");
+		
+		//Headers
+		$labels = array(
+			'ID',
+			'Name',
+			'Email',
+			'Phone',
+			'Date',
+			'Status',
+			'Spaces',
+			'Comment'
+		);
+		$file = sprintf(__('Booking details for "%s" as of %s','dbem'),$event_name, date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
+		$file = '"'. implode('","', $labels). '"' .  "\n";
+		
+		//Rows
+		foreach( $this->bookings as $EM_Booking ) {
+			$row = array(
+				$EM_Booking->id,
+				$EM_Booking->person->name,
+				$EM_Booking->person->email,
+				$EM_Booking->person->phone,
+				date('Y-m-d h:i', $EM_Booking->timestamp),
+				$EM_Booking->seats,
+				$EM_Booking->get_status(),
+				$EM_Booking->comment
+			);
+			//Display all values
+			foreach($row as $value){
+				$value = str_replace('"', '""', $value);
+				$value = str_replace("=", "", $value);
+				$file .= '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
+			}
+			$file .= "\n";
+		}
+		
+		// $file holds the data
+		echo $file;
+		$file = "";
+	}
+	
 	/* Overrides EM_Object method to apply a filter to result
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */

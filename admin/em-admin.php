@@ -235,7 +235,7 @@ function em_admin_general_script() {
 				}
 				return true; 
 		   }
-		   $('#eventForm').bind("submit", validateEventForm);
+		   $('#event-form').bind("submit", validateEventForm);
 		});
 		//]]>
 	</script>

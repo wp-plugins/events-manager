@@ -65,14 +65,14 @@ function em_admin_event_page() {
 	} else {
 		$EM_Event = ( is_object($EM_Event) && get_class($EM_Event) == 'EM_Event') ? $EM_Event : new EM_Event();
 		$title = __ ( "Insert New Event", 'dbem' );
-		//Give a default location
+		//Give a default location & category
 		$default_cat = get_option('dbem_default_category');
 		$default_loc = get_option('dbem_default_location');
 		if( is_numeric($default_cat) && $default_cat > 0 ){
 			$EM_Event->category_id = $default_cat;
 			$EM_Event->category = new EM_Category($default_cat);
 		}
-		if( is_numeric($default_loc) && $default_loc > 0 ){
+		if( is_numeric($default_loc) && $default_loc > 0 && ( empty($EM_Event->location->id) && empty($EM_Event->location->name) && empty($EM_Event->location->address) && empty($EM_Event->location->town) ) ){
 			$EM_Event->location_id = $default_loc;
 			$EM_Event->location = new EM_Location($default_loc);
 		}
@@ -108,7 +108,7 @@ function em_admin_event_page() {
 		<p><?php echo !empty($EM_Event->feedback_message) ? $EM_Event->feedback_message : $_GET['message']; ?></p>
 	</div>
 	<?php endif; ?>
-	<form id="eventForm" method="post" 	action="">
+	<form id="event-form" method="post" action="">
 		<div class="wrap">
 			<div id="icon-events" class="icon32"><br /></div>
 			<h2><?php echo $title; ?></h2>
@@ -204,7 +204,7 @@ function em_admin_event_page() {
 											<p>
 												<?php echo $EM_Event->get_recurrence_description(); ?>
 												<br />
-												<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/edit.php?page=events-manager&amp;action=edit_event&amp;event_id=<?php echo $EM_Event->recurrence_id; ?>">
+												<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $EM_Event->recurrence_id; ?>">
 												<?php _e ( 'Reschedule', 'dbem' ); ?>
 												</a>
 												<input type="hidden" name="recurrence_id" value="<?php echo $EM_Event->recurrence_id; ?>" />
@@ -276,7 +276,8 @@ function em_admin_event_page() {
 											 	 	<div id='major-publishing-actions'>  
 														<div id='publishing-action'> 
 															<a id='printable' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&event_id=".$EM_Event->id ?>'><?php _e('manage bookings','dbem')?></a><br />
-															<a id='printable' target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_report&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a>
+															<a target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_report&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a>
+															<a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a>
 															<br class='clear'/>             
 												        </div>
 														<br class='clear'/>    
@@ -304,7 +305,7 @@ function em_admin_event_page() {
 									<?php _e ( 'Category', 'dbem' ); ?>
 									</span></h3>
 								<div class="inside">
-									<?php $categories = EM_Categories::get(array('owner'=>false, 'orderby'=>'category_name')); ?>
+									<?php $categories = EM_Categories::get(array('orderby'=>'category_name')); ?>
 									<?php if( count($categories) > 0 ): ?>
 										<p><?php _e ( 'Category:', 'dbem' ); ?>
 											<select name="event_category_id">
@@ -338,7 +339,7 @@ function em_admin_event_page() {
 								<?php _e ( 'Name', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
-								<input type="text" name="event_name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
+								<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
 								<br />
 								<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
 							</div>
@@ -492,7 +493,8 @@ function em_admin_event_page() {
 									get_option ( 'dbem_rss_description_format' ).
 									get_option ( 'dbem_rss_title_format' ).
 									get_option ( 'dbem_single_event_format' ).
-									get_option ( 'dbem_single_location_format' );
+									get_option ( 'dbem_single_location_format' ).
+									get_option ( 'dbem_placeholders_custom' );
 								//We now have one long string of formats, get all the attribute placeholders
 								preg_match_all('/#_ATT\{.+?\}(\{.+?\})?/', $formats, $placeholders);
 								//Now grab all the unique attributes we can use in our event.
@@ -600,7 +602,7 @@ function em_admin_event_page() {
 		jQuery(document).ready( function($) {
 			<?php if( $EM_Event->is_recurring() ): ?>
 			//Recurrence Warnings
-			$('#eventForm').submit( function(event){
+			$('#event_form').submit( function(event){
 				confirmation = confirm('<?php _e('Are you sure you want to reschedule this recurring event? If you do this, you will lose all booking information and the old recurring events will be deleted.', 'dbem'); ?>');
 				if( confirmation == false ){
 					event.preventDefault();

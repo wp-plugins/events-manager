@@ -51,6 +51,16 @@ p#recurrence_warning {
 div#icon-events{
 	background:url('../images/calendar-32.png') no-repeat center;
 }
+
+/* Events Add Page */
+#event-form #event-name, #location-form, #location-name { margin: 2px 0 7px; padding: 6px 5px; width: 100%; }
+
+/* Google Map Object */
+#location-balloon-content h3 { background:none; text-shadow:none; }
+
+/* Options Page */
+#dbem_options_form td, #dbem_options_form th { vertical-align:top; }
+
 /* Widget Tables CSS */
 .em_obj .table-wrap{
 	position:relative;

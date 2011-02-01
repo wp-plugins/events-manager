@@ -7,7 +7,7 @@ class EM_Booking extends EM_Object{
 	var $seats;
 	var $comment;
 	var $status = 0;
-	//Other Vars
+	var $notes = array();
 	var $fields = array(
 		'booking_id' => array('name'=>'id','type'=>'%d'),
 		'event_id' => array('name'=>'event_id','type'=>'%d'),
@@ -16,6 +16,8 @@ class EM_Booking extends EM_Object{
 		'booking_comment' => array('name'=>'comment','type'=>'%s'),
 		'booking_status' => array('name'=>'status','type'=>'%d')
 	);
+	//Other Vars
+	var $timestamp;
 	var $person;
 	var $required_fields = array('booking_id', 'event_id', 'person_id', 'booking_seats');
 	var $feedback_message = "";
@@ -54,9 +56,15 @@ class EM_Booking extends EM_Object{
 			  	$booking = $wpdb->get_row($sql, ARRAY_A);
 			  	//Get the person for this booking
 			  	$this->person = new EM_Person($booking['person_id']);
+			  	//Booking notes
+			  	$notes = $wpdb->get_results("SELECT * FROM ". $wpdb->prefix . EM_META_TABLE ." WHERE meta_key='booking-note' AND object_id ='$booking_data'", ARRAY_A);
+			  	foreach($notes as $note){
+			  		$this->notes[] = unserialize($note['meta_value']);
+			  	}
 			}
 			//Save into the object
 			$this->to_object($booking);
+			$this->timestamp = strtotime($booking['booking_date']);
 		}
 		//Do it here so things appear in the po file.
 		$this->status_array = array(
@@ -167,7 +175,14 @@ class EM_Booking extends EM_Object{
 		}
 		return $this->event;
 	}
-	
+
+	/**
+	 * Returns a string representation of the booking's status
+	 * @return string
+	 */
+	function get_status(){
+		return $this->status_array[$this->status];
+	}
 	/**
 	 * I wonder what this does....
 	 * @return boolean
@@ -237,7 +252,21 @@ class EM_Booking extends EM_Object{
 		}
 	}
 	
-
+	/**
+	 * Add a booking note to this booking. returns wpdb result or false if use can't manage this event.
+	 * @param string $note
+	 * @return mixed
+	 */
+	function add_note( $note_text ){
+		global $wpdb;
+		if( $this->can_manage() ){
+			$note = array('author'=>get_current_user_id(),'note'=>$note_text,'timestamp'=>current_time('timestamp'));
+			$this->notes[] = $note;
+			$this->feedback_message = __('Booking note successfully added.','dbem');
+			return $wpdb->insert($wpdb->prefix.EM_META_TABLE, array('object_id'=>$this->id, 'meta_key'=>'booking-note', 'meta_value'=> serialize($note)),array('%d','%s','%s'));
+		}
+		return false;
+	}
 	
 	/**
 	 * @param EM_Booking $EM_Booking
@@ -328,7 +357,7 @@ class EM_Booking extends EM_Object{
 	 * Can the user manage this event? 
 	 */
 	function can_manage(){
-		return ( get_option('dbem_disable_ownership') || $this->get_event()->author == get_current_user_id() || em_verify_admin() );
+		return ( get_option('dbem_permissions_events') || $this->get_event()->author == get_current_user_id() || em_verify_admin() );
 	}
 	
 	/**
