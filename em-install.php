@@ -297,14 +297,14 @@ function em_add_options() {
 		add_option($key, $value);
 	}
 	//Customization for new options on updated plugins (not new installs)
-	if( get_option('dbem_version') != '' && get_option('dbem_version') <= 3.09){
+	if( get_option('dbem_version') != '' && get_option('dbem_version') <= 3.091){
 		//New options, defaults for updates
+		add_option('dbem_admin_notice_3.0.91',1);
 		update_option('dbem_bookings_approval',0); //Previously in <3.0.9 bookings were never approvable
 		update_option('dbem_bookings_approval_warning',1); //One off warning for old EM users to activate this new feature
-		update_option('dbem_permissions_events',1); //set to true, so updaters don't get a surprise!
-		update_option('dbem_permissions_locations',2); //set to true, so updaters don't get a surprise!
-		update_option('dbem_permissions_categories',2); //set to true, so updaters don't get a surprise!
-		update_option('dbem_events_ownership_warning',1); //one off warn updaters about ownership feature
+		update_option('dbem_permissions_events',1); //set to 2, so updaters don't get a surprise!
+		update_option('dbem_permissions_locations',2); //set to 2, so updaters don't get a surprise!
+		update_option('dbem_permissions_categories',2); //set to 2, so updaters don't get a surprise!
 		//Contact person email flag
 		update_option('dbem_bookings_contact_email',get_option('dbem_rsvp_notify_contact'));
 		//Booking emails

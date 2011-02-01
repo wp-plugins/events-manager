@@ -8,40 +8,59 @@ function em_admin_warnings() {
 	//If we're editing the events page show hello to new user
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$dismiss_link_joiner = ( count($_GET) > 0 ) ? '&amp;':'?';
-	if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
-		// Disable Hello to new user if requested
-		update_option ( 'dbem_hello_to_user', 0 );
-	}else{
-		if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
-			$message = sprintf ( __ ( "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. ", 'dbem' ), 'admin.php?page=events-manager-options' );
-			$notice = "<div class='error'><p>$message</p></div>";
-			echo $notice;
-		}
-	}
-	//If events page couldn't be created
-	if( !empty($_GET['em_dismiss_events_page']) ){
-		update_option('dbem_dismiss_events_page',1);
-	}else{
-		if ( !get_page($events_page_id) && !get_option('dbem_dismiss_events_page') ){
+	
+	if( em_verify_admin() ){
+		//New User Intro
+		if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
+			// Disable Hello to new user if requested
+			update_option ( 'dbem_hello_to_user', 0 );
+		}elseif ( get_option ( 'dbem_hello_to_user' ) == 1 && $_GET['page'] == 'events-manager-events' ) {
+			$current_user = wp_get_current_user ();
+			//FIXME update welcome msg with good links
+			$advice = sprintf ( __ ( "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> 
+			<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>
+			<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>
+			<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>", 'dbem' ), $current_user->display_name, get_bloginfo ( 'url' ) . '/wp-admin/widgets.php', 'http://wp-events-plugin.com/documentation/template-tags/', 'http://wp-events-plugin.com/documentation/shortcodes/', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager&disable_hello_to_user=true' );
 			?>
-			<div id="em_page_error" class="updated">
-				<p><?php echo sprintf ( __( 'Uh Oh! For some reason wordpress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">settings page</a>. Sorry for the extra step! If you know what you are doing, you may have done this on purpose, if so <a href="%s">ignore this message</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1' ); ?></p>
+			<div id="message" class="updated">
+				<?php echo $advice; ?>
 			</div>
-			<?php		
+			<?php
+		}	
+	
+		//If events page couldn't be created
+		if( !empty($_GET['em_dismiss_admin_notice']) ){
+			delete_option('dbem_admin_notice_'.$_GET['em_dismiss_admin_notice']);
+		}else{
+			if ( get_option('dbem_admin_notice_3.0.91') ){
+				?>
+				<div class="updated">
+					<p><?php echo sprintf ( __( '<strong>Events Manager has some new features!</strong><ul><li>Bookings can now be approved before they count towards your event\'s space allocations.</li><li>Events now have owners, and you can restrict users so they can only manage events/locations/categories they create.<br/><br/>These new permissions are enabled by default, but since you upgraded it has been disabled to maintain the previous plugin behaviour. You can re-enable it from the <a href="%s">settings page</a>. <a href="%s">Dismiss</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_admin_notice=3.0.91' ); ?></p>
+				</div>
+				<?php		
+			}
+		}
+	
+		//If events page couldn't be created
+		if( !empty($_GET['em_dismiss_events_page']) ){
+			update_option('dbem_dismiss_events_page',1);
+		}else{
+			if ( !get_page($events_page_id) && !get_option('dbem_dismiss_events_page') ){
+				?>
+				<div id="em_page_error" class="updated">
+					<p><?php echo sprintf ( __( 'Uh Oh! For some reason wordpress could not create an events page for you (or you just deleted it). Not to worry though, all you have to do is create an empty page, name it whatever you want, and select it as your events page in your <a href="%s">settings page</a>. Sorry for the extra step! If you know what you are doing, you may have done this on purpose, if so <a href="%s">ignore this message</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_events_page=1' ); ?></p>
+				</div>
+				<?php		
+			}
 		}
 	}
-	//If events page couldn't be created
-	if( !empty($_GET['em_dismiss_bookings_approval_warning']) ){
-		delete_option('dbem_bookings_approval_warning');
-	}else{
-		if ( get_option('dbem_bookings_approval_warning') ){
-			?>
-			<div class="updated">
-				<p><?php echo sprintf ( __( 'Events Manager now has booking approvals! Bookings can now be approved before they count towards your event\'s space allocations.<br/><br/>This is enabled by default, but since you upgraded it has been disabled to maintain the previous plugin behaviour. You can re-enable it from the <a href="%s">settings page</a>. <a href="%s">Dismiss</a>', 'dbem'), get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_bookings_approval_warning=1' ); ?></p>
-			</div>
-			<?php		
-		}
+	//Warn about EM page edit
+	if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
+		$message = sprintf ( __ ( "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. ", 'dbem' ), 'admin.php?page=events-manager-options' );
+		$notice = "<div class='error'><p>$message</p></div>";
+		echo $notice;
 	}
+	
 }
 add_action ( 'admin_notices', 'em_admin_warnings' );
 

@@ -94,7 +94,7 @@ if( is_admin() ){
 
 
 // Setting constants
-define('EM_VERSION', 3.111); //self expanatory
+define('EM_VERSION', 3.091); //self expanatory
 define('EM_CATEGORIES_TABLE', 'em_categories'); //TABLE NAME
 define('EM_EVENTS_TABLE','em_events'); //TABLE NAME
 define('EM_META_TABLE','em_meta'); //TABLE NAME

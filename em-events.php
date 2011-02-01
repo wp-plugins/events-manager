@@ -14,14 +14,16 @@ function em_content($content) {
 		global $wpdb, $EM_Event;
 		//TODO FILTER - filter em page content before placeholder replacing
 		//TODO any loop should put the current $EM_Event etc. into the global variable
+		//general defaults
+		$args = array(				
+			'orderby' => get_option('dbem_events_default_orderby'),
+			'order' => get_option('dbem_events_default_order'),
+			'owner' => false,
+			'pagination' => 1
+		);
 		if ( !empty($_REQUEST['calendar_day']) ) {
 			//Events for a specific day
-			$args = array(					
-				'orderby' => get_option('dbem_events_default_orderby'),
-				'order' => get_option('dbem_events_default_order'),
-				'scope'=> $_REQUEST['calendar_day'],
-				'pagination' => 1
-			);
+			$args['scope'] = $_REQUEST['calendar_day'];
 			$page = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
 			$events = EM_Events::get( apply_filters('em_content_calendar_day_args', $args) ); //Get events first, so we know how many there are in advance
 			if ( count($events) > 1 || $page > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
@@ -46,11 +48,7 @@ function em_content($content) {
 			// Multiple events page
 			$scope = ( !empty($_REQUEST['scope']) ) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
 			//If we have a $_GET['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
-			$args = array(				
-				'orderby' => get_option('dbem_events_default_orderby'),
-				'order' => get_option('dbem_events_default_order'),
-				'scope' => $scope
-			);
+			$args['scope'] = $scope;
 			if ( !empty($_REQUEST['category_id']) ) $args['category'] = $_REQUEST['category_id'];
 			if (get_option ( 'dbem_display_calendar_in_events_page' )){
 				$args['full'] = 1;
@@ -58,7 +56,6 @@ function em_content($content) {
 				$content =  EM_Calendar::output( apply_filters('em_content_calendar_args', $args) );
 			}else{
 				$args['limit'] = get_option('dbem_events_default_limit');
-				$args['pagination'] = 1;	
 				$args['page'] = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
 				
 				/*calculate event list time range */
@@ -93,7 +90,7 @@ function em_events_page_title($content) {
 	
 	if ( $post->ID == $events_page_id && $events_page_id != 0 ) {
 		if (isset ( $_REQUEST['calendar_day'] ) && $_REQUEST['calendar_day'] != '') {
-			$events = EM_Events::get(array('limit'=>2,'scope'=>$_REQUEST['calendar_day']));
+			$events = EM_Events::get(array('limit'=>2,'scope'=>$_REQUEST['calendar_day'],'owner'=>false));
 			if ( count($events) != 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
 				//We only support dates for the calendar day list title, so we do a simple filter for the supplied calendar_day
 				$content = get_option ('dbem_list_date_title');

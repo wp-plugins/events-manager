@@ -389,19 +389,19 @@ function em_admin_options_page() {
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
 
-<div  class="postbox " >
+		<div  class="postbox " >
 			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Management Permission Options', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 	            <table class="form-table">
 	            	<tr><td colspan="2">
 	            		<strong><?php _e('Warning: Changing these values may result in exposing previously hidden information to all users.')?></strong><br />
-	            		<em><?php _e('Note that currently "users" are considered as wordpress contributor users upwards, as they can create and manage events. Wordpress administrators can control all events/locations/categories/etc. on Events Manager.','dbem'); ?></em>
+	            		<em><?php _e('Note that currently "users" are considered as wordpress contributor users upwards, as they can create and manage events (we\'re working on that). Wordpress administrators can control all events/locations/categories/etc. on Events Manager.','dbem'); ?></em>
 	            	</td></tr>
 					<tr><th colspan="2"><strong><?php _e('Event Permissions','dbem'); ?></strong></th></tr>
 					<?php
 					$location_privacy_options = array(
 						'0' => __('Every user can create and manage their own events. Users can\'t view or modify each others\' events and booking data','dbem'),
-						'1' => __('Every user can create/edit/delete any event on this site.','dbem')
+						'1' => __('Every user can create/edit/delete any event on this site. (not recommended)','dbem')
 					);
 					em_options_radio ( 'dbem_permissions_events', $location_privacy_options );  
 					?>
