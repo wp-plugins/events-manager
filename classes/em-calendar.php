@@ -341,6 +341,9 @@ class EM_Calendar extends EM_Object {
 		}
 		$qs_array = array();
 		foreach($args as $key => $value){
+			if(is_array($value)){
+				$value = implode(',',$value);
+			}
 			$qs_array[] = "$key=".urlencode($value);
 		}
 		return ($html_entities) ? implode('&amp;', $qs_array) : implode('&', $qs_array);
