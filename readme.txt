@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, manager, calendar, gigs, concert, maps, geotagging, rsvp  
 Requires at least: 2.9   
 Tested up to: 3.0.4
-Stable tag: 3.0.91
+Stable tag: 3.0.92
 
 Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
              
