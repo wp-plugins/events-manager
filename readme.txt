@@ -24,22 +24,19 @@ For more information visit the [Documentation Page](http://wp-events-plugin.com/
 
 == Installation ==
 
+Install Events Manager directly from your wordpress site. 
+1. Go to Plugins > Add New in the admin area, and search for events manager
+2. Click install
+3. Activate it
+4. Done! You can start adding events straight away, although you may want to visit the [Documentation Pages](http://wp-events-plugin.com/documentation/).
+
+
 = Installing or Upgrading from 2.x =
 
 1. Back up your database if upgrading is recommended, as with any plugin or wordpress upgrade.
 2. Upload the `events-manager` folder to the `/wp-content/plugins/` directory
 3. Activate the plugin through the 'Plugins' menu in WordPress
 4. Add events list or calendars following the instructions in the Usage section.
-
-= Upgrading from 1.* only =
-
-Events Manager 1.* adopters should:
-
-1. backup the Wordpress database. 
-2. deactivate Events Manager 1.*
-3. delete Events Managers 1.* and upload Events Manager 2.* to the server
-4. activate Events Manager 2.* 
-5. Download and activate Events Manager 3.*
     
 == Usage == 
 
