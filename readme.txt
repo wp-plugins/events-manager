@@ -106,6 +106,13 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 3. The Events Manager Options page.
 
 == Change Log ==
+
+= 3.0.92 =
+* Fixed permission issue
+* Fixed category not saving
+* Fixed location saving issue
+
+
 = 3.0.91 =
 * Documentation finally up to date now!
 * widget bug fixed
@@ -122,6 +129,7 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * added extra validation so event start date/times can't be after end date/time
 * calendar navigation will pass on all arguments for following month (e.g. category, etc)
 * small map balloon fix for some rare js conflicts
+* fixed location gui editor
 
 = 3.0.9 =
 * Fixed small calendar discrepencies

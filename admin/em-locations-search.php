@@ -7,7 +7,7 @@ require_once('../../../../wp-load.php');
 global $wpdb;
 
 $locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
-$location_cond = ( get_option('dbem_permissions_events') < 1 && !em_verify_admin() ) ? "AND location_owner=".get_current_user_id() : '';
+$location_cond = ( get_option('dbem_permissions_locations') < 1 && !em_verify_admin() ) ? "AND location_owner=".get_current_user_id() : '';
 
 $term = (isset($_GET['term'])) ? '%'.$_GET['term'].'%' : '%'.$_GET['q'].'%';
 $sql = $wpdb->prepare("

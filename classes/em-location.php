@@ -83,11 +83,11 @@ class EM_Location extends EM_Object {
 		unset($data['location_id']);
 		unset($data['location_image_url']);
 		if($this->id != ''){
+			$where = array( 'location_id' => $this->id );
 			$wpdb->update($table, $data, $where, $this->get_types($data));
 		}else{
 			$this->owner = $current_user->ID; //Record creator of event
 			$data['location_owner'] = $this->owner;
-			$where = array( 'location_id' => $this->id );
 			$wpdb->insert($table, $data, $this->get_types($data));
 		    $this->id = $wpdb->insert_id;   
 		}

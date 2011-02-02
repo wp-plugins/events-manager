@@ -14,7 +14,7 @@ function em_admin_categories_page() {
 			$EM_Category->get_post();
 			if ( $EM_Category->validate() ) {
 				$EM_Category->save(); //FIXME better handling of db write fails when saving category
-				$message = $success_message;
+				em_categories_table_layout($success_message);
 			} else {
 				?>
 				<div id='message' class='error '>
@@ -23,16 +23,18 @@ function em_admin_categories_page() {
 					</p>
 				</div>
 				<?php  
-				unset($EM_Category);
+				em_categories_edit_layout();
 			}
+		} elseif( $_REQUEST['action'] == "edit" ){
+			em_categories_edit_layout();
 		} elseif( $_REQUEST['action'] == "delete" ){
 			//delelte category
 			EM_Categories::delete($_REQUEST['categories']);
 			//FIXME no result verification when deleting various categories
 			$message = __('Categories Deleted', "dbem" );
+			em_categories_table_layout($message);
 		}
 	}
-	em_categories_table_layout($message);
 } 
 
 function em_categories_table_layout($message = "") {
@@ -136,7 +138,7 @@ function em_categories_edit_layout($message = "") {
 		?>
 		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
 		<?php
-		return false;
+		return;
 	}
 	?>
 	<div class='wrap'>
@@ -156,7 +158,7 @@ function em_categories_edit_layout($message = "") {
 
 		<form name='editcat' id='editcat' method='post' action='admin.php?page=events-manager-categories' class='validate'>
 			<input type='hidden' name='action' value='save' />
-			<input type='hidden' name='category_ID' value='<?php echo $EM_Category->id ?>'/>
+			<input type='hidden' name='category_id' value='<?php echo $EM_Category->id ?>'/>
 		
 			<table class='form-table'>
 				<tr class='form-field form-required'>

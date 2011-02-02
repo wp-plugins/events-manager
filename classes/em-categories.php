@@ -148,6 +148,7 @@ class EM_Categories extends EM_Object {
 				$defaults['owner'] = false;
 				break;
 		}
+		$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
 		return apply_filters('em_categories_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}	
 

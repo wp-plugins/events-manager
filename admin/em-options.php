@@ -390,7 +390,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 
 		<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Management Permission Options', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Management Permission Options', 'dbem' ); ?> (Beta)</span></h3>
 			<div class="inside">
 	            <table class="form-table">
 	            	<tr><td colspan="2">
