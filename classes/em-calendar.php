@@ -355,7 +355,8 @@ class EM_Calendar extends EM_Object {
 		$defaults = array( 
 			'full' => 0, //Will display a full calendar with event names
 			'long_events' => 0, //Events that last longer than a day
-			'scope' => 'future'
+			'scope' => 'future',
+			'owner' => false
 		);
 		$atts = parent::get_default_search($defaults, $array);
 		$atts['full'] = ($atts['full']==true) ? 1:0;

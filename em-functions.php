@@ -7,8 +7,14 @@
  * @return boolean
  */
 function em_verify_admin( $user_id = false ){
-	return is_super_admin($user_id);
+	if(function_exists('is_super_admin')){
+		return is_super_admin($user_id);
+	}elseif( current_user_can('delete_posts') ){
+		return true;
+	}
+	return false;
 }
+
 
 /**
  * Intro paragraph to new users. 

@@ -16,12 +16,10 @@ class EM_Widget extends WP_Widget {
 	    echo $args['before_title'];
 	    echo $instance['title'];
 	    echo $args['after_title'];
-		
-		/*Compute event range*/
 		if ( is_numeric($instance['time_limit']) && $instance['time_limit'] > 0 ){
 			$instance['scope'] = date('Y-m-d').",".date('Y-m-t', strtotime('+'.($instance['time_limit']-1).' month'));
-		}
-		/*END*/		
+		}	
+		$instance['owner'] = false;
 	
 		$events = EM_Events::get($instance);
 		echo "<ul>";

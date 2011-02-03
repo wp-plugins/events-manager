@@ -14,7 +14,7 @@ function em_rss() {
 				
 		<?php
 		$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_rss_description_format' ) ) );
-		$events = EM_Events::get( array('limit'=>5) );
+		$events = EM_Events::get( array('limit'=>5, 'owner'=>false) );
 		foreach ( $events as $event ) {
 			$description = $event->output( get_option ( 'dbem_rss_description_format' ), "rss");
 			$description = ent2ncr(convert_chars(strip_tags($description))); //Some RSS filtering

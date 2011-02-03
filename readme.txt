@@ -107,6 +107,11 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 
 == Change Log ==
 
+= 3.0.93 =
+* Fixed bug with ownership and widgets
+* Resolved 2.9 incompatability
+
+
 = 3.0.92 =
 * Fixed permission issue
 * Fixed category not saving
