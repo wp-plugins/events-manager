@@ -6,21 +6,36 @@ Requires at least: 2.9
 Tested up to: 3.0.4
 Stable tag: 3.0.92
 
-Manage events and display them in your blog. Includes recurring events, location management, calendar, Google map integration, RSVP. 
+Fully featured events management plugin. Includes recurring events, location management, calendar, Google map integration, booking management, and much more! 
              
 == Description ==
 
-Events Manager 3.0 is a full-featured event management solution for Wordpress. Events Manager supports recurring events, venues data, RSVP and maps. With Events Manager you can plan and publish your tour, or let people reserve spaces for your weekly meetings. You can then add events list, calendars and description to your blog using a sidebar widget or shortcodes; if you’re web designer you can simply employ the template tags provided by Events Manager. 
+Events Manager 3.0 is a full-featured event management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
 
-Events Manager integrates with Google Maps; thanks the geocoding, Events Manager can find the location of your events, and accordingly display a map. Now there's no need for Google Maps API keys, as we are now using their new v3 API.
+Main Features
 
-Events Manager provides also a RSS feed, to keep your subscribers updated about the events you're organising.
+* Easy event creation (single day with start/end times)
+* Recurring and long (multi-day) events
+* Assign event locations and view events by location
+* Event categories
+* Easily create custom event attributes (e.g. dress code)
+* Bookings Management (including approval/rejections, export CVS, and more!)
+* Google Map integration straight out the box!
+* Advanced permissions - restrict user management of events.
+* Sidebars to display your events and locations
+* Calendaring widgets show your events in an AJAX calendar format
+* Fine grained control of how every aspect of your events are shown on your site, easily modify templates from the settings page
+* RSS Feeds
+* Plenty of template tags and shortcodes for use in your posts and pages
+* Actively maintained and supported
+* Fully localizable, translations already available in German, Spanish, Czech, Italian, Dutch, Portuguese and Swedish
+* And much more!
 
-Events manager is fully customisable; you can customise the amount of data displayed and their format in events lists, pages and in the RSS feed. You can choose to show or hide the events page, and change its title.   
+Events Manager 3.0 was written from the ground up with flexibility in mind. Through use of object oriented programming and exposing hooks and filters throughout the site, you can modify Events Manager just like you would Wordpress!
 
 Events Manager is fully localisable and already localised in Italian, Spanish, German and Swedish.
 
-For more information visit the [Documentation Page](http://wp-events-plugin.com/documentation/) and [Support Forum](http://wp-events-plugin.com/forums/).
+For more information and support please visit the [Documentation Page](http://wp-events-plugin.com/documentation/) and [Support Forum](http://wp-events-plugin.com/forums/).
 
 == Installation ==
 
@@ -117,10 +132,12 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * fixed page nav conflicts with role scoper
 * added shortcut to manage bookings on event list
 
+
 = 3.0.92 =
 * Fixed permission issue
 * Fixed category not saving
 * Fixed location saving issue
+
 
 = 3.0.91 =
 * Documentation finally up to date now!
