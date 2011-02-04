@@ -210,7 +210,7 @@ function em_add_options() {
 	$contact_person_email_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_NAME on #F #j, #Y. He wants to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$contact_person_email_cancelled_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) cancelled his booking at #_NAME on #F #j, #Y. He wanted to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$respondent_email_body_localizable = __("Dear #_BOOKINGNAME, <br/>you have successfully reserved #_BOOKINGSPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
-	$respondent_email_pending_body_localizable = __("Dear #_BOOKINGNAME, <br/>You have requested #_BOOKEDSPACES space/spaces for #_NAME.<br/>Your booking is currently pending approval by our administrators. Once approved you will receive an automatic confrimation.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
+	$respondent_email_pending_body_localizable = __("Dear #_BOOKINGNAME, <br/>You have requested #_BOOKEDSPACES space/spaces for #_NAME.<br/>Your booking is currently pending approval by our administrators. Once approved you will receive an automatic confirmation.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$respondent_email_rejected_body_localizable = __("Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_NAME on #F #j, #Y has been rejected.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$respondent_email_cancelled_body_localizable = __("Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_NAME on #F #j, #Y has been cancelled.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	
@@ -287,17 +287,17 @@ function em_add_options() {
 		'dbem_disable_title_rewrites'=> false,
 		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
 		//Bookings
-		'dbem_bookings_approval' => 1,
+		'dbem_default_contact_person' => 1, //admin
+		'dbem_bookings_approval' => 1, //approval is on by default
 		'dbem_bookings_notify_admin' => 0,
-		'dbem_default_contact_person' => 1,
 		'dbem_bookings_contact_email' => 1,
-		'dbem_contactperson_email_subject' => __("New booking",'dbem'),
-		'dbem_contactperson_email_body' => str_replace("<br/>", "\n\r", $contact_person_email_body_localizable),
+		'dbem_bookings_contact_email_subject' => __("New booking",'dbem'),
+		'dbem_bookings_contact_email_body' => str_replace("<br/>", "\n\r", $contact_person_email_body_localizable),
 		'dbem_contactperson_email_cancelled_subject' => __("Booking Cancelled",'dbem'),
 		'dbem_contactperson_email_cancelled_body' => str_replace("<br/>", "\n\r", $contact_person_email_cancelled_body_localizable),
-		'dbem_bookings_email_pending_subject' => __("Reservation Pending",'dbem'),
+		'dbem_bookings_email_pending_subject' => __("Booking Pending",'dbem'),
 		'dbem_bookings_email_pending_body' => str_replace("<br/>", "\n\r", $respondent_email_pending_body_localizable),
-		'dbem_bookings_email_rejected_subject' => __("Reservation Rejected",'dbem'),
+		'dbem_bookings_email_rejected_subject' => __("Booking Rejected",'dbem'),
 		'dbem_bookings_email_rejected_body' => str_replace("<br/>", "\n\r", $respondent_email_rejected_body_localizable),
 		'dbem_bookings_email_confirmed_subject' => __('Booking Confirmed','dbem'),
 		'dbem_bookings_email_confirmed_body' => str_replace("<br/>", "\n\r", $respondent_email_body_localizable),
@@ -325,14 +325,9 @@ function em_add_options() {
 		if( get_option('dbem_respondent_email_body') != '' ){
 			update_option('dbem_bookings_email_confirmed_body', get_option('dbem_respondent_email_body'));
 		}
+	}elseif( get_option('dbem_version') != '' && get_option('dbem_version') <= 3.092 ){		
 		update_option('dbem_bookings_contact_email_subject', get_option('dbem_contactperson_email_subject'));
 		update_option('dbem_bookings_contact_email_body', get_option('dbem_contactperson_email_body'));
-		/* deleted options (won't do this in case some need to revert)
-		delete_option('dbem_rsvp_notify_contact');
-		delete_option('dbem_contactperson_email_subject');
-		delete_option('dbem_contactperson_email_body');
-		delete_option('dbem_respondent_email_body');
-		 */
 	}
 }     
 

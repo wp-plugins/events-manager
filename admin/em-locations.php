@@ -52,7 +52,7 @@ function em_admin_locations_page() {
 
 function em_admin_locations($message='', $fill_fields = false) {
 	$limit = ( !empty($_REQUEST['limit']) ) ? $_REQUEST['limit'] : 20;//Default limit
-	$page = ( !empty($_REQUEST['p']) ) ? $_REQUEST['p']:1;
+	$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
 	$locations = EM_Locations::get();
 	$locations_count = count($locations);
@@ -89,7 +89,7 @@ function em_admin_locations($message='', $fill_fields = false) {
 							if( $locations_count >= $limit ){
 								//Show the pagination links (unless there's less than 10 events
 								$page_link_template = preg_replace('/(&|\?)p=\d+/i','',$_SERVER['REQUEST_URI']);
-								$page_link_template = em_add_get_params($page_link_template, array('p'=>'%PAGE%'));
+								$page_link_template = em_add_get_params($page_link_template, array('pno'=>'%PAGE%'));
 								$locations_nav = em_paginate( $page_link_template, $locations_count, $limit, $page);
 								echo $locations_nav;
 							}

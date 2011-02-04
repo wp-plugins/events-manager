@@ -114,13 +114,13 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * Fixed calendar bug where pre/post dates don't show events
 * Fixed calendar, now showing today correctly
 * Categories blank page fix
-
+* fixed page nav conflicts with role scoper
+* added shortcut to manage bookings on event list
 
 = 3.0.92 =
 * Fixed permission issue
 * Fixed category not saving
 * Fixed location saving issue
-
 
 = 3.0.91 =
 * Documentation finally up to date now!

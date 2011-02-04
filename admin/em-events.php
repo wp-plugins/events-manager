@@ -11,7 +11,7 @@ function em_admin_events_page() {
 	$action = ( !empty($_GET ['action']) ) ? $_GET ['action']:'';
 	$order = ( !empty($_GET ['order']) ) ? $_GET ['order']:'ASC';
 	$limit = ( !empty($_GET['limit']) ) ? $_GET['limit'] : 20;//Default limit
-	$page = ( !empty($_GET['p']) ) ? $_GET['p']:1;
+	$page = ( !empty($_GET['pno']) ) ? $_GET['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
 	$scope_names = array (
 		'past' => __ ( 'Past events', 'dbem' ),
@@ -108,7 +108,7 @@ function em_admin_events_page() {
 				-->
 				<?php 
 				if ( $events_count >= $limit ) {
-					$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('p'=>'%PAGE%'));
+					$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%'));
 					$events_nav .= em_admin_paginate( $page_link_template, $events_count, $limit, $page, 5);
 					echo $events_nav;
 				}
@@ -170,11 +170,13 @@ function em_admin_events_page() {
 									<?php endif; ?>
 									<?php 
 									if( get_option('dbem_rsvp_enabled') == 1 && $event->rsvp == 1 ){
-										echo "<br/>";
-										echo __("Booked Seats",'dbem').": ". $event->get_bookings()->get_booked_seats()."/".$event->seats;
-										if( get_option('dbem_bookings_approval') == 1 ){
-											echo " | ". __("Pending",'dbem').": ". $event->get_bookings()->get_pending_seats();
-										}
+										?>
+										<br/>
+										<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $event->id ?>"><?php echo __("Bookings",'dbem'); ?></a> &ndash;
+										<?php _e("Booked",'dbem'); ?>: <?php echo $event->get_bookings()->get_booked_seats()."/".$event->seats; ?>
+										<?php if( get_option('dbem_bookings_approval') == 1 ): ?>
+											| <?php _e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_seats(); ?>
+										<?php endif;
 									}
 									?>
 								</td>

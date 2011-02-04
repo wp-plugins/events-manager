@@ -19,7 +19,7 @@ function em_bookings_events_table() {
 	$action = ( $action_scope && !empty($_GET ['action']) ) ? $_GET ['action']:'';
 	$order = ( $action_scope && !empty($_GET ['order']) ) ? $_GET ['order']:'ASC';
 	$limit = ( $action_scope && !empty($_GET['limit']) ) ? $_GET['limit'] : 20;//Default limit
-	$page = ( $action_scope && !empty($_GET['p']) ) ? $_GET['p']:1;
+	$page = ( $action_scope && !empty($_GET['pno']) ) ? $_GET['pno']:1;
 	$offset = ( $action_scope && $page > 1 ) ? ($page-1)*$limit : 0;
 	$scope = ( $action_scope && !empty($_GET ['scope']) && array_key_exists($_GET ['scope'], $scope_names) ) ? $_GET ['scope']:'future';
 	
@@ -77,7 +77,7 @@ function em_bookings_events_table() {
 				-->
 				<?php 
 				if ( $events_count >= $limit ) {
-					$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('p'=>'%PAGE%', 'em_ajax'=>0, 'em_obj'=>'em_bookings_events_table'));
+					$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%', 'em_ajax'=>0, 'em_obj'=>'em_bookings_events_table'));
 					$events_nav .= em_admin_paginate( $page_link_template, $events_count, $limit, $page, 5);
 					echo $events_nav;
 				}

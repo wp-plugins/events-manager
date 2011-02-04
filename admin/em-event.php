@@ -15,7 +15,7 @@ function em_admin_event_actions(){
 			if ( $validation ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
 				//Save
 				if( $EM_Event->save() ) {
-					$page = !empty($_REQUEST['p']) ? $_REQUEST['p']:'';
+					$page = !empty($_REQUEST['pno']) ? $_REQUEST['pno']:'';
 					$scope = !empty($_REQUEST['scope']) ? $_REQUEST['scope']:'';
 					wp_redirect( get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager&p='.$page.'&scope='.$scope.'&message='.urlencode($EM_Event->feedback_message));
 				}
@@ -30,7 +30,7 @@ function em_admin_event_actions(){
 				$redirect_url = em_add_get_params($_SERVER['HTTP_REFERER'], array('error' => __('There was an error duplicating the event. Try again maybe?', 'dbem'), 'message'=>''), false);
 				wp_redirect($redirect_url);
 			}else{
-				$page = !empty($_REQUEST['p']) ? $_REQUEST['p']:'';
+				$page = !empty($_REQUEST['pno']) ? $_REQUEST['pno']:'';
 				$scope = !empty($_REQUEST['scope']) ? $_REQUEST['scope']:'';
 				wp_redirect( get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-event&event_id='.$EM_Event->id.'&p='.$page.'&scope='.$scope.'&message='.urlencode($EM_Event->feedback_message));
 			}
@@ -591,7 +591,7 @@ function em_admin_event_page() {
 					<p class="submit">
 						<input type="submit" name="events_update" value="<?php _e ( 'Submit Event', 'dbem' ); ?> &raquo;" />
 					</p>
-					<input type="hidden" name="p" value="<?php echo ( !empty($_REQUEST['p']) ) ? $_REQUEST['p']:''; ?>" /><a>
+					<input type="hidden" name="p" value="<?php echo ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:''; ?>" /><a>
 					<input type="hidden" name="scope" value="<?php echo ( !empty($_REQUEST['scope']) ) ? $_REQUEST['scope']:'' ?>" /></a>
 					<input type="hidden" name="action" value="save" />
 				</div>
