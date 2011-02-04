@@ -181,13 +181,11 @@ class EM_Calendar extends EM_Object {
 					$calendar .= "<td class='eventless-pre'>" . date ( 'j', $d ) . "</td>\n";
 				}
 				if (($i >= $offset_count) && ($i < ($num_weeks * 7) - $outset)) { // if it is THIS month
-					$fullday = $d;
-					$d = date ( 'j', $d );
-					$month_string = ($month < 10) ? '0'.$month : $month;
-					if ( $current_date == "$year-". $month_string ."-$d" ) {						
-						$calendar .= "<td class='eventless-today'>$d</td>\n";
+					$day = date ( 'j', $d );
+					if ( $current_date == date('Y-m-d', $d) ){					
+						$calendar .= "<td class='eventless-today'>$day</td>\n";
 					} else {
-						$calendar .= "<td class='eventless'>$d</td>\n";
+						$calendar .= "<td class='eventless'>$day</td>\n";
 					}
 				} elseif (($outset > 0)) { //if it is NEXT month
 					if (($i >= ($num_weeks * 7) - $outset)) {
@@ -293,11 +291,11 @@ class EM_Calendar extends EM_Object {
 		
 		if($events){
 			foreach($cells as $cell) {  
-				if ($cell['month'] == $month_pre) {
+				if ($cell['month'] == $month_pre && $cell['year'] == $year_pre) {
 				 	$calendar = str_replace("<td class='eventless-pre'>".$cell['day']."</td>","<td class='eventful-pre'>".$cell['cell']."</td>",$calendar);
-				} elseif($cell['month'] == $month_post) {
+				} elseif($cell['month'] == $month_post && $cell['year'] == $year_post) {
 				 	$calendar = str_replace("<td class='eventless-post'>".$cell['day']."</td>","<td class='eventful-post'>".$cell['cell']."</td>",$calendar);
-				} elseif( date('Y-m-d', current_time('timestamp')) == $cell['year']."-".$cell['month']."-".$cell['day'] ) {
+				} elseif( date('Y-m-j', current_time('timestamp')) == $cell['year']."-".$cell['month']."-".$cell['day'] ) {
 	  			 	$calendar = str_replace("<td class='eventless-today'>".$cell['day']."</td>","<td class='eventful-today'>".$cell['cell']."</td>",$calendar);
 				} elseif( $cell['month'] == $month && $cell['year'] == $year){   
 			    	$calendar = str_replace("<td class='eventless'>".$cell['day']."</td>","<td class='eventful'>".$cell['cell']."</td>",$calendar);

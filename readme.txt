@@ -110,6 +110,10 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 = 3.0.93 =
 * Fixed bug with ownership and widgets
 * Resolved 2.9 incompatability
+* Fixed rss ownership bug
+* Fixed calendar bug where pre/post dates don't show events
+* Fixed calendar, now showing today correctly
+* Categories blank page fix
 
 
 = 3.0.92 =

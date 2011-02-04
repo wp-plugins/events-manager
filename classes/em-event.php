@@ -65,12 +65,21 @@ class EM_Event extends EM_Object{
 	 * @var int
 	 */
 	var $start;
-	
 	/**
 	 * Timestamp of end date/time
 	 * @var int
 	 */
 	var $end;
+	/**
+	 * Created on timestamp, taken from DB, converted to TS
+	 * @var int
+	 */
+	var $created;
+	/**
+	 * Created on timestamp, taken from DB, converted to TS
+	 * @var int
+	 */
+	var $modified;
 	
 	/**
 	 * @var EM_Location
@@ -151,6 +160,8 @@ class EM_Event extends EM_Object{
 			//Start/End times should be available as timestamp
 			$this->start = strtotime($this->start_date." ".$this->start_time);
 			$this->end = strtotime($this->end_date." ".$this->end_time);
+			$this->modified = strtotime($event['event_date_modified']);
+			$this->created = strtotime($event['event_date_created']);			
 			
 			//Add Contact Person
 			if($this->contactperson_id){
@@ -508,7 +519,7 @@ class EM_Event extends EM_Object{
 			switch( $result ){
 				//Event Details
 				case '#_EVENTID':
-					$replace = $this->name;
+					$replace = $this->id;
 					break;
 				case '#_NAME':
 					$replace = $this->name;

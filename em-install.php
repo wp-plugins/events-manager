@@ -58,6 +58,8 @@ function em_create_events_table() {
 		recurrence_id bigint(20) unsigned NULL,
   		event_category_id bigint(20) unsigned NULL DEFAULT NULL,
   		event_attributes text NULL,
+  		event_date_created datetime NULL,
+  		event_date_modified datetime NULL,
 		recurrence bool NOT NULL DEFAULT 0,
 		recurrence_interval int(4) NULL DEFAULT NULL,
 		recurrence_freq tinytext NULL DEFAULT NULL,
@@ -80,6 +82,9 @@ function em_create_events_table() {
 		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id) VALUES ('6 Nations, Italy VS Ireland', '$in_one_year','22:00:00', '24:00:00', 3)");
 	}else{
 		dbDelta($sql);
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') <= 3.092){
+		$wpdb->query("UPDATE $table_name SET event_date_created='".current_time('mysql')."', event_date_modified='".current_time('mysql')."'");
 	}
 }
 
@@ -234,10 +239,19 @@ function em_add_options() {
 		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
 		'dbem_single_location_format' => '<p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
 		//RSS Stuff
+		'dbem_rss_limit' => 10,
+		'dbem_rss_scope' => 'future',
 		'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events'),
 		'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events'),
 		'dbem_rss_description_format' => "#j #M #y - #H:#i <br/>#_LOCATION <br/>#_LOCATIONADDRESS <br/>#_LOCATIONTOWN",
 		'dbem_rss_title_format' => "#_NAME",
+		//iCal Stuff
+		'dbem_ical_limit' => 10,
+		'dbem_ical_scope' => 'future',
+		'dbem_ical_main_title' => get_bloginfo('title')." - ".__('Events'),
+		'dbem_ical_main_description' => get_bloginfo('description'),
+		'dbem_ical_description_format' => "#_NAME - #_LOCATIONNAME - #j #M #y #H:#i",
+		'dbem_ical_title_format' => "#_NAME",
 		//Google Maps
 		'dbem_gmap_is_active'=> 1,
 		'dbem_location_baloon_format' =>  "<strong>#_LOCATIONNAME</strong><br/>#_LOCATIONADDRESS - #_LOCATIONTOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>",

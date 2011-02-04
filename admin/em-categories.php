@@ -34,6 +34,8 @@ function em_admin_categories_page() {
 			$message = __('Categories Deleted', "dbem" );
 			em_categories_table_layout($message);
 		}
+	}else{
+		em_categories_table_layout($message);
 	}
 } 
 

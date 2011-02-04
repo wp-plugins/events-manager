@@ -49,6 +49,7 @@ include_once("em-ajax.php");
 include_once("em-bookings.php");
 include_once("em-events.php");
 include_once("em-functions.php");
+include_once("em-ical.php");
 include_once("em-rss.php");
 include_once("em-shortcode.php");
 include_once("em-template-tags.php");
@@ -94,7 +95,7 @@ if( is_admin() ){
 
 
 // Setting constants
-define('EM_VERSION', 3.091); //self expanatory
+define('EM_VERSION', 3.093); //self expanatory
 define('EM_CATEGORIES_TABLE', 'em_categories'); //TABLE NAME
 define('EM_EVENTS_TABLE','em_events'); //TABLE NAME
 define('EM_META_TABLE','em_meta'); //TABLE NAME
