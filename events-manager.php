@@ -49,7 +49,6 @@ include_once("em-ajax.php");
 include_once("em-bookings.php");
 include_once("em-events.php");
 include_once("em-functions.php");
-include_once("em-ical.php");
 include_once("em-rss.php");
 include_once("em-shortcode.php");
 include_once("em-template-tags.php");
