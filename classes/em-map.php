@@ -13,7 +13,7 @@ class EM_Map extends EM_Object {
 		//TODO Finish and document this feature, need to add balloons here
 		if (get_option('dbem_gmap_is_active') == '1') {
 			ob_start();
-			$atts['ajax'] = true;
+			$atts['em_ajax'] = true;
 			$atts['query'] = 'GlobalMapData';
 			$rand = substr(md5(rand().rand()),0,5);
 			//build js array of arguments to send to event query

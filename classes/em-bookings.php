@@ -472,7 +472,19 @@ class EM_Bookings extends EM_Object{
 		$defaults = array(
 			'status' => false,
 			'person' => true //to add later, search by person's bookings...
-		);
+		);	
+		if( true || is_admin() ){
+			//figure out default owning permissions
+			switch( get_option('dbem_permissions_events') ){
+				case 0:
+					$defaults['owner'] = get_current_user_id();
+					break;
+				case 1:
+					$defaults['owner'] = false;
+					break;
+			}
+			$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
+		}
 		return apply_filters('em_bookings_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
 }

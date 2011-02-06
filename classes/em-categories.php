@@ -13,7 +13,7 @@ class EM_Categories extends EM_Object {
 			$results = $wpdb->get_results(apply_filters('em_categories_get_sql',$sql),ARRAY_A);
 			$categories = array();
 			foreach($results as $result){
-				$categories[$result['category_id']] = new EM_Event($result);
+				$categories[$result['category_id']] = new EM_Category($result);
 			}
 			return $categories; //We return all the categories matched as an EM_Event array. 
 		}
@@ -132,23 +132,25 @@ class EM_Categories extends EM_Object {
 			'eventful' => false, //cats that have an event (scope will also play a part here
 			'eventless' => false, //cats WITHOUT events, eventful takes precedence
 		);
-		//by default, we only get categories the owner can manage
-		switch( get_option('dbem_permissions_categories') ){
-			case 0:
-				$defaults['owner'] = get_current_user_id();
-				break;
-			case 1:
-				$wp_user_search = new WP_User_Search(null, null, 'administrator');
-				$users = $wp_user_search->get_results();
-				$users[] = get_current_user_id();
-				$users[] = 0;
-				$defaults['owner'] = implode(',', $users);
-				break;
-			case 2:
-				$defaults['owner'] = false;
-				break;
+		if( is_admin() ){
+			//by default, we only get categories the owner can manage
+			switch( get_option('dbem_permissions_categories') ){
+				case 0:
+					$defaults['owner'] = get_current_user_id();
+					break;
+				case 1:
+					$wp_user_search = new WP_User_Search(null, null, 'administrator');
+					$users = $wp_user_search->get_results();
+					$users[] = get_current_user_id();
+					$users[] = 0;
+					$defaults['owner'] = implode(',', $users);
+					break;
+				case 2:
+					$defaults['owner'] = false;
+					break;
+			}
+			$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
 		}
-		$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
 		return apply_filters('em_categories_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}	
 

@@ -187,24 +187,25 @@ class EM_Locations extends EM_Object {
 		);
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );
-		
-		//by default, we only get categories the owner can manage
-		switch( get_option('dbem_permissions_locations') ){
-			case 0:
-				$defaults['owner'] = get_current_user_id();
-				break;
-			case 1:
-				$wp_user_search = new WP_User_Search(null, null, 'administrator');
-				$users = $wp_user_search->get_results();
-				$users[] = get_current_user_id();
-				$users[] = 0;
-				$defaults['owner'] = implode(',', $users);
-				break;
-			case 2:
-				$defaults['owner'] = false;
-				break;
+		if( is_admin() ){
+			//by default, we only get categories the owner can manage
+			switch( get_option('dbem_permissions_locations') ){
+				case 0:
+					$defaults['owner'] = get_current_user_id();
+					break;
+				case 1:
+					$wp_user_search = new WP_User_Search(null, null, 'administrator');
+					$users = $wp_user_search->get_results();
+					$users[] = get_current_user_id();
+					$users[] = 0;
+					$defaults['owner'] = implode(',', $users);
+					break;
+				case 2:
+					$defaults['owner'] = false;
+					break;
+			}
+			$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
 		}
-		$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
 		return apply_filters('em_locations_get_default_search', parent::get_default_search($defaults, $array), $array, $defaults);
 	}
 	//TODO for all the static plural classes like this one, we might benefit from bulk actions like delete/add/save etc.... just a random thought.

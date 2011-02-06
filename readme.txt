@@ -122,6 +122,11 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 
 == Change Log ==
 
+= 3.0.94 =
+* Fixed missing events, locations etc. due to permissions
+* fixed location widget bug
+* fixed broken global map js
+
 = 3.0.93 =
 * Fixed bug with ownership and widgets
 * Resolved 2.9 incompatability

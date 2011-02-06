@@ -236,16 +236,18 @@ class EM_Events extends EM_Object {
 			'order' => get_option('dbem_events_default_order'),
 			'rsvp' => false //if set to true, only events with bookings enabled are returned
 		);
-		//figure out default owning permissions
-		switch( get_option('dbem_permissions_events') ){
-			case 0:
-				$defaults['owner'] = get_current_user_id();
-				break;
-			case 1:
-				$defaults['owner'] = false;
-				break;
+		if( is_admin() ){
+			//figure out default owning permissions
+			switch( get_option('dbem_permissions_events') ){
+				case 0:
+					$defaults['owner'] = get_current_user_id();
+					break;
+				case 1:
+					$defaults['owner'] = false;
+					break;
+			}
+			$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
 		}
-		$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
 		return apply_filters('em_events_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
 }
