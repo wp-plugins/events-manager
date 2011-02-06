@@ -1,7 +1,7 @@
 === Events Manager ===  
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://wp-events-plugin.com
-Tags: events, event, bookings, events manager, calendar, gigs, concert, venue, location, maps, geotagging, rsvp  
+Tags: events, bookings, calendar, venue, locations, maps, geotagging, rsvp  
 Requires at least: 2.9   
 Tested up to: 3.0.4
 Stable tag: 3.0.94
