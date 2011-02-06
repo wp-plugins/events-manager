@@ -1,7 +1,7 @@
 === Events Manager ===  
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://wp-events-plugin.com
-Tags: events, bookings, calendar, venue, locations, maps, geotagging, rsvp  
+Tags: events, booking, calendar, locations, maps, geotagging, admin, dashboard, plugin, template, theme, widget
 Requires at least: 2.9   
 Tested up to: 3.0.4
 Stable tag: 3.0.94
@@ -11,6 +11,8 @@ Fully featured events management including recurring events, location management
 == Description ==
 
 Events Manager 3.0 is a full-featured event management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
+
+For more documentation and support please visit the [plugin website](http://wp-events-plugin.com/).
 
 Main Features
 
@@ -35,11 +37,9 @@ Events Manager 3.0 was written from the ground up with flexibility in mind. Thro
 
 Events Manager is fully localisable and already localised in Italian, Spanish, German and Swedish.
 
-For more information and support please visit the [Documentation Page](http://wp-events-plugin.com/documentation/) and [Support Forum](http://wp-events-plugin.com/forums/).
-
 == Installation ==
 
-Events Manager works like any standard Wordpress plugin, and requires little configuration to start managing events. If you get stuck, visit the [Documentation Page](http://wp-events-plugin.com/documentation/) and [Support Forum](http://wp-events-plugin.com/forums/).
+Events Manager works like any standard Wordpress plugin, and requires little configuration to start managing events. If you get stuck, visit the our documentation and support forums.
 
 Whenever installing or upgrading any plugin, or even Wordpress itself, it is always recommended you back up your database first!
 
@@ -48,24 +48,20 @@ Whenever installing or upgrading any plugin, or even Wordpress itself, it is alw
 1. If installing, go to Plugins > Add New in the admin area, and search for events manager.
 2. Click install, once installed, activate and you're done!
 
-Once installed, you can start adding events straight away, although you may want to visit the [Documentation Pages](http://wp-events-plugin.com/documentation/) and unleash the full power of Events Manager.
+Once installed, you can start adding events straight away, although you may want to visit the plugin site documentation and learn how to unleash the full power of Events Manager.
 
 = Upgrading =
 
 1. When upgrading, visit the plugins page in your admin area, scroll down to events manager and click upgrade.
 2. Wordpress will help you upgrade automatically.
 
-See Wordpress docs for more info on [managing plugins](http://codex.wordpress.org/Managing_Plugins) in general.
-
 = Upgrading from 2.x to 3.x =
 
-Version 3.x uses different tables than 2.x. Events should be migrated automatically without any action needed from you. However, in the event something does go wrong (very rare, we've done it many times), you can downgrade immediately without losing any settings, or you can click on the help page and try re-importing your events. If you run into any issues, let us know in the forums and we'll be happy to help.
+Version 3.x uses different tables than 2.x. Events should be migrated automatically without any action needed from you. However, in the event something does go wrong (very rare, we've done it many times), you can downgrade immediately without losing any settings, or you can click on the help page and try re-importing your events. If you run into any issues, let us know in the forums and we'll be happy to help you through the upgrade.
  
 == Frequently Asked Questions ==
 
 See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is updated regularly.
-
-You may also be interested in our [troubleshooting](http://wp-events-plugin.com/documentation/troubleshooting/) and other [documentation](http://wp-events-plugin.com/documentation/)
 
 == Screenshots ==
 
