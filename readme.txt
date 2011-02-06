@@ -73,7 +73,7 @@ You may also be interested in our [troubleshooting](http://wp-events-plugin.com/
 2. The events management page.
 3. The Events Manager Options page.
 
-== Change Log ==
+== Changelog ==
 
 = 3.0.94 =
 * Fixed missing events, locations etc. due to permissions
