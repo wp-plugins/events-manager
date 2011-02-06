@@ -1,12 +1,12 @@
 === Events Manager ===  
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://wp-events-plugin.com
-Tags: events, manager, calendar, gigs, concert, maps, geotagging, rsvp  
+Tags: events, event, bookings, events manager, calendar, gigs, concert, venue, location, maps, geotagging, rsvp  
 Requires at least: 2.9   
 Tested up to: 3.0.4
 Stable tag: 3.0.94
 
-Fully featured events management. Includes recurring events, location management, calendar, Google map integration, booking management and more.
+Fully featured events management including recurring events, location management, calendar, Google map integration, booking management and more.
              
 == Description ==
 
@@ -39,80 +39,33 @@ For more information and support please visit the [Documentation Page](http://wp
 
 == Installation ==
 
-Install Events Manager directly from your wordpress site. 
-1. Go to Plugins > Add New in the admin area, and search for events manager
-2. Click install
-3. Activate it
-4. Done! You can start adding events straight away, although you may want to visit the [Documentation Pages](http://wp-events-plugin.com/documentation/) and unleash the full power of Events Manager.
+Events Manager works like any standard Wordpress plugin, and requires little configuration to start managing events. If you get stuck, visit the [Documentation Page](http://wp-events-plugin.com/documentation/) and [Support Forum](http://wp-events-plugin.com/forums/).
 
+Whenever installing or upgrading any plugin, or even Wordpress itself, it is always recommended you back up your database first!
 
-= Installing or Upgrading from 2.x =
+= Installing =
+ 
+1. If installing, go to Plugins > Add New in the admin area, and search for events manager.
+2. Click install, once installed, activate and you're done!
 
-1. Back up your database if upgrading is recommended, as with any plugin or wordpress upgrade.
-2. Upload the `events-manager` folder to the `/wp-content/plugins/` directory
-3. Activate the plugin through the 'Plugins' menu in WordPress
-4. Add events list or calendars following the instructions in the Usage section.
-    
-== Usage == 
+Once installed, you can start adding events straight away, although you may want to visit the [Documentation Pages](http://wp-events-plugin.com/documentation/) and unleash the full power of Events Manager.
 
-After the installation, Events Manager add a top level "Events" menu to your Wordpress Administration.
+= Upgrading =
 
-*  The *Events* page lets you edit or delete the events. The *Add new* page lets you insert a new event.  
-	In the event edit page you can specify the number of spaces available for your event. Yuo just need to turn on RSVP for the event and specify the spaces available in the right sidebar box.  
-	When a visitor responds to your events, the box sill show you his reservation. You can remoe reservation by clicking on the *x* button or view the respondents data in a printable page.
-*  The *Locations* page lets you add, delete and edit locations directly. Locations are automatically added with events if not present, but this interface lets you customise your locations data and add a picture. 
-*  The *People* page serves as a gathering point for the information about the people who reserved a space in your events.
-*  The *Settings* page allows a fine-grained control over the plugin. Here you can set the [format](#formatting-events) of events in the Events page.
-* The *Help* page will provide you with information on troubleshooting and where to ask for support.
+1. When upgrading, visit the plugins page in your admin area, scroll down to events manager and click upgrade.
+2. Wordpress will help you upgrade automatically.
 
-Events list and calendars can be added to your blogs through widgets, shortcodes and template tags. See the full documentation at the [Events Manager Support Pages](http://wp-events-plugin.com).
+See Wordpress docs for more info on [managing plugins](http://codex.wordpress.org/Managing_Plugins) in general.
+
+= Upgrading from 2.x to 3.x =
+
+Version 3.x uses different tables than 2.x. Events should be migrated automatically without any action needed from you. However, in the event something does go wrong (very rare, we've done it many times), you can downgrade immediately without losing any settings, or you can click on the help page and try re-importing your events. If you run into any issues, let us know in the forums and we'll be happy to help.
  
 == Frequently Asked Questions ==
 
-= I enabled the Google Maps integration, but instead of the map there is a green/gray background. What should I do? =
+See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is updated regularly.
 
-If your event pages aren't loading maps properly, it may be that your theme is not set up correctly. Open the `header.php` page of your theme; if your theme hasn't any `header.php` page, just open the `index.php page` and/or any page containing the `<head>` section of the html code. Make sure that the page contains a line like this:              
-
-    <?php wp_head(); ?>              
-
-If your page(s) doesn't contain such line, add it just before the line containing `</head>`. Now everything should work allright.    
-For curiosity's sake, `<?php wp_head(); ?>` is an action hook, that is a function call allowing plugins to insert their stuff in Wordpress pages; if you're a theme maker, you should make sure to include `<?php wp_head(); ?> ` and all the necessary hooks in your theme.
-
-= How do I resize the map? = 
-
-Insert some code similar to this in your css:
-
-    #event-map {
-	    width: 300px !important;
-	    height: 200px !important;
-    }
-
-Do not leave out the `!important` directive; it is, needless to say, important.
-
-= Can I customise the event page? =
-
-Sure, you can do that by editing the page and changing its [template](http://codex.wordpress.org/Pages#Page_Templates). For heavy customisation, you can use the some of the plugin's own conditional tags, described in the *Template Tags* section.
-
-= Can I customise the event lists, etc? = 
-
-Yes, you can use css to match the id and classes of the events markup.
-
-= How does Events Manager work? =   
-
-When installed, events Manager creates a special "Events" page. This page is used for the dynamic content of the events. All the events link actually link to this page, which gets rendered differently for each event.
-
-= Are events posts? =
-
-Events aren't posts. They are stored in a different table and have no relationship whatsoever with posts.
-
-= Why aren't events posts? =
-
-I decided to treat events as a separate class because my priority was the usability of the user interface in the administration; I wanted my users to have a simple, straightforward way of inserting the events, without confusing them with posts. I wanted to make my own simple event form.  
-If you need to treat events like posts, you should use one of the other excellent events plugin.
-
-= Is Events Manager available in my language? = 
-
-At this stage, Events Manager is only available in English and Italian. Yet, the plugin is fully localisable; I will welcome any translator willing to add to this package a translation of Events Manager into his mother tongue.
+You may also be interested in our [troubleshooting](http://wp-events-plugin.com/documentation/troubleshooting/) and other [documentation](http://wp-events-plugin.com/documentation/)
 
 == Screenshots ==
 
@@ -124,12 +77,12 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 
 = 3.0.94 =
 * Fixed missing events, locations etc. due to permissions
-* fixed location widget bug
+* Fixed location widget bug
 * fixed broken global map js
 
 = 3.0.93 =
 * Fixed bug with ownership and widgets
-* Resolved 2.9 incompatability
+* Resolved 2.9 incompatibility
 * Fixed rss ownership bug
 * Fixed calendar bug where pre/post dates don't show events
 * Fixed calendar, now showing today correctly
@@ -163,7 +116,7 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * fixed location gui editor
 
 = 3.0.9 =
-* Fixed small calendar discrepencies
+* Fixed small calendar discrepancies
 * added event and location single shortcodes
 * shortcodes now accept html within format attribute or within the shortcode tags [like]<p>this</p>[/like]
 * fixed pagination functionality (or lack thereof) in shortcodes
@@ -187,8 +140,8 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 
 = 3.0.8 =
 * Event lists now have pagination links for both admin and public areas!
-* Fixed timezone issue with calendars, now taking time from WP settings, not server
-* Added option to show long events if showing a calendar on events page.
+* Fixed time zone issue with calendars, now taking time from WP settings, not server
+* Added option to show long events if showing a calendar of events page.
 * Multiple maps on one page will now show up.
 * Modified styling of map balloons to not use #content (if you modded your theme, look at the CSS to override).
 * Media uploads in GUI now working as expected
@@ -205,7 +158,7 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * Added revised German translation
 * Fixed ordering issue
 * Fixed old template tag attributes not being read
-* Changed map ballon wrapper id to class
+* Changed map balloon wrapper id to class
 
 = 3.0.5 =
 * Fixed 12pm bug
@@ -219,7 +172,7 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 = 3.0.4 =
 * Title rewriting workaround for themes where main menus are broken on events pages
 * Added option to show lists on calendar days regardless of whether there is only one event on that day.
-* added spanish translation
+* added Spanish translation
 * fixed rsvp deletion issue
 * fixed potential phpmailer conflicts
 * CSS issue with maps fixed
@@ -245,7 +198,7 @@ At this stage, Events Manager is only available in English and Italian. Yet, the
 * Fixed error for #_EXCERPT not showing
 
 = 3.0 =
-* Refactored all the underlying achitecture, to make it object oriented. Now classes and templates are separate.    
+* Refactored all the underlying architecture, to make it object oriented. Now classes and templates are separate.    
 * Merged the events and recurrences tables                                                   
 * Tables migration from dbem to em (to provide a fallback in case the previous merge goes wrong)
 * Bugfix: 127 limit increased (got rid of tinyint types)

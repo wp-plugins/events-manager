@@ -44,7 +44,9 @@ function em_content($content) {
 			// single event page
 			$event = new EM_Event( $_REQUEST['event_id'] );
 			$content =  $event->output_single();
-		} else {
+		} elseif ( !empty($_REQUEST['bookings_id']) ) {
+			//bookings page
+		}else {
 			// Multiple events page
 			$scope = ( !empty($_REQUEST['scope']) ) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
 			//If we have a $_GET['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
