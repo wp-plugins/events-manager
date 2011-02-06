@@ -63,6 +63,43 @@ Version 3.x uses different tables than 2.x. Events should be migrated automatica
 
 See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is updated regularly.
 
+= This plugin is *almost* right for me, but there's this feature I *desperately* need. Can you add it? =
+
+We have a pretty big to-do list and we intend on implementing many cool new features over time. If you really really need this feature you can offer to sponsor the feature for the plugin and we may be able to accommodate you. Sponsored features will also be made available to other users, so you're also giving back to the community and help us make this plugin better, faster!
+
+= How do I resize the map? =
+
+Insert some code similar to this in your css:
+
+`.em-location-map, .em-locations-map { width: 300px !important; height: 200px !important; }`    
+
+Do not leave out the `!important` directive; it is, needless to say, important.
+
+= Can I further customise the event page? =
+
+Sure, there are a few ways to do this:
+
+*   If you want to simply change what event info is displayed, you can do this in the settings page by providing a combination of html and placeholders (see plugin settings page).
+*   Add to your theme's CSS files to further style the page.
+*   Edit the wordpress event page (via Pages in the admin area) and changing its [template](http://codex.wordpress.org/Pages#Page_Templates).
+*   For heavy customisation, you can use the some of the plugins own conditional tags, described in the template tags section of our documentation.
+
+= How does Events Manager work? =
+
+When installed, events Manager creates a special “Events” page. This page is used for the dynamic content of the events. All the events link actually link to this page, which gets rendered differently for each event.
+
+= Are events posts? =
+
+Events aren't posts. They are stored in a different table and have no relationship whatsoever with posts.
+
+= Why aren't events posts? =
+
+We wanted our users to have a simple, straightforward way of inserting the events, without confusing them with posts. EM was also created before custom posts were available. If you need to treat events like posts, there may be other events plugins that do this.
+
+= Is Events Manager available in my language? =
+
+At this stage, Events Manager is available in German, Spanish, Czech, Italian, Dutch, Portuguese and Swedish. Yet, the plugin is fully localisable; I will welcome any translator willing to add a translation of Events Manager into their mother tongue for this plugin.
+
 == Screenshots ==
 
 1. A default event page with a map automatically pulled from Google Maps through the #_MAP placeholder.
