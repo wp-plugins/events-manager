@@ -671,7 +671,7 @@ class EM_Event extends EM_Object{
 			//Strip string of placeholder and just leave the reference
 			$attRef = substr( substr($result, 0, strpos($result, '}')), 6 );
 			$attString = '';
-			if( array_key_exists($attRef, $this->attributes) ){
+			if( is_array($this->attributes) && array_key_exists($attRef, $this->attributes) ){
 				$attString = $this->attributes[$attRef];
 				if( trim($attString) == '' && $results[1][$resultKey] != '' ){
 					//Check to see if we have a second set of braces;

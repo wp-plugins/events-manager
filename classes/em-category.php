@@ -23,6 +23,7 @@ class EM_Category extends EM_Object {
 	function EM_Category( $category_data = false ) {
 		//Initialize
 		$this->required_fields = array("category_name" => __('The category name', 'dbem'));
+		$category = array();
 		if( $category_data != false ){
 			//Load location data
 			if( is_array($category_data) && isset($category_data['category_name']) ){
