@@ -14,7 +14,7 @@ function em_admin_warnings() {
 		if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
 			// Disable Hello to new user if requested
 			update_option ( 'dbem_hello_to_user', 0 );
-		}elseif ( get_option ( 'dbem_hello_to_user' ) == 1 && $_GET['page'] == 'events-manager-events' ) {
+		}elseif ( get_option ( 'dbem_hello_to_user' ) == 1 && !empty($_GET['page']) && $_GET['page'] == 'events-manager-events' ) {
 			$current_user = wp_get_current_user ();
 			//FIXME update welcome msg with good links
 			$advice = sprintf ( __ ( "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> 

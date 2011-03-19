@@ -4,14 +4,22 @@
  * Standard events calendar widget
  */
 class EM_Widget_Calendar extends WP_Widget {
+	
+	var $defaults = array();
+	
     /** constructor */
     function EM_Widget_Calendar() {
+    	$this->defaults = array(
+    		'title' => __('Calendar','dbem'),
+    		'long_events' => 0
+    	);
     	$widget_ops = array('description' => __( "Display your events in a calendar widget.", 'dbem') );
         parent::WP_Widget(false, $name = __('Events Calendar','dbem'), $widget_ops);	
     }
 
     /** @see WP_Widget::widget */
     function widget($args, $instance) {
+    	$instance = array_merge($this->defaults, $instance);
 		echo $args['before_widget'];
 	    echo $args['before_title'];
 	    echo $instance['title'];
@@ -37,13 +45,14 @@ class EM_Widget_Calendar extends WP_Widget {
     /** @see WP_Widget::update */
     function update($new_instance, $old_instance) {
     	//filter the new instance and replace blanks with defaults
-    	$new_instance['title'] = ($new_instance['title'] == '') ? __('Calendar','dbem'):$new_instance['title'];
-    	$new_instance['long_events'] = ($new_instance['long_events'] == '') ? 0:$new_instance['long_events'];
+    	$new_instance['title'] = ($new_instance['title'] == '') ? $this->defaults['title']:$new_instance['title'];
+    	$new_instance['long_events'] = ($new_instance['long_events'] == '') ? $this->defaults['long_events']:$new_instance['long_events'];
     	return $new_instance;
     }
 
     /** @see WP_Widget::form */
     function form($instance) {
+    	$instance = array_merge($this->defaults, $instance);
         ?>
 		<p>
 			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title'); ?>: </label>

@@ -1,5 +1,11 @@
 <?php
-
+//simple backwards compatability for WP 2.x ... since it's only this function to get it down to 2.9.1 
+if( !function_exists('get_current_user_id') ){
+	function get_current_user_id() {
+		$user = wp_get_current_user();
+		return ( isset( $user->ID ) ? (int) $user->ID : 0 );
+	}
+}
 
 /**
  * Currently, just is_super_admin() but allows scalability of permissions now.

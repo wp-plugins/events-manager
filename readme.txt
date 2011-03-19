@@ -2,9 +2,9 @@
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://wp-events-plugin.com
 Tags: events, booking, calendar, locations, maps, geotagging, admin, dashboard, plugin, template, theme, widget
-Requires at least: 2.9   
-Tested up to: 3.0.4
-Stable tag: 3.0.94
+Requires at least: 2.9 
+Tested up to: 3.1
+Stable tag: 3.1
 
 Fully featured events management including recurring events, location management, calendar, Google map integration, booking management and more.
              
@@ -107,6 +107,11 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 3. The Events Manager Options page.
 
 == Changelog ==
+
+= 3.1 =
+* removed some php warnings
+* fixed blank widget defaults, although if you still get warnings, you should
+*
 
 = 3.0.94 =
 * Fixed missing events, locations etc. due to permissions
