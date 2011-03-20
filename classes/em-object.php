@@ -176,7 +176,7 @@ class EM_Object {
 				$conditions['scope'] = " event_start_date < '$today'";  
 			}elseif ($scope == "today"){
 				$conditions['scope'] = " ( (event_start_date = CAST('$today' AS DATE)) OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE)) )";
-			}elseif ($scope == "future" || $scope != 'all'){
+			}elseif ($scope == "future"){
 				$conditions['scope'] = " (event_start_date >= CAST('$today' AS DATE) OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
 			}
 		}

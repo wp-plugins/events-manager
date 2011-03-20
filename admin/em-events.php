@@ -109,7 +109,7 @@ function em_admin_events_page() {
 				<?php 
 				if ( $events_count >= $limit ) {
 					$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%'));
-					$events_nav .= em_admin_paginate( $page_link_template, $events_count, $limit, $page, 5);
+					$events_nav = em_admin_paginate( $page_link_template, $events_count, $limit, $page, 5);
 					echo $events_nav;
 				}
 				?>

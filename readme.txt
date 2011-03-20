@@ -110,8 +110,8 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 
 = 3.1 =
 * removed some php warnings
-* fixed blank widget defaults, although if you still get warnings, you should
-*
+* fixed blank widget defaults (resave current widgets to replace blanks with defaults)
+* fixed calendar bug, where old events aren't being shown
 
 = 3.0.94 =
 * Fixed missing events, locations etc. due to permissions
