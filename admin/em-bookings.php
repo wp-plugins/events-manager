@@ -81,8 +81,10 @@ function em_bookings_dashboard(){
   		<h2>
   			<?php _e('Event Bookings Dashboard', 'dbem'); ?>
   		</h2>
+  		<?php if( get_option('dbem_bookings_approval') ): ?>
 		<h2><?php _e('Pending Bookings','dbem'); ?></h2>
 		<?php em_bookings_pending_table(); ?>
+		<?php endif; ?>
 		<h2><?php _e('Events With Bookings Enabled','dbem'); ?></h2>		
 		<?php em_bookings_events_table(); ?>
 	</div>

@@ -115,6 +115,7 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 * fixed calendar css for events on the current day
 * unapproval is now reject if pre-approvals are turned off
 * delete bookings working again
+* booking emails working as expected without pre-approvals
 * added js hook for maps
 * fixed qtranslate conflict, delayed mo file loading for better compatability with wpml
 

@@ -102,7 +102,7 @@ function em_add_booking_form() {
 	<script type="text/javascript">
 		jQuery(document).ready( function($){
 			if( $('#dbem-booking-delete').size() > 0 ){
-				var triggerText = '<?php ($_POST['eventAction'] == 'delete_booking') ? _e('Hide cancellation form', 'dbem') : _e('Cancel a booking', 'dbem'); ?>';
+				var triggerText = '<?php ( !empty($_POST['eventAction']) && $_POST['eventAction'] == 'delete_booking') ? _e('Hide cancellation form', 'dbem') : _e('Cancel a booking', 'dbem'); ?>';
 				$('#dbem-rsvp input[type=submit]').after(' <a href="#" id="dbem-booking-cancel">'+triggerText+'</a>');
 				if( $('#dbem-booking-cancel').html() == '<?php _e('Cancel a booking', 'dbem'); ?>' ) { $('#dbem-booking-delete').hide(); }
 				$('#dbem-booking-cancel').click( function(event){
