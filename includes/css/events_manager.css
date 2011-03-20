@@ -108,7 +108,7 @@ table.dbem-calendar-table td.eventful a, table.dbem-calendar-table td.eventful-t
   font-weight: bold;
   color: #FD7E29;
 }
- table.dbem-calendar-table td.eventless-today {
+ table.dbem-calendar-table td.eventless-today, table.dbem-calendar-table td.eventful-today  {
    background-color: #CFCFCF;  
 }
 table.dbem-calendar-table thead {

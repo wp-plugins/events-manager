@@ -125,7 +125,7 @@ add_filter('dbem_notes', 'prepend_attachment');
 // RSS general filters
 add_filter('dbem_general_rss', 'strip_tags');
 add_filter('dbem_general_rss', 'ent2ncr', 8);
-add_filter('dbem_general_rss', 'wp_specialchars');
+add_filter('dbem_general_rss', 'esc_html');
 // RSS content filter
 add_filter('dbem_notes_rss', 'convert_chars', 8);    
 add_filter('dbem_notes_rss', 'ent2ncr', 8);

@@ -10,7 +10,6 @@ class EM_Person extends EM_Object{
 	//Other Vars
 	var $fields = array( 
 		'person_id' => array('name'=>'id','type'=>'%d'), 
-		'person_owner' => array('name'=>'owner','type'=>'%d'), 
 		'person_name' => array('name'=>'name','type'=>'%s'), 
 		'person_email' => array('name'=>'email','type'=>'%s'),
 		'person_phone' => array('name'=>'phone','type'=>'%s')

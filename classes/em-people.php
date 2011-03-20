@@ -88,15 +88,6 @@ class EM_People extends EM_Object {
 		//FIXME EM_People doesn't build sql conditions in EM_Object
 		$conditions = array();
 		
-		//owner lookup
-		//FIXME permissions need tweaking for people, not owned by event owner, but site.
-		/*
-		if( is_numeric($args['owner']) ){
-			$conditions['owner'] = "person_owner=".get_current_user_id();
-		}elseif( preg_match('/^([0-9],?)+$/', $args['owner']) ){
-			$conditions['owner'] = "person_owner IN (".explode(',', $args['owner']).")";			
-		}	
-		*/
 		return apply_filters( 'em_people_build_sql_conditions', $conditions, $args );
 	}
 	

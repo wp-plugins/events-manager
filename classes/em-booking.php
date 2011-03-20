@@ -46,7 +46,7 @@ class EM_Booking extends EM_Object{
 				$booking = $booking_data;
 				//Also create a person out of this...
 			  	$this->person = new EM_Person($booking_data);
-			  	if($booking['person_id'] != $this->person->id){
+			  	if( !empty($booking['person_id']) && $booking['person_id'] != $this->person->id){
 			  		$this->person = new EM_Person($booking['booking_id']);
 			  	}
 			}elseif( is_numeric($booking_data) ){
@@ -64,7 +64,9 @@ class EM_Booking extends EM_Object{
 			}
 			//Save into the object
 			$this->to_object($booking);
-			$this->timestamp = strtotime($booking['booking_date']);
+			if( !empty($booking['booking_date']) ){
+				$this->timestamp = strtotime($booking['booking_date']);
+			}
 		}
 		//Do it here so things appear in the po file.
 		$this->status_array = array(
@@ -166,7 +168,7 @@ class EM_Booking extends EM_Object{
 	 */
 	function get_event(){
 		global $EM_Event;
-		if( is_object($this->event) && get_class($this->event)=='EM_Event' && $this->event->id == $this->event_id ){
+		if( !empty($this->event) && is_object($this->event) && get_class($this->event)=='EM_Event' && $this->event->id == $this->event_id ){
 			return $this->event;
 		}elseif( is_object($EM_Event) && $EM_Event->id == $this->event_id ){
 			$this->event = $EM_Event;
