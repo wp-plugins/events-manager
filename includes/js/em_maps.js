@@ -28,6 +28,8 @@ function em_maps() {
 		});
 		var infowindow = new google.maps.InfoWindow({ content: document.getElementById('em-location-map-info-'+map_id).firstElementChild });
 		infowindow.open(maps[map_id],marker);
+		//JS Hook for handling map after instantiation
+		if( jQuery.isFunction(em_maps_location_hook) ){ em_maps_location_hook( maps[map_id], infowindow ); }
 	});
 	jQuery('.em-locations-map').each( function(index){
 		var el = jQuery(this);
@@ -69,6 +71,8 @@ function em_maps() {
 				  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
 				  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
 				  maps[map_id].fitBounds(bounds);
+				//Call a hook if exists
+				if( jQuery.isFunction(em_maps_locations_hook) ){ em_maps_locations_hook( maps[map_id] ); }
 			}else{
 				el.children().first().html('No locations found');
 			}

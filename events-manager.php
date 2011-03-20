@@ -135,8 +135,11 @@ add_filter('dbem_notes_map', 'js_escape');
 
 // LOCALIZATION  
 // Localised date formats as in the jquery UI datepicker plugin
-//TODO Sort out dates, (ref: output idea) 
-load_plugin_textdomain('dbem', false, dirname( plugin_basename( __FILE__ ) ).'/includes/langs');
+// TODO Sort out dates, (ref: output idea)
+function  em_load_plugin_textdomain(){
+	load_plugin_textdomain('dbem', false, dirname( plugin_basename( __FILE__ ) ).'/includes/langs');
+}
+add_filter('plugins_loaded','em_load_plugin_textdomain');
 
 /**
  * This function will load an event into the global $EM_Event variable during page initialization, provided an event_id is given in the url via GET or POST.

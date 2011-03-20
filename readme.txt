@@ -113,6 +113,10 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 * fixed blank widget defaults (resave current widgets to replace blanks with defaults)
 * fixed calendar bug, where old events aren't being shown
 * fixed calendar css for events on the current day
+* unapproval is now reject if pre-approvals are turned off
+* delete bookings working again
+* added js hook for maps
+* fixed qtranslate conflict, delayed mo file loading for better compatability with wpml
 
 = 3.0.94 =
 * Fixed missing events, locations etc. due to permissions

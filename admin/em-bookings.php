@@ -127,8 +127,10 @@ function em_bookings_event(){
 				<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-locations&amp;location_id=<?php echo $EM_Event->location->id ?>"><?php echo ($EM_Event->location->name); ?></a> 
 			</p>
 		</div>
+		<?php if( get_option('dbem_bookings_approval') ): ?>
 		<h2><?php _e('Pending Bookings','dbem'); ?></h2>
 		<?php em_bookings_pending_table(); ?>
+		<?php endif; ?>
 		<h2><?php _e('Confirmed Bookings','dbem'); ?></h2>
 		<?php em_bookings_confirmed_table(); ?>
 		<h2><?php _e('Rejected Bookings','dbem'); ?></h2>

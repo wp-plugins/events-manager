@@ -110,6 +110,7 @@ function em_admin_load_scripts(){
 	wp_enqueue_script('em-script', WP_PLUGIN_URL.'/events-manager/includes/js/em_admin.js', array('em-ui-js'));
 	
 	//TinyMCE Editor
+	remove_filter('the_editor',					'qtrans_modifyRichEditor'); //qtranslate filter
 	add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 25 );
 	wp_enqueue_script('post');
 	if ( user_can_richedit() )

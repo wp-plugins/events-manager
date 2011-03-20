@@ -42,8 +42,7 @@ jQuery(document).ready( function($) {
 		});
 		//Approve/Reject Links
 		$('.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete').live('click', function(){
-			var el = $(this); 
-			console.log(el);
+			var el = $(this);
 			if( el.hasClass('em-bookings-delete') ){
 				if( !confirm("Are you sure you want to delete?") ){ return false; }
 			}

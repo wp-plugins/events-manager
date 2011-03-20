@@ -227,7 +227,7 @@ class EM_Bookings extends EM_Object{
 	function get_bookings(){
 		$confirmed = array();
 		foreach ( $this->bookings as $booking ){
-			if( $booking->status == 1 || (get_option('dbem_bookings_approval') == 0 && $booking->status != 3) ){
+			if( $booking->status == 1 || (get_option('dbem_bookings_approval') == 0 && $booking->status < 2) ){
 				$confirmed[] = $booking;
 			}
 		}
@@ -252,13 +252,10 @@ class EM_Bookings extends EM_Object{
 	}	
 	
 	/**
-	 * Get rejected bookings. If booking approval is disabled, will return no bookings. 
+	 * Get rejected bookings. 
 	 * @return array EM_Booking
 	 */
 	function get_rejected_bookings(){
-		if( get_option('dbem_bookings_approval') == 0 ){
-			return array();
-		}
 		$pending = array();
 		foreach ( $this->bookings as $booking ){
 			if($booking->status == 2){
@@ -416,7 +413,7 @@ class EM_Bookings extends EM_Object{
 			'Comment'
 		);
 		$file = sprintf(__('Booking details for "%s" as of %s','dbem'),$event_name, date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
-		$file = '"'. implode('","', $labels). '"' .  "\n";
+		$file = '"'. strtolower(implode('","', $labels)). '"' .  "\n";
 		
 		//Rows
 		foreach( $this->bookings as $EM_Booking ) {

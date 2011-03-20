@@ -62,7 +62,7 @@ function em_bookings_cancelled_table(){
 					<?php 
 					if ( $bookings_count >= $limit ) {
 						$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%', 'em_ajax'=>0, 'em_obj'=>'em_bookings_confirmed_table'));
-						$bookings_nav .= em_admin_paginate( $page_link_template, $bookings_count, $limit, $page, 5);
+						$bookings_nav = em_admin_paginate( $page_link_template, $bookings_count, $limit, $page, 5);
 						echo $bookings_nav;
 					}
 					?>
@@ -104,7 +104,7 @@ function em_bookings_cancelled_table(){
 										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'booking_id'=>$EM_Booking->id));
 										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'booking_id'=>$EM_Booking->id));
 										?>
-										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Approve','dbem'); ?></a> |
+										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Restore','dbem'); ?></a> |
 										<a class="em-bookings-edit" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;booking_id=<?php echo $EM_Booking->id; ?>"><?php _e('Edit'); ?></a> |
 										<a class="em-bookings-delete" href="<?php echo $delete_url ?>"><?php _e('Delete','dbem'); ?></a>
 									</td>
@@ -121,7 +121,7 @@ function em_bookings_cancelled_table(){
 					<?php _e('No cancelled bookings.', 'dbem'); ?>
 				<?php endif; ?>
 			</form>
-			<?php if( $bookings >= $limit ) : ?>
+			<?php if( !empty($bookings_nav) ) : ?>
 			<div class='tablenav'>
 				<?php echo $bookings_nav; ?>
 				<div class="clear"></div>

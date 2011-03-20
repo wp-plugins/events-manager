@@ -60,15 +60,18 @@ function em_ajax_actions() {
 					die();			
 				}elseif($_REQUEST['action'] == 'bookings_delete'){
 					//Just do it here, since we may be deleting bookings of different events.
+					$result = false;
 					if(EM_Object::array_is_numeric($_REQUEST['bookings'])){
 						$results = array();
-						foreach($booking_ids as $booking_id){
-							$EM_Booking = new EM_Booking($booking_ids);
+						foreach($_REQUEST['bookings'] as $booking_id){
+							$EM_Booking = new EM_Booking($booking_id);
 							$results[] = $EM_Booking->delete();
 						}
 						$result = !in_array(false,$results);
-					}elseif(is_numeric($booking_ids)){
-						$EM_Booking = new EM_Booking($booking_ids);
+					}elseif( is_numeric($_REQUEST['bookings']) ){
+						$EM_Booking = new EM_Booking($_REQUEST['bookings']);
+						$result = $EM_Booking->delete();
+					}elseif( is_object($EM_Booking) ){
 						$result = $EM_Booking->delete();
 					}
 					if( $result ){

@@ -63,7 +63,7 @@ function em_bookings_confirmed_table(){
 					<?php 
 					if ( $bookings_count >= $limit ) {
 						$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%', 'em_ajax'=>0, 'em_obj'=>'em_bookings_confirmed_table'));
-						$bookings_nav .= em_admin_paginate( $page_link_template, $bookings_count, $limit, $page, 5);
+						$bookings_nav = em_admin_paginate( $page_link_template, $bookings_count, $limit, $page, 5);
 						echo $bookings_nav;
 					}
 					?>
@@ -103,8 +103,13 @@ function em_bookings_confirmed_table(){
 									<td>
 										<?php
 										$unapprove_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_unapprove', 'booking_id'=>$EM_Booking->id));
+										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'booking_id'=>$EM_Booking->id));
 										?>
+										<?php if( get_option('dbem_bookings_approval') ): ?>
 										<a class="em-bookings-unapprove" href="<?php echo $unapprove_url ?>"><?php _e('Unapprove','dbem'); ?></a> |
+										<?php else: ?>
+										<a class="em-bookings-reject" href="<?php echo $reject_url ?>"><?php _e('Reject','dbem'); ?></a> |
+										<?php endif; ?>
 										<a class="em-bookings-edit" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;booking_id=<?php echo $EM_Booking->id; ?>"><?php _e('Edit'); ?></a>
 									</td>
 								</tr>
@@ -120,7 +125,7 @@ function em_bookings_confirmed_table(){
 					<?php _e('No confirmed bookings.', 'dbem'); ?>
 				<?php endif; ?>
 			</form>
-			<?php if( $bookings >= $limit ) : ?>
+			<?php if( !empty($bookings_nav) ) : ?>
 			<div class='tablenav'>
 				<?php echo $bookings_nav; ?>
 				<div class="clear"></div>

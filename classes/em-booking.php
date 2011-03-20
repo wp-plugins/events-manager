@@ -26,7 +26,7 @@ class EM_Booking extends EM_Object{
 	 * If saved in this instance, you can see what previous approval status was.
 	 * @var int
 	 */
-	var $previous_status;
+	var $previous_status = false;
 	/**
 	 * The booking approval status number corresponds to a state in this array.
 	 * @var unknown_type
@@ -39,6 +39,9 @@ class EM_Booking extends EM_Object{
 	 * @return null
 	 */
 	function EM_Booking( $booking_data = false ){
+		if( !get_option('dbem_bookings_approval') ){
+			$this->status = 1;
+		}
 		if( $booking_data !== false ){
 			//Load booking data
 			$booking = array();
@@ -193,11 +196,6 @@ class EM_Booking extends EM_Object{
 		global $wpdb;
 		$sql = $wpdb->prepare("DELETE FROM ". $wpdb->prefix.EM_BOOKINGS_TABLE . " WHERE booking_id=%d", $this->id);
 		$result = $wpdb->query( $sql );
-		if( $result !== false ){
-			$this->previous_status = $this->status;
-			$this->status == false;
-			$this->email();
-		}
 		return ( $result !== false );
 	}
 	
@@ -285,7 +283,7 @@ class EM_Booking extends EM_Object{
 			$contact_subject = get_option('dbem_bookings_contact_email_subject');
 			$contact_body = get_option('dbem_bookings_contact_email_body');
 			
-			if( get_option('dbem_bookings_approval') == 0 || $this->status == 1 ){
+			if( (get_option('dbem_bookings_approval') == 0 && $this->previous_status === false) || $this->status == 1 ){
 				$booker_subject = get_option('dbem_bookings_email_confirmed_subject');
 				$booker_body = get_option('dbem_bookings_email_confirmed_body');
 			}elseif( $this->status == 0 ){

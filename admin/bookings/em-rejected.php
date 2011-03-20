@@ -62,7 +62,7 @@ function em_bookings_rejected_table(){
 					<?php 
 					if ( $bookings_count >= $limit ) {
 						$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%', 'em_ajax'=>0, 'em_obj'=>'em_bookings_confirmed_table'));
-						$bookings_nav .= em_admin_paginate( $page_link_template, $bookings_count, $limit, $page, 5);
+						$bookings_nav = em_admin_paginate( $page_link_template, $bookings_count, $limit, $page, 5);
 						echo $bookings_nav;
 					}
 					?>
@@ -121,7 +121,7 @@ function em_bookings_rejected_table(){
 					<?php _e('No rejected bookings.', 'dbem'); ?>
 				<?php endif; ?>
 			</form>
-			<?php if( $bookings >= $limit ) : ?>
+			<?php if( !empty($bookings_nav) ) : ?>
 			<div class='tablenav'>
 				<?php echo $bookings_nav; ?>
 				<div class="clear"></div>

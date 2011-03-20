@@ -78,7 +78,7 @@ function em_bookings_events_table() {
 				<?php 
 				if ( $events_count >= $limit ) {
 					$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%', 'em_ajax'=>0, 'em_obj'=>'em_bookings_events_table'));
-					$events_nav .= em_admin_paginate( $page_link_template, $events_count, $limit, $page, 5);
+					$events_nav = em_admin_paginate( $page_link_template, $events_count, $limit, $page, 5);
 					echo $events_nav;
 				}
 				?>
@@ -162,7 +162,7 @@ function em_bookings_events_table() {
 				<div class="alignleft actions">
 				<br class='clear' />
 				</div>
-				<?php if ( $events_count >= $limit ) : ?>
+			<?php if( !empty($events_nav) ) : ?>
 				<div class="tablenav-pages">
 					<?php
 					echo $events_nav;
