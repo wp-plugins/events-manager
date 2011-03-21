@@ -666,19 +666,18 @@ class EM_Event extends EM_Object{
 			$event_string = str_replace($result,$replace,$event_string );
 		}
 		//This is for the custom attributes
-		preg_match_all('/#_ATT\{.+?\}(\{.+?\})?/', $format, $results);
+		preg_match_all('/#_ATT\{.+?\}(\{(.+)\})?/', $format, $results);
 		foreach($results[0] as $resultKey => $result) {
 			//Strip string of placeholder and just leave the reference
 			$attRef = substr( substr($result, 0, strpos($result, '}')), 6 );
 			$attString = '';
 			if( is_array($this->attributes) && array_key_exists($attRef, $this->attributes) ){
 				$attString = $this->attributes[$attRef];
-				if( trim($attString) == '' && $results[1][$resultKey] != '' ){
-					//Check to see if we have a second set of braces;
-					$attString = substr( $results[1][$resultKey], 1, strlen(trim($results[1][$resultKey]))-2 );
-				}
-				$attString = apply_filters('em_event_output_placeholder', $attString, $this, $result, $target);
+			}elseif( !empty($results[2][$resultKey]) ){
+				//Check to see if we have a second set of braces;
+				$attString = $results[2][$resultKey];
 			}
+			$attString = apply_filters('em_event_output_placeholder', $attString, $this, $result, $target);
 			$event_string = str_replace($result, $attString ,$event_string );
 		}
 		

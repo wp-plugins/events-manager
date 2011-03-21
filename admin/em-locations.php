@@ -137,7 +137,7 @@ function em_admin_locations($message='', $fill_fields = false) {
 }
 
 function em_admin_location($message = "") {
-	global $EM_Location;
+	global $EM_Location, $EM_Event;
 	//check that user can access this page
 	if( is_object($EM_Location) && !$EM_Location->can_manage() ){
 		?>
@@ -186,9 +186,9 @@ function em_admin_location($message = "") {
 								<?php _e ( 'Coordinates', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
-								<input id='location-latitude' name='location_latitude' type='text' value='<?php echo $EM_Event->latitude; ?>' size='15' />
+								<input id='location-latitude' name='location_latitude' type='text' value='<?php echo $EM_Location->latitude; ?>' size='15' />
 								-
-								<input id='location-longitude' name='location_longitude' type='text' value='<?php echo $EM_Event->longitude; ?>' size='15' />
+								<input id='location-longitude' name='location_longitude' type='text' value='<?php echo $EM_Location->longitude; ?>' size='15' />
 							</div>
 						</div>
 						<div id="location_info" class="stuffbox">
