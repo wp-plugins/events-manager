@@ -18,7 +18,7 @@ function em_bookings_person_table(){
 	$offset = ( $action_scope && $page > 1 ) ? ($page-1)*$limit : 0;
 	
 	$bookings = $EM_Person->get_bookings();
-	$bookings_count = (is_array($bookings)) ? count($bookings):0;
+	$bookings_count = count($bookings);
 	if($bookings_count > 0){
 		//Get events here in one query to speed things up
 		foreach($bookings as $EM_Booking){
@@ -67,8 +67,7 @@ function em_bookings_person_table(){
 					-->
 					<?php 
 					if ( $bookings_count >= $limit ) {
-						$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%', 'em_ajax'=>0, 'em_obj'=>'em_bookings_confirmed_table'));
-						$bookings_nav = em_admin_paginate( $page_link_template, $bookings_count, $limit, $page, 5);
+						$bookings_nav = em_admin_paginate( $bookings_count, $limit, $page, array('em_ajax'=>0, 'em_obj'=>'em_bookings_confirmed_table'));
 						echo $bookings_nav;
 					}
 					?>
@@ -96,13 +95,13 @@ function em_bookings_person_table(){
 						$event_count = 0;
 						foreach ($bookings as $EM_Booking) {
 							$EM_Event = $events[$EM_Booking->event_id];							
-							if( $EM_Event->can_manage() && ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
+							if( $EM_Event->can_manage('edit_events','edit_others_events') && ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
 								$rowno++;
 								?>
 								<tr>
 									<th scope="row" class="check-column" style="padding:7px 0px 7px;"><input type='checkbox' value='<?php echo $EM_Booking->id ?>' name='bookings[]'/></th>
 									<td><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->id ?>"><?php echo ($EM_Event->name); ?></a></td>
-									<td><?php echo $EM_Booking->seats ?></td>
+									<td><?php echo $EM_Booking->get_spaces() ?></td>
 									<td><?php echo $EM_Booking->status_array[$EM_Booking->status]; ?>
 									</td>
 									<td>
@@ -112,17 +111,20 @@ function em_bookings_person_table(){
 										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'bookings'=>$EM_Booking->id));
 										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'bookings'=>$EM_Booking->id));
 										?>
-										<?php if( $EM_Booking->status == 0 || $EM_Booking->status == 2 ): ?>
+										<?php if( get_option('dbem_bookings_approval') && ($EM_Booking->status == 0 ) ): ?>
 										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Approve','dbem'); ?></a> |
 										<?php endif; ?>
-										<?php if( $EM_Booking->status == 2 ): ?>
+										<?php if( get_option('dbem_bookings_approval') && $EM_Booking->status == 1 ): ?>
 										<a class="em-bookings-unapprove" href="<?php echo $unapprove_url ?>"><?php _e('Unapprove','dbem'); ?></a> |
+										<?php endif; ?>
+										<?php if( $EM_Booking->status == 2 ): ?>
+										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Restore','dbem'); ?></a> |
 										<?php endif; ?>
 										<?php if( $EM_Booking->status == 0 || $EM_Booking->status == 1 ): ?>
 										<a class="em-bookings-reject" href="<?php echo $reject_url ?>"><?php _e('Reject','dbem'); ?></a> |
 										<?php endif; ?>
-										<a class="em-bookings-edit" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;booking_id=<?php echo $EM_Booking->id; ?>"><?php _e('Edit'); ?></a> |
-										<a class="em-bookings-delete" href="<?php echo $delete_url ?>"><?php _e('Delete','dbem'); ?></a>
+										<a class="em-bookings-edit" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;booking_id=<?php echo $EM_Booking->id; ?>"><?php _e('Edit/View','dbem'); ?></a> |
+										<span class="trash"><a class="em-bookings-delete" href="<?php echo $delete_url ?>"><?php _e('Delete','dbem'); ?></a></span>
 									</td>
 								</tr>
 								<?php
@@ -137,7 +139,7 @@ function em_bookings_person_table(){
 					<?php _e('No confirmed bookings.', 'dbem'); ?>
 				<?php endif; ?>
 			</form>
-			<?php if( !empty($bookings_nav) ) : ?>
+			<?php if( !empty($bookings_nav) && $bookings >= $limit ) : ?>
 			<div class='tablenav'>
 				<?php echo $bookings_nav; ?>
 				<div class="clear"></div>

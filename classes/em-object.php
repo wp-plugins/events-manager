@@ -4,8 +4,10 @@
  *
  */
 class EM_Object {
-	
 	var $fields = array();
+	var $required_fields = array();
+	var $feedback_message = "";
+	var $errors = array();
 	
 	/**
 	 * Takes the array and provides a clean array of search parameters, along with details
@@ -14,6 +16,7 @@ class EM_Object {
 	 * @return array
 	 */
 	function get_default_search($defaults=array(), $array = array()){
+		global $wpdb;
 		//TODO accept all objects as search options as well as ids (e.g. location vs. location_id, person vs. person_id)
 		//Create minimal defaults array, merge it with supplied defaults array
 		$super_defaults = array(
@@ -34,7 +37,8 @@ class EM_Object {
 			'pagination'=>false,
 			'array'=>false,
 			'owner'=>false,
-			'rsvp'=>false
+			'rsvp'=>false,
+			'search'=>false
 		);
 		//Return default if nothing passed
 		if( empty($defaults) && empty($array) ){
@@ -97,6 +101,7 @@ class EM_Object {
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
 		$defaults['owner'] = (is_numeric($defaults['owner'])) ? $defaults['owner']:$super_defaults['owner'];
+		$defaults['search'] = ($defaults['search']) ? $wpdb->escape(like_escape($defaults['search'])):false;
 		//Calculate offset in event page is set
 		if($defaults['page'] > 1){
 			$defaults['offset'] = $defaults['limit'] * ($defaults['page']-1);	
@@ -224,7 +229,7 @@ class EM_Object {
 		}
 		//Default ownership belongs to an event, child objects can just overwrite this if needed.
 		if( is_numeric($owner) ){
-			$conditions['owner'] = 'event_author='.$owner;
+			$conditions['owner'] = 'event_owner='.$owner;
 		}
 		return apply_filters('em_object_build_sql_conditions', $conditions);
 	}
@@ -266,6 +271,34 @@ class EM_Object {
 		}
 		return apply_filters('em_object_build_sql_orderby', $orderby);
 	}
+	
+	/**
+	 * Used by "single" objects, e.g. bookings, events, locations to verify if they have the capability to edit this or someone else's object. Relies on the fact that the object has an owner property with id of user (or admin capability must pass).
+	 * @param string $owner_capability If the object has an owner property and the user id matches that, this capability will be checked for.
+	 * @param string $admin_capability If the user isn't the owner of the object, this capability will be checked for.
+	 * @return boolean
+	 */
+	function can_manage( $owner_capability = false, $admin_capability = false ){
+		global $em_capabilities_array;
+		//do they own this?
+		$is_owner = ( $this->owner == get_current_user_id() || empty($this->id) );
+		//now check capability
+		$can_manage = false;
+		if( $is_owner && current_user_can($owner_capability) ){
+			$can_manage = true;
+		}elseif( $is_owner && array_key_exists($owner_capability, $em_capabilities_array) ){
+			$error_msg = $em_capabilities_array[$owner_capability];
+		}
+		if( !$is_owner && current_user_can($admin_capability) ){
+			$can_manage = true;
+		}elseif( !$is_owner && array_key_exists($admin_capability, $em_capabilities_array) ){
+			$error_msg = $em_capabilities_array[$admin_capability];
+		}
+		if( !$can_manage ){
+			$this->add_error($error_msg);
+		}
+		return $can_manage;
+	}
 
 	/**
 	 * Save an array into this class.
@@ -292,10 +325,16 @@ class EM_Object {
 	 * Returns this object in the form of an array, useful for saving directly into a database table.
 	 * @return array
 	 */
-	function to_array(){
+	function to_array($db = false){
 		$array = array();
 		foreach ( $this->fields as $key => $val ) {
-			$array[$key] = $this->$val['name'];
+			if($db){
+				if( !empty($this->$val['name']) || empty($val['null']) ){
+					$array[$key] = $this->$val['name'];
+				}
+			}else{
+				$array[$key] = $this->$val['name'];
+			}
 		}
 		return apply_filters('em_to_array', $array);
 	}
@@ -392,8 +431,12 @@ class EM_Object {
 	function email_send($subject, $body, $email){
 		global $EM_Mailer;
 		if( !$EM_Mailer->send($subject,$body,$email) ){
-			foreach($EM_Mailer->errors as $error){
-				$this->errors[] = $error;
+			if( is_array($EM_Mailer->errors) ){
+				foreach($EM_Mailer->errors as $error){
+					$this->errors[] = $error;
+				}
+			}else{
+				$this->errors[] = $EM_Mailer->errors;
 			}
 			return false;
 		}
@@ -413,6 +456,31 @@ class EM_Object {
 			}
 		}
 		return (!in_array(false, $results) && count($results) > 0);
+	}	
+	
+	/**
+	 * Returns an array of errors in this object
+	 * @return array 
+	 */
+	function get_errors(){
+		if(is_array($this->errors)){
+			return $this->errors;
+		}else{
+			return array();
+		}
+	}
+	
+	/**
+	 * Adds an error to the object
+	 */
+	function add_error($error){
+		if(is_array($this->errors)){
+			if( !in_array($error, $this->errors) ){
+				$this->errors[] = $error;
+			}
+		}else{
+			$this->errors = array($error);
+		}
 	}
 	
 	/**
@@ -426,11 +494,11 @@ class EM_Object {
 		}else{
 			$return = self::array_to_json($array);
 		}
-		if( isset($_GET['callback']) ){
-			$return = $_GET['callback']."($return)";
+		if( isset($_REQUEST['callback']) ){
+			$return = $_REQUEST['callback']."($return)";
 		}
 		return apply_filters('em_object_json_encode', $return, $array);
-	}	
+	}
 	
 	/**
 	 * Compatible json encoder function for PHP4

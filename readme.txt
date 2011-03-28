@@ -86,7 +86,7 @@ Sure, there are a few ways to do this:
 
 = How does Events Manager work? =
 
-When installed, events Manager creates a special “Events” page. This page is used for the dynamic content of the events. All the events link actually link to this page, which gets rendered differently for each event.
+When installed, events Manager creates a special â€œEventsâ€ page. This page is used for the dynamic content of the events. All the events link actually link to this page, which gets rendered differently for each event.
 
 = Are events posts? =
 

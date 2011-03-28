@@ -133,25 +133,26 @@ class EM_Categories extends EM_Object {
 			'eventless' => false, //cats WITHOUT events, eventful takes precedence
 		);
 		if( is_admin() ){
-			//by default, we only get categories the owner can manage
-			switch( get_option('dbem_permissions_categories') ){
-				case 0:
-					$defaults['owner'] = get_current_user_id();
-					break;
-				case 1:
-					$wp_user_search = new WP_User_Search(null, null, 'administrator');
-					$users = $wp_user_search->get_results();
-					$users[] = get_current_user_id();
-					$users[] = 0;
-					$defaults['owner'] = implode(',', $users);
-					break;
-				case 2:
-					$defaults['owner'] = false;
-					break;
-			}
-			$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
+			//$defaults['owner'] = self::get_default_search_owner();
 		}
 		return apply_filters('em_categories_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}	
-
+	
+	/**
+	 * will return the default search parameter to use according to permission settings
+	 * @return string
+	 */
+	function get_default_search_owner(){
+		//by default, we only get categories the owner can manage
+		$defaults = array('owner'=>false);
+		//by default, we only get categories the owner can manage
+		if( !current_user_can('edit_categories') ){
+			$defaults['owner'] = get_current_user_id();
+			break;
+		}else{
+			$defaults['owner'] = false;
+			break;
+		}
+		return $defaults['owner'];
+	}
 }

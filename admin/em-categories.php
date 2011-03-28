@@ -35,7 +35,7 @@ function em_admin_categories_page() {
 			em_categories_table_layout($message);
 		}
 	}else{
-		em_categories_table_layout($message);
+		em_categories_table_layout();
 	}
 } 
 
@@ -136,9 +136,9 @@ function em_categories_edit_layout($message = "") {
 		$EM_Category = new EM_Category();
 	}
 	//check that user can access this page
-	if( is_object($EM_Category) && !$EM_Category->can_manage() ){
+	if( is_object($EM_Category) && !$EM_Category->can_manage('edit_categories') ){
 		?>
-		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
+		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php implode('<br/>',$EM_Category->get_errors()); ?></p></div>
 		<?php
 		return;
 	}

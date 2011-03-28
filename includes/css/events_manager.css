@@ -1,46 +1,22 @@
-table#dbem-bookings-table tfoot td.booking-result {
-	font-weight: bold;
-   	background:#6D6D6D url(../../../wp-admin/images/menu-bits.gif) repeat-x scroll left top;      
-	color: #eee;
-}
-
-table#dbem-bookings-table tfoot th {
-	text-align: right;
-	padding-right: 1em;
-}    
-
-table.dbem-rsvp-form  {
-	width: 80%;
+#em-booking-form  {
+	position:relative;
 }  
-table.dbem-rsvp-form th { 
-	text-align: left;
-	width: 30%;
-}
 
-table.dbem-rsvp-form td { 
-	padding-left: 1em;
-	text-align: left;
-}      
-
-table.dbem-rsvp-form td input { 
-	margin:0px;
-}
-
-div.dbem-rsvp-message {     
+div.em-booking-message {     
 	margin-bottom: 1em;
 	background-color: #FDDD73;
 	padding: 5px;
 	border: 2px solid #FF9100;
 }
 
-div.dbem-rsvp-message-success {     
+div.em-booking-message-success {     
 	margin-bottom: 1em;
 	background-color: #5BBF58;
 	padding: 5px;
 	border: 2px solid #499B47;
 }
 
-div.dbem-rsvp-message-error {     
+div.em-booking-message-error {     
 	margin-bottom: 1em;
 	background-color: #DF9477;
 	padding: 5px;
@@ -65,7 +41,7 @@ table#bookings-table {
 table#bookings-table td {
 	padding: 5px 0;
 }
-table#bookings-table td.seats-number {
+table#bookings-table td.spaces-number {
 	text-align: right;
 	padding-right: 20px;
 }
@@ -73,7 +49,7 @@ table#bookings-table th {
 	text-align: left;
 	margin-left: 5px;
 }   
-table#bookings-table tr#booked-seats td{
+table#bookings-table tr#booked-spaces td{
 	border-top: 2px solid #999;    
 }      
 
@@ -81,7 +57,7 @@ table#bookings-table td.total-label {
 	text-align: right;
 }                                  
 
-table#bookings-table tr#booked-seats td.seats-number, table#bookings-table tr#available-seats td.seats-number {
+table#bookings-table tr#booked-spaces td.spaces-number, table#bookings-table tr#available-spaces td.spaces-number {
 	font-weight: bold;
 }
 
@@ -108,7 +84,7 @@ table.dbem-calendar-table td.eventful a, table.dbem-calendar-table td.eventful-t
   font-weight: bold;
   color: #FD7E29;
 }
- table.dbem-calendar-table td.eventless-today, table.dbem-calendar-table td.eventful-today  {
+ table.dbem-calendar-table td.eventless-today {
    background-color: #CFCFCF;  
 }
 table.dbem-calendar-table thead {

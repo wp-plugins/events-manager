@@ -1,10 +1,15 @@
 <?php
+//TODO EM_Events is currently static, better we make this non-static so we can loop sets of events, and standardize with other objects.
 /**
  * Use this class to query and manipulate sets of events. If dealing with more than one event, you probably want to use this class in some way.
  *
  */
-class EM_Events extends EM_Object {
-	
+class EM_Events extends EM_Object implements Iterator {
+	/**
+	 * Array of EM_Event objects
+	 * @var array EM_Event
+	 */
+	var $events = array();
 	/**
 	 * Returns an array of EM_Events that match the given specs in the argument, or returns a list of future evetnts in future 
 	 * (see EM_Events::get_default_search() ) for explanation of possible search array values. You can also supply a numeric array
@@ -13,7 +18,7 @@ class EM_Events extends EM_Object {
 	 * @param array $args
 	 * @return EM_Event array()
 	 */
-	function get( $args = array() ) {
+	function get( $args = array(), $count=false ) {
 		global $wpdb;
 		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
 		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
@@ -54,15 +59,19 @@ class EM_Events extends EM_Object {
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
 		
 		//Create the SQL statement and execute
+		$selectors = ( $count ) ?  'COUNT(*)':'*';
 		$sql = "
-			SELECT * FROM $events_table
+			SELECT $selectors FROM $events_table
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 			LEFT JOIN $categories_table ON {$categories_table}.category_id={$events_table}.event_category_id
 			$where
 			$orderby_sql
 			$limit $offset
 		";
-	
+		//If we're only counting results, return the number of results
+		if( $count ){
+			return $wpdb->get_var($sql);		
+		}
 		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?
@@ -92,11 +101,16 @@ class EM_Events extends EM_Object {
 		return apply_filters('em_events_count_date', $wpdb->get_var($sql));
 	}
 	
+	function count( $args = array() ){
+		return apply_filters('em_events_count', self::get($args, true), $args);
+	}
+	
 	/**
 	 * Will delete given an array of event_ids or EM_Event objects
 	 * @param unknown_type $id_array
 	 */
 	function delete( $array ){
+		//TODO add better cap checks in bulk actions
 		global $wpdb;
 		//Detect array type and generate SQL for event IDs
 		$event_ids = array();
@@ -174,12 +188,13 @@ class EM_Events extends EM_Object {
 			}
 			//Add headers and footers to output
 			if( $format == get_option ( 'dbem_event_list_item_format' ) ){
-				$single_event_format_header = get_option ( 'dbem_event_list_item_format_header' );
-				$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='dbem_events_list'>";
-				$single_event_format_footer = get_option ( 'dbem_event_list_item_format_footer' );
-				$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
-				$output = $single_event_format_header .  $output . $single_event_format_footer;
+				$format_header = ( get_option( 'dbem_event_list_item_format_header') == '' ) ? '':get_option ( 'dbem_event_list_item_format_header' );
+				$format_footer = ( get_option ( 'dbem_event_list_item_format_footer' ) == '' ) ? '':get_option ( 'dbem_event_list_item_format_footer' );
+			}else{
+				$format_header = ( !empty($args['format_header']) ) ? $args['format_header']:'';
+				$format_footer = ( !empty($args['format_footer']) ) ? $args['format_footer']:'';
 			}
+			$output = $format_header .  $output . $format_footer;
 			//Pagination (if needed/requested)
 			if( !empty($args['pagination']) && !empty($limit) && $events_count > $limit ){
 				//Show the pagination links (unless there's less than $limit events)
@@ -198,13 +213,13 @@ class EM_Events extends EM_Object {
 	
 	function can_manage($event_ids){
 		global $wpdb;
-		if( em_verify_admin() ){
+		if( current_user_can('edit_others_events') ){
 			return apply_filters('em_events_can_manage', true, $event_ids);
 		}
 		if( EM_Object::array_is_numeric($event_ids) ){
 			$condition = implode(" OR event_id=", $event_ids);
 			//Delete all the bookings
-			$results = $wpdb->query("SELECT event_author FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE author_id != '". get_current_user_id() ."' event_id=$condition;");
+			$results = $wpdb->query("SELECT event_owner FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE author_id != '". get_current_user_id() ."' event_id=$condition;");
 			return apply_filters('em_events_can_manage', (count($results) > 0), $event_ids);
 		}
 		return apply_filters('em_events_can_manage', false, $event_ids);
@@ -214,7 +229,15 @@ class EM_Events extends EM_Object {
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */
 	function build_sql_conditions( $args = array() ){
-		return apply_filters( 'em_events_build_sql_conditions', parent::build_sql_conditions($args), $args );
+		$conditions = parent::build_sql_conditions($args);
+		if( !empty($args['search']) ){
+			$like_search = array('event_name','event_notes');
+			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
+		}
+		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
+			$conditions['status'] = "(`event_status`={$args['status']})";
+		}
+		return apply_filters( 'em_events_build_sql_conditions', $conditions, $args );
 	}
 	
 	/* Overrides EM_Object method to apply a filter to result
@@ -234,21 +257,45 @@ class EM_Events extends EM_Object {
 		$defaults = array(
 			'orderby' => get_option('dbem_events_default_orderby'),
 			'order' => get_option('dbem_events_default_order'),
-			'rsvp' => false //if set to true, only events with bookings enabled are returned
+			'rsvp' => false, //if set to true, only events with bookings enabled are returned
+			'status' => 1, //approved events only
+			'format_header' => '', //events can have custom html above the list
+			'format_footer' => '', //events can have custom html below the list
 		);
 		if( is_admin() ){
 			//figure out default owning permissions
-			switch( get_option('dbem_permissions_events') ){
-				case 0:
-					$defaults['owner'] = get_current_user_id();
-					break;
-				case 1:
-					$defaults['owner'] = false;
-					break;
+			$defaults['owner'] = !current_user_can('edit_others_events') ? get_current_user_id() : false;
+			if( !array_key_exists('status', $array) && current_user_can('edit_others_events') ){
+				$defaults['status'] = false; //by default, admins see pending and live events
 			}
-			$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
 		}
 		return apply_filters('em_events_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
+
+	//TODO Implement object and interators for handling groups of events.
+    public function rewind(){
+        reset($this->events);
+    }
+  
+    public function current(){
+        $var = current($this->events);
+        return $var;
+    }
+  
+    public function key(){
+        $var = key($this->events);
+        return $var;
+    }
+  
+    public function next(){
+        $var = next($this->events);
+        return $var;
+    }
+  
+    public function valid(){
+        $key = key($this->events);
+        $var = ($key !== NULL && $key !== FALSE);
+        return $var;
+    }
 }
 ?>

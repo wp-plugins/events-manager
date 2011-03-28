@@ -9,9 +9,22 @@
  * @return string
  */
 function em_content($content) {
+	/*
+	echo "<h2>WP_REWRITE</h2>";
+	echo "<pre>";
+	global $wp_rewrite;
+	print_r($wp_rewrite);
+	echo "</pre>";
+	echo "<h2>WP_QUERY</h2>";
+	echo "<pre>";
+	global $wp_query;
+	print_r($wp_query);
+	echo "</pre>";
+	die();	
+	*/
 	$events_page_id = get_option ( 'dbem_events_page' );
 	if ( get_the_ID() == $events_page_id && $events_page_id != 0 ) {
-		global $wpdb, $EM_Event;
+		global $wpdb, $EM_Event, $EM_Location, $EM_Category;
 		//TODO FILTER - filter em page content before placeholder replacing
 		//TODO any loop should put the current $EM_Event etc. into the global variable
 		//general defaults
@@ -24,7 +37,7 @@ function em_content($content) {
 		if ( !empty($_REQUEST['calendar_day']) ) {
 			//Events for a specific day
 			$args['scope'] = $_REQUEST['calendar_day'];
-			$page = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
+			$page = ( !empty($_REQUEST['page']) && is_numeric($_REQUEST['page']) )? $_REQUEST['page'] : 1;
 			$events = EM_Events::get( apply_filters('em_content_calendar_day_args', $args) ); //Get events first, so we know how many there are in advance
 			if ( count($events) > 1 || $page > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
 				$args['limit'] = get_option('dbem_events_default_limit');
@@ -36,20 +49,23 @@ function em_content($content) {
 			} else {
 				$content = get_option('dbem_no_events_message');
 			}
-		} elseif ( !empty($_REQUEST['location_id']) && is_numeric($_REQUEST['location_id']) ) {
+		} elseif ( is_object($EM_Location) ) {
 			//Just a single location
-			$location = new EM_Location($_REQUEST['location_id']);
-			$content =  $location->output_single();
-		} elseif ( !empty($_REQUEST['event_id']) && is_numeric($_REQUEST['event_id']) ) {
-			// single event page
-			$event = new EM_Event( $_REQUEST['event_id'] );
-			$content =  $event->output_single();
-		} elseif ( !empty($_REQUEST['bookings_id']) ) {
+			$content =  $EM_Location->output_single();
+		} elseif ( is_object($EM_Event) && !empty($_REQUEST['book']) ) {
 			//bookings page
-		}else {
+			$content = $EM_Event->output( get_option('dbem_bookings_page') );
+		} elseif ( is_object($EM_Event) ) {
+			// single event page
+			if( $EM_Event->status == 1 ){
+				$content =  $EM_Event->output_single();
+			}else{
+				$content = get_option('dbem_no_events_message');
+			}
+		} else {
 			// Multiple events page
 			$scope = ( !empty($_REQUEST['scope']) ) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
-			//If we have a $_GET['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
+			//If we have a $_REQUEST['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
 			$args['scope'] = $scope;
 			if ( !empty($_REQUEST['category_id']) ) $args['category'] = $_REQUEST['category_id'];
 			if (get_option ( 'dbem_display_calendar_in_events_page' )){
@@ -58,14 +74,12 @@ function em_content($content) {
 				$content =  EM_Calendar::output( apply_filters('em_content_calendar_args', $args) );
 			}else{
 				$args['limit'] = get_option('dbem_events_default_limit');
-				$args['page'] = ( !empty($_GET['page']) && is_numeric($_GET['page']) )? $_GET['page'] : 1;
-				
+				$args['page'] = (!empty($_REQUEST['page']) && is_numeric($_REQUEST['page']) )? $_REQUEST['page'] : 1;				
 				/*calculate event list time range */
 				$time_limit = get_option('dbem_events_page_time_limit');
-				if ( is_numeric($time_limit) && $time_limit > 0 ){
+				if ( is_numeric($time_limit) && $time_limit > 0 && $scope == 'future'){
 					$args['scope'] = date('Y-m-d').",".date('Y-m-t', strtotime('+'.($time_limit-1).' month'));
 				}
-				
 				$content =  EM_Events::output( apply_filters('em_content_events_args', $args) );
 			}
 		}
@@ -110,9 +124,16 @@ function em_events_page_title($content) {
 		}elseif (isset ( $_REQUEST ['location_id'] ) && $_REQUEST ['location_id'] |= '') {
 			$location = new EM_Location( EM_Object::sanitize($_REQUEST ['location_id']) );
 			$content =  $location->output(get_option( 'dbem_location_page_title_format' ));;
-		}elseif (isset ( $_REQUEST ['event_id'] ) && $_REQUEST ['event_id'] != '') {
+		}elseif ( is_object($EM_Event) && !empty($_REQUEST['book']) ) {
+			//bookings page
+			$content = $EM_Event->output( get_option('dbem_bookings_page_title') );
+		}elseif ( is_object($EM_Event) ) {
 			// single event page
-			$content =  $EM_Event->output ( get_option ( 'dbem_event_page_title_format' ) );
+			if( $EM_Event->status == 1 ){
+				$content =  $EM_Event->output ( get_option ( 'dbem_event_page_title_format' ) );
+			}else{
+				$content = get_option('dbem_events_page_title');
+			}
 		}else{
 			// Multiple events page
 			$content =  get_option ( 'dbem_events_page_title' );

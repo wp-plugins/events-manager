@@ -99,8 +99,10 @@ function em_docs_init(){
 							'#_REMOVEBOOKINGFORM' => array( 'desc' => 'Adds a form which allows the visitors to remove their booking.' ),
 							'#_BOOKINGFORM' => array( 'desc' => 'Adds a both booking forms (add and remove).' ),
 							'#_AVAILABLESPACES' => array( 'desc' => 'Shows available spaces for the event.' ),
-							'#_BOOKEDSPACES' => array( 'desc' => 'Shows the amount of currently booked seats for the event.' ),
-							'#_SPACES' => array( 'desc' => 'Shows the total spaces for the event.' )
+							'#_BOOKEDSPACES' => array( 'desc' => 'Shows the amount of currently booked spaces for the event.' ),
+							'#_PENDINGSPACES' => array( 'desc' => 'Shows the amount of pending spaces for the event.' ),
+							'#_SPACES' => array( 'desc' => 'Shows the total spaces for the event.' ),
+							'#_ATTENDEES' => array( 'desc' => 'Shows the list of user avatars attending events.' )
 						)
 					),
 					'Contact Details' => array(
@@ -158,7 +160,9 @@ function em_docs_init(){
 						)
 					)
 				),
-			)
+			),
+			//TODO add capabilites explanations
+			'capabilities' => array()
 		);
 	}
 }
@@ -175,7 +179,7 @@ function em_docs_placeholders($atts){
 		foreach($data as $sectionTitle => $details) : ?>
 			<div>
 				<h3><?php echo $sectionTitle; ?></h3>
-				<?php if($details['desc'] != ''): ?>
+				<?php if( !empty($details['desc']) ): ?>
 				<p><?php echo $details['desc']; ?></p>
 				<?php endif; ?>
 				<dl>

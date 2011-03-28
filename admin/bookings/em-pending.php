@@ -7,7 +7,7 @@
  * @param int $event_id
  */
 function em_bookings_pending_table($event_id = false){
-	global $EM_Event, $wpdb, $current_user;
+	global $EM_Event, $EM_Ticket, $wpdb, $current_user;
 	
 	if( get_option('dbem_bookings_approval') == 0 ){
 		return false;
@@ -20,21 +20,25 @@ function em_bookings_pending_table($event_id = false){
 	$page = ( $action_scope && !empty($_GET['pno']) ) ? $_GET['pno']:1;
 	$offset = ( $action_scope && $page > 1 ) ? ($page-1)*$limit : 0;
 	
-	if( is_object($EM_Event) ){
-		$bookings = $EM_Event->get_bookings()->get_pending();
+	if( is_object($EM_Ticket) ){
+		$EM_Bookings = $EM_Ticket->get_bookings()->get_pending_bookings();
 	}else{
-		//To optimize performance, we can do one query here for all pending bookings to show.
-		$bookings = EM_Bookings::get(array('status'=>0));
-		$events = array();
-		//Now let's create events and bookings for this:
-		foreach($bookings as $EM_Booking){
-			//create event
-			if( !array_key_exists($EM_Booking->event_id,$events) ){
-				$events[$EM_Booking->event_id] = new EM_Event($EM_Booking->event_id);
+		if( is_object($EM_Event) ){
+			$EM_Bookings = $EM_Event->get_bookings()->get_pending_bookings();
+		}else{
+			//To optimize performance, we can do one query here for all pending bookings to show.
+			$EM_Bookings = EM_Bookings::get(array('status'=>0));
+			$events = array();
+			//Now let's create events and bookings for this:
+			foreach($EM_Bookings->bookings as $EM_Booking){
+				//create event
+				if( !array_key_exists($EM_Booking->event_id,$events) ){
+					$events[$EM_Booking->event_id] = new EM_Event($EM_Booking->event_id);
+				}
 			}
 		}
 	}
-	$bookings_count = (is_array($bookings)) ? count($bookings):0;
+	$bookings_count = (is_array($EM_Bookings->bookings)) ? count($EM_Bookings->bookings):0;
 	?>
 		<div class='wrap em_bookings_pending_table em_obj'>
 			<form id='bookings-filter' method='get' action='<?php bloginfo('wpurl') ?>/wp-admin/edit.php'>
@@ -76,8 +80,7 @@ function em_bookings_pending_table($event_id = false){
 					-->
 					<?php 
 					if ( $bookings_count >= $limit ) {
-						$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%', 'em_ajax'=>0, 'em_obj'=>'em_bookings_pending_table'));
-						$bookings_nav = em_admin_paginate( $page_link_template, $bookings_count, $limit, $page, 5);
+						$bookings_nav = em_admin_paginate( $bookings_count, $limit, $page, array('em_ajax'=>0, 'em_obj'=>'em_bookings_pending_table'));
 						echo $bookings_nav;
 					}
 					?>
@@ -94,7 +97,7 @@ function em_bookings_pending_table($event_id = false){
 								<input class='select-all' type="checkbox" value='1' />
 							</th>
 							<th class='manage-column' scope='col'>Booker</th>
-							<?php if( !is_object($EM_Event) ): ?>
+							<?php if( !is_object($EM_Event) && !is_object($EM_Ticket) ): ?>
 							<th class='manage-column' scope="col">Event</th>
 							<?php endif; ?>
 							<th class='manage-column' scope='col'>E-mail</th>
@@ -107,27 +110,29 @@ function em_bookings_pending_table($event_id = false){
 						<?php 
 						$rowno = 0;
 						$event_count = 0;
-						foreach ($bookings as $EM_Booking) {
+						foreach ($EM_Bookings->bookings as $EM_Booking) {
 							if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
 								$rowno++;
 								?>
 								<tr>
 									<th scope="row" class="check-column" style="padding:7px 0px 7px;"><input type='checkbox' value='<?php echo $EM_Booking->id ?>' name='bookings[]'/></th>
-									<td><a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;person_id=<?php echo $EM_Booking->person->id; ?>"><?php echo $EM_Booking->person->name ?></a></td>
-									<?php if( !is_object($EM_Event) ): ?>
+									<td><a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;person_id=<?php echo $EM_Booking->person->ID; ?>"><?php echo $EM_Booking->person->display_name ?></a></td>
+									<?php if( !is_object($EM_Event) && !is_object($EM_Ticket) ): ?>
 									<td><a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $EM_Booking->event_id; ?>"><?php echo $events[$EM_Booking->event_id]->name ?></a></td>
 									<?php endif; ?>
-									<td><?php echo $EM_Booking->person->email ?></td>
+									<td><?php echo $EM_Booking->person->user_email ?></td>
 									<td><?php echo $EM_Booking->person->phone ?></td>
-									<td><?php echo $EM_Booking->seats ?></td>
+									<td><?php echo $EM_Booking->get_spaces() ?></td>
 									<td>
 										<?php
 										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'booking_id'=>$EM_Booking->id));
 										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'booking_id'=>$EM_Booking->id));
+										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'booking_id'=>$EM_Booking->id));
 										?>
 										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Approve','dbem'); ?></a> |
 										<a class="em-bookings-reject" href="<?php echo $reject_url ?>"><?php _e('Reject','dbem'); ?></a> |
-										<a class="em-bookings-edit" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;booking_id=<?php echo $EM_Booking->id; ?>"><?php _e('Edit'); ?></a>
+										<span class="trash"><a class="em-bookings-delete" href="<?php echo $delete_url ?>"><?php _e('Delete','dbem'); ?></a></span> |
+										<a class="em-bookings-edit" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;booking_id=<?php echo $EM_Booking->id; ?>"><?php _e('Edit/View','dbem'); ?></a>
 									</td>
 								</tr>
 								<?php
@@ -142,7 +147,7 @@ function em_bookings_pending_table($event_id = false){
 					<?php _e('No pending bookings.', 'dbem'); ?>
 				<?php endif; ?>
 			</form>
-			<?php if( !empty($bookings_nav) ) : ?>
+			<?php if( !empty($bookings_nav) && $EM_Bookings >= $limit ) : ?>
 			<div class='tablenav'>
 				<?php echo $bookings_nav; ?>
 				<div class="clear"></div>

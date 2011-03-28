@@ -1,24 +1,107 @@
 jQuery(document).ready( function($) {
-    // Managing bookings delete operations -old
-	$('a.bookingdelbutton').click( function(){
-		eventId = (jQuery(this).parents('table:first').attr('id').split("-"))[3]; 
-		idToRemove = (jQuery(this).parents('tr:first').attr('id').split("-"))[1];     
-		$.ajax({
-	  	  type: "POST",
-		    url: "admin.php?page=events-manager-bookings&action=remove_booking",
-		    data: "booking_id="+ idToRemove,
-		    success: function(){	
-				$('tr#booking-' + idToRemove).fadeOut('slow');
-			  	$.getJSON("admin.php?page=events-manager-people&dbem_ajax_action=booking_data",{id: eventId, ajax: 'true'}, function(data){
-			  	  	booked = data[0].bookedSeats;
-			  	    available = data[0].availableSeats; 
-					$('td#booked-seats').text(booked);
-					$('td#available-seats').text(available);          
-			  	});  
-		   	}
+	//Events List
+		//Approve/Reject Links
+		$('.em-event-delete').live('click', function(){
+			if( !confirm("Are you sure you want to delete?") ){ return false; }
+			var url = em_ajaxify( el.attr('href'));		
+			var td = el.parents('td').first();
+			td.html("Loading...");
+			td.load( url );
+			return false;
 		});
-	});
+	//Tickets
+		//Tickets overlay
+		var triggers = $("#em-tickets-add").overlay({
+			mask: { 
+				color: '#ebecff',
+				loadSpeed: 200,
+				opacity: 0.9
+			},
+			closeOnClick: true,
+			onLoad: function(){
+				$('#ui-datepicker-div').appendTo('#em-tickets-form form');
+			}
+		});
+		//Submitting ticket (Add/Edit)
+		$('#em-tickets-form form').submit(function(e){
+			e.preventDefault();
+			$('#em-tickets-intro').remove();
+			//first we get the template to insert this to
+			if( $('#em-tickets-form form input[name=prev_slot]').val() ){
+				//grab slot and populate
+				var slot = $('#'+$('#em-tickets-form form input[name=prev_slot]').val());
+				var rowNo = slot.attr('id').replace('em-tickets-row-','');
+				var edit = true;
+			}else{
+				//create copy of template slot, insert so ready for population
+				var rowNo = $('#em-tickets-body').children('tr').length+1;
+				var slot = $('#em-tickets-template').clone().attr('id','em-tickets-row-'+ rowNo).appendTo($('#em-tickets-body'));
+				var edit = false;
+				slot.show();
+			}
+			var postData = {};
+			$.each($('#em-tickets-form form *[name]'), function(index,el){
+				el = $(el);
+				slot.find('input.'+el.attr('name')).attr({
+					'value' : el.attr('value'),
+					'name' : 'em_tickets['+rowNo+']['+el.attr('name')+']'
+				});
+				slot.find('span.'+el.attr('name')).text(el.attr('value'));
+			});
+			//sort out dates and localization masking
+			var start_pub = $("#em-tickets-form input[name=ticket_start_pub]").val();
+			var end_pub = $("#em-tickets-form input[name=ticket_end_pub]").val();
+			$('#em-tickets-form *[name]').attr('value','');
+			$('#em-tickets-form .close').trigger('click');
+			return false;
+		});
+		//Edit a Ticket
+		$('.ticket-actions-edit').live('click',function(e){
+			//first, populate form, then, trigger click
+			e.preventDefault();
+			$('#em-tickets-add').trigger('click');
+			var rowId = $(this).parents('tr').first().attr('id');
+			$('#em-tickets-form *[name]').attr('value','');
+			$.each( $('#'+rowId+' *[name]'), function(index,el){
+				var el = $(el);
+				var selector = el.attr('class');
+				$('#em-tickets-form *[name='+selector+']').attr('value',el.attr('value'));
+			});
+			$("#em-tickets-form input[name=prev_slot]").attr('value',rowId);
+			$("#em-tickets-form input[name=ticket_start_pub]").datepicker('refresh');
+			$("#em-tickets-form input[name=ticket_end_pub]").datepicker('refresh');
 	
+			date_dateFormat = $("#localised-date").datepicker('option', 'dateFormat');
+			if( $('#em-tickets-form input[name=ticket_start]').val() != '' || $('#em-tickets-form input[name=ticket_end]').val() != '' ){			
+				start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-tickets-form input[name=ticket_start]').val()) );
+				end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-tickets-form input[name=ticket_end]').val()) );
+				$("#em-tickets-form input[name=ticket_start_pub]").val(start_date_formatted);
+				$("#em-tickets-form input[name=ticket_end_pub]").val(end_date_formatted);
+			}
+			return false;
+		});	
+		//Delete a ticket
+		$('.ticket-actions-delete').live('click',function(e){
+			e.preventDefault();
+			var el = $(this);
+			var rowId = $(this).parents('tr').first().attr('id');
+			if( $('#'+rowId+' input.ticket_id').attr('value') == '' ){
+				//not saved to db yet, so just remove
+				$('#'+rowId).remove();
+			}else{
+				//only will happen if no bookings made
+				el.text('Deleting...');	
+				$.getJSON( $(this).attr('href'), {'em_ajax_action':'delete_ticket', 'id':$('#'+rowId+' input.ticket_id').attr('value')}, function(data){
+					if(data.result){
+						$('#'+rowId).remove();
+					}else{
+						el.text('Delete');
+						alert(data.error);
+					}
+				});
+			}
+			return false;
+		});
 	//Manageing Bookings
 		//Widgets and filter submissions
 		$('.em_bookings_events_table form, .em_bookings_pending_table form').live('submit', function(e){
@@ -42,7 +125,7 @@ jQuery(document).ready( function($) {
 		});
 		//Approve/Reject Links
 		$('.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete').live('click', function(){
-			var el = $(this);
+			var el = $(this); 
 			if( el.hasClass('em-bookings-delete') ){
 				if( !confirm("Are you sure you want to delete?") ){ return false; }
 			}
@@ -52,59 +135,7 @@ jQuery(document).ready( function($) {
 			td.load( url );
 			return false;
 		});
-	
-	//Attributes
-	$('#mtm_add_tag').click( function(event){
-		event.preventDefault();
-		//Get All meta rows
-			var metas = $('#mtm_body').children();
-		//Copy first row and change values
-			var metaCopy = $(metas[0]).clone(true);
-			newId = metas.length + 1;
-			metaCopy.attr('id', 'mtm_'+newId);
-			metaCopy.find('a').attr('rel', newId);
-			metaCopy.find('[name=mtm_1_ref]').attr({
-				name:'mtm_'+newId+'_ref' ,
-				value:'' 
-			});
-			metaCopy.find('[name=mtm_1_content]').attr({ 
-				name:'mtm_'+newId+'_content' , 
-				value:'' 
-			});
-			metaCopy.find('[name=mtm_1_name]').attr({ 
-				name:'mtm_'+newId+'_name' ,
-				value:'' 
-			});
-		//Insert into end of file
-			$('#mtm_body').append(metaCopy);
-		//Duplicate the last entry, remove values and rename id
-	});	
-	$('#mtm_body a').click( function(event){
-		event.preventDefault();
-		//Only remove if there's more than 1 meta tag
-		if($('#mtm_body').children().length > 1){
-			//Remove the item
-			var parents = $(this).parents('#mtm_body tr').first().remove();
-			//Renumber all the items
-			$('#mtm_body').children().each( function(i){
-				metaCopy = $(this);
-				oldId = metaCopy.attr('id').replace('mtm_','');
-				newId = i+1;
-				metaCopy.attr('id', 'mtm_'+newId);
-				metaCopy.find('a').attr('rel', newId);
-				metaCopy.find('[name=mtm_'+ oldId +'_ref]').attr('name', 'mtm_'+newId+'_ref');
-				metaCopy.find('[name=mtm_'+ oldId +'_content]').attr('name', 'mtm_'+newId+'_content');
-				metaCopy.find('[name=mtm_'+ oldId +'_name]').attr( 'name', 'mtm_'+newId+'_name');
-			});
-		}else{
-			metaCopy = $(this).parents('#mtm_body tr').first();
-			metaCopy.find('[name=mtm_1_ref]').attr('value', '');
-			metaCopy.find('[name=mtm_1_content]').attr('value', '');
-			metaCopy.find('[name=mtm_1_name]').attr( 'value', '');
-			alert("If you don't want any meta tags, just leave the text boxes blank and submit");
-		}
-	});
-	
+		
 	//Datepicker
 	if( $('#date-to-submit').length > 0 ){
 		$("#localised-date").datepicker({
@@ -126,8 +157,19 @@ jQuery(document).ready( function($) {
 			$("#localised-date").val(start_date_formatted);
 			$("#localised-end-date").val(end_date_formatted);
 		}
+		$("#em-tickets-form input[name=ticket_start_pub]").datepicker({
+			altField: "#em-tickets-form input[name=ticket_start]", 
+			altFormat: "yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
+		$("#em-tickets-form input[name=ticket_end_pub]").datepicker({
+			altField: "#em-tickets-form input[name=ticket_end]", 
+			altFormat: "yy-mm-dd",
+			changeMonth: true,
+			changeYear: true
+		});
 	}
-	
 	
 	//Location stuff - only needed if inputs for location exist
 	if( $('select#location-select-id, input#location-name').length > 0 ){
@@ -178,8 +220,19 @@ jQuery(document).ready( function($) {
 			}
 		}
 		$('#location-select-id').change( function(){get_map_by_id($(this).val())} );
-		$('#location-town, #location-address').change( function(){
-			var address = $('#location-address').val() + ', ' + $('#location-town').val();
+		$('#location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
+			//build address
+			var addresses = [ $('#location-address').val(), $('#location-town').val(), $('#location-state').val(), $('#location-postcode').val() ];
+			var address = '';
+			jQuery.each( addresses, function(i, val){
+				if( val != '' ){
+					address = ( address == '' ) ? address+val:address+', '+val;
+				}
+			});
+			//do country last, as it's using the text version
+			if( $('#location-country option:selected').val() != 0 ){
+				address = ( address == '' ) ? address+$('#location-country option:selected').text():address+', '+$('#location-country option:selected').text();
+			}
 			if( address != '' && $('#em-map').length > 0 ){
 				geocoder.geocode( { 'address': address }, function(results, status) {
 				    if (status == google.maps.GeocoderStatus.OK) {
@@ -242,19 +295,85 @@ jQuery(document).ready( function($) {
 				});
 			},
 			formatItem: function(item) {
-				return item.value + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town;
+				return item.value + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span>";
 			},
 			formatResult: function(item){
 				return item.value;
 			}
 		}).result(function(e, item) {
 			e.preventDefault();
-			$( "input#location-name" ).val(item.value);
+			$("input#location-id" ).val(item.id);
+			$("input#location-name" ).val(item.value);
 			$('input#location-address').val(item.address);
 			$('input#location-town').val(item.town);
+			$('input#location-state').val(item.state);
+			$('input#location-postcode').val(item.postcode);
+			if( item.country == '' ){
+				$('select#location-country option:selected').removeAttr('selected');
+			}else{
+				$('select#location-country option[value="'+item.country+'"]').attr('selected', 'selected');
+			}
 			get_map_by_id(item.id);
 		});
 	}
+
+	//previously in em-admin.php
+	function updateIntervalDescriptor () { 
+		$(".interval-desc").hide();
+		var number = "-plural";
+		if ($('input#recurrence-interval').val() == 1 || $('input#recurrence-interval').val() == "")
+		number = "-singular"
+		var descriptor = "span#interval-"+$("select#recurrence-frequency").val()+number;
+		$(descriptor).show();
+	}
+	function updateIntervalSelectors () {
+		$('p.alternate-selector').hide();   
+		$('p#'+ $('select#recurrence-frequency').val() + "-selector").show();
+	}
+	function updateShowHideRecurrence () {
+		if( $('input#event-recurrence').attr("checked")) {
+			$("#event_recurrence_pattern").fadeIn();
+			$("#event-date-explanation").hide();
+			$("#recurrence-dates-explanation").show();
+			$("h3#recurrence-dates-title").show();
+			$("h3#event-date-title").hide();     
+		} else {
+			$("#event_recurrence_pattern").hide();
+			$("#recurrence-dates-explanation").hide();
+			$("#event-date-explanation").show();
+			$("h3#recurrence-dates-title").hide();
+			$("h3#event-date-title").show();   
+		}
+	}		 
+	$("#recurrence-dates-explanation").hide();
+	$("#date-to-submit").hide();
+	$("#end-date-to-submit").hide();
+	
+	$("#localised-date").show();
+	$("#localised-end-date").show();
+
+	$('input.select-all').change(function(){
+	 	if($(this).is(':checked'))
+	 	$('input.row-selector').attr('checked', true);
+	 	else
+	 	$('input.row-selector').attr('checked', false);
+	}); 
+	
+	updateIntervalDescriptor(); 
+	updateIntervalSelectors();
+	updateShowHideRecurrence();
+	$('input#event-recurrence').change(updateShowHideRecurrence);
+	   
+	// recurrency elements   
+	$('input#recurrence-interval').keyup(updateIntervalDescriptor);
+	$('select#recurrence-frequency').change(updateIntervalDescriptor);
+	$('select#recurrence-frequency').change(updateIntervalSelectors);
+    
+	// hiding or showing notes according to their content	
+	$('.postbox h3').prepend('<a class="togbox">+</a> ');
+	$('#event_notes h3').click( function() {
+		 $(this).parent().first().toggleClass('closed');
+    });
 });
 
 

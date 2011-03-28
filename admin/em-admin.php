@@ -9,7 +9,7 @@ function em_admin_warnings() {
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$dismiss_link_joiner = ( count($_GET) > 0 ) ? '&amp;':'?';
 	
-	if( em_verify_admin() ){
+	if( current_user_can('activate_plugins') ){
 		//New User Intro
 		if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
 			// Disable Hello to new user if requested
@@ -74,14 +74,21 @@ add_action ( 'admin_notices', 'em_admin_warnings' );
  * @return string
  * @uses em_paginate()
  */
-function em_admin_paginate($link, $total, $limit, $page=1, $pagesToShow=5){					
+function em_admin_paginate($total, $limit, $page=1, $vars=false){				
 	$return = '<div class="tablenav-pages">';
-	$return .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>', 
-		number_format_i18n( ( $page - 1 ) * $limit + 1 ),
-		number_format_i18n( min( $page * $limit, $total ) ),
-		number_format_i18n( $total )
-	);
-	$return .= em_paginate($link, $total, $limit, $page, $pagesToShow);
+	$events_nav = paginate_links( array(
+		'base' => add_query_arg( 'pno', '%#%' ),
+		'format' => '',
+		'total' => ceil($total / $limit),
+		'current' => $page,
+		'add_args' => $vars
+	));
+	$return .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>%s',
+						number_format_i18n( ( $page - 1 ) * $limit + 1 ),
+						number_format_i18n( min( $page * $limit, $total ) ),
+						number_format_i18n( $total ),
+						$events_nav
+						);
 	$return .= '</div>';
 	return $return;
 }
@@ -144,118 +151,10 @@ function em_admin_general_script() {
 	?>
 	<script type="text/javascript">
 	 	//<![CDATA[        
-	   // TODO: make more general, to support also latitude and longitude (when added)
-	
+	   // TODO: make more general, to support also latitude and longitude (when added)	
 		jQuery(document).ready( function($) {
-
-			function updateIntervalDescriptor () { 
-				$(".interval-desc").hide();
-				var number = "-plural";
-				if ($('input#recurrence-interval').val() == 1 || $('input#recurrence-interval').val() == "")
-				number = "-singular"
-				var descriptor = "span#interval-"+$("select#recurrence-frequency").val()+number;
-				$(descriptor).show();
-			}
-			function updateIntervalSelectors () {
-				$('p.alternate-selector').hide();   
-				$('p#'+ $('select#recurrence-frequency').val() + "-selector").show();
-			}			
-			function updateShowHideRsvp () {
-				if($('input#rsvp-checkbox').attr("checked")) {
-					$("div#rsvp-data").fadeIn();
-				} else {
-					$("div#rsvp-data").hide();
-				}
-			}
-			function updateShowHideRecurrence () {
-				if( $('input#event-recurrence').attr("checked")) {
-					$("#event_recurrence_pattern").fadeIn();
-					$("#event-date-explanation").hide();
-					$("#recurrence-dates-explanation").show();
-					$("h3#recurrence-dates-title").show();
-					$("h3#event-date-title").hide();     
-				} else {
-					$("#event_recurrence_pattern").hide();
-					$("#recurrence-dates-explanation").hide();
-					$("#event-date-explanation").show();
-					$("h3#recurrence-dates-title").hide();
-					$("h3#event-date-title").show();   
-				}
-			}		 
-			$("#recurrence-dates-explanation").hide();
-			$("#localised-date").show();
-			$("#localised-end-date").show();
-		
-			$("#date-to-submit").hide();
-			$("#end-date-to-submit").hide();
-			  
 		 	$("#start-time").timeEntry({spinnerImage: '', show24Hours: <?php echo $show24Hours; ?> });
 			$("#end-time").timeEntry({spinnerImage: '', show24Hours: <?php echo $show24Hours; ?>});
-		
-			$('input.select-all').change(function(){
-			 	if($(this).is(':checked'))
-			 	$('input.row-selector').attr('checked', true);
-			 	else
-			 	$('input.row-selector').attr('checked', false);
-			}); 
-			
-			updateIntervalDescriptor(); 
-			updateIntervalSelectors();
-			updateShowHideRecurrence();  
-			updateShowHideRsvp();
-			$('input#event-recurrence').change(updateShowHideRecurrence);  
-			$('input#rsvp-checkbox').change(updateShowHideRsvp);
-			   
-			// recurrency elements   
-			$('input#recurrence-interval').keyup(updateIntervalDescriptor);
-			$('select#recurrence-frequency').change(updateIntervalDescriptor);
-			$('select#recurrence-frequency').change(updateIntervalSelectors);
-		    
-			// hiding or showing notes according to their content	
-			$('.postbox h3').prepend('<a class="togbox">+</a> ');
-			$('#event_notes h3').click( function() {
-				 $(this).parent().first().toggleClass('closed');
-		    });
-		
-			// users cannot submit the event form unless some fields are filled
-		   	function validateEventForm(){
-		   		errors = "";
-				var recurring = $("input[@name=repeated_event]:checked").val();
-				requiredFields= new Array('event_name', 'localised_event_date', 'location_name','location_address','location_town');
-				var localisedRequiredFields = {
-					'event_name':"<?php _e ( 'Name', 'dbem' )?>", 
-					'localised_event_date':"<?php	_e ( 'Date', 'dbem' )?>", 
-					'location_name':"<?php _e ( 'Location', 'dbem' )?>",
-					'location_address':"<?php _e ( 'Address', 'dbem' )?>",
-					'location_town':"<?php _e ( 'Town', 'dbem' )?>"
-				};		
-				missingFields = new Array;
-				for (var i in requiredFields) {
-					if ($("input[@name=" + requiredFields[i]+ "]").val() == 0) {
-						missingFields.push(localisedRequiredFields[requiredFields[i]]);
-						$("input[@name=" + requiredFields[i]+ "]").css('border','2px solid red');
-					} else {
-						$("input[@name=" + requiredFields[i]+ "]").css('border','1px solid #DFDFDF');				
-					}				
-			   	}
-			
-				// 	alert('ciao ' + recurring+ " end: " + $("input[@name=localised_event_end_date]").val());     
-			   	if (missingFields.length > 0) {	
-				    errors = "<?php _e ( 'Some required fields are missing:', 'dbem' )?> " + missingFields.join(", ") + ".\n";
-				}
-				if(recurring && $("input[@name=localised_event_end_date]").val() == "") {
-					errors = errors +  "<?php _e ( 'Since the event is repeated, you must specify an end date', 'dbem' )?>."; 
-					$("input[@name=localised_event_end_date]").css('border','2px solid red');
-				} else {
-					$("input[@name=localised_event_end_date]").css('border','1px solid #DFDFDF');
-				}
-				if(errors != "") {
-					alert(errors);
-					return false;
-				}
-				return true; 
-		   }
-		   $('#event-form').bind("submit", validateEventForm);
 		});
 		//]]>
 	</script>

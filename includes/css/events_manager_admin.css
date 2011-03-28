@@ -1,7 +1,7 @@
 #location_info td { vertical-align:top; text-align:left; }
 #location_info th { vertical-align:top; text-align:left; padding:5px 10px 0 0; }
 
-p#recurrence_warning {
+p.warning {
 	border: 2px solid #FD0000;
 	background: #FF7146;
 	color: #fff;
@@ -51,9 +51,37 @@ p#recurrence_warning {
 div#icon-events{
 	background:url('../images/calendar-32.png') no-repeat center;
 }
+/* Events List */
+table.events-table tr.pending { background:#FCFFA8 }
+table.events-table tr.past { background:#E4E4E4 }
+table.events-table .category { color:#888; }
 
 /* Events Add Page */
 #event-form #event-name, #location-form, #location-name { margin: 2px 0 7px; padding: 6px 5px; width: 100%; }
+
+	/*Tickets*/
+		.em-tickets-row .ticket-status span.ticket_on { display:block; width:10px; height:10px; background:green; }
+		.em-tickets-row .ticket-status span.ticket_off { display:block; width:10px; height:10px; background:red; }
+		.em-tickets-row .ticket-status span.ticket_new { display:block; width:10px; height:10px; background:grey; }
+		#event-tickets th { width:auto; }
+		#event-tickets th.ticket-status { width:20px; }
+		#em-tickets-form { margin-top:10px; display:none; }
+		#em-tickets-form input[type=text] { width:97%; padding:2px; color:#666; }
+		#em-tickets-form { background-color:#fff; color:#333; display:none; width:350px; padding:15px; text-align:left;  border:2px solid #333; opacity:0.8; -moz-border-radius:6px; -webkit-border-radius:6px; -moz-box-shadow: 0 0 50px #ccc; -webkit-box-shadow: 0 0 50px #ccc; }
+		#em-tickets-form h4 { font-size:16px; margin:0px; padding:0px; }
+		#em-tickets-form form { overflow:auto; }
+		#em-tickets-form .close { background:url(../images/close.png) 0px 0px no-repeat  !important; position:absolute; right:-15px; top:-15px; cursor:pointer; height:35px; width:35px; border:none; padding:0px; margin:0px; }
+		#em-tickets-form #wp-submit { display:block; clear:both; }
+
+/* Booking admin area */
+#em-booking-details .inside { padding:5px 10px; }
+.stuffbox .inside h4 { font-size:16px; font-weight:normal; margin:10px 0px 20px; font-weight:bold; }
+	/* Ticket table info */
+	table.em-tickets-bookings-table { width:90%; border:1px #efefef solid; margin:10px 0px; }
+	table.em-tickets-bookings-table th, table.em-tickets-bookings-table td { padding:5px 5px; margin:0px; }
+	table.em-tickets-bookings-table thead th, table.em-tickets-bookings-table tfoot th { background:#cdcdcd; text-align:center }
+	table.em-tickets-bookings-table tbody td.ticket-type { text-align:left; padding-left:10px; }
+	table.em-tickets-bookings-table tbody td { text-align:center; }	
 
 /* Google Map Object */
 #location-balloon-content h3 { background:none; text-shadow:none; }

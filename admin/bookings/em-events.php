@@ -77,8 +77,7 @@ function em_bookings_events_table() {
 				-->
 				<?php 
 				if ( $events_count >= $limit ) {
-					$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%', 'em_ajax'=>0, 'em_obj'=>'em_bookings_events_table'));
-					$events_nav = em_admin_paginate( $page_link_template, $events_count, $limit, $page, 5);
+					$events_nav = em_admin_paginate( $events_count, $limit, $page, array('em_ajax'=>0, 'em_obj'=>'em_bookings_events_table'));
 					echo $events_nav;
 				}
 				?>
@@ -131,9 +130,9 @@ function em_bookings_events_table() {
 										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $event->id ?>"><?php echo ($event->name); ?></a>
 									</strong>
 									&ndash; 
-									<?php _e("Booked Seats",'dbem') ?>: <?php echo $event->get_bookings()->get_booked_seats()."/".$event->seats ?>
+									<?php _e("Booked Spaces",'dbem') ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces() ?>
 									<?php if( get_option('dbem_bookings_approval') == 1 ) : ?>
-										| <?php _e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_seats(); ?>
+										| <?php _e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
 									<?php endif; ?>
 								</td>
 						
@@ -162,7 +161,7 @@ function em_bookings_events_table() {
 				<div class="alignleft actions">
 				<br class='clear' />
 				</div>
-			<?php if( !empty($events_nav) ) : ?>
+				<?php if (!empty($events_nav) &&  $events_count >= $limit ) : ?>
 				<div class="tablenav-pages">
 					<?php
 					echo $events_nav;

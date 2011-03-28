@@ -3,11 +3,13 @@
 class EM_Category extends EM_Object {	
 	//DB Fields
 	var $id = '';
+	var $slug = '';
 	var $owner = '';
 	var $name = '';
 	//Other Vars
 	var $fields = array(
 		'category_id' => array('name'=>'id','type'=>'%d'),
+		'category_slug' => array('name'=>'slug','type'=>'%s'), 
 		'category_owner' => array('name'=>'owner','type'=>'%d'),
 		'category_name' => array('name'=>'name','type'=>'%s')
 	);
@@ -21,22 +23,26 @@ class EM_Category extends EM_Object {
 	 * @return null
 	 */
 	function EM_Category( $category_data = false ) {
+		global $wpdb;
 		//Initialize
 		$this->required_fields = array("category_name" => __('The category name', 'dbem'));
 		$category = array();
-		if( $category_data != false ){
+		if( !empty($category_data) ){
 			//Load location data
 			if( is_array($category_data) && isset($category_data['category_name']) ){
 				$category = $category_data;
 			}elseif( is_numeric($category_data) ){
 				//Retreiving from the database		
-				global $wpdb;
 				$sql = "SELECT * FROM ". $wpdb->prefix.EM_CATEGORIES_TABLE ." WHERE category_id ='{$category_data}'";   
+			  	$category = $wpdb->get_row($sql, ARRAY_A);
+			}else{
+				$sql = "SELECT * FROM ". $wpdb->prefix.EM_CATEGORIES_TABLE ." WHERE category_slug ='{$category_data}'";   
 			  	$category = $wpdb->get_row($sql, ARRAY_A);
 			}
 			//Save into the object
 			$this->to_object($category);
 		} 
+		do_action('em_category',$this, $category_data);
 	}
 	
 	function get_post(){
@@ -51,26 +57,55 @@ class EM_Category extends EM_Object {
 	
 	function save(){
 		global $wpdb;
-		do_action('em_category_save_pre', $this);
-		$table = $wpdb->prefix.EM_CATEGORIES_TABLE;
-		$data = $this->to_array();
-		unset($data['category_id']);
-		if($this->id != ''){
-			$where = array( 'category_id' => $this->id );  
-			$wpdb->update($table, $data, $where, $this->get_types($data));
-		}else{
-			$wpdb->insert($table, $data, $this->get_types($data));
-		    $this->id = $wpdb->insert_id;   
+		$result = false;
+		if( $this->can_manage('edit_categories') ){
+			do_action('em_category_save_pre', $this);
+			$table = $wpdb->prefix.EM_CATEGORIES_TABLE;
+			$this->slug = $this->sanitize_title();
+			$data = $this->to_array();
+			unset($data['category_id']);
+			if($this->id != ''){
+				$where = array( 'category_id' => $this->id );  
+				$result = $wpdb->update($table, $data, $where, $this->get_types($data));
+			}else{
+				$wpdb->insert($table, $data, $this->get_types($data));
+			    $result = $this->id = $wpdb->insert_id;   
+			}
 		}
-		return apply_filters('em_category_save', ( $this->id > 0 && $image_upload ), $this, $image_upload);
+		return apply_filters('em_category_save', ($result !== false), $this);
+	}
+	
+	/**
+	 * Takes the title and gives either a unique slug or returns the currently used slug if this record already has it.
+	 * @param unknown_type $title
+	 */
+	function sanitize_title($iteration = 1){
+		global $wpdb;
+		//Generate the slug. If this is a new event, create the slug automatically, if not, verify it is still unique and if not rewrite
+		if( empty($this->slug) ){
+			$this->slug = sanitize_title($this->name);
+		}
+		$slug = $this->slug;
+		$slug_matches = $wpdb->get_results('SELECT category_id FROM '.$wpdb->prefix.EM_LOCATIONS_TABLE." WHERE category_slug='{$slug}'", ARRAY_A);
+		if( count($slug_matches) > 0 ){ //we will check that the slug is unique
+			if( $slug_matches[0]['category_id'] != $this->id || count($slug_matches) > 1 ){
+				//we have a conflict, so try another alternative
+				$this->slug = preg_replace('/\-[0-9]+$/', '', $slug).'-'.($iteration+1);
+				$this->sanitize_title($iteration+1);
+			}
+		}
+		return apply_filters('em_location_sanitize_title', $this->slug, $this);
 	}
 	
 	function delete(){
-		global $wpdb;	
-		do_action('em_category_delete_pre', $this);
-		$table_name = $wpdb->prefix.EM_CATEGORIES_TABLE;
-		$sql = "DELETE FROM $table_name WHERE category_id = '{$this->id}';";
-		$result = $wpdb->query($sql);
+		global $wpdb;
+		$result = false;
+		if( $this->can_manage('edit_categories') ){
+			do_action('em_category_delete_pre', $this);
+			$table_name = $wpdb->prefix.EM_CATEGORIES_TABLE;
+			$sql = "DELETE FROM $table_name WHERE category_id = '{$this->id}';";
+			$result = $wpdb->query($sql);
+		}
 		return apply_filters('em_category_delete', $result, $this);
 	}
 
@@ -134,19 +169,8 @@ class EM_Category extends EM_Object {
 		return apply_filters('em_category_output', $category_string, $this, $format, $target);	
 	}
 	
-	function can_manage(){
-		return ( get_option('dbem_permissions_categories') == 2 || $this->owner == get_current_user_id() || empty($this->id) || em_verify_admin() );
-	}
-	
-	function can_use(){
-		switch( get_option('dbem_permissions_locations') ){
-			case 0:
-				return $this->owner == get_current_user_id();
-			case 1:
-				return em_verify_admin($this->owner);
-			case 2:
-				return true;
-		}
+	function can_manage( $capability_owner = 'edit_categories', $capability_admin = false ){
+		return current_user_can($capability_owner);
 	}
 }
 ?>

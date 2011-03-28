@@ -11,13 +11,13 @@ class EM_Locations extends EM_Object {
 	 * @param boolean $return_objects
 	 * @return array
 	 */
-	function get( $args = array() ){
+	function get( $args = array(), $count=false ){
 		global $wpdb;
 		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
 		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
-		if( self::array_is_numeric($args) && count() ){ //Array of numbers, assume they are event IDs to retreive
+		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
 			//We can just get all the events here and return them
 			$sql = "SELECT * FROM $locations_table WHERE location_id=".implode(" OR location_id=", $args);
 			$results = $wpdb->get_results($sql,ARRAY_A);
@@ -26,8 +26,12 @@ class EM_Locations extends EM_Object {
 				$locations[$result['location_id']] = new EM_Location($result);
 			}
 			return $locations; //We return all the events matched as an EM_Event array. 
-		}
-		
+		}elseif( is_numeric($args) ){
+			//return an event in the usual array format
+			return apply_filters('em_locations_get', array(new EM_Event($args)), $args);
+		}elseif( is_array($args) && is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
+			return apply_filters('em_locations_get', $args, $args);
+		}	
 
 		//We assume it's either an empty array or array of search arguments to merge with defaults			
 		$args = self::get_default_search($args);
@@ -50,17 +54,23 @@ class EM_Locations extends EM_Object {
 		//Now, build orderby sql
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
 		
-		
+		if( $count ){
+			$fields = $locations_table.'.location_id';
+		}
 		//Create the SQL statement and execute
 		$sql = "
 			SELECT $fields FROM $locations_table
 			LEFT JOIN $events_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
-			GROUP BY location_id
+			GROUP BY {$locations_table}.location_id
 			$orderby_sql
 			$limit $offset
 		";
 	
+		//If we're only counting results, return the number of results
+		if( $count ){
+			return count($wpdb->get_results($sql));		
+		}
 		$results = $wpdb->get_results($sql, ARRAY_A);
 		
 		//If we want results directly in an array, why not have a shortcut here?
@@ -74,6 +84,10 @@ class EM_Locations extends EM_Object {
 		}
 		return apply_filters('em_locations_get', $locations, $args);
 	}	
+	
+	function count( $args = array() ){
+		return apply_filters('em_locations_count', self::get($args, true), $args);
+	}
 	
 	/**
 	 * Output a set of matched of events
@@ -141,6 +155,19 @@ class EM_Locations extends EM_Object {
 		return apply_filters('em_locations_output', $output, $locations, $args);		
 	}
 	
+	function delete( $args = array() ){
+		if( !is_object(current($args)) && get_class((current($args))) != 'EM_Location' ){
+			$locations = self::get($args);
+		}else{
+			$locations = $args;
+		}
+		$results = array();
+		foreach ( $locations as $EM_Location ){
+			$results[] = $EM_Location->delete();
+		}		
+		return apply_filters('em_locations_delete', in_array(false, $results), $locations);
+	}
+	
 	/**
 	 * Builds an array of SQL query conditions based on regularly used arguments
 	 * @param array $args
@@ -160,9 +187,7 @@ class EM_Locations extends EM_Object {
 		}
 		//owner lookup
 		if( !empty($args['owner']) ){
-			if ( get_option('dbem_permissions_locations') < 1 && !em_verify_admin() ){
-				$conditions['owner'] = "location_owner=".get_current_user_id();
-			}
+			$conditions['owner'] = "location_owner=".$args['owner'];
 		}
 		return apply_filters('em_locations_build_sql_conditions', $conditions, $args);
 	}
@@ -188,26 +213,9 @@ class EM_Locations extends EM_Object {
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );
 		if( is_admin() ){
-			//by default, we only get categories the owner can manage
-			switch( get_option('dbem_permissions_locations') ){
-				case 0:
-					$defaults['owner'] = get_current_user_id();
-					break;
-				case 1:
-					$wp_user_search = new WP_User_Search(null, null, 'administrator');
-					$users = $wp_user_search->get_results();
-					$users[] = get_current_user_id();
-					$users[] = 0;
-					$defaults['owner'] = implode(',', $users);
-					break;
-				case 2:
-					$defaults['owner'] = false;
-					break;
-			}
-			$defaults['owner'] = ( em_verify_admin() ) ? false:$defaults['owner'];
+			$defaults['owner'] = !current_user_can('read_others_locations') ? get_current_user_id():false;
 		}
 		return apply_filters('em_locations_get_default_search', parent::get_default_search($defaults, $array), $array, $defaults);
 	}
-	//TODO for all the static plural classes like this one, we might benefit from bulk actions like delete/add/save etc.... just a random thought.
 }
 ?>

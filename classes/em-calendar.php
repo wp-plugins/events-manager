@@ -269,16 +269,18 @@ class EM_Calendar extends EM_Object {
 				$events_titles[] = $event->output($event_title_format);
 			}   
 			$link_title = implode( $event_title_separator_format, $events_titles);  
-			
-			$events_page_id = get_option('dbem_events_page');
-			$event_page_link = get_permalink($events_page_id);
-			if (stristr($event_page_link, "?"))
-				$joiner = "&amp;";
-			else
-				$joiner = "?";
-			
-			
-			$cells[$day_key]['cell'] = "<a title='$link_title' href='".$event_page_link.$joiner."calendar_day={$day_key}'>{$cells[$day_key]['day']}</a>";
+						
+			global $wp_rewrite;
+			$event_page_link = get_permalink(get_option('dbem_events_page')); //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+			if( $wp_rewrite->using_permalinks() ){
+				$cells[$day_key]['cell'] = "<a title='$link_title' href='".$event_page_link."{$day_key}/'>{$cells[$day_key]['day']}</a>";
+			}else{
+				if (stristr($event_page_link, "?"))
+					$joiner = "&amp;";
+				else
+					$joiner = "?";
+				$cells[$day_key]['cell'] = "<a title='$link_title' href='".$event_page_link.$joiner."calendar_day={$day_key}'>{$cells[$day_key]['day']}</a>";
+			}
 			if ($full) {
 				$cells[$day_key]['cell'] .= "<ul>";
 			
@@ -353,7 +355,7 @@ class EM_Calendar extends EM_Object {
 		$defaults = array( 
 			'full' => 0, //Will display a full calendar with event names
 			'long_events' => 0, //Events that last longer than a day
-			'scope' => 'all',
+			'scope' => 'future',
 			'owner' => false
 		);
 		$atts = parent::get_default_search($defaults, $array);

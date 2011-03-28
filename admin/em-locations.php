@@ -7,54 +7,30 @@ function em_admin_locations_page() {
 	//TODO EM_Location is globalized, use it fully here
 	global $EM_Location;
 	//Take actions
-	if( !empty($_REQUEST['action']) || !empty($_REQUEST['location_id']) ){
-		if( $_REQUEST['action'] == "edit" || $_REQUEST['action'] == "add" ) { 
-			//edit/add location  
-			em_admin_location();
-		} elseif( $_REQUEST['action'] == "delete" ){
-			//delelte location
-			$locations = $_REQUEST['locations'];
-			foreach($locations as $location_id) {
-			 	$EM_Location = new EM_Location($location_id);
-				$EM_Location->delete();
-			}
-			em_admin_locations(__('Locations Deleted', "dbem" ));
-		} elseif( $_REQUEST['action'] == "save") {
-			// save (add/update) location
-			if( empty($EM_Location) || !is_object($EM_Location) ){
-				$EM_Location = new EM_Location(); //blank location
-				$success_message = __('The location has been added.', 'dbem');
-			}else{
-				$success_message = __('The location has been updated.', 'dbem');
-			}
-			$EM_Location->get_post();
-			$validation_result = $EM_Location->validate();
-			if ( $validation_result ) {
-				$EM_Location->save(); //FIXME better handling of db write fails when saving location
-				em_admin_locations($success_message);
-			} else {
-				?>
-				<div id='message' class='error '>
-					<p>
-						<strong><?php _e( "Ach, there's a problem here:", "dbem" ) ?></strong><br /><br /><?php echo implode('<br />', $EM_Location->errors); ?>
-					</p>
-				</div>
-				<?php  
-				unset($EM_Location);
-				em_admin_location();
-			}
-		}
-	} else {  
+	if( (!empty($_REQUEST['action']) && ( ($_REQUEST['action'] == "edit" && !empty($_REQUEST['location_id'])) || $_REQUEST['action'] == "add")) ) { 
+		em_admin_location();
+	} elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "location_save" ) {
+		em_admin_location();
+	} else { 
 		// no action, just a locations list
 		em_admin_locations();
   	}
 }  
 
 function em_admin_locations($message='', $fill_fields = false) {
+	global $EM_Notices;
 	$limit = ( !empty($_REQUEST['limit']) ) ? $_REQUEST['limit'] : 20;//Default limit
 	$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
-	$locations = EM_Locations::get();
+	if( !empty($_REQUEST['owner']) && current_user_can('read_others_locations') ){
+		$locations = EM_Locations::get();
+		$locations_mine_count = EM_Locations::count( array('owner'=>get_current_user_id()) );
+		$locations_all_count = count($locations);
+	}else{
+		$locations = EM_Locations::get( array('owner'=>get_current_user_id()) );
+		$locations_mine_count = count($locations);
+		$locations_all_count = current_user_can('read_others_locations') ? EM_Locations::count():0;
+	}
 	$locations_count = count($locations);
 	?>
 		<div class='wrap'>
@@ -66,35 +42,34 @@ function em_admin_locations($message='', $fill_fields = false) {
  	 			<a href="admin.php?page=events-manager-locations&action=add" class="button add-new-h2"><?php _e('Add New') ?></a>
  	 		</h2>  
 
-			<?php if($message != "") : ?>
-				<div id='message' class='updated fade below-h2'>
-					<p><?php echo $message ?></p>
-				</div>
-			<?php endif; ?>  
+			<?php echo $EM_Notices; ?>  
 			  
-		 	 <form id='bookings-filter' method='post' action=''>
+		 	 <form id='locations-filter' method='post' action=''>
 				<input type='hidden' name='page' value='locations'/>
 				<input type='hidden' name='limit' value='<?php echo $limit ?>' />	
-				<input type='hidden' name='p' value='<?php echo $page ?>' />								
+				<input type='hidden' name='p' value='<?php echo $page ?>' />	
+				<div class="subsubsub">
+					<a href='admin.php?page=events-manager-locations' <?php echo (empty($_REQUEST['owner'])) ? 'class="current"':''; ?>><?php echo sprintf( __( 'My %s', 'dbem' ), __('Locations','dbem')); ?> <span class="count">(<?php echo $locations_mine_count; ?>)</span></a>
+					<?php if( current_user_can('read_others_locations') ): ?>
+					&nbsp;|&nbsp;
+					<a href='admin.php?page=events-manager-locations&amp;owner=all' <?php echo (!empty($_REQUEST['owner'])) ? 'class="current"':''; ?>><?php echo sprintf( __( 'All %s', 'dbem' ), __('Locations','dbem')); ?> <span class="count">(<?php echo $locations_all_count; ?>)</span></a>
+					<?php endif; ?>
+				</div>										
 				<?php if ( $locations_count > 0 ) : ?>
 				<div class='tablenav'>					
 					<div class="alignleft actions">
 						<select name="action">
 							<option value="" selected="selected"><?php _e ( 'Bulk Actions' ); ?></option>
-							<option value="delete"><?php _e ( 'Delete selected','dbem' ); ?></option>
+							<option value="location_delete"><?php _e ( 'Delete selected','dbem' ); ?></option>
 						</select> 
 						<input type="submit" value="<?php _e ( 'Apply' ); ?>" id="doaction2" class="button-secondary action" /> 
-						<?php 
-							//Pagination (if needed/requested)
-							if( $locations_count >= $limit ){
-								//Show the pagination links (unless there's less than 10 events
-								$page_link_template = preg_replace('/(&|\?)p=\d+/i','',$_SERVER['REQUEST_URI']);
-								$page_link_template = em_add_get_params($page_link_template, array('pno'=>'%PAGE%'));
-								$locations_nav = em_paginate( $page_link_template, $locations_count, $limit, $page);
-								echo $locations_nav;
-							}
-						?>
 					</div>
+						<?php
+						if ( $locations_count >= $limit ) {
+							$locations_nav = em_admin_paginate( $locations_count, $limit, $page );
+							echo $locations_nav;
+						}
+						?>
 				</div>
 				<table class='widefat'>
 					<thead>
@@ -137,9 +112,9 @@ function em_admin_locations($message='', $fill_fields = false) {
 }
 
 function em_admin_location($message = "") {
-	global $EM_Location, $EM_Event;
+	global $EM_Location, $EM_Notices;
 	//check that user can access this page
-	if( is_object($EM_Location) && !$EM_Location->can_manage() ){
+	if( is_object($EM_Location) && !$EM_Location->can_manage('edit_locations','edit_others_locations') ){
 		?>
 		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this location.','dbem'); ?></p></div>
 		<?php
@@ -151,9 +126,12 @@ function em_admin_location($message = "") {
 	}else{
 		$title = __('Edit location', 'dbem');
 	}
+	$required = "<i>(".__('required','dbem').")</i>";
+	echo $EM_Notices;
 	?>
-	<form enctype='multipart/form-data' name='editcat' id='locationForm' method='post' action='admin.php?page=events-manager-locations' class='validate'>
-		<input type='hidden' name='action' value='save' />
+	<form enctype='multipart/form-data' name='editcat' id='location-form' method='post' action='admin.php?page=events-manager-locations' class='validate'>
+		<input type='hidden' name='action' value='location_save' />
+		<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('location_save'); ?>' />
 		<input type='hidden' name='location_id' value='<?php echo $EM_Location->id ?>'/>
 		<div class='wrap'>
 			<div id='icon-edit' class='icon32'>
@@ -161,11 +139,7 @@ function em_admin_location($message = "") {
 			</div>
 			<h2><?php echo $title ?></h2>   
 	 		
-			<?php if($message != "") : ?>
-				<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
-					<p><?php echo $message ?></p>
-				</div>
-			<?php endif; ?>
+			<?php global $EM_Notices; echo $EM_Notices; ?>
 			<div id='ajax-response'></div>
 			
 			<div id="poststuff" class="metabox-holder">
@@ -196,22 +170,43 @@ function em_admin_location($message = "") {
 								<?php _e ( 'Location', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
+								<p><?php _e("If you're using the Google Maps, the more detail you provide, the more accurate Google can be at finding your location. If your address isn't being found, please <a='http://maps.google.com'>try it on maps.google.com</a> by adding all the fields below seperated by commas.",'dbem')?></p>
 								<table id="dbem-location-data">     
 									<tr>
-										<td style="padding-right:20px">
+										<td style="padding-right:20px; width:100%;">
 											<table>
 												<tr>
 													<th><?php _e ( 'Address:' )?>&nbsp;</th>
 													<td>
-														<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Location->address, ENT_QUOTES); ; ?>" />
-														<p><?php _e ( 'The address of the location where the event takes place. Example: 21, Dominick Street', 'dbem' )?></p>
+														<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Location->address, ENT_QUOTES); ; ?>" /> <?php echo $required; ?>
 													</td>
 												</tr>
 												<tr>
-													<th><?php _e ( 'Town:' )?>&nbsp;</th>
+													<th><?php _e ( 'City/Town:' )?>&nbsp;</th>
 													<td>
-														<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Location->town, ENT_QUOTES); ?>" />
-														<p><?php _e ( 'The town where the location is located. If you\'re using the Google Map integration and want to avoid geotagging ambiguities include the country in the town field. Example: Verona, Italy.', 'dbem' )?></p>
+														<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Location->town, ENT_QUOTES); ?>" /> <?php echo $required; ?>
+													</td>
+												</tr>
+												<tr>
+													<th><?php _e ( 'State/County:' )?>&nbsp;</th>
+													<td>
+														<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Location->state, ENT_QUOTES); ?>" />
+													</td>
+												</tr>
+												<tr>
+													<th><?php _e ( 'Postcode:' )?>&nbsp;</th>
+													<td>
+														<input id="location-postcode" type="text" name="location_postcode" value="<?php echo htmlspecialchars($EM_Location->postcode, ENT_QUOTES); ?>" />
+													</td>
+												</tr>
+												<tr>
+													<th><?php _e ( 'Country:' )?>&nbsp;</th>
+													<td>
+														<select id="location-country" name="location_country">
+															<?php foreach(em_get_countries(__('none selected','dbem')) as $country_key => $country_name): ?>
+															<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Location->country === $country_key || ($EM_Location->country == '' && $EM_Location->id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
+															<?php endforeach; ?>
+														</select> <?php echo $required; ?>
 													</td>
 												</tr>
 											</table>
@@ -256,6 +251,7 @@ function em_admin_location($message = "") {
 									<label for='location_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='location-image' name='location_image' id='location_image' type='file' size='40' />
 							</div>
 						</div>
+						
 					</div>
 				</div>
 			</div>

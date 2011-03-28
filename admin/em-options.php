@@ -18,12 +18,30 @@ function em_options_save(){
 				}
 			}
 		}
+		//set capabilities
+		if( !empty($_POST['em_capabilities']) && is_array($_POST['em_capabilities']) ){
+			global $em_capabilities_array, $wp_roles;
+			foreach( $wp_roles->role_objects as $role_name => $role ){
+				foreach( array_keys($em_capabilities_array) as $capability){
+					if( !empty($_POST['em_capabilities'][$role_name][$capability]) ){
+						$role->add_cap($capability);
+					}else{
+						
+						$role->remove_cap($capability);						
+					}
+				}
+			}
+		}
+		do_action('em_options_save');
 		function em_options_saved_notice(){
 			?>
 			<div class="updated"><p><strong><?php _e('Changes saved.'); ?></strong></p></div>
 			<?php
 		}
 		add_action ( 'admin_notices', 'em_options_saved_notice' );
+		if( get_option('dbem_debug') ){
+			include_once( WP_PLUGIN_DIR.'/events-manager/em-debug.php');
+		}
 	}   
 }
 add_action('admin_head', 'em_options_save');          
@@ -67,7 +85,7 @@ function em_admin_options_page() {
 				}
 			});
 			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');
-			
+			$(".postbox").addClass('closed'); //Let's start off closing everything for now.			
 		});
 	</script>
 	<div class="wrap">
@@ -110,6 +128,9 @@ function em_admin_options_page() {
 				 		$location_options[$EM_Location->id] = $EM_Location->name;
 				 	}
 					em_options_select ( __( 'Default Location' ), 'dbem_default_location', $location_options, __( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
+					
+					/*default location country*/
+					em_options_select ( __( 'Default Location Country' ), 'dbem_location_default_country', em_get_countries(__('no default country', 'dbem')), __('If you select a default country, that will be pre-selected when creating a new location.','dbem') );
 										
 					em_options_textarea ( __( 'Custom Placeholders', 'dbem' ), 'dbem_placeholders_custom', sprintf(__( "You can add custom placeholders here, one per line in this format <code>#_ATT{key}</code>. They will not appear on event pages unless you insert them into another template below, but you may want to store extra information about an event for other uses. <a href='%s'>More information on placeholders.</a>", 'dbem' ), 'wp-events-plugin.com/documentation/the-em-templates-syntax/') );
 										
@@ -306,12 +327,27 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'RSVP and bookings', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking and Ticketing Options', 'dbem' ); ?> </span></h3>
+			<div class="inside">
+				<table class='form-table'> 
+					<?php 
+					em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
+					em_options_radio_binary ( __( 'Show unavailable tickets?', 'dbem' ), 'dbem_bookings_tickets_show_unavailable', __( 'You can choose whether or not to show unavailable tickets to visitors.', 'dbem' ) );
+					em_options_radio_binary ( __( 'Reserved unconfirmed spaces?', 'dbem' ), 'dbem_bookings_approval_reserved', __( 'By default, event spaces become unavailable once there are enough CONFIRMED bookings. To reserve spaces even if unnapproved, choose yes.', 'dbem' ) );
+					em_options_radio_binary ( __( 'Show multiple tickets if logged out?', 'dbem' ), 'dbem_bookings_tickets_show_loggedout', __( 'If logged out, a user will be asked to register in order to book. However, we can show available tickets if you have more than one ticket.', 'dbem' ) );
+					em_options_radio_binary ( __( 'Allow overbooking when approving?', 'dbem' ), 'dbem_bookings_approval_overbooking', __( 'If you get a lot of pending bookings and you decide to allow more bookings than spaces allow, setting this to yes will allow you to override the event space limit when manually approving.', 'dbem' ) );
+					echo $save_button;     
+					?> 
+				</table>
+			</div> <!-- . inside -->
+			</div> <!-- .postbox -->
+			
+			<div  class="postbox " >
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking Email Templates', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
 					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users (), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
-					em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
 					em_options_input_text ( __( 'Email events admin?', 'dbem' ), 'dbem_bookings_notify_admin', __( "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email).", 'dbem' ) );
 					em_options_radio_binary ( __( 'Email contact person?', 'dbem' ), 'dbem_bookings_contact_email', __( 'Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)', 'dbem' ) );
 					?>
@@ -390,44 +426,57 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 
 		<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Management Permission Options', 'dbem' ); ?> (Beta)</span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'User Capabilities', 'dbem' ); ?> (Beta)</span></h3>
 			<div class="inside">
 	            <table class="form-table">
 	            	<tr><td colspan="2">
 	            		<strong><?php _e('Warning: Changing these values may result in exposing previously hidden information to all users.')?></strong><br />
-	            		<em><?php _e('Note that currently "users" are considered as wordpress contributor users upwards, as they can create and manage events (we\'re working on that). Wordpress administrators can control all events/locations/categories/etc. on Events Manager.','dbem'); ?></em>
 	            	</td></tr>
-					<tr><th colspan="2"><strong><?php _e('Event Permissions','dbem'); ?></strong></th></tr>
 					<?php
-					$location_privacy_options = array(
-						'0' => __('Every user can create and manage their own events. Users can\'t view or modify each others\' events and booking data','dbem'),
-						'1' => __('Every user can create/edit/delete any event on this site. (not recommended)','dbem')
-					);
-					em_options_radio ( 'dbem_permissions_events', $location_privacy_options );  
-					?>
-					<tr><th colspan="2"><strong><?php _e('Location Permissions','dbem'); ?></strong></th></tr>
-					<?php
-					$location_privacy_options = array(
-						'0' => __('Every user can create and manage their own location.','dbem')." ".__('In future releases of Events Manager, sharing locations with more than one user will be possible in this option, as well as connecting different user defined locations to prevent duplicate listings.','dbem'),
-						'1' => __('Only event administrators can create and edit locations. User must choose from these available locations.','dbem'),
-						'2' => __('Everyone can create/edit/delete all locations on this site. (not recommended)','dbem')
-					);
-					em_options_radio ( 'dbem_permissions_locations', $location_privacy_options );  
-					?>
-					<tr><th colspan="2"><strong><?php _e('Category Permissions','dbem'); ?></strong></th></tr>
-					<?php
-					$category_privacy_options = array(
-						'0' => __('Every user can create and manage their own category.','dbem'),
-						'1' => __('Only event administrators can create and edit categories. User must choose from these available categories.','dbem'),
-						'2' => __('Everyone can create/edit/delete all categories on the system. (not recommended)','dbem')
-					);
-					em_options_radio ( 'dbem_permissions_categories', $category_privacy_options );
-					?>
+            		global $wp_roles;
+            		global $em_capabilities_array;
+	            	?>
+	            	<tr><td colspan="2">
+	            		<p><em><?php _e('You can now give fine grained control with regards to what your users can do with events. Each user role can have perform different sets of actions.','dbem'); ?></em></p>
+			            <table class="form-table" style="width:auto;">
+							<?php foreach($wp_roles->role_objects as $role): ?>
+			            		<tr>
+			            			<th><?php echo $role->name; ?></th>
+				            		<td>
+				            			<table>
+										<?php foreach(array_keys($em_capabilities_array) as $capability): ?>
+											<tr>
+						            			<td><?php echo $capability; ?></td>
+						            			<td><input type="checkbox" name="em_capabilities[<?php echo $role->name; ?>][<?php echo $capability ?>]" value="1" <?php echo $role->has_cap($capability) ? 'checked="checked"':''; ?> /></td>
+						            		</tr>
+					            		<?php endforeach; ?>
+					            		</table>
+				            		</td>
+			            		</tr>
+				            <?php endforeach; ?>
+			            </table>
+			        </td></tr>
+			        <?php echo $save_button; ?>
 				</table>
-				    
 			</div> <!-- . inside --> 
 			</div> <!-- .postbox -->    
-            
+
+			<?php /*
+			<div  class="postbox " >
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Debug Modes', 'dbem' ); ?> </span></h3>
+			<div class="inside">
+				<table class='form-table'>
+					<?php
+					em_options_radio_binary ( __( 'EM Debug Mode?', 'dbem' ), 'dbem_debug', __( 'Setting this to yes will display different content to admins for event pages and emails so you can see all the available placeholders and their values.', 'dbem' ) );
+					em_options_radio_binary ( __( 'WP Debug Mode?', 'dbem' ), 'dbem_wp_debug', __( 'This will turn WP_DEBUG mode on. Useful if you want to troubleshoot php errors without looking at your logs.', 'dbem' ) );
+					?>
+				</table>
+			</div> <!-- . inside -->
+			</div> <!-- .postbox -->
+			*/ ?>
+			
+			<?php do_action('em_options_page_footer'); ?>
+
 			<p class="submit">
 				<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e ( 'Save Changes' )?>" />
 				<input type="hidden" name="em-submitted" value="1" />

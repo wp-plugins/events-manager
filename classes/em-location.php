@@ -6,9 +6,13 @@
 class EM_Location extends EM_Object {
 	//DB Fields
 	var $id = '';
+	var $slug = '';
 	var $name = '';
 	var $address = '';
 	var $town = '';
+	var $state = '';
+	var $postcode = '';
+	var $country = '';
 	var $latitude = '';
 	var $longitude = '';
 	var $description = '';
@@ -17,16 +21,19 @@ class EM_Location extends EM_Object {
 	//Other Vars
 	var $fields = array( 
 		'location_id' => array('name'=>'id','type'=>'%d'), 
+		'location_slug' => array('name'=>'slug','type'=>'%s'), 
 		'location_name' => array('name'=>'name','type'=>'%s'), 
 		'location_address' => array('name'=>'address','type'=>'%s'),
 		'location_town' => array('name'=>'town','type'=>'%s'),
-		//Not Used - 'location_province' => array('name'=>'province','type'=>'%s'),
+		'location_state' => array('name'=>'state','type'=>'%s'),
+		'location_postcode' => array('name'=>'postcode','type'=>'%s'),
+		'location_country' => array('name'=>'country','type'=>'%s'),
 		'location_latitude' =>  array('name'=>'latitude','type'=>'%f'),
 		'location_longitude' => array('name'=>'longitude','type'=>'%f'),
 		'location_description' => array('name'=>'description','type'=>'%s'),
 		'location_owner' => array('name'=>'owner','type'=>'%d')
 	);
-	var $required_fields;
+	var $required_fields = array();
 	var $feedback_message = "";
 	var $mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png'); 
 	var $errors = array();
@@ -38,16 +45,21 @@ class EM_Location extends EM_Object {
 	 */
 	function EM_Location( $location_data = 0 ) {
 		//Initialize
-		$this->required_fields = array("name" => __('The location name', 'dbem'), "address" => __('The location address', 'dbem'), "town" => __('The location town', 'dbem'));
-		if( $location_data != 0 ){
+		$this->required_fields = array("name" => __('The location name', 'dbem'), "address" => __('The location address', 'dbem'), "town" => __('The location town', 'dbem'), "country" => __('The country', 'dbem'),);
+		if( !empty($location_data) ){
 			//Load location data
 			if( is_array($location_data) && isset($location_data['location_name']) ){
 				$location = $location_data;
-			}elseif( $location_data > 0 ){
+			}elseif( !empty($location_data) ){
 				//Retreiving from the database		
 				global $wpdb;
-				$sql = "SELECT * FROM ". $wpdb->prefix.EM_LOCATIONS_TABLE ." WHERE location_id ='{$location_data}'";   
-			  	$location = $wpdb->get_row($sql, ARRAY_A);
+				if( is_numeric($location_data) ){
+					$sql = "SELECT * FROM ". $wpdb->prefix.EM_LOCATIONS_TABLE ." WHERE location_id ='{$location_data}'";   
+				  	$location = $wpdb->get_row($sql, ARRAY_A);
+				}else{
+					$sql = "SELECT * FROM ". $wpdb->prefix.EM_LOCATIONS_TABLE ." WHERE location_slug ='{$location_data}'";   
+				  	$location = $wpdb->get_row($sql, ARRAY_A);
+				}
 			}
 			//If gmap is turned off, values may not be returned and set, so we set it here
 			if(empty($location['location_latitude'])) {
@@ -58,6 +70,7 @@ class EM_Location extends EM_Object {
 			$this->to_object($location, true);
 			$this->get_image_url();
 		} 
+		do_action('em_location', $this, $location_data);
 	}
 	
 	function get_post(){
@@ -68,6 +81,9 @@ class EM_Location extends EM_Object {
 		$location['location_name'] = ( !empty($_POST['location_name']) ) ? stripslashes($_POST['location_name']):'';
 		$location['location_address'] = ( !empty($_POST['location_address']) ) ? stripslashes($_POST['location_address']):'';
 		$location['location_town'] = ( !empty($_POST['location_town']) ) ? stripslashes($_POST['location_town']):'';
+		$location['location_state'] = ( !empty($_POST['location_state']) ) ? stripslashes($_POST['location_state']):'';
+		$location['location_postcode'] = ( !empty($_POST['location_postcode']) ) ? stripslashes($_POST['location_postcode']):'';
+		$location['location_country'] = ( !empty($_POST['location_country']) ) ? stripslashes($_POST['location_country']):'';
 		$location['location_latitude'] = ( !empty($_POST['location_latitude']) ) ? $_POST['location_latitude']:'';
 		$location['location_longitude'] = ( !empty($_POST['location_longitude']) ) ? $_POST['location_longitude']:'';
 		$location['location_description'] = ( !empty($_POST['content']) ) ? stripslashes($_POST['content']):'';
@@ -76,32 +92,78 @@ class EM_Location extends EM_Object {
 	
 	function save(){
 		global $wpdb, $current_user;
-   		get_currentuserinfo();
-		do_action('em_location_save_pre', $this);
-		$table = $wpdb->prefix.EM_LOCATIONS_TABLE;
-		$data = $this->to_array();
-		unset($data['location_id']);
-		unset($data['location_image_url']);
-		if($this->id != ''){
-			$where = array( 'location_id' => $this->id );
-			$wpdb->update($table, $data, $where, $this->get_types($data));
-		}else{
-			$this->owner = $current_user->ID; //Record creator of event
-			$data['location_owner'] = $this->owner;
-			$wpdb->insert($table, $data, $this->get_types($data));
-		    $this->id = $wpdb->insert_id;   
+		if( $this->validate() ){
+			if( current_user_can('edit_locations') ){
+		   		get_currentuserinfo();
+				do_action('em_location_save_pre', $this);
+				$table = $wpdb->prefix.EM_LOCATIONS_TABLE;
+				$this->slug = $this->sanitize_title();
+				$data = $this->to_array();
+				unset($data['location_id']);
+				unset($data['location_image_url']);
+				if($this->id != ''){
+					$where = array( 'location_id' => $this->id );
+					$result = $wpdb->update($table, $data, $where, $this->get_types($data));
+					if( $result ){
+						$this->feedback_message = sprintf(__('%s successfully updated.', 'dbem'), __('Location','dbem'));
+					}				
+				}else{
+					$this->owner = $current_user->ID; //Record creator of event
+					$data['location_owner'] = $this->owner;
+					$result = $wpdb->insert($table, $data, $this->get_types($data));
+				    $this->id = $wpdb->insert_id;   
+					if( $result ){
+						$this->feedback_message = sprintf(__('%s successfully added.', 'dbem'), __('Location','dbem'));
+					}		
+				}
+				$image_upload = $this->image_upload();
+				return apply_filters('em_location_save', ( $this->id > 0 && $image_upload ), $this, $image_upload);
+			}else{
+				$this->add_error( sprintf(__('You do not have permission to create/edit %s.','dbem'), __('locations','dbem')) );
+			}
 		}
-		$image_upload = $this->image_upload();
-		return apply_filters('em_location_save', ( $this->id > 0 && $image_upload ), $this, $image_upload);
+		return apply_filters('em_location_save', false, $this, false);
+	}
+	
+	/**
+	 * Takes the title and gives either a unique slug or returns the currently used slug if this record already has it.
+	 * @param unknown_type $title
+	 */
+	function sanitize_title($iteration = 1){
+		global $wpdb;
+		//Generate the slug. If this is a new event, create the slug automatically, if not, verify it is still unique and if not rewrite
+		if( empty($this->slug) ){
+			$this->slug = sanitize_title($this->name);
+		}
+		$slug = $this->slug;
+		$slug_matches = $wpdb->get_results('SELECT location_id FROM '.$wpdb->prefix.EM_LOCATIONS_TABLE." WHERE location_slug='{$slug}'", ARRAY_A);
+		if( count($slug_matches) > 0 ){ //we will check that the slug is unique
+			if( $slug_matches[0]['location_id'] != $this->id || count($slug_matches) > 1 ){
+				//we have a conflict, so try another alternative
+				$this->slug = preg_replace('/\-[0-9]+$/', '', $slug).'-'.($iteration+1);
+				$this->sanitize_title($iteration+1);
+			}
+		}
+		return apply_filters('em_location_sanitize_title', $this->slug, $this);
 	}
 	
 	function delete(){
 		global $wpdb;	
-		do_action('em_location_delete_pre', $this);
-		$table_name = $wpdb->prefix.EM_LOCATIONS_TABLE;
-		$sql = "DELETE FROM $table_name WHERE location_id = '{$this->id}';";
-		$result = $wpdb->query($sql);
-		$result = $this->image_delete() && $result;
+		if( current_user_can('delete_locations') ){
+			do_action('em_location_delete_pre', $this);
+			$table_name = $wpdb->prefix.EM_LOCATIONS_TABLE;
+			$sql = "DELETE FROM $table_name WHERE location_id = '{$this->id}';";
+			$result = $wpdb->query($sql);
+			$result = $this->image_delete() && $result;
+			if( $result ){
+				$this->feedback_message = sprintf(__('%s successfully deleted.', 'dbem'), __('Location','dbem')) ;
+			}else{
+				$this->add_error( sprintf(__('%s could not be deleted.', 'dbem'), __('Location','dbem')) );
+			}
+		}else{
+			$this->add_error( sprintf(__('You do not have permission to delete %s.','dbem'), __('locations','dbem')) );
+			$result = false;
+		}
 		return apply_filters('em_location_delete', $result, $this);
 	}
 	
@@ -119,11 +181,15 @@ class EM_Location extends EM_Object {
 	}
 	
 	function image_delete() {
-		$file_name= ABSPATH.EM_IMAGE_UPLOAD_DIR."/location-".$this->id;
-		$result = false;
-		foreach($this->mime_types as $type) { 
-			if (file_exists($file_name.".".$type))
-	  		$result = unlink($file_name.".".$type);
+		if( $this->image_url == '' ){
+			$result = true;
+		}else{
+			$file_name= ABSPATH.EM_IMAGE_UPLOAD_DIR."/location-".$this->id;
+			$result = false;
+			foreach($this->mime_types as $type) { 
+				if (file_exists($file_name.".".$type))
+		  		$result = unlink($file_name.".".$type);
+			}
 		}
 		return apply_filters('em_location_image_delete', $result, $this);
 	}
@@ -153,7 +219,7 @@ class EM_Location extends EM_Object {
 		global $wpdb;
 		if( !empty($criteria['location_name']) && !empty($criteria['location_name']) && !empty($criteria['location_name']) ){
 			$locations_table = $wpdb->prefix.EM_LOCATIONS_TABLE; 
-			$prepared_sql = $wpdb->prepare("SELECT * FROM $locations_table WHERE location_name = %s AND location_address = %s AND location_town = %s", stripcslashes($criteria['location_name']), stripcslashes($criteria['location_address']), stripcslashes($criteria['location_town']) );
+			$prepared_sql = $wpdb->prepare("SELECT * FROM $locations_table WHERE location_name = %s AND location_address = %s AND location_town = %s AND location_state = %s AND location_postcode = %s AND location_country = %s", stripcslashes($criteria['location_name']), stripcslashes($criteria['location_address']), stripcslashes($criteria['location_town']), stripcslashes($criteria['location_state']), stripcslashes($criteria['location_postcode']), stripcslashes($criteria['location_country']) );
 			//$wpdb->show_errors(true);
 			$location = $wpdb->get_row($prepared_sql, ARRAY_A);
 			if( is_array($location) ){
@@ -169,11 +235,16 @@ class EM_Location extends EM_Object {
 	 * @return boolean
 	 */
 	function validate(){
+		//check required fields
 		foreach ( $this->required_fields as $field => $description) {
-			if ( $this->$field == "" ) {
-				$this->errors[] = $description.__(" is missing!", "dbem");
-			}       
+			if( $field == 'country' && !array_key_exists($this->country, em_get_countries()) ){ 
+				//country specific checking
+				$this->errors[] = $this->required_fields['country'].__(" is required.", "dbem");				
+			}elseif ( $this->$field == "" ) {
+				$this->errors[] = $description.__(" is required.", "dbem");
+			}
 		}
+		//Srt out the image
 		if ( !empty($_FILES['location_image']) && $_FILES['location_image']['size'] > 0 ) { 
 			if (is_uploaded_file($_FILES['location_image']['tmp_name'])) {
 	 	 		$mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
@@ -203,19 +274,11 @@ class EM_Location extends EM_Object {
 		return apply_filters('em_location_has_events', (count($affected_events) > 0), $this);
 	}
 	
-	function can_manage(){
-		return ( get_option('dbem_permissions_locations') == 2 || $this->owner == get_current_user_id() || empty($this->id) || em_verify_admin() );
-	}
-	
-	function can_use(){
-		switch( get_option('dbem_permissions_locations') ){
-			case 0:
-				return $this->owner == get_current_user_id();
-			case 1:
-				return em_verify_admin($this->owner);
-			case 2:
-				return true;
-		}
+	/**
+	 * Can the user manage this location? 
+	 */
+	function can_manage( $owner_capability = false, $admin_capability = false ){
+		return apply_filters('em_location_can_manage', parent::can_manage($owner_capability, $admin_capability), $this);
 	}
 	
 	function output_single($target = 'html'){
@@ -230,6 +293,30 @@ class EM_Location extends EM_Object {
 			$match = true;
 			$replace = '';
 			switch( $result ){
+				case '#_LOCATIONID':
+					$replace = $this->id;
+					break;
+				case '#_NAME': //Depreciated
+				case '#_LOCATIONNAME':
+					$replace = $this->name;
+					break;
+				case '#_ADDRESS': //Depreciated
+				case '#_LOCATIONADDRESS': 
+					$replace = $this->address;
+					break;
+				case '#_TOWN': //Depreciated
+				case '#_LOCATIONTOWN':
+					$replace = $this->town;
+					break;
+				case '#_LOCATIONSTATE':
+					$replace = $this->id;
+					break;
+				case '#_LOCATIONPOSTCODE':
+					$replace = $this->id;
+					break;
+				case '#_LOCATIONCOUNTRY':
+					$replace = $this->id;
+					break;
 				case '#_MAP': //Depreciated
 				case '#_LOCATIONMAP':
 			 		$replace = EM_Map::get_single( array('location' => $this) );
@@ -243,6 +330,12 @@ class EM_Location extends EM_Object {
 						$matches = explode('<!--more', $this->description);
 						$replace = $matches[0];
 					}
+					break;
+				case '#_IMAGE': //Depreciated
+				case '#_LOCATIONIMAGE':
+	        		if($this->image_url != ''){
+						$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+	        		}
 					break;
 				case '#_LOCATIONURL':
 				case '#_LOCATIONLINK':
@@ -269,27 +362,6 @@ class EM_Location extends EM_Object {
 						$replace = get_option('dbem_location_no_events_message');
 					}
 					break;
-				case '#_IMAGE': //Depreciated
-				case '#_LOCATIONIMAGE':
-	        		if($this->image_url != ''){
-						$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
-	        		}
-					break;
-				case '#_NAME': //Depreciated
-				case '#_LOCATIONNAME':
-					$replace = $this->name;
-					break;
-				case '#_ADDRESS': //Depreciated
-				case '#_LOCATIONADDRESS': 
-					$replace = $this->address;
-					break;
-				case '#_TOWN': //Depreciated
-				case '#_LOCATIONTOWN':
-					$replace = $this->town;
-					break;
-				case '#_LOCATIONID':
-					$replace = $this->id;
-					break;
 				default:
 					$match = false;
 					break;
@@ -303,5 +375,14 @@ class EM_Location extends EM_Object {
 		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
 		$location_string = str_replace('#_LOCATION', apply_filters($name_filter, $this->name) , $location_string ); //Depreciated
 		return apply_filters('em_location_output', $location_string, $this, $format, $target);	
+	}
+	
+	function get_country(){
+		$countries = em_get_countries();
+		if( !empty($countries[$this->country]) ){
+			return apply_filters('em_location_get_country', $countries[$this->country], $this);
+		}
+		return apply_filters('em_location_get_country', false, $this);
+			
 	}
 }

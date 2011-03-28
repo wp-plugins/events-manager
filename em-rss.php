@@ -1,7 +1,9 @@
 <?php
 function em_rss() {
-	if ( !empty( $_REQUEST ['dbem_rss'] ) ) {
+	global $post, $wp_query;
+	if ( !empty($_REQUEST['dbem_rss']) || (is_object($post) && $post->ID == get_option('dbem_events_page') && $wp_query->get('rss')) ) {
 		header ( "Content-type: text/xml" );
+		ob_start();
 		echo "<?xml version='1.0'?>\n";
 		?>
 <rss version="2.0">
@@ -31,8 +33,9 @@ function em_rss() {
 	</channel>
 </rss>
 		<?php
+		echo apply_filters('em_rss', ob_get_clean());
 		die ();
 	}
 }
-add_action ( 'init', 'em_rss' );
+add_action ( 'template_redirect', 'em_rss' );
 ?>

@@ -6,54 +6,44 @@
  */
 function em_admin_events_page() {
 	//TODO Simplify panel for events, use form flags to detect certain actions (e.g. submitted, etc)
-	global $wpdb;
-	global $EM_Event;
-	$action = ( !empty($_GET ['action']) ) ? $_GET ['action']:'';
-	$order = ( !empty($_GET ['order']) ) ? $_GET ['order']:'ASC';
-	$limit = ( !empty($_GET['limit']) ) ? $_GET['limit'] : 20;//Default limit
-	$page = ( !empty($_GET['pno']) ) ? $_GET['pno']:1;
+	global $wpdb, $EM_Notices, $EM_Event;
+	
+	$action = ( !empty($_REQUEST ['action']) ) ? $_REQUEST ['action']:'';
+	$order = ( !empty($_REQUEST ['order']) ) ? $_REQUEST ['order']:'ASC';
+	$limit = ( !empty($_REQUEST['limit']) ) ? $_REQUEST['limit'] : 20;//Default limit
+	$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
+	$search = ( !empty($_REQUEST['em_search']) ) ? $_REQUEST['em_search']:'';
 	$scope_names = array (
 		'past' => __ ( 'Past events', 'dbem' ),
 		'all' => __ ( 'All events', 'dbem' ),
 		'future' => __ ( 'Future events', 'dbem' )
 	);
-	$scope = ( !empty($_GET ['scope']) && array_key_exists($_GET ['scope'], $scope_names) ) ? $_GET ['scope']:'future';
-	$selectedEvents = ( !empty($_GET ['events']) ) ? $_GET ['events']:'';
+	$scope = ( !empty($_REQUEST ['scope']) && array_key_exists($_REQUEST ['scope'], $scope_names) ) ? $_REQUEST ['scope']:'future';
+	$selectedEvents = ( !empty($_REQUEST ['events']) ) ? $_REQUEST ['events']:'';
 	
-	// DELETE action
-	if ( $action == 'deleteEvents' && EM_Object::array_is_numeric($selectedEvents) ) {
-		EM_Events::delete( $selectedEvents );
-	}
+	$args = array('scope'=>$scope, 'limit'=>0, 'order'=>$order, 'search'=>$search );
 	
-	// No action, only showing the events list
-	switch ($scope) {
-		case "past" :
-			$title = __ ( 'Past Events', 'dbem' );
-			break;
-		case "all" :
-			$title = __ ( 'All Events', 'dbem' );
-			break;
-		default :
-			$title = __ ( 'Future Events', 'dbem' );
-			$scope = "future";
-	}
-	$args = array('scope'=>$scope, 'limit'=>0, 'order'=>$order );
-	
-	if( !get_option('dbem_permissions_events') && !em_verify_admin() ){
+	if(	!current_user_can('edit_others_events') ){
 		$args['owner'] = get_current_user_id();
 	}
-		
+	//Figure out what status to search for
+	$args['status'] = ( isset($_REQUEST['status']) && is_numeric($_REQUEST['status']) ) ? $_REQUEST['status'] : false;
+	
 	$events = EM_Events::get( $args );
 	$events_count = count ( $events );
+	$pending_count = EM_Events::count( array('status'=>0) );
+	$approved_count = EM_Events::count( array('status'=> 1) );
+	$total_count = EM_Events::count( array('status'=> false) );
 	
-	$use_events_end = get_option ( 'dbem_use_event_end' );
+	$use_events_end = get_option('dbem_use_event_end');
+	echo $EM_Notices; 
 	?>
 	<div class="wrap">
 		<div id="icon-events" class="icon32"><br />
 		</div>
 		<h2>	
-			<?php echo $title; ?>
+			<?php echo $scope_names[$scope]; ?>
  	 		<a href="admin.php?page=events-manager-event" class="button add-new-h2"><?php _e('Add New','dbem'); ?></a>
  	 	</h2>
 		<?php	
@@ -62,23 +52,27 @@ function em_admin_events_page() {
 			$link ['all'] = " <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/admin.php?page=events-manager&amp;scope=all&amp;order=desc'>" . __ ( 'All events', 'dbem' ) . "</a>";
 			$link ['future'] = "  <a href='" . get_bloginfo ( 'wpurl' ) . "/wp-admin/admin.php?page=events-manager&amp;scope=future'>" . __ ( 'Future events', 'dbem' ) . "</a>";
 		?> 
-		<?php if ( !empty($_GET['error']) ) : ?>
+		<?php if ( !empty($_REQUEST['error']) ) : ?>
 		<div id='message' class='error'>
-			<p><?php echo $_GET['error']; ?></p>
+			<p><?php echo $_REQUEST['error']; ?></p>
 		</div>
 		<?php endif; ?>
-		<?php if ( !empty($_GET['message']) ) : ?>
+		<?php if ( !empty($_REQUEST['message']) ) : ?>
 		<div id='message' class='updated fade'>
-			<p><?php echo $_GET['message']; ?></p>
+			<p><?php echo $_REQUEST['message']; ?></p>
 		</div>
 		<?php endif; ?>
 		<form id="posts-filter" action="" method="get"><input type='hidden' name='page' value='events-manager' />
 			<ul class="subsubsub">
-				<li><a href='#' class="current"><?php _e ( 'Total', 'dbem' ); ?> <span class="count">(<?php echo (count ( $events )); ?>)</span></a></li>
+				<li><a href='<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager' <?php echo ( !isset($_REQUEST['status']) ) ? 'class="current"':''; ?>><?php _e ( 'Total', 'dbem' ); ?> <span class="count">(<?php echo $total_count; ?>)</span></a></li>
+				<?php if( current_user_can('publish_events') ): ?>
+				<li>| <a href='<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;status=1' <?php echo ( isset($_REQUEST['status']) && $_REQUEST['status']=='1' ) ? 'class="current"':''; ?>><?php _e ( 'Approved', 'dbem' ); ?> <span class="count">(<?php echo $approved_count; ?>)</span></a></li>
+				<li>| <a href='<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;status=0' <?php echo ( isset($_REQUEST['status']) && $_REQUEST['status']=='0' ) ? 'class="current"':''; ?>><?php _e ( 'Pending', 'dbem' ); ?> <span class="count">(<?php echo $pending_count; ?>)</span></a></li>
+				<?php endif; ?>
 			</ul>
 			<p class="search-box">
 				<label class="screen-reader-text" for="post-search-input"><?php _e('Search Events','dbem'); ?>:</label>
-				<input type="text" id="post-search-input" name="em_search" value="<?php echo (!empty($_GET['em_search'])) ? $_GET['em_search']:''; ?>" />
+				<input type="text" id="post-search-input" name="em_search" value="<?php echo (!empty($_REQUEST['em_search'])) ? $_REQUEST['em_search']:''; ?>" />
 				<input type="submit" value="<?php _e('Search Events','dbem'); ?>" class="button" />
 			</p>			
 			<div class="tablenav">
@@ -86,7 +80,7 @@ function em_admin_events_page() {
 				<div class="alignleft actions">
 					<select name="action">
 						<option value="-1" selected="selected"><?php _e ( 'Bulk Actions' ); ?></option>
-						<option value="deleteEvents"><?php _e ( 'Delete selected','dbem' ); ?></option>
+						<option value="event_delete"><?php _e ( 'Delete selected','dbem' ); ?></option>
 					</select> 
 					<input type="submit" value="<?php _e ( 'Apply' ); ?>" name="doaction2" id="doaction2" class="button-secondary action" /> 
 					<select name="scope">
@@ -106,10 +100,9 @@ function em_admin_events_page() {
 					<a href="/wp-admin/edit.php?mode=list"><img class="current" id="view-switch-list" src="http://wordpress.lan/wp-includes/images/blank.gif" width="20" height="20" title="List View" alt="List View" name="view-switch-list" /></a> <a href="/wp-admin/edit.php?mode=excerpt"><img id="view-switch-excerpt" src="http://wordpress.lan/wp-includes/images/blank.gif" width="20" height="20" title="Excerpt View" alt="Excerpt View" name="view-switch-excerpt" /></a>
 				</div>
 				-->
-				<?php 
+				<?php
 				if ( $events_count >= $limit ) {
-					$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%'));
-					$events_nav = em_admin_paginate( $page_link_template, $events_count, $limit, $page, 5);
+					$events_nav = em_admin_paginate( $events_count, $limit, $page);
 					echo $events_nav;
 				}
 				?>
@@ -123,7 +116,7 @@ function em_admin_events_page() {
 			} else {
 			?>
 					
-			<table class="widefat">
+			<table class="widefat events-table">
 				<thead>
 					<tr>
 						<th class='manage-column column-cb check-column' scope='col'>
@@ -143,7 +136,7 @@ function em_admin_events_page() {
 						/* @var $event EM_Event */
 						if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
 							$rowno++;
-							$class = ($rowno % 2) ? ' class="alternate"' : '';
+							$class = ($rowno % 2) ? 'alternate' : '';
 							// FIXME set to american
 							$localised_start_date = date_i18n('D d M Y', $event->start);
 							$localised_end_date = date_i18n('D d M Y', $event->end);
@@ -153,40 +146,49 @@ function em_admin_events_page() {
 							$category = new EM_Category($event->category_id);
 							
 							if ($event->start_date < $today && $event->end_date < $today){
-								$style = "style ='background-color: #FADDB7;'";
-							}							
+								$class .= " past";
+							}
+							//Check pending approval events
+							if ( !$event->status ){
+								$class .= " pending";
+							}					
 							?>
-							<tr <?php echo "$class $style"; ?>>
-				
+							<tr class="event <?php echo trim($class); ?>" <?php echo $style; ?> id="event_<?php echo $event->id ?>">
 								<td>
 									<input type='checkbox' class='row-selector' value='<?php echo $event->id; ?>' name='events[]' />
 								</td>
 								<td>
 									<strong>
-										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>"><?php echo ($event->name); ?></a>
+										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>"><?php echo ($event->name); ?></a>
 									</strong>
-									<?php if( is_object($category) ) : ?>
-									<br/><span title='<?php echo __( 'Category', 'dbem' ).": ".$category->name ?>'><?php echo $category->name ?></span>
-									<?php endif; ?>
 									<?php 
 									if( get_option('dbem_rsvp_enabled') == 1 && $event->rsvp == 1 ){
 										?>
 										<br/>
 										<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $event->id ?>"><?php echo __("Bookings",'dbem'); ?></a> &ndash;
-										<?php _e("Booked",'dbem'); ?>: <?php echo $event->get_bookings()->get_booked_seats()."/".$event->seats; ?>
+										<?php _e("Booked",'dbem'); ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces(); ?>
 										<?php if( get_option('dbem_bookings_approval') == 1 ): ?>
-											| <?php _e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_seats(); ?>
+											| <?php _e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
 										<?php endif;
 									}
 									?>
+									<div class="row-actions">
+										<span class="trash"><a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;action=event_delete&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>" class="em-event-delete"><?php _e('Delete','dbem'); ?></a></span>
+										<?php if( !$event->status && $event->can_manage('publish_events','publish_others_events') ): ?>
+										| <a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;action=event_approve&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>" class="em-event-approve" style="color:green"><?php _e('Approve','dbem'); ?></a>
+										<?php endif; ?>
+									</div>
 								</td>
 								<td>
-									<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;action=duplicate&amp;event_id=<?php echo $event->id; ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
+									<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;action=event_duplicate&amp;event_id=<?php echo $event->id; ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
 										<strong>+</strong>
 									</a>
 								</td>
 								<td>
 									<?php echo $location_summary; ?>
+									<?php if( is_object($category) && !empty($category->name) ) : ?>
+									<br/><span class="category"><strong><?php _e( 'Category', 'dbem' ); ?>: </strong><?php echo $category->name ?></span>
+									<?php endif; ?>
 								</td>
 						
 								<td>
@@ -204,7 +206,7 @@ function em_admin_events_page() {
 										?>
 										<strong>
 										<?php echo $event->get_recurrence_description(); ?> <br />
-										<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->recurrence_id ?>&amp;scope=<?php echo $scope ?>&amp;p=<?php echo $page ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+										<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->recurrence_id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
 										</strong>
 										<?php
 									}

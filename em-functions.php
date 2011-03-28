@@ -1,26 +1,4 @@
 <?php
-//simple backwards compatability for WP 2.x ... since it's only this function to get it down to 2.9.1 
-if( !function_exists('get_current_user_id') ){
-	function get_current_user_id() {
-		$user = wp_get_current_user();
-		return ( isset( $user->ID ) ? (int) $user->ID : 0 );
-	}
-}
-
-/**
- * Currently, just is_super_admin() but allows scalability of permissions now.
- * @param int $user_id
- * @return boolean
- */
-function em_verify_admin( $user_id = false ){
-	if(function_exists('is_super_admin')){
-		return is_super_admin($user_id);
-	}elseif( current_user_can('delete_posts') ){
-		return true;
-	}
-	return false;
-}
-
 
 /**
  * Intro paragraph to new users. 
@@ -91,10 +69,12 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 		$url_params_dirty = $url_parts[1];
 	}
 	//get the get params as an array
-	if( strstr($url_params_dirty, '&amp;') !== false ){
-		$url_params_dirty = explode('&amp;', $url_params_dirty);
-	}else{
-		$url_params_dirty = explode('&', $url_params_dirty);		
+	if( !is_array($url_params_dirty) ){
+		if( strstr($url_params_dirty, '&amp;') !== false ){
+			$url_params_dirty = explode('&amp;', $url_params_dirty);
+		}else{
+			$url_params_dirty = explode('&', $url_params_dirty);		
+		}
 	}
 	//split further into associative array
 	$url_params = array();
@@ -118,15 +98,37 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 	return $url;
 }
 
-function url_exists($url) {	
-	if ((strpos ( $url, "http" )) === false)
-		$url = "http://" . $url;
-		// FIXME ripristina la linea seguente e VEDI DI SISTEMARE!!!!
-	// if (is_array(@get_headers($url))) {
-	if (true)
-		return true;
-	else
-		return false;
+/**
+ * Get a array of countries, translated. Keys are 2 character country iso codes. If you supply a string or array that will be the first value in the array (if array, the array key is the first key in the returned array)
+ * @param mixed $add_blank
+ * @return array
+ */
+function em_get_countries($add_blank = false){
+	global $em_countries_array;
+	if( !is_array($em_countries_array) ){
+		$em_countries_array = array('AF' => 'Afghanistan', 	'DZ' => 'Algeria', 	'AS' => 'American Samoa', 	'AD' => 'Andorra', 	'AO' => 'Angola', 	'AR' => 'Argentina', 	'AU' => 'Australia', 	'AT' => 'Austria', 	'BH' => 'Bahrain', 	'BD' => 'Bangladesh', 	'BE' => 'Belgium', 	'BJ' => 'Benin', 	'BT' => 'Bhutan', 	'BW' => 'Botswana', 	'BR' => 'Brazil', 	'BN' => 'Brunei', 	'BG' => 'Bulgaria', 	'BI' => 'Burundi', 	'KH' => 'Cambodia', 	'CA' => 'Canada', 	'CF' => 'Central African Republic', 	'TD' => 'Chad', 	'CL' => 'Chile', 	'CN' => 'China', 	'CI' => 'Côte D\'ivoire', 	'HR' => 'Croatia', 	'CZ' => 'Czech Republic', 	'CD' => 'Democratic Republic of the Congo', 	'DK' => 'Denmark', 	'DJ' => 'Djibouti', 	'EG' => 'Egypt', 	'EE' => 'Estonia', 	'ET' => 'Ethiopia', 	'FJ' => 'Fiji', 	'FI' => 'Finland', 	'FR' => 'France', 	'PF' => 'French Polynesia', 	'GA' => 'Gabon', 	'GM' => 'Gambia', 	'DE' => 'Germany', 	'GH' => 'Ghana', 	'GR' => 'Greece', 	'GU' => 'Guam', 	'HK' => 'Hong Kong', 	'HU' => 'Hungary', 	'IS' => 'Iceland', 	'IN' => 'India', 	'ID' => 'Indonesia', 	'IQ' => 'Iraq', 	'IE' => 'Ireland', 	'IL' => 'Israel', 	'IT' => 'Italy', 	'JP' => 'Japan', 	'JO' => 'Jordan', 	'KZ' => 'Kazakhstan', 	'KE' => 'Kenya', 	'KW' => 'Kuwait', 	'KG' => 'Kyrgyzstan', 	'LA' => 'Laos', 	'LV' => 'Latvia', 	'LB' => 'Lebanon', 	'LI' => 'Liechtenstein', 	'LT' => 'Lithuania', 	'LU' => 'Luxembourg', 	'MO' => 'Macao', 	'MK' => 'Macedonia', 	'MG' => 'Madagascar', 	'MW' => 'Malawi', 	'MY' => 'Malaysia', 	'MV' => 'Maldives', 	'MT' => 'Malta', 	'MU' => 'Mauritius', 	'MX' => 'Mexico', 	'MN' => 'Mongolia', 	'MA' => 'Morocco', 	'MZ' => 'Mozambique', 	'MM' => 'Myanmar(Burma)', 	'NA' => 'Namibia', 	'NP' => 'Nepal', 	'NL' => 'Netherlands', 	'NC' => 'New Caledonia', 	'NZ' => 'New Zealand', 	'NG' => 'Nigeria', 	'MP' => 'Northern Mariana Islands', 	'NO' => 'Norway', 	'OM' => 'Oman', 	'PK' => 'Pakistan', 	'PW' => 'Palau', 	'PG' => 'Papua New Guinea', 	'PH' => 'Philippines', 	'PL' => 'Poland', 	'PT' => 'Portugal', 	'QA' => 'Qatar', 	'CG' => 'Republic of the Congo', 	'RO' => 'Romania', 	'RU' => 'Russia', 	'RW' => 'Rwanda', 	'WS' => 'Samoa', 	'ST' => 'São Tomé And Príncipe', 	'SA' => 'Saudi Arabia', 	'SN' => 'Senegal', 	'RS' => 'Serbia', 	'SC' => 'Seychelles', 	'SL' => 'Sierra Leone', 	'SG' => 'Singapore', 	'SK' => 'Slovakia', 	'SI' => 'Slovenia', 	'SB' => 'Solomon Islands', 	'ZA' => 'South Africa', 	'KR' => 'South Korea', 	'ES' => 'Spain', 	'LK' => 'Sri Lanka', 	'SE' => 'Sweden', 	'CH' => 'Switzerland', 	'TW' => 'Taiwan', 	'TJ' => 'Tajikistan', 	'TZ' => 'Tanzania', 	'TH' => 'Thailand', 	'TG' => 'Togo', 	'TO' => 'Tonga', 	'TN' => 'Tunisia', 	'TR' => 'Turkey', 	'TM' => 'Turkmenistan', 	'UG' => 'Uganda', 	'UA' => 'Ukraine', 	'AE' => 'United Arab Emirates', 	'GB' => 'United Kingdom', 	'US' => 'United States', 	'UZ' => 'Uzbekistan', 	'VU' => 'Vanuatu', 	'VN' => 'Vietnam', 	'YE' => 'Yemen', 	'ZM' => 'Zambia', 	'ZW' => 'Zimbabwe' );
+		array_walk($em_countries_array, '__');
+	}
+	if($add_blank !== false){
+		if(is_array($add_blank)){
+			$em_countries_array = $add_blank + $em_countries_array;
+		}else{
+			array_unshift($em_countries_array, $add_blank);
+		}
+	}
+	return $em_countries_array;
+}
+
+/**
+ * Works like check_admin_referrer(), but also in public mode. If in admin mode, it triggers an error like in check_admin_referrer(), if outside admin it just exits with an error.
+ * @param string $action
+ */
+function em_verify_nonce($action, $nonce_name='_wpnonce'){
+	if( is_admin() ){
+		if( !wp_verify_nonce($_REQUEST[$nonce_name] && $action) ) check_admin_referer('trigger_error');				
+	}else{
+		if( !wp_verify_nonce($_REQUEST[$nonce_name] && $action) ) exit( __('Trying to perform an illegal action.','dbem') );
+	}
 }
 
 /**
@@ -141,6 +143,34 @@ function em_get_wp_users() {
 	foreach($users as $user) 
 		$indexed_users[$user['ID']] = $user['display_name'];
  	return $indexed_users;
+}
+
+function em_get_attributes(){
+	//We also get a list of attribute names and create a ddm list (since placeholders are fixed)
+	$formats = 
+		get_option ( 'dbem_event_list_item_format' ).
+		get_option ( 'dbem_event_page_title_format' ).
+		get_option ( 'dbem_full_calendar_event_format' ).
+		get_option ( 'dbem_location_baloon_format' ).
+		get_option ( 'dbem_location_event_list_item_format' ).
+		get_option ( 'dbem_location_page_title_format' ).
+		get_option ( 'dbem_map_text_format' ).
+		get_option ( 'dbem_rss_description_format' ).
+		get_option ( 'dbem_rss_title_format' ).
+		get_option ( 'dbem_single_event_format' ).
+		get_option ( 'dbem_single_location_format' ).
+		get_option ( 'dbem_placeholders_custom' );
+	//We now have one long string of formats, get all the attribute placeholders
+	preg_match_all('/#_ATT\{.+?\}(\{.+?\})?/', $formats, $placeholders);
+	//Now grab all the unique attributes we can use in our event.
+	$attributes = array();
+	foreach($placeholders[0] as $result) {
+		$attribute = substr( substr($result, 0, strpos($result, '}')), 6 );
+		if( !in_array($attribute, $attributes) ){			
+			$attributes[] = $attribute ;
+		}
+	}
+	return $attributes;
 }
 
 /*
@@ -209,11 +239,16 @@ function em_options_textarea($title, $name, $description) {
 	<?php
 }
 
-function em_options_radio($name, $options) {
+function em_options_radio($name, $options, $title='') {
 		$option = get_option($name); 
 		?>		 
 	   	<tr valign="top" id='<?php echo $name;?>_row'>
-	   		<td colspan="2">  
+	   		<?php if( !empty($title) ): ?>
+	   		<th scope="row"><?php _e($title,'dbem'); ?></th>
+	   		<td>
+	   		<?php else: ?>
+	   		<td colspan="2">
+	   		<?php endif; ?>  
 	   			<table>
 	   			<?php foreach($options as $value => $text): ?>
 	   				<tr>
