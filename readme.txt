@@ -108,6 +108,11 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 
 == Changelog ==
 
+= 3.0.96 =
+* fixed js hook bug, you must now bind your function to the document's custom em_maps_locations_hook and em_maps_location_hook event triggers using jquery
+* fixed tinymce bug with linking which cropped up in 3.1 due to new WP linking window.
+* event_date_modified now properly updated
+
 = 3.0.95 =
 * removed some php warnings
 * fixed blank widget defaults (resave current widgets to replace blanks with defaults)
