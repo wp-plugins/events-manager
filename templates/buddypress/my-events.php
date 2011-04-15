@@ -28,8 +28,8 @@
 		'owner' => get_current_user_id(),
 		'status' => $status
 	);
-	$events = EM_Events::get( $args );
-	$events_count = count ( $events );
+	$EM_Events = EM_Events::get( $args );
+	$events_count = count ( $EM_Events );
 	$future_count = EM_Events::count( array('status'=>1, 'owner' =>get_current_user_id(), 'scope' => 'future'));
 	$pending_count = EM_Events::count( array('status'=>0, 'owner' =>get_current_user_id(), 'scope' => 'all') );
 	$use_events_end = get_option('dbem_use_event_end');
@@ -62,7 +62,7 @@
 			</div>
 				
 			<?php
-			if (empty ( $events )) {
+			if (empty ( $EM_Events )) {
 				// TODO localize
 				_e ( 'no events','dbem' );
 			} else {
@@ -84,7 +84,7 @@
 					<?php 
 					$rowno = 0;
 					$event_count = 0;
-					foreach ( $events as $event ) {
+					foreach ( $EM_Events as $event ) {
 						/* @var $event EM_Event */
 						if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
 							$rowno++;

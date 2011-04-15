@@ -2,7 +2,7 @@
 class EM_Calendar extends EM_Object {
 	
 	function init(){
-		add_action('wp_head', array('EM_Calendar', 'insert_js'));
+		//nothing to init anymore
 	}
 	
 	function output($args = array()) {
@@ -305,18 +305,6 @@ class EM_Calendar extends EM_Object {
 			}
 		}       
 		return apply_filters('em_calendar_output', '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.$calendar.'</div>');
-	}
-
-	/**
-	 * Echoes the calendar external JS contents directly into the head of the document
-	 * @return unknown_type
-	 */
-	function insert_js() { 
-		?>
-<script type='text/javascript'>
-		<?php include(WP_PLUGIN_DIR.'/events-manager/includes/js/em_calendar_ajax.js'); ?>	
-		</script>
-<?php
 	}
 
 

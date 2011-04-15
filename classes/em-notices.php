@@ -8,6 +8,7 @@
         var $notices = array('errors'=>array(), 'infos'=>array(), 'alerts'=>array(), 'confirms'=>array());
         
         function __construct(){
+        	session_start();
         	//Grab from session
         	if( !empty($_SESSION['events']['notices']) && is_serialized($_SESSION['events']['notices']) ){
         		$this->notices = unserialize($_SESSION['events']['notices']);
@@ -22,11 +23,13 @@
         			}
         		}
         	}
-            add_action('shutdown', array(&$this,'flush_notices'));
+            add_action('shutdown', array(&$this,'destruct'));
+            add_filter('wp_redirect', array(&$this,'destruct'), 1,1);
         }
         
-        function flush_notices(){
+        function destruct($redirect = false){
         	$_SESSION['events']['notices'] = serialize($this->notices);
+        	return $redirect;
         }
         
         function __toString(){

@@ -55,7 +55,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	
 	/**
 	 * Add a booking into this event (or add spaces if person already booked this), checking that there's enough space for the event
-	 * @param $EM_Booking
+	 * @param EM_Booking $EM_Booking
 	 * @return boolean
 	 */
 	function add( $EM_Booking ){
@@ -96,14 +96,18 @@ class EM_Bookings extends EM_Object implements Iterator{
 	}
 	
 	/**
-	 * get POST data and create a booking for each ticket requested:
-	 * @return bool
+	 * Get POST data and create a booking for each ticket requested. If successful, a booking object is returned, false if not.
+	 * @return false|object
 	 */
 	function add_from_post(){
 		$EM_Booking = new EM_booking();
 		$result = $EM_Booking->get_post();
 		if($result){
 			$result = $this->add($EM_Booking);
+			if($result){
+				$result = $EM_Booking;
+			}
+			$this->feedback_message = sprintf(__('% created.','dbem'),__('Booking','dbem'));
 		}else{
 			$this->errors = array_merge($this->errors, $EM_Booking->errors);
 		}
@@ -147,6 +151,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 		$tickets = array();
 		$timesamp = current_time('timestamp');
 		foreach ($this->get_tickets() as $EM_Ticket){
+			/* @var EM_Ticket $EM_Ticket */
 			if( $EM_Ticket->is_available() ){
 				//within time range
 				if( $EM_Ticket->get_available_spaces() > 0 ){
@@ -403,6 +408,24 @@ class EM_Bookings extends EM_Object implements Iterator{
 			}
 		}
 		return false;
+	}
+	
+	/**
+	 * Checks to see if user has a booking for this event
+	 * @param unknown_type $user_id
+	 */
+	function has_booking( $user_id = false ){
+		if( $user_id === false ){
+			$user_id = get_current_user_id();
+		}
+		if( is_numeric($user_id) && $user_id > 0 ){
+			foreach ($this->bookings as $EM_Booking){
+				if( $EM_Booking->person->ID == $user_id && $EM_Booking->status != 3 ){
+					return apply_filters('em_bookings_has_booking', true, $this);
+				}
+			}	
+		}
+		return apply_filters('em_bookings_has_booking', false, $this);
 	}
 	
 	/**

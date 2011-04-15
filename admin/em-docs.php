@@ -102,7 +102,8 @@ function em_docs_init(){
 							'#_BOOKEDSPACES' => array( 'desc' => 'Shows the amount of currently booked spaces for the event.' ),
 							'#_PENDINGSPACES' => array( 'desc' => 'Shows the amount of pending spaces for the event.' ),
 							'#_SPACES' => array( 'desc' => 'Shows the total spaces for the event.' ),
-							'#_ATTENDEES' => array( 'desc' => 'Shows the list of user avatars attending events.' )
+							'#_ATTENDEES' => array( 'desc' => 'Shows the list of user avatars attending events.' ),
+							'#_BOOKINGBUTTON' => array( 'desc' => 'A single button that will appear to logged in users, if they click on it, they apply for a booking. This button will only display if there is one ticket.' )
 						)
 					),
 					'Contact Details' => array(
@@ -157,6 +158,12 @@ function em_docs_init(){
 							'#_BOOKINGPHONE' => array( 'desc' => 'Phone number of person who made the booking.' ),
 							'#_BOOKINGSPACES' => array( 'desc' => 'Number of spaces the person has booked.' ),
 							'#_BOOKINGCOMMENT' => array( 'desc' => 'Any specific comments made by the person who made the booking.' )
+						)
+					),
+					'Links' => array(
+						'desc' => 'People are able to manage their bookings. Below are some placeholder which automatically provides correctly formatted urls',
+						'placeholders' => array(
+							'#_BOOKINGLISTURL' => array( 'desc' => 'URL to page showing that users booked events.' )
 						)
 					)
 				),

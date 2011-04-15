@@ -49,6 +49,7 @@ add_action('admin_head', 'em_options_save');
 
 
 function em_admin_options_page() {
+	global $wpdb;
 	//TODO place all options into an array
 	$events_placeholders = '<a href="admin.php?page=events-manager-help#event-placeholders">'. __('Event Related Placeholders','dbem') .'</a>';
 	$locations_placeholders = '<a href="admin.php?page=events-manager-help#location-placeholders">'. __('Location Related Placeholders','dbem') .'</a>';
@@ -92,7 +93,45 @@ function em_admin_options_page() {
 		<div id='icon-options-general' class='icon32'><br />
 		</div>		
 		<h2><?php _e ( 'Event Manager Options', 'dbem' ); ?></h2>
-		
+		<?php 
+		/*
+		 * START MIGRATION BIT
+		 */
+			if($_REQUEST['action'] == 'bookings_migrate'){
+				require_once(dirname(__FILE__).'/../em-install.php');
+				em_migrate_bookings();
+			}elseif($_REQUEST['action'] == 'bookings_migrate_delete'){
+				require_once( dirname(__FILE__).'/../em-install.php');
+				em_migrate_bookings_delete();
+			}		
+		?>
+		<?php if( $wpdb->get_var("SHOW TABLES LIKE '".$wpdb->prefix.EM_PEOPLE_TABLE."'") == $wpdb->prefix.EM_PEOPLE_TABLE ): ?>
+			<?php if( $wpdb->get_var('SELECT COUNT(*) FROM '.$wpdb->prefix.EM_TICKETS_BOOKINGS_TABLE) > 0 ): ?>
+				<div class='updated'>
+					<p>
+					It looks like you've already tried reimporting some bookings into the new version (or new bookings have been made since you installed). 
+					If everything looks correct, you can 
+					<a href="admin.php?page=events-manager-options&amp;_wpnonce=<?php echo wp_create_nonce('bookings_migrate_delete'); ?>&amp;action=bookings_migrate_delete">delete the unused tables</a>, or you can also safely try 
+					<a href="admin.php?page=events-manager-options&amp;_wpnonce=<?php echo wp_create_nonce('bookings_migrate'); ?>&amp;action=bookings_migrate">re-importing again</a>.
+					</p>
+				</div>
+			<?php else: ?>
+				<div class='updated'>
+					<p>It looks like you've upgraded from Events Manager version 3.0, meaning your old bookings won't work until you re-import them. 
+					Events Manager 3.0 kept booking user info in a simple database table, whereas now people that make bookings get a subscriber account so 
+					they can access private booking information. You have to choice to 
+					<a href="admin.php?page=events-manager-options&amp;_wpnonce=<?php echo wp_create_nonce('bookings_migrate'); ?>&amp;action=bookings_migrate">import all your old bookings</a> 
+					and create wordpress accounts for bookers, or you can also start afresh and 
+					<a href="admin.php?page=events-manager-options&amp;_wpnonce=<?php echo wp_create_nonce('bookings_migrate_delete'); ?>&amp;action=bookings_migrate_delete">delete the old bookings</a>.
+					</p>
+				</div>
+			<?php endif; ?>
+		<?php endif; ?>
+		<?php
+		/*
+		 *  END MIGRATION BIT
+		 */
+		?>
 		<form id="dbem_options_form" method="post" action="">          
 
 			<div class="metabox-holder">         
@@ -164,6 +203,7 @@ function em_admin_options_page() {
 					em_options_radio_binary ( __( 'Disable title rewriting?', 'dbem' ), 'dbem_disable_title_rewrites', __( "Some wordpress themes don't follow best practices when generating navigation menus, and so the automatic title rewriting feature may cause problems, if your menus aren't working correctly on the event pages, try setting this to 'Yes', and provide an appropriate HTML title format below.",'dbem' ) );
 					em_options_input_text ( __( 'Event Manager titles', 'dbem' ), 'dbem_title_html', __( "This only setting only matters if you selected 'Yes' to above. You will notice the events page titles aren't being rewritten, and you have a new title underneath the default page name. This is where you control the HTML of this title. Make sure you keep the #_PAGETITLE placeholder here, as that's what is rewritten by events manager. To control what's rewritten in this title, see settings further down for page titles.", 'dbem' ) );
 					em_options_input_text ( __( 'Event List Limits', 'dbem' ), 'dbem_events_default_limit', __( "This will control how many events are shown on one list by default.", 'dbem' ) );
+					em_options_radio_binary ( __( 'Show events search?', 'dbem' ), 'dbem_events_page_search', __( "If set to yes, a search form will appear just above your list of events.", 'dbem' ) );
 					?>
 					<tr valign="top" id='dbem_events_default_orderby_row'>
 				   		<th scope="row"><?php _e('Default event list ordering','dbem'); ?></th>
@@ -261,7 +301,7 @@ function em_admin_options_page() {
            	<div  class="postbox " >
 			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Calendar format', 'dbem' ); ?></span></h3>
 			<div class="inside">
-            	<table class="form-table">   
+            	<table class="form-table">
 					<?php
 				    em_options_input_text ( __( 'Small calendar title', 'dbem' ), 'dbem_small_calendar_event_title_format', __( 'The format of the title, corresponding to the text that appears when hovering on an eventful calendar day.', 'dbem' ).$events_placeholder_tip );
 					em_options_input_text ( __( 'Small calendar title separator', 'dbem' ), 'dbem_small_calendar_event_title_separator', __( 'The separator appearing on the above title when more than one events are taking place on the same day.', 'dbem' ) );         
@@ -332,6 +372,7 @@ function em_admin_options_page() {
 				<table class='form-table'> 
 					<?php 
 					em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
+					em_options_radio_binary ( __( 'Single ticket mode?', 'dbem' ), 'dbem_bookings_tickets_single', __( 'In single ticket mode, users can only create one ticket per booking (and will not see options to add more tickets).', 'dbem' ) );
 					em_options_radio_binary ( __( 'Show unavailable tickets?', 'dbem' ), 'dbem_bookings_tickets_show_unavailable', __( 'You can choose whether or not to show unavailable tickets to visitors.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Reserved unconfirmed spaces?', 'dbem' ), 'dbem_bookings_approval_reserved', __( 'By default, event spaces become unavailable once there are enough CONFIRMED bookings. To reserve spaces even if unnapproved, choose yes.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Show multiple tickets if logged out?', 'dbem' ), 'dbem_bookings_tickets_show_loggedout', __( 'If logged out, a user will be asked to register in order to book. However, we can show available tickets if you have more than one ticket.', 'dbem' ) );
@@ -438,22 +479,49 @@ function em_admin_options_page() {
 	            	?>
 	            	<tr><td colspan="2">
 	            		<p><em><?php _e('You can now give fine grained control with regards to what your users can do with events. Each user role can have perform different sets of actions.','dbem'); ?></em></p>
-			            <table class="form-table" style="width:auto;">
-							<?php foreach($wp_roles->role_objects as $role): ?>
+			            <table class="em-caps-table" style="width:auto;" cellspacing="0" cellpadding="0">
+							<thead>
+								<tr>
+									<td>&nbsp;</td>
+									<?php 
+									$odd = 0;
+									$cap_docs = array(
+										'publish_events' => __('Users can publish events and skip any admin approval.','dbem'),
+										'edit_categories' => __('User can edit the global categories.','dbem'),
+										'delete_others_events' => __('User can delete other users events.','dbem'),
+										'delete_others_locations' => __('User can delete other users locations.','dbem'),
+										'edit_others_locations' => __('User can edit other users locations.','dbem'),
+										'manage_others_bookings' => __('User can manage other users individual bookings and event booking settings.','dbem'),
+										'edit_others_events' => __('User can edit other users events.','dbem'),
+										'delete_locations' => __('User can delete their own locations.','dbem'),
+										'delete_events' => __('User can delete their events.','dbem'),
+										'edit_locations' => __('User can edit their locations.','dbem'),
+										'manage_bookings' => __('User can use and manage bookings with their events.','dbem'),
+										'read_others_locations' => __('User can view other users locations, to make locations shared by all users allow all event user roles to view all locations.','dbem'),
+										'edit_recurrences' => __('User can create recurrent events.','dbem'),
+										'edit_events' => __('User can create and edit their events.','dbem')
+									);
+									foreach(array_keys($em_capabilities_array) as $capability){
+										?><th class="<?php echo $capability ?> <?php echo ( !is_int($odd/2) ) ? 'odd':''; ?>">&nbsp;<a href="#" title="<?php echo $cap_docs[$capability]; ?>">?</a></th><?php
+										$odd++;
+									} 
+									?>
+								</tr>
+							</thead>
+							<tbody>
+		            			<?php foreach($wp_roles->role_objects as $role): ?>
 			            		<tr>
-			            			<th><?php echo $role->name; ?></th>
-				            		<td>
-				            			<table>
-										<?php foreach(array_keys($em_capabilities_array) as $capability): ?>
-											<tr>
-						            			<td><?php echo $capability; ?></td>
-						            			<td><input type="checkbox" name="em_capabilities[<?php echo $role->name; ?>][<?php echo $capability ?>]" value="1" <?php echo $role->has_cap($capability) ? 'checked="checked"':''; ?> /></td>
-						            		</tr>
-					            		<?php endforeach; ?>
-					            		</table>
-				            		</td>
+			            			<td class="cap"><strong><?php echo $role->name; ?></strong></td>
+									<?php 
+									$odd = 0;
+									foreach(array_keys($em_capabilities_array) as $capability){
+			            				?><td class="<?php echo ( !is_int($odd/2) ) ? 'odd':''; ?>"><input type="checkbox" name="em_capabilities[<?php echo $role->name; ?>][<?php echo $capability ?>]" value="1" <?php echo $role->has_cap($capability) ? 'checked="checked"':''; ?> /></td><?php
+										$odd++;
+									} 
+									?>
 			            		</tr>
-				            <?php endforeach; ?>
+					            <?php endforeach; ?>
+					        </tbody>
 			            </table>
 			        </td></tr>
 			        <?php echo $save_button; ?>

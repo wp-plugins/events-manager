@@ -40,7 +40,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 //Known Bugs
 //FIXME admin panel showing future events shows event of day before
 //FIXME when saving event, select screen has reversed order of events
-//DEBUG MODE
+
+//DEBUG MODE - currently not public, not fully tested
 if( !defined('WP_DEBUG') && get_option('dbem_wp_debug') ){
 	define('WP_DEBUG',true);
 }
@@ -59,10 +60,9 @@ add_action('plugins_loaded', 'dbem_debug_mode');
 include_once('classes/em-object.php'); //Base object, any files below may depend on this 
 //Template Tags & Template Logic
 include_once("em-actions.php");
-include_once("em-bookings.php");
 include_once("em-events.php");
 include_once("em-functions.php");
-include_once("em-rss.php");
+include_once("em-ical.php");
 include_once("em-shortcode.php");
 include_once("em-template-tags.php");
 include_once("em-template-tags-depreciated.php"); //To depreciate
@@ -118,7 +118,7 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.0012); //self expanatory
+define('EM_VERSION', 4.0013); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
 define('EM_CATEGORIES_TABLE', 'em_categories'); //TABLE NAME
 define('EM_EVENTS_TABLE','em_events'); //TABLE NAME
@@ -161,6 +161,27 @@ add_filter('dbem_notes_map', 'convert_chars', 8);
 add_filter('dbem_notes_map', 'js_escape');
 
 /**
+ * Enqueing public scripts and styles 
+ */
+function em_enqueue_public() {
+	//Scripts
+	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-form')); //jQuery will load as dependency
+	wp_localize_script('events-manager','EM', array(
+		'ajaxurl' => admin_url( 'admin-ajax.php' )
+	));
+	//Locale Script
+	$locale_code = substr ( get_locale (), 0, 2 );
+	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
+	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
+		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager'));
+	}
+	//Styles
+	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
+	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
+}
+add_action ( 'init', 'em_enqueue_public' );
+
+/**
  * Perform plugins_loaded actions 
  */
 function em_plugins_loaded(){
@@ -192,10 +213,12 @@ add_filter('plugins_loaded','em_plugins_loaded');
  */
 function em_init(){
 	//Hard Links
+	global $EM_Mailer;
 	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
 	define('EM_RSS_URI', trailingslashit(EM_URI)."rss/"); //RSS PAGE URI
+	$EM_Mailer = new EM_Mailer();
 }
-add_filter('init','em_init');
+add_filter('init','em_init',1);
 
 /**
  * This function will load an event into the global $EM_Event variable during page initialization, provided an event_id is given in the url via GET or POST.
@@ -204,7 +227,7 @@ add_filter('init','em_init');
  * @return null
  */
 function em_load_event(){
-	global $EM_Event, $EM_Recurrences, $EM_Location, $EM_Mailer, $EM_Person, $EM_Booking, $EM_Category, $EM_Ticket, $current_user;
+	global $EM_Event, $EM_Recurrences, $EM_Location, $EM_Person, $EM_Booking, $EM_Category, $EM_Ticket, $current_user;
 	if( !defined('EM_LOADED') ){
 		$EM_Recurrences = array();
 		if( isset( $_REQUEST['event_id'] ) && is_numeric($_REQUEST['event_id']) && !is_object($EM_Event) ){
@@ -234,52 +257,41 @@ function em_load_event(){
 		if( isset($_REQUEST['ticket_id']) && is_numeric($_REQUEST['ticket_id']) && !is_object($_REQUEST['ticket_id']) ){
 			$EM_Ticket = new EM_Ticket($_REQUEST['ticket_id']);
 		}
-		$EM_Mailer = new EM_Mailer();
 		define('EM_LOADED',true);
 	}
 }
-add_action('template_redirect', 'em_load_event');
+add_action('template_redirect', 'em_load_event', 1);
 if(is_admin()){ add_action('init', 'em_load_event', 2); }
-
-/**
- * Settings link in the plugins page menu
- * @param array $links
- * @param string $file
- * @return array
- */
-function em_set_plugin_meta($links, $file) {
-	$plugin = plugin_basename(__FILE__);
-	// create link
-	if ($file == $plugin) {
-		return array_merge(
-			$links,
-			array( sprintf( '<a href="admin.php?page=events-manager-options">%s</a>', __('Settings') ) )
-		);
-	}
-	return $links;
-}
-add_filter( 'plugin_row_meta', 'em_set_plugin_meta', 10, 2 );
 
 
 // Create the Manage Events and the Options submenus  
 function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//Count pending bookings
-		$num = '';
+		$bookings_num = '';
 		if( get_option('dbem_bookings_approval') == 1){ 
 			$bookings_pending_count = count(EM_Bookings::get(array('status'=>0))->bookings);
 			//TODO Add flexible permissions
 			if($bookings_pending_count > 0){
-				$num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
+				$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
 			}
 		}
-	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$num,EM_MIN_CAPABILITY,'events-manager','em_admin_events_page', '../wp-content/plugins/events-manager/includes/images/calendar-16.png');
+		//Count pending events
+		$events_num = '';
+		$events_pending_count = EM_Events::count(array('status'=>0, 'scope'=>'all'));
+		//TODO Add flexible permissions
+		if($events_pending_count > 0){
+			$events_num = '<span class="update-plugins count-'.$events_pending_count.'"><span class="plugin-count">'.$events_pending_count.'</span></span>';
+		}
+		$both_pending_count = $events_pending_count + $bookings_pending_count;
+		$both_num = ($both_pending_count > 0) ? '<span class="update-plugins count-'.$both_pending_count.'"><span class="plugin-count">'.$both_pending_count.'</span></span>':'';
+	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,EM_MIN_CAPABILITY,'events-manager','em_admin_events_page', '../wp-content/plugins/events-manager/includes/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu:
 	   		$plugin_pages = array(); 
-			$plugin_pages[] = add_submenu_page('events-manager', __('Edit'),__('Edit'),'edit_events','events-manager','em_admin_events_page');
+			$plugin_pages[] = add_submenu_page('events-manager', __('Edit'),__('Edit').$events_num,'edit_events','events-manager','em_admin_events_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Add new', 'dbem'), __('Add new','dbem'), 'edit_events', 'events-manager-event', "em_admin_event_page");
 			$plugin_pages[] = add_submenu_page('events-manager', __('Locations', 'dbem'), __('Locations', 'dbem'), 'edit_locations', 'events-manager-locations', "em_admin_locations_page");
-			$plugin_pages[] = add_submenu_page('events-manager', __('Bookings', 'dbem'), __('Bookings', 'dbem').$num, 'manage_bookings', 'events-manager-bookings', "em_bookings_page");
+			$plugin_pages[] = add_submenu_page('events-manager', __('Bookings', 'dbem'), __('Bookings', 'dbem').$bookings_num, 'manage_bookings', 'events-manager-bookings', "em_bookings_page");
 			$plugin_pages[] = add_submenu_page('events-manager', __('Event Categories','dbem'),__('Categories','dbem'), 'edit_categories', "events-manager-categories", 'em_admin_categories_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Events Manager Settings','dbem'),__('Settings','dbem'), 'activate_plugins', "events-manager-options", 'em_admin_options_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Getting Help for Events Manager','dbem'),__('Help','dbem'), 'activate_plugins', "events-manager-help", 'em_admin_help_page');
@@ -308,25 +320,51 @@ function em_locate_template( $template_name, $load=false ) {
 			$located = EM_DIR.'/templates/'.$template_name;
 		}
 	}
-	if( $load ){
+	if( $located && $load ){
 		include($located);
 	}
 	return $located;
 }
 
 /**
- * Enqueing public scripts and styles 
+ * Quick class to dynamically catch wp_options that are EM formats and need replacing with template files.
+ * Since the options filter doesn't have a catchall filter, we send all filters to the __call function and figure out the option that way.   
  */
-function em_enqueue_public() {
-	//Scripts
-	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/em_maps.js', array('jquery', 'jquery-form')); //jQuery will load as dependency
-	wp_localize_script('events-manager','EM', array(
-		'ajaxurl' => admin_url( 'admin-ajax.php' )
-	));
-	//Styles
-	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
+class EM_Formats {
+	function __construct(){ add_action( 'template_redirect', array(&$this, 'add_filters')); }	
+	function add_filters(){
+		//you can hook into this filter and activate the format options you want to override by supplying the wp option names in an array, just like in the database.
+		$formats = apply_filters('em_formats_filter', array());
+		foreach( $formats as $format_name ){
+			add_filter('option_'.$format_name, array(&$this, $format_name), 1,1);
+		}
+	}	
+	function __call( $name, $value ){
+		$format = em_locate_template( 'formats/'.substr($name, 5).'.php' );
+		if( $format ){
+			ob_start();
+			include($format);
+			$value[0] = ob_get_clean();
+		}
+		return $value[0];
+	}
 }
-add_action ( 'init', 'em_enqueue_public' );
+global $EM_Formats;
+$EM_Formats = new EM_Formats();
+
+/**
+ * Catches the event rss feed requests
+ */
+function em_rss() {
+	global $post, $wp_query;
+	if ( is_object($post) && $post->ID == get_option('dbem_events_page') && $wp_query->get('rss') ) {
+		ob_start();
+		em_locate_template('templates/rss.php', true);
+		echo apply_filters('em_rss', ob_get_clean());
+		die ();
+	}
+}
+add_action ( 'template_redirect', 'em_rss' );
 
 /**
  * Add a link to the favourites menu
@@ -340,46 +378,31 @@ function em_favorite_menu($actions) {
 }
 add_filter ( 'favorite_actions', 'em_favorite_menu' );
 
+/**
+ * Settings link in the plugins page menu
+ * @param array $links
+ * @param string $file
+ * @return array
+ */
+function em_set_plugin_meta($links, $file) {
+	$plugin = plugin_basename(__FILE__);
+	// create link
+	if ($file == $plugin) {
+		return array_merge(
+			$links,
+			array( sprintf( '<a href="admin.php?page=events-manager-options">%s</a>', __('Settings') ) )
+		);
+	}
+	return $links;
+}
+add_filter( 'plugin_row_meta', 'em_set_plugin_meta', 10, 2 );
+
 /* Creating the wp_events table to store event data*/
 function em_activate() {
 	global $wp_rewrite;
    	$wp_rewrite->flush_rules();
-	require_once(WP_PLUGIN_DIR.'/events-manager/em-install.php');
+	require_once( dirname(__FILE__).'/em-install.php');
 	em_install();
 }
 register_activation_hook( __FILE__,'em_activate');
-
-if( !empty($_GET['em_reimport']) || get_option('dbem_import_fail') == '1' ){
-	require_once(WP_PLUGIN_DIR.'/events-manager/em-install.php');
-}
-
-/**
- * reset capabilities for testing purposes 
- */
-function em_set_capabilities2(){
-	//Get default roles
-	global $wp_roles;
-	//if( get_option('dbem_version') == '' && get_option('dbem_version') < 4 ){
-		//Assign caps in groups, as we go down, permissions are "looser"
-		$func = 'remove_cap';
-		//Delete
-		$wp_roles->$func('administrator', 'delete_events');
-		$wp_roles->$func('editor', 'delete_events');
-		//Publish Events
-		$wp_roles->$func('administrator', 'publish_events');
-		$wp_roles->$func('editor', 'publish_events');
-		//Edit Others Events
-		$wp_roles->$func('administrator', 'edit_others_events');
-		$wp_roles->$func('editor', 'edit_others_events');
-		//Add/Edit Events
-		$wp_roles->$func('administrator', 'edit_events');
-		$wp_roles->$func('editor', 'edit_events');
-		//if(get_option('dbem_version') == ''){
-			$wp_roles->$func('contributor', 'edit_events');
-			$wp_roles->$func('author', 'edit_events');
-			$wp_roles->$func('subscriber', 'edit_events');
-		//}
-	//}
-}
-//add_action('admin_init', 'em_set_capabilities2');
 ?>

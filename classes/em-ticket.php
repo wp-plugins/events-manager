@@ -10,7 +10,7 @@ class EM_Ticket extends EM_Object{
 	var $end;
 	var $min;
 	var $max;
-	var $spaces;
+	var $spaces = 10;
 	var $fields = array(
 		'ticket_id' => array('name'=>'id','type'=>'%d'),
 		'event_id' => array('name'=>'event_id','type'=>'%d'),
@@ -48,6 +48,7 @@ class EM_Ticket extends EM_Object{
 	 * @return null
 	 */
 	function EM_Ticket( $ticket_data = false ){
+		$this->name = __('Standard Ticket','dbem');
 		if( $ticket_data !== false ){
 			//Load ticket data
 			$ticket = array();

@@ -47,12 +47,12 @@ class EM_Object {
 		//TODO decide on search defaults shared across all objects and then validate here
 		$defaults = array_merge($super_defaults, $defaults);
 		
-		//We are still dealing with recurrence_id, location_id, category_id in some place, so we do a quick replace here just in case
-		if( array_key_exists('recurrence_id', $array) && !array_key_exists('recurrence', $array) ) { $array['recurrence'] = $array['recurrence_id']; }
-		if( array_key_exists('location_id', $array) && !array_key_exists('location', $array) ) { $array['location'] = $array['location_id']; }
-		if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
-		
 		if(is_array($array)){
+			//We are still dealing with recurrence_id, location_id, category_id in some place, so we do a quick replace here just in case
+			if( array_key_exists('recurrence_id', $array) && !array_key_exists('recurrence', $array) ) { $array['recurrence'] = $array['recurrence_id']; }
+			if( array_key_exists('location_id', $array) && !array_key_exists('location', $array) ) { $array['location'] = $array['location_id']; }
+			if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
+		
 			//Clean all id lists
 			$array = self::clean_id_atts($array, array('location', 'event', 'category'));
 			
@@ -69,7 +69,9 @@ class EM_Object {
 			}
 			//return clean array
 			$defaults = array_merge ( $defaults, $array ); //No point using WP's cleaning function, we're doing it already.
+			
 		}
+		
 		//Do some spring cleaning for known values
 		//Month & Year - may be array or single number
 		$month_regex = '/^[0-9]{1,2}$/';
@@ -83,6 +85,17 @@ class EM_Object {
 			$defaults['year'] = ( preg_match($year_regex, $defaults['year'][0]) && preg_match($year_regex, $defaults['year'][1]) ) ? $defaults['year']:'';
 		}else{
 			$defaults['year'] = preg_match($year_regex, $defaults['year']) ? $defaults['year']:'';
+		}
+		//Deal with scope and date searches
+		if ( !is_array($defaults['scope']) && preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $defaults['scope'] ) ) {
+			//This is to become an array, so let's split it up
+			$defaults['scope'] = explode(',', $defaults['scope']);
+		}
+		if( is_array($defaults['scope']) ){
+			//looking for a date range here, so we'll verify the dates validate, if not get the default.
+			if ( !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $defaults['scope'][0]) || !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $defaults['scope'][1]) ) {
+				$defaults['scope'] = $super_defaults['scope'];
+			}
 		}
 		//Order - it's either ASC or DESC, so let's just validate
 		if( !is_array($defaults['order']) && preg_match('/,/', $defaults['order']) ) {
@@ -101,7 +114,7 @@ class EM_Object {
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
 		$defaults['owner'] = (is_numeric($defaults['owner'])) ? $defaults['owner']:$super_defaults['owner'];
-		$defaults['search'] = ($defaults['search']) ? $wpdb->escape(like_escape($defaults['search'])):false;
+		$defaults['search'] = ($defaults['search']) ? trim($wpdb->escape(like_escape($defaults['search']))):false;
 		//Calculate offset in event page is set
 		if($defaults['page'] > 1){
 			$defaults['offset'] = $defaults['limit'] * ($defaults['page']-1);	
@@ -164,14 +177,13 @@ class EM_Object {
 			}
 			$date_start = $date_year_start."-".$date_month_start."-01";
 			$date_end = date('Y-m-t', mktime(0,0,0,$date_month_end,1,$date_year_end));
-			$scope = "$date_start,$date_end"; //just modify the scope here
+			$scope = array($date_start,$date_end); //just modify the scope here
 		}
 		//No date requested, so let's look at scope
-		if ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
+		if ( is_array($scope) ) {
 			//This is an array, let's split it up
-			$dates = explode(',', $scope);
-			$date_start = $dates[0];
-			$date_end = $dates[1];
+			$date_start = $scope[0];
+			$date_end = $scope[1];
 			$conditions['scope'] = " ( ( event_start_date <= CAST('$date_end' AS DATE) AND event_end_date >= CAST('$date_start' AS DATE) ) OR (event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) )";
 		} elseif ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
 			//Scope can also be a specific date. However, if 'day', 'month', or 'year' are set, that will take precedence
@@ -212,6 +224,23 @@ class EM_Object {
 				$event_ids[] = $EM_Event->id;
 			}
 			$conditions['event'] = "( {$events_table}.event_id=". implode(" {$events_table}.event_id=", $event_ids) ." )";
+		}
+		//Location specific filters
+		//country lookup
+		if( !empty($args['country']) ){
+			$countries = em_get_countries();
+			//we can accept country codes or names
+			if( in_array($args['country'], $countries) ){
+				//we have a country name, 
+				$conditions['country'] = "location_country='".array_search($args['country'])."'";	
+			}elseif( array_key_exists($args['country'], $countries) ){
+				//we have a country code
+				$conditions['country'] = "location_country='".$args['country']."'";					
+			}
+		}
+		//state lookup
+		if( !empty($args['state']) ){
+			$conditions['state'] = "location_state='".$args['state']."'";
 		}
 				
 		//Add conditions for category selection

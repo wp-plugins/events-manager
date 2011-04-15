@@ -127,7 +127,7 @@ function em_bookings_events_table() {
 								</td>
 								<td>
 									<strong>
-										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $event->id ?>"><?php echo ($event->name); ?></a>
+										<?php echo $event->output('#_BOOKINGSLINK'); ?>
 									</strong>
 									&ndash; 
 									<?php _e("Booked Spaces",'dbem') ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces() ?>

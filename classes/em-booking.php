@@ -51,6 +51,11 @@ class EM_Booking extends EM_Object{
 	 * @var EM_Tickets_Bookings
 	 */
 	var $tickets_bookings;
+	/**
+	 * If set to true, this booking can be managed by any logged in user.
+	 * @var EM_Tickets_Bookings
+	 */
+	var $manage_override;
 	
 	/**
 	 * Creates booking object and retreives booking data (default is a blank booking object). Accepts either array of booking data (from db) or a booking id.
@@ -91,7 +96,7 @@ class EM_Booking extends EM_Object{
 			0 => __('Pending','dbem'),
 			1 => __('Approved','dbem'),
 			2 => __('Rejected','dbem'),
-			3 => __('Cacncelled','dbem'),
+			3 => __('Cancelled','dbem'),
 			4 => __('Awaiting Online Payment','dbem')
 		);
 		do_action('em_booking', $this, $booking_data);
@@ -105,39 +110,49 @@ class EM_Booking extends EM_Object{
 		global $wpdb;
 		$table = $wpdb->prefix.EM_BOOKINGS_TABLE;
 		do_action('em_booking_save_pre',$this);
-		if($this->validate()){
-			$this->person_id = $this->get_person()->ID;			
-			//Step 1. Save the booking
-			$data = $this->to_array();
-			if($this->id != ''){
-				$update = true;
-				$where = array( 'booking_id' => $this->id );  
-				$result = $wpdb->update($table, $data, $where, $this->get_types($data));
-				$this->feedback_message = __('Changes saved','dbem');
-			}else{
-				$update = false;
-				$result = $wpdb->insert($table, $data, $this->get_types($data));
-			    $this->id = $wpdb->insert_id;  
-				$this->feedback_message = __('Your booking has been recorded','dbem'); 
-			}
-			if( $result === false ){
-				$this->feedback_message = __('There was a problem saving the booking.', 'dbem');
-				$this->errors[] = __('There was a problem saving the booking.', 'dbem');
-			}else{
-				//Step 2. Insert ticket bookings for this booking id
-				$tickets_bookings_result = $this->get_tickets_bookings()->save();
-				if( !$tickets_bookings_result ){
-					if( !$update ){
-						//delete the booking and tickets, instead of a transaction
-						$this->delete();
-					}
+		if( $this->validate() ){
+			if( $this->can_manage() ){
+				$this->person_id = $this->get_person()->ID;			
+				//Step 1. Save the booking
+				$data = $this->to_array();
+				if($this->id != ''){
+					$update = true;
+					$where = array( 'booking_id' => $this->id );  
+					$result = $wpdb->update($table, $data, $where, $this->get_types($data));
+					$this->feedback_message = __('Changes saved','dbem');
+				}else{
+					$update = false;
+					$result = $wpdb->insert($table, $data, $this->get_types($data));
+				    $this->id = $wpdb->insert_id;  
+					$this->feedback_message = __('Your booking has been recorded','dbem'); 
+				}
+				if( $result === false ){
+					$this->feedback_message = __('There was a problem saving the booking.', 'dbem');
 					$this->errors[] = __('There was a problem saving the booking.', 'dbem');
-					$this->add_errors( $this->get_tickets_bookings()->get_errors() );
+				}else{
+					//Step 2. Insert ticket bookings for this booking id
+					$tickets_bookings_result = $this->get_tickets_bookings()->save();
+					if( !$tickets_bookings_result ){
+						if( !$update ){
+							//delete the booking and tickets, instead of a transaction
+							$this->delete();
+						}
+						$this->errors[] = __('There was a problem saving the booking.', 'dbem');
+						$this->add_errors( $this->get_tickets_bookings()->get_errors() );
+					}
+				}
+				return apply_filters('em_booking_save', ( count($this->errors) == 0 ), $this);
+			}else{
+				$this->feedback_message = __('There was a problem saving the booking.', 'dbem');
+				if( !$this->can_manage() ){
+					$this->feedback_message = sprintf(__('You cannot manage this %s.', 'dbem'),__('Booking','dbem'));
 				}
 			}
-			return apply_filters('em_booking_save', ( count($this->errors) == 0 ), $this);
 		}else{
 			$this->feedback_message = __('There was a problem saving the booking.', 'dbem');
+			if( !$this->can_manage() ){
+				$this->feedback_message = sprintf(__('You cannot manage this %s.', 'dbem'),__('Booking','dbem'));
+			}
 		}
 		return apply_filters('em_booking_save', false, $this);
 	}
@@ -203,8 +218,7 @@ class EM_Booking extends EM_Object{
 		$basic = ( 
 			(empty($this->event_id) || is_numeric($this->event_id)) && 
 			(empty($this->person_id) || is_numeric($this->person_id)) &&
-			is_numeric($this->spaces) && $this->spaces > 0 && 
-			is_user_logged_in()
+			is_numeric($this->spaces) && $this->spaces > 0
 		);
 		//give some errors in step 1
 		if( $this->spaces == 0 ){
@@ -216,6 +230,7 @@ class EM_Booking extends EM_Object{
 			foreach($this->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){
 				if ( !$EM_Ticket_Booking->validate() ){
 					$ticket_validation[] = false;
+					$result = $basic && !in_array(false,$ticket_validation);
 				}
 				$this->errors = array_merge($this->errors, $EM_Ticket_Booking->get_errors());
 			}
@@ -316,15 +331,10 @@ class EM_Booking extends EM_Object{
 		global $EM_Person;
 		if( is_object($this->person) && get_class($this->person)=='EM_Person' && ($this->person->ID == $this->person_id || empty($this->person_id) ) ){
 			return apply_filters('em_booking_get_person', $this->person, $this);
-		}elseif( is_object($EM_Person) && $EM_Person->ID == $this->person_id ){
+		}elseif( is_object($EM_Person) && ($EM_Person->ID === $this->person_id || $this->id == '') ){
 			$this->person = $EM_Person;
-		}else{
-			if( !empty($this->person_id) ){
-				$this->person = new EM_Person($this->person_id);
-			}elseif( is_user_logged_in() ){
-				//get current logged in user
-				$this->person = new EM_Person(get_current_user_id());
-			}
+		}elseif( is_numeric($this->person_id) ){
+			$this->person = new EM_Person($this->person_id);
 		}
 		return apply_filters('em_booking_get_person', $this->person, $this);
 	}
@@ -351,11 +361,17 @@ class EM_Booking extends EM_Object{
 			$this->get_tickets_bookings()->delete();
 			$this->previous_status = $this->status;
 			$this->status = false;
+			$this->feedback_message = sprintf(__('%s deleted', 'dbem'), __('Booking','dbem'));
+		}else{
+			$this->add_error(sprintf(__('%s could not be deleted', 'dbem'), __('Booking','dbem')));
 		}
-		return ( $result !== false );
+		return apply_filters('em_booking_delete',( $result !== false ), $this);
 	}
 	
 	function cancel(){
+		if( $this->person->ID == get_current_user_id() ){
+			$this->manage_override = true; //normally, users can't manage a bookiing, only event owners, so we allow them to mod their booking status in this case only.
+		}
 		return $this->set_status(3);
 	}
 	
@@ -400,18 +416,20 @@ class EM_Booking extends EM_Object{
 		$result = $this->save();
 		if($result){
 			$this->feedback_message = sprintf(__('Booking %s.','dbem'), $action_string);
-			if( !($this->status == 0 && $this->previous_status > 0) ){
+			if( !($this->status == 0 && $this->previous_status > 0) || $this->previous_status == 4 ){
 				if( $this->email() ){
 					$this->feedback_message .= " ".__('Mail Sent.','dbem');
 				}elseif( $this->previous_status == 0 ){
 					//extra errors may be logged by email() in EM_Object
 					$this->feedback_message .= ' <span style="color:red">'.__('ERROR : Mail Not Sent.','dbem').'</span>';
+					$this->add_error(__('ERROR : Mail Not Sent.','dbem'));
 					$result =  false;
 				}
 			}
 		}else{
 			//errors should be logged by save()
 			$this->feedback_message = sprintf(__('Booking could not be %s.','dbem'), $action_string);
+			$this->add_error(sprintf(__('Booking could not be %s.','dbem'), $action_string));
 		}
 		return apply_filters('em_booking_set_status', $result, $this);
 	}
@@ -442,7 +460,7 @@ class EM_Booking extends EM_Object{
 		//FIXME ticket logic needed
 		$EM_Event = $this->get_event(); //We NEED event details here.
 		//Make sure event matches booking, and that booking used to be approved.
-		if( !($this->status == 0 && $this->previous_status > 0) ){
+		if( !($this->status == 0 && $this->previous_status > 0) || $this->previous_status == 4 ){
 			$contact_id = ( $EM_Event->owner != "") ? $EM_Event->owner : get_option('dbem_default_contact_person');
 	
 			$contact_subject = get_option('dbem_bookings_contact_email_subject');
@@ -451,7 +469,7 @@ class EM_Booking extends EM_Object{
 			if( get_option('dbem_bookings_approval') == 0 && $this->status < 2 || $this->status == 1 ){
 				$booker_subject = get_option('dbem_bookings_email_confirmed_subject');
 				$booker_body = get_option('dbem_bookings_email_confirmed_body');
-			}elseif( $this->status == 0 ){
+			}elseif( $this->status == 0 || $this->previous_status == 4 ){
 				$booker_subject = get_option('dbem_bookings_email_pending_subject');
 				$booker_body = get_option('dbem_bookings_email_pending_body');
 			}elseif( $this->status == 2 ){
@@ -475,6 +493,7 @@ class EM_Booking extends EM_Object{
 				'#_BOOKINGEMAIL' => $this->person->user_email,
 				'#_BOOKINGPHONE' => $this->person->phone,
 				'#_BOOKINGSPACES' => $this->get_spaces(),
+				'#_BOOKINGLISTURL' => em_get_my_bookings_url(),
 				'#_BOOKINGCOMMENT' => $this->comment,
 			);		 
 			foreach($placeholders as $key => $value) {
@@ -522,7 +541,7 @@ class EM_Booking extends EM_Object{
 	 * Can the user manage this event? 
 	 */
 	function can_manage(){
-		return $this->get_event()->can_manage('manage_bookings','manage_others_bookings');
+		return $this->get_event()->can_manage('manage_bookings','manage_others_bookings') || empty($this->id) || !empty($this->manage_override);
 	}
 	
 	/**

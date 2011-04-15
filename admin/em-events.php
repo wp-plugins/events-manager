@@ -32,9 +32,9 @@ function em_admin_events_page() {
 	
 	$events = EM_Events::get( $args );
 	$events_count = count ( $events );
-	$pending_count = EM_Events::count( array('status'=>0) );
-	$approved_count = EM_Events::count( array('status'=> 1) );
-	$total_count = EM_Events::count( array('status'=> false) );
+	$pending_count = EM_Events::count( array('status'=>0, 'scope'=>$scope) );
+	$approved_count = EM_Events::count( array('status'=> 1, 'scope'=>$scope) );
+	$total_count = EM_Events::count( array('status'=> false, 'scope'=>$scope) );
 	
 	$use_events_end = get_option('dbem_use_event_end');
 	echo $EM_Notices; 
@@ -64,10 +64,10 @@ function em_admin_events_page() {
 		<?php endif; ?>
 		<form id="posts-filter" action="" method="get"><input type='hidden' name='page' value='events-manager' />
 			<ul class="subsubsub">
-				<li><a href='<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager' <?php echo ( !isset($_REQUEST['status']) ) ? 'class="current"':''; ?>><?php _e ( 'Total', 'dbem' ); ?> <span class="count">(<?php echo $total_count; ?>)</span></a></li>
+				<li><a href='<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;scope=<?php echo $scope; ?>' <?php echo ( !isset($_REQUEST['status']) ) ? 'class="current"':''; ?>><?php _e ( 'Total', 'dbem' ); ?> <span class="count">(<?php echo $total_count; ?>)</span></a></li>
 				<?php if( current_user_can('publish_events') ): ?>
-				<li>| <a href='<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;status=1' <?php echo ( isset($_REQUEST['status']) && $_REQUEST['status']=='1' ) ? 'class="current"':''; ?>><?php _e ( 'Approved', 'dbem' ); ?> <span class="count">(<?php echo $approved_count; ?>)</span></a></li>
-				<li>| <a href='<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;status=0' <?php echo ( isset($_REQUEST['status']) && $_REQUEST['status']=='0' ) ? 'class="current"':''; ?>><?php _e ( 'Pending', 'dbem' ); ?> <span class="count">(<?php echo $pending_count; ?>)</span></a></li>
+				<li>| <a href='<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;scope=<?php echo $scope; ?>&amp;status=1' <?php echo ( isset($_REQUEST['status']) && $_REQUEST['status']=='1' ) ? 'class="current"':''; ?>><?php _e ( 'Approved', 'dbem' ); ?> <span class="count">(<?php echo $approved_count; ?>)</span></a></li>
+				<li>| <a href='<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;scope=<?php echo $scope; ?>&amp;status=0' <?php echo ( isset($_REQUEST['status']) && $_REQUEST['status']=='0' ) ? 'class="current"':''; ?>><?php _e ( 'Pending', 'dbem' ); ?> <span class="count">(<?php echo $pending_count; ?>)</span></a></li>
 				<?php endif; ?>
 			</ul>
 			<p class="search-box">

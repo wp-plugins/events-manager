@@ -13,6 +13,7 @@ require ( dirname( __FILE__ ) . '/bp-em-notifications.php' ); /* The notificatio
 	include( dirname( __FILE__ ). '/screens/my-events.php');
 	include( dirname( __FILE__ ). '/screens/my-locations.php');
 	include( dirname( __FILE__ ). '/screens/attending.php');
+	include( dirname( __FILE__ ). '/screens/my-bookings.php');
 	
 
 /**
@@ -97,6 +98,16 @@ function bp_em_setup_nav() {
 		'position' => 40,
 		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
 	) );
+	
+	bp_core_new_subnav_item( array(
+		'name' => __( 'My Event Bookings', 'dbem' ),
+		'slug' => 'my-bookings',
+		'parent_slug' => $bp->events->slug,
+		'parent_url' => $em_link,
+		'screen_function' => 'bp_em_my_bookings',
+		'position' => 50,
+		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+	) );
 
 	/* Add a nav item for this component under the settings nav item. */
 	bp_core_new_subnav_item( array(
@@ -117,6 +128,35 @@ function bp_em_setup_nav() {
 add_action( 'wp', 'bp_em_setup_nav', 2 );
 add_action( 'admin_menu', 'bp_em_setup_nav', 2 );
 
+
+function em_bp_rewrite_links($replace, $object, $result){
+	global $bp;
+	if( is_object($object) && get_class($object)=='EM_Event' ){
+		switch( $result ){
+			case '#_EDITEVENTURL':
+			case '#_EDITEVENTLINK':
+				if( $object->can_manage('edit_events','edit_others_events') && !is_admin() ){
+					$replace = $bp->events->link.'my-events/edit/?event_id='.$object->id;
+					if($result == '#_EDITEVENTLINK'){
+						$replace = "<a href='".$replace."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+					}
+				}	 
+				break;
+			case '#_BOOKINGSLINK':	
+			case '#_BOOKINGSURL':
+				if( $object->can_manage('manage_bookings','manage_others_bookings') && !is_admin() ){
+					$replace = $bp->events->link.'my-bookings/?event_id='.$object->id;
+					if($result == '#_BOOKINGSLINK'){
+						$replace = "<a href='{$replace}' title='{$object->name}'>{$object->name}</a>";
+					}
+				}
+				break;
+		}
+	}
+	return $replace;
+}
+add_filter('em_event_output_placeholder','em_bp_rewrite_links',10,3);
+			
 /**
  * bp_em_load_template_filter()
  *

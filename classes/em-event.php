@@ -37,7 +37,8 @@ class EM_Event extends EM_Object{
 		'recurrence_freq' => array( 'name'=>'freq', 'type'=>'%s' ), //daily,weekly,monthly?
 		'recurrence_byday' => array( 'name'=>'byday', 'type'=>'%s' ), //if weekly or monthly, what days of the week?
 		'recurrence_byweekno' => array( 'name'=>'byweekno', 'type'=>'%d' ), //if monthly which week (-1 is last)
-		'event_status' => array( 'name'=>'status', 'type'=>'%d' ) //if monthly which week (-1 is last)
+		'event_status' => array( 'name'=>'status', 'type'=>'%d' ), //if monthly which week (-1 is last)
+		'event_date_modified' => array( 'name'=>'date_modified', 'type'=>'%s' )
 	);
 	/* Field Names  - see above for matching DB field names and other field meta data */
 	var $id;
@@ -54,13 +55,15 @@ class EM_Event extends EM_Object{
 	var $location_id;
 	var $recurrence_id;
 	var $category_id;
-	var $attributes;
+	var $attributes = array();
 	var $recurrence;
 	var $interval;
 	var $freq;
 	var $byday;
 	var $byweekno;
 	var $status;
+	var $date_created;
+	var $date_modified;
 	
 	/**
 	 * Timestamp of start date/time
@@ -219,6 +222,7 @@ class EM_Event extends EM_Object{
 		//Build Event Array
 		do_action('em_event_get_post_pre', $this);
 		$this->name = ( !empty($_POST['event_name']) ) ? stripslashes($_POST['event_name']) : '' ;
+		$this->slug = ( !empty($_POST['event_slug']) ) ? $_POST['event_slug'] : '' ;
 		$this->start_date = ( !empty($_POST['event_start_date']) ) ? $_POST['event_start_date'] : '';
 		$this->end_date = ( !empty($_POST['event_end_date']) ) ? $_POST['event_end_date'] : $this->start_date; 
 		$this->rsvp = ( !empty($_POST['event_rsvp']) ) ? 1:0;
@@ -289,11 +293,10 @@ class EM_Event extends EM_Object{
 		//Add location information, or just link to previous location, this is a requirement...
 		if( !empty($_POST['location_id']) && is_numeric($_POST['location_id'])) {
 			$this->location_id = $_POST['location_id'];
-			$this->location = new EM_Location($_POST['location_id']);
-			
+			$this->location = new EM_Location($_POST['location_id']);			
 		} else {
-			$this->location = new EM_Location($_POST);
-			$this->location->load_similar($_POST);                
+			$this->location = new EM_Location();
+			$this->location->get_post();  
 		}
 		if( !$this->get_bookings()->get_tickets()->get_post() ){
 			$EM_Tickets = $this->get_bookings()->get_tickets();
@@ -384,10 +387,12 @@ class EM_Event extends EM_Object{
 			$this->recurrence_id = 0; // If it's saved here, it becomes individual
 			$event = $this->to_array();
 			$event['event_attributes'] = serialize($event['event_attributes']);
+			$event['event_date_modified'] = current_time('mysql');
 			$event = apply_filters('em_event_save_pre',$event,$this);
 			$result = $wpdb->update ( $events_table, $event, array('event_id' => $this->id), $this->get_types($event) );
 			if($result !== false){ //Can't just do $result since if you don't make an actual record details change, it'll return 0 for no changes made
 				//Add Tickets
+				$this->feedback_message = "{$this->name} " . __ ( 'updated', 'dbem' ) . "!";
 				if( !$this->get_bookings()->get_tickets()->save() ){
 					$this->errors[] = 	__( 'Something went wrong with creating tickets.', 'dbem' );
 					return apply_filters('em_event_save', false, $this);
@@ -537,10 +542,11 @@ class EM_Event extends EM_Object{
 		}else{
 			$this->errors[] = __('Dates must have correct formatting. Please use the date picker provided.','dbem');
 		}
-		if( $this->get_location()->id == '' && !$this->get_location()->validate() ){
+		if( $this->get_location()->id == '' && !$this->location->validate() ){
 			$this->errors = array_merge($this->errors, $this->location->errors);
 		}
 		//TODO validate recurrence during event validate
+		$count = count($this->errors);
 		return apply_filters('em_event_validate', count($this->errors) == 0, $this );
 	}
 
@@ -570,7 +576,11 @@ class EM_Event extends EM_Object{
 	 */
 	function get_location() {
 		global $EM_location;
-		if( is_object($this->location) && get_class($this->location)=='EM_location' && ($this->location_id == $this->location->id || empty($this->id)) ){
+		$test1 = is_object($this->location);
+		$test2 = get_class($this->location)=='EM_location';
+		$test3 =  $this->location_id == $this->location->id;
+		$test4 = empty($this->id);
+		if( is_object($this->location) && get_class($this->location)=='EM_Location' && ($this->location_id == $this->location->id || empty($this->id)) ){
 			return $this->location;
 		}elseif( is_object($EM_location) && $EM_location->id == $this->location_id ){
 			$this->location = $EM_location;
@@ -603,8 +613,21 @@ class EM_Event extends EM_Object{
 			if( (!$this->bookings || $force_reload) ){
 				$this->bookings = new EM_Bookings($this);
 			}
+		}else{
+			return new EM_Bookings();
 		}
 		return apply_filters('em_event_get_bookings', $this->bookings, $this);
+	}
+	
+	function is_free(){
+		$free = true;
+		if( isset($this->free) ) return $this->free;
+		foreach($this->get_bookings()->get_tickets() as $EM_Ticket){
+			if( $EM_Ticket->price > 0 ){
+				$free = false;
+			}
+		}
+		return apply_filters('em_event_is_free',$free,$this);
 	}
 	
 	/**
@@ -623,19 +646,15 @@ class EM_Event extends EM_Object{
 	 * @return string
 	 */
 	function output_single($target='html'){
-		$format = get_option ( 'dbem_single_event_format' );
-		return apply_filters('em_event_output_single', $this->output($format, $target), $this, $target);
-	}
-
-	/**
-	 * Will output a event list item format of this event. 
-	 * Equivalent of calling EM_Event::output( get_option ( 'dbem_event_list_item_format' ) )
-	 * @param string $target
-	 * @return string
-	 */
-	function output_list($target='html'){
-		$format = get_option ( 'dbem_event_list_item_format' );
-		return apply_filters('em_event_output_list', $this->output($format, $target), $this, $target);
+		$located = em_locate_template('templates/event-single.php');
+		if( $located ){
+			ob_start();
+			include($located);
+			return apply_filters('em_event_output_single', ob_get_clean(), $this, $target);	
+		}else{
+			$format = get_option ( 'dbem_single_event_format' );
+			return apply_filters('em_event_output_single', $this->output($format, $target), $this, $target);			
+		}
 	}
 	
 	/**
@@ -691,22 +710,33 @@ class EM_Event extends EM_Object{
 						$replace = $event_link;	
 					}
 					break;
+				case '#_EDITEVENTURL':
 				case '#_EDITEVENTLINK':
 					if( $this->can_manage('edit_event','edit_others_events') ){
 						//TODO user should have permission to edit the event
-						$replace = "<a href='".get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+						$replace = get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}";
+						if( $result == '#_EDITEVENTLINK'){
+							$replace = "<a href='{$replace}'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+						}
 					}	 
 					break;
 				//Bookings
-				case '#_ADDBOOKINGFORM':
-				case '#_REMOVEBOOKINGFORM':
+				case '#_ADDBOOKINGFORM': //Depreciated
+				case '#_REMOVEBOOKINGFORM': //Depreciated
 				case '#_BOOKINGFORM':
-					if ($this->rsvp && get_option('dbem_rsvp_enabled')){
-						if($result == '#_BOOKINGFORM'){
-							$replace = EM_Bookings_Form::create().EM_Bookings_Form::cancel();
-						}else{
-							$replace = ($result == '#_ADDBOOKINGFORM') ? EM_Bookings_Form::create():EM_Bookings_Form::cancel();
-						}
+					$template = em_locate_template('placeholders/bookingform.php');
+					if( $template ){
+						ob_start();
+						include($template);
+						$replace = ob_get_clean();
+					}
+					break;
+				case '#_BOOKINGBUTTON':
+					$template = em_locate_template('placeholders/bookingbutton.php');
+					if( $template ){
+						ob_start();
+						include($template);
+						$replace = ob_get_clean();
 					}
 					break;
 				case '#_AVAILABLESEATS': //Depreciated
@@ -735,6 +765,15 @@ class EM_Event extends EM_Object{
 				case '#_SEATS': //Depreciated
 				case '#_SPACES':
 					$replace = $this->get_spaces();
+					break;
+				case '#_BOOKINGSURL':
+				case '#_BOOKINGSLINK':
+					$bookings_link = get_bloginfo ( 'wpurl' )."/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=".$this->id;
+					if($result == '#_BOOKINGSLINK'){
+						$replace = "<a href='{$bookings_link}' title='{$this->name}'>{$this->name}</a>";
+					}else{
+						$replace = $bookings_link;	
+					}
 					break;
 				//Contact Person
 				case '#_CONTACTNAME':

@@ -28,7 +28,7 @@ function em_install() {
 		
 		//Migrate?
 		if( $old_version < 4 && $old_version != '' ){
-			em_migrate_to_new_tables();
+			em_migrate_v3();
 		}
 		//Upate Version	
 	  	update_option('dbem_version', EM_VERSION); 
@@ -175,7 +175,7 @@ function em_create_bookings_table() {
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		booking_status bool NOT NULL DEFAULT 1,
- 		booking_price decimal(6,2) unsigned NOT NULL,
+ 		booking_price decimal(6,2) unsigned NOT NULL DEFAULT 0,
 		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -231,7 +231,7 @@ function em_create_tickets_table() {
 		ticket_end DATETIME NULL ,
 		ticket_min INT( 10 ) NULL ,
 		ticket_max INT( 10 ) NULL ,
-		ticket_spaces TINYINT NULL ,
+		ticket_spaces INT NULL ,
 		PRIMARY KEY  (ticket_id),
 		INDEX (event_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -281,6 +281,7 @@ function em_add_options() {
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_events_page_time_limit' => 0,
+		'dbem_events_page_search' => 1,
 		'dbem_event_list_item_format' => '<li>#j #M #Y - #H:#i<br/> #_EVENTLINK<br/>#_LOCATIONTOWN </li>',
 		'dbem_display_calendar_in_events_page' => 0,
 		'dbem_single_event_format' => '<p>Date(s) - #j #M #Y #@_{ \u\n\t\i\l j M Y}<br />#_DESCRIPTION<br />Time - #_24HSTARTTIME - #_24HENDTIME<br /></p><p>Where - #_LOCATIONLINK, #_LOCATIONTOWN</p>#_MAP<br/>#_BOOKINGFORM',
@@ -338,7 +339,8 @@ function em_add_options() {
 		'dbem_disable_title_rewrites'=> false,
 		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
 		//Bookings
-		'dbem_bookings_form_max' => 20, 
+		'dbem_bookings_form_max' => 20,
+		'dbem_bookings_anonymous' => 1, 
 		'dbem_bookings_approval' => 1, //approval is on by default
 		'dbem_bookings_approval_reserved' => 0, //overbooking before approval?
 		'dbem_bookings_approval_overbooking' => 0, //overbooking possible when approving?
@@ -365,13 +367,16 @@ function em_add_options() {
 			'dbem_bookings_tickets_priority' => 0,
 			'dbem_bookings_tickets_show_unavailable' => 0,
 			'dbem_bookings_tickets_show_loggedout' => 1,
+			'dbem_bookings_tickets_single' => 0,
+			//My Bookings Page
+			'dbem_bookings_my_title_format' => __('My Bookings','dbem'),
 		//Flags
 		'dbem_hello_to_user' => 1,
 		//BP Settings
-		'dbem_bp_events_list_format_header' => '<ul>',
+		'dbem_bp_events_list_format_header' => '<ul class="em-events-list">',
 		'dbem_bp_events_list_format' => '<li>#_EVENTLINK - #j #M #Y #_12HSTARTTIME #@_{ \u\n\t\i\l j M Y}<ul><li>#_LOCATIONLINK - #_LOCATIONADDRESS, #_LOCATIONTOWN</li></ul></li>',
 		'dbem_bp_events_list_format_footer' => '</ul>',
-		'dbem_bp_events_list_none_format' => '<p>'.__('No Events','dbem').'</p>'
+		'dbem_bp_events_list_none_format' => '<p class="em-events-list">'.__('No Events','dbem').'</p>'
 	);
 	
 	foreach($dbem_options as $key => $value){
@@ -425,34 +430,88 @@ function em_create_events_page(){
 }   
 
 // migrate old dbem tables to new em ones
-function em_migrate_to_new_tables(){
+function em_migrate_v3(){
 	global $wpdb, $current_user;
 	get_currentuserinfo();
 	$errors = array();
-
+	
 	//approve all old events
 	$wpdb->query('UPDATE '.$wpdb->prefix.EM_EVENTS_TABLE.' SET event_status=1');
 	
 	//give all old events a default ticket
 	$wpdb->query("INSERT INTO ".$wpdb->prefix.EM_TICKETS_TABLE." (`event_id`, `ticket_name`, `ticket_spaces`) SELECT event_id, 'Standard' as ticket_name, event_spaces FROM ".$wpdb->prefix.EM_EVENTS_TABLE." WHERE recurrence!=1 and event_rsvp=1");
 	
-	//make slugs the ids for now
-
-		//create permalinks for each location, category, event
-		$array = array('event' => $wpdb->prefix.EM_EVENTS_TABLE, 'location' => $wpdb->prefix.EM_LOCATIONS_TABLE, 'category' => $wpdb->prefix.EM_CATEGORIES_TABLE);
-		foreach( $array as $prefix => $table ){
-			$used_slugs = array();
-			$results = $wpdb->get_results("SELECT {$prefix}_id AS id, {$prefix}_slug AS slug, {$prefix}_name AS name FROM $table", ARRAY_A);
-			foreach($results as $row){
-				$slug = sanitize_title($row['name']);
-				$count = 2;
-				while( in_array($slug, $used_slugs) ){
-					$slug = preg_replace('/\-[0-9]+$/', '', $slug).'-'.$count;
-					$count++;
-				}
-				$wpdb->query("UPDATE $table SET {$prefix}_slug='$slug' WHERE {$prefix}_id={$row['id']}");
-				$used_slugs[] = $slug;
+	//create permalinks for each location, category, event
+	$array = array('event' => $wpdb->prefix.EM_EVENTS_TABLE, 'location' => $wpdb->prefix.EM_LOCATIONS_TABLE, 'category' => $wpdb->prefix.EM_CATEGORIES_TABLE);
+	foreach( $array as $prefix => $table ){
+		$used_slugs = array();
+		$results = $wpdb->get_results("SELECT {$prefix}_id AS id, {$prefix}_slug AS slug, {$prefix}_name AS name FROM $table", ARRAY_A);
+		foreach($results as $row){
+			$slug = sanitize_title($row['name']);
+			$count = 2;
+			while( in_array($slug, $used_slugs) ){
+				$slug = preg_replace('/\-[0-9]+$/', '', $slug).'-'.$count;
+				$count++;
 			}
+			$wpdb->query("UPDATE $table SET {$prefix}_slug='$slug' WHERE {$prefix}_id={$row['id']}");
+			$used_slugs[] = $slug;
 		}
+	}
+	update_option('em_notice_migrate_v3',1);
+	//change some old values so it doesn't surprise admins with new features
+	update_option('dbem_events_page_search', 0);
+}
+
+/**
+ * Migrates bookings from 3.x or less. Not really recommended due to the amount of spam the other form allowed, but maybe useful for some. 
+ */
+function em_migrate_bookings(){
+	global $wpdb;
+	if( $wpdb->get_var("SHOW TABLES LIKE '".$wpdb->prefix.EM_PEOPLE_TABLE."'") == $wpdb->prefix.EM_PEOPLE_TABLE && current_user_can('activate_plugins') && wp_verify_nonce($_REQUEST['_wpnonce'], 'bookings_migrate') ){
+		$new_people = array();
+		$ticket_bookings = array();
+		$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix.EM_TICKETS_TABLE); //empty tickets bookings table first
+		foreach( $wpdb->get_results("SELECT ticket_id, b.booking_id, booking_spaces, b.person_id, person_name, person_email, person_phone FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." b LEFT JOIN ".$wpdb->prefix.EM_PEOPLE_TABLE." p ON p.person_id=b.person_id LEFT JOIN ".$wpdb->prefix.EM_EVENTS_TABLE." e ON e.event_id=b.event_id LEFT JOIN ".$wpdb->prefix.EM_TICKETS_TABLE." tt ON tt.event_id=e.event_id", ARRAY_A) as $booking_array ){
+			//first we create the user if we hadn't before
+			$user = get_user_by_email($booking_array['person_email']);
+			if( is_object($user) ){
+				//User exists, whether from current insert or not, so ammend array
+				$new_people[$booking_array['person_id']] = $user->ID;
+			}else{
+	 			$username_root = explode('@', $booking_array['person_email']);
+				$username_rand = $username_root[0];
+				while( username_exists($username_root[0].rand(1,1000)) ){
+					$username_rand = $username_root[0].rand(1,1000);
+				}
+				$user_array = array(
+					'user_email' => $booking_array['person_email'],
+					'user_login' => $username_rand,
+					'first_name' => $booking_array['person_name'],
+					'display_name'=> $booking_array['person_name'],
+				);
+				$new_people[$booking_array['person_id']] = wp_insert_user($user_array);
+				update_user_meta($new_people[$booking_array['person_id']], 'dbem_phone', $booking_array['person_phone']);
+			}	
+			//save the booking
+			$ticket_bookings[] = "({$booking_array['booking_id']} , {$booking_array['ticket_id']}, {$booking_array['booking_spaces']}, '0')"; 
+		} 
+		//modify the booking to have data about the new people, we do this here to avoid duplicate names
+		foreach($new_people as $old_id => $new_id){
+			$wpdb->query('UPDATE '.$wpdb->prefix.EM_BOOKINGS_TABLE." SET person_id='".$new_id."', booking_status=1 WHERE person_id='".$old_id."'");	
+		}
+		//Finally insert all the tickets bookings
+		$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix. 'em_tickets_bookings'); //empty tickets bookings table first
+		$sql = "INSERT INTO ". $wpdb->prefix. 'em_tickets_bookings ( `booking_id` ,`ticket_id` ,`ticket_booking_spaces` ,`ticket_booking_price`) VALUES' . implode(',',$ticket_bookings);
+		$wpdb->query($sql);
+		echo "<div class='updated'><p>Bookings have been migrated. Please verify this in the <a href='admin.php?page=events-manager-bookings'>bookings</a> and wordpress <a href='users.php'>users</a> sections (or for older bookings, access the booking info via the admin events list). If this didn't work you can try migrating again or delete the old persons database table which is not in use anymore.</p></div>";
+	}
+}
+
+function em_migrate_bookings_delete(){
+	global $wpdb;
+	if( wp_verify_nonce($_REQUEST['_wpnonce'], 'bookings_migrate_delete') ){
+		$wpdb->query('DROP TABLE '.$wpdb->prefix.'em_people');
+		echo "<div class='updated'><p>Old People table deleted, enjoy Events Manager 4!</p></div>";
+	}
 }
 ?>

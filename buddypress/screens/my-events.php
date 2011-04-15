@@ -46,7 +46,7 @@ function bp_em_my_events_title() {
  * @return null
  */
 function bp_em_my_events_content() {
-	em_locate_template('buddypress/events/my-events.php', true);
+	em_locate_template('buddypress/my-events.php', true);
 }
 
 function bp_em_my_events_editor_title() {
@@ -59,7 +59,7 @@ function bp_em_my_events_editor_title() {
 }
 
 function bp_em_my_events_editor(){
-	em_locate_template('forms/events/editor.php', true);
+	em_locate_template('forms/event-editor.php', true);
 }
 
 ?>

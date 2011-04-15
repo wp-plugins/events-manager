@@ -115,7 +115,7 @@ function em_bookings_event(){
 		</div>
   		<h2>
   			<?php echo sprintf(__('Manage %s Bookings', 'dbem'), "'{$EM_Event->name}'"); ?>
-  			<a href="admin.php?page=events-manager-event&event_id=<?php echo $EM_Event->id; ?>" class="button add-new-h2"><?php _e('View/Edit Event','dbem') ?></a>
+  			<a href="<?php echo $EM_Event->output('#_EDITEVENTURL'); ?>" class="button add-new-h2"><?php _e('View/Edit Event','dbem') ?></a>
   		</h2>
   		<div><a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a></div>  
 		<div>

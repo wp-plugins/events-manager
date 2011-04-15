@@ -4,7 +4,7 @@
  * @author marcus
  *
  */
-class EM_Tickets extends EM_Object{
+class EM_Tickets extends EM_Object implements Iterator{
 	
 	/**
 	 * Array of EM_Ticket objects for a specific event
@@ -39,7 +39,7 @@ class EM_Tickets extends EM_Object{
 				$EM_Ticket->event = $this->event;
 				$this->tickets[] = $EM_Ticket;
 			}
-		}elseif( is_object($object) && get_class($object) == "EM_Booking"){
+		}elseif( is_array($object) && get_class($object) == "EM_Booking"){
 			$this->booking = $object;
 			$this->event = $this->booking->get_event();
 			$sql = "SELECT * FROM ". $wpdb->prefix . EM_TICKETS_TABLE ." t LEFT JOIN ". $wpdb->prefix . EM_BOOKINGS_TICKETS_TABLE ." bt ON bt.ticket_id=t.ticket_id  WHERE booking_id ='{$EM_Booking->id}'";
@@ -48,6 +48,16 @@ class EM_Tickets extends EM_Object{
 				$EM_Ticket = new EM_Ticket($ticket);
 				$EM_Ticket->event = $this->event;
 				$this->tickets[] = $EM_Ticket;
+			}
+		}elseif( is_array($object) ){
+			if( is_object(current($object)) && get_class(current($object)) == 'EM_Ticket' ){
+				$this->tickets = $object;
+			}else{
+				foreach($object as $ticket){
+					$EM_Ticket = new EM_Ticket($ticket);
+					$EM_Ticket->event = $this->event;
+					$this->tickets[] = $EM_Ticket;				
+				}
 			}
 		}
 		do_action('em_tickets', $this, $object);
@@ -200,5 +210,27 @@ class EM_Tickets extends EM_Object{
 		}
 		return apply_filters('em_tickets_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
+	
+	//Iterator Implementation
+    public function rewind(){
+        reset($this->tickets);
+    }  
+    public function current(){
+        $var = current($this->tickets);
+        return $var;
+    }  
+    public function key(){
+        $var = key($this->tickets);
+        return $var;
+    }  
+    public function next(){
+        $var = next($this->tickets);
+        return $var;
+    }  
+    public function valid(){
+        $key = key($this->tickets);
+        $var = ($key !== NULL && $key !== FALSE);
+        return $var;
+    }
 }
 ?>

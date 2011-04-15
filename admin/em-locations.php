@@ -155,6 +155,16 @@ function em_admin_location($message = "") {
 								<?php _e('The name of the location', 'dbem') ?>
 							</div>
 						</div>
+						<div id="location_owner" class="stuffbox">
+							<h3>
+								<?php _e ( 'Location Owner', 'dbem' ); ?>
+							</h3>
+							<div class="inside">
+								<?php
+									wp_dropdown_users ( array ('name' => 'location_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Location->owner  ) );
+								?>
+							</div>
+						</div>
 						<div id="location_coordinates" class="stuffbox" style='display: none;'>
 							<h3>
 								<?php _e ( 'Coordinates', 'dbem' ); ?>

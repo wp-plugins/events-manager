@@ -79,6 +79,9 @@ class EM_Location extends EM_Object {
 		$location = array();
 		$location['location_id'] = ( !empty($_POST['location_id']) ) ? $_POST['location_id']:'';
 		$location['location_name'] = ( !empty($_POST['location_name']) ) ? stripslashes($_POST['location_name']):'';
+		if( current_user_can('edit_others_events') ){
+			$location['location_owner'] = ( !empty($_POST['location_owner']) && is_numeric($_POST['location_owner']) ) ? $_POST['location_owner']:'';
+		}
 		$location['location_address'] = ( !empty($_POST['location_address']) ) ? stripslashes($_POST['location_address']):'';
 		$location['location_town'] = ( !empty($_POST['location_town']) ) ? stripslashes($_POST['location_town']):'';
 		$location['location_state'] = ( !empty($_POST['location_state']) ) ? stripslashes($_POST['location_state']):'';
@@ -92,11 +95,18 @@ class EM_Location extends EM_Object {
 	
 	function save(){
 		global $wpdb, $current_user;
+		$table = $wpdb->prefix.EM_LOCATIONS_TABLE;
 		if( $this->validate() ){
-			if( current_user_can('edit_locations') ){
-		   		get_currentuserinfo();
+			if( $this->can_manage('edit_locations','edit_others_locations') ){
+				//owner person can be anyone the admin wants, but the creator if not.
+				if( current_user_can('edit_others_events') ){
+					$this->owner = ( $this->owner > 0 ) ? $this->owner:0;
+				}else{
+					//force user id - user is either editing a location or making a new one, as can_manage checks ownership too. 
+					$this->owner = get_current_user_id();
+				}
+				get_currentuserinfo();
 				do_action('em_location_save_pre', $this);
-				$table = $wpdb->prefix.EM_LOCATIONS_TABLE;
 				$this->slug = $this->sanitize_title();
 				$data = $this->to_array();
 				unset($data['location_id']);
@@ -108,8 +118,6 @@ class EM_Location extends EM_Object {
 						$this->feedback_message = sprintf(__('%s successfully updated.', 'dbem'), __('Location','dbem'));
 					}				
 				}else{
-					$this->owner = $current_user->ID; //Record creator of event
-					$data['location_owner'] = $this->owner;
 					$result = $wpdb->insert($table, $data, $this->get_types($data));
 				    $this->id = $wpdb->insert_id;   
 					if( $result ){
@@ -282,8 +290,15 @@ class EM_Location extends EM_Object {
 	}
 	
 	function output_single($target = 'html'){
-		$format = get_option ( 'dbem_single_location_format' );
-		return apply_filters('em_location_output_single', $this->output($format, $target), $this, $target);	
+		$located = em_locate_template('templates/location-single.php');
+		if( $located ){
+			ob_start();
+			include($located);
+			return apply_filters('em_location_output_single', ob_get_clean(), $this, $target);	
+		}else{
+			$format = get_option ( 'dbem_single_location_format' );
+			return apply_filters('em_location_output_single', $this->output($format, $target), $this, $target);			
+		}
 	}
 	
 	function output($format, $target="html") {

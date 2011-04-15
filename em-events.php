@@ -8,25 +8,23 @@
  * @param $data
  * @return string
  */
-function em_content($content) {
-	/*
-	echo "<h2>WP_REWRITE</h2>";
-	echo "<pre>";
-	global $wp_rewrite;
-	print_r($wp_rewrite);
-	echo "</pre>";
-	echo "<h2>WP_QUERY</h2>";
-	echo "<pre>";
-	global $wp_query;
-	print_r($wp_query);
-	echo "</pre>";
-	die();	
-	*/
+function em_content($page_content) {
 	$events_page_id = get_option ( 'dbem_events_page' );
 	if ( get_the_ID() == $events_page_id && $events_page_id != 0 ) {
-		global $wpdb, $EM_Event, $EM_Location, $EM_Category;
-		//TODO FILTER - filter em page content before placeholder replacing
-		//TODO any loop should put the current $EM_Event etc. into the global variable
+		/*
+		echo "<h2>WP_REWRITE</h2>";
+		echo "<pre>";
+		global $wp_rewrite;
+		print_r($wp_rewrite);
+		echo "</pre>";
+		echo "<h2>WP_QUERY</h2>";
+		echo "<pre>";
+		global $wp_query;
+		print_r($wp_query->query_vars);
+		echo "</pre>";
+		die();
+		*/
+		global $wpdb, $wp_query, $EM_Event, $EM_Location, $EM_Category;
 		//general defaults
 		$args = array(				
 			'orderby' => get_option('dbem_events_default_orderby'),
@@ -52,6 +50,11 @@ function em_content($content) {
 		} elseif ( is_object($EM_Location) ) {
 			//Just a single location
 			$content =  $EM_Location->output_single();
+		} elseif ( $wp_query->get('bookings_page') ) {
+			//Bookings Page
+			ob_start();
+			em_locate_template('templates/my-bookings.php',true);
+			$content = ob_get_clean();
 		} elseif ( is_object($EM_Event) && !empty($_REQUEST['book']) ) {
 			//bookings page
 			$content = $EM_Event->output( get_option('dbem_bookings_page') );
@@ -64,7 +67,7 @@ function em_content($content) {
 			}
 		} else {
 			// Multiple events page
-			$scope = ( !empty($_REQUEST['scope']) ) ? EM_Object::sanitize($_REQUEST['scope']) : "future";
+			$scope = ( !empty($_REQUEST['scope']) ) ? $_REQUEST['scope'] : "future";
 			//If we have a $_REQUEST['page'] var, use it to calculate the offset/limit ratios (safer than offset/limit get vars)
 			$args['scope'] = $scope;
 			if ( !empty($_REQUEST['category_id']) ) $args['category'] = $_REQUEST['category_id'];
@@ -80,17 +83,42 @@ function em_content($content) {
 				if ( is_numeric($time_limit) && $time_limit > 0 && $scope == 'future'){
 					$args['scope'] = date('Y-m-d').",".date('Y-m-t', strtotime('+'.($time_limit-1).' month'));
 				}
-				$content =  EM_Events::output( apply_filters('em_content_events_args', $args) );
+				//Intercept search request, if defined
+				if( wp_verify_nonce($_POST['_wpnonce'], 'search_events') && get_option('dbem_events_page_search') ){
+					$args = EM_Events::get_post_search($args);
+				}
+				$events = EM_Events::get( apply_filters('em_content_events_args', $args) );
+				$template = em_locate_template('templates/events-list.php'); //if successful, this template overrides the settings and defaults, including search
+				if( $template ){
+					ob_start();
+					include($template);
+					$content = ob_get_clean();					
+				}else{
+					if( count($events) > 0 ){
+						$content = EM_Events::output( $events );
+					}else{
+						$content = get_option ( 'dbem_no_events_message' );
+					}
+					if( get_option('dbem_events_page_search') ){
+						ob_start();
+						em_locate_template('templates/events-search.php',true);
+						$content = ob_get_clean() . $content;
+					}
+				}
 			}
 		}
 		//If disable rewrite flag is on, then we need to add a placeholder here
 		if( get_option('dbem_disable_title_rewrites') == 1 ){
 			$content = str_replace('#_PAGETITLE', em_events_page_title(''), get_option('dbem_title_html')) . $content;
 		}
+		//Now, we either replace CONTENTS or just replace the whole page
+		if( preg_match('/CONTENTS/', $page_content) ){
+			$content = str_replace('CONTENTS',$content,$page_content);
+		}
 		//TODO FILTER - filter em page content before display
 		return apply_filters('em_content', '<div id="em-wrapper">'.$content.'</div>');
 	}
-	return $content;
+	return $page_content;
 }
 add_filter ( 'the_content', 'em_content' );
 
@@ -100,8 +128,7 @@ add_filter ( 'the_content', 'em_content' );
  * @return string
  */
 function em_events_page_title($content) {
-	global $EM_Event;
-	global $post;
+	global $EM_Event, $wp_query, $post;
 	$events_page_id = get_option ( 'dbem_events_page' );
 	
 	if ( $post->ID == $events_page_id && $events_page_id != 0 ) {
@@ -124,6 +151,9 @@ function em_events_page_title($content) {
 		}elseif (isset ( $_REQUEST ['location_id'] ) && $_REQUEST ['location_id'] |= '') {
 			$location = new EM_Location( EM_Object::sanitize($_REQUEST ['location_id']) );
 			$content =  $location->output(get_option( 'dbem_location_page_title_format' ));;
+		}elseif ( $wp_query->get('bookings_page') ) {
+			//Bookings Page
+			$content = sprintf(__('My %s','dbem'),__('Bookings','dbem'));
 		}elseif ( is_object($EM_Event) && !empty($_REQUEST['book']) ) {
 			//bookings page
 			$content = $EM_Event->output( get_option('dbem_bookings_page_title') );

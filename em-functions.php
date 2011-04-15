@@ -106,7 +106,7 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 function em_get_countries($add_blank = false){
 	global $em_countries_array;
 	if( !is_array($em_countries_array) ){
-		$em_countries_array = array('AF' => 'Afghanistan', 	'DZ' => 'Algeria', 	'AS' => 'American Samoa', 	'AD' => 'Andorra', 	'AO' => 'Angola', 	'AR' => 'Argentina', 	'AU' => 'Australia', 	'AT' => 'Austria', 	'BH' => 'Bahrain', 	'BD' => 'Bangladesh', 	'BE' => 'Belgium', 	'BJ' => 'Benin', 	'BT' => 'Bhutan', 	'BW' => 'Botswana', 	'BR' => 'Brazil', 	'BN' => 'Brunei', 	'BG' => 'Bulgaria', 	'BI' => 'Burundi', 	'KH' => 'Cambodia', 	'CA' => 'Canada', 	'CF' => 'Central African Republic', 	'TD' => 'Chad', 	'CL' => 'Chile', 	'CN' => 'China', 	'CI' => 'Côte D\'ivoire', 	'HR' => 'Croatia', 	'CZ' => 'Czech Republic', 	'CD' => 'Democratic Republic of the Congo', 	'DK' => 'Denmark', 	'DJ' => 'Djibouti', 	'EG' => 'Egypt', 	'EE' => 'Estonia', 	'ET' => 'Ethiopia', 	'FJ' => 'Fiji', 	'FI' => 'Finland', 	'FR' => 'France', 	'PF' => 'French Polynesia', 	'GA' => 'Gabon', 	'GM' => 'Gambia', 	'DE' => 'Germany', 	'GH' => 'Ghana', 	'GR' => 'Greece', 	'GU' => 'Guam', 	'HK' => 'Hong Kong', 	'HU' => 'Hungary', 	'IS' => 'Iceland', 	'IN' => 'India', 	'ID' => 'Indonesia', 	'IQ' => 'Iraq', 	'IE' => 'Ireland', 	'IL' => 'Israel', 	'IT' => 'Italy', 	'JP' => 'Japan', 	'JO' => 'Jordan', 	'KZ' => 'Kazakhstan', 	'KE' => 'Kenya', 	'KW' => 'Kuwait', 	'KG' => 'Kyrgyzstan', 	'LA' => 'Laos', 	'LV' => 'Latvia', 	'LB' => 'Lebanon', 	'LI' => 'Liechtenstein', 	'LT' => 'Lithuania', 	'LU' => 'Luxembourg', 	'MO' => 'Macao', 	'MK' => 'Macedonia', 	'MG' => 'Madagascar', 	'MW' => 'Malawi', 	'MY' => 'Malaysia', 	'MV' => 'Maldives', 	'MT' => 'Malta', 	'MU' => 'Mauritius', 	'MX' => 'Mexico', 	'MN' => 'Mongolia', 	'MA' => 'Morocco', 	'MZ' => 'Mozambique', 	'MM' => 'Myanmar(Burma)', 	'NA' => 'Namibia', 	'NP' => 'Nepal', 	'NL' => 'Netherlands', 	'NC' => 'New Caledonia', 	'NZ' => 'New Zealand', 	'NG' => 'Nigeria', 	'MP' => 'Northern Mariana Islands', 	'NO' => 'Norway', 	'OM' => 'Oman', 	'PK' => 'Pakistan', 	'PW' => 'Palau', 	'PG' => 'Papua New Guinea', 	'PH' => 'Philippines', 	'PL' => 'Poland', 	'PT' => 'Portugal', 	'QA' => 'Qatar', 	'CG' => 'Republic of the Congo', 	'RO' => 'Romania', 	'RU' => 'Russia', 	'RW' => 'Rwanda', 	'WS' => 'Samoa', 	'ST' => 'São Tomé And Príncipe', 	'SA' => 'Saudi Arabia', 	'SN' => 'Senegal', 	'RS' => 'Serbia', 	'SC' => 'Seychelles', 	'SL' => 'Sierra Leone', 	'SG' => 'Singapore', 	'SK' => 'Slovakia', 	'SI' => 'Slovenia', 	'SB' => 'Solomon Islands', 	'ZA' => 'South Africa', 	'KR' => 'South Korea', 	'ES' => 'Spain', 	'LK' => 'Sri Lanka', 	'SE' => 'Sweden', 	'CH' => 'Switzerland', 	'TW' => 'Taiwan', 	'TJ' => 'Tajikistan', 	'TZ' => 'Tanzania', 	'TH' => 'Thailand', 	'TG' => 'Togo', 	'TO' => 'Tonga', 	'TN' => 'Tunisia', 	'TR' => 'Turkey', 	'TM' => 'Turkmenistan', 	'UG' => 'Uganda', 	'UA' => 'Ukraine', 	'AE' => 'United Arab Emirates', 	'GB' => 'United Kingdom', 	'US' => 'United States', 	'UZ' => 'Uzbekistan', 	'VU' => 'Vanuatu', 	'VN' => 'Vietnam', 	'YE' => 'Yemen', 	'ZM' => 'Zambia', 	'ZW' => 'Zimbabwe' );
+		$em_countries_array = array('AF' => 'Afghanistan', 	'DZ' => 'Algeria', 	'AS' => 'American Samoa', 	'AD' => 'Andorra', 	'AO' => 'Angola', 	'AR' => 'Argentina', 	'AU' => 'Australia', 	'AT' => 'Austria', 	'BH' => 'Bahrain', 	'BD' => 'Bangladesh', 	'BE' => 'Belgium', 	'BJ' => 'Benin', 	'BT' => 'Bhutan', 	'BW' => 'Botswana', 	'BR' => 'Brazil', 	'BN' => 'Brunei', 	'BG' => 'Bulgaria', 	'BI' => 'Burundi', 	'KH' => 'Cambodia', 	'CA' => 'Canada', 	'CF' => 'Central African Republic', 	'TD' => 'Chad', 	'CL' => 'Chile', 	'CN' => 'China', 	'CI' => 'Côte D\'ivoire', 	'HR' => 'Croatia', 	'CZ' => 'Czech Republic', 	'CD' => 'Democratic Republic of the Congo', 	'DK' => 'Denmark', 	'DJ' => 'Djibouti', 	'EG' => 'Egypt', 	'EE' => 'Estonia', 	'ET' => 'Ethiopia', 	'FJ' => 'Fiji', 	'FI' => 'Finland', 	'FR' => 'France', 	'PF' => 'French Polynesia', 	'GA' => 'Gabon', 	'GM' => 'Gambia', 	'DE' => 'Germany', 	'GH' => 'Ghana', 	'GR' => 'Greece', 	'GU' => 'Guam', 	'HK' => 'Hong Kong', 	'HU' => 'Hungary', 	'IS' => 'Iceland', 	'IN' => 'India', 	'ID' => 'Indonesia', 	'IQ' => 'Iraq', 	'IE' => 'Ireland', 	'IL' => 'Israel', 	'IT' => 'Italy', 	'JP' => 'Japan', 	'JO' => 'Jordan', 	'KZ' => 'Kazakhstan', 	'KE' => 'Kenya', 	'KW' => 'Kuwait', 	'KG' => 'Kyrgyzstan', 	'LA' => 'Laos', 	'LV' => 'Latvia', 	'LB' => 'Lebanon', 	'LI' => 'Liechtenstein', 	'LT' => 'Lithuania', 	'LU' => 'Luxembourg', 	'MO' => 'Macao', 	'MK' => 'Macedonia', 	'MG' => 'Madagascar', 	'MW' => 'Malawi', 	'MY' => 'Malaysia', 	'MV' => 'Maldives', 	'MT' => 'Malta', 	'MU' => 'Mauritius', 	'MX' => 'Mexico', 	'MN' => 'Mongolia', 	'MA' => 'Morocco', 	'MZ' => 'Mozambique', 	'MM' => 'Myanmar(Burma)', 	'NA' => 'Namibia', 	'NP' => 'Nepal', 	'NL' => 'Netherlands', 	'NC' => 'New Caledonia', 	'NZ' => 'New Zealand', 	'NG' => 'Nigeria', 	'MP' => 'Northern Mariana Islands', 	'NO' => 'Norway', 	'OM' => 'Oman', 	'PK' => 'Pakistan', 	'PW' => 'Palau', 	'PG' => 'Papua New Guinea', 	'PH' => 'Philippines', 	'PL' => 'Poland', 	'PT' => 'Portugal', 	'QA' => 'Qatar', 	'CG' => 'Republic of the Congo', 	'RO' => 'Romania', 	'RU' => 'Russia', 	'RW' => 'Rwanda', 	'WS' => 'Samoa', 	'ST' => 'São Tomé And Príncipe', 	'SA' => 'Saudi Arabia', 	'SN' => 'Senegal', 	'RS' => 'Serbia', 	'SC' => 'Seychelles', 	'SL' => 'Sierra Leone', 	'SG' => 'Singapore', 	'SK' => 'Slovakia', 	'SI' => 'Slovenia', 	'SB' => 'Solomon Islands', 	'ZA' => 'South Africa', 	'KR' => 'South Korea', 	'ES' => 'Spain', 	'LK' => 'Sri Lanka', 	'SE' => 'Sweden', 	'CH' => 'Switzerland', 	'TW' => 'Taiwan', 	'TJ' => 'Tajikistan', 	'TZ' => 'Tanzania', 	'TH' => 'Thailand', 	'TG' => 'Togo', 	'TO' => 'Tonga', 	'TN' => 'Tunisia', 	'TR' => 'Turkey', 	'TM' => 'Turkmenistan', 	'UG' => 'Uganda', 	'UA' => 'Ukraine', 	'AE' => 'United Arab Emirates', 	'GB' => 'United Kingdom', 	'US' => 'United States', 	'UZ' => 'Uzbekistan',	'VE' => 'Venezuela', 	'VU' => 'Vanuatu', 	'VN' => 'Vietnam', 	'YE' => 'Yemen', 	'ZM' => 'Zambia', 	'ZW' => 'Zimbabwe' );
 		array_walk($em_countries_array, '__');
 	}
 	if($add_blank !== false){
@@ -171,6 +171,99 @@ function em_get_attributes(){
 		}
 	}
 	return $attributes;
+}
+
+/**
+ * Copied straight from wp-login.php, only change atm is a function renaming. 
+ * Handles registering a new user.
+ *
+ * @param string $user_login User's username for logging in
+ * @param string $user_email User's email address to send password and add
+ * @return int|WP_Error Either user's ID or error on failure.
+ */
+function em_register_new_user( $user_login, $user_email ) {
+	$errors = new WP_Error();
+
+	$sanitized_user_login = sanitize_user( $user_login );
+	$user_email = apply_filters( 'user_registration_email', $user_email );
+
+	// Check the username
+	if ( $sanitized_user_login == '' ) {
+		$errors->add( 'empty_username', __( '<strong>ERROR</strong>: Please enter a username.' ) );
+	} elseif ( ! validate_username( $user_login ) ) {
+		$errors->add( 'invalid_username', __( '<strong>ERROR</strong>: This username is invalid because it uses illegal characters. Please enter a valid username.' ) );
+		$sanitized_user_login = '';
+	} elseif ( username_exists( $sanitized_user_login ) ) {
+		$errors->add( 'username_exists', __( '<strong>ERROR</strong>: This username is already registered, please choose another one.' ) );
+	}
+
+	// Check the e-mail address
+	if ( $user_email == '' ) {
+		$errors->add( 'empty_email', __( '<strong>ERROR</strong>: Please type your e-mail address.' ) );
+	} elseif ( ! is_email( $user_email ) ) {
+		$errors->add( 'invalid_email', __( '<strong>ERROR</strong>: The email address isn&#8217;t correct.' ) );
+		$user_email = '';
+	} elseif ( email_exists( $user_email ) ) {
+		$errors->add( 'email_exists', __( '<strong>ERROR</strong>: This email is already registered, please choose another one.' ) );
+	}
+
+	do_action( 'register_post', $sanitized_user_login, $user_email, $errors );
+
+	$errors = apply_filters( 'registration_errors', $errors, $sanitized_user_login, $user_email );
+
+	if ( $errors->get_error_code() )
+		return $errors;
+
+	$user_pass = wp_generate_password( 12, false);
+	$user_id = wp_create_user( $sanitized_user_login, $user_pass, $user_email );
+	if ( ! $user_id ) {
+		$errors->add( 'registerfail', sprintf( __( '<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !' ), get_option( 'admin_email' ) ) );
+		return $errors;
+	}
+
+	update_user_option( $user_id, 'default_password_nag', true, true ); //Set up the Password change nag.
+
+	em_new_user_notification( $user_id, $user_pass );
+
+	return $user_id;
+}
+
+/**
+ * Notify the blog admin of a new user, normally via email.
+ *
+ * @since 2.0
+ *
+ * @param int $user_id User ID
+ * @param string $plaintext_pass Optional. The user's plaintext password
+ */
+function em_new_user_notification($user_id, $plaintext_pass = '') {
+	global $LoginWithAjax;
+	
+	//Copied out of /wp-includes/pluggable.php
+	$user = new WP_User($user_id);
+
+	$user_login = stripslashes($user->user_login);
+	$user_email = stripslashes($user->user_email);
+	
+	// The blogname option is escaped with esc_html on the way into the database in sanitize_option
+	// we want to reverse this for the plain text arena of emails.
+	$blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES);
+
+	$message  = sprintf(__('New user registration on your blog %s:'), $blogname) . "\r\n\r\n";
+	$message .= sprintf(__('Username: %s'), $user_login) . "\r\n\r\n";
+	$message .= sprintf(__('E-mail: %s'), $user_email) . "\r\n";
+	@wp_mail(get_option('admin_email'), sprintf(__('[%s] New User Registration'), $blogname), $message);
+
+	if ( empty($plaintext_pass) )
+		return;
+			
+	//
+	ob_start();
+	em_locate_template('emails/new-user.php', true);	
+	$message = ob_get_clean();
+	$message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), $message);
+	
+	return wp_mail($user_email, sprintf(__('[%s] Your username and password'), $blogname), $message);
 }
 
 /*

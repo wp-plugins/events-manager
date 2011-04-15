@@ -63,5 +63,23 @@ class EM_People extends EM_Object {
 		return apply_filters('em_people_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}	
 	
+	/**
+	 * Handles the action of someone being deleted on wordpress
+	 * @param int $id
+	 */
+	function user_deleted( $id ){
+		global $wpdb;
+		if( current_user_can('delete_users') ){
+			if( $_REQUEST['delete_option'] == 'reassign' && is_numeric($_REQUEST['reassign_user']) ){
+				$wpdb->update($wpdb->prefix.EM_EVENTS_TABLE, array('event_owner'=>$_REQUEST['reassign_user']), array('event_owner'=>$id));
+			}else{
+				//User is being deleted, so we delete their events and cancel their bookings.
+				$wpdb->query("DELETE FROM ".$wpdb->prefix.EM_EVENTS_TABLE." WHERE event_owner=$id");
+			}
+		}
+		//set bookings to cancelled
+		$wpdb->update($wpdb->prefix.EM_BOOKINGS_TABLE, array('booking_status'=>3, 'person_id'=>0, 'booking_comment'=>__('User deleted by administrators','dbem')), array('person_id'=>$id));
+	}
 }
+add_action('delete_user', array('EM_People','user_deleted'), 1,10);
 ?>

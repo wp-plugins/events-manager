@@ -16,9 +16,9 @@ class EM_Person extends WP_User{
 		}
 		if($username){
 			parent::WP_User($person_id, $username);
-		}elseif($person_id === 0){
+		}elseif( is_numeric($person_id) && $person_id == 0 ){
 			$this->ID = 0;
-			$this->display_name = 'Unregistered Booking';
+			$this->display_name = 'Non-Registered User';
 			$this->user_email = 'n/a';
 		}else{
 			parent::WP_User($person_id);
@@ -29,7 +29,8 @@ class EM_Person extends WP_User{
 	
 	function get_bookings(){
 		global $wpdb;
-		$results = $wpdb->get_results("SELECT * FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE person_id={$this->id}",ARRAY_A);
+		$EM_Booking = new EM_Booking(); //empty booking for fields
+		$results = $wpdb->get_results("SELECT b.".implode(', b.', array_keys($EM_Booking->fields))." FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." b, ".$wpdb->prefix.EM_EVENTS_TABLE." e WHERE e.event_id=b.event_id AND person_id={$this->id} ORDER BY event_start_date DESC",ARRAY_A);
 		$bookings = array();
 		foreach($results as $booking_data){
 			$bookings[] = new EM_Booking($booking_data);
@@ -56,9 +57,9 @@ class EM_Person extends WP_User{
 			<tr>
 				<td><?php echo get_avatar($this->ID); ?></td>
 				<td style="padding-left:10px; vertical-align: top;">
-					<strong>Name</strong> : <?php echo $this->display_name; ?><br /><br />
-					<strong>Email</strong> : <?php echo $this->user_email; ?><br /><br />
-					<strong>Phone</strong> : <?php echo $this->phone; ?>
+					<strong><?php _e('Name','dbem'); ?></strong> : <?php echo $this->display_name; ?><br /><br />
+					<strong><?php _e('Email','dbem'); ?></strong> : <?php echo $this->user_email; ?><br /><br />
+					<strong><?php _e('Phone','dbem'); ?></strong> : <?php echo $this->phone; ?>
 				</td>
 			</tr>
 		</table>
