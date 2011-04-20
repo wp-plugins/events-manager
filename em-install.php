@@ -1,12 +1,4 @@
 <?php
-// obsolete tables
-define('EM_OLD_EVENTS_TABLE','dbem_events') ; 
-define('EM_OLD_RECURRENCE_TABLE','dbem_recurrence'); //TABLE NAME   
-define('EM_OLD_LOCATIONS_TABLE','dbem_locations'); //TABLE NAME  
-define('EM_OLD_BOOKINGS_TABLE','dbem_bookings'); //TABLE NAME
-define('EM_OLD_PEOPLE_TABLE','dbem_people'); //TABLE NAME  
-define('EM_OLD_BOOKING_PEOPLE_TABLE','dbem_bookings_people'); //TABLE NAME   
-define('EM_OLD_CATEGORIES_TABLE', 'dbem_categories'); //TABLE NAME
 
 function em_install() {
 	$old_version = get_option('dbem_version');
@@ -34,8 +26,8 @@ function em_install() {
 	  	update_option('dbem_version', EM_VERSION); 
 	  	
 		// wp-content must be chmodded 777. Maybe just wp-content.
-		if(!file_exists("../".EM_IMAGE_UPLOAD_DIR))
-			mkdir("../".EM_IMAGE_UPLOAD_DIR, 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
+		if(!file_exists(ABSPATH.EM_IMAGE_UPLOAD_DIR))
+			mkdir(ABSPATH.EM_IMAGE_UPLOAD_DIR, 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
 		
 		em_create_events_page(); 
 	}
@@ -87,9 +79,9 @@ function em_create_events_table() {
 		$in_four_weeks = date('Y-m-d', time() + 60*60*24*7*4); 
 		$in_one_year = date('Y-m-d', time() + 60*60*24*7*365);
 		
-		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id) VALUES ('Orality in James Joyce Conference', '$in_one_week', '16:00:00', '18:00:00', 1)");
-		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id)	VALUES ('Traditional music session', '$in_four_weeks', '20:00:00', '22:00:00', 2)");
-		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id) VALUES ('6 Nations, Italy VS Ireland', '$in_one_year','22:00:00', '24:00:00', 3)");
+		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id, event_slug, event_owner, event_status) VALUES ('Orality in James Joyce Conference', '$in_one_week', '16:00:00', '18:00:00', 1, 'oralty-in-james-joyce-conference','".get_current_user_id()."',1)");
+		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id, event_slug, event_owner, event_status)	VALUES ('Traditional music session', '$in_four_weeks', '20:00:00', '22:00:00', 2, 'traditional-music-session','".get_current_user_id()."',1)");
+		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id, event_slug, event_owner, event_status) VALUES ('6 Nations, Italy VS Ireland', '$in_one_year','22:00:00', '24:00:00', 3, '6-nations-italy-vs-ireland','".get_current_user_id()."',1)");
 	}else{
 		if( get_option('dbem_version') < 4 ){
 			$wpdb->query("ALTER TABLE $table_name CHANGE event_seats event_spaces int(5)");
@@ -134,13 +126,16 @@ function em_create_locations_table() {
 		location_owner bigint(20) unsigned DEFAULT 0 NOT NULL,
 		location_address tinytext NOT NULL,
 		location_town tinytext NOT NULL,
-		location_state tinytext NULL,
+		location_state VARCHAR( 200 ) NULL,
 		location_postcode VARCHAR( 10 ) NULL,
+		location_region VARCHAR( 200 ) NULL,
 		location_country CHAR( 2 ) NOT NULL,
 		location_latitude float DEFAULT NULL,
 		location_longitude float DEFAULT NULL,
 		location_description text DEFAULT NULL,
 		PRIMARY KEY  (location_id),
+		INDEX (location_state),
+		INDEX (location_region),
 		INDEX (location_country),
 		INDEX (location_slug)
 		) DEFAULT CHARSET=utf8 ;";
@@ -151,9 +146,9 @@ function em_create_locations_table() {
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);		
 		//Add default values
-		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_latitude, location_longitude) VALUES ('Arts Millenium Building', 'Newcastle Road','Galway', 53.275, -9.06532)");
-		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_latitude, location_longitude) VALUES ('The Crane Bar', '2, Sea Road','Galway', 53.2692, -9.06151)");
-		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_latitude, location_longitude) VALUES ('Taaffes Bar', '19 Shop Street','Galway', 53.2725, -9.05321)");
+		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_state, location_country, location_latitude, location_longitude, location_slug, location_owner) VALUES ('Arts Millenium Building', 'Newcastle Road','Galway','Galway','IE', 53.275, -9.06532, 'arts-millenium-building','".get_current_user_id()."')");
+		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_state, location_country, location_latitude, location_longitude, location_slug, location_owner) VALUES ('The Crane Bar', '2, Sea Road','Galway','Galway','IE', 53.2692, -9.06151, 'the-crane-bar','".get_current_user_id()."')");
+		$wpdb->query("INSERT INTO ".$table_name." (location_name, location_address, location_town, location_state, location_country, location_latitude, location_longitude, location_slug, location_owner) VALUES ('Taaffes Bar', '19 Shop Street','Galway','Galway','IE', 53.2725, -9.05321, 'taffes-bar','".get_current_user_id()."')");
 	}else{
 		if( get_option('dbem_version') < 4 && get_option('dbem_version') != '' ){
 			$wpdb->query('ALTER TABLE wp_em_locations CHANGE location_province location_state TINYTEXT CHARACTER SET utf8 COLLATE utf8_general_ci NULL DEFAULT NULL');
@@ -198,6 +193,7 @@ function em_create_categories_table() {
 		category_slug VARCHAR( 200 ) NOT NULL,
 		category_owner bigint(20) unsigned DEFAULT 0 NOT NULL,
 		category_name tinytext NOT NULL,
+		category_description text DEFAULT NULL,
 		PRIMARY KEY  (category_id),
 		INDEX (category_slug)
 		) DEFAULT CHARSET=utf8 ;";
@@ -207,7 +203,7 @@ function em_create_categories_table() {
 	
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);
-		$wpdb->insert( $table_name, array('category_name'=>__('Uncategorized', 'dbem')), array('%s') );
+		$wpdb->insert( $table_name, array('category_name'=>__('Uncategorized', 'dbem'), 'category_slug'=>'uncategorized'), array('%s') );
 	}else{
 		dbDelta($sql);
 	}
@@ -280,20 +276,28 @@ function em_add_options() {
 		'dbem_list_events_page' => 1,
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
-		'dbem_events_page_time_limit' => 0,
+		'dbem_events_page_scope' => 'future',
 		'dbem_events_page_search' => 1,
 		'dbem_event_list_item_format' => '<li>#j #M #Y - #H:#i<br/> #_EVENTLINK<br/>#_LOCATIONTOWN </li>',
 		'dbem_display_calendar_in_events_page' => 0,
 		'dbem_single_event_format' => '<p>Date(s) - #j #M #Y #@_{ \u\n\t\i\l j M Y}<br />#_DESCRIPTION<br />Time - #_24HSTARTTIME - #_24HENDTIME<br /></p><p>Where - #_LOCATIONLINK, #_LOCATIONTOWN</p>#_MAP<br/>#_BOOKINGFORM',
 		'dbem_event_page_title_format' => '#_NAME',
-		'dbem_no_events_message' => __('No events','dbem'),
+		'dbem_no_events_message' => sprintf(__( 'No %s', 'dbem' ),__('Events','dbem')),
 		//Location Formatting
 		'dbem_location_default_country' => 'US',
-		'dbem_location_page_title_format' => '#_LOCATIONNAME',
-		'dbem_location_event_list_item_format' => "<li>#_LOCATIONNAME - #j #M #Y - #H:#i</li>",
 		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_LOCATIONADDRESS</li><li>#_LOCATIONTOWN</li></ul>',
-		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
+		'dbem_locations_page_title' => __('Event','dbem')." ".__('Locations','dbem'),
+		'dbem_no_locations_message' => sprintf(__( 'No %s', 'dbem' ),__('Locations','dbem')),
+		'dbem_location_page_title_format' => '#_LOCATIONNAME',
 		'dbem_single_location_format' => '<p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
+		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
+		'dbem_location_event_list_item_format' => "<li>#_LOCATIONNAME - #j #M #Y - #H:#i</li>",
+		//Category Formatting
+		'dbem_category_page_title_format' => '#_CATEGORYNAME',
+		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYIMAGE #_CATEGORYNOTES <div>#_CATEGORYEVENTSNEXT',
+		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
+		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
+		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
 		//RSS Stuff
 		'dbem_rss_limit' => 10,
 		'dbem_rss_scope' => 'future',
@@ -398,7 +402,7 @@ function em_set_capabilities(){
 	global $wp_roles;
 	if( get_option('dbem_version') == '' || get_option('dbem_version') < 4 ){
 		//Assign caps in groups, as we go down, permissions are "looser"
-		$caps = array('publish_others_events', 'edit_others_events', 'delete_others_events', 'edit_others_locations', 'delete_others_locations', 'manage_others_bookings', 'edit_categories');
+		$caps = array('publish_events', 'edit_others_events', 'delete_others_events', 'edit_others_locations', 'delete_others_locations', 'manage_others_bookings', 'edit_categories');
 		em_set_mass_caps( array('administrator','editor'), $caps );
 		
 		//Add all the open caps
@@ -442,7 +446,7 @@ function em_migrate_v3(){
 	$wpdb->query("INSERT INTO ".$wpdb->prefix.EM_TICKETS_TABLE." (`event_id`, `ticket_name`, `ticket_spaces`) SELECT event_id, 'Standard' as ticket_name, event_spaces FROM ".$wpdb->prefix.EM_EVENTS_TABLE." WHERE recurrence!=1 and event_rsvp=1");
 	
 	//create permalinks for each location, category, event
-	$array = array('event' => $wpdb->prefix.EM_EVENTS_TABLE, 'location' => $wpdb->prefix.EM_LOCATIONS_TABLE, 'category' => $wpdb->prefix.EM_CATEGORIES_TABLE);
+	$array = array('event' => $wpdb->prefix.EM_CATEGORIES_TABLE);
 	foreach( $array as $prefix => $table ){
 		$used_slugs = array();
 		$results = $wpdb->get_results("SELECT {$prefix}_id AS id, {$prefix}_slug AS slug, {$prefix}_name AS name FROM $table", ARRAY_A);

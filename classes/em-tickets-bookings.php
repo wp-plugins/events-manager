@@ -4,7 +4,7 @@
  * @author marcus
  *
  */
-class EM_Tickets_Bookings extends EM_Object{
+class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	
 	/**
 	 * Array of EM_Ticket_Booking objects for a specific event
@@ -34,12 +34,12 @@ class EM_Tickets_Bookings extends EM_Object{
 		if($object){
 			if( is_object($object) && get_class($object) == "EM_Booking"){
 				$this->booking = $object;
-				$sql = "SELECT * FROM ". $wpdb->prefix . EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". $wpdb->prefix . EM_BOOKINGS_TABLE ." b ON bt.booking_id=b.booking_id  WHERE b.booking_id ='{$this->booking->id}'";
+				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_BOOKINGS_TABLE ." b ON bt.booking_id=b.booking_id  WHERE b.booking_id ='{$this->booking->id}'";
 			}elseif( is_object($object) && get_class($object) == "EM_Ticket"){
 				$this->ticket = $object;
-				$sql = "SELECT * FROM ". $wpdb->prefix . EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". $wpdb->prefix . EM_TICKETS_TABLE ." t ON bt.ticket_id=t.ticket_id  WHERE t.ticket_id ='{$this->ticket->id}'";
+				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_TICKETS_TABLE ." t ON bt.ticket_id=t.ticket_id  WHERE t.ticket_id ='{$this->ticket->id}'";
 			}elseif( is_numeric($object) ){
-				$sql = "SELECT * FROM ". $wpdb->prefix . EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". $wpdb->prefix . EM_BOOKINGS_TABLE ." t ON bt.booking_id=b.booking_id  WHERE b.booking_id ='{$object}'";
+				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_BOOKINGS_TABLE ." t ON bt.booking_id=b.booking_id  WHERE b.booking_id ='{$object}'";
 			}
 			$tickets_bookings = $wpdb->get_results($sql, ARRAY_A);
 			//Get tickets belonging to this tickets booking.
@@ -130,7 +130,7 @@ class EM_Tickets_Bookings extends EM_Object{
 	function delete(){
 		global $wpdb;
 		if( is_object($this->get_booking()) && $this->get_booking()->can_manage() ){
-			$result = $wpdb->query("DELETE FROM ".$wpdb->prefix.EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id='{$this->booking->id}'");
+			$result = $wpdb->query("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id='{$this->booking->id}'");
 		}else{
 			//FIXME ticket bookings
 			$ticket_ids = array();
@@ -142,7 +142,7 @@ class EM_Tickets_Bookings extends EM_Object{
 				}
 			}
 			if(count($ticket_ids) > 0){
-				$result = $wpdb->query("DELETE FROM ".$wpdb->prefix.EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_booking_id IN (".implode(',',$ticket_ids).")");
+				$result = $wpdb->query("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_booking_id IN (".implode(',',$ticket_ids).")");
 			}
 		}
 		return apply_filters('em_tickets_bookings_get_booking_id', ($result == true), $this);
@@ -257,5 +257,27 @@ class EM_Tickets_Bookings extends EM_Object{
 		$defaults['owner'] = !current_user_can('manage_others_bookings') ? get_current_user_id():false;
 		return apply_filters('em_tickets_bookings_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
+
+	//Iterator Implementation
+    public function rewind(){
+        reset($this->tickets_bookings);
+    }  
+    public function current(){
+        $var = current($this->tickets_bookings);
+        return $var;
+    }  
+    public function key(){
+        $var = key($this->tickets_bookings);
+        return $var;
+    }  
+    public function next(){
+        $var = next($this->tickets_bookings);
+        return $var;
+    }  
+    public function valid(){
+        $key = key($this->tickets_bookings);
+        $var = ($key !== NULL && $key !== FALSE);
+        return $var;
+    }	
 }
 ?>

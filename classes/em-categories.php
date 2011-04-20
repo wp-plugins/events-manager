@@ -3,8 +3,8 @@ class EM_Categories extends EM_Object {
 		
 	function get( $args = array() ) {
 		global $wpdb;
-		$categories_table = $wpdb->prefix.EM_CATEGORIES_TABLE;
-		$events_table = $wpdb->prefix.EM_EVENTS_TABLE;
+		$categories_table = EM_CATEGORIES_TABLE;
+		$events_table = EM_EVENTS_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
@@ -79,13 +79,81 @@ class EM_Categories extends EM_Object {
 			apply_filters('em_categories_delete', $category_ids);
 			$condition = implode(" OR category_id=", $category_ids);
 			//Delete all the bookings
-			$result_bookings = $wpdb->query("DELETE FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE category_id=$condition;");
+			$result_bookings = $wpdb->query("DELETE FROM ". EM_BOOKINGS_TABLE ." WHERE category_id=$condition;");
 			//Now delete the categories
-			$result = $wpdb->query ( "DELETE FROM ". $wpdb->prefix . EM_CATEGORIES_TABLE ." WHERE category_id=$condition;" );
+			$result = $wpdb->query ( "DELETE FROM ". EM_CATEGORIES_TABLE ." WHERE category_id=$condition;" );
 			do_action('em_categories_delete', $category_ids);
 		}
 		//TODO add error detection on categories delete fails
 		return apply_filters('em_categories_delete', true, $category_ids);
+	}
+
+	function output( $args ){
+		global $EM_Category;
+		$EM_Category_old = $EM_Category; //When looping, we can replace EM_Category global with the current event in the loop
+		//Can be either an array for the get search or an array of EM_Category objects
+		if( is_object(current($args)) && get_class((current($args))) == 'EM_Category' ){
+			$func_args = func_get_args();
+			$categories = $func_args[0];
+			$args = (!empty($func_args[1])) ? $func_args[1] : array();
+			$args = apply_filters('em_categories_output_args', self::get_default_search($args), $categories);
+			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
+			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
+		}else{
+			$args = apply_filters('em_categories_output_args', self::get_default_search($args) );
+			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
+			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
+			$args['limit'] = false;
+			$args['offset'] = false;
+			$args['page'] = false;
+			$categories = self::get( $args );
+		}
+		//What format shall we output this to, or use default
+		$format = ( $args['format'] == '' ) ? get_option( 'dbem_categories_list_item_format' ) : $args['format'] ;
+		
+		$output = "";
+		$categories_count = count($categories);
+		$categories = apply_filters('em_categories_output_categories', $categories);
+		$template = em_locate_template('templates/categories-list.php');
+		if( $template && empty($args['format']) ){
+			ob_start();
+			include($template);
+			$output = ob_get_clean();
+		}else{		
+			if ( count($categories) > 0 ) {
+				$category_count = 0;
+				$categories_shown = 0;
+				foreach ( $categories as $EM_Category ) {
+					if( ($categories_shown < $limit || empty($limit)) && ($category_count >= $offset || $offset === 0) ){
+						$output .= $EM_Category->output($format);
+						$categories_shown++;
+					}
+					$category_count++;
+				}
+				//Add headers and footers to output
+				if( $format == get_option ( 'dbem_categories_list_item_format' ) ){
+					$single_event_format_header = get_option ( 'dbem_categories_list_item_format_header' );
+					$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='em-categories-list'>";
+					$single_event_format_footer = get_option ( 'dbem_categories_list_item_format_footer' );
+					$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
+					$output =  $single_event_format_header .  $output . $single_event_format_footer;
+				}
+				//Pagination (if needed/requested)
+				if( !empty($args['pagination']) && !empty($limit) && $categories_count >= $limit ){
+					//Show the pagination links (unless there's less than 10 events
+					$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
+					$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
+					$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $categories_count, $limit, $page), $page_link_template, $categories_count, $limit, $page);
+				}
+			} else {
+				$output = get_option ( 'dbem_no_categories_message' );
+			}
+		}
+		//FIXME check if reference is ok when restoring object, due to changes in php5 v 4
+		$EM_Category_old= $EM_Category;
+		return apply_filters('em_categories_output', $output, $categories, $args);		
 	}
 
 	/* Overrides EM_Object method to apply a filter to result
@@ -93,8 +161,8 @@ class EM_Categories extends EM_Object {
 	 */
 	function build_sql_conditions( $args = array() ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
-		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
+		$locations_table = EM_LOCATIONS_TABLE;
 		
 		//FIXME EM_Categories doesn't build sql conditions in EM_Object
 		$conditions = array();

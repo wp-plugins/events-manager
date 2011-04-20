@@ -72,12 +72,12 @@ class EM_Booking extends EM_Object{
 			}elseif( is_numeric($booking_data) ){
 				//Retreiving from the database		
 				global $wpdb;			
-				$sql = "SELECT * FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." LEFT JOIN ". $wpdb->prefix . EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data'";
+				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data'";
 				$booking = $wpdb->get_row($sql, ARRAY_A);
 				//Custom Fields
-				$custom = $wpdb->get_row("SELECT meta_key, meta_value FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." LEFT JOIN ". $wpdb->prefix . EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data' AND meta_key='booking_custom'");
+				$custom = $wpdb->get_row("SELECT meta_key, meta_value FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data' AND meta_key='booking_custom'");
 			  	//Booking notes
-			  	$notes = $wpdb->get_results("SELECT * FROM ". $wpdb->prefix . EM_META_TABLE ." WHERE meta_key='booking-note' AND object_id ='$booking_data'", ARRAY_A);
+			  	$notes = $wpdb->get_results("SELECT * FROM ". EM_META_TABLE ." WHERE meta_key='booking-note' AND object_id ='$booking_data'", ARRAY_A);
 			  	foreach($notes as $note){
 			  		$this->notes[] = unserialize($note['meta_value']);
 			  	}
@@ -108,7 +108,7 @@ class EM_Booking extends EM_Object{
 	 */
 	function save(){
 		global $wpdb;
-		$table = $wpdb->prefix.EM_BOOKINGS_TABLE;
+		$table = EM_BOOKINGS_TABLE;
 		do_action('em_booking_save_pre',$this);
 		if( $this->validate() ){
 			if( $this->can_manage() ){
@@ -289,7 +289,7 @@ class EM_Booking extends EM_Object{
 	function get_custom(){
 		global $wpdb;
 		if( count($this->custom) == 0 ){
-			$sql = "SELECT * FROM ". $wpdb->prefix . EM_META_TABLE ." WHERE object_id ='{$this->id}' AND (meta_key='booking_custom' OR meta_key IS NULL)";
+			$sql = "SELECT * FROM ". EM_META_TABLE ." WHERE object_id ='{$this->id}' AND (meta_key='booking_custom' OR meta_key IS NULL)";
 			$booking = $wpdb->get_row($sql, ARRAY_A);
 			//Add custom booking data
 			if( !empty($booking['meta_key']) && $booking['meta_key'] == 'booking_custom' && is_serialized($booking['meta_value']) ){
@@ -301,16 +301,13 @@ class EM_Booking extends EM_Object{
 	
 	/**
 	 * Gets the ticket object this booking belongs to, saves a reference in ticket property
-	 * @return EM_Ticket
+	 * @return EM_Tickets
 	 */
 	function get_tickets(){
-		global $EM_Ticket;
-		if( is_object($this->tickets) && get_class($this->tickets)=='EM_Ticket' && $this->tickets->id == $this->ticket_id ){
+		if( is_object($this->tickets) && get_class($this->tickets)=='EM_Tickets' ){
 			return apply_filters('em_booking_get_tickets', $this->tickets, $this);
-		}elseif( is_object($EM_Ticket) && $EM_Ticket->id == $this->ticket_id ){
-			$this->tickets = $EM_Ticket;
 		}else{
-			$this->tickets = new EM_Tickets($this->ticket_id);
+			$this->tickets = new EM_Tickets($this);
 		}
 		return apply_filters('em_booking_get_tickets', $this->tickets, $this);
 	}
@@ -354,7 +351,7 @@ class EM_Booking extends EM_Object{
 	function delete(){
 		global $wpdb;
 		//FIXME ticket logic needed
-		$sql = $wpdb->prepare("DELETE FROM ". $wpdb->prefix.EM_BOOKINGS_TABLE . " WHERE booking_id=%d", $this->id);
+		$sql = $wpdb->prepare("DELETE FROM ". EM_BOOKINGS_TABLE . " WHERE booking_id=%d", $this->id);
 		$result = $wpdb->query( $sql );
 		if( $result !== false ){
 			//delete the tickets too
@@ -445,7 +442,7 @@ class EM_Booking extends EM_Object{
 			$note = array('author'=>get_current_user_id(),'note'=>$note_text,'timestamp'=>current_time('timestamp'));
 			$this->notes[] = $note;
 			$this->feedback_message = __('Booking note successfully added.','dbem');
-			return $wpdb->insert($wpdb->prefix.EM_META_TABLE, array('object_id'=>$this->id, 'meta_key'=>'booking-note', 'meta_value'=> serialize($note)),array('%d','%s','%s'));
+			return $wpdb->insert(EM_META_TABLE, array('object_id'=>$this->id, 'meta_key'=>'booking-note', 'meta_value'=> serialize($note)),array('%d','%s','%s'));
 		}
 		return false;
 	}

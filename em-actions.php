@@ -66,9 +66,7 @@ function em_init_actions() {
 				if( !wp_verify_nonce($_REQUEST['_wpnonce'] && 'event_save') ) exit('Trying to perform an illegal action.');
 			}
 			//Grab and validate submitted data
-			$get_post  = $EM_Event->get_post();
-			$save_post =  $EM_Event->save();
-			if ( $save_post ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
+			if ( $EM_Event->get_post() && $EM_Event->save() ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
 				$EM_Notices->add_confirm($EM_Event->feedback_message);
 				if( is_admin() ){
 					$page = !empty($_REQUEST['pno']) ? $_REQUEST['pno']:'';
@@ -148,14 +146,11 @@ function em_init_actions() {
 			//Check Nonces
 			em_verify_nonce('location_save');
 			//Grab and validate submitted data
-			$EM_Location->get_post();
-			if ( $EM_Location->save() ) { //EM_location gets the location if submitted via POST and validates it (safer than to depend on JS)
+			if ( $EM_Location->get_post() && $EM_Location->save() ) { //EM_location gets the location if submitted via POST and validates it (safer than to depend on JS)
 				$EM_Notices->add_confirm($EM_Location->feedback_message);
 				$result = true;
 			}else{
-				foreach($EM_Location->get_errors() as $error){
-					$EM_Notices->add_error( $error );	
-				}
+				$EM_Notices->add_error( $EM_Location->get_errors() );
 				$result = false;				
 			}
 		}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "location_delete" ){
@@ -185,6 +180,58 @@ function em_init_actions() {
 			die();
 		}elseif( isset($result) && !$result && !empty($_REQUEST['em_ajax']) ){
 			$return = array('result'=>false, 'message'=>$EM_Location->feedback_message, 'errors'=>$EM_Notices->get_errors());
+			echo EM_Object::json_encode($return);
+			die();
+		}
+	}
+	
+	//Category Actions
+	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,8) == 'category' ){
+		global $EM_Category, $EM_Notices;
+		//Load the category object, with saved event if requested
+		if( !empty($_REQUEST['category_id']) ){
+			$EM_Category = new EM_Category($_REQUEST['category_id']);
+		}else{
+			$EM_Category = new EM_Category();
+		}
+		if( $_REQUEST['action'] == 'category_save' && current_user_can('edit_categories') ){
+			//Check Nonces
+			em_verify_nonce('category_save');
+			//Grab and validate submitted data
+			if ( $EM_Category->get_post() && $EM_Category->save() ) { //EM_Category gets the category if submitted via POST and validates it (safer than to depend on JS)
+				$EM_Notices->add_confirm($EM_Category->feedback_message);
+				$result = true;
+			}else{
+				$EM_Notices->add_error( $EM_Category->get_errors() );
+				$result = false;				
+			}
+		}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "category_delete" ){
+			//delete category
+			//get object or objects			
+			if( !empty($_REQUEST['categories']) || !empty($_REQUEST['category_id']) ){
+				$args = !empty($_REQUEST['categories']) ? $_REQUEST['categories']:$_REQUEST['category_id'];
+				$categories = EM_Categories::get($args);
+				foreach($categories as $category) {
+					if( !$category->delete() ){
+						$EM_Notices->add_error($category->get_errors());
+						$errors = true;
+					}			
+				}
+				if( empty($errors) ){
+					$result = true;
+					$category_term = ( count($categories) > 1 ) ?__('EM_Categories', 'dbem') : __('Category', 'dbem'); 
+					$EM_Notices->add_confirm( sprintf(__('%s successfully deleted', 'dbem'), $category_term) );
+				}else{
+					$result = false;
+				}
+			}
+		}
+		if( isset($result) && $result && !empty($_REQUEST['em_ajax']) ){
+			$return = array('result'=>true, 'message'=>$EM_Category->feedback_message);
+			echo EM_Object::json_encode($return);
+			die();
+		}elseif( isset($result) && !$result && !empty($_REQUEST['em_ajax']) ){
+			$return = array('result'=>false, 'message'=>$EM_Category->feedback_message, 'errors'=>$EM_Notices->get_errors());
 			echo EM_Object::json_encode($return);
 			die();
 		}
@@ -319,21 +366,53 @@ function em_init_actions() {
 		}
 	}
 	
-	//AJAX call for state search
+	//AJAX call for searches
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,6) == 'search' ){
 		if( $_REQUEST['action'] == 'search_states' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_states') ){
-			ob_start();
-			?>
-			<option value=''><?php _e('All States','dbem'); ?></option>
-			<?php
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_col($wpdb->prepare('SELECT location_state FROM ' . $wpdb->prefix.EM_LOCATIONS_TABLE ." WHERE location_country=%s", $_REQUEST['country']));
-				foreach( $results as $result ){
-					echo "<option>$result</option>";
-				}
+				$results = $wpdb->get_results($wpdb->prepare("SELECT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_country=%s", $_REQUEST['country']));
+			}else{
+				$results = $wpdb->get_results($wpdb->prepare("SELECT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE, $_REQUEST['country']));
 			}
-			echo apply_filters('em_ajax_search_states', ob_get_clean());
-			exit();
+			if( $_REQUEST['return_html'] ) {
+				//quick shortcut for quick html form manipulation
+				ob_start();
+				?>
+				<option value=''><?php _e('All States','dbem'); ?></option>
+				<?php			
+				foreach( $results as $result ){
+					echo "<option>{$result->value}</option>";
+				}
+				$return = ob_get_clean();
+				echo apply_filters('em_ajax_search_states', $return);
+				exit();
+			}else{
+				echo EM_Object::json_encode($results);
+				exit();
+			}
+		}
+		if( $_REQUEST['action'] == 'search_regions' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_regions') ){
+			if( !empty($_REQUEST['country']) ){
+				$results = $wpdb->get_results($wpdb->prepare("SELECT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
+			}else{
+				$results = $wpdb->get_results($wpdb->prepare("SELECT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != ''", $_REQUEST['country']));
+			}
+			if( $_REQUEST['return_html'] ) {
+				//quick shortcut for quick html form manipulation
+				ob_start();
+				?>
+				<option value=''><?php _e('All Regions','dbem'); ?></option>
+				<?php			
+				foreach( $results as $result ){
+					echo "<option>{$result->value}</option>";
+				}
+				$return = ob_get_clean();
+				echo apply_filters('em_ajax_search_regions', $return);
+				exit();
+			}else{
+				echo EM_Object::json_encode($results);
+				exit();
+			}
 		}elseif( $_REQUEST['action'] == 'search_events' && wp_verify_nonce($_POST['_wpnonce'], 'search_events') && get_option('dbem_events_page_search') ){
 			$args = EM_Events::get_post_search();
 			$events = EM_Events::get( $args );

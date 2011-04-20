@@ -35,7 +35,8 @@ function em_bookings_events_table() {
 			$title = __ ( 'Future Events', 'dbem' );
 			$scope = "future";
 	}
-	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>0, 'order'=>$order, 'rsvp'=>true ) );
+	$owner = !current_user_can('edit_others_events') ? get_current_user_id() : false;
+	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>0, 'order'=>$order, 'rsvp'=>true, 'owner' => $owner ) );
 	$events_count = count ( $events );
 	
 	$use_events_end = get_option ( 'dbem_use_event_end' );

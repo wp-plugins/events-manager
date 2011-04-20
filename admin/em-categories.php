@@ -1,7 +1,18 @@
 <?php
 function em_admin_categories_page() {      
-	global $wpdb, $EM_Category;
-	
+	global $wpdb, $EM_Category, $EM_Notices;
+
+	//Take actions
+	if( (!empty($_REQUEST['action']) && ( ($_REQUEST['action'] == "edit" && !empty($_REQUEST['category_id'])) || $_REQUEST['action'] == "add")) ) { 
+		em_categories_edit_layout();
+	} elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "category_save" ) {
+		em_categories_edit_layout();
+	} else { 
+		// no action, just a locations list
+		em_categories_table_layout();
+  	}
+  	return;
+	//TODO move categories action logic to em-actions.php
 	if( !empty($_REQUEST['action']) ){
 		if( $_REQUEST['action'] == "save") {
 			// save (add/update) category
@@ -11,18 +22,12 @@ function em_admin_categories_page() {
 			}else{
 				$success_message = __('The category has been updated.', 'dbem');
 			}
-			$EM_Category->get_post();
-			if ( $EM_Category->validate() ) {
-				$EM_Category->save(); //FIXME better handling of db write fails when saving category
-				em_categories_table_layout($success_message);
+			
+			if ( $EM_Category->get_post() && $EM_Category->save() ) {
+				$EM_Notices->add_confirm($EM_Category->feedback_message);
+				em_categories_table_layout();
 			} else {
-				?>
-				<div id='message' class='error '>
-					<p>
-						<strong><?php _e( "Ach, there's a problem here:", "dbem" ) ?></strong><br /><br /><?php echo implode('<br />', $EM_Category->errors); ?>
-					</p>
-				</div>
-				<?php  
+				$EM_Notices->add_error($EM_Category->errors);
 				em_categories_edit_layout();
 			}
 		} elseif( $_REQUEST['action'] == "edit" ){
@@ -40,98 +45,70 @@ function em_admin_categories_page() {
 } 
 
 function em_categories_table_layout($message = "") {
+	global $EM_Notices;
 	$categories = EM_Categories::get();
 	$destination = get_bloginfo('url')."/wp-admin/admin.php"; 
 	?>
-	<div class='wrap nosubsub'>
+	<div class='wrap'>
 		<div id='icon-edit' class='icon32'>
 			<br/>
 		</div>
-  		<h2><?php echo __('Categories', 'dbem') ?></h2>
+  		<h2>
+  			<?php echo __('Categories', 'dbem') ?>
+  			<a href="admin.php?page=events-manager-categories&action=add" class="button add-new-h2"><?php _e('Add New') ?></a>
+  		</h2>
 	 		
-		<?php if($message != "") : ?>
-			<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
-				<p><?php echo $message ?></p>
-			</div>
-		<?php endif; ?>
-		
-		<div id='col-container'>
-			<!-- begin col-right -->   
-			<div id='col-right'>
-			 	<div class='col-wrap'>       
-				 	 <form id='bookings-filter' method='post' action='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories'>
-						<input type='hidden' name='action' value='delete'/>
-						<?php if (count($categories)>0) : ?>
-							<table class='widefat'>
-								<thead>
-									<tr>
-										<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
-										<th><?php echo __('ID', 'dbem') ?></th>
-										<th><?php echo __('Name', 'dbem') ?></th>
-									</tr> 
-								</thead>
-								<tfoot>
-									<tr>
-										<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
-										<th><?php echo __('ID', 'dbem') ?></th>
-										<th><?php echo __('Name', 'dbem') ?></th>
-									</tr>             
-								</tfoot>
-								<tbody>
-									<?php foreach ($categories as $EM_Category) : ?>
-									<tr>
-										<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Category->id ?>' name='categories[]'/></td>
-										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_id=<?php echo $EM_Category->id ?>'><?php echo htmlspecialchars($EM_Category->id, ENT_QUOTES); ?></a></td>
-										<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_id=<?php echo $EM_Category->id ?>'><?php echo htmlspecialchars($EM_Category->name, ENT_QUOTES); ?></a></td>
-									</tr>
-									<?php endforeach; ?>
-								</tbody>
-	
-							</table>
-	
-							<div class='tablenav'>
-								<div class='alignleft actions'>
-							 	<input class='button-secondary action' type='submit' name='doaction2' value='Delete'/>
-								<br class='clear'/> 
-								</div>
-								<br class='clear'/>
-							</div>
-						<?php else: ?>
-							<p><?php echo __('No categories have been inserted yet!', 'dbem'); ?></p>
-						<?php endif; ?>
-					</form>
+		<?php echo $EM_Notices; ?>
+
+	 	 <form id='bookings-filter' method='post' action='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories'>
+			<input type='hidden' name='action' value='category_delete'/>
+			<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('category_delete'); ?>'/>
+			<?php if (count($categories)>0) : ?>
+				<table class='widefat'>
+					<thead>
+						<tr>
+							<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
+							<th><?php echo __('ID', 'dbem') ?></th>
+							<th><?php echo __('Name', 'dbem') ?></th>
+						</tr> 
+					</thead>
+					<tfoot>
+						<tr>
+							<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
+							<th><?php echo __('ID', 'dbem') ?></th>
+							<th><?php echo __('Name', 'dbem') ?></th>
+						</tr>             
+					</tfoot>
+					<tbody>
+						<?php foreach ($categories as $EM_Category) : ?>
+						<tr>
+							<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Category->id ?>' name='categories[]'/></td>
+							<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_id=<?php echo $EM_Category->id ?>'><?php echo htmlspecialchars($EM_Category->id, ENT_QUOTES); ?></a></td>
+							<td><a href='<?php echo get_bloginfo('wpurl') ?>/wp-admin/admin.php?page=events-manager-categories&amp;action=edit&amp;category_id=<?php echo $EM_Category->id ?>'><?php echo htmlspecialchars($EM_Category->name, ENT_QUOTES); ?></a></td>
+						</tr>
+						<?php endforeach; ?>
+					</tbody>
+
+				</table>
+
+				<div class='tablenav'>
+					<div class='alignleft actions'>
+				 	<input class='button-secondary action' type='submit' name='doaction2' value='Delete'/>
+					<br class='clear'/> 
+					</div>
+					<br class='clear'/>
 				</div>
-			</div>
-			<!-- end col-right -->     
-			
-			<!-- begin col-left -->
-			<div id='col-left'>
-		  		<div class='col-wrap'>
-					<div class='form-wrap'> 
-						<div id='ajax-response'>
-					  		<h3><?php echo __('Add category', 'dbem') ?></h3>
-							<form name='add' id='add' method='post' action='admin.php?page=events-manager-categories' class='add:the-list: validate'>
-								<input type='hidden' name='action' value='save' />
-								<div class='form-field form-required'>
-									<label for='category_name'><?php echo __('Category name', 'dbem') ?></label>
-									<input id='category-name' name='category_name' id='category_name' type='text' size='40' />
-									<p><?php echo __('The name of the category', 'dbem'); ?></p>
-								</div>
-								<p class='submit'><input type='submit' class='button' name='submit' value='<?php echo __('Add category', 'dbem') ?>' /></p>
-							</form>
-					  	</div>
-					</div> 
-				</div>    
-			</div> 
-			<!-- end col-left --> 		
-		</div> 
+			<?php else: ?>
+				<p><?php echo __('No categories have been inserted yet!', 'dbem'); ?></p>
+			<?php endif; ?>
+		</form>
   	</div>
   	<?php
 }
 
 
 function em_categories_edit_layout($message = "") {
-	global $EM_Category;
+	global $EM_Category, $EM_Notices;
 	if( !is_object($EM_Category) ){
 		$EM_Category = new EM_Category();
 	}
@@ -150,27 +127,60 @@ function em_categories_edit_layout($message = "") {
 			
 		<h2><?php echo __('Edit category', 'dbem') ?></h2>  
  		
-		<?php if($message != "") : ?>
-		<div id='message' class='updated fade below-h2' style='background-color: rgb(255, 251, 204);'>
-			<p><?php echo $message ?></p>
-		</div>
-		<?php endif; ?>
+		<?php echo $EM_Notices ?>
 
 		<div id='ajax-response'></div>
 
-		<form name='editcat' id='editcat' method='post' action='admin.php?page=events-manager-categories' class='validate'>
-			<input type='hidden' name='action' value='save' />
-			<input type='hidden' name='category_id' value='<?php echo $EM_Category->id ?>'/>
+		<div id="poststuff" class="metabox-holder">
+			<div id="post-body">
+				<div id="post-body-content">
+					<form enctype='multipart/form-data' name='editcat' id='editcat' method='post' action='admin.php?page=events-manager-categories' class='validate'>
+						<input type='hidden' name='action' value='category_save' />
+						<input type='hidden' name='category_id' value='<?php echo $EM_Category->id ?>'/>
+						<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('category_save'); ?>" />
+							<div id="category_description" class="postbox">
+								<h3><?php echo __('Category name', 'dbem') ?></h3>
+								<div class="inside">					
+									<input name='category_name' id='category-name' type='text' value='<?php echo $EM_Category->name ?>' size='40'  />
+									<br />
+					           		<em><?php echo __('The name of the category', 'dbem') ?></em>
+								</div>
+							</div>
+											
+							<div id="category_description" class="postbox">
+								<h3>
+									<?php _e ( 'Details', 'dbem' ); ?>
+								</h3>
+								<div class="inside">
+									<div id="<?php echo user_can_richedit() ? 'postdivrich' : 'postdiv'; ?>" class="postarea">
+										<?php the_editor($EM_Category->description ); ?>
+									</div>
+									<br />
+									<em><?php _e ( 'Details about the category', 'dbem' )?></em>
+								</div>
+							</div>
+										
+							<div id="category_description" class="stuffbox">
+								<h3>
+									<?php _e ( 'Category image', 'dbem' ); ?>
+								</h3>
+								<div class="inside" style="padding:10px;">
+										<?php if ($EM_Category->image_url != '') : ?> 
+											<img src='<?php echo $EM_Category->image_url; ?>' alt='<?php echo $EM_Category->name ?>'/>
+										<?php else : ?> 
+											<em><?php _e('No image uploaded for this category yet', 'debm') ?></em>
+										<?php endif; ?>
+										<br /><br />
+										<label for='category_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='locacategoryge' name='category_image' id='category_image' type='file' size='40' />
+								</div>
+							</div>
+						</div>
+						<p class='submit'><input type='submit' class='button-primary' name='submit' value='<?php echo __('Update category', 'dbem') ?>' /></p>
+					</form>
+				</div>
+			</div>
+		</div>	
 		
-			<table class='form-table'>
-				<tr class='form-field form-required'>
-					<th scope='row' valign='top'><label for='category_name'><?php echo __('Category name', 'dbem') ?></label></th>
-					<td><input name='category_name' id='category-name' type='text' value='<?php echo $EM_Category->name ?>' size='40'  /><br />
-		           <?php echo __('The name of the category', 'dbem') ?></td>
-				</tr>
-			</table>
-			<p class='submit'><input type='submit' class='button-primary' name='submit' value='<?php echo __('Update category', 'dbem') ?>' /></p>
-		</form>
 	</div>
 	<?php
 }

@@ -210,6 +210,13 @@ function em_admin_location($message = "") {
 													</td>
 												</tr>
 												<tr>
+													<th><?php _e ( 'Region:' )?>&nbsp;</th>
+													<td>
+														<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Location->region, ENT_QUOTES); ?>" />
+														<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
+													</td>
+												</tr>
+												<tr>
 													<th><?php _e ( 'Country:' )?>&nbsp;</th>
 													<td>
 														<select id="location-country" name="location_country">

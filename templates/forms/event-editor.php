@@ -291,10 +291,10 @@
 									</tfoot>
 									<tbody id="em-tickets-body">
 										<?php
-											$count = 1;
+											$col_count = 1;
 											foreach( $EM_Tickets->tickets as $EM_Ticket){
 												?>
-												<tr valign="top" id="em-tickets-row-<?php echo $count ?>" class="em-tickets-row">
+												<tr valign="top" id="em-tickets-row-<?php echo $col_count ?>" class="em-tickets-row">
 													<td class="ticket-status"><span class="<?php echo ($EM_Ticket->is_available()) ? 'ticket_on':'ticket_off'; ?>"></span></td>													
 													<td class="ticket-name"><span class="ticket_name"><?php echo $EM_Ticket->name ?></span><br /><span class="ticket_description"></span></td>
 													<td class="ticket-price">
@@ -333,19 +333,19 @@
 														<?php else: ?>
 														| <a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=events-manager-bookings&ticket_id=<?php echo $EM_Ticket->id ?>"><?php _e('View Bookings','dbem'); ?></a>
 														<?php endif; ?>
-														<input type="hidden" class="ticket_id" name="em_tickets[<?php echo $count; ?>][ticket_id]" value="<?php echo $EM_Ticket->id ?>" />
-														<input type="hidden" class="ticket_name" name="em_tickets[<?php echo $count; ?>][ticket_name]" value="<?php echo $EM_Ticket->name ?>" />
-														<input type="hidden" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo $EM_Ticket->description ?>" />
-														<input type="hidden" class="ticket_price" name="em_tickets[<?php echo $count; ?>][ticket_price]" value="<?php echo $EM_Ticket->price ?>" />
-														<input type="hidden" class="ticket_spaces" name="em_tickets[<?php echo $count; ?>][ticket_spaces]" value="<?php echo $EM_Ticket->spaces ?>" />
-														<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
-														<input type="hidden" class="ticket_end" name="em_tickets[<?php echo $count; ?>][ticket_end]" value="<?php echo ( !empty($EM_Ticket->end) ) ? date("Y-m-d H:i", $EM_Ticket->end_timestamp):''; ?>" />
-														<input type="hidden" class="ticket_min" name="em_tickets[<?php echo $count; ?>][ticket_min]" value="<?php echo $EM_Ticket->min ?>" />
-														<input type="hidden" class="ticket_max" name="em_tickets[<?php echo $count; ?>][ticket_max]" value="<?php echo $EM_Ticket->max ?>" />
+														<input type="hidden" class="ticket_id" name="em_tickets[<?php echo $col_count; ?>][ticket_id]" value="<?php echo $EM_Ticket->id ?>" />
+														<input type="hidden" class="ticket_name" name="em_tickets[<?php echo $col_count; ?>][ticket_name]" value="<?php echo $EM_Ticket->name ?>" />
+														<input type="hidden" name="em_tickets[<?php echo $col_count; ?>][ticket_description]" value="<?php echo $EM_Ticket->description ?>" />
+														<input type="hidden" class="ticket_price" name="em_tickets[<?php echo $col_count; ?>][ticket_price]" value="<?php echo $EM_Ticket->price ?>" />
+														<input type="hidden" class="ticket_spaces" name="em_tickets[<?php echo $col_count; ?>][ticket_spaces]" value="<?php echo $EM_Ticket->spaces ?>" />
+														<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $col_count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
+														<input type="hidden" class="ticket_end" name="em_tickets[<?php echo $col_count; ?>][ticket_end]" value="<?php echo ( !empty($EM_Ticket->end) ) ? date("Y-m-d H:i", $EM_Ticket->end_timestamp):''; ?>" />
+														<input type="hidden" class="ticket_min" name="em_tickets[<?php echo $col_count; ?>][ticket_min]" value="<?php echo $EM_Ticket->min ?>" />
+														<input type="hidden" class="ticket_max" name="em_tickets[<?php echo $col_count; ?>][ticket_max]" value="<?php echo $EM_Ticket->max ?>" />
 													</td>
 												</tr>
 												<?php
-												$count++;
+												$col_count++;
 											}
 											if( !empty($delete_temp_ticket) ){
 												array_pop($EM_Tickets->tickets[0]);

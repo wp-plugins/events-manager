@@ -12,7 +12,7 @@ if( !class_exists('EM_Permalinks') ){
 			'ticket_id',
 			'calendar_day',
 			'book',
-			'rss','ical', 'scope', 'page', 'bookings_page', 'payment_gateway'
+			'rss','ical', 'scope', 'page', 'bookings_page', 'payment_gateway','event_categories','event_locations'
 		);
 		static $scopes = 'today|tomorrow|this\-month|next\-month|past|all|future';
 		
@@ -26,6 +26,7 @@ if( !class_exists('EM_Permalinks') ){
 			//Add filters to rewrite the URLs
 			add_filter('em_event_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
 			add_filter('em_location_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
+			add_filter('em_category_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
 		}
 		
 		function flush(){
@@ -61,6 +62,13 @@ if( !class_exists('EM_Permalinks') ){
 							$replace = ($result == '#_LOCATIONURL' || $result == '#_LOCATIONPAGEURL') ? $link : '<a href="'.$link.'">'.$object->name.'</a>';
 						}
 						break;
+					case '#_CATEGORYLINK':
+					case '#_CATEGORYURL':
+						if( is_object($object) && get_class($object)=='EM_Category' ){
+							$link = trailingslashit(trailingslashit(EM_URI).'category/'.$object->slug);
+							$replace = ($result == '#_CATEGORYURL') ? $link : '<a href="'.$link.'">'.$object->name.'</a>';
+						}
+						break;
 				}
 			}
 			return $replace;
@@ -83,38 +91,17 @@ if( !class_exists('EM_Permalinks') ){
 						exit();
 					} elseif ( !empty($_GET['location_id']) && is_numeric($_GET['location_id']) ) {
 						//Just a single location
-						wp_redirect( self::url('location', $_GET['location_id'],$page), 301);
-						exit();
-					} elseif ( !empty($_GET['location_slug']) ) {
-						//Just a single location with slug
-						wp_redirect( self::url('location', $_GET['location_slug'],$page), 301);
-						exit();
-					} elseif ( !empty($_GET['book']) && !empty($_GET['event_id']) ) {
-						//bookings page
-						wp_redirect( self::url('book', $_GET['event_id']), 301);
+						$EM_Location = new EM_Location($_GET['location_id']);
+						wp_redirect( self::url('location', $EM_Location->slug,$page), 301);
 						exit();
 					} elseif ( !empty($_GET['event_id']) && is_numeric($_GET['event_id']) ) {
 						//single event page
-						wp_redirect( self::url('event', $_GET['event_id']), 301);
-						exit();
-					} elseif ( !empty($_GET['event_slug']) ) {
-						//single event page with slug
-						wp_redirect( self::url('event', $_GET['event_slug']), 301);
-						exit();
-					} elseif ( !empty($_GET['category_id']) && is_numeric($_GET['category_id']) ){
-						//category page
-						wp_redirect( self::url('category', $_GET['category_id'], $page), 301);
-						exit();
-					} elseif ( !empty($_GET['category_slug']) ){
-						//category page with slug
-						wp_redirect( self::url('category', $_GET['category_slug'], $page), 301);
-						exit();
-					} elseif( !empty($_GET['scope']) ) {
-						// Multiple events page
-						wp_redirect( self::url($_GET['scope'], $page), 301);
+						$EM_Event = new EM_Event($_GET['event_id']);
+						wp_redirect( self::url('event', $EM_Event->slug), 301);
 						exit();
 					}			
-				}elseif( !empty($_GET['dbem_rss']) ){
+				}
+				if( !empty($_GET['dbem_rss']) ){
 					//RSS page
 					wp_redirect( self::url('rss'), 301);
 					exit();
@@ -137,9 +124,10 @@ if( !class_exists('EM_Permalinks') ){
 				$em_rules[$events_slug.'/bookings/(\d+)$'] = 'index.php?pagename='.$events_slug.'&event_id=$matches[1]&book=1'; //single event booking form with id
 				$em_rules[$events_slug.'/bookings/(.+)$'] = 'index.php?pagename='.$events_slug.'&event_slug=$matches[1]&book=1'; //single event booking form with slug
 				$em_rules[$events_slug.'/event/(.+)$'] = 'index.php?pagename='.$events_slug.'&event_slug=$matches[1]'; //single event page with slug
+				$em_rules[$events_slug.'/locations$'] = 'index.php?pagename='.$events_slug.'&event_locations=1'; //category list with slug
 				$em_rules[$events_slug.'/location/(\d+)$'] = 'index.php?pagename='.$events_slug.'&location_id=$matches[1]'; //location page with id
 				$em_rules[$events_slug.'/location/(.+)$'] = 'index.php?pagename='.$events_slug.'&location_slug=$matches[1]'; //location page with slug
-				$em_rules[$events_slug.'/category/(.+)$'] = 'index.php?pagename='.$events_slug.'&category_id=$matches[1]'; //category page with id
+				$em_rules[$events_slug.'/categories$'] = 'index.php?pagename='.$events_slug.'&event_categories=1'; //category list with slug
 				$em_rules[$events_slug.'/category/(.+)$'] = 'index.php?pagename='.$events_slug.'&category_slug=$matches[1]'; //category page with slug
 				$em_rules[$events_slug.'/rss$'] = 'index.php?pagename='.$events_slug.'&rss=1'; //rss page
 				$em_rules[$events_slug.'/ical$'] = 'index.php?pagename='.$events_slug.'&ical=1'; //ical page

@@ -40,7 +40,7 @@ class EM_Ticket_Booking extends EM_Object{
 			}elseif( is_numeric($ticket_data) ){
 				//Retreiving from the database		
 				global $wpdb;
-				$sql = "SELECT * FROM ". $wpdb->prefix . EM_TICKETS_BOOKINGS_TABLE ." WHERE ticket_booking_id ='$ticket_data'";   
+				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." WHERE ticket_booking_id ='$ticket_data'";   
 			  	$ticket = $wpdb->get_row($sql, ARRAY_A);
 			}
 			//Save into the object
@@ -54,7 +54,7 @@ class EM_Ticket_Booking extends EM_Object{
 	 */
 	function save(){
 		global $wpdb;
-		$table = $wpdb->prefix. EM_TICKETS_BOOKINGS_TABLE;
+		$table = EM_TICKETS_BOOKINGS_TABLE;
 		do_action('em_ticket_booking_save_pre',$this);
 		//First the person
 		if($this->validate()){			
@@ -166,7 +166,7 @@ class EM_Ticket_Booking extends EM_Object{
 	 */
 	function delete(){
 		global $wpdb;
-		$sql = $wpdb->prepare("DELETE FROM ". $wpdb->prefix.EM_TICKETS_BOOKINGS_TABLE . " WHERE ticket_booking_id=%d", $this->id);
+		$sql = $wpdb->prepare("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE . " WHERE ticket_booking_id=%d", $this->id);
 		$result = $wpdb->query( $sql );
 		return apply_filters('em_ticket_booking_delete', ($result !== false ), $this);
 	}

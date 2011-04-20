@@ -6,7 +6,7 @@
 function em_admin_actions_bookings() {
   	global $dbem_form_add_message;   
 	global $dbem_form_delete_message; 
-	global $wpdb, $EM_Booking, $EM_Event;
+	global $wpdb, $EM_Booking, $EM_Event, $EM_Notices;
 	
 	if( current_user_can(EM_MIN_CAPABILITY) && is_object($EM_Booking) && !empty($_REQUEST['action']) ) {
 		if( $_REQUEST['action'] == 'bookings_delete' ){
@@ -21,9 +21,9 @@ function em_admin_actions_bookings() {
 			if ( $validation ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
 				//Save
 				if( $EM_Booking->save() ) {
-					function em_booking_save_notification(){ global $EM_Booking; ?><div class="updated"><p><strong><?php echo $EM_Booking->feedback_message; ?></strong></p></div><?php }		
+					$EM_Notices->add_confirm($EM_Booking->feedback_message);		
 				}else{
-					function em_booking_save_notification(){ global $EM_Booking; ?><div class="error"><p><strong><?php echo $EM_Booking->feedback_message; ?></strong></p></div><?php }
+					$EM_Notices->add_error($EM_Booking->feedback_message);	
 				}
 			}else{
 				//TODO make errors clearer when saving person
@@ -44,8 +44,8 @@ function em_admin_actions_bookings() {
 			function em_booking_save_notification(){ global $EM_Booking; ?><div class="updated"><p><strong><?php echo $EM_Booking->feedback_message; ?></strong></p></div><?php }
 			add_action ( 'admin_notices', 'em_booking_save_notification' );
 		}
-	}elseif( current_user_can(EM_MIN_CAPABILITY) && is_object($EM_Event) && !empty($_REQUEST['action']) ){
-		if( $_REQUEST['action'] == 'export_csv' ){
+	}elseif( is_object($EM_Event) && !empty($_REQUEST['action']) ){
+		if( $_REQUEST['action'] == 'bookings_export_csv' && wp_verify_nonce($_REQUEST['_wpnonce'],'bookings_export_csv') ){
 			$EM_Event->get_bookings()->export_csv();
 			exit();
 		}
@@ -75,6 +75,7 @@ function em_bookings_page(){
  * Generates the bookings dashboard, showing information on all events 
  */
 function em_bookings_dashboard(){
+	global $EM_Notices;
 	?>
 	<div class='wrap'>
 		<div id='icon-users' class='icon32'>
@@ -83,6 +84,7 @@ function em_bookings_dashboard(){
   		<h2>
   			<?php _e('Event Bookings Dashboard', 'dbem'); ?>
   		</h2>
+  		<?php echo $EM_Notices; ?>
   		<?php if( get_option('dbem_bookings_approval')): ?>
 		<h2><?php _e('Pending Bookings','dbem'); ?></h2>
 		<?php em_bookings_pending_table(); ?>
@@ -98,7 +100,7 @@ function em_bookings_dashboard(){
  * Shows all booking data for a single event 
  */
 function em_bookings_event(){
-	global $EM_Event,$EM_Person;
+	global $EM_Event,$EM_Person,$EM_Notices;
 	//check that user can access this page
 	if( is_object($EM_Event) && !$EM_Event->can_manage('manage_bookings','manage_others_bookings') ){
 		?>
@@ -117,7 +119,8 @@ function em_bookings_event(){
   			<?php echo sprintf(__('Manage %s Bookings', 'dbem'), "'{$EM_Event->name}'"); ?>
   			<a href="<?php echo $EM_Event->output('#_EDITEVENTURL'); ?>" class="button add-new-h2"><?php _e('View/Edit Event','dbem') ?></a>
   		</h2>
-  		<div><a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a></div>  
+  		<?php echo $EM_Notices; ?>
+  		<div><a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_export_csv&_wpnonce=".wp_create_nonce('bookings_export_csv')."&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a></div>  
 		<div>
 			<p><strong><?php _e('Event Name','dbem'); ?></strong> : <?php echo ($EM_Event->name); ?></p>
 			<p><strong>Availability :</strong> <?php echo $EM_Event->get_bookings()->get_booked_spaces() . '/'. $EM_Event->get_spaces() ." ". __('Spaces confirmed','dbem'); ?></p>
@@ -151,7 +154,7 @@ function em_bookings_event(){
  * Shows a ticket view
  */
 function em_bookings_ticket(){
-	global $EM_Ticket;
+	global $EM_Ticket,$EM_Notices;
 	$EM_Event = $EM_Ticket->get_event();
 	//check that user can access this page
 	if( is_object($EM_Ticket) && !$EM_Ticket->can_manage() ){
@@ -170,6 +173,7 @@ function em_bookings_ticket(){
   			<a href="admin.php?page=events-manager-event&event_id=<?php echo $EM_Event->id; ?>" class="button add-new-h2"><?php _e('View/Edit Event','dbem') ?></a>
   			<a href="admin.php?page=events-manager-bookings&event_id=<?php echo $EM_Event->id; ?>" class="button add-new-h2"><?php _e('View Event Bookings','dbem') ?></a>
   		</h2> 
+  		<?php echo $EM_Notices; ?>
 		<div>
 			<table>
 				<tr><td><?php echo __('Name','dbem'); ?></td><td></td><td><?php echo $EM_Ticket->name; ?></td></tr>
@@ -201,7 +205,7 @@ function em_bookings_ticket(){
  * Shows a single booking for a single person. 
  */
 function em_bookings_single(){
-	global $EM_Booking;
+	global $EM_Booking, $EM_Notices;
 	//check that user can access this page
 	if( is_object($EM_Booking) && !$EM_Booking->can_manage() ){
 		?>
@@ -217,6 +221,7 @@ function em_bookings_single(){
   		<h2>
   			<?php _e('Edit Booking', 'dbem'); ?>
   		</h2>
+  		<?php echo $EM_Notices; ?>
   		<div id="poststuff" class="metabox-holder">
 	  		<div id="post-body">
 				<div id="post-body-content">
@@ -330,7 +335,20 @@ function em_bookings_single(){
  * Shows all bookings made by one person.
  */
 function em_bookings_person(){	
-	global $EM_Person;
+	global $EM_Person, $EM_Notices;
+	$EM_Person->get_bookings();
+	$has_booking = false;
+	foreach($EM_Person->get_bookings() as $EM_Booking){
+		if($EM_Booking->can_manage('manage_bookings','manage_others_bookings')){
+			$has_booking = true;
+		}
+	}
+	if( !$has_booking ){
+		?>
+		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
+		<?php
+		return false;
+	}
 	?>
 	<div class='wrap'>
 		<div id='icon-users' class='icon32'>
@@ -342,6 +360,7 @@ function em_bookings_person(){
   			<a href="user-edit.php?user_id=<?php echo $EM_Person->ID; ?>" class="button add-new-h2"><?php _e('Edit User','dbem') ?></a>
   			<?php endif; ?>
   		</h2>
+  		<?php echo $EM_Notices; ?>
 		<?php do_action('em_bookings_person_header'); ?>
   		<div id="poststuff" class="metabox-holder has-right-sidebar">
 	  		<div id="post-body">

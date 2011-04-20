@@ -6,16 +6,19 @@ class EM_Category extends EM_Object {
 	var $slug = '';
 	var $owner = '';
 	var $name = '';
+	var $description = '';
 	//Other Vars
 	var $fields = array(
 		'category_id' => array('name'=>'id','type'=>'%d'),
 		'category_slug' => array('name'=>'slug','type'=>'%s'), 
 		'category_owner' => array('name'=>'owner','type'=>'%d'),
-		'category_name' => array('name'=>'name','type'=>'%s')
+		'category_name' => array('name'=>'name','type'=>'%s'),
+		'category_description' => array('name'=>'description','type'=>'%s')
 	);
 	var $required_fields;
 	var $feedback_message = "";
 	var $errors = array();
+	var $image_url = '';
 	
 	/**
 	 * Gets data from POST (default), supplied array, or from the database if an ID is supplied
@@ -25,7 +28,7 @@ class EM_Category extends EM_Object {
 	function EM_Category( $category_data = false ) {
 		global $wpdb;
 		//Initialize
-		$this->required_fields = array("category_name" => __('The category name', 'dbem'));
+		$this->required_fields = array("name" => __('The category name', 'dbem'));
 		$category = array();
 		if( !empty($category_data) ){
 			//Load location data
@@ -33,26 +36,41 @@ class EM_Category extends EM_Object {
 				$category = $category_data;
 			}elseif( is_numeric($category_data) ){
 				//Retreiving from the database		
-				$sql = "SELECT * FROM ". $wpdb->prefix.EM_CATEGORIES_TABLE ." WHERE category_id ='{$category_data}'";   
+				$sql = "SELECT * FROM ". EM_CATEGORIES_TABLE ." WHERE category_id ='{$category_data}'";   
 			  	$category = $wpdb->get_row($sql, ARRAY_A);
 			}else{
-				$sql = "SELECT * FROM ". $wpdb->prefix.EM_CATEGORIES_TABLE ." WHERE category_slug ='{$category_data}'";   
+				$sql = "SELECT * FROM ". EM_CATEGORIES_TABLE ." WHERE category_slug ='{$category_data}'";   
 			  	$category = $wpdb->get_row($sql, ARRAY_A);
 			}
 			//Save into the object
 			$this->to_object($category);
 		} 
+		$this->get_image_url();
+		add_action('em_category_save',array(&$this, 'image_upload'), 1, 1);
 		do_action('em_category',$this, $category_data);
 	}
 	
 	function get_post(){
 		//We are getting the values via POST or GET
-		do_action('em_location_get_post_pre', $this);
+		do_action('em_category_get_post_pre', $this);
 		$category = array();
 		$category['category_id'] = ( !empty($_POST['category_id']) ) ? $_POST['category_id']:'';
 		$category['category_name'] = ( !empty($_POST['category_name']) ) ? stripslashes($_POST['category_name']):'';
+		$category['category_description'] = ( !empty($_POST['content']) ) ? stripslashes($_POST['content']) : ''; //WP TinyMCE field
 		$category['category_owner'] = ( !empty($_POST['category_owner']) && is_numeric($_POST['category_owner']) ) ? $_POST['category_owner']:get_current_user_id();
 		$this->to_object( apply_filters('em_category_get_post', $category, $this) );
+		return apply_filters('em_category_get_post',$this->validate(), $this);
+	}
+	
+	function validate(){
+		//check required fields
+		foreach ( $this->required_fields as $field => $description) {
+			if ( $this->$field == "" ) {
+				$this->add_error($description.__(" is required.", "dbem"));
+			}
+		}
+		$this->image_validate();
+		return apply_filters('em_location_validate', ( count($this->errors) == 0 ), $this);
 	}
 	
 	function save(){
@@ -60,17 +78,25 @@ class EM_Category extends EM_Object {
 		$result = false;
 		if( $this->can_manage('edit_categories') ){
 			do_action('em_category_save_pre', $this);
-			$table = $wpdb->prefix.EM_CATEGORIES_TABLE;
+			$table = EM_CATEGORIES_TABLE;
 			$this->slug = $this->sanitize_title();
 			$data = $this->to_array();
 			unset($data['category_id']);
 			if($this->id != ''){
 				$where = array( 'category_id' => $this->id );  
 				$result = $wpdb->update($table, $data, $where, $this->get_types($data));
+				if( $result !== false ){
+					$this->feedback_message = sprintf(__('%s successfully updated.', 'dbem'), __('Category','dbem'));
+				}
 			}else{
 				$wpdb->insert($table, $data, $this->get_types($data));
 			    $result = $this->id = $wpdb->insert_id;   
+				if( $result !== false ){
+					$this->feedback_message = sprintf(__('%s successfully added.', 'dbem'), __('Category','dbem'));
+				}
 			}
+		}else{
+			$this->add_error( sprintf(__('You do not have permission to create/edit %s.','dbem'), __('categories','dbem')) );
 		}
 		return apply_filters('em_category_save', ($result !== false), $this);
 	}
@@ -86,7 +112,7 @@ class EM_Category extends EM_Object {
 			$this->slug = sanitize_title($this->name);
 		}
 		$slug = $this->slug;
-		$slug_matches = $wpdb->get_results('SELECT category_id FROM '.$wpdb->prefix.EM_LOCATIONS_TABLE." WHERE category_slug='{$slug}'", ARRAY_A);
+		$slug_matches = $wpdb->get_results('SELECT category_id FROM '.EM_CATEGORIES_TABLE." WHERE category_slug='{$slug}'", ARRAY_A);
 		if( count($slug_matches) > 0 ){ //we will check that the slug is unique
 			if( $slug_matches[0]['category_id'] != $this->id || count($slug_matches) > 1 ){
 				//we have a conflict, so try another alternative
@@ -102,43 +128,32 @@ class EM_Category extends EM_Object {
 		$result = false;
 		if( $this->can_manage('edit_categories') ){
 			do_action('em_category_delete_pre', $this);
-			$table_name = $wpdb->prefix.EM_CATEGORIES_TABLE;
+			$table_name = EM_CATEGORIES_TABLE;
 			$sql = "DELETE FROM $table_name WHERE category_id = '{$this->id}';";
 			$result = $wpdb->query($sql);
 		}
 		return apply_filters('em_category_delete', $result, $this);
 	}
-
-	/**
-	 * Validates the category. Should be run during any form submission or saving operation.
-	 * @return boolean
-	 */
-	function validate(){
-		$missing_fields = Array ();
-		foreach ( $this->required_fields as $key => $field ) {
-			$true_field = $this->fields[$key]['name'];
-			if ( $this->$true_field == "") {
-				$missing_fields[] = $field;
-			}
-		}
-		if ( count($missing_fields) > 0){
-			// TODO Create friendly equivelant names for missing fields notice in validation 
-			$this->errors[] = __ ( 'Missing fields: ' ) . implode ( ", ", $missing_fields ) . ". ";
-		}
-		return apply_filters('em_category_validate', ( count($this->errors) == 0 ), $this);
-	}
 	
 	function has_events(){
 		global $wpdb;	
-		$events_table = $wpdb->prefix.EM_EVENTS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
 		$sql = "SELECT count(event_id) as events_no FROM $events_table WHERE category_id = {$this->id}";   
 	 	$affected_events = $wpdb->get_row($sql);
 		return apply_filters('em_category_has_events', (count($affected_events) > 0), $this);
 	}
 	
 	function output_single($target = 'html'){
-		$format = get_option ( 'dbem_single_category_format' );
-		return apply_filters('em_category_output_single', $this->output($format, $target), $this, $target);	
+		$format = get_option ( 'dbem_category_page_format' );
+		$located = em_locate_template('templates/category-single.php');
+		if( $located ){
+			ob_start();
+			include($located);
+			return apply_filters('em_category_output_single', ob_get_clean(), $this, $target);	
+		}else{
+			$format = get_option ( 'dbem_category_page_format' );
+			return apply_filters('em_category_output_single', $this->output($format, $target), $this, $target);			
+		}	
 	}
 	
 	function output($format, $target="html") {
@@ -154,15 +169,40 @@ class EM_Category extends EM_Object {
 				case '#_CATEGORYID':
 					$replace = $this->id;
 					break;
+				case '#_CATEGORYDESCRIPTION':
+					$replace = $this->description;
+					break;
+				case '#_CATEGORYIMAGE':
+				case '#_CATEGORYIMAGEURL':
+					$replace = ($result == '#_CATEGORYIMAGEURL') ? $this->image_url : "<img src='".$this->image_url."' alt='".$this->name."'/>";
+					break;
+				case '#_CATEGORYLINK':
+				case '#_CATEGORYURL':
+					$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
+					$link = EM_URI.$joiner."category_id=".$this->id;
+					$replace = ($result == '#_CATEGORYURL') ? $link : '<a href="'.$link.'">'.$this->name.'</a>';
+					break;
+				case '#_CATEGORYEVENTSPAST':
+				case '#_CATEGORYEVENTSNEXT':
+				case '#_CATEGORYEVENTSALL':
+					if ($result == '#_CATEGORYEVENTSPAST'){ $scope = 'past'; }
+					elseif ( $result == '#_CATEGORYEVENTSNEXT' ){ $scope = 'future'; }
+					else{ $scope = 'all'; }
+					$events = EM_Events::get( array('category'=>$this->id, 'scope'=>$scope) );
+					if ( count($events) > 0 ){
+						foreach($events as $EM_Event){
+							$replace .= $EM_Event->output(get_option('dbem_location_event_list_item_format'));
+						}
+					} else {
+						$replace = get_option('dbem_location_no_events_message');
+					}
+					break;
 				default:
-					$match = false;
+					$replace = $result;
 					break;
 			}
-			if($match){ //if true, we've got a placeholder that needs replacing
-				//TODO FILTER - placeholder filter
-				$replace = apply_filters('em_category_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
-				$category_string = str_replace($result, $replace , $category_string );
-			}
+			$replace = apply_filters('em_category_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+			$category_string = str_replace($result, $replace , $category_string );
 		}
 		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
 		$category_string = str_replace('#_CATEGORY', apply_filters($name_filter, $this->name) , $category_string ); //Depreciated

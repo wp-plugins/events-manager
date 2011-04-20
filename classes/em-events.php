@@ -34,9 +34,9 @@ class EM_Events extends EM_Object implements Iterator {
 	 */
 	function get( $args = array(), $count=false ) {
 		global $wpdb;
-		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
-		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
-		$categories_table = $wpdb->prefix . EM_CATEGORIES_TABLE;
+		$events_table = EM_EVENTS_TABLE;
+		$locations_table = EM_LOCATIONS_TABLE;
+		$categories_table = EM_CATEGORIES_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
@@ -100,7 +100,7 @@ class EM_Events extends EM_Object implements Iterator {
 			$events[] = new EM_Event($event);
 		}
 		
-		return apply_filters('em_events_get', $events);
+		return apply_filters('em_events_get', $events, $args);
 	}
 	
 	/**
@@ -110,7 +110,7 @@ class EM_Events extends EM_Object implements Iterator {
 	 */
 	function count_date($date){
 		global $wpdb;
-		$table_name = $wpdb->prefix . EM_EVENTS_TABLE;
+		$table_name = EM_EVENTS_TABLE;
 		$sql = "SELECT COUNT(*) FROM  $table_name WHERE (event_start_date  like '$date') OR (event_start_date <= '$date' AND event_end_date >= '$date');";
 		return apply_filters('em_events_count_date', $wpdb->get_var($sql));
 	}
@@ -141,9 +141,9 @@ class EM_Events extends EM_Object implements Iterator {
 				apply_filters('em_events_delete_pre', $event_ids);
 				$condition = implode(" OR event_id=", $event_ids);
 				//Delete all the bookings
-				$result_bookings = $wpdb->query("DELETE FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE event_id=$condition;");
+				$result_bookings = $wpdb->query("DELETE FROM ". EM_BOOKINGS_TABLE ." WHERE event_id=$condition;");
 				//Now delete the events
-				$result = $wpdb->query ( "DELETE FROM ". $wpdb->prefix . EM_EVENTS_TABLE ." WHERE event_id=$condition;" );
+				$result = $wpdb->query ( "DELETE FROM ". EM_EVENTS_TABLE ." WHERE event_id=$condition;" );
 				return apply_filters('em_events_delete', true, $event_ids);
 			}else{
 				return apply_filters('em_events_delete', true, $event_ids);
@@ -168,7 +168,8 @@ class EM_Events extends EM_Object implements Iterator {
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Event' ){
 			$func_args = func_get_args();
 			$events = $func_args[0];
-			$args = apply_filters('em_events_output_args', self::get_default_search($func_args[1]), $events);
+			$args = (!empty($func_args[1]) && is_array($func_args[1])) ? $func_args[1] : array();
+			$args = apply_filters('em_events_output_args', self::get_default_search($args), $events);
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
 			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
@@ -240,7 +241,7 @@ class EM_Events extends EM_Object implements Iterator {
 		if( EM_Object::array_is_numeric($event_ids) ){
 			$condition = implode(" OR event_id=", $event_ids);
 			//we try to find any of these events that don't belong to this user
-			$results = $wpdb->get_var("SELECT COUNT(*) FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE event_owner != '". get_current_user_id() ."' event_id=$condition;");
+			$results = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_BOOKINGS_TABLE ." WHERE event_owner != '". get_current_user_id() ."' event_id=$condition;");
 			return apply_filters('em_events_can_manage', ($results == 0), $event_ids);
 		}
 		return apply_filters('em_events_can_manage', false, $event_ids);
@@ -268,6 +269,13 @@ class EM_Events extends EM_Object implements Iterator {
 		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
 			$conditions['status'] = "(`event_status`={$args['status']})";
 		}
+		if( is_multisite() && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
+			if( $args['blog'] == 1 ){
+				$conditions['blog'] = "(`blog_id`={$args['blog']} OR blog_id IS NULL)";
+			}else{
+				$conditions['blog'] = "(`blog_id`={$args['blog']})";
+			}
+		}
 		return apply_filters( 'em_events_build_sql_conditions', $conditions, $args );
 	}
 	
@@ -294,7 +302,12 @@ class EM_Events extends EM_Object implements Iterator {
 			'format_footer' => '', //events can have custom html below the list
 			'state' => '',
 			'country' => '',
+			'blog' => get_current_blog_id()
 		);
+		if( is_multisite() && get_current_blog_id() != 1 ){
+			//not the main blog, force single blog search
+			$array['blog'] = get_current_blog_id();
+		}
 		if( is_admin() ){
 			//figure out default owning permissions
 			$defaults['owner'] = !current_user_can('edit_others_events') ? get_current_user_id() : false;

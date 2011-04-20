@@ -57,7 +57,7 @@ table.events-table tr.past { background:#E4E4E4 }
 table.events-table .category { color:#888; }
 
 /* Events Add Page */
-#event-form #event-name, #location-form, #location-name { margin: 2px 0 7px; padding: 6px 5px; width: 100%; }
+#event-form #event-name, #location-form, #location-name { margin: 2px 0 7px; padding: 6px 5px; width: 98%; }
 
 	/*Bookings */
 		#event-rsvp-box { margin:10px; }

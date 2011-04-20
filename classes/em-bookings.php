@@ -37,7 +37,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 		if( is_object($data) && get_class($data) == "EM_Event" ){ //Creates a blank bookings object if needed
 			global $wpdb;
 			$this->event = $data;
-			$sql = "SELECT * FROM ". $wpdb->prefix . EM_BOOKINGS_TABLE ." WHERE event_id ='{$this->event->id}'";
+			$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." WHERE event_id ='{$this->event->id}'";
 			$bookings = $wpdb->get_results($sql, ARRAY_A);
 			foreach ($bookings as $booking){
 				$this->bookings[] = new EM_Booking($booking);
@@ -193,12 +193,12 @@ class EM_Bookings extends EM_Object implements Iterator{
 		global $wpdb;
 		$booking_ids = array();
 		if( is_object($this->event) ){
-			$result = $wpdb->query("DELETE FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE event_id='{$this->event_id}'");
+			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id='{$this->event_id}'");
 		}else{
 			foreach( $this->bookings as $EM_Booking ){
 				$booking_ids[] = $EM_Booking->id;
 			}
-			$result = $wpdb->query("DELETE FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." WHERE event_id IN (".implode(',',$booking_ids).")");
+			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id IN (".implode(',',$booking_ids).")");
 		}
 		return ($result !== false);
 	}
@@ -435,9 +435,9 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get( $args = array() ){
 		global $wpdb,$current_user;
-		$bookings_table = $wpdb->prefix . EM_BOOKINGS_TABLE;
-		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
-		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		$bookings_table = EM_BOOKINGS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
+		$locations_table = EM_LOCATIONS_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
@@ -516,13 +516,15 @@ class EM_Bookings extends EM_Object implements Iterator{
 		
 		//Headers
 		$labels = array(
-			'ID',
+			'Booking ID',
 			'Name',
 			'Email',
 			'Phone',
 			'Date',
 			'Status',
+			'Ticket Name',
 			'Spaces',
+			'Price',
 			'Comment'
 		);
 		$file = sprintf(__('Booking details for "%s" as of %s','dbem'),$event_name, date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
@@ -530,23 +532,31 @@ class EM_Bookings extends EM_Object implements Iterator{
 		
 		//Rows
 		foreach( $this->bookings as $EM_Booking ) {
-			$row = array(
-				$EM_Booking->id,
-				$EM_Booking->person->display_name,
-				$EM_Booking->person->user_email,
-				$EM_Booking->person->phone,
-				date('Y-m-d h:i', $EM_Booking->timestamp),
-				$EM_Booking->get_spaces(),
-				$EM_Booking->get_status(),
-				$EM_Booking->comment
-			);
-			//Display all values
-			foreach($row as $value){
-				$value = str_replace('"', '""', $value);
-				$value = str_replace("=", "", $value);
-				$file .= '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
+			/* @var $EM_Booking EM_Booking */
+			foreach( $EM_Booking->get_tickets_bookings() as $EM_Ticket_Booking){
+				/* @var $EM_Ticket EM_Ticket */
+				/* @var $EM_Ticket_Booking EM_Ticket_Booking */
+				$EM_Ticket = $EM_Ticket_Booking->get_ticket();
+				$row = array(
+					$EM_Booking->id,
+					$EM_Booking->person->display_name,
+					$EM_Booking->person->user_email,
+					$EM_Booking->person->phone,
+					date('Y-m-d h:i', $EM_Booking->timestamp),
+					$EM_Booking->get_status(),
+					$EM_Ticket->name,
+					$EM_Ticket_Booking->get_spaces(),
+					$EM_Ticket_Booking->get_price(),
+					$EM_Booking->comment
+				);
+				//Display all values
+				foreach($row as $value){
+					$value = str_replace('"', '""', $value);
+					$value = str_replace("=", "", $value);
+					$file .= '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
+				}
+				$file .= "\n";
 			}
-			$file .= "\n";
 		}
 		
 		// $file holds the data

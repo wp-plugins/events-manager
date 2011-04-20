@@ -31,8 +31,8 @@ class EM_Locations extends EM_Object implements Iterator {
 	 */
 	function get( $args = array(), $count=false ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
-		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
+		$locations_table = EM_LOCATIONS_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
@@ -119,7 +119,8 @@ class EM_Locations extends EM_Object implements Iterator {
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
 			$func_args = func_get_args();
 			$locations = $func_args[0];
-			$args = apply_filters('em_locations_output_args', self::get_default_search($func_args[1]), $locations);
+			$args = (!empty($func_args[1])) ? $func_args[1] : array();
+			$args = apply_filters('em_locations_output_args', self::get_default_search($args), $locations);
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
 			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
@@ -158,7 +159,7 @@ class EM_Locations extends EM_Object implements Iterator {
 				//Add headers and footers to output
 				if( $format == get_option ( 'dbem_location_list_item_format' ) ){
 					$single_event_format_header = get_option ( 'dbem_location_list_item_format_header' );
-					$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='dbem_events_list'>";
+					$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='em-locations-list'>";
 					$single_event_format_footer = get_option ( 'dbem_location_list_item_format_footer' );
 					$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
 					$output =  $single_event_format_header .  $output . $single_event_format_footer;
@@ -199,8 +200,8 @@ class EM_Locations extends EM_Object implements Iterator {
 	 */
 	function build_sql_conditions( $args = array() ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
-		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
+		$locations_table = EM_LOCATIONS_TABLE;
 		
 		$conditions = parent::build_sql_conditions($args);
 		//eventful locations
@@ -212,6 +213,14 @@ class EM_Locations extends EM_Object implements Iterator {
 		//owner lookup
 		if( !empty($args['owner']) ){
 			$conditions['owner'] = "location_owner=".$args['owner'];
+		}
+		//blog id in events table
+		if( is_multisite() && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
+			if( $args['blog'] == 1 ){
+				$conditions['blog'] = "(`blog_id`={$args['blog']} OR blog_id IS NULL)";
+			}else{
+				$conditions['blog'] = "(`blog_id`={$args['blog']})";
+			}
 		}
 		return apply_filters('em_locations_build_sql_conditions', $conditions, $args);
 	}
@@ -234,8 +243,13 @@ class EM_Locations extends EM_Object implements Iterator {
 			'orderby' => 'name',
 			'state' => false,
 			'country' => false,
-			'scope' => 'all' //we probably want to search all locations by default, not like events
+			'scope' => 'all', //we probably want to search all locations by default, not like events
+			'blog' => get_current_blog_id()
 		);
+		if( is_multisite() && get_current_blog_id() != 1 ){
+			//not the main blog, force single blog search
+			$array['blog'] = get_current_blog_id();
+		}
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );
 		if( is_admin() ){

@@ -57,10 +57,10 @@ class EM_Ticket extends EM_Object{
 			}elseif( is_numeric($ticket_data) ){
 				//Retreiving from the database		
 				global $wpdb;
-				$sql = "SELECT * FROM ". $wpdb->prefix . EM_TICKETS_TABLE ." WHERE ticket_id ='$ticket_data'";   
+				$sql = "SELECT * FROM ". EM_TICKETS_TABLE ." WHERE ticket_id ='$ticket_data'";   
 			  	$ticket = $wpdb->get_row($sql, ARRAY_A);
 			  	//Ticket notes
-			  	$notes = $wpdb->get_results("SELECT * FROM ". $wpdb->prefix . EM_META_TABLE ." WHERE meta_key='ticket-note' AND object_id ='$ticket_data'", ARRAY_A);
+			  	$notes = $wpdb->get_results("SELECT * FROM ". EM_META_TABLE ." WHERE meta_key='ticket-note' AND object_id ='$ticket_data'", ARRAY_A);
 			  	foreach($notes as $note){
 			  		$this->notes[] = unserialize($note['meta_value']);
 			  	}
@@ -79,7 +79,7 @@ class EM_Ticket extends EM_Object{
 	 */
 	function save(){
 		global $wpdb;
-		$table = $wpdb->prefix.EM_TICKETS_TABLE;
+		$table = EM_TICKETS_TABLE;
 		do_action('em_ticket_save_pre',$this);
 		//First the person
 		if($this->validate() && $this->can_manage() ){			
@@ -267,7 +267,7 @@ class EM_Ticket extends EM_Object{
 		$result = false;
 		if( $this->can_manage() ){
 			if( count($this->get_bookings()->bookings) == 0 ){
-				$sql = $wpdb->prepare("DELETE FROM ". $wpdb->prefix.EM_TICKETS_TABLE . " WHERE ticket_id=%d", $this->id);
+				$sql = $wpdb->prepare("DELETE FROM ". EM_TICKETS_TABLE . " WHERE ticket_id=%d", $this->id);
 				$result = $wpdb->query( $sql );
 			}else{
 				$this->feedback_message = __('You cannot delete a ticket that has a booking on it.','dbem');

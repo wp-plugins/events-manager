@@ -74,9 +74,11 @@ class EM_Locations_Widget extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope of the locations','dbem'); ?>:</label><br/>
 			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >
-				<option value="future" <?php echo ($instance['scope'] == 'future') ? 'selected="selected"':''; ?>><?php _e('Locations with upcoming events','dbem'); ?></option>
-				<option value="all" <?php echo ($instance['scope'] == 'all') ? 'selected="selected"':''; ?>><?php _e('All locations','dbem'); ?></option>
-				<option value="past" <?php echo ($instance['scope'] == 'past') ? 'selected="selected"':''; ?>><?php _e('Locations with past events ','dbem'); ?></option>
+				<?php foreach( em_get_scopes() as $key => $value) : ?>   
+				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_page_scope')) ? "selected='selected'" : ''; ?>>
+					<?php echo $value; ?>
+				</option>
+				<?php endforeach; ?>
 			</select>
 		</p>
 		<p>

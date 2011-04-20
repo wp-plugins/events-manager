@@ -8,6 +8,7 @@ class EM_Object {
 	var $required_fields = array();
 	var $feedback_message = "";
 	var $errors = array();
+	var $mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
 	
 	/**
 	 * Takes the array and provides a clean array of search parameters, along with details
@@ -115,7 +116,7 @@ class EM_Object {
 		$defaults['recurring'] = ($defaults['recurring'] == true);
 		$defaults['owner'] = (is_numeric($defaults['owner'])) ? $defaults['owner']:$super_defaults['owner'];
 		$defaults['search'] = ($defaults['search']) ? trim($wpdb->escape(like_escape($defaults['search']))):false;
-		//Calculate offset in event page is set
+		//Calculate offset if event page is set
 		if($defaults['page'] > 1){
 			$defaults['offset'] = $defaults['limit'] * ($defaults['page']-1);	
 		}else{
@@ -131,8 +132,8 @@ class EM_Object {
 	 */
 	function build_sql_conditions( $args = array() ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
-		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
+		$locations_table = EM_LOCATIONS_TABLE;
 		
 		$args = apply_filters('em_object_build_sql_conditions_args',$args);
 		
@@ -193,6 +194,23 @@ class EM_Object {
 				$conditions['scope'] = " event_start_date < '$today'";  
 			}elseif ($scope == "today"){
 				$conditions['scope'] = " ( (event_start_date = CAST('$today' AS DATE)) OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE)) )";
+			}elseif ($scope == "tomorrow"){
+				$tomorrow = date('Y-m-d',current_time('timestamp')+60*60*24);
+				$conditions['scope'] = " ( (event_start_date = CAST('$tomorrow' AS DATE)) OR (event_start_date <= CAST('$tomorrow' AS DATE) AND event_end_date >= CAST('$tomorrow' AS DATE)) )";
+			}elseif ($scope == "month"){
+				$start_month = date('Y-m-d',current_time('timestamp'));
+				$end_month = date('Y-m-t',current_time('timestamp'));
+				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE)) OR (event_end_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
+			}elseif ($scope == "next-month"){
+				$start_month_timestamp = strtotime('+1 month', current_time('timestamp')); //get the end of this month + 1 day
+				$start_month = date('Y-m-1',$start_month_timestamp);
+				$end_month = date('Y-m-t',$start_month_timestamp);
+				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE)) OR (event_end_date BETWEEN CAST('$end_month' AS DATE) AND CAST('$start_month' AS DATE))";
+			}elseif( preg_match('/(\d\d?)\-months/',$scope,$matches) ){
+				$months_to_add = $matches[1];
+				$start_month = date('Y-m-d',current_time('timestamp'));
+				$end_month = date('Y-m-t',strtotime("+$months_to_add month", current_time('timestamp')));
+				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE)) OR (event_end_date BETWEEN CAST('$end_month' AS DATE) AND CAST('$start_month' AS DATE))";
 			}elseif ($scope == "future"){
 				$conditions['scope'] = " (event_start_date >= CAST('$today' AS DATE) OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
 			}
@@ -317,13 +335,12 @@ class EM_Object {
 			$can_manage = true;
 		}elseif( $is_owner && array_key_exists($owner_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$owner_capability];
+			$this->add_error($error_msg);
 		}
 		if( !$is_owner && current_user_can($admin_capability) ){
 			$can_manage = true;
 		}elseif( !$is_owner && array_key_exists($admin_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$admin_capability];
-		}
-		if( !$can_manage ){
 			$this->add_error($error_msg);
 		}
 		return $can_manage;
@@ -580,4 +597,112 @@ class EM_Object {
 	    }		
 	    return $result;
 	}	
+	
+	/*
+	 * START IMAGE UPlOAD FUNCTIONS
+	 * Used for various objects, so shared in one place 
+	 */
+	function get_image_type(){
+		switch( get_class($this) ){
+			case 'EM_Event':
+				return 'event';
+			case 'EM_Location':
+				return 'location';
+			case 'EM_Category':
+				return 'category';
+		} 	
+	}
+	
+	function get_image_url(){
+		$type = $this->get_image_type();
+		if( $type ){
+			if($this->image_url == ''){
+			  	foreach($this->mime_types as $mime_type) { 
+					$file_path = "/".EM_IMAGE_UPLOAD_DIR."/{$type}-{$this->id}.$mime_type";
+					if( file_exists( ABSPATH . $file_path) ) {
+						$result = get_bloginfo('wpurl').$file_path;
+			  			$this->image_url = $result;
+					}
+				}
+			}
+		}
+		return apply_filters('em_object_get_image_url', $this->image_url, $this);
+	}
+	
+	function image_delete() {
+		$type = $this->get_image_type();
+		if( $type ){
+			if( $this->image_url == '' ){
+				$result = true;
+			}else{
+				$file_name= ABSPATH.EM_IMAGE_UPLOAD_DIR."/{$type}-".$this->id;
+				$result = false;
+				foreach($this->mime_types as $mime_type) { 
+					if (file_exists($file_name.".".$mime_type)){
+				  		$result = unlink($file_name.".".$mime_type);
+					}
+				}
+			}
+		}
+		return apply_filters('em_object_get_image_url', $result, $this);
+	}
+	
+	function image_upload($result){
+		$type = $this->get_image_type();
+		if( $type ){
+			do_action('em_object_image_upload_pre', $type, $this);
+			$result = true;
+			if ( !empty($_FILES[$type.'_image']['size']) && file_exists($_FILES[$type.'_image']['tmp_name'])) {	
+			  	if( !file_exists(ABSPATH.EM_IMAGE_UPLOAD_DIR) ){
+					mkdir(ABSPATH.EM_IMAGE_UPLOAD_DIR, 0777);
+			  	}
+				$this->image_delete();   
+				list($width, $height, $mime_type, $attr) = getimagesize($_FILES[$type.'_image']['tmp_name']);
+				if( $this->image_validate()){
+					$image_path = '/'.EM_IMAGE_UPLOAD_DIR."/{$type}-".$this->id.".".$this->mime_types[$mime_type];
+					if ( move_uploaded_file($_FILES[$type.'_image']['tmp_name'], ABSPATH.$image_path) ){
+						$this->image_url = get_bloginfo('wpurl').$image_path;
+					}else{
+						if($result){				
+							$this->feedback_message .= ' '. __('However, the ssimage could not be saved.','dbem');
+						}
+						$this->add_error(__('The image could not be saved','dbem'));
+					}					
+				}else{
+					if($result){
+						$this->feedback_message .= ' '.  __('However, the image could not be saved:','dbem');
+						$this->feedback_message .= '<p>'.implode('<br />',$this->errors).'</p>';
+					}
+				}
+			}
+		}
+		return apply_filters('em_object_image_upload', $result, $this);
+	}
+	
+	function image_validate(){
+		$type = $this->get_image_type();
+		if( $type ){
+			if ( !empty($_FILES[$type.'_image']) && $_FILES[$type.'_image']['size'] > 0 ) { 
+				if (is_uploaded_file($_FILES[$type.'_image']['tmp_name'])) {
+			  		list($width, $height, $mime_type, $attr) = getimagesize($_FILES[$type.'_image']['tmp_name']);
+					$maximum_size = get_option('dbem_image_max_size'); 
+					if ($_FILES[$type.'_image']['size'] > $maximum_size){ 
+				     	$this->add_error( __('The image file is too big! Maximum size:', 'dbem')." $maximum_size");
+					}
+					$maximum_width = get_option('dbem_image_max_width'); 
+					$maximum_height = get_option('dbem_image_max_height'); 
+				  	if (($width > $maximum_width) || ($height > $maximum_height)) { 
+						$this->add_error( __('The image is too big! Maximum size allowed:','dbem')." $maximum_width x $maximum_height");
+				  	}
+				  	if ( empty($mime_type) || !array_key_exists($mime_type, $this->mime_types) ){ 
+						$this->add_error(__('The image is in a wrong format!','dbem'));
+				  	}
+		  		}
+			}
+		}
+		return apply_filters('em_object_image_validate', count($this->errors) == 0, $this);
+	}
+	/*
+	 * END IMAGE UPlOAD FUNCTIONS
+	 */
 }

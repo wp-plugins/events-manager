@@ -54,10 +54,11 @@ function em_admin_event_page() {
 		$hours_locale_regexp = "h:iA";
 	
 	$days_names = array (1 => __ ( 'Mon' ), 2 => __ ( 'Tue' ), 3 => __ ( 'Wed' ), 4 => __ ( 'Thu' ), 5 => __ ( 'Fri' ), 6 => __ ( 'Sat' ), 0 => __ ( 'Sun' ) );
+	$required = "<i>*</i>";
 	?>
 	<?php echo $EM_Notices; ?>
 
-	<form id="event-form" method="post" action="">
+	<form id="event-form" method="post" action=""  enctype='multipart/form-data'>
 		<div class="wrap">
 			<div id="icon-events" class="icon32"><br /></div>
 			<h2><?php echo $title; ?></h2>
@@ -65,11 +66,12 @@ function em_admin_event_page() {
 				<?php foreach($EM_Event->warnings as $warning): ?>
 				<p class="warning"><?php echo $warning; ?></p>
 				<?php endforeach; ?>
-			<?php endif; ?>              
+			<?php endif; ?>             
 			<div id="poststuff" class="metabox-holder has-right-sidebar">
 				<!-- SIDEBAR -->
 				<div id="side-info-column" class='inner-sidebar'>
-					<div id='side-sortables'>       
+					<div id='side-sortables'>
+						<?php do_action('em_admin_event_form_side_header'); ?>       
 						<?php if(get_option('dbem_recurrence_enabled') && ($EM_Event->is_recurrence() || $EM_Event->is_recurring() || $EM_Event->id == '')) : ?>
 							<!-- START recurrence postbox -->
 							<div class="postbox ">
@@ -243,17 +245,19 @@ function em_admin_event_page() {
 							</div> 
 							<!-- END Categories -->
 						<?php endif; ?>
+						<?php do_action('em_admin_event_form_side_footer'); ?>
 					</div>
 				</div>
 				<!-- END OF SIDEBAR -->
 				<div id="post-body">
 					<div id="post-body-content">
+						<?php do_action('em_admin_event_form_header'); ?>
 						<div id="event_name" class="stuffbox">
 							<h3>
 								<?php _e ( 'Name', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
-								<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
+								<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" /><?php echo $required; ?>
 								<br />
 								<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
 								<?php $slug_link = __('View Slug','dbem'); ?>
@@ -358,26 +362,28 @@ function em_admin_event_page() {
 													<th><?php _e ( 'Name:' )?></th>
 													<td>
 														<input id='location-id' name='location_id' type='hidden' value='<?php echo $EM_Event->get_location()->id; ?>' size='15' />
-														<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Event->location->name, ENT_QUOTES); ?>" />													
-					                            		<p><?php _e ( 'Create a location or start typing to search a previously created location.', 'dbem' )?></p>
+														<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Event->location->name, ENT_QUOTES); ?>" /><?php echo $required; ?>													
+					                            		<p><em><?php _e ( 'Create a location or start typing to search a previously created location.', 'dbem' )?></em></p>
 					                            	</td>
 										 		</tr>
 												<tr>
 													<th><?php _e ( 'Address:' )?>&nbsp;</th>
 													<td>
-														<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Event->location->address, ENT_QUOTES); ; ?>" /> <?php echo $required; ?>
+														<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Event->location->address, ENT_QUOTES); ; ?>" /><?php echo $required; ?>
 													</td>
 												</tr>
 												<tr>
 													<th><?php _e ( 'City/Town:' )?>&nbsp;</th>
 													<td>
-														<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Event->location->town, ENT_QUOTES); ?>" /> <?php echo $required; ?>
+														<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Event->location->town, ENT_QUOTES); ?>" /><?php echo $required; ?>
+														<input id="location-town-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_town'); ?>" />
 													</td>
 												</tr>
 												<tr>
 													<th><?php _e ( 'State/County:' )?>&nbsp;</th>
 													<td>
 														<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Event->location->state, ENT_QUOTES); ?>" />
+														<input id="location-state-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_states'); ?>" />
 													</td>
 												</tr>
 												<tr>
@@ -387,14 +393,22 @@ function em_admin_event_page() {
 													</td>
 												</tr>
 												<tr>
+													<th><?php _e ( 'Region:' )?>&nbsp;</th>
+													<td>
+														<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Event->location->region, ENT_QUOTES); ?>" />
+														<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
+													</td>
+												</tr>
+												<tr>
 													<th><?php _e ( 'Country:' )?>&nbsp;</th>
 													<td>
 														<select id="location-country" name="location_country">
 															<option value="0" <?php echo ( $EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country') == '' ) ? 'selected="selected"':''; ?>><?php _e('none selected','dbem'); ?></option>
 															<?php foreach(em_get_countries() as $country_key => $country_name): ?>
-															<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Event->location->country || ($EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
+															<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Event->location->country == $country_key || ($EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
 															<?php endforeach; ?>
-														</select> <?php echo $required; ?>
+														</select><?php echo $required; ?>
+														<!-- <p><em><?php _e('Filling this in first will allow you to quickly find previously filled states and regions for the country.','dbem'); ?></em></p> -->
 													</td>
 												</tr>
 												<?php endif; ?>
@@ -422,6 +436,21 @@ function em_admin_event_page() {
 							</div>
 							<br />
 							<?php _e ( 'Details about the event', 'dbem' )?>
+						</div>
+					</div>
+									
+					<div id="event-image" class="stuffbox">
+						<h3>
+							<?php _e ( 'Event image', 'dbem' ); ?>
+						</h3>
+						<div class="inside" style="padding:10px;">
+								<?php if ($EM_Event->image_url != '') : ?> 
+									<img src='<?php echo $EM_Event->image_url; ?>' alt='<?php echo $EM_Event->name ?>'/>
+								<?php else : ?> 
+									<?php _e('No image uploaded for this event yet', 'debm') ?>
+								<?php endif; ?>
+								<br /><br />
+								<label for='event_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='event-image' name='event_image' id='event_image' type='file' size='40' />
 						</div>
 					</div>
 					
@@ -542,7 +571,7 @@ function em_admin_event_page() {
 					<?php endif; ?>
 					
 					<?php if(get_option('dbem_attributes_enabled')) : ?>
-						<div id="event_attributes" class="stuffbox">
+						<div id="event-attributes" class="stuffbox">
 							<h3>
 								<?php _e ( 'Attributes', 'dbem' ); ?>
 							</h3>
@@ -625,6 +654,7 @@ function em_admin_event_page() {
 							</div>
 						</div>
 						<?php endif; ?>
+						<?php do_action('em_admin_event_form_footer'); ?>
 					</div>
 					<p class="submit">
 						<input type="submit" name="events_update" value="<?php _e ( 'Submit Event', 'dbem' ); ?> &raquo;" />

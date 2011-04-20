@@ -6,6 +6,12 @@
  */
 function bp_em_my_bookings() {
 	global $bp, $EM_Event;
+	
+	//assume any notifications here are considered viewed via this page
+	bp_core_delete_notifications_for_user_by_type(get_current_user_id(), 'events','pending_booking');
+	bp_core_delete_notifications_for_user_by_type(get_current_user_id(), 'events','confirmed_booking');
+	bp_core_delete_notifications_for_user_by_type(get_current_user_id(), 'events','cancelled_booking');
+	
 	if( !is_object($EM_Event) && !empty($_REQUEST['event_id']) ){
 		$EM_Event = new EM_Event($_REQUEST['event_id']);
 	}

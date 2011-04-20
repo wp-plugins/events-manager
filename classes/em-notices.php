@@ -60,12 +60,13 @@
         	}
             if($string != ''){
                 if( isset($this->notices[$type]) ){
+                	$notice_key = 0;
                 	foreach( $this->notices[$type] as $notice_key => $notice ){
                 		if($string == $notice['string']){
                 			return $notice_key;
                 		}
                 	}
-                    $i = key($this->notices[$type])+1;
+                    $i = $notice_key+1;
                     $this->notices[$type][$i]['string'] = $string;
                     if( $static ){
                     	$this->notices[$type][$i]['static'] = true;
@@ -88,17 +89,17 @@
         }
         function get($type){
             if( isset($this->notices[$type]) ){
+        		$string = '';
                 foreach ($this->notices[$type] as $key => $error){
                     $class = substr($type, 0, (strlen($type)-1));
                     $string .= "<p>{$error['string']}</p>";
-                    if($error['static'] !== true){
+                    if( empty($error['static']) || $error['static'] !== true){
                         $this->remove($key, $type);
                     }
                 }
                 return $string;
-            }else{
-                return false;
             }
+            return false;
         }
         
         /* Errors */

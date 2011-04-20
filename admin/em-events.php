@@ -14,11 +14,7 @@ function em_admin_events_page() {
 	$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
 	$search = ( !empty($_REQUEST['em_search']) ) ? $_REQUEST['em_search']:'';
-	$scope_names = array (
-		'past' => __ ( 'Past events', 'dbem' ),
-		'all' => __ ( 'All events', 'dbem' ),
-		'future' => __ ( 'Future events', 'dbem' )
-	);
+	$scope_names = em_get_scopes();
 	$scope = ( !empty($_REQUEST ['scope']) && array_key_exists($_REQUEST ['scope'], $scope_names) ) ? $_REQUEST ['scope']:'future';
 	$selectedEvents = ( !empty($_REQUEST ['events']) ) ? $_REQUEST ['events']:'';
 	

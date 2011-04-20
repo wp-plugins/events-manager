@@ -54,15 +54,10 @@ function em_docs_init(){
 							'#_NAME' => array( 'desc' => 'Displays the name of the event.' ),
 							'#_NOTES' => array( 'desc' => 'Shows the description of the event.' ),
 							'#_EXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show (currently, no read more link is added).' ),
-							'#_EVENTID' => array( 'desc' => 'Shows the event\'s corresponding ID number in the database table.' )
+							'#_EVENTID' => array( 'desc' => 'Shows the event corresponding ID number in the database table.' ),
+							'#_EVENTIMAGE' => array( 'desc' => 'Shows the event image, if available.' )
 						)
-					),
-					'Category Details' => array(
-						'placeholders' => array(
-							'#_CATEGORYNAME' => array( 'desc' => 'Shows the category name of the event.' ),
-							'#_CATEGORYID' => array( 'desc' => 'Shows the category ID of the event.' )
-						)
-					),					
+					),			
 					'Time' => array(
 						'desc' => '',
 						'placeholders' => array(
@@ -82,8 +77,10 @@ function em_docs_init(){
 					'Links' => array(
 						'placeholders' => array(
 							'#_EVENTURL' => array( 'desc' => 'Simply prints the event URL. You can use this placeholder to build your own customised links.' ),
+							'#_EVENTIMAGEURL' => array( 'desc' => 'Shows the event image url, if available.' ),
 							'#_EVENTLINK' => array( 'desc' => 'Displays the event name with a link to the event page.' ),
-							'#_EDITEVENTLINK' => array( 'desc' => 'Inserts a link to the edit event page, only if a user is logged in and is allowed to edit the event.' )
+							'#_EDITEVENTLINK' => array( 'desc' => 'Inserts a link to the admin  or buddypress (if activated) edit event page, only if a user is logged in and is allowed to edit the event.' ),
+							'#_EDITEVENTURL' => array( 'desc' => 'Inserts a url to the admin or buddypress (if activated) edit event page, only if a user is logged in and is allowed to edit the event.' )
 						)
 					),
 					'Custom Attributes' => array(
@@ -95,15 +92,15 @@ function em_docs_init(){
 					'Bookings/RSVP' => array(
 						'desc' => 'These placeholders will only show if RSVP is enabled for the given event and in the events manager settings page. Spaces placeholders will default to 0',
 						'placeholders' => array(
-							'#_ADDBOOKINGFORM' => array( 'desc' => 'Adds a form which allows the visitors to register for an event.' ),
-							'#_REMOVEBOOKINGFORM' => array( 'desc' => 'Adds a form which allows the visitors to remove their booking.' ),
-							'#_BOOKINGFORM' => array( 'desc' => 'Adds a both booking forms (add and remove).' ),
+							'#_BOOKINGFORM' => array( 'desc' => 'Adds a booking forms for this event.' ),
 							'#_AVAILABLESPACES' => array( 'desc' => 'Shows available spaces for the event.' ),
 							'#_BOOKEDSPACES' => array( 'desc' => 'Shows the amount of currently booked spaces for the event.' ),
 							'#_PENDINGSPACES' => array( 'desc' => 'Shows the amount of pending spaces for the event.' ),
 							'#_SPACES' => array( 'desc' => 'Shows the total spaces for the event.' ),
 							'#_ATTENDEES' => array( 'desc' => 'Shows the list of user avatars attending events.' ),
-							'#_BOOKINGBUTTON' => array( 'desc' => 'A single button that will appear to logged in users, if they click on it, they apply for a booking. This button will only display if there is one ticket.' )
+							'#_BOOKINGBUTTON' => array( 'desc' => 'A single button that will appear to logged in users, if they click on it, they apply for a booking. This button will only display if there is one ticket.' ),
+							'#_BOOKINGSURL' => array( 'desc' => 'Shows the url to the admin or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' ),
+							'#_BOOKINGSLINK' => array( 'desc' => 'Shows a link to the admin or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' )							
 						)
 					),
 					'Contact Details' => array(
@@ -119,6 +116,17 @@ function em_docs_init(){
 							'#_CONTACTID' => array( 'desc' => 'Contact person\'s wordpress user ID.')
 						)
 					),			
+				),
+				'categories' => array(
+					'Category Details' => array(
+						'placeholders' => array(
+							'#_CATEGORYNAME' => array( 'desc' => 'Shows the category name of the event.' ),
+							'#_CATEGORYID' => array( 'desc' => 'Shows the category ID of the event.' ),
+							'#_CATEGORYIMAGE' => array( 'desc' => 'Shows the event image, if available.' ),
+							'#_CATEGORYIMAGEURL' => array( 'desc' => 'Shows the event image url, if available.' ),
+							'#_CATEGORYNOTES' => array( 'desc' => 'Shows the location description.' )
+						)
+					)					
 				),
 				'locations' => array(
 					'Location Details' => array(

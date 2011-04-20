@@ -6,7 +6,9 @@ function em_options_save(){
 		//Build the array of options here
 		$post = $_POST;
 		foreach ($_POST as $postKey => $postValue){
-			if( substr($postKey, 0, 5) == 'dbem_' ){
+			if( substr($postKey, 0, 7) == 'dbem_ms' ){
+				update_site_option($postKey, stripslashes($postValue));
+			}elseif( substr($postKey, 0, 5) == 'dbem_' ){
 				//TODO some more validation/reporting
 				$numeric_options = array('dbem_locations_default_limit','dbem_events_default_limit');
 				if( in_array($postKey,$numeric_options) && !is_numeric($postValue) ){
@@ -54,8 +56,10 @@ function em_admin_options_page() {
 	$events_placeholders = '<a href="admin.php?page=events-manager-help#event-placeholders">'. __('Event Related Placeholders','dbem') .'</a>';
 	$locations_placeholders = '<a href="admin.php?page=events-manager-help#location-placeholders">'. __('Location Related Placeholders','dbem') .'</a>';
 	$bookings_placeholders = '<a href="admin.php?page=events-manager-help#booking-placeholders">'. __('Booking Related Placeholders','dbem') .'</a>';
+	$categories_placeholders = '<a href="admin.php?page=events-manager-help#category-placeholders">'. __('Category Related Placeholders','dbem') .'</a>';
 	$events_placeholder_tip = " ". sprintf(__('This accepts %s and %s placeholders.','dbem'),$events_placeholders, $locations_placeholders);
 	$locations_placeholder_tip = " ". sprintf(__('This accepts %s placeholders.','dbem'), $locations_placeholders);
+	$categories_placeholder_tip = " ". sprintf(__('This accepts %s placeholders.','dbem'), $categories_placeholders);
 	$bookings_placeholder_tip = " ". sprintf(__('This accepts %s, %s and %s placeholders.','dbem'), $bookings_placeholders, $events_placeholders, $locations_placeholders);
 	
 	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes' ) .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
@@ -97,16 +101,16 @@ function em_admin_options_page() {
 		/*
 		 * START MIGRATION BIT
 		 */
-			if($_REQUEST['action'] == 'bookings_migrate'){
+			if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'bookings_migrate' ){
 				require_once(dirname(__FILE__).'/../em-install.php');
 				em_migrate_bookings();
-			}elseif($_REQUEST['action'] == 'bookings_migrate_delete'){
+			}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'bookings_migrate_delete'){
 				require_once( dirname(__FILE__).'/../em-install.php');
 				em_migrate_bookings_delete();
 			}		
 		?>
-		<?php if( $wpdb->get_var("SHOW TABLES LIKE '".$wpdb->prefix.EM_PEOPLE_TABLE."'") == $wpdb->prefix.EM_PEOPLE_TABLE ): ?>
-			<?php if( $wpdb->get_var('SELECT COUNT(*) FROM '.$wpdb->prefix.EM_TICKETS_BOOKINGS_TABLE) > 0 ): ?>
+		<?php if( $wpdb->get_var("SHOW TABLES LIKE '".EM_PEOPLE_TABLE."'") == EM_PEOPLE_TABLE ): ?>
+			<?php if( $wpdb->get_var('SELECT COUNT(*) FROM '.EM_TICKETS_BOOKINGS_TABLE) > 0 ): ?>
 				<div class='updated'>
 					<p>
 					It looks like you've already tried reimporting some bookings into the new version (or new bookings have been made since you installed). 
@@ -138,6 +142,21 @@ function em_admin_options_page() {
 			<!-- // TODO Move style in css -->
 			<div class='postbox-container' style='width: 99.5%'>
 			<div id="" class="meta-box-sortables" >
+		  
+		  	<?php if( is_multisite() ): ?>
+			<div  class="postbox " >
+				<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Multi Site Options', 'dbem' ); ?> </span></h3>
+				<div class="inside">
+		            <table class="form-table">
+						<?php 
+						em_options_radio_binary ( __( 'Enable global tables mode?' ), 'dbem_ms_global_table', __( 'Setting this to yes will make all events save in the main site database (note that you must at least activate EM on there for this to work). This allows you to share events across different blogs, such as showing events in your network whilst allowing users to display and manage their events within their own blog.','dbem' ) );  
+						echo $save_button;
+						?>
+					</table>
+					    
+				</div> <!-- . inside --> 
+			</div> <!-- .postbox --> 
+			<?php endif; ?>
 		  
 			<div  class="postbox " >
 			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'General options', 'dbem' ); ?> </span></h3>
@@ -247,23 +266,13 @@ function em_admin_options_page() {
 							<br/>
 							<em><?php _e('When Events Manager displays lists of events the default behaviour is ordering by start date in ascending order. To change this, modify the values above.','dbem'); ?></em>
 						</td>
-				   	</tr>
+				   	</tr>				   	
 					<tr valign="top" id='dbem_events_display_time_limit'>
-				   		<th scope="row"><?php _e('Event list range limit','dbem'); ?></th>
+				   		<th scope="row"><?php _e('Event list scope','dbem'); ?></th>
 							<td>
 								<select name="dbem_events_page_time_limit" >
-									<?php 
-										$limit_options = apply_filters('em_settings_events_page_time_limit_ddm', array(
-											'0' => __('no limit','dbem'),
-											'1' => __('This month','dbem'),
-											'2' => __('Next two months','dbem'),
-											'3' => __('Next three months','dbem'),
-											'6' => __('Next six months','dbem'),
-											'12' => __('Next twelve months','dbem')
-										)); 
-									?>
-									<?php foreach( $limit_options as $key => $value) : ?>   
-									<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_page_time_limit')) ? "selected='selected'" : ''; ?>>
+									<?php foreach( em_get_scopes() as $key => $value) : ?>   
+									<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_page_scope')) ? "selected='selected'" : ''; ?>>
 										<?php echo $value; ?>
 									</option>
 									<?php endforeach; ?>
@@ -271,7 +280,7 @@ function em_admin_options_page() {
 								<br />
 								<em><?php _e('Only show events starting within a certain time limit on the events page. Default is no time limit is applied.','dbem'); ?></em>
 							</td>
-					</tr>					
+					</tr>
 					<?php
 					echo $save_button;
 					?>				
@@ -283,15 +292,19 @@ function em_admin_options_page() {
 			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Events format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
-				 	<?php
+				 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Events','dbem')); ?></strong></td></tr>
+					<?php
+					em_options_input_text ( __( 'Events page title', 'dbem' ), 'dbem_events_page_title', __( 'The title on the multiple events page.', 'dbem' ) );
 					em_options_textarea ( __( 'Default event list format header', 'dbem' ), 'dbem_event_list_item_format_header', __( 'This content will appear just above your code for the default event list format. Default is blank', 'dbem' ) );
 				 	em_options_textarea ( __( 'Default event list format', 'dbem' ), 'dbem_event_list_item_format', __( 'The format of any events in a list.', 'dbem' ).$events_placeholder_tip );
 					em_options_textarea ( __( 'Default event list format footer', 'dbem' ), 'dbem_event_list_item_format_footer', __( 'This content will appear just below your code for the default event list format. Default is blank', 'dbem' ) );
-					em_options_input_text ( __( 'Single event page title format', 'dbem' ), 'dbem_event_page_title_format', __( 'The format of a single event page title.', 'dbem' ).$events_placeholder_tip );
-					em_options_textarea ( __( 'Default single event format', 'dbem' ), 'dbem_single_event_format', __( 'The format of a single event page.', 'dbem' ).$events_placeholder_tip );
-					em_options_input_text ( __( 'Events page title', 'dbem' ), 'dbem_events_page_title', __( 'The title on the multiple events page.', 'dbem' ) );
 					em_options_input_text ( __( 'No events message', 'dbem' ), 'dbem_no_events_message', __( 'The message displayed when no events are available.', 'dbem' ) );
 					em_options_input_text ( __( 'List events by date title', 'dbem' ), 'dbem_list_date_title', __( 'If viewing a page for events on a specific date, this is the title that would show up. To insert date values, use <a href="http://www.php.net/manual/en/function.date.php">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/>', 'dbem' ) );
+					?>
+				 	<tr><td><strong><?php echo sprintf(__('Single %s Page','dbem'),__('Event','dbem')); ?></strong></td></tr>
+				 	<?php
+					em_options_input_text ( __( 'Single event page title format', 'dbem' ), 'dbem_event_page_title_format', __( 'The format of a single event page title.', 'dbem' ).$events_placeholder_tip );
+					em_options_textarea ( __( 'Default single event format', 'dbem' ), 'dbem_single_event_format', __( 'The format of a single event page.', 'dbem' ).$events_placeholder_tip );
 					echo $save_button;
 					?>
 				</table> 	
@@ -318,12 +331,43 @@ function em_admin_options_page() {
 			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Locations format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
+				 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Locations','dbem')); ?></strong></td></tr>
 					<?php
-					em_options_input_text ( __( 'Single location page title format', 'dbem' ), 'dbem_location_page_title_format', __( 'The format of a single location page title.', 'dbem' ).$locations_placeholder_tip );
-					em_options_textarea ( __( 'Default single location page format', 'dbem' ), 'dbem_single_location_format', __( 'The format of a single location page.', 'dbem' ).$locations_placeholder_tip );
-					em_options_textarea ( __( 'Default location balloon format', 'dbem' ), 'dbem_location_baloon_format', __( 'The format of of the text appearing in the baloon describing the location in the map.', 'dbem' ).$locations_placeholder_tip );
-					em_options_textarea ( __( 'Default location event list format', 'dbem' ), 'dbem_location_event_list_item_format', __( 'The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element.', 'dbem' ).$locations_placeholder_tip );
-					em_options_textarea ( __( 'Default no events message', 'dbem' ), 'dbem_location_no_events_message', __( 'The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available.', 'dbem' ) );
+					em_options_input_text ( sprintf(__('%s page title','dbem'),__('Locations','dbem')), 'dbem_locations_page_title', sprintf(__( 'The title on the multiple %s page.', 'dbem' ), __('locations','dbem')) );
+					em_options_textarea ( sprintf(__('%s list header format','dbem'),__('Locations','dbem')), 'dbem_location_list_item_format_header', sprintf(__( 'This content will appear just above your code for the %s list format below. Default is blank', 'dbem' ), __('locations','dbem')) );
+				 	em_options_textarea ( sprintf(__('%s list item format','dbem'),__('Locations','dbem')), 'dbem_location_list_item_format', sprintf(__( 'The format of a single %s in a list.', 'dbem' ), __('locations','dbem')).$locations_placeholder_tip );
+					em_options_textarea ( sprintf(__('%s list footer format','dbem'),__('Locations','dbem')), 'dbem_location_list_item_format_footer', sprintf(__( 'This content will appear just below your code for the %s list format above. Default is blank', 'dbem' ), __('locations','dbem')) );
+					em_options_input_text ( sprintf(__( 'No %s message', 'dbem' ),__('Locations','dbem')), 'dbem_no_locations_message', sprintf( __( 'The message displayed when no %s are available.', 'dbem' ), __('locations','dbem')) );
+				 	?>
+				 	<tr><td><strong><?php echo sprintf(__('Single %s Page','dbem'),__('Location','dbem')); ?></strong></td></tr>
+				 	<?php
+					em_options_input_text (sprintf( __( 'Single %s title format', 'dbem' ),__('location','dbem')), 'dbem_location_page_title_format', __( 'The format of a single location page title.', 'dbem' ).$locations_placeholder_tip );
+					em_options_textarea ( sprintf(__('Single %s page format', 'dbem' ),__('location','dbem')), 'dbem_single_location_format', __( 'The format of a single location page.', 'dbem' ).$locations_placeholder_tip );
+					em_options_textarea ( __( 'Default location balloon format', 'dbem' ), 'dbem_location_baloon_format', __( 'The format of of the text appearing in the baloon describing the location a single location map.', 'dbem' ).$locations_placeholder_tip );
+					em_options_textarea ( sprintf(__( 'Default %s list format', 'dbem' ),__('events','dbem')), 'dbem_location_event_list_item_format', __( 'The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element.', 'dbem' ).$locations_placeholder_tip );
+					em_options_textarea ( sprintf(__( 'No %s message', 'dbem' ),__('events','dbem')), 'dbem_location_no_events_message', __( 'The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available.', 'dbem' ) );
+					echo $save_button;
+					?>
+				</table>
+			</div> <!-- . inside -->
+			</div> <!-- .postbox -->
+			
+			<div  class="postbox " >
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Categories format', 'dbem' ); ?> </span></h3>
+			<div class="inside">
+            	<table class="form-table">
+				 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Categories','dbem')); ?></strong></td></tr>
+					<?php
+					em_options_input_text ( sprintf(__('%s page title','dbem'),__('Categories','dbem')), 'dbem_categories_page_title', sprintf(__( 'The title on the multiple %s page.', 'dbem' ), __('categories','dbem')) );
+					em_options_textarea ( sprintf(__('%s list header format','dbem'),__('Categories','dbem')), 'dbem_categories_list_item_format_header', sprintf(__( 'This content will appear just above your code for the %s list format below. Default is blank', 'dbem' ), __('categories','dbem')) );
+				 	em_options_textarea ( sprintf(__('%s list item format','dbem'),__('Categories','dbem')), 'dbem_categories_list_item_format', sprintf(__( 'The format of a single %s in a list.', 'dbem' ), __('categories','dbem')).$categories_placeholder_tip );
+					em_options_textarea ( sprintf(__('%s list footer format','dbem'),__('Categories','dbem')), 'dbem_categories_list_item_format_footer', sprintf(__( 'This content will appear just below your code for the %s list format above. Default is blank', 'dbem' ), __('categories','dbem')) );
+					em_options_input_text ( sprintf(__( 'No %s message', 'dbem' ),__('Categories','dbem')), 'dbem_no_categories_message', sprintf( __( 'The message displayed when no %s are available.', 'dbem' ), __('categories','dbem')) );
+				 	?>
+				 	<tr><td><strong><?php echo sprintf(__('Single %s Page','dbem'),__('Category','dbem')); ?></strong></td></tr>
+				 	<?php
+					em_options_input_text ( sprintf(__( 'Single %s title format', 'dbem' ),__('category','dbem')), 'dbem_category_page_title_format', __( 'The format of a single category page title.', 'dbem' ).$categories_placeholder_tip );
+					em_options_textarea ( sprintf(__('Single %s page format', 'dbem' ),__('category','dbem')), 'dbem_category_page_format', __( 'The format of a single category page.', 'dbem' ).$categories_placeholder_tip );
 					echo $save_button;
 					?>
 				</table>

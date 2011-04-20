@@ -8,6 +8,9 @@ class EM_Calendar extends EM_Object {
 	function output($args = array()) {
 	 	global $wpdb; 
 	 	
+		$calendar_array = array();
+		$calendar_array['cells'] = array();
+	 	
 		$args = self::get_default_search($args);
 		$full = $args['full']; //For ZDE, don't delete pls
 		$month = $args['month']; 
@@ -26,6 +29,8 @@ class EM_Calendar extends EM_Object {
 		  
 		// Get the first day of the month 
 		$month_start = mktime(0,0,0,$month, 1, $year);
+		$calendar_array['month_start'] = $month_start;
+		
 		// Get friendly month name 		
 		$month_name = date('M',$month_start);
 		// Figure out which day of the week 
@@ -49,12 +54,18 @@ class EM_Calendar extends EM_Object {
 		// determine how many days are in the last month.
 		$month_last = $month-1;
 		$month_next = $month+1;
+		$calendar_array['month_next'] = $month_next;
 		$year_last = $year; 
 		$year_next = $year;
+		$calendar_array['year_next'] = $year_next;
+		
 		if($month == 1) { 
 		   $month_last = 12;
 		   $year_last = $year -1;
 		}
+		$calendar_array['month_last'] = $month_last;
+		$calendar_array['year_last'] = $year_last;
+		
 		$num_days_last = self::days_in_month($month_last, $year_last);
 		 
 		// determine how many days are in the current month. 
@@ -90,9 +101,7 @@ class EM_Calendar extends EM_Object {
 		// we need to fill in 35 TDs 
 		// so, we will have to figure out 
 		// how many days to appened to the end 
-		// of the final array to make it 35 days. 
-	
-	
+		// of the final array to make it 35 days. 	
 		if($current_num > 35){ 
 		   $num_weeks = 6; 
 		   $outset = (42 - $current_num); 
@@ -111,40 +120,13 @@ class EM_Calendar extends EM_Object {
 		// Now let's "chunk" the $all_days array 
 		// into weeks. Each week has 7 days 
 		// so we will array_chunk it into 7 days. 
-		$weeks = array_chunk($new_count, 7); 
-		
-		
-	
-		// Build Previous and Next Links 
-		$base_link = "?".$_SERVER['QUERY_STRING']."&amp;";       
+		$weeks = array_chunk($new_count, 7);    
 		  
-		$full ? $link_extra_class = "full-link" : $link_extra_class = '';
 		//Get an array of arguments that don't include default valued args
 		$link_args = self::get_link_args($args);
 
-		//Get the previous link
-		if($month == 1){ 
-			 $back_month = 12;
-			 $back_year = $year-1;
-		} else { 
-		   $back_month = $month -1;
-			 $back_year = $year;
-		}
-		$previous_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;month={$back_month}&amp;year={$back_year}&amp;{$link_args}'>&lt;&lt;</a>"; 
-
-		//Now the next
-		if($month == 12){ 
-			$next_month = 1;
-			$next_year = $year+1;
-		} else { 
-			$next_month = $month + 1;
-			$next_year = $year;	
-		} 
-		$next_link = "<a class='em-calnav $link_extra_class' href='?ajaxCalendar=1&amp;month={$next_month}&amp;year={$next_year}&amp;{$link_args}'>&gt;&gt;</a>";
-		
-		
-		$class = ($full) ? 'dbem-calendar-full' : 'dbem-calendar';
-		$calendar="<div class='$class'><div style='display:none' class='month_n'>$month</div><div class='year_n' style='display:none' >$year</div>";
+		$previous_url = "?ajaxCalendar=1&amp;month={$month_last}&amp;year={$year_last}&amp;{$link_args}";
+		$next_url = "?ajaxCalendar=1&amp;month={$month_next}&amp;year={$year_next}&amp;{$link_args}";
 		
 	 	$weekdays = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
 	   $n = 0 ;
@@ -154,50 +136,41 @@ class EM_Calendar extends EM_Object {
 			$n++;
 		}
 	   
-		$days_initials = "";
+		$days_initials_array = array();
 		foreach($weekdays as $weekday) {
-			$days_initials .= "<td>".self::translate_and_trim($weekday)."</td>";
+			$days_initials_array[] = self::translate_and_trim($weekday);
 		} 
-		$full ? $fullclass = 'fullcalendar' : $fullclass='';
-		// Build the heading portion of the calendar table 
-		$calendar .=  "<table class='dbem-calendar-table $fullclass'>\n". 
-		   	"<thead>\n<tr>\n".
-			"<td>$previous_link</td><td class='month_name' colspan='5'>". apply_filters('dbem_calendar_output_month', ucfirst(date_i18n('M', $month_start)), $month_start, $args)." $year</td><td>$next_link</td>\n". 
-			"</tr>\n</thead>\n".	
-		    "<tr class='days-names'>\n". 
-		    $days_initials. 
-		    "</tr>\n"; 
-	
+		
+		$calendar_array['links'] = array( 'previous_url'=>$previous_url, 'next_url'=>$next_url);
+		$calendar_array['row_headers'] = $days_initials_array;
+		
 		// Now we break each key of the array  
 		// into a week and create a new table row for each 
 		// week with the days of that week in the table data 
 	  
 		$i = 0;
 		$current_date = date('Y-m-d', current_time('timestamp'));
+		$week_count = 0;
 		foreach ( $weeks as $week ) {
-			$calendar .= "<tr>\n";
 			foreach ( $week as $d ) {
+				$date = date('Y-m-d', $d);
+				$calendar_array['cells'][$date] = array('date'=>$d); //set it up so we have the exact array of dates to be filled
 				if ($i < $offset_count) { //if it is PREVIOUS month
-					$calendar .= "<td class='eventless-pre'>" . date ( 'j', $d ) . "</td>\n";
+					$calendar_array['cells'][$date]['type'] = 'pre';
 				}
 				if (($i >= $offset_count) && ($i < ($num_weeks * 7) - $outset)) { // if it is THIS month
-					$day = date ( 'j', $d );
-					if ( $current_date == date('Y-m-d', $d) ){					
-						$calendar .= "<td class='eventless-today'>$day</td>\n";
-					} else {
-						$calendar .= "<td class='eventless'>$day</td>\n";
+					if ( $current_date == $date ){	
+						$calendar_array['cells'][$date]['type'] = 'today';
 					}
 				} elseif (($outset > 0)) { //if it is NEXT month
 					if (($i >= ($num_weeks * 7) - $outset)) {
-						$calendar .= "<td class='eventless-post'>" . date ( 'j', $d ) . "</td>\n";
+						$calendar_array['cells'][$date]['type'] = 'post';
 					}
 				}
 				$i ++;
 			}
-			$calendar .= "</tr>\n";
+			$week_count++;
 		} 
-		
-		$calendar .= " </table>\n</div>";
 		
 			// query the database for events in this time span
 		if ($month == 1) {
@@ -220,6 +193,10 @@ class EM_Calendar extends EM_Object {
 		$args['month'] = array($month_pre, $month_post);
 		$events = EM_Events::get($args);
 	
+		$event_format = get_option('dbem_full_calendar_event_format'); 
+		$event_title_format = get_option('dbem_small_calendar_event_title_format');
+		$event_title_separator_format = get_option('dbem_small_calendar_event_title_separator');
+		
 		$eventful_days= array();
 		if($events){
 			//Go through the events and slot them into the right d-m index
@@ -253,58 +230,34 @@ class EM_Calendar extends EM_Object {
 				$event = apply_filters('em_calendar_output_loop_end', $event);
 			}
 		}
-	   
-		$event_format = get_option('dbem_full_calendar_event_format'); 
-		$event_title_format = get_option('dbem_small_calendar_event_title_format');
-		$event_title_separator_format = get_option('dbem_small_calendar_event_title_separator');
-		$cells = array() ;
 		foreach($eventful_days as $day_key => $events) {
-			//Set the date into the key
-			$event_start_date = explode('-', $day_key);
-			$cells[$day_key]['day'] = ltrim($event_start_date[2],'0');  
-			$cells[$day_key]['month'] = $event_start_date[1];  
-			$cells[$day_key]['year'] = $event_start_date[0];
-			$events_titles = array();
-			foreach($events as $event) { 
-				$events_titles[] = $event->output($event_title_format);
-			}   
-			$link_title = implode( $event_title_separator_format, $events_titles);  
-						
-			global $wp_rewrite;
-			$event_page_link = get_permalink(get_option('dbem_events_page')); //don't use EM_URI here, since ajax calls this before EM_URI is defined.
-			if( $wp_rewrite->using_permalinks() ){
-				$cells[$day_key]['cell'] = "<a title='$link_title' href='".$event_page_link."{$day_key}/'>{$cells[$day_key]['day']}</a>";
-			}else{
-				if (stristr($event_page_link, "?"))
-					$joiner = "&amp;";
-				else
-					$joiner = "?";
-				$cells[$day_key]['cell'] = "<a title='$link_title' href='".$event_page_link.$joiner."calendar_day={$day_key}'>{$cells[$day_key]['day']}</a>";
+			if( array_key_exists($day_key, $calendar_array['cells']) ){
+				//Get link title for this date
+				$events_titles = array();
+				foreach($events as $event) { 
+					$events_titles[] = $event->output($event_title_format);
+				}   
+				$calendar_array['cells'][$day_key]['link_title'] = implode( $event_title_separator_format, $events_titles);
+							
+				//Get the link to this calendar day
+				global $wp_rewrite;
+				$event_page_link = get_permalink(get_option('dbem_events_page')); //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+				if( $wp_rewrite->using_permalinks() ){
+					$calendar_array['cells'][$day_key]['link'] = $event_page_link.$day_key."/";
+				}else{
+					$joiner = (stristr($event_page_link, "?")) ? "&amp;" : "?";				
+					$calendar_array['cells'][$day_key]['link'] = $event_page_link.$joiner."calendar_day=".$day_key;
+				}
+				//Add events to array
+				$calendar_array['cells'][$day_key]['events'] = $events;
 			}
-			if ($full) {
-				$cells[$day_key]['cell'] .= "<ul>";
-			
-				foreach($events as $event) {
-					$cells[$day_key]['cell'] .= $event->output($event_format);
-				} 
-				$cells[$day_key]['cell'] .= "</ul>";  
-	   		}
 		}
 		
-		if($events){
-			foreach($cells as $cell) {  
-				if ($cell['month'] == $month_pre && $cell['year'] == $year_pre) {
-				 	$calendar = str_replace("<td class='eventless-pre'>".$cell['day']."</td>","<td class='eventful-pre'>".$cell['cell']."</td>",$calendar);
-				} elseif($cell['month'] == $month_post && $cell['year'] == $year_post) {
-				 	$calendar = str_replace("<td class='eventless-post'>".$cell['day']."</td>","<td class='eventful-post'>".$cell['cell']."</td>",$calendar);
-				} elseif( date('Y-m-j', current_time('timestamp')) == $cell['year']."-".$cell['month']."-".$cell['day'] ) {
-	  			 	$calendar = str_replace("<td class='eventless-today'>".$cell['day']."</td>","<td class='eventful-today'>".$cell['cell']."</td>",$calendar);
-				} elseif( $cell['month'] == $month && $cell['year'] == $year){   
-			    	$calendar = str_replace("<td class='eventless'>".$cell['day']."</td>","<td class='eventful'>".$cell['cell']."</td>",$calendar);
-		   		}
-			}
-		}       
-		return apply_filters('em_calendar_output', '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.$calendar.'</div>');
+		$template = ($args['full']) ? 'templates/calendar-full.php':'templates/calendar-small.php';
+		ob_start();
+		em_locate_template($template, true, array('calendar'=>$calendar_array,'args'=>$args));
+		$calendar = '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.ob_get_clean().'</div>';
+		return apply_filters('em_calendar_output', $calendar, $args);
 	}
 
 
@@ -353,4 +306,3 @@ class EM_Calendar extends EM_Object {
 	}
 } 
 add_action('init', array('EM_Calendar', 'init'));
-?>

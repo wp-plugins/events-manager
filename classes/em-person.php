@@ -30,7 +30,7 @@ class EM_Person extends WP_User{
 	function get_bookings(){
 		global $wpdb;
 		$EM_Booking = new EM_Booking(); //empty booking for fields
-		$results = $wpdb->get_results("SELECT b.".implode(', b.', array_keys($EM_Booking->fields))." FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." b, ".$wpdb->prefix.EM_EVENTS_TABLE." e WHERE e.event_id=b.event_id AND person_id={$this->id} ORDER BY event_start_date DESC",ARRAY_A);
+		$results = $wpdb->get_results("SELECT b.".implode(', b.', array_keys($EM_Booking->fields))." FROM ".EM_BOOKINGS_TABLE." b, ".EM_EVENTS_TABLE." e WHERE e.event_id=b.event_id AND person_id={$this->id} ORDER BY event_start_date DESC",ARRAY_A);
 		$bookings = array();
 		foreach($results as $booking_data){
 			$bookings[] = new EM_Booking($booking_data);

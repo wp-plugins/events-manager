@@ -8,7 +8,7 @@ class EM_People extends EM_Object {
 	 */
 	function get( $return_people = true ) {
 		global $wpdb; 
-		$sql = "SELECT *  FROM ". $wpdb->prefix.EM_PEOPLE_TABLE ;    
+		$sql = "SELECT *  FROM ". EM_PEOPLE_TABLE ;    
 		$result = $wpdb->get_results($sql, ARRAY_A);
 		if( $return_people ){
 			//Return people as EM_Person objects
@@ -71,14 +71,14 @@ class EM_People extends EM_Object {
 		global $wpdb;
 		if( current_user_can('delete_users') ){
 			if( $_REQUEST['delete_option'] == 'reassign' && is_numeric($_REQUEST['reassign_user']) ){
-				$wpdb->update($wpdb->prefix.EM_EVENTS_TABLE, array('event_owner'=>$_REQUEST['reassign_user']), array('event_owner'=>$id));
+				$wpdb->update(EM_EVENTS_TABLE, array('event_owner'=>$_REQUEST['reassign_user']), array('event_owner'=>$id));
 			}else{
 				//User is being deleted, so we delete their events and cancel their bookings.
-				$wpdb->query("DELETE FROM ".$wpdb->prefix.EM_EVENTS_TABLE." WHERE event_owner=$id");
+				$wpdb->query("DELETE FROM ".EM_EVENTS_TABLE." WHERE event_owner=$id");
 			}
 		}
 		//set bookings to cancelled
-		$wpdb->update($wpdb->prefix.EM_BOOKINGS_TABLE, array('booking_status'=>3, 'person_id'=>0, 'booking_comment'=>__('User deleted by administrators','dbem')), array('person_id'=>$id));
+		$wpdb->update(EM_BOOKINGS_TABLE, array('booking_status'=>3, 'person_id'=>0, 'booking_comment'=>__('User deleted by administrators','dbem')), array('person_id'=>$id));
 	}
 }
 add_action('delete_user', array('EM_People','user_deleted'), 1,10);

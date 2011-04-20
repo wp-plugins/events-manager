@@ -1,15 +1,15 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.0b
+Version: 4.0b2
 Plugin URI: http://wp-events-plugin.com
 Description: A complete event management solution for wordpress. Recurring events, locations, google maps, rss, bookings and more!
-Author: Davide Benini, Marcus Sykes
+Author: Marcus Sykes
 Author URI: http://wp-events-plugin.com
 */
 
 /*
-Copyright (c) 2010, Davide Benini and Marcus Sykes
+Copyright (c) 2011, Marcus Sykes
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -25,21 +25,6 @@ You should have received a copy of the GNU General Public License
 along with this program; if not, write to the Free Software
 Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
-
-/*************************************************/ 
-
-/*
- * Some random notes
- * 
- * - for consistency and easier modifications I propose we use a common coding practice Davide... ieally, $event and $EM_Event should always be only variables used to reference an EM_Event object, no others. 
- * $EM_Event is a global variable, $event has a local scope. same for $events and $EM_Events, they should be an array of EM_Event objects. what do u think?
- * - Would be cool for functions where we pass a reference for something (event, location, category, etc) it could be either the ID, or the object itself. Makes things flexible, not hard to implement, am doing it already (see EM_Events::get) 
- */
-//Features
-//TODO Better data validation, both into database and outputting info (http://codex.wordpress.org/Data_Validation)
-//Known Bugs
-//FIXME admin panel showing future events shows event of day before
-//FIXME when saving event, select screen has reversed order of events
 
 //DEBUG MODE - currently not public, not fully tested
 if( !defined('WP_DEBUG') && get_option('dbem_wp_debug') ){
@@ -118,21 +103,34 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.0013); //self expanatory
+define('EM_VERSION', 4.0017); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
-define('EM_CATEGORIES_TABLE', 'em_categories'); //TABLE NAME
-define('EM_EVENTS_TABLE','em_events'); //TABLE NAME
-define('EM_TICKETS_TABLE', 'em_tickets'); //TABLE NAME
-define('EM_TICKETS_BOOKINGS_TABLE', 'em_tickets_bookings'); //TABLE NAME
-define('EM_META_TABLE','em_meta'); //TABLE NAME
-define('EM_RECURRENCE_TABLE','dbem_recurrence'); //TABLE NAME   
-define('EM_LOCATIONS_TABLE','em_locations'); //TABLE NAME  
-define('EM_BOOKINGS_TABLE','em_bookings'); //TABLE NAME
-define('EM_PEOPLE_TABLE','em_people'); //TABLE NAME
-define('EM_MIN_CAPABILITY', 'edit_events');	// Minimum user level to add events
-define('EM_EDITOR_CAPABILITY', 'publish_events');	// Minimum user level to access calendars
-define('EM_SETTING_CAPABILITY', 'activate_plugins'); // Minimum user level to edit settings in EM
-define("EM_IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
+if( file_exists('wp-content/uploads/locations-pics' ) ){
+	define("EM_IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
+}else{
+	define("EM_IMAGE_UPLOAD_DIR", "wp-content/uploads/events-manager");
+}
+
+//Table names
+global $wpdb;
+if( get_site_option('dbem_ms_global_table') ){
+	$prefix = $wpdb->base_prefix;
+}else{
+	$prefix = $wpdb->prefix;
+}
+	define('EM_CATEGORIES_TABLE', $prefix.'em_categories'); //TABLE NAME
+	define('EM_EVENTS_TABLE',$prefix.'em_events'); //TABLE NAME
+	define('EM_TICKETS_TABLE', $prefix.'em_tickets'); //TABLE NAME
+	define('EM_TICKETS_BOOKINGS_TABLE', $prefix.'em_tickets_bookings'); //TABLE NAME
+	define('EM_META_TABLE',$prefix.'em_meta'); //TABLE NAME
+	define('EM_RECURRENCE_TABLE',$prefix.'dbem_recurrence'); //TABLE NAME   
+	define('EM_LOCATIONS_TABLE',$prefix.'em_locations'); //TABLE NAME  
+	define('EM_BOOKINGS_TABLE',$prefix.'em_bookings'); //TABLE NAME
+	define('EM_PEOPLE_TABLE',$prefix.'em_people'); //TABLE NAME
+	define('EM_MIN_CAPABILITY', $prefix.'edit_events');	// Minimum user level to add events
+	define('EM_EDITOR_CAPABILITY',$prefix. 'publish_events');	// Minimum user level to access calendars
+	define('EM_SETTING_CAPABILITY', $prefix.'activate_plugins'); // Minimum user level to edit settings in EM
+
 // Localised date formats as in the jquery UI datepicker plugin but for php date
 $localised_date_formats = array("am" => "d.m.Y","ar" => "d/m/Y", "bg" => "d.m.Y", "ca" => "m/d/Y", "cs" => "d.m.Y", "da" => "d-m-Y", "de" =>"d.m.Y", "es" => "d/m/Y", "en" => "m/d/Y", "fi" => "d.m.Y", "fr" => "d/m/Y", "he" => "d/m/Y", "hu" => "Y-m-d", "hy" => "d.m.Y", "id" => "d/m/Y", "is" => "d/m/Y", "it" => "d/m/Y", "ja" => "Y/m/d", "ko" => "Y-m-d", "lt" => "Y-m-d", "lv" => "d-m-Y", "nl" => "d.m.Y", "no" => "Y-m-d", "pl" => "Y-m-d", "pt" => "d/m/Y", "ro" => "m/d/Y", "ru" => "d.m.Y", "sk" => "d.m.Y", "sv" => "Y-m-d", "th" => "d/m/Y", "tr" => "d.m.Y", "ua" => "d.m.Y", "uk" => "d.m.Y", "us" => "m/d/Y", "CN" => "Y-m-d", "TW" => "Y/m/d");
 //TODO reorganize how defaults are created, e.g. is it necessary to create false entries? They are false by default... less code, but maybe not verbose enough...
@@ -213,7 +211,7 @@ add_filter('plugins_loaded','em_plugins_loaded');
  */
 function em_init(){
 	//Hard Links
-	global $EM_Mailer;
+	global $EM_Mailer, $wpdb;
 	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
 	define('EM_RSS_URI', trailingslashit(EM_URI)."rss/"); //RSS PAGE URI
 	$EM_Mailer = new EM_Mailer();
@@ -253,6 +251,8 @@ function em_load_event(){
 		}
 		if( isset($_REQUEST['category_id']) && is_numeric($_REQUEST['category_id']) && !is_object($_REQUEST['category_id']) ){
 			$EM_Category = new EM_Category($_REQUEST['category_id']);
+		}elseif( isset($_REQUEST['category_slug']) && !is_object($EM_Category) ){
+			$EM_Category = new EM_Category( $_REQUEST['category_slug'] );
 		}
 		if( isset($_REQUEST['ticket_id']) && is_numeric($_REQUEST['ticket_id']) && !is_object($_REQUEST['ticket_id']) ){
 			$EM_Ticket = new EM_Ticket($_REQUEST['ticket_id']);
@@ -285,7 +285,7 @@ function em_create_events_submenu () {
 		}
 		$both_pending_count = $events_pending_count + $bookings_pending_count;
 		$both_num = ($both_pending_count > 0) ? '<span class="update-plugins count-'.$both_pending_count.'"><span class="plugin-count">'.$both_pending_count.'</span></span>':'';
-	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,EM_MIN_CAPABILITY,'events-manager','em_admin_events_page', '../wp-content/plugins/events-manager/includes/images/calendar-16.png');
+	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,'edit_events','events-manager','em_admin_events_page', '../wp-content/plugins/events-manager/includes/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu:
 	   		$plugin_pages = array(); 
 			$plugin_pages[] = add_submenu_page('events-manager', __('Edit'),__('Edit').$events_num,'edit_events','events-manager','em_admin_events_page');
@@ -312,7 +312,7 @@ add_action('admin_menu','em_create_events_submenu');
  * @uses locate_template()
  * @return string
  */
-function em_locate_template( $template_name, $load=false ) {
+function em_locate_template( $template_name, $load=false, $args = array() ) {
 	//First we check if there are overriding tempates in the child or parent theme
 	$located = locate_template(array('plugins/events-manager/'.$template_name));
 	if( !$located ){
@@ -321,6 +321,7 @@ function em_locate_template( $template_name, $load=false ) {
 		}
 	}
 	if( $located && $load ){
+		extract($args);
 		include($located);
 	}
 	return $located;

@@ -120,6 +120,25 @@ function em_get_countries($add_blank = false){
 }
 
 /**
+ * Returns an array of scopes available to events manager. Hooking into this function's em_get_scopes filter will allow you to add scope options to the event pages. 
+ */
+function em_get_scopes(){
+	$scopes = array(
+		'all' => __('All events','dbem'),
+		'future' => __('Future events','dbem'),
+		'past' => __('Past events','dbem'),
+		'today' => __('Today\'s events','dbem'),
+		'tomorrow' => __('Tomorrow\'s events','dbem'),
+		'month' => __('Events this month','dbem'),
+		'2-months'  => __('Events within 2 months','dbem'),
+		'3-months'  => __('Events within 3 months','dbem'),
+		'6-months'  => __('Events within 6 months','dbem'),
+		'12-months' => __('Events within 12 months','dbem')
+	);
+	return apply_filters('em_get_scopes',$scopes);
+}
+
+/**
  * Works like check_admin_referrer(), but also in public mode. If in admin mode, it triggers an error like in check_admin_referrer(), if outside admin it just exits with an error.
  * @param string $action
  */
@@ -356,17 +375,21 @@ function em_options_radio($name, $options, $title='') {
 }
 
 function em_options_radio_binary($title, $name, $description) {
-		$list_events_page = get_option($name); ?>
-		 
-	   	<tr valign="top" id='<?php echo $name;?>_row'>
-	   		<th scope="row"><?php _e($title,'dbem'); ?></th>
-	   		<td>  
-	   			<?php _e('Yes'); ?> <input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
-				<?php _e('No'); ?> <input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
-				<br/><em><?php echo $description; ?></em>
-			</td>
-	   	</tr>
-<?php	
+	if( substr($name, 0, 7) == 'dbem_ms' ){
+		$list_events_page = get_site_option($name); 
+	}else{
+		$list_events_page = get_option($name); 
+	}
+	?>		 
+   	<tr valign="top" id='<?php echo $name;?>_row'>
+   		<th scope="row"><?php _e($title,'dbem'); ?></th>
+   		<td>  
+   			<?php _e('Yes'); ?> <input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
+			<?php _e('No'); ?> <input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
+			<br/><em><?php echo $description; ?></em>
+		</td>
+   	</tr>
+	<?php	
 }  
 
 function em_options_select($title, $name, $list, $description) {
