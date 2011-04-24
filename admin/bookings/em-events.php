@@ -35,7 +35,8 @@ function em_bookings_events_table() {
 			$title = __ ( 'Future Events', 'dbem' );
 			$scope = "future";
 	}
-	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>0, 'order'=>$order, 'rsvp'=>true ) );
+	$owner = !current_user_can('edit_others_events') ? get_current_user_id() : false;
+	$events = EM_Events::get( array('scope'=>$scope, 'limit'=>0, 'order'=>$order, 'rsvp'=>true, 'owner' => $owner ) );
 	$events_count = count ( $events );
 	
 	$use_events_end = get_option ( 'dbem_use_event_end' );
@@ -127,7 +128,7 @@ function em_bookings_events_table() {
 								</td>
 								<td>
 									<strong>
-										<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $event->id ?>"><?php echo ($event->name); ?></a>
+										<?php echo $event->output('#_BOOKINGSLINK'); ?>
 									</strong>
 									&ndash; 
 									<?php _e("Booked Spaces",'dbem') ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces() ?>

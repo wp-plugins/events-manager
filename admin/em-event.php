@@ -1,16 +1,4 @@
 <?php
-function em_admin_event_actions(){
-	if( current_user_can(EM_MIN_CAPABILITY) && !empty($_GET['page']) && $_GET['page'] == 'events-manager-event' && !empty($_REQUEST ['action']) ){
-		global $wpdb;
-		global $EM_Event;
-		//if dealing with new event, we still want an event object
-		if( !is_object($EM_Event) ){
-			$EM_Event = new EM_Event();
-		}
-	}
-}
-add_action('admin_init', 'em_admin_event_actions');
-
 /**
  * Generates Event Admin page, for adding and updating a single (or recurring) event.
  * @param $title
@@ -26,6 +14,8 @@ function em_admin_event_page() {
 		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php echo sprintf(__('You do not have the rights to manage this %s.','dbem'),__('Event','dbem')); ?></p></div>
 		<?php
 		return false;
+	}elseif( !is_object($EM_Event) ){
+		$EM_Event = new EM_Event();
 	}
 	
 	if( is_object($EM_Event) && $EM_Event->id > 0 ){
@@ -41,8 +31,8 @@ function em_admin_event_page() {
 		$default_cat = get_option('dbem_default_category');
 		$default_loc = get_option('dbem_default_location');
 		if( is_numeric($default_cat) && $default_cat > 0 ){
-			$EM_Event->category_id = $default_cat;
-			$EM_Event->category = new EM_Category($default_cat);
+			$EM_Category = new EM_Category($default_cat);
+			$EM_Event->get_categories()->categories[] = $EM_Category;
 		}
 		if( is_numeric($default_loc) && $default_loc > 0 && ( empty($EM_Event->location->id) && empty($EM_Event->location->name) && empty($EM_Event->location->address) && empty($EM_Event->location->town) ) ){
 			$EM_Event->location_id = $default_loc;
@@ -64,10 +54,11 @@ function em_admin_event_page() {
 		$hours_locale_regexp = "h:iA";
 	
 	$days_names = array (1 => __ ( 'Mon' ), 2 => __ ( 'Tue' ), 3 => __ ( 'Wed' ), 4 => __ ( 'Thu' ), 5 => __ ( 'Fri' ), 6 => __ ( 'Sat' ), 0 => __ ( 'Sun' ) );
+	$required = "<i>*</i>";
 	?>
 	<?php echo $EM_Notices; ?>
 
-	<form id="event-form" method="post" action="">
+	<form id="event-form" method="post" action=""  enctype='multipart/form-data'>
 		<div class="wrap">
 			<div id="icon-events" class="icon32"><br /></div>
 			<h2><?php echo $title; ?></h2>
@@ -75,11 +66,12 @@ function em_admin_event_page() {
 				<?php foreach($EM_Event->warnings as $warning): ?>
 				<p class="warning"><?php echo $warning; ?></p>
 				<?php endforeach; ?>
-			<?php endif; ?>              
+			<?php endif; ?>             
 			<div id="poststuff" class="metabox-holder has-right-sidebar">
 				<!-- SIDEBAR -->
 				<div id="side-info-column" class='inner-sidebar'>
-					<div id='side-sortables'>       
+					<div id='side-sortables'>
+						<?php do_action('em_admin_event_form_side_header'); ?>       
 						<?php if(get_option('dbem_recurrence_enabled') && ($EM_Event->is_recurrence() || $EM_Event->is_recurring() || $EM_Event->id == '')) : ?>
 							<!-- START recurrence postbox -->
 							<div class="postbox ">
@@ -160,23 +152,63 @@ function em_admin_event_page() {
 								</div>
 							</div> 
 							<!-- END recurrence postbox -->   
-						<?php endif; ?>          
-						<?php if(get_option('dbem_rsvp_enabled')) : ?>
+						<?php endif; ?>   
+						   
+						<?php if ( current_user_can('edit_others_events') ): ?>
+						<div class="postbox ">
+							<div class="handlediv" title="Fare clic per cambiare."><br />
+							</div>
+							<h3 class='hndle'><span><?php _e ( 'Event Owner/Contact Person', 'dbem' ); ?></span></h3>
+							<div class="inside">
+								<?php
+									wp_dropdown_users ( array ('name' => 'event_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->owner  ) );
+								?>
+							</div>
+						</div>
+						<?php else: ?>
+						<input type="hidden" name="event_owner" value="<?php get_current_user_id() ?>" />
+						<?php endif; ?> 
+						   
+						<?php if( empty($EM_Event->id) ): ?>
+							<?php 
+							$user_groups = array();
+							if( function_exists('groups_get_user_groups') ){
+								$group_data = groups_get_user_groups(get_current_user_id());
+								foreach( $group_data['groups'] as $group_id ){
+									if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+										$user_groups[] = groups_get_group( array('group_id'=>$group_id)); 
+									}
+								}
+							}
+							?>
+							<?php if( count($user_groups) > 0 ): ?>
 							<!-- START RSVP -->
-							<?php if ( current_user_can('edit_others_events') ): ?>
-							<div class="postbox ">
+							<div class="postbox " id='group-data'>
 								<div class="handlediv" title="Fare clic per cambiare."><br />
 								</div>
-								<h3 class='hndle'><span><?php _e ( 'Event Owner/Contact Person', 'dbem' ); ?></span></h3>
+								<h3 class='hndle'><span><?php _e('Group Ownership','dbem'); ?></span></h3>
 								<div class="inside">
-									<?php
-										wp_dropdown_users ( array ('name' => 'event_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->owner  ) );
-									?>
+									<p>
+										<select name="group_id">
+											<option value="<?php echo $BP_Group->id; ?>">Not a Group Event</option>
+										<?php
+										foreach($user_groups as $BP_Group){
+											?>
+											<option value="<?php echo $BP_Group->id; ?>"><?php echo $BP_Group->name; ?></option>
+											<?php
+										} 
+										?>
+										</select>
+										<br />
+										<em><?php _e ( 'Select a group you admin to attach this event to it. Note that all other admins of that group can modify the booking, and you will not be able to unattach the event without deleting it.', 'dbem' )?></em>
+									</p>
 								</div>
 							</div>
-							<?php else: ?>
-							<input type="hidden" name="event_owner" value="<?php get_current_user_id() ?>" />
 							<?php endif; ?>
+						<?php endif; ?>
+						
+						<?php if(get_option('dbem_rsvp_enabled')) : ?>
+							<!-- START RSVP -->
 							<div class="postbox " id='rsvp-data'>
 								<div class="handlediv" title="Fare clic per cambiare."><br />
 								</div>
@@ -231,20 +263,10 @@ function em_admin_event_page() {
 								<div class="inside">
 									<?php $categories = EM_Categories::get(array('orderby'=>'category_name')); ?>
 									<?php if( count($categories) > 0 ): ?>
-										<p><?php _e ( 'Category:', 'dbem' ); ?>
-											<select name="event_category_id">
-												<option value="" <?php echo ($EM_Event->category_id == '') ? "selected='selected'":'' ?>><?php _e('no category','dbem') ?></option>	
-												<?php
-												foreach ( $categories as $EM_Category ){
-													$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
-													?>
-													<option value="<?php echo $EM_Category->id ?>" <?php echo $selected ?>>
-													<?php echo $EM_Category->name ?>
-													</option>
-													<?php 
-												}
-												?>
-											</select>
+										<p>
+											<?php foreach( $categories as $EM_Category ):?>
+											<label><input type="checkbox" name="event_categories[]" value="<?php echo $EM_Category->id; ?>" <?php if($EM_Event->get_categories()->has($EM_Category->id)) echo 'checked="checked"'; ?> /> <?php echo $EM_Category->name ?></label><br />			
+											<?php endforeach; ?>
 										</p>
 									<?php else: ?>
 										<p><?php sprintf(__('No categories available, <a href="%s">create one here first</a>','dbem'), get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-categories'); ?></p>
@@ -253,29 +275,51 @@ function em_admin_event_page() {
 							</div> 
 							<!-- END Categories -->
 						<?php endif; ?>
+						<?php do_action('em_admin_event_form_side_footer'); ?>
 					</div>
 				</div>
 				<!-- END OF SIDEBAR -->
 				<div id="post-body">
 					<div id="post-body-content">
+						<?php do_action('em_admin_event_form_header'); ?>
 						<div id="event_name" class="stuffbox">
 							<h3>
 								<?php _e ( 'Name', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
-								<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
+								<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" /><?php echo $required; ?>
 								<br />
 								<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
+								<?php $slug_link = __('View Slug','dbem'); ?>
+								<a href="#" id="event-slug-trigger"><?php echo $slug_link; ?></a>
+								<script type="text/javascript">
+									jQuery(document).ready(function($){
+										$('#event-slug-trigger').click(function(){
+											if( $(this).text() == '<?php echo $slug_link; ?>'){
+												$('.event-slug').show(); 
+												 $(this).text('<?php _e('Hide Slug','dbem'); ?>');
+											}else{ 
+												$('.event-slug').hide(); 
+												 $(this).text('<?php echo $slug_link; ?>'); 
+											}
+										});
+									});
+								</script>
+								<p class='event-slug' style="display:none">
+									<?php _e('Event Slug','dbem'); ?>: <input type="text" name="event_slug" id="event-slug" value="<?php echo $EM_Event->slug; ?>" />
+									<br />
+									<?php _e ( 'The event slug. If the event slug already exists, a random number will be appended to the end.', 'dbem' )?>
+								</p>
 							</div>
 						</div>
 						<div id="event_start_date" class="stuffbox">
 							<h3 id='event-date-title'><?php _e ( 'Event date', 'dbem' ); ?></h3>
 							<h3 id='recurrence-dates-title'><?php _e ( 'Recurrence dates', 'dbem' ); ?></h3>
 							<div class="inside">
-								<input id="localised-date" type="text" name="localised_event_date" style="display: none;" />
-								<input id="date-to-submit" type="text" name="event_start_date" value="<?php echo $EM_Event->start_date ?>" style="background: #FCFFAA" />
-								<input id="localised-end-date" type="text" name="localised_event_end_date" style="display: none;" />
-								<input id="end-date-to-submit" type="text" name="event_end_date" value="<?php echo $EM_Event->end_date ?>" style="background: #FCFFAA" />
+								<input id="em-date-start-loc" type="text" />
+								<input id="em-date-start" type="hidden" name="event_start_date" value="<?php echo $EM_Event->start_date ?>" />
+								<input id="em-date-end-loc" type="text" />
+								<input id="em-date-end" type="hidden" name="event_end_date" value="<?php echo $EM_Event->end_date ?>" />
 								<br />
 								<span id='event-date-explanation'>
 								<?php
@@ -326,7 +370,7 @@ function em_admin_event_page() {
 												<tr>
 													<th><?php _e('Location:','dbem') ?></th>
 													<td> 
-														<select name="location-select-id" id='location-select-id' size="1">  
+														<select name="location_id" id='location-select-id' size="1">  
 															<?php 
 															$locations = EM_Locations::get();
 															foreach($locations as $location) {    
@@ -348,26 +392,28 @@ function em_admin_event_page() {
 													<th><?php _e ( 'Name:' )?></th>
 													<td>
 														<input id='location-id' name='location_id' type='hidden' value='<?php echo $EM_Event->get_location()->id; ?>' size='15' />
-														<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Event->location->name, ENT_QUOTES); ?>" />													
-					                            		<p><?php _e ( 'Create a location or start typing to search a previously created location.', 'dbem' )?></p>
+														<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Event->location->name, ENT_QUOTES); ?>" /><?php echo $required; ?>													
+					                            		<p><em><?php _e ( 'Create a location or start typing to search a previously created location.', 'dbem' )?></em></p>
 					                            	</td>
 										 		</tr>
 												<tr>
 													<th><?php _e ( 'Address:' )?>&nbsp;</th>
 													<td>
-														<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Event->location->address, ENT_QUOTES); ; ?>" /> <?php echo $required; ?>
+														<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Event->location->address, ENT_QUOTES); ; ?>" /><?php echo $required; ?>
 													</td>
 												</tr>
 												<tr>
 													<th><?php _e ( 'City/Town:' )?>&nbsp;</th>
 													<td>
-														<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Event->location->town, ENT_QUOTES); ?>" /> <?php echo $required; ?>
+														<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Event->location->town, ENT_QUOTES); ?>" /><?php echo $required; ?>
+														<input id="location-town-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_town'); ?>" />
 													</td>
 												</tr>
 												<tr>
 													<th><?php _e ( 'State/County:' )?>&nbsp;</th>
 													<td>
 														<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Event->location->state, ENT_QUOTES); ?>" />
+														<input id="location-state-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_states'); ?>" />
 													</td>
 												</tr>
 												<tr>
@@ -377,13 +423,22 @@ function em_admin_event_page() {
 													</td>
 												</tr>
 												<tr>
+													<th><?php _e ( 'Region:' )?>&nbsp;</th>
+													<td>
+														<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Event->location->region, ENT_QUOTES); ?>" />
+														<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
+													</td>
+												</tr>
+												<tr>
 													<th><?php _e ( 'Country:' )?>&nbsp;</th>
 													<td>
 														<select id="location-country" name="location_country">
-															<?php foreach(em_get_countries(__('none selected','dbem')) as $country_key => $country_name): ?>
-															<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Event->location->country === $country_key || ($EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
+															<option value="0" <?php echo ( $EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country') == '' ) ? 'selected="selected"':''; ?>><?php _e('none selected','dbem'); ?></option>
+															<?php foreach(em_get_countries() as $country_key => $country_name): ?>
+															<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Event->location->country == $country_key || ($EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
 															<?php endforeach; ?>
-														</select> <?php echo $required; ?>
+														</select><?php echo $required; ?>
+														<!-- <p><em><?php _e('Filling this in first will allow you to quickly find previously filled states and regions for the country.','dbem'); ?></em></p> -->
 													</td>
 												</tr>
 												<?php endif; ?>
@@ -413,152 +468,132 @@ function em_admin_event_page() {
 							<?php _e ( 'Details about the event', 'dbem' )?>
 						</div>
 					</div>
+									
+					<div id="event-image" class="stuffbox">
+						<h3>
+							<?php _e ( 'Event image', 'dbem' ); ?>
+						</h3>
+						<div class="inside" style="padding:10px;">
+								<?php if ($EM_Event->image_url != '') : ?> 
+									<img src='<?php echo $EM_Event->image_url; ?>' alt='<?php echo $EM_Event->name ?>'/>
+								<?php else : ?> 
+									<?php _e('No image uploaded for this event yet', 'debm') ?>
+								<?php endif; ?>
+								<br /><br />
+								<label for='event_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='event-image' name='event_image' id='event_image' type='file' size='40' />
+						</div>
+					</div>
 					
 					<?php if(get_option('dbem_rsvp_enabled')) : ?>
 					<div id="event-bookings" class="stuffbox">
 						<h3><span><?php _e('Bookings/Registration','dbem'); ?></span></h3>
 						<div class="inside">
 							<div class="wrap">
-								<p>
+								<div id="event-rsvp-box">
 									<input id="event-rsvp" name='event_rsvp' value='1' type='checkbox' <?php echo ($EM_Event->rsvp) ? 'checked="checked"' : ''; ?> />
+									&nbsp;&nbsp;
 									<?php _e ( 'Enable registration for this event', 'dbem' )?>
-								</p>
-								<br />
+								</div>
 								<div id="event-tickets" style="<?php echo ($EM_Event->rsvp) ? '':'display:none;' ?>">
-									<p><strong><?php _e('Tickets','dbem'); ?></strong></p>
-									<p><em><?php _e('You have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?></em></p>
-									<table class="form-table">
-										<thead>
-											<tr valign="top">
-												<th class="ticket-status">&nbsp;</th>
-												<th><?php _e('Ticket Name','dbem'); ?></th>
-												<th><?php _e('Price','dbem'); ?></th>
-												<th><?php _e('Min/Max','dbem'); ?></th>
-												<th><?php _e('Start/End','dbem'); ?></th>
-												<th><?php _e('Avail. Spaces','dbem'); ?></th>
-												<th><?php _e('Booked Spaces','dbem'); ?></th>
-												<th>&nbsp;</th>
-											</tr>
-										</thead>    
-										<tfoot>
-											<tr valign="top">
-												<td colspan="6">
-													<a href="#" id="em-tickets-add" rel="#em-tickets-form"><?php _e('Add new ticket','dbem'); ?></a>
-												</td>
-											</tr>
-										</tfoot>
-										<tbody id="em-tickets-body">
-											<?php
-											$EM_Tickets = $EM_Event->get_bookings()->get_tickets();
-											if( count($EM_Tickets->tickets) > 0 ){
-												$count = 1;
-												foreach( $EM_Tickets->tickets as $EM_Ticket){
-													?>
-													<tr valign="top" id="em-tickets-row-<?php echo $count ?>" class="em-tickets-row">
-														<td class="ticket-status"><span class="<?php echo ($EM_Ticket->is_available()) ? 'ticket_on':'ticket_off'; ?>"></span></td>													
-														<td class="ticket-name"><span class="ticket_name"><?php echo $EM_Ticket->name ?></span><br /><span class="ticket_description"></span></td>
-														<td class="ticket-price">
-															<span class="ticket_price"><?php echo ($EM_Ticket->price) ? $EM_Ticket->price : __('Free','dbem'); ?></span>
-														</td>
-														<td class="ticket-limit">
-															<span class="ticket_min">
-																<?php  echo ( !empty($EM_Ticket->min) ) ? $EM_Ticket->min:'-'; ?>
-															</span> / 
-															<span class="ticket_max"><?php echo ( !empty($EM_Ticket->max) ) ? $EM_Ticket->max:'-'; ?></span>
-														</td>
-														<td class="ticket-time">
-															<span class="ticket_start"><?php echo ( !empty($EM_Ticket->start) ) ? date($localised_date_format, $EM_Ticket->start_timestamp):''; ?></span> -
-															<span class="ticket_end"><?php echo ( !empty($EM_Ticket->end) ) ? date($localised_date_format, $EM_Ticket->end_timestamp):''; ?></span>
-														</td>
-														<td class="ticket-qty">
-															<span class="ticket_available_spaces"><?php echo $EM_Ticket->get_available_spaces(); ?></span>/
-															<span class="ticket_spaces">
-																<?php 
-																if( $EM_Ticket->get_spaces() ){
-																	echo $EM_Ticket->get_spaces();
-																	echo ($EM_Ticket->spaces_limit) ? '':'*';
-																}else{
-																	echo '-';
-																} 
-																?>
-															</span>
-														</td>
-														<td class="ticket-booked-spaces">
-															<span class="ticket_booked_spaces"><?php echo $EM_Ticket->get_booked_spaces(); ?></span>
-														</td>
-														<td class="ticket-actions">
-															<a href="#" class="ticket-actions-edit"><?php _e('Edit','dbem'); ?></a> 
-															<?php if( count($EM_Ticket->get_bookings()->bookings) == 0 ): ?>
-															| <a href="<?php bloginfo('wpurl'); ?>/wp-load.php" class="ticket-actions-delete"><?php _e('Delete','dbem'); ?></a>
-															<?php else: ?>
-															| <a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=events-manager-bookings&ticket_id=<?php echo $EM_Ticket->id ?>"><?php _e('View Bookings','dbem'); ?></a>
-															<?php endif; ?>
-															
-															<input type="hidden" class="ticket_id" name="em_tickets[<?php echo $count; ?>][ticket_id]" value="<?php echo $EM_Ticket->id ?>" />
-															<input type="hidden" class="ticket_name" name="em_tickets[<?php echo $count; ?>][ticket_name]" value="<?php echo $EM_Ticket->name ?>" />
-															<input type="hidden" class="ticket_description" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo $EM_Ticket->description ?>" />
-															<input type="hidden" class="ticket_price" name="em_tickets[<?php echo $count; ?>][ticket_price]" value="<?php echo $EM_Ticket->price ?>" />
-															<input type="hidden" class="ticket_spaces" name="em_tickets[<?php echo $count; ?>][ticket_spaces]" value="<?php echo $EM_Ticket->spaces ?>" />
-															<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
-															<input type="hidden" class="ticket_end" name="em_tickets[<?php echo $count; ?>][ticket_end]" value="<?php echo ( !empty($EM_Ticket->end) ) ? date("Y-m-d H:i", $EM_Ticket->end_timestamp):''; ?>" />
-															<input type="hidden" class="ticket_min" name="em_tickets[<?php echo $count; ?>][ticket_min]" value="<?php echo $EM_Ticket->min ?>" />
-															<input type="hidden" class="ticket_max" name="em_tickets[<?php echo $count; ?>][ticket_max]" value="<?php echo $EM_Ticket->max ?>" />
-														</td>
-													</tr>
-													<?php
-													$count++;
-												}
-											}else{
-												?>
-												<tr valign="top" id="em-tickets-row-1" class="em-tickets-row">
-													<td class="ticket-status"><span class="ticket_off"></span></td>													
-													<td class="ticket-name"><span class="ticket_name">Free Ticket</span><br><span class="ticket_description"></span></td>
-													<td class="ticket-price"><span class="ticket_price">Free</span></td>
-													<td class="ticket-limit"><span class="ticket_min">-</span> / <span class="ticket_max">-</span></td>
-													<td class="ticket-time"><span class="ticket_start"></span> - <span class="ticket_end"></span></td>
-													<td class="ticket-qty"><span class="ticket_available_spaces">10</span>/<span class="ticket_spaces">10</span></td>
-													<td class="ticket-booked-spaces"><span class="ticket_booked_spaces">0</span></td>
-													<td class="ticket-actions">
-														<a href="#" class="ticket-actions-edit">Edit</a>| <a href="http://wordpress.lan/wp-load.php" class="ticket-actions-delete">Delete</a>
-														<input type="hidden" class="ticket_id" name="em_tickets[1][ticket_id]" value="">
-														<input type="hidden" class="ticket_name" name="em_tickets[1][ticket_name]" value="Free Ticket">
-														<input type="hidden" class="ticket_description" name="em_tickets[1][ticket_description]" value="">
-														<input type="hidden" class="ticket_price" name="em_tickets[1][ticket_price]" value="">
-														<input type="hidden" class="ticket_spaces" name="em_tickets[1][ticket_spaces]" value="10">
-														<input type="hidden" class="ticket_start" name="em_tickets[1][ticket_start]" value="">
-														<input type="hidden" class="ticket_end" name="em_tickets[1][ticket_end]" value="">
-														<input type="hidden" class="ticket_min" name="em_tickets[1][ticket_min]" value="">
-														<input type="hidden" class="ticket_max" name="em_tickets[1][ticket_max]" value="">
+									<?php
+									//get tickets here and if there are none, create a blank ticket
+									$EM_Tickets = $EM_Event->get_bookings()->get_tickets();
+									if( count($EM_Tickets->tickets) == 0 ){
+										$EM_Tickets->tickets[] = new EM_Ticket();
+										$delete_temp_ticket = true;
+									}
+									if( get_option('dbem_bookings_tickets_single') ){	
+										$EM_Ticket = $EM_Tickets->get_first();							
+										include( em_locate_template('forms/ticket-form.php') );
+									}else{
+										?>		
+										<p><strong><?php _e('Tickets','dbem'); ?></strong></p>
+										<p><em><?php _e('You have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?></em></p>					
+										<table class="form-table">
+											<thead>
+												<tr valign="top">
+													<th class="ticket-status">&nbsp;</th>
+													<th><?php _e('Ticket Name','dbem'); ?></th>
+													<th><?php _e('Price','dbem'); ?></th>
+													<th><?php _e('Min/Max','dbem'); ?></th>
+													<th><?php _e('Start/End','dbem'); ?></th>
+													<th><?php _e('Avail. Spaces','dbem'); ?></th>
+													<th><?php _e('Booked Spaces','dbem'); ?></th>
+													<th>&nbsp;</th>
+												</tr>
+											</thead>    
+											<tfoot>
+												<tr valign="top">
+													<td colspan="6">
+														<a href="#" id="em-tickets-add" rel="#em-tickets-form"><?php _e('Add new ticket','dbem'); ?></a>
 													</td>
 												</tr>
-												<?php 
-											}
-											?>
-										</tbody>
-									</table>
-									<table style="display:none; visibility:hidden;">
-										<tr valign="top" id="em-tickets-template">
-											<td class="ticket-status"><span class="ticket_new"></span></td>	
-											<td class="ticket-name"><span class="ticket_name"></span><br /><span class="ticket_description"></span></td>
-											<td class="ticket-price"><span class="ticket_price"></span></td>
-											<td class="ticket-limit"><span class="ticket_min"></span> / <span class="ticket_max"></span></td>
-											<td class="ticket-time"><span class="ticket_start"></span> - <span class="ticket_end"></span></td>
-											<td class="ticket-qty"><span class="ticket_available_spaces">0</span>/<span class="ticket_spaces"></span></td>
-											<td class="ticket-booked-spaces"><span class="ticket_booked_spaces">0</span></td>
-											<td class="ticket-actions">
-												<a href="#" class="ticket-actions-edit"><?php _e('Edit','dbem'); ?></a> | <a href="<?php bloginfo('wpurl'); ?>/wp-load.php" class="ticket-actions-delete"><?php _e('Delete','dbem'); ?></a>
-												<input type="hidden" class="ticket_id" />
-												<input type="hidden" class="ticket_name" />
-												<input type="hidden" class="ticket_description"  />
-												<input type="hidden" class="ticket_price" />
-												<input type="hidden" class="ticket_spaces" />
-												<input type="hidden" class="ticket_start" />
-												<input type="hidden" class="ticket_end" />
-												<input type="hidden" class="ticket_min" />
-												<input type="hidden" class="ticket_max" />
-											</td>
-										</tr>
-									</table>
+											</tfoot>
+											<tbody id="em-tickets-body">
+												<?php
+													$count = 1;
+													foreach( $EM_Tickets->tickets as $EM_Ticket){
+														?>
+														<tr valign="top" id="em-tickets-row-<?php echo $count ?>" class="em-tickets-row">
+															<td class="ticket-status"><span class="<?php echo ($EM_Ticket->is_available()) ? 'ticket_on':'ticket_off'; ?>"></span></td>													
+															<td class="ticket-name"><span class="ticket_name"><?php echo $EM_Ticket->name ?></span><br /><span class="ticket_description"></span></td>
+															<td class="ticket-price">
+																<span class="ticket_price"><?php echo ($EM_Ticket->price) ? $EM_Ticket->price : __('Free','dbem'); ?></span>
+															</td>
+															<td class="ticket-limit">
+																<span class="ticket_min">
+																	<?php  echo ( !empty($EM_Ticket->min) ) ? $EM_Ticket->min:'-'; ?>
+																</span> / 
+																<span class="ticket_max"><?php echo ( !empty($EM_Ticket->max) ) ? $EM_Ticket->max:'-'; ?></span>
+															</td>
+															<td class="ticket-time">
+																<span class="ticket_start"><?php echo ( !empty($EM_Ticket->start) ) ? date($localised_date_format, $EM_Ticket->start_timestamp):''; ?></span> -
+																<span class="ticket_end"><?php echo ( !empty($EM_Ticket->end) ) ? date($localised_date_format, $EM_Ticket->end_timestamp):''; ?></span>
+															</td>
+															<td class="ticket-qty">
+																<span class="ticket_available_spaces"><?php echo $EM_Ticket->get_available_spaces(); ?></span>/
+																<span class="ticket_spaces">
+																	<?php 
+																	if( $EM_Ticket->get_spaces() ){
+																		echo $EM_Ticket->get_spaces();
+																		echo ($EM_Ticket->spaces_limit) ? '':'*';
+																	}else{
+																		echo '-';
+																	} 
+																	?>
+																</span>
+															</td>
+															<td class="ticket-booked-spaces">
+																<span class="ticket_booked_spaces"><?php echo $EM_Ticket->get_booked_spaces(); ?></span>
+															</td>
+															<td class="ticket-actions">
+																<a href="#" class="ticket-actions-edit"><?php _e('Edit','dbem'); ?></a> 
+																<?php if( count($EM_Ticket->get_bookings()->bookings) == 0 ): ?>
+																| <a href="<?php bloginfo('wpurl'); ?>/wp-load.php" class="ticket-actions-delete"><?php _e('Delete','dbem'); ?></a>
+																<?php else: ?>
+																| <a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=events-manager-bookings&ticket_id=<?php echo $EM_Ticket->id ?>"><?php _e('View Bookings','dbem'); ?></a>
+																<?php endif; ?>
+																<input type="hidden" class="ticket_id" name="em_tickets[<?php echo $count; ?>][ticket_id]" value="<?php echo $EM_Ticket->id ?>" />
+																<input type="hidden" class="ticket_name" name="em_tickets[<?php echo $count; ?>][ticket_name]" value="<?php echo $EM_Ticket->name ?>" />
+																<input type="hidden" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo $EM_Ticket->description ?>" />
+																<input type="hidden" class="ticket_price" name="em_tickets[<?php echo $count; ?>][ticket_price]" value="<?php echo $EM_Ticket->price ?>" />
+																<input type="hidden" class="ticket_spaces" name="em_tickets[<?php echo $count; ?>][ticket_spaces]" value="<?php echo $EM_Ticket->spaces ?>" />
+																<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
+																<input type="hidden" class="ticket_end" name="em_tickets[<?php echo $count; ?>][ticket_end]" value="<?php echo ( !empty($EM_Ticket->end) ) ? date("Y-m-d H:i", $EM_Ticket->end_timestamp):''; ?>" />
+																<input type="hidden" class="ticket_min" name="em_tickets[<?php echo $count; ?>][ticket_min]" value="<?php echo $EM_Ticket->min ?>" />
+																<input type="hidden" class="ticket_max" name="em_tickets[<?php echo $count; ?>][ticket_max]" value="<?php echo $EM_Ticket->max ?>" />
+															</td>
+														</tr>
+														<?php
+														$count++;
+													}
+													if( !empty($delete_temp_ticket) ){
+														array_pop($EM_Tickets->tickets);
+													}
+												?>
+											</tbody>
+										</table>
+										<?php } ?>
 								</div>
 							</div>
 						</div>
@@ -566,7 +601,7 @@ function em_admin_event_page() {
 					<?php endif; ?>
 					
 					<?php if(get_option('dbem_attributes_enabled')) : ?>
-						<div id="event_attributes" class="stuffbox">
+						<div id="event-attributes" class="stuffbox">
 							<h3>
 								<?php _e ( 'Attributes', 'dbem' ); ?>
 							</h3>
@@ -649,6 +684,7 @@ function em_admin_event_page() {
 							</div>
 						</div>
 						<?php endif; ?>
+						<?php do_action('em_admin_event_form_footer'); ?>
 					</div>
 					<p class="submit">
 						<input type="submit" name="events_update" value="<?php _e ( 'Submit Event', 'dbem' ); ?> &raquo;" />
@@ -662,28 +698,7 @@ function em_admin_event_page() {
 			</div>
 		</div>
 	</form>
-	<div id="em-tickets-form">
-		<h4><?php _e('Create a ticket', 'dbem'); ?></h4>
-		<form action="" method="post">
-			<div><label><?php _e('Name','dbem'); ?></label><input type="text" name="ticket_name" /></div>
-			<div><label><?php _e('Description','dbem') ?></label><br /><textarea name="ticket_description"></textarea></div>
-			<div><label><?php _e('Price','dbem') ?></label><input type="text" name="ticket_price" /></div>
-			<div>
-				<label><?php _e('Available ticket spaces','dbem') ?></label><input type="text" name="ticket_spaces" /><br />
-				<em><?php _e('If left blank, spaces are determined by event limit.','dbem'); ?></em>
-			</div><br />
-			<div><label><?php _e('Start date of ticket availability','dbem') ?></label><input type="hidden" name="ticket_start" /><input type="text" name="ticket_start_pub" /></div>
-			<div><label><?php _e('End date of ticket availability','dbem') ?></label><input type="hidden" name="ticket_end" /><input type="text" name="ticket_end_pub" /></div>
-			<div><label><?php _e('Minimum tickets required per booking','dbem') ?></label><input type="text" name="ticket_min" /></div>
-			<div><label><?php _e('Maximum tickets required per booking','dbem') ?></label><input type="text" name="ticket_max" /></div>
-			<p class="submit">
-				<input type="hidden" name="ticket_id" />
-				<input type="hidden" name="event_id" />
-				<input type="hidden" name="prev_slot" />
-				<input type="submit" value="<?php _e('Add Ticket','dbem'); ?>" />
-			</p>
-		</form>
-	</div>
+	<?php em_locate_template('forms/tickets-form.php', true); //put here as it can't be in the add event form ?>
 	<script type="text/javascript">
 		jQuery(document).ready( function($) {
 			<?php if( $EM_Event->is_recurring() ): ?>

@@ -12,11 +12,11 @@ class EM_Location extends EM_Object {
 	var $town = '';
 	var $state = '';
 	var $postcode = '';
+	var $region = '';
 	var $country = '';
 	var $latitude = '';
 	var $longitude = '';
 	var $description = '';
-	var $image_url = '';
 	var $owner = '';
 	//Other Vars
 	var $fields = array( 
@@ -27,12 +27,14 @@ class EM_Location extends EM_Object {
 		'location_town' => array('name'=>'town','type'=>'%s'),
 		'location_state' => array('name'=>'state','type'=>'%s'),
 		'location_postcode' => array('name'=>'postcode','type'=>'%s'),
+		'location_region' => array('name'=>'region','type'=>'%s'),
 		'location_country' => array('name'=>'country','type'=>'%s'),
 		'location_latitude' =>  array('name'=>'latitude','type'=>'%f'),
 		'location_longitude' => array('name'=>'longitude','type'=>'%f'),
 		'location_description' => array('name'=>'description','type'=>'%s'),
 		'location_owner' => array('name'=>'owner','type'=>'%d')
 	);
+	var $image_url = '';
 	var $required_fields = array();
 	var $feedback_message = "";
 	var $mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png'); 
@@ -54,10 +56,10 @@ class EM_Location extends EM_Object {
 				//Retreiving from the database		
 				global $wpdb;
 				if( is_numeric($location_data) ){
-					$sql = "SELECT * FROM ". $wpdb->prefix.EM_LOCATIONS_TABLE ." WHERE location_id ='{$location_data}'";   
+					$sql = "SELECT * FROM ". EM_LOCATIONS_TABLE ." WHERE location_id ='{$location_data}'";   
 				  	$location = $wpdb->get_row($sql, ARRAY_A);
 				}else{
-					$sql = "SELECT * FROM ". $wpdb->prefix.EM_LOCATIONS_TABLE ." WHERE location_slug ='{$location_data}'";   
+					$sql = "SELECT * FROM ". EM_LOCATIONS_TABLE ." WHERE location_slug ='{$location_data}'";   
 				  	$location = $wpdb->get_row($sql, ARRAY_A);
 				}
 			}
@@ -69,6 +71,7 @@ class EM_Location extends EM_Object {
 			//Save into the object
 			$this->to_object($location, true);
 			$this->get_image_url();
+			add_filter('em_location_save',array(&$this,'image_upload'));
 		} 
 		do_action('em_location', $this, $location_data);
 	}
@@ -79,24 +82,54 @@ class EM_Location extends EM_Object {
 		$location = array();
 		$location['location_id'] = ( !empty($_POST['location_id']) ) ? $_POST['location_id']:'';
 		$location['location_name'] = ( !empty($_POST['location_name']) ) ? stripslashes($_POST['location_name']):'';
+		if( current_user_can('edit_others_events') ){
+			$location['location_owner'] = ( !empty($_POST['location_owner']) && is_numeric($_POST['location_owner']) ) ? $_POST['location_owner']:'';
+		}
 		$location['location_address'] = ( !empty($_POST['location_address']) ) ? stripslashes($_POST['location_address']):'';
 		$location['location_town'] = ( !empty($_POST['location_town']) ) ? stripslashes($_POST['location_town']):'';
 		$location['location_state'] = ( !empty($_POST['location_state']) ) ? stripslashes($_POST['location_state']):'';
 		$location['location_postcode'] = ( !empty($_POST['location_postcode']) ) ? stripslashes($_POST['location_postcode']):'';
+		$location['location_region'] = ( !empty($_POST['location_region']) ) ? stripslashes($_POST['location_region']):'';
 		$location['location_country'] = ( !empty($_POST['location_country']) ) ? stripslashes($_POST['location_country']):'';
 		$location['location_latitude'] = ( !empty($_POST['location_latitude']) ) ? $_POST['location_latitude']:'';
 		$location['location_longitude'] = ( !empty($_POST['location_longitude']) ) ? $_POST['location_longitude']:'';
 		$location['location_description'] = ( !empty($_POST['content']) ) ? stripslashes($_POST['content']):'';
 		$this->to_object( apply_filters('em_location_get_post', $location, $this) );
+		return apply_filters('em_location_get_post',$this->validate(),$this);
+	}
+
+	/**
+	 * Validates the location. Should be run during any form submission or saving operation.
+	 * @return boolean
+	 */
+	function validate(){
+		//check required fields
+		foreach ( $this->required_fields as $field => $description) {
+			if( $field == 'country' && !array_key_exists($this->country, em_get_countries()) ){ 
+				//country specific checking
+				$this->add_error( $this->required_fields['country'].__(" is required.", "dbem") );				
+			}elseif ( $this->$field == "" ) {
+				$this->add_error( $description.__(" is required.", "dbem") );
+			}
+		}
+		$this->image_validate();
+		return apply_filters('em_location_validate', ( count($this->errors) == 0 ), $this);
 	}
 	
 	function save(){
 		global $wpdb, $current_user;
+		$table = EM_LOCATIONS_TABLE;
 		if( $this->validate() ){
-			if( current_user_can('edit_locations') ){
-		   		get_currentuserinfo();
+			if( $this->can_manage('edit_locations','edit_others_locations') ){
+				//owner person can be anyone the admin wants, but the creator if not.
+				if( current_user_can('edit_others_events') ){
+					$this->owner = ( $this->owner > 0 ) ? $this->owner:0;
+				}else{
+					//force user id - user is either editing a location or making a new one, as can_manage checks ownership too. 
+					$this->owner = get_current_user_id();
+				}
+				get_currentuserinfo();
 				do_action('em_location_save_pre', $this);
-				$table = $wpdb->prefix.EM_LOCATIONS_TABLE;
 				$this->slug = $this->sanitize_title();
 				$data = $this->to_array();
 				unset($data['location_id']);
@@ -104,20 +137,21 @@ class EM_Location extends EM_Object {
 				if($this->id != ''){
 					$where = array( 'location_id' => $this->id );
 					$result = $wpdb->update($table, $data, $where, $this->get_types($data));
-					if( $result ){
+					if( $result !== false ){
 						$this->feedback_message = sprintf(__('%s successfully updated.', 'dbem'), __('Location','dbem'));
-					}				
+					}else{
+						$this->add_error( sprintf(__('Could not save the %s details due to a database error.', 'dbem'),__('location','dbem') ));
+					}			
 				}else{
-					$this->owner = $current_user->ID; //Record creator of event
-					$data['location_owner'] = $this->owner;
 					$result = $wpdb->insert($table, $data, $this->get_types($data));
 				    $this->id = $wpdb->insert_id;   
-					if( $result ){
+					if( $result !== false ){
 						$this->feedback_message = sprintf(__('%s successfully added.', 'dbem'), __('Location','dbem'));
-					}		
+					}else{
+						$this->add_error( sprintf(__('Could not save the %s details due to a database error.', 'dbem'),__('location','dbem') ));
+					}	
 				}
-				$image_upload = $this->image_upload();
-				return apply_filters('em_location_save', ( $this->id > 0 && $image_upload ), $this, $image_upload);
+				return apply_filters('em_location_save', ( $this->id > 0 && count($this->errors) == 0 ), $this);
 			}else{
 				$this->add_error( sprintf(__('You do not have permission to create/edit %s.','dbem'), __('locations','dbem')) );
 			}
@@ -136,7 +170,7 @@ class EM_Location extends EM_Object {
 			$this->slug = sanitize_title($this->name);
 		}
 		$slug = $this->slug;
-		$slug_matches = $wpdb->get_results('SELECT location_id FROM '.$wpdb->prefix.EM_LOCATIONS_TABLE." WHERE location_slug='{$slug}'", ARRAY_A);
+		$slug_matches = $wpdb->get_results('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_slug='{$slug}'", ARRAY_A);
 		if( count($slug_matches) > 0 ){ //we will check that the slug is unique
 			if( $slug_matches[0]['location_id'] != $this->id || count($slug_matches) > 1 ){
 				//we have a conflict, so try another alternative
@@ -151,7 +185,7 @@ class EM_Location extends EM_Object {
 		global $wpdb;	
 		if( current_user_can('delete_locations') ){
 			do_action('em_location_delete_pre', $this);
-			$table_name = $wpdb->prefix.EM_LOCATIONS_TABLE;
+			$table_name = EM_LOCATIONS_TABLE;
 			$sql = "DELETE FROM $table_name WHERE location_id = '{$this->id}';";
 			$result = $wpdb->query($sql);
 			$result = $this->image_delete() && $result;
@@ -166,59 +200,11 @@ class EM_Location extends EM_Object {
 		}
 		return apply_filters('em_location_delete', $result, $this);
 	}
-	
-	function get_image_url(){
-		if($this->image_url == ''){
-		  	foreach($this->mime_types as $type) { 
-				$file_path = "/".EM_IMAGE_UPLOAD_DIR."/location-{$this->id}.$type";
-				if( file_exists( ABSPATH . $file_path) ) {
-					$result = get_bloginfo('wpurl').$file_path;
-		  			$this->image_url = $result;
-				}
-			}
-		}
-		return apply_filters('em_location_get_image_url', $this->image_url, $this);
-	}
-	
-	function image_delete() {
-		if( $this->image_url == '' ){
-			$result = true;
-		}else{
-			$file_name= ABSPATH.EM_IMAGE_UPLOAD_DIR."/location-".$this->id;
-			$result = false;
-			foreach($this->mime_types as $type) { 
-				if (file_exists($file_name.".".$type))
-		  		$result = unlink($file_name.".".$type);
-			}
-		}
-		return apply_filters('em_location_image_delete', $result, $this);
-	}
-	
-	function image_upload(){	
-		//TODO better image upload error handling
-		do_action('em_location_image_upload_pre', $this);
-		$result = true;
-		if ( !empty($_FILES['location_image']['size']) ) {	
-		  	if( !file_exists(ABSPATH.EM_IMAGE_UPLOAD_DIR) ){
-				mkdir(ABSPATH.EM_IMAGE_UPLOAD_DIR, 0777);
-		  	}
-			$this->image_delete();   
-			list($width, $height, $type, $attr) = getimagesize($_FILES['location_image']['tmp_name']);
-			$image_path = ABSPATH.EM_IMAGE_UPLOAD_DIR."/location-".$this->id.".".$this->mime_types[$type];
-			if (!move_uploaded_file($_FILES['location_image']['tmp_name'], $image_path)){
-				$this->errors = __('The image could not be loaded','dbem');
-				$result = false;
-			}else{
-				$result = true;
-			}
-		}
-		return apply_filters('em_location_image_upload', $result, $this);
-	}
 
 	function load_similar($criteria){
 		global $wpdb;
 		if( !empty($criteria['location_name']) && !empty($criteria['location_name']) && !empty($criteria['location_name']) ){
-			$locations_table = $wpdb->prefix.EM_LOCATIONS_TABLE; 
+			$locations_table = EM_LOCATIONS_TABLE; 
 			$prepared_sql = $wpdb->prepare("SELECT * FROM $locations_table WHERE location_name = %s AND location_address = %s AND location_town = %s AND location_state = %s AND location_postcode = %s AND location_country = %s", stripcslashes($criteria['location_name']), stripcslashes($criteria['location_address']), stripcslashes($criteria['location_town']), stripcslashes($criteria['location_state']), stripcslashes($criteria['location_postcode']), stripcslashes($criteria['location_country']) );
 			//$wpdb->show_errors(true);
 			$location = $wpdb->get_row($prepared_sql, ARRAY_A);
@@ -229,46 +215,10 @@ class EM_Location extends EM_Object {
 		}
 		return apply_filters('em_location_load_similar', false, $this);
 	}
-
-	/**
-	 * Validates the location. Should be run during any form submission or saving operation.
-	 * @return boolean
-	 */
-	function validate(){
-		//check required fields
-		foreach ( $this->required_fields as $field => $description) {
-			if( $field == 'country' && !array_key_exists($this->country, em_get_countries()) ){ 
-				//country specific checking
-				$this->errors[] = $this->required_fields['country'].__(" is required.", "dbem");				
-			}elseif ( $this->$field == "" ) {
-				$this->errors[] = $description.__(" is required.", "dbem");
-			}
-		}
-		//Srt out the image
-		if ( !empty($_FILES['location_image']) && $_FILES['location_image']['size'] > 0 ) { 
-			if (is_uploaded_file($_FILES['location_image']['tmp_name'])) {
-	 	 		$mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
-				$maximum_size = get_option('dbem_image_max_size'); 
-				if ($_FILES['location_image']['size'] > $maximum_size){ 
-			     	$this->errors[] = __('The image file is too big! Maximum size:', 'dbem')." $maximum_size";
-				}
-		  		list($width, $height, $type, $attr) = getimagesize($_FILES['location_image']['tmp_name']);
-				$maximum_width = get_option('dbem_image_max_width'); 
-				$maximum_height = get_option('dbem_image_max_height'); 
-			  	if (($width > $maximum_width) || ($height > $maximum_height)) { 
-					$this->errors[] = __('The image is too big! Maximum size allowed:')." $maximum_width x $maximum_height";
-			  	}
-			  	if (($type!=1) && ($type!=2) && ($type!=3)){ 
-					$this->errors[] = __('The image is in a wrong format!');
-			  	}
-	  		}
-		}
-		return apply_filters('em_location_validate', ( count($this->errors) == 0 ), $this);
-	}
 	
 	function has_events(){
 		global $wpdb;	
-		$events_table = $wpdb->prefix.EM_EVENTS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
 		$sql = "SELECT count(event_id) as events_no FROM $events_table WHERE location_id = {$this->id}";   
 	 	$affected_events = $wpdb->get_row($sql);
 		return apply_filters('em_location_has_events', (count($affected_events) > 0), $this);
@@ -282,12 +232,26 @@ class EM_Location extends EM_Object {
 	}
 	
 	function output_single($target = 'html'){
-		$format = get_option ( 'dbem_single_location_format' );
-		return apply_filters('em_location_output_single', $this->output($format, $target), $this, $target);	
+		$located = em_locate_template('templates/location-single.php');
+		if( $located ){
+			ob_start();
+			include($located);
+			return apply_filters('em_location_output_single', ob_get_clean(), $this, $target);	
+		}else{
+			$format = get_option ( 'dbem_single_location_format' );
+			return apply_filters('em_location_output_single', $this->output($format, $target), $this, $target);			
+		}
 	}
 	
-	function output($format, $target="html") {
-		$location_string = $format;		 
+	function output($format, $target="html") { 
+		preg_match_all('/\{([a-zA-Z0-9_]+)\}([^{]+)\{\/[a-zA-Z0-9_]+\}/', $format, $conditionals);
+		if( count($conditionals[0]) > 0 ){
+			//Check if the language we want exists, if not we take the first language there
+			foreach($conditionals[1] as $key => $condition){
+				$format = str_replace($conditionals[0][$key], apply_filters('em_location_output_condition', '', $conditionals[0][$key], $condition, $this), $format);
+			}
+		}
+		$location_string = $format;
 		preg_match_all("/#_[A-Za-z]+/", $format, $placeholders);
 		foreach($placeholders[0] as $result) {
 			$match = true;
@@ -331,7 +295,6 @@ class EM_Location extends EM_Object {
 						$replace = $matches[0];
 					}
 					break;
-				case '#_IMAGE': //Depreciated
 				case '#_LOCATIONIMAGE':
 	        		if($this->image_url != ''){
 						$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";

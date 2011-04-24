@@ -87,7 +87,7 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 		$status = $EM_Booking->status;
 		if( $status == 1 || (!get_option('dbem_bookings_approval') && $status < 2) ){
 			$action = sprintf(__('%s is attending %s.','dbem'), $user_link, $event_link );
-		}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && $status > 1 ){
+		}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && ($status > 1 || empty($status) || (!get_option('dbem_bookings_approval') && $status != 1)) ){
 			$action = sprintf(__('%s will not be attending %s anymore.','dbem'), $user_link, $event_link );
 		}
 		if( !empty($action) ){
@@ -104,3 +104,4 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 	return $result;
 }
 add_filter('em_booking_save','bp_em_record_activity_booking_save', 10, 2);
+add_filter('em_booking_delete','bp_em_record_activity_booking_save', 10, 2);

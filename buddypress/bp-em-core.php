@@ -7,12 +7,16 @@ if ( !defined( 'BP_EM_SLUG' ) )
 require ( dirname( __FILE__ ) . '/bp-em-activity.php' ); /* The notifications file should contain functions to send email notifications on specific user actions */
 require ( dirname( __FILE__ ) . '/bp-em-templatetags.php' ); /* The templatetags file should contain classes and functions designed for use in template files */
 require ( dirname( __FILE__ ) . '/bp-em-notifications.php' ); /* The notifications file should contain functions to send email notifications on specific user actions */
+require ( dirname( __FILE__ ) . '/bp-em-groups.php' ); /* The notifications file should contain functions to send email notifications on specific user actions */
 //Screens
 	include( dirname( __FILE__ ). '/screens/settings.php');
 	include( dirname( __FILE__ ). '/screens/profile.php');
 	include( dirname( __FILE__ ). '/screens/my-events.php');
 	include( dirname( __FILE__ ). '/screens/my-locations.php');
 	include( dirname( __FILE__ ). '/screens/attending.php');
+	include( dirname( __FILE__ ). '/screens/my-bookings.php');
+	include( dirname( __FILE__ ). '/screens/my-group-events.php');
+	include( dirname( __FILE__ ). '/screens/group-events.php');
 	
 
 /**
@@ -44,6 +48,7 @@ add_action( 'wp', 'bp_em_setup_globals', 2 );
  */
 function bp_em_setup_nav() {
 	global $bp;
+	$count = 0; 
 
 	/* Add 'Events' to the main user profile navigation */
 	bp_core_new_nav_item( array(
@@ -56,17 +61,16 @@ function bp_em_setup_nav() {
 
 	$em_link = $bp->loggedin_user->domain . $bp->events->slug . '/';
 
-	if( bp_is_my_profile() ){
-		/* Create two sub nav items for this component */
-		bp_core_new_subnav_item( array(
-			'name' => __( 'My Profile', 'dbem' ),
-			'slug' => 'profile',
-			'parent_slug' => $bp->events->slug,
-			'parent_url' => $em_link,
-			'screen_function' => 'bp_em_events',
-			'position' => 10
-		) );
-	}
+	/* Create two sub nav items for this component */
+	bp_core_new_subnav_item( array(
+		'name' => __( 'My Profile', 'dbem' ),
+		'slug' => 'profile',
+		'parent_slug' => $bp->events->slug,
+		'parent_url' => $em_link,
+		'screen_function' => 'bp_em_events',
+		'position' => 10,
+		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+	) );
 	
 	bp_core_new_subnav_item( array(
 		'name' => __( 'Events I\'m Attending', 'dbem' ),
@@ -97,7 +101,28 @@ function bp_em_setup_nav() {
 		'position' => 40,
 		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
 	) );
+	
+	bp_core_new_subnav_item( array(
+		'name' => __( 'My Event Bookings', 'dbem' ),
+		'slug' => 'my-bookings',
+		'parent_slug' => $bp->events->slug,
+		'parent_url' => $em_link,
+		'screen_function' => 'bp_em_my_bookings',
+		'position' => 50,
+		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+	) );
 
+	/* Add a nav item for this component under the settings nav item. */
+	bp_core_new_subnav_item( array(
+		'name' => __( 'Events', 'dbem' ),
+		'slug' => 'group-events',
+		'parent_slug' => $bp->groups->slug,
+		'parent_url' => $bp->loggedin_user->domain . $bp->groups->slug . '/',
+		'screen_function' => 'bp_em_my_group_events',
+		'position' => 60,
+		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+	) );
+	
 	/* Add a nav item for this component under the settings nav item. */
 	bp_core_new_subnav_item( array(
 		'name' => __( 'Events', 'dbem' ),
@@ -108,6 +133,26 @@ function bp_em_setup_nav() {
 		'position' => 40,
 		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
 	) );
+	
+
+	/* Create two sub nav items for this component */
+	$group_link = $bp->root_domain . '/' . $bp->groups->slug . '/' . $bp->groups->current_group->slug . '/';
+	
+	if( $bp->current_component == 'groups' ){
+		$count = EM_Events::count(array('group'=>$bp->groups->current_group->id));
+		if( empty($count) ) $count = 0;
+	}
+	bp_core_new_subnav_item( array( 
+		'name' => sprintf(__( 'Events (%s)', 'dbem' ), $count),
+		'slug' => 'events', 
+		'parent_url' => $group_link, 
+		'parent_slug' => $bp->groups->slug, 
+		'screen_function' => 'bp_em_group_events', 
+		'position' => 50, 
+		'user_has_access' => $bp->groups->current_group->user_has_access, 
+		'item_css_id' => 'forums' 
+	) );
+	
 }
 
 /***
@@ -117,6 +162,35 @@ function bp_em_setup_nav() {
 add_action( 'wp', 'bp_em_setup_nav', 2 );
 add_action( 'admin_menu', 'bp_em_setup_nav', 2 );
 
+
+function em_bp_rewrite_links($replace, $object, $result){
+	global $bp;
+	if( is_object($object) && get_class($object)=='EM_Event' ){
+		switch( $result ){
+			case '#_EDITEVENTURL':
+			case '#_EDITEVENTLINK':
+				if( $object->can_manage('edit_events','edit_others_events') && !is_admin() ){
+					$replace = $bp->events->link.'my-events/edit/?event_id='.$object->id;
+					if($result == '#_EDITEVENTLINK'){
+						$replace = "<a href='".$replace."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+					}
+				}	 
+				break;
+			case '#_BOOKINGSLINK':	
+			case '#_BOOKINGSURL':
+				if( $object->can_manage('manage_bookings','manage_others_bookings') && !is_admin() ){
+					$replace = $bp->events->link.'my-bookings/?event_id='.$object->id;
+					if($result == '#_BOOKINGSLINK'){
+						$replace = "<a href='{$replace}' title='{$object->name}'>{$object->name}</a>";
+					}
+				}
+				break;
+		}
+	}
+	return $replace;
+}
+add_filter('em_event_output_placeholder','em_bp_rewrite_links',10,3);
+			
 /**
  * bp_em_load_template_filter()
  *
@@ -172,4 +246,5 @@ function bp_em_remove_data( $user_id ) {
 }
 add_action( 'wpmu_delete_user', 'bp_em_remove_data', 1 );
 add_action( 'delete_user', 'bp_em_remove_data', 1 );
+
 ?>

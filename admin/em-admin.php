@@ -53,10 +53,22 @@ function em_admin_warnings() {
 				<?php		
 			}
 		}
+		//If events page couldn't be created
+		if( !empty($_GET['em_dismiss_notice_migrate_v3']) ){
+			delete_option('em_notice_migrate_v3');
+		}else{
+			if( get_option('em_notice_migrate_v3') ){
+				?>
+				<div id="em_page_error" class="updated">
+					<p><?php echo sprintf ( __( 'A <strong>LOT</strong> has changed since Events Manager 3. We recommend you take a look at the <a href="%s">settings page</a> for new features and upgrade instructions, and you may particualarly be interested in modifying permissions. <a href="%s">Dismiss</a>' ), 'admin.php?page=events-manager-options',  em_add_get_params($_SERVER['REQUEST_URI'], array('em_dismiss_notice_migrate_v3'=>1))); ?></p>
+				</div>
+				<?php		
+			}
+		}
 	}
 	//Warn about EM page edit
 	if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
-		$message = sprintf ( __ ( "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by <strong>Events Manager</strong>. If you want to display your content, you can can assign another page to <strong>Events Manager</strong> in the the <a href='%s'>Settings</a>. ", 'dbem' ), 'admin.php?page=events-manager-options' );
+		$message = sprintf ( __ ( "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by Events Manager, although if you include the word CONTENTS (exactly in capitals) and surround it with other text, only CONTENTS will be overwritten. If you want to change the way your events look, go to the <a href='%s'>settings</a> page. ", 'dbem' ), 'admin.php?page=events-manager-options' );
 		$notice = "<div class='error'><p>$message</p></div>";
 		echo $notice;
 	}
@@ -99,7 +111,7 @@ function em_admin_paginate($total, $limit, $page=1, $vars=false){
 function em_admin_load_scripts(){
 	//Load the UI items, currently date picker and autocomplete plus dependencies
 	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
-	wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/em_ui.js', array('jquery', 'jquery-ui-core'));
+	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core'));
 	
 	//Add maps
 	if( get_option('dbem_gmap_is_active') ){
@@ -112,16 +124,17 @@ function em_admin_load_scripts(){
 	$locale_code = substr ( get_locale (), 0, 2 );
 	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
 	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
-		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('em-ui-js'));
+		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager'));
 	}
-	wp_enqueue_script('em-script', WP_PLUGIN_URL.'/events-manager/includes/js/em_admin.js', array('em-ui-js'));
 	
 	//TinyMCE Editor
-	remove_filter('the_editor',					'qtrans_modifyRichEditor'); //qtranslate filter
+	remove_filter('the_editor',	'qtrans_modifyRichEditor'); //qtranslate filter
 	add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 25 );
+	add_action( 'admin_print_footer_scripts', 'wp_tiny_mce_preload_dialogs', 30 );
 	wp_enqueue_script('post');
 	if ( user_can_richedit() )
 		wp_enqueue_script('editor');
+	
 	add_thickbox();
 	wp_enqueue_script('media-upload');
 	wp_enqueue_script('word-count');
