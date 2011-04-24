@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.0b2
+Version: 4.0rc1
 Plugin URI: http://wp-events-plugin.com
-Description: A complete event management solution for wordpress. Recurring events, locations, google maps, rss, bookings and more!
+Description: A complete event management solution for wordpress. Recurring events, locations, google maps, rss, booking registration and more!
 Author: Marcus Sykes
 Author URI: http://wp-events-plugin.com
 */
@@ -103,7 +103,7 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.0017); //self expanatory
+define('EM_VERSION', 4.0019); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
 if( file_exists('wp-content/uploads/locations-pics' ) ){
 	define("EM_IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
@@ -305,6 +305,49 @@ function em_create_events_submenu () {
 }
 add_action('admin_menu','em_create_events_submenu');
 
+class EM_MS_Globals {
+	function __construct(){ add_action( 'init', array(&$this, 'add_filters')); }	
+	function add_filters(){
+		foreach( self::get_globals() as $global_option_name ){
+			add_filter('pre_option_'.$global_option_name, array(&$this, 'pre_option_'.$global_option_name), 1,1);
+			add_filter('pre_update_option_'.$global_option_name, array(&$this, 'pre_update_option_'.$global_option_name), 1,2);
+			add_action('add_option_'.$global_option_name, array(&$this, 'add_option_'.$global_option_name), 1,1);
+		}
+	}	
+	function get_globals(){ 
+		return apply_filters('em_ms_globals', array(
+			//multisite settings
+			'dbem_ms_global_table', 'dbem_ms_global_events', 'dbem_ms_global_events_links',
+			//mail
+			'dbem_rsvp_mail_port', 'dbem_mail_sender_address', 'dbem_smtp_host', 'dbem_mail_sender_name','dbem_smtp_host','dbem_rsvp_mail_send_method','dbem_rsvp_mail_SMTPAuth',
+			//images	
+			'dbem_image_max_width','dbem_image_max_height','dbem_image_max_size'	
+		));
+	}
+	function __call($filter_name, $value){
+		if( strstr($filter_name, 'pre_option_') !== false ){
+			$return = get_site_option(str_replace('pre_option_','',$filter_name));
+			return $return;
+		}elseif( strstr($filter_name, 'pre_update_option_') !== false ){
+			if( is_super_admin() ){	
+				update_site_option(str_replace('pre_update_option_','',$filter_name), $value[0]);	
+			}
+			return $value[1];
+		}elseif( strstr($filter_name, 'add_option_') !== false ){
+			if( is_super_admin() ){	
+				update_site_option(str_replace('add_option_','',$filter_name),$value[0]);
+			}
+			delete_option(str_replace('pre_option_','',$filter_name));
+			return;
+		}
+		return $value[0];
+	}
+}
+if( defined('MULTISITE') && MULTISITE ){
+	global $EM_MS_Globals;
+	$EM_MS_Globals = new EM_MS_Globals();
+}
+
 /**
  * Works much like <a href="http://codex.wordpress.org/Function_Reference/locate_template" target="_blank">locate_template</a>, except it takes a string instead of an array of templates, we only need to load one.  
  * @param string $template_name
@@ -321,7 +364,7 @@ function em_locate_template( $template_name, $load=false, $args = array() ) {
 		}
 	}
 	if( $located && $load ){
-		extract($args);
+		if( is_array($args) ) extract($args);
 		include($located);
 	}
 	return $located;

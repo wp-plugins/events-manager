@@ -243,8 +243,15 @@ class EM_Location extends EM_Object {
 		}
 	}
 	
-	function output($format, $target="html") {
-		$location_string = $format;		 
+	function output($format, $target="html") { 
+		preg_match_all('/\{([a-zA-Z0-9_]+)\}([^{]+)\{\/[a-zA-Z0-9_]+\}/', $format, $conditionals);
+		if( count($conditionals[0]) > 0 ){
+			//Check if the language we want exists, if not we take the first language there
+			foreach($conditionals[1] as $key => $condition){
+				$format = str_replace($conditionals[0][$key], apply_filters('em_location_output_condition', '', $conditionals[0][$key], $condition, $this), $format);
+			}
+		}
+		$location_string = $format;
 		preg_match_all("/#_[A-Za-z]+/", $format, $placeholders);
 		foreach($placeholders[0] as $result) {
 			$match = true;

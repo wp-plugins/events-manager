@@ -1,7 +1,7 @@
 <?php
-/* @var $this EM_Event */
+/* @var $EM_Event EM_Event */
 $people = array();
-foreach($this->get_bookings() as $EM_Booking){
+foreach($EM_Event->get_bookings() as $EM_Booking){
 	$people[$EM_Booking->person->ID] = $EM_Booking->person;
 }
 ?>

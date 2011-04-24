@@ -22,7 +22,7 @@ class EM_Category extends EM_Object {
 	
 	/**
 	 * Gets data from POST (default), supplied array, or from the database if an ID is supplied
-	 * @param $location_data
+	 * @param $category_data
 	 * @return null
 	 */
 	function EM_Category( $category_data = false ) {
@@ -31,7 +31,7 @@ class EM_Category extends EM_Object {
 		$this->required_fields = array("name" => __('The category name', 'dbem'));
 		$category = array();
 		if( !empty($category_data) ){
-			//Load location data
+			//Load category data
 			if( is_array($category_data) && isset($category_data['category_name']) ){
 				$category = $category_data;
 			}elseif( is_numeric($category_data) ){
@@ -157,6 +157,13 @@ class EM_Category extends EM_Object {
 	}
 	
 	function output($format, $target="html") {
+		preg_match_all('/\{([a-zA-Z0-9_]+)\}([^{]+)\{\/[a-zA-Z0-9_]+\}/', $format, $conditionals);
+		if( count($conditionals[0]) > 0 ){
+			//Check if the language we want exists, if not we take the first language there
+			foreach($conditionals[1] as $key => $condition){
+				$format = str_replace($conditionals[0][$key], apply_filters('em_category_output_condition', '', $condition, $conditionals[0][$key], $this), $format);
+			}
+		}
 		$category_string = $format;		 
 		preg_match_all("/#_[A-Za-z]+/", $format, $placeholders);
 		foreach($placeholders[0] as $result) {
@@ -174,7 +181,9 @@ class EM_Category extends EM_Object {
 					break;
 				case '#_CATEGORYIMAGE':
 				case '#_CATEGORYIMAGEURL':
-					$replace = ($result == '#_CATEGORYIMAGEURL') ? $this->image_url : "<img src='".$this->image_url."' alt='".$this->name."'/>";
+					if( $this->image_url != ''){
+						$replace = ($result == '#_CATEGORYIMAGEURL') ? $this->image_url : "<img src='".$this->image_url."' alt='".$this->name."'/>";
+					}
 					break;
 				case '#_CATEGORYLINK':
 				case '#_CATEGORYURL':
@@ -210,7 +219,18 @@ class EM_Category extends EM_Object {
 	}
 	
 	function can_manage( $capability_owner = 'edit_categories', $capability_admin = false ){
-		return current_user_can($capability_owner);
+		global $em_capabilities_array;
+		//Figure out if this is multisite and require an extra bit of validation
+		$multisite_check = true;
+		$can_manage = current_user_can($capability_owner);
+		if( is_multisite() && get_site_option('dbem_ms_global_table') && !is_main_site() ){
+			//User can't admin this bit, as they're on a sub-blog
+			$can_manage = false;
+			if(array_key_exists($capability_owner, $em_capabilities_array) ){
+				$this->add_error( $em_capabilities_array[$capability_owner]);
+			}
+		}
+		return $can_manage;
 	}
 }
 ?>

@@ -191,28 +191,53 @@ class EM_Object {
 			$conditions['scope'] = " ( event_start_date = CAST('$scope' AS DATE) OR ( event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE) ) )";
 		} else {
 			if ($scope == "past"){
-				$conditions['scope'] = " event_start_date < '$today'";  
+				if( get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] = " event_start_date < '$today'";
+				}else{
+					$conditions['scope'] = " event_end_date < '$today'";
+				}  
 			}elseif ($scope == "today"){
-				$conditions['scope'] = " ( (event_start_date = CAST('$today' AS DATE)) OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE)) )";
+				$conditions['scope'] = " (event_start_date = CAST('$today' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE))";
+				}
 			}elseif ($scope == "tomorrow"){
 				$tomorrow = date('Y-m-d',current_time('timestamp')+60*60*24);
-				$conditions['scope'] = " ( (event_start_date = CAST('$tomorrow' AS DATE)) OR (event_start_date <= CAST('$tomorrow' AS DATE) AND event_end_date >= CAST('$tomorrow' AS DATE)) )";
+				$conditions['scope'] = "(event_start_date = CAST('$tomorrow' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date <= CAST('$tomorrow' AS DATE) AND event_end_date >= CAST('$tomorrow' AS DATE))";
+				}
 			}elseif ($scope == "month"){
 				$start_month = date('Y-m-d',current_time('timestamp'));
 				$end_month = date('Y-m-t',current_time('timestamp'));
-				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE)) OR (event_end_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
+				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
+				}
 			}elseif ($scope == "next-month"){
 				$start_month_timestamp = strtotime('+1 month', current_time('timestamp')); //get the end of this month + 1 day
 				$start_month = date('Y-m-1',$start_month_timestamp);
 				$end_month = date('Y-m-t',$start_month_timestamp);
-				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE)) OR (event_end_date BETWEEN CAST('$end_month' AS DATE) AND CAST('$start_month' AS DATE))";
-			}elseif( preg_match('/(\d\d?)\-months/',$scope,$matches) ){
+				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
+				}
+			}elseif( preg_match('/(\d\d?)\-months/',$scope,$matches) ){ // next x months means this month (what's left of it), plus the following x-1 months until the end of that month.
 				$months_to_add = $matches[1];
 				$start_month = date('Y-m-d',current_time('timestamp'));
 				$end_month = date('Y-m-t',strtotime("+$months_to_add month", current_time('timestamp')));
-				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE)) OR (event_end_date BETWEEN CAST('$end_month' AS DATE) AND CAST('$start_month' AS DATE))";
+				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
+				}
 			}elseif ($scope == "future"){
-				$conditions['scope'] = " (event_start_date >= CAST('$today' AS DATE) OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
+				$conditions['scope'] = " event_start_date >= CAST('$today' AS DATE)";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL)";
+				}
+			}
+			if( !empty($conditions['scope']) ){
+				$conditions['scope'] = '('.$conditions['scope'].')';
 			}
 		}
 		
@@ -265,9 +290,9 @@ class EM_Object {
 		//Filter by category, can be id or comma seperated ids
 		//TODO create an exclude category option
 		if ( is_numeric($category) && $category > 0 ){
-			$conditions['category'] = " event_category_id = $category";
+			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value='$category' ) ";
 		}elseif( self::array_is_numeric($category) ){
-			$conditions['category'] = "( event_category_id = ". implode(' OR event_category_id = ', $category).")";
+			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$category).") ) ";
 		}
 	
 		//If we want rsvped items, we usually check the event
@@ -335,12 +360,25 @@ class EM_Object {
 			$can_manage = true;
 		}elseif( $is_owner && array_key_exists($owner_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$owner_capability];
-			$this->add_error($error_msg);
 		}
-		if( !$is_owner && current_user_can($admin_capability) ){
+		//Figure out if this is multisite and require an extra bit of validation
+		$multisite_check = true;
+		if( !empty($this->id) && is_multisite() && get_site_option('dbem_ms_global_table') ){
+			if( get_class($this) == "EM_Event" ){
+				//Other user-owned events can be modified by admins if it's on the same blog, otherwise it must be an admin on the main site.
+				$multisite_check = !( $this->blog_id == get_current_blog_id() || is_main_site() );
+			}else{
+				//User can't admin this bit, as they're on a sub-blog
+				$multisite_check = is_main_site();
+				$can_manage = false;
+			}
+		}
+		if( !$is_owner && current_user_can($admin_capability) && $multisite_check ){
 			$can_manage = true;
 		}elseif( !$is_owner && array_key_exists($admin_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$admin_capability];
+		}
+		if( !$can_manage && !empty($error_msg) ){
 			$this->add_error($error_msg);
 		}
 		return $can_manage;

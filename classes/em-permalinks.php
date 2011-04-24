@@ -16,7 +16,7 @@ if( !class_exists('EM_Permalinks') ){
 		);
 		static $scopes = 'today|tomorrow|this\-month|next\-month|past|all|future';
 		
-		function init(){			
+		function init(){	
 			add_filter('pre_update_option_dbem_events_page', array('EM_Permalinks','option_update'));
 			add_filter('init', array('EM_Permalinks','flush'));
 			add_filter('rewrite_rules_array',array('EM_Permalinks','rewrite_rules_array'));
@@ -46,7 +46,11 @@ if( !class_exists('EM_Permalinks') ){
 					case '#_EVENTURL': //Just the URL
 					case '#_EVENTLINK': //HTML Link
 						if( is_object($object) && get_class($object)=='EM_Event' ){
-							$event_link = trailingslashit(trailingslashit(EM_URI).'event/'.$object->slug);
+							$EM_URI = EM_URI;
+							if( is_multisite() && get_site_option('dbem_ms_global_events') && get_site_option('dbem_ms_global_events_links') && !empty($object->blog_id) && is_main_site() && $object->blog_id != get_current_blog_id() ){
+								$EM_URI = get_blog_permalink($object->blog_id, get_blog_option($object->blog_id, 'dbem_events_page'));
+							}
+							$event_link = trailingslashit(trailingslashit($EM_URI).'event/'.$object->slug);
 							if($result == '#_LINKEDNAME' || $result == '#_EVENTLINK'){
 								$replace = "<a href='{$event_link}' title='{$object->name}'>{$object->name}</a>";
 							}else{
@@ -144,11 +148,9 @@ if( !class_exists('EM_Permalinks') ){
 		function url(){
 			global $wp_rewrite;
 			$args = func_get_args();
-			$em_uri = ( !defined('EM_URI') ) ? get_permalink(get_option("dbem_events_page")):EM_URI; //PAGE URI OF EM
+			$em_uri = get_permalink(get_option("dbem_events_page")); //PAGE URI OF EM
 			if ( $wp_rewrite->using_permalinks() ) {
 				$event_link = trailingslashit(trailingslashit($em_uri). implode('/',$args));
-			}else{
-				echo em_add_get_params($em_uri, $args);
 			}
 			return $event_link;
 		}

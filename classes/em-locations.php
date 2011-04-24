@@ -216,7 +216,7 @@ class EM_Locations extends EM_Object implements Iterator {
 		}
 		//blog id in events table
 		if( is_multisite() && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
-			if( $args['blog'] == 1 ){
+			if( is_main_site($args['blog']) ){
 				$conditions['blog'] = "(`blog_id`={$args['blog']} OR blog_id IS NULL)";
 			}else{
 				$conditions['blog'] = "(`blog_id`={$args['blog']})";
@@ -246,10 +246,6 @@ class EM_Locations extends EM_Object implements Iterator {
 			'scope' => 'all', //we probably want to search all locations by default, not like events
 			'blog' => get_current_blog_id()
 		);
-		if( is_multisite() && get_current_blog_id() != 1 ){
-			//not the main blog, force single blog search
-			$array['blog'] = get_current_blog_id();
-		}
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );
 		if( is_admin() ){

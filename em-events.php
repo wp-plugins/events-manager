@@ -113,18 +113,15 @@ function em_content($page_content) {
 					$args['long_events'] = get_option('dbem_full_calendar_long_events');
 					$content =  EM_Calendar::output( apply_filters('em_content_calendar_args', $args) );
 				}else{
-					$args['limit'] = get_option('dbem_events_default_limit');
-					$args['page'] = (!empty($_REQUEST['page']) && is_numeric($_REQUEST['page']) )? $_REQUEST['page'] : 1;				
-					/*calculate event list time range */
-					$time_limit = get_option('dbem_events_page_time_limit');
-					if ( is_numeric($time_limit) && $time_limit > 0 && $scope == 'future'){
-						$args['scope'] = date('Y-m-d').",".date('Y-m-t', strtotime('+'.($time_limit-1).' month'));
-					}
+					$args['scope'] = get_option('dbem_events_page_scope');
 					//Intercept search request, if defined
 					if( !empty($_POST['_wpnonce']) && wp_verify_nonce($_POST['_wpnonce'], 'search_events') && get_option('dbem_events_page_search') ){
 						$args = EM_Events::get_post_search($args);
 					}
 					$events = EM_Events::get( apply_filters('em_content_events_args', $args) );
+					$args['limit'] = get_option('dbem_events_default_limit'); //since we are passing this info to an output function or template, we should get all the events first
+					$args['page'] = (!empty($_REQUEST['page']) && is_numeric($_REQUEST['page']) )? $_REQUEST['page'] : 1;				
+					
 					$template = em_locate_template('templates/events-list.php'); //if successful, this template overrides the settings and defaults, including search
 					if( $template ){
 						ob_start();
@@ -132,7 +129,7 @@ function em_content($page_content) {
 						$content = ob_get_clean();					
 					}else{
 						if( count($events) > 0 ){
-							$content = EM_Events::output( $events );
+							$content = EM_Events::output( $events, $args );
 						}else{
 							$content = get_option ( 'dbem_no_events_message' );
 						}

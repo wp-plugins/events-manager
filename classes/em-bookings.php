@@ -25,9 +25,6 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	var $spaces;
 	
-	var $feedback_message = "";
-	var $errors = array();
-	
 	/**
 	 * Creates an EM_Bookings instance, currently accepts an EM_Event object (gets all bookings for that event) or array of any EM_Booking objects, which can be manipulated in bulk with helper functions.
 	 * @param EM_Event $event
@@ -91,8 +88,8 @@ class EM_Bookings extends EM_Object implements Iterator{
 			}
 		} else {
 			 $this->add_error(__('Booking cannot be made, not enough spaces available!', 'dbem'));
-			 return false;
 		} 
+		return false;
 	}
 	
 	/**
@@ -107,7 +104,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 			if($result){
 				$result = $EM_Booking;
 			}
-			$this->feedback_message = sprintf(__('% created.','dbem'),__('Booking','dbem'));
+			$this->feedback_message = sprintf(__('%s created.','dbem'),__('Booking','dbem'));
 		}else{
 			$this->errors = array_merge($this->errors, $EM_Booking->errors);
 		}

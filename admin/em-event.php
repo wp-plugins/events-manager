@@ -31,8 +31,8 @@ function em_admin_event_page() {
 		$default_cat = get_option('dbem_default_category');
 		$default_loc = get_option('dbem_default_location');
 		if( is_numeric($default_cat) && $default_cat > 0 ){
-			$EM_Event->category_id = $default_cat;
-			$EM_Event->category = new EM_Category($default_cat);
+			$EM_Category = new EM_Category($default_cat);
+			$EM_Event->get_categories()->categories[] = $EM_Category;
 		}
 		if( is_numeric($default_loc) && $default_loc > 0 && ( empty($EM_Event->location->id) && empty($EM_Event->location->name) && empty($EM_Event->location->address) && empty($EM_Event->location->town) ) ){
 			$EM_Event->location_id = $default_loc;
@@ -152,23 +152,63 @@ function em_admin_event_page() {
 								</div>
 							</div> 
 							<!-- END recurrence postbox -->   
-						<?php endif; ?>          
-						<?php if(get_option('dbem_rsvp_enabled')) : ?>
+						<?php endif; ?>   
+						   
+						<?php if ( current_user_can('edit_others_events') ): ?>
+						<div class="postbox ">
+							<div class="handlediv" title="Fare clic per cambiare."><br />
+							</div>
+							<h3 class='hndle'><span><?php _e ( 'Event Owner/Contact Person', 'dbem' ); ?></span></h3>
+							<div class="inside">
+								<?php
+									wp_dropdown_users ( array ('name' => 'event_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->owner  ) );
+								?>
+							</div>
+						</div>
+						<?php else: ?>
+						<input type="hidden" name="event_owner" value="<?php get_current_user_id() ?>" />
+						<?php endif; ?> 
+						   
+						<?php if( empty($EM_Event->id) ): ?>
+							<?php 
+							$user_groups = array();
+							if( function_exists('groups_get_user_groups') ){
+								$group_data = groups_get_user_groups(get_current_user_id());
+								foreach( $group_data['groups'] as $group_id ){
+									if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+										$user_groups[] = groups_get_group( array('group_id'=>$group_id)); 
+									}
+								}
+							}
+							?>
+							<?php if( count($user_groups) > 0 ): ?>
 							<!-- START RSVP -->
-							<?php if ( current_user_can('edit_others_events') ): ?>
-							<div class="postbox ">
+							<div class="postbox " id='group-data'>
 								<div class="handlediv" title="Fare clic per cambiare."><br />
 								</div>
-								<h3 class='hndle'><span><?php _e ( 'Event Owner/Contact Person', 'dbem' ); ?></span></h3>
+								<h3 class='hndle'><span><?php _e('Group Ownership','dbem'); ?></span></h3>
 								<div class="inside">
-									<?php
-										wp_dropdown_users ( array ('name' => 'event_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->owner  ) );
-									?>
+									<p>
+										<select name="group_id">
+											<option value="<?php echo $BP_Group->id; ?>">Not a Group Event</option>
+										<?php
+										foreach($user_groups as $BP_Group){
+											?>
+											<option value="<?php echo $BP_Group->id; ?>"><?php echo $BP_Group->name; ?></option>
+											<?php
+										} 
+										?>
+										</select>
+										<br />
+										<em><?php _e ( 'Select a group you admin to attach this event to it. Note that all other admins of that group can modify the booking, and you will not be able to unattach the event without deleting it.', 'dbem' )?></em>
+									</p>
 								</div>
 							</div>
-							<?php else: ?>
-							<input type="hidden" name="event_owner" value="<?php get_current_user_id() ?>" />
 							<?php endif; ?>
+						<?php endif; ?>
+						
+						<?php if(get_option('dbem_rsvp_enabled')) : ?>
+							<!-- START RSVP -->
 							<div class="postbox " id='rsvp-data'>
 								<div class="handlediv" title="Fare clic per cambiare."><br />
 								</div>
@@ -223,20 +263,10 @@ function em_admin_event_page() {
 								<div class="inside">
 									<?php $categories = EM_Categories::get(array('orderby'=>'category_name')); ?>
 									<?php if( count($categories) > 0 ): ?>
-										<p><?php _e ( 'Category:', 'dbem' ); ?>
-											<select name="event_category_id">
-												<option value="" <?php echo ($EM_Event->category_id == '') ? "selected='selected'":'' ?>><?php _e('no category','dbem') ?></option>	
-												<?php
-												foreach ( $categories as $EM_Category ){
-													$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
-													?>
-													<option value="<?php echo $EM_Category->id ?>" <?php echo $selected ?>>
-													<?php echo $EM_Category->name ?>
-													</option>
-													<?php 
-												}
-												?>
-											</select>
+										<p>
+											<?php foreach( $categories as $EM_Category ):?>
+											<label><input type="checkbox" name="event_categories[]" value="<?php echo $EM_Category->id; ?>" <?php if($EM_Event->get_categories()->has($EM_Category->id)) echo 'checked="checked"'; ?> /> <?php echo $EM_Category->name ?></label><br />			
+											<?php endforeach; ?>
 										</p>
 									<?php else: ?>
 										<p><?php sprintf(__('No categories available, <a href="%s">create one here first</a>','dbem'), get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-categories'); ?></p>
@@ -558,7 +588,7 @@ function em_admin_event_page() {
 														$count++;
 													}
 													if( !empty($delete_temp_ticket) ){
-														array_pop($EM_Tickets->tickets[0]);
+														array_pop($EM_Tickets->tickets);
 													}
 												?>
 											</tbody>

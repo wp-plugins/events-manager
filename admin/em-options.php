@@ -2,13 +2,15 @@
 
 //Function composing the options subpanel
 function em_options_save(){
+	/*
+	 * Here's the idea, we have an array of all options that need super admin approval if in multi-site mode
+	 * since options are only updated here, its one place fit all
+	 */
 	if( current_user_can('activate_plugins') && !empty($_POST['em-submitted']) ){
 		//Build the array of options here
 		$post = $_POST;
 		foreach ($_POST as $postKey => $postValue){
-			if( substr($postKey, 0, 7) == 'dbem_ms' ){
-				update_site_option($postKey, stripslashes($postValue));
-			}elseif( substr($postKey, 0, 5) == 'dbem_' ){
+			if( substr($postKey, 0, 5) == 'dbem_' ){
 				//TODO some more validation/reporting
 				$numeric_options = array('dbem_locations_default_limit','dbem_events_default_limit');
 				if( in_array($postKey,$numeric_options) && !is_numeric($postValue) ){
@@ -20,15 +22,15 @@ function em_options_save(){
 				}
 			}
 		}
+		
 		//set capabilities
-		if( !empty($_POST['em_capabilities']) && is_array($_POST['em_capabilities']) ){
+		if( !empty($_POST['em_capabilities']) && is_array($_POST['em_capabilities']) && (!is_multisite() || is_multisite() && is_super_admin()) ){
 			global $em_capabilities_array, $wp_roles;
 			foreach( $wp_roles->role_objects as $role_name => $role ){
 				foreach( array_keys($em_capabilities_array) as $capability){
 					if( !empty($_POST['em_capabilities'][$role_name][$capability]) ){
 						$role->add_cap($capability);
 					}else{
-						
 						$role->remove_cap($capability);						
 					}
 				}
@@ -63,6 +65,8 @@ function em_admin_options_page() {
 	$bookings_placeholder_tip = " ". sprintf(__('This accepts %s, %s and %s placeholders.','dbem'), $bookings_placeholders, $events_placeholders, $locations_placeholders);
 	
 	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes' ) .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
+	//Do some multisite checking here for reuse
+	$multisite_view = (is_multisite() && is_super_admin()) ? ' - ('.__('Only Network Admins see this','dbem').')':'';
 	?>	
 	<script type="text/javascript" charset="utf-8">
 		jQuery(document).ready(function($){
@@ -115,7 +119,8 @@ function em_admin_options_page() {
 					<p>
 					It looks like you've already tried reimporting some bookings into the new version (or new bookings have been made since you installed). 
 					If everything looks correct, you can 
-					<a href="admin.php?page=events-manager-options&amp;_wpnonce=<?php echo wp_create_nonce('bookings_migrate_delete'); ?>&amp;action=bookings_migrate_delete">delete the unused tables</a>, or you can also safely try 
+					<a href="admin.php?page=events-manager-options&amp;_wpnonce=<?php echo wp_create_nonce('bookings_migrate_delete'); ?>&amp;action=bookings_migrate_delete">delete the unused tables</a>, 
+					or you can also safely try 
 					<a href="admin.php?page=events-manager-options&amp;_wpnonce=<?php echo wp_create_nonce('bookings_migrate'); ?>&amp;action=bookings_migrate">re-importing again</a>.
 					</p>
 				</div>
@@ -143,13 +148,15 @@ function em_admin_options_page() {
 			<div class='postbox-container' style='width: 99.5%'>
 			<div id="" class="meta-box-sortables" >
 		  
-		  	<?php if( is_multisite() ): ?>
+			<?php if ( is_multisite() && is_super_admin() ) : ?>
 			<div  class="postbox " >
-				<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Multi Site Options', 'dbem' ); ?> </span></h3>
+				<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Multi Site Options', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
 				<div class="inside">
 		            <table class="form-table">
 						<?php 
-						em_options_radio_binary ( __( 'Enable global tables mode?' ), 'dbem_ms_global_table', __( 'Setting this to yes will make all events save in the main site database (note that you must at least activate EM on there for this to work). This allows you to share events across different blogs, such as showing events in your network whilst allowing users to display and manage their events within their own blog.','dbem' ) );  
+						em_options_radio_binary ( __( 'Enable global tables mode?' ), 'dbem_ms_global_table', __( 'Setting this to yes will make all events save in the main site event tables (EM must also be activated). This allows you to share events across different blogs, such as showing events in your network whilst allowing users to display and manage their events within their own blog. Bear in mind that activating this will mean old events created on the sub-blogs will not be accessible anymore, and if you switch back they will be but new events created during global events mode will only remain on the main site.','dbem' ) );
+						em_options_radio_binary ( __( 'Display global events on main blog?' ), 'dbem_ms_global_events', __( 'Displays events from all sites on the network by default. You can still restrict events by blog using shortcodes and template tags coupled with the <code>blog</code> attribute. Requires global tables to be turned on.','dbem' ) );
+						em_options_radio_binary ( __( 'Link sub-site events directly to sub-site?' ), 'dbem_ms_global_events_links', __( 'When displaying global events on the main site you have the option of users viewing the event details on the main site or being directed to the sub-site.','dbem' ) );
 						echo $save_button;
 						?>
 					</table>
@@ -222,6 +229,7 @@ function em_admin_options_page() {
 					em_options_radio_binary ( __( 'Disable title rewriting?', 'dbem' ), 'dbem_disable_title_rewrites', __( "Some wordpress themes don't follow best practices when generating navigation menus, and so the automatic title rewriting feature may cause problems, if your menus aren't working correctly on the event pages, try setting this to 'Yes', and provide an appropriate HTML title format below.",'dbem' ) );
 					em_options_input_text ( __( 'Event Manager titles', 'dbem' ), 'dbem_title_html', __( "This only setting only matters if you selected 'Yes' to above. You will notice the events page titles aren't being rewritten, and you have a new title underneath the default page name. This is where you control the HTML of this title. Make sure you keep the #_PAGETITLE placeholder here, as that's what is rewritten by events manager. To control what's rewritten in this title, see settings further down for page titles.", 'dbem' ) );
 					em_options_input_text ( __( 'Event List Limits', 'dbem' ), 'dbem_events_default_limit', __( "This will control how many events are shown on one list by default.", 'dbem' ) );
+					em_options_radio_binary ( __( 'Are current events past events?', 'dbem' ), 'dbem_events_current_are_past', __( "By default, events that are have an end date later than today will be included in searches, set this to yes to consider events that started 'yesterday' as past.", 'dbem' ) );
 					em_options_radio_binary ( __( 'Show events search?', 'dbem' ), 'dbem_events_page_search', __( "If set to yes, a search form will appear just above your list of events.", 'dbem' ) );
 					?>
 					<tr valign="top" id='dbem_events_default_orderby_row'>
@@ -270,7 +278,7 @@ function em_admin_options_page() {
 					<tr valign="top" id='dbem_events_display_time_limit'>
 				   		<th scope="row"><?php _e('Event list scope','dbem'); ?></th>
 							<td>
-								<select name="dbem_events_page_time_limit" >
+								<select name="dbem_events_page_scope" >
 									<?php foreach( em_get_scopes() as $key => $value) : ?>   
 									<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_page_scope')) ? "selected='selected'" : ''; ?>>
 										<?php echo $value; ?>
@@ -278,7 +286,7 @@ function em_admin_options_page() {
 									<?php endforeach; ?>
 								</select>
 								<br />
-								<em><?php _e('Only show events starting within a certain time limit on the events page. Default is no time limit is applied.','dbem'); ?></em>
+								<em><?php _e('Only show events starting within a certain time limit on the events page. Default is future events with no end time limit.','dbem'); ?></em>
 							</td>
 					</tr>
 					<?php
@@ -416,11 +424,13 @@ function em_admin_options_page() {
 				<table class='form-table'> 
 					<?php 
 					em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
+					em_options_select ( __( 'Currency', 'dbem' ), 'dbem_bookings_currency', em_get_currencies()->names, __( 'Choose your currency for displaying event pricing.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Single ticket mode?', 'dbem' ), 'dbem_bookings_tickets_single', __( 'In single ticket mode, users can only create one ticket per booking (and will not see options to add more tickets).', 'dbem' ) );
 					em_options_radio_binary ( __( 'Show unavailable tickets?', 'dbem' ), 'dbem_bookings_tickets_show_unavailable', __( 'You can choose whether or not to show unavailable tickets to visitors.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Reserved unconfirmed spaces?', 'dbem' ), 'dbem_bookings_approval_reserved', __( 'By default, event spaces become unavailable once there are enough CONFIRMED bookings. To reserve spaces even if unnapproved, choose yes.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Show multiple tickets if logged out?', 'dbem' ), 'dbem_bookings_tickets_show_loggedout', __( 'If logged out, a user will be asked to register in order to book. However, we can show available tickets if you have more than one ticket.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Allow overbooking when approving?', 'dbem' ), 'dbem_bookings_approval_overbooking', __( 'If you get a lot of pending bookings and you decide to allow more bookings than spaces allow, setting this to yes will allow you to override the event space limit when manually approving.', 'dbem' ) );
+					em_options_radio_binary ( __( 'Allow guest bookings?', 'dbem' ), 'dbem_bookings_anonymous', __( 'If enabled, guest visitors can supply an email address and a user account will automatically be created for them along with their booking. They will be also be able to log back in with that newly created account.', 'dbem' ) );
 					echo $save_button;     
 					?> 
 				</table>
@@ -476,9 +486,10 @@ function em_admin_options_page() {
 				</table>
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
-						
+			
+			<?php if ( !is_multisite() || (is_multisite() && is_super_admin()) ) : ?>
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Email Settings', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Email Settings', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
@@ -497,7 +508,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Images size', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Images size', 'dbem' ); ?> <?php echo $multisite_view; ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
@@ -509,9 +520,9 @@ function em_admin_options_page() {
 				</table> 
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
-
-		<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'User Capabilities', 'dbem' ); ?> (Beta)</span></h3>
+			
+			<div  class="postbox" >
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'User Capabilities', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
 			<div class="inside">
 	            <table class="form-table">
 	            	<tr><td colspan="2">
@@ -572,6 +583,7 @@ function em_admin_options_page() {
 				</table>
 			</div> <!-- . inside --> 
 			</div> <!-- .postbox -->    
+			<?php endif; ?>
 
 			<?php /*
 			<div  class="postbox " >

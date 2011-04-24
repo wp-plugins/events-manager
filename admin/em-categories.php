@@ -138,6 +138,9 @@ function em_categories_edit_layout($message = "") {
 						<input type='hidden' name='action' value='category_save' />
 						<input type='hidden' name='category_id' value='<?php echo $EM_Category->id ?>'/>
 						<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('category_save'); ?>" />
+						
+						<?php do_action('em_admin_category_form_header'); ?>
+						
 							<div id="category_description" class="postbox">
 								<h3><?php echo __('Category name', 'dbem') ?></h3>
 								<div class="inside">					
@@ -175,6 +178,7 @@ function em_categories_edit_layout($message = "") {
 								</div>
 							</div>
 						</div>
+						<?php do_action('em_admin_category_form_footer'); ?>
 						<p class='submit'><input type='submit' class='button-primary' name='submit' value='<?php echo __('Update category', 'dbem') ?>' /></p>
 					</form>
 				</div>

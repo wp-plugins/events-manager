@@ -30,7 +30,6 @@ class EM_Event extends EM_Object{
 		//'event_spaces' => array( 'name'=>'spaces', 'type'=>'%d' ),
 		'location_id' => array( 'name'=>'location_id', 'type'=>'%d' ),
 		'recurrence_id' => array( 'name'=>'recurrence_id', 'type'=>'%d' ),
-		'event_category_id' => array( 'name'=>'category_id', 'type'=>'%d' ),
 		'event_attributes' => array( 'name'=>'attributes', 'type'=>'%s' ),
 		'recurrence' => array( 'name'=>'recurrence', 'type'=>'%d' ),
 		'recurrence_interval' => array( 'name'=>'interval', 'type'=>'%d' ), //every x day(s)/week(s)/month(s)
@@ -38,7 +37,8 @@ class EM_Event extends EM_Object{
 		'recurrence_byday' => array( 'name'=>'byday', 'type'=>'%s' ), //if weekly or monthly, what days of the week?
 		'recurrence_byweekno' => array( 'name'=>'byweekno', 'type'=>'%d' ), //if monthly which week (-1 is last)
 		'event_status' => array( 'name'=>'status', 'type'=>'%d' ), //if monthly which week (-1 is last)
-		'event_date_modified' => array( 'name'=>'date_modified', 'type'=>'%s' )
+		'event_date_modified' => array( 'name'=>'date_modified', 'type'=>'%s' ),
+		'group_id' => array( 'name'=>'group_id', 'type'=>'%d' )
 	);
 	/* Field Names  - see above for matching DB field names and other field meta data */
 	var $id;
@@ -64,6 +64,8 @@ class EM_Event extends EM_Object{
 	var $status;
 	var $date_created;
 	var $date_modified;
+	var $blog_id;
+	var $group_id; 
 	
 	var $image_url = '';
 	/**
@@ -143,7 +145,6 @@ class EM_Event extends EM_Object{
 				if($event['location_name']){
 					$this->location = new EM_Location( $event );
 				}
-				$this->category = new EM_Category( $event );
 			}elseif( !empty($event_data) ) {
 				if( is_numeric($event_data) && $event_data > 0 ){
 					$cond = "event_id = $event_data";
@@ -157,13 +158,11 @@ class EM_Event extends EM_Object{
 				$sql = "
 					SELECT * FROM $events_table
 					LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id 
-					LEFT JOIN $categories_table ON {$categories_table}.category_id={$events_table}.event_category_id 
 					WHERE $cond
 				"; //We get event and location data here to avoid extra queries
 				$event = $wpdb->get_row ( $sql, ARRAY_A );
 				//Sort Location
 				$this->location = new EM_Location ( $event );
-				$this->category = new EM_Category( $event );
 			}
 			//Sort out attributes
 			if( !empty($event['event_attributes']) ){
@@ -174,6 +173,7 @@ class EM_Event extends EM_Object{
 			}
 			$event['recurrence_byday'] = ( empty($event['recurrence_byday']) || $event['recurrence_byday'] == 7 ) ? 0:$event['recurrence_byday']; //Backward compatibility (since 3.0.3), using 0 makes more sense due to date() function
 			$this->to_object($event, true);
+			$this->blog_id = $event['blog_id'];
 			
 			//Start/End times should be available as timestamp
 			$this->start = strtotime($this->start_date." ".$this->start_time);
@@ -198,7 +198,6 @@ class EM_Event extends EM_Object{
 			}
 		}else{
 			$this->location = new EM_Location(); //blank location
-			$this->category = new EM_Category(); //blank category
 		}
 		$this->get_location();
 		//Do it here so things appear in the po file.
@@ -212,6 +211,9 @@ class EM_Event extends EM_Object{
 			$this->warnings['recurring'] = __( 'WARNING: This is a recurring event.', 'dbem' )."<br />". __( 'Modifications to this event will cause all recurrences of this event to be deleted and recreated and previous bookings will be deleted! You can edit individual recurrences and disassociate them with this recurring event.', 'dbem' );
 		} elseif ( $this->is_recurrence() ) {
 			$this->warnings['recurrence'] = __('WARNING: This is a recurrence in a set of recurring events.', 'dbem')."<br />". __('If you update this event data and save, it will become an independent event, and will not be deleted or modified automatically if you reschedule the original recurring event details.', 'dbem' );
+		}elseif( !empty($this->group_id) && function_exists('groups_get_group') ){
+			$group = groups_get_group(array('group_id'=>$this->group_id));
+			$this->warnings['group'] = sprintf(__('WARNING: This is a event belonging to the group "%s". Other group admins can also modify this event.', 'dbem'), $group->name);
 		}
 		$this->get_image_url();
 		add_action('em_event_save',array(&$this, 'image_upload'), 1, 1);
@@ -264,10 +266,10 @@ class EM_Event extends EM_Object{
 			$this->owner = current_user_can('edit_others_events') ? $_REQUEST['event_owner']:get_current_user_id();
 		}
 		
-		//category
-		if( !empty($_POST['event_category_id']) && is_numeric($_POST['event_category_id']) ){
-			$this->category_id = $_POST['event_category_id'];
-		}	
+		//categories
+		if( !empty($_POST['event_categories']) && is_array($_POST['event_categories']) ){
+			$this->categories = new EM_Categories($_POST['event_categories']);
+		}
 		//Attributes
 		$event_attributes = array();
 		$post = $_POST;
@@ -367,6 +369,11 @@ class EM_Event extends EM_Object{
 					$this->errors[] = 	__( 'Something went wrong with creating tickets.', 'dbem' );
 					return apply_filters('em_event_save', false, $this);
 				}
+				//Save Categories
+				if( !$this->get_categories()->save() ){
+					$this->add_error( $this->get_categories()->get_errors() );
+					return apply_filters('em_event_save', false, $this);					
+				}
 				//Deal with recurrences
 				if ( $this->is_recurring() ) {
 					//Recurrence master event saved, now Save Events & check errors
@@ -403,6 +410,11 @@ class EM_Event extends EM_Object{
 				if( !$this->get_bookings()->get_tickets()->save() ){
 					$this->errors[] = 	__( 'Something went wrong with creating tickets.', 'dbem' );
 					return apply_filters('em_event_save', false, $this);
+				}
+				//Save Categories
+				if( !$this->get_categories()->save() ){
+					$this->add_error( $this->get_categories()->get_errors() );
+					return apply_filters('em_event_save', false, $this);					
 				}
 				//Deal with recurrences
 				if ( $this->is_recurring() ) {
@@ -560,22 +572,20 @@ class EM_Event extends EM_Object{
 	}
 	
 	/**
-	 * Returns an array with category id and name (in that order) of the EM_Event instance.
-	 * @return array
+	 * Returns an EM_Categories object of the EM_Event instance.
+	 * @return EM_Categories
 	 */
-	function get_category() {
-		global $EM_Category;
-		if( is_object($this->category) && get_class($this->category)=='EM_Category' && $this->category_id == $this->category->id ){
-			return $this->category;
-		}elseif( is_object($EM_Category) && $EM_Category->id == $this->category_id ){
-			$this->category = $EM_Category;
+	function get_categories() {
+		global $EM_Categories;
+		if( is_object($this->categories) && get_class($this->categories)=='EM_Categories' && ( empty($this->categories->event->id) || $this->categories->event->id == $this->id ) ){
+			$this->categories = $this->categories;
+		}elseif( is_object($EM_Categories) && $EM_Categories->get_event()->id == $this->id ){
+			$this->categories = $EM_Categories;
 		}else{
-			$this->category = new EM_Category($this->category_id);
+			$this->categories = new EM_Categories($this);
 		}
-		global $wpdb; 
-		$sql = "SELECT category_id, category_name FROM ".EM_CATEGORIES_TABLE." ON category_id=event_category_id WHERE event_id ='".$this->id."'";
-	 	$category = $wpdb->get_row($sql, ARRAY_A);
-		return apply_filters('em_event_get_category', $category, $this);
+		$this->categories->event = $this;
+		return apply_filters('em_event_get_categories', $this->categories, $this);
 	}
 	
 	/**
@@ -691,7 +701,7 @@ class EM_Event extends EM_Object{
 					}
 					str_replace($conditionals[0][$key], $replacement, $format);
 				}
-				$format = str_replace($conditionals[0][$key], apply_filters('em_event_output_condition', $replacement, $condition, $this), $format);
+				$format = str_replace($conditionals[0][$key], apply_filters('em_event_output_condition', $replacement, $condition, $conditionals[0][$key], $this), $format);
 			}
 		}
 	 	$event_string = $format;
@@ -739,8 +749,13 @@ class EM_Event extends EM_Object{
 				case '#_LINKEDNAME': //Depreciated
 				case '#_EVENTURL': //Just the URL
 				case '#_EVENTLINK': //HTML Link
-					$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
-					$event_link = EM_URI.$joiner."event_id=".$this->id;
+					//If this event is not of this blog, we need a new URL
+					$EM_URI = EM_URI;
+					if( is_multisite() && get_site_option('dbem_ms_global_events') && get_site_option('dbem_ms_global_events_links') && !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
+						$EM_URI = get_blog_permalink($this->blog_id, get_blog_option($this->blog_id, 'dbem_events_page'));
+					}
+					$joiner = (stristr($EM_URI, "?")) ? "&amp;" : "?";
+					$event_link = $EM_URI.$joiner."event_id=".$this->id;
 					if($result == '#_LINKEDNAME' || $result == '#_EVENTLINK'){
 						$replace = "<a href='{$event_link}' title='{$this->name}'>{$this->name}</a>";
 					}else{
@@ -750,8 +765,11 @@ class EM_Event extends EM_Object{
 				case '#_EDITEVENTURL':
 				case '#_EDITEVENTLINK':
 					if( $this->can_manage('edit_events','edit_others_events') ){
-						//TODO user should have permission to edit the event
-						$replace = get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}";
+						if( is_multisite() && get_site_option('dbem_ms_global_events') && get_site_option('dbem_ms_global_events_links') && !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
+							$replace = get_site_url($this->blog_id, "/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}");
+						}else{
+							$replace = get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}";
+						}
 						if( $result == '#_EDITEVENTLINK'){
 							$replace = "<a href='{$replace}'>".__('Edit').' '.__('Event', 'dbem')."</a>";
 						}
@@ -761,20 +779,14 @@ class EM_Event extends EM_Object{
 				case '#_ADDBOOKINGFORM': //Depreciated
 				case '#_REMOVEBOOKINGFORM': //Depreciated
 				case '#_BOOKINGFORM':
-					$template = em_locate_template('placeholders/bookingform.php');
-					if( $template ){
-						ob_start();
-						include($template);
-						$replace = ob_get_clean();
-					}
+					ob_start();
+					$template = em_locate_template('placeholders/bookingform.php', true, array('EM_Event'=>$this));
+					$replace = ob_get_clean();
 					break;
 				case '#_BOOKINGBUTTON':
-					$template = em_locate_template('placeholders/bookingbutton.php');
-					if( $template ){
-						ob_start();
-						include($template);
-						$replace = ob_get_clean();
-					}
+					ob_start();
+					$template = em_locate_template('placeholders/bookingbutton.php', true, array('EM_Event'=>$this));
+					$replace = ob_get_clean();
 					break;
 				case '#_AVAILABLESEATS': //Depreciated
 				case '#_AVAILABLESPACES':
@@ -852,12 +864,14 @@ class EM_Event extends EM_Object{
 					}
 					break;
 				case '#_ATTENDEES':
-					$template = em_locate_template('placeholders/attendees.php');
-					if( $template ){
-						ob_start();
-						include($template);
-						$replace = ob_get_clean();
-					}
+					ob_start();
+					$template = em_locate_template('placeholders/attendees.php', true, array('EM_Event'=>$this));
+					$replace = ob_get_clean();
+					break;
+				case '#_CATEGORIES':
+					ob_start();
+					$template = em_locate_template('placeholders/categories.php', true, array('EM_Event'=>$this));
+					$replace = ob_get_clean();
 					break;
 				default:
 					$replace = $result;
@@ -917,7 +931,12 @@ class EM_Event extends EM_Object{
 		
 		//Now do dependent objects
 		$event_string = $this->location->output($event_string, $target);
-		$event_string = $this->category->output($event_string, $target);	
+		
+		//for backwards compat and easy use, take over the individual category placeholders with the frirst cat in th elist.
+		$EM_Category = $this->get_categories()->categories[0];
+		if( empty($EM_Category) ) $EM_Category = new EM_Category();
+		$event_string = $EM_Category->output($event_string, $target);
+		
 		return apply_filters('em_event_output', $event_string, $this, $target);
 	}
 	

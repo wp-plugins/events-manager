@@ -139,7 +139,6 @@ function em_admin_events_page() {
 							$style = "";
 							$today = date ( "Y-m-d" );
 							$location_summary = "<b>" . $event->location->name . "</b><br/>" . $event->location->address . " - " . $event->location->town;
-							$category = new EM_Category($event->category_id);
 							
 							if ($event->start_date < $today && $event->end_date < $today){
 								$class .= " past";
@@ -182,9 +181,6 @@ function em_admin_events_page() {
 								</td>
 								<td>
 									<?php echo $location_summary; ?>
-									<?php if( is_object($category) && !empty($category->name) ) : ?>
-									<br/><span class="category"><strong><?php _e( 'Category', 'dbem' ); ?>: </strong><?php echo $category->name ?></span>
-									<?php endif; ?>
 								</td>
 						
 								<td>

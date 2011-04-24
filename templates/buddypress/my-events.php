@@ -91,7 +91,6 @@
 							$style = "";
 							$today = date ( "Y-m-d" );
 							$location_summary = "<b>" . $event->location->name . "</b><br/>" . $event->location->address . " - " . $event->location->town;
-							$category = new EM_Category($event->category_id);
 							
 							if ($event->start_date < $today && $event->end_date < $today){
 								$class .= " past";

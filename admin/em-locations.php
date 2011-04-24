@@ -23,13 +23,13 @@ function em_admin_locations($message='', $fill_fields = false) {
 	$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
 	if( !empty($_REQUEST['owner']) && current_user_can('read_others_locations') ){
-		$locations = EM_Locations::get();
+		$locations = EM_Locations::get(array('blog'=>false));
 		$locations_mine_count = EM_Locations::count( array('owner'=>get_current_user_id()) );
 		$locations_all_count = count($locations);
 	}else{
-		$locations = EM_Locations::get( array('owner'=>get_current_user_id()) );
+		$locations = EM_Locations::get( array('owner'=>get_current_user_id(), 'blog'=>false) );
 		$locations_mine_count = count($locations);
-		$locations_all_count = current_user_can('read_others_locations') ? EM_Locations::count():0;
+		$locations_all_count = current_user_can('read_others_locations') ? EM_Locations::count(array('blog'=>false)):0;
 	}
 	$locations_count = count($locations);
 	?>
@@ -268,6 +268,7 @@ function em_admin_location($message = "") {
 									<label for='location_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='location-image' name='location_image' id='location_image' type='file' size='40' />
 							</div>
 						</div>
+						<?php do_action('em_admin_location_form_footer'); ?>
 						
 					</div>
 				</div>

@@ -3,7 +3,7 @@
  * Performs actions on init. This works for both ajax and normal requests, the return results depends if an em_ajax flag is passed via POST or GET.
  */
 function em_init_actions() {
-	global $wpdb; 
+	global $wpdb,$EM_Notices; 
 	//NOTE - No EM objects are globalized at this point, as we're hitting early init mode.
 	//TODO Clean this up.... use a uniformed way of calling EM Ajax actions
 	if( !empty($_REQUEST['em_ajax']) || !empty($_REQUEST['em_ajax_action']) ){
@@ -239,7 +239,7 @@ function em_init_actions() {
 	
 	//Booking Actions
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,7) == 'booking' && (is_user_logged_in() || ($_REQUEST['action'] == 'booking_add' && get_option('dbem_bookings_anonymous'))) ){
-		global $EM_Event, $EM_Booking, $EM_Notices, $EM_Person;
+		global $EM_Event, $EM_Booking, $EM_Person;
 		//Load the event object, with saved event if requested
 		$EM_Event = ( !empty($_REQUEST['event_id']) ) ? new EM_Event($_REQUEST['event_id']): new EM_Event();
 		//Load the booking object, with saved booking if requested
@@ -250,16 +250,19 @@ function em_init_actions() {
 		if ( $_REQUEST['action'] == 'booking_add') {
 			//ADD/EDIT Booking
 			em_verify_nonce('booking_add');
-			//Does this user need to be registered first?
-			$registration = true;
-			if( $_REQUEST['register_user'] && get_option('dbem_bookings_anonymous') ){
+			do_action('em_booking_add', $EM_Event, $EM_Booking);
+			if( $EM_Booking->get_post() ){
+				//Does this user need to be registered first?
+				$registration = true;
+				//TODO do some ticket validation before registering the user
+				if( $_REQUEST['register_user'] && get_option('dbem_bookings_anonymous') ){
 					//find random username - less options for user, less things go wrong
 					$username_root = explode('@', $_REQUEST['user_email']);
 					$username_rand = $username_root[0].rand(1,1000);
 					while( username_exists($username_root[0].rand(1,1000)) ){
 						$username_rand = $username_root[0].rand(1,1000);
 					}
-					$id = em_register_new_user($username_rand, $_REQUEST['user_email']);
+					$id = em_register_new_user($username_rand, $_REQUEST['user_email'], $_REQUEST['user_name'],$_REQUEST['user_phone']);
 					if( is_numeric($id) ){
 						$EM_Person = new EM_Person($id);
 						$EM_Booking->person_id = $id;
@@ -268,7 +271,6 @@ function em_init_actions() {
 						$registration = false;
 						if( is_object($id) && get_class($id) == 'WP_Error'){
 							/* @var $id WP_Error */
-							$result = false;
 							if( $id->get_error_code() == 'email_exists' ){
 								$EM_Notices->add_error( __('This email already exists in our system, please log in to register to proceed with your booking.','dbem') );
 							}else{
@@ -278,16 +280,20 @@ function em_init_actions() {
 							$EM_Notices->add_error( __('There was a problem creating a user account, please contact a website administrator.','dbem') );
 						}
 					}
-			}
-			$booking = $EM_Event->get_bookings()->add_from_post();
-			if( is_object($booking) && $registration ){
-				$EM_Booking = $booking;
-				$result = true;
-				$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
+				}
+				if( $EM_Event->get_bookings()->add($EM_Booking) && $registration ){
+					$result = true;
+					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
+				}else{
+					ob_start(); echo "<pre>"; print_r($id); echo "</pre>";
+					$EM_Booking->feedback_message = ob_get_clean();
+					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
+				}
 			}else{
-				$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
+				$result = false;
+				$EM_Notices->add_error( $EM_Booking->get_errors() );
 			}
-	  	}if ( $_REQUEST['action'] == 'booking_add_one' && is_object($EM_Event) && is_user_logged_in() ) {
+	  	}elseif ( $_REQUEST['action'] == 'booking_add_one' && is_object($EM_Event) && is_user_logged_in() ) {
 			//ADD/EDIT Booking
 			em_verify_nonce('booking_add_one');
 			$EM_Booking = new EM_Booking(array('person_id'=>get_current_user_id(), 'event_id'=>$EM_Event->id)); //new booking
@@ -364,6 +370,13 @@ function em_init_actions() {
 			echo EM_Object::json_encode($return);
 			die();
 		}
+	}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'booking_add' && !is_user_logged_in() && !get_option('dbem_bookings_anonymous')){
+		$EM_Notices->add_error(__('You must log in before you make a booking.','dbem'));
+		if( !$result && defined('DOING_AJAX') ){
+			$return = array('result'=>false, 'message'=>$EM_Booking->feedback_message, 'errors'=>$EM_Notices->get_errors());
+			echo EM_Object::json_encode($return);
+		}
+		die();
 	}
 	
 	//AJAX call for searches

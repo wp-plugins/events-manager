@@ -29,7 +29,10 @@ X-WR-CALNAME:{$blog_desc}";
 				$location		= $EM_Event->output('#_LOCATION');
 				$location		= ent2ncr(convert_chars(strip_tags($location)));
 				
-				$categories = $EM_Event->category->name;
+				$categories = array();
+				foreach($EM_Event->get_categories() as $EM_Category){
+					$categories[] = $EM_Category->name;
+				}
 	
 //FIXME we need a modified date for events
 echo "
@@ -39,7 +42,7 @@ DTSTART:{$dateStart}
 DTEND:{$dateEnd}
 DTSTAMP:{$dateModified}
 ORGANIZER:MAILTO:{$EM_Event->contact->user_email}
-CATEGORIES:{$categories}
+CATEGORIES:".implode(',',$categories)."
 LOCATION:{$location}
 SUMMARY:{$description}
 END:VEVENT";

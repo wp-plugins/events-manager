@@ -38,7 +38,7 @@ function em_create_events_table() {
 	get_currentuserinfo();
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php'); 
 	
-	$table_name = $wpdb->prefix.EM_EVENTS_TABLE; 
+	$table_name = EM_EVENTS_TABLE; 
 	$sql = "CREATE TABLE ".$table_name." (
 		event_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		event_slug VARCHAR( 200 ) NOT NULL,
@@ -64,13 +64,15 @@ function em_create_events_table() {
 		recurrence_byday tinytext NULL DEFAULT NULL,
 		recurrence_byweekno int(4) NULL DEFAULT NULL,	
 		blog_id bigint(20) unsigned NULL DEFAULT NULL,
+		group_id bigint(20) unsigned NULL DEFAULT NULL,
 		PRIMARY KEY  (event_id),
 		INDEX (event_status),
 		INDEX (blog_id),
-		INDEX (event_slug)
+		INDEX (event_slug),
+		INDEX (group_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
-	$old_table_name = $wpdb->prefix.EM_OLD_EVENTS_TABLE; 
+	$old_table_name = EM_OLD_EVENTS_TABLE; 
 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);		
@@ -93,7 +95,7 @@ function em_create_events_table() {
 
 function em_create_events_meta_table(){
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.EM_META_TABLE;
+	$table_name = EM_META_TABLE;
 
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
@@ -109,14 +111,14 @@ function em_create_events_meta_table(){
 		
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
-	$old_table_name = $wpdb->prefix.EM_OLD_LOCATIONS_TABLE;     
+	$old_table_name = EM_OLD_LOCATIONS_TABLE;     
 	dbDelta($sql);	
 }
 
 function em_create_locations_table() {
 	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.EM_LOCATIONS_TABLE;
+	$table_name = EM_LOCATIONS_TABLE;
 
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
@@ -142,7 +144,7 @@ function em_create_locations_table() {
 		
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
-	$old_table_name = $wpdb->prefix.EM_OLD_LOCATIONS_TABLE; //for 3.0 
+	$old_table_name = EM_OLD_LOCATIONS_TABLE; //for 3.0 
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);		
 		//Add default values
@@ -160,7 +162,7 @@ function em_create_locations_table() {
 function em_create_bookings_table() {
 	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.EM_BOOKINGS_TABLE;
+	$table_name = EM_BOOKINGS_TABLE;
 		
 	$sql = "CREATE TABLE ".$table_name." (
 		booking_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -185,7 +187,7 @@ function em_create_bookings_table() {
 function em_create_categories_table() {
 	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.EM_CATEGORIES_TABLE;
+	$table_name = EM_CATEGORIES_TABLE;
 
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
@@ -199,7 +201,7 @@ function em_create_categories_table() {
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
-	$old_table_name = $wpdb->prefix.EM_OLD_CATEGORIES_TABLE;     
+	$old_table_name = EM_OLD_CATEGORIES_TABLE;     
 	
 	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
 		dbDelta($sql);
@@ -214,7 +216,7 @@ function em_create_categories_table() {
 function em_create_tickets_table() {
 	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.EM_TICKETS_TABLE;
+	$table_name = EM_TICKETS_TABLE;
 
 	// Creating the events table
 	$sql = "CREATE TABLE {$table_name} (
@@ -239,7 +241,7 @@ function em_create_tickets_table() {
 //Add the categories table
 function em_create_tickets_bookings_table() {	
 	global  $wpdb, $user_level;
-	$table_name = $wpdb->prefix.EM_TICKETS_BOOKINGS_TABLE;
+	$table_name = EM_TICKETS_BOOKINGS_TABLE;
 
 	// Creating the events table
 	$sql = "CREATE TABLE {$table_name} (
@@ -440,13 +442,13 @@ function em_migrate_v3(){
 	$errors = array();
 	
 	//approve all old events
-	$wpdb->query('UPDATE '.$wpdb->prefix.EM_EVENTS_TABLE.' SET event_status=1');
+	$wpdb->query('UPDATE '.EM_EVENTS_TABLE.' SET event_status=1');
 	
 	//give all old events a default ticket
-	$wpdb->query("INSERT INTO ".$wpdb->prefix.EM_TICKETS_TABLE." (`event_id`, `ticket_name`, `ticket_spaces`) SELECT event_id, 'Standard' as ticket_name, event_spaces FROM ".$wpdb->prefix.EM_EVENTS_TABLE." WHERE recurrence!=1 and event_rsvp=1");
+	$wpdb->query("INSERT INTO ".EM_TICKETS_TABLE." (`event_id`, `ticket_name`, `ticket_spaces`) SELECT event_id, 'Standard' as ticket_name, event_spaces FROM ".EM_EVENTS_TABLE." WHERE recurrence!=1 and event_rsvp=1");
 	
 	//create permalinks for each location, category, event
-	$array = array('event' => $wpdb->prefix.EM_CATEGORIES_TABLE);
+	$array = array('event' => EM_CATEGORIES_TABLE);
 	foreach( $array as $prefix => $table ){
 		$used_slugs = array();
 		$results = $wpdb->get_results("SELECT {$prefix}_id AS id, {$prefix}_slug AS slug, {$prefix}_name AS name FROM $table", ARRAY_A);
@@ -464,6 +466,18 @@ function em_migrate_v3(){
 	update_option('em_notice_migrate_v3',1);
 	//change some old values so it doesn't surprise admins with new features
 	update_option('dbem_events_page_search', 0);
+	
+	$time_limit = get_option('dbem_events_page_time_limit');
+	if ( is_numeric($time_limit) && $time_limit > 0 ){
+		$scopes = em_get_scopes();
+		if( array_key_exists($time_limit.'-months',$scopes) ){
+			update_option('dbem_events_page_scope',$time_limit.'-months');
+		}elseif( array_key_exists('month',$scopes) ){
+			update_option('dbem_events_page_scope','month');
+		}else{
+			update_option('dbem_events_page_scope','future');
+		}
+	}
 }
 
 /**
@@ -471,11 +485,11 @@ function em_migrate_v3(){
  */
 function em_migrate_bookings(){
 	global $wpdb;
-	if( $wpdb->get_var("SHOW TABLES LIKE '".$wpdb->prefix.EM_PEOPLE_TABLE."'") == $wpdb->prefix.EM_PEOPLE_TABLE && current_user_can('activate_plugins') && wp_verify_nonce($_REQUEST['_wpnonce'], 'bookings_migrate') ){
+	if( $wpdb->get_var("SHOW TABLES LIKE '".EM_PEOPLE_TABLE."'") == EM_PEOPLE_TABLE && current_user_can('activate_plugins') && wp_verify_nonce($_REQUEST['_wpnonce'], 'bookings_migrate') ){
 		$new_people = array();
 		$ticket_bookings = array();
-		$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix.EM_TICKETS_TABLE); //empty tickets bookings table first
-		foreach( $wpdb->get_results("SELECT ticket_id, b.booking_id, booking_spaces, b.person_id, person_name, person_email, person_phone FROM ".$wpdb->prefix.EM_BOOKINGS_TABLE." b LEFT JOIN ".$wpdb->prefix.EM_PEOPLE_TABLE." p ON p.person_id=b.person_id LEFT JOIN ".$wpdb->prefix.EM_EVENTS_TABLE." e ON e.event_id=b.event_id LEFT JOIN ".$wpdb->prefix.EM_TICKETS_TABLE." tt ON tt.event_id=e.event_id", ARRAY_A) as $booking_array ){
+		$wpdb->query('TRUNCATE TABLE '.EM_TICKETS_TABLE); //empty tickets bookings table first
+		foreach( $wpdb->get_results("SELECT ticket_id, b.booking_id, booking_spaces, b.person_id, person_name, person_email, person_phone FROM ".EM_BOOKINGS_TABLE." b LEFT JOIN ".EM_PEOPLE_TABLE." p ON p.person_id=b.person_id LEFT JOIN ".EM_EVENTS_TABLE." e ON e.event_id=b.event_id LEFT JOIN ".EM_TICKETS_TABLE." tt ON tt.event_id=e.event_id", ARRAY_A) as $booking_array ){
 			//first we create the user if we hadn't before
 			$user = get_user_by_email($booking_array['person_email']);
 			if( is_object($user) ){
@@ -501,7 +515,7 @@ function em_migrate_bookings(){
 		} 
 		//modify the booking to have data about the new people, we do this here to avoid duplicate names
 		foreach($new_people as $old_id => $new_id){
-			$wpdb->query('UPDATE '.$wpdb->prefix.EM_BOOKINGS_TABLE." SET person_id='".$new_id."', booking_status=1 WHERE person_id='".$old_id."'");	
+			$wpdb->query('UPDATE '.EM_BOOKINGS_TABLE." SET person_id='".$new_id."', booking_status=1 WHERE person_id='".$old_id."'");	
 		}
 		//Finally insert all the tickets bookings
 		$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix. 'em_tickets_bookings'); //empty tickets bookings table first

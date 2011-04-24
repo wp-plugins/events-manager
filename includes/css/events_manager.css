@@ -1,5 +1,5 @@
 /* Booking Form */
-	#em-booking { margin:15px 0px 10px 0px; }
+	#em-booking { margin:15px 0px 10px 0px; position:relative; }
 	#em-booking-form  { position:relative; clear:left; }
 	.em-booking-form-details  {
 		padding:10px;
@@ -49,7 +49,13 @@
 		div.em-booking-login label {
 			display:inline-block;
 			width:90px; 
+		}
+		div.em-booking-login p{
+			margin:10px 0px !important;
+			padding:0px !important;
 		}	
+		div.em-booking-login input { margin:0px; }
+}
 /* Add Event Form */
 	#event-form h4 { margin:25px 0px 15px 0px; }
 	#event-form .event-details { margin-top:10px; }		

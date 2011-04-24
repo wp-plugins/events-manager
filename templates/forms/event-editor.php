@@ -1,5 +1,5 @@
 <?php
-	global $EM_Event, $current_user, $localised_date_formats, $EM_Notices;
+	global $EM_Event, $current_user, $localised_date_formats, $EM_Notices, $bp;
 	
 	//check that user can access this page
 	if( is_object($EM_Event) && !$EM_Event->can_manage('edit_events','edit_others_events') ){
@@ -21,9 +21,9 @@
 		//Give a default location & category
 		$default_cat = get_option('dbem_default_category');
 		$default_loc = get_option('dbem_default_location');
-		if( is_numeric($default_cat) && $default_cat > 0 ){
-			$EM_Event->category_id = $default_cat;
-			$EM_Event->category = new EM_Category($default_cat);
+		if( is_numeric($default_cat) && $default_cat > 0 && !empty($EM_Event->get_categories->categories) ){
+			$EM_Category = new EM_Category($default_cat);
+			$EM_Event->get_categories()->categories[] = $EM_Category;
 		}
 		if( is_numeric($default_loc) && $default_loc > 0 && ( empty($EM_Event->location->id) && empty($EM_Event->location->name) && empty($EM_Event->location->address) && empty($EM_Event->location->town) ) ){
 			$EM_Event->location_id = $default_loc;
@@ -53,11 +53,42 @@
 				<?php endforeach; ?>
 			<?php endif; ?>        
 			
+			<?php do_action('em_front_event_form_header'); ?>
+			
 			<h4><?php _e ( 'Event Name', 'dbem' ); ?></h4>
 			<div class="inside">
 				<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
 				<br />
 				<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
+				<?php if( !empty($EM_Event->group_id) ): ?>
+					<?php 
+					$user_groups = array();
+					if( !empty($bp->groups) ){
+						$group_data = groups_get_user_groups(get_current_user_id());
+						foreach( $group_data['groups'] as $group_id ){
+							if( groups_is_user_admin(get_current_user_id(), $group_id) ){
+								$user_groups[] = groups_get_group( array('group_id'=>$group_id)); 
+							}
+						}
+					} 
+					?>
+					<?php if( count($user_groups) > 0 ): ?>
+					<p>
+						<select name="group_id">
+							<option value="<?php echo $BP_Group->id; ?>">Not a Group Event</option>
+						<?php
+						foreach($user_groups as $BP_Group){
+							?>
+							<option value="<?php echo $BP_Group->id; ?>"><?php echo $BP_Group->name; ?></option>
+							<?php
+						} 
+						?>
+						</select>
+						<br />
+						<?php _e ( 'Select a group you admin to attach this event to it. Note that all other admins of that group can modify the booking, and you will not be able to unattach the event without deleting it.', 'dbem' )?>
+					</p>
+					<?php endif; ?>
+				<?php endif; ?>
 			</div>
 						
 			<h4 id='event-date-title'><?php _e ( 'When', 'dbem' ); ?></h4>
@@ -206,8 +237,7 @@
 					<?php if( count($categories) > 0 ): ?>
 						<!-- START Categories -->
 						<label for="event_category_id"><?php _e ( 'Category:', 'dbem' ); ?></label>
-						<select name="event_category_id">
-							<option value="" <?php echo ($EM_Event->category_id == '') ? "selected='selected'":'' ?>><?php _e('no category','dbem') ?></option>	
+						<select name="event_category_id" multiple size="10">
 							<?php
 							foreach ( $categories as $EM_Category ){
 								$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
@@ -218,7 +248,7 @@
 								<?php 
 							}
 							?>
-						</select>
+						</select>						
 						<!-- END Categories -->
 					<?php endif; ?>
 				<?php endif; ?>	
@@ -359,7 +389,8 @@
 					</div>
 				</div>
 				<!-- END Bookings -->
-			<?php endif; ?>				
+			<?php endif; ?>
+			<?php do_action('em_front_event_form_footer'); ?>
 		</div>
 		<p class="submit">
 			<input type="submit" name="events_update" value="<?php _e ( 'Submit Event', 'dbem' ); ?> &raquo;" />

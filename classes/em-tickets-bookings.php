@@ -205,7 +205,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	 * @param boolean $force_refresh
 	 * @return float
 	 */
-	function get_price( $force_refresh=false ){
+	function get_price( $force_refresh=false, $format = false ){
 		$price = 0;
 		if($force_refresh || $this->price == 0){
 			foreach($this->tickets_bookings as $EM_Ticket_Booking){
@@ -213,7 +213,10 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 			}
 			$this->price = $price;
 		}
-		return apply_filters('em_booking_get_prices',$this->price,$this);
+		if($format){
+			return apply_filters('em_tickets_bookings_get_prices', em_get_currency_symbol().number_format($this->price,2),$this);
+		}
+		return apply_filters('em_tickets_bookings_get_prices',$this->price,$this);
 	}
 	
 	/**

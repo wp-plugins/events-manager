@@ -36,7 +36,6 @@ class EM_Events extends EM_Object implements Iterator {
 		global $wpdb;
 		$events_table = EM_EVENTS_TABLE;
 		$locations_table = EM_LOCATIONS_TABLE;
-		$categories_table = EM_CATEGORIES_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
@@ -44,7 +43,6 @@ class EM_Events extends EM_Object implements Iterator {
 			$sql = "
 				SELECT * FROM $events_table
 				LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
-				LEFT JOIN $categories_table ON {$categories_table}.category_id={$events_table}.event_category_id
 				WHERE event_id=".implode(" OR event_id=", $args)."
 			";
 			$results = $wpdb->get_results(apply_filters('em_events_get_sql',$sql),ARRAY_A);
@@ -77,11 +75,11 @@ class EM_Events extends EM_Object implements Iterator {
 		$sql = "
 			SELECT $selectors FROM $events_table
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
-			LEFT JOIN $categories_table ON {$categories_table}.category_id={$events_table}.event_category_id
 			$where
 			$orderby_sql
 			$limit $offset
 		";
+			
 		//If we're only counting results, return the number of results
 		if( $count ){
 			return $wpdb->get_var($sql);		
@@ -165,6 +163,7 @@ class EM_Events extends EM_Object implements Iterator {
 		global $EM_Event;
 		$EM_Event_old = $EM_Event; //When looping, we can replace EM_Event global with the current event in the loop
 		//Can be either an array for the get search or an array of EM_Event objects
+		$func_args = func_get_args();
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Event' ){
 			$func_args = func_get_args();
 			$events = $func_args[0];
@@ -270,7 +269,7 @@ class EM_Events extends EM_Object implements Iterator {
 			$conditions['status'] = "(`event_status`={$args['status']})";
 		}
 		if( is_multisite() && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
-			if( $args['blog'] == 1 ){
+			if( is_main_site($args['blog']) ){
 				$conditions['blog'] = "(`blog_id`={$args['blog']} OR blog_id IS NULL)";
 			}else{
 				$conditions['blog'] = "(`blog_id`={$args['blog']})";
@@ -302,11 +301,15 @@ class EM_Events extends EM_Object implements Iterator {
 			'format_footer' => '', //events can have custom html below the list
 			'state' => '',
 			'country' => '',
-			'blog' => get_current_blog_id()
+			'blog' => get_current_blog_id(),
 		);
-		if( is_multisite() && get_current_blog_id() != 1 ){
-			//not the main blog, force single blog search
-			$array['blog'] = get_current_blog_id();
+		if(is_multisite()){
+			if( !is_main_site() ){
+				//not the main blog, force single blog search
+				$array['blog'] = get_current_blog_id();
+			}elseif( empty($array['blog']) && get_site_option('dbem_ms_global_events') ) {
+				$array['blog'] = false;
+			}
 		}
 		if( is_admin() ){
 			//figure out default owning permissions

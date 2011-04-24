@@ -1,5 +1,6 @@
+<?php do_action('em_template_my_bookings_header'); ?>
 <?php
-	global $wpdb, $current_user, $EM_Notices;
+	global $wpdb, $current_user, $EM_Notices, $EM_Person;
 	if( is_user_logged_in() ):
 		$EM_Person = new EM_Person( wp_get_current_user() );
 		$bookings = $EM_Person->get_bookings();
@@ -82,7 +83,6 @@
 				<?php else: ?>
 					<?php _e('You do not have any bookings.', 'dbem'); ?>
 				<?php endif; ?>
-				
 			<?php if( !empty($bookings_nav) && $bookings >= $limit ) : ?>
 			<div class='tablenav'>
 				<?php echo $bookings_nav; ?>
@@ -90,4 +90,7 @@
 			</div>
 			<?php endif; ?>
 		</div>	
+<?php else: ?>
+	<p><?php echo sprintf(__('Please <a href="%s">Log In</a> to view your bookings.','dbem'),site_url('wp-login.php', 'login'))?></p>
 <?php endif; ?>
+<?php do_action('em_template_my_bookings_footer', $bookings); ?>

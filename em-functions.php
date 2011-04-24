@@ -67,23 +67,23 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 	$url_params_dirty = array();
 	if(count($url_parts) > 1){
 		$url_params_dirty = $url_parts[1];
-	}
-	//get the get params as an array
-	if( !is_array($url_params_dirty) ){
-		if( strstr($url_params_dirty, '&amp;') !== false ){
-			$url_params_dirty = explode('&amp;', $url_params_dirty);
-		}else{
-			$url_params_dirty = explode('&', $url_params_dirty);		
+		//get the get params as an array
+		if( !is_array($url_params_dirty) ){
+			if( strstr($url_params_dirty, '&amp;') !== false ){
+				$url_params_dirty = explode('&amp;', $url_params_dirty);
+			}else{
+				$url_params_dirty = explode('&', $url_params_dirty);		
+			}
 		}
+		//split further into associative array
+		$url_params = array();
+		foreach($url_params_dirty as $url_param){
+			$url_param = explode('=', $url_param);
+			$url_params[$url_param[0]] = $url_param[1];
+		}
+		//Merge it together
+		$params = array_merge($url_params, $params);
 	}
-	//split further into associative array
-	$url_params = array();
-	foreach($url_params_dirty as $url_param){
-		$url_param = explode('=', $url_param);
-		$url_params[$url_param[0]] = $url_param[1];
-	}
-	//Merge it together
-	$params = array_merge($url_params, $params);
 	//Now build the array back up.
 	$count = 0;
 	foreach($params as $key=>$value){
@@ -130,12 +130,28 @@ function em_get_scopes(){
 		'today' => __('Today\'s events','dbem'),
 		'tomorrow' => __('Tomorrow\'s events','dbem'),
 		'month' => __('Events this month','dbem'),
+		'next-month' => __('Events next month','dbem'),
 		'2-months'  => __('Events within 2 months','dbem'),
 		'3-months'  => __('Events within 3 months','dbem'),
 		'6-months'  => __('Events within 6 months','dbem'),
 		'12-months' => __('Events within 12 months','dbem')
 	);
 	return apply_filters('em_get_scopes',$scopes);
+}
+
+function em_get_currencies(){
+	$currencies = new stdClass();
+	$currencies->names = array('EUR' => 'EUR - Euros','USD' => 'USD - U.S. Dollars','GBP' => 'GBP - British Pounds','CAD' => 'CAD - Canadian Dollars','AUD' => 'AUD - Australian Dollars','BRL' => 'BRL - Brazilian Reais','CZK' => 'CZK - Czech Koruny','DKK' => 'DKK - Danish Kroner','HKD' => 'HKD - Hong Kong Dollars','HUF' => 'HUF - Hungarian Forints','ILS' => 'ILS - Israeli New Shekels','JPY' => 'JPY - Japanese Yen','MYR' => 'MYR - Malaysian Ringgit','MXN' => 'MXN - Mexican Pesos','TWD' => 'TWD - New Taiwan Dollars','NZD' => 'NZD - New Zealand Dollars','NOK' => 'NOK - Norwegian Kroner','PHP' => 'PHP - Philippine Pesos','PLN' => 'PLN - Polish Zlotys','SGD' => 'SGD - Singapore Dollars','SEK' => 'SEK - Swedish Kronor','CHF' => 'CHF - Swiss Francs','THB' => 'THB - Thai Baht','TRY' => 'TRY - Turkish Liras');
+	$currencies->symbols = array( 'EUR' => '&euro;','USD' => '$','GBP' => '&pound;','CAD' => '$','AUD' => '$','BRL' => 'R$','DKK' => 'kr','HKD' => '$','HUF' => 'Ft','JPY' => '&#165;','MYR' => 'RM','MXN' => '$','TWD' => '$','NZD' => '$','NOK' => 'kr','PHP' => 'Php','SGD' => '$','SEK' => 'kr','CHF' => 'CHF','TRY' => 'TL');
+	return apply_filters('em_get_currencies',$currencies);
+}
+
+function em_get_currency_symbol(){
+	return em_get_currencies()->symbols[get_option('dbem_bookings_currency','USD')];
+}
+
+function em_get_currency_name(){
+	return em_get_currencies()->symbols[get_option('dbem_bookings_currency','USD')];
 }
 
 /**
@@ -200,9 +216,13 @@ function em_get_attributes(){
  * @param string $user_email User's email address to send password and add
  * @return int|WP_Error Either user's ID or error on failure.
  */
-function em_register_new_user( $user_login, $user_email ) {
+function em_register_new_user( $user_login, $user_email, $user_name = '', $user_phone = '' ) {
+	
 	$errors = new WP_Error();
-
+	$name = explode(' ', $user_name);
+	$first_name = array_shift($name);
+	$last_name = implode(' ',$name);
+	
 	$sanitized_user_login = sanitize_user( $user_login );
 	$user_email = apply_filters( 'user_registration_email', $user_email );
 
@@ -234,7 +254,12 @@ function em_register_new_user( $user_login, $user_email ) {
 		return $errors;
 
 	$user_pass = wp_generate_password( 12, false);
-	$user_id = wp_create_user( $sanitized_user_login, $user_pass, $user_email );
+	
+	$user_id = wp_insert_user(array('user_login'=>$user_login, 'user_email'=>$user_email,'user_pass'=>$user_pass, 'first_name'=>$first_name, 'last_name'=>$last_name));
+	if(is_numeric($user_id)){
+		update_user_meta($user_id, 'dbem_phone', $user_phone);
+	}
+	
 	if ( ! $user_id ) {
 		$errors->add( 'registerfail', sprintf( __( '<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !' ), get_option( 'admin_email' ) ) );
 		return $errors;

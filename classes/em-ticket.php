@@ -181,8 +181,11 @@ class EM_Ticket extends EM_Object{
 	 * Gets the total price for this ticket.
 	 * @return float
 	 */
-	function get_price(){
-		return apply_filters('em_ticket_get_prices',$this->price,$this);
+	function get_price($format = false){
+		if($format){
+			return apply_filters('em_ticket_get_price', em_get_currency_symbol().number_format($this->price,2),$this);
+		}
+		return apply_filters('em_ticket_get_price',$this->price,$this);
 	}
 	
 	/**
@@ -323,6 +326,7 @@ class EM_Ticket extends EM_Object{
 				break;
 			case 'end':
 				$value = date_i18n( get_option('date_format'), $this->end_timestamp );
+				break;
 				break;
 			default:
 				$value = $this->$property;
