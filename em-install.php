@@ -463,6 +463,9 @@ function em_migrate_v3(){
 			$used_slugs[] = $slug;
 		}
 	}
+	//categories
+	$wpdb->query('INSERT INTO '.EM_META_TABLE." (`meta_key`,`meta_value`,`object_id`) SELECT 'event-category' as meta_key, event_category_id, event_id FROM ".EM_EVENTS_TABLE ." WHERE recurrence!=1 AND event_category_id IS NOT NULL");
+	
 	update_option('em_notice_migrate_v3',1);
 	//change some old values so it doesn't surprise admins with new features
 	update_option('dbem_events_page_search', 0);
