@@ -116,7 +116,7 @@ function em_get_countries($add_blank = false){
 			array_unshift($em_countries_array, $add_blank);
 		}
 	}
-	return $em_countries_array;
+	return apply_filters('em_get_countries', $em_countries_array);
 }
 
 /**
