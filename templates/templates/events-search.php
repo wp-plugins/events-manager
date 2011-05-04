@@ -7,7 +7,7 @@
 ?>
 <div class="em-events-search">
 	<?php $s = __('Search Events', 'dbem'); ?>
-	<form action="" method="post" class="em-events-search-form">
+	<form action="<?php echo EM_URI; ?>" method="post" class="em-events-search-form">
 		<?php do_action('em_template_events_search_form_header'); ?>
 		<!-- START General Search -->
 		<?php /* This general search will find matches within event_name, event_notes, and the location_name, address, town, state and country. */ ?>

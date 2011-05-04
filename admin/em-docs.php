@@ -41,8 +41,8 @@ function em_docs_init(){
 					'offset' => array( 'desc'=>'For example, if you have ten results, if you set this to 5, only the last 5 results will be returned. Useful for pagination.', 'default'=>0), 
 					'recurrence' => array( 'desc'=>'If set to 1, will show only events that are recurring (i.e. events that are repeated over different dates).', 'default'=>0),
 					'recurring' => array( 'desc'=>'If set to 1, will only show recurring event templates. Only useful if you know what you\'re doing, use recurrence if you want events that are recurrences.', 'default'=>0),
-					'month' => array( 'desc'=>'If set to a month (1 to 12) only events that start or end during this month/year will be retured. Must be used in conjunction with year', 'default'=>''),
-					'year' => array( 'desc'=>'If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Must be used in conjunction with year', 'default'=>''),
+					'month' => array( 'desc'=>'If set to a month (1 to 12) only events that start or end during this month/year will be retured. Must be used in conjunction with year and does not work as intended if used with scope.', 'default'=>''),
+					'year' => array( 'desc'=>'If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Does not work as intended if used with scope.', 'default'=>''),
 					'array' => array( 'desc'=>'If you supply this as an argument, the returned data will be in an array, no objects (only useful wen using PHP, not shortcodes)', 'default'=>0),
 					'pagination' => array('desc'=>'When using a function or shortcode that outputs items (e.g. [events_list] for events, [locations_list] for locations), if the number of items supercede the limit of items to show, setting this to 1 will show page links under the list.', 'default'=>0)
 				)
@@ -135,6 +135,9 @@ function em_docs_init(){
 							'#_LOCATIONNAME' => array( 'desc' => 'Displays the location name.' ),
 							'#_LOCATIONADDRESS' => array( 'desc' => 'Displays the address.' ),
 							'#_LOCATIONTOWN' => array( 'desc' => 'Displays the town.' ),
+							'#_LOCATIONSTATE' => array( 'desc' => 'Displays the state/county.' ),
+							'#_LOCATIONPOSTCODE' => array( 'desc' => 'Displays the postcode.' ),
+							'#_LOCATIONCOUNTRY' => array( 'desc' => 'Displays the country.' ),
 							'#_LOCATIONMAP' => array( 'desc' => 'Displays a google map showing where the event is located (Will not show if maps are disabled in the settings page)' ),
 							'#_LOCATIONNOTES' => array( 'desc' => 'Shows the location description.' ),
 							'#_LOCATIONEXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your location description, only the content before this tag will show (currently, no read more link is added).' ),

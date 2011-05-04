@@ -145,15 +145,7 @@ class EM_Category extends EM_Object {
 	
 	function output_single($target = 'html'){
 		$format = get_option ( 'dbem_category_page_format' );
-		$located = em_locate_template('templates/category-single.php');
-		if( $located ){
-			ob_start();
-			include($located);
-			return apply_filters('em_category_output_single', ob_get_clean(), $this, $target);	
-		}else{
-			$format = get_option ( 'dbem_category_page_format' );
-			return apply_filters('em_category_output_single', $this->output($format, $target), $this, $target);			
-		}	
+		return apply_filters('em_category_output_single', $this->output($format, $target), $this, $target);	
 	}
 	
 	function output($format, $target="html") {

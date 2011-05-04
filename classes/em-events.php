@@ -187,44 +187,37 @@ class EM_Events extends EM_Object implements Iterator {
 		$format = ( empty($args['format']) ) ? get_option( 'dbem_event_list_item_format' ) : $args['format'] ;
 		
 		$output = "";
-		$events_count = count($events);
 		$events = apply_filters('em_events_output_events', $events);
-		$template = em_locate_template('templates/events-list.php');
-		if( $template && empty($args['format']) ){
-			ob_start();
-			include($template);
-			$output = ob_get_clean();
-		}else{
-			if ( $events_count > 0 ) {
-				$event_count = 0;
-				$events_shown = 0;
-				foreach ( $events as $EM_Event ) {
-					if( ($events_shown < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ){
-						$output .= $EM_Event->output($format);
-						$events_shown++;
-					}
-					$event_count++;
+		$events_count = count($events);
+		if ( $events_count > 0 ) {
+			$event_count = 0;
+			$events_shown = 0;
+			foreach ( $events as $EM_Event ) {
+				if( ($events_shown < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ){
+					$output .= $EM_Event->output($format);
+					$events_shown++;
 				}
-				//Add headers and footers to output
-				if( $format == get_option ( 'dbem_event_list_item_format' ) ){
-					$format_header = ( get_option( 'dbem_event_list_item_format_header') == '' ) ? '':get_option ( 'dbem_event_list_item_format_header' );
-					$format_footer = ( get_option ( 'dbem_event_list_item_format_footer' ) == '' ) ? '':get_option ( 'dbem_event_list_item_format_footer' );
-				}else{
-					$format_header = ( !empty($args['format_header']) ) ? $args['format_header']:'';
-					$format_footer = ( !empty($args['format_footer']) ) ? $args['format_footer']:'';
-				}
-				$output = $format_header .  $output . $format_footer;
-				//Pagination (if needed/requested)
-				if( !empty($args['pagination']) && !empty($limit) && $events_count > $limit ){
-					//Show the pagination links (unless there's less than $limit events)
-					$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
-					$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
-					$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $events_count, $limit, $page), $page_link_template, $events_count, $limit, $page);
-				}
-			} else {
-				$output = get_option ( 'dbem_no_events_message' );
-			}			
-		}
+				$event_count++;
+			}
+			//Add headers and footers to output
+			if( $format == get_option ( 'dbem_event_list_item_format' ) ){
+				$format_header = ( get_option( 'dbem_event_list_item_format_header') == '' ) ? '':get_option ( 'dbem_event_list_item_format_header' );
+				$format_footer = ( get_option ( 'dbem_event_list_item_format_footer' ) == '' ) ? '':get_option ( 'dbem_event_list_item_format_footer' );
+			}else{
+				$format_header = ( !empty($args['format_header']) ) ? $args['format_header']:'';
+				$format_footer = ( !empty($args['format_footer']) ) ? $args['format_footer']:'';
+			}
+			$output = $format_header .  $output . $format_footer;
+			//Pagination (if needed/requested)
+			if( !empty($args['pagination']) && !empty($limit) && $events_count > $limit ){
+				//Show the pagination links (unless there's less than $limit events)
+				$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
+				$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
+				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $events_count, $limit, $page), $page_link_template, $events_count, $limit, $page);
+			}
+		} else {
+			$output = get_option ( 'dbem_no_events_message' );
+		}	
 		
 		//TODO check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Event = $EM_Event_old;
@@ -248,9 +241,14 @@ class EM_Events extends EM_Object implements Iterator {
 	
 	function get_post_search($args = array()){
 		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state'), $args);
-		foreach($_POST as $post_key => $post_value){
-			if( in_array($post_key, $accepted_searches) ){
-				$args[$post_key] = $post_value;
+		foreach($_REQUEST as $post_key => $post_value){
+			if( in_array($post_key, $accepted_searches) && !empty($post_value) ){
+				if(is_array($post_value)){
+					$post_value = implode(',',$post_value);
+				}
+				if($post_value != ',' ){
+					$args[$post_key] = $post_value;
+				}
 			}
 		}
 		return $args;

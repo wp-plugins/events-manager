@@ -76,7 +76,7 @@ function em_bookings_confirmed_table(){
 				<div class="clear"></div>
 				<?php if( $bookings_count > 0 ): ?>
 				<div class='table-wrap'>
-				<table id='dbem-bookings-table' class='widefat post fixed'>
+				<table id='dbem-bookings-table' class='widefat post '>
 					<thead>
 						<tr>
 							<th class='manage-column column-cb check-column' scope='col'>

@@ -29,17 +29,27 @@ function em_hello_to_new_user() {
  */
 function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
 	if($limit > 0){
+		$url_parts = explode('?', $link);
+		$base_link = $url_parts[0];
+    	//Get querystring for first page without page
+    	$base_querystring = preg_replace('/(&(amp;)?|\?)(page|pno)=%(25)?PAGE%(25)?/','',$url_parts[1]);
 		$maxPages = ceil($total/$limit); //Total number of pages
 		$startPage = ($page <= $pagesToShow) ? 1 : $pagesToShow * (floor($page/$pagesToShow)) ; //Which page to start the pagination links from (in case we're on say page 12 and $pagesToShow is 10 pages)
 		$placeholder = urlencode('%PAGE%');
 		$link = str_replace('%PAGE%', urlencode('%PAGE%'), $link); //To avoid url encoded/non encoded placeholders
 	    //Add the back and first buttons
 		    $string = ($page>1 && $startPage != 1) ? '<a class="prev page-numbers" href="'.str_replace($placeholder,1,$link).'">&lt;&lt;</a> ' : '';
-		    $string .= ($page>1) ? ' <a class="prev page-numbers" href="'.str_replace($placeholder,$page-1,$link).'">&lt;</a> ' : '';
+		    if($page == 2){
+		    	$string .= ' <a class="prev page-numbers" href="'.$base_link.'?'.$base_querystring.'">&lt;</a> ';
+		    }elseif($page > 2){
+		    	$string .= ' <a class="prev page-numbers" href="'.str_replace($placeholder,$page-1,$link).'">&lt;</a> ';
+		    }
 		//Loop each page and create a link or just a bold number if its the current page
 		    for ($i = $startPage ; $i < $startPage+$pagesToShow && $i <= $maxPages ; $i++){
 	            if($i == $page){
 	                $string .= ' <strong><span class="page-numbers current">'.$i.'</span></strong>';
+	            }elseif($i=='1'){
+	                $string .= ' <a class="page-numbers" href="'.$base_link.'?'.$base_querystring.'">'.$i.'</a> ';                
 	            }else{
 	                $string .= ' <a class="page-numbers" href="'.str_replace($placeholder,$i,$link).'">'.$i.'</a> ';                
 	            }
@@ -183,6 +193,7 @@ function em_get_wp_users() {
 function em_get_attributes(){
 	//We also get a list of attribute names and create a ddm list (since placeholders are fixed)
 	$formats = 
+		get_option ( 'dbem_placeholders_custom' ).
 		get_option ( 'dbem_event_list_item_format' ).
 		get_option ( 'dbem_event_page_title_format' ).
 		get_option ( 'dbem_full_calendar_event_format' ).
@@ -193,19 +204,23 @@ function em_get_attributes(){
 		get_option ( 'dbem_rss_description_format' ).
 		get_option ( 'dbem_rss_title_format' ).
 		get_option ( 'dbem_single_event_format' ).
-		get_option ( 'dbem_single_location_format' ).
-		get_option ( 'dbem_placeholders_custom' );
+		get_option ( 'dbem_single_location_format' );
 	//We now have one long string of formats, get all the attribute placeholders
-	preg_match_all('/#_ATT\{.+?\}(\{.+?\})?/', $formats, $placeholders);
+	preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $formats, $matches);
 	//Now grab all the unique attributes we can use in our event.
 	$attributes = array();
-	foreach($placeholders[0] as $result) {
-		$attribute = substr( substr($result, 0, strpos($result, '}')), 6 );
-		if( !in_array($attribute, $attributes) ){			
-			$attributes[] = $attribute ;
+	foreach($matches[1] as $key => $attribute) {
+		if( !in_array($attribute, $attributes['names']) ){			
+			$attributes['names'][] = $attribute ;
+			//check if there's ddm values
+			$attribute_values = array();
+			if(strstr($matches[3][$key], '|') !== false){
+				$attribute_values = explode('|',$matches[3][$key]);
+			}
+			$attributes['values'][$attribute] = apply_filters('em_get_attributes_'.$attribute,$attribute_values, $attribute, $matches);
 		}
 	}
-	return $attributes;
+	return apply_filters('em_get_attributes', $attributes, $matches);
 }
 
 /**
@@ -443,5 +458,14 @@ function em_ascii_encode($e){
 	$output = '';
     for ($i = 0; $i < strlen($e); $i++) { $output .= '&#'.ord($e[$i]).';'; }  
     return $output;  
+}
+
+
+if( !function_exists('get_current_blog_id') ){
+	/**
+	 * Substitutes the original function in 3.1 onwards, for backwards compatability (only created if not previously defined)
+	 * @return int
+	 */
+	function get_current_blog_id(){ return 1; } //for < 3.1 
 }
 ?>

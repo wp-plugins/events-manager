@@ -27,6 +27,25 @@ function em_admin_warnings() {
 			</div>
 			<?php
 		}	
+		
+		//Image upload folders
+		if( is_super_admin() && EM_IMAGE_DS == '/' ){
+			$errs = array();
+			if( !file_exists(EM_IMAGE_UPLOAD_DIR) && @mkdir(EM_IMAGE_UPLOAD_DIR, 0777)){
+				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/events/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777) ){ $errs[] = 'events'; }
+				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/locations/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777) ){ $errs[] = 'locations'; }
+				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/categories/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777) ){ $errs[] = 'categories'; }
+			}elseif( !file_exists(EM_IMAGE_UPLOAD_DIR) ){
+				$errs = array('events','categories','locations');
+			}
+			if( count($errs) > 0 ){
+			  	?>
+				<div class="updated">
+					<p><?php echo sprintf(__('The upload directory '.EM_IMAGE_UPLOAD_DIR.' is must be present with these writeable folders: %s. Please create these folders with the same write permissions you use for your normal wordpress image upload folders.','dbem'),implode(', ',$errs)); ?></p>
+				</div>
+				<?php
+			}
+		}
 	
 		//If events page couldn't be created
 		if( !empty($_GET['em_dismiss_admin_notice']) ){

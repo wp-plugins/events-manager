@@ -643,11 +643,17 @@ class EM_Object {
 	function get_image_type(){
 		switch( get_class($this) ){
 			case 'EM_Event':
-				return 'event';
+				$dir = (EM_IMAGE_DS == '/') ? 'events/':'';
+				return $dir.'event';
+				break;
 			case 'EM_Location':
-				return 'location';
+				$dir = (EM_IMAGE_DS == '/') ? 'locations/':'';
+				return $dir.'location';
+				break;
 			case 'EM_Category':
-				return 'category';
+				$dir = (EM_IMAGE_DS == '/') ? 'categories/':'';
+				return $dir.'category';
+				break;
 		} 	
 	}
 	
@@ -656,10 +662,9 @@ class EM_Object {
 		if( $type ){
 			if($this->image_url == ''){
 			  	foreach($this->mime_types as $mime_type) { 
-					$file_path = "/".EM_IMAGE_UPLOAD_DIR."/{$type}-{$this->id}.$mime_type";
-					if( file_exists( ABSPATH . $file_path) ) {
-						$result = get_bloginfo('wpurl').$file_path;
-			  			$this->image_url = $result;
+					$file_name = "{$type}-{$this->id}.$mime_type";
+					if( file_exists( EM_IMAGE_UPLOAD_DIR . $file_name) ) {
+			  			$this->image_url = EM_IMAGE_UPLOAD_URI.$file_name;
 					}
 				}
 			}
@@ -673,7 +678,7 @@ class EM_Object {
 			if( $this->image_url == '' ){
 				$result = true;
 			}else{
-				$file_name= ABSPATH.EM_IMAGE_UPLOAD_DIR."/{$type}-".$this->id;
+				$file_name= EM_IMAGE_UPLOAD_DIR."{$type}-".$this->id;
 				$result = false;
 				foreach($this->mime_types as $mime_type) { 
 					if (file_exists($file_name.".".$mime_type)){
@@ -690,19 +695,16 @@ class EM_Object {
 		if( $type ){
 			do_action('em_object_image_upload_pre', $type, $this);
 			$result = true;
-			if ( !empty($_FILES[$type.'_image']['size']) && file_exists($_FILES[$type.'_image']['tmp_name'])) {	
-			  	if( !file_exists(ABSPATH.EM_IMAGE_UPLOAD_DIR) ){
-					mkdir(ABSPATH.EM_IMAGE_UPLOAD_DIR, 0777);
-			  	}
+			if ( !empty($_FILES[$type.'_image']['size']) && file_exists($_FILES[$type.'_image']['tmp_name'])) {
 				$this->image_delete();   
 				list($width, $height, $mime_type, $attr) = getimagesize($_FILES[$type.'_image']['tmp_name']);
+				$image_path = "{$type}-".$this->id.".".$this->mime_types[$mime_type];	
 				if( $this->image_validate()){
-					$image_path = '/'.EM_IMAGE_UPLOAD_DIR."/{$type}-".$this->id.".".$this->mime_types[$mime_type];
-					if ( move_uploaded_file($_FILES[$type.'_image']['tmp_name'], ABSPATH.$image_path) ){
-						$this->image_url = get_bloginfo('wpurl').$image_path;
+					if ( move_uploaded_file($_FILES[$type.'_image']['tmp_name'], EM_IMAGE_UPLOAD_DIR.$image_path) ){
+						$this->image_url = EM_IMAGE_UPLOAD_URI.$image_path;
 					}else{
 						if($result){				
-							$this->feedback_message .= ' '. __('However, the ssimage could not be saved.','dbem');
+							$this->feedback_message .= ' '. __('However, the image could not be saved.','dbem');
 						}
 						$this->add_error(__('The image could not be saved','dbem'));
 					}					

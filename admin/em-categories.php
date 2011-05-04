@@ -168,7 +168,7 @@ function em_categories_edit_layout($message = "") {
 									<?php _e ( 'Category image', 'dbem' ); ?>
 								</h3>
 								<div class="inside" style="padding:10px;">
-										<?php if ($EM_Category->image_url != '') : ?> 
+										<?php if ($EM_Category->get_image_url() != '') : ?> 
 											<img src='<?php echo $EM_Category->image_url; ?>' alt='<?php echo $EM_Category->name ?>'/>
 										<?php else : ?> 
 											<em><?php _e('No image uploaded for this category yet', 'debm') ?></em>

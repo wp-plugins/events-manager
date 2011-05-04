@@ -153,40 +153,33 @@ class EM_Categories extends EM_Object implements Iterator{
 		$output = "";
 		$categories_count = count($categories);
 		$categories = apply_filters('em_categories_output_categories', $categories);
-		$template = em_locate_template('templates/categories-list.php');
-		if( $template && empty($args['format']) ){
-			ob_start();
-			include($template);
-			$output = ob_get_clean();
-		}else{		
-			if ( count($categories) > 0 ) {
-				$category_count = 0;
-				$categories_shown = 0;
-				foreach ( $categories as $EM_Category ) {
-					if( ($categories_shown < $limit || empty($limit)) && ($category_count >= $offset || $offset === 0) ){
-						$output .= $EM_Category->output($format);
-						$categories_shown++;
-					}
-					$category_count++;
+		if ( count($categories) > 0 ) {
+			$category_count = 0;
+			$categories_shown = 0;
+			foreach ( $categories as $EM_Category ) {
+				if( ($categories_shown < $limit || empty($limit)) && ($category_count >= $offset || $offset === 0) ){
+					$output .= $EM_Category->output($format);
+					$categories_shown++;
 				}
-				//Add headers and footers to output
-				if( $format == get_option ( 'dbem_categories_list_item_format' ) ){
-					$single_event_format_header = get_option ( 'dbem_categories_list_item_format_header' );
-					$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='em-categories-list'>";
-					$single_event_format_footer = get_option ( 'dbem_categories_list_item_format_footer' );
-					$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
-					$output =  $single_event_format_header .  $output . $single_event_format_footer;
-				}
-				//Pagination (if needed/requested)
-				if( !empty($args['pagination']) && !empty($limit) && $categories_count >= $limit ){
-					//Show the pagination links (unless there's less than 10 events, or the custom limit)
-					$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
-					$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
-					$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $categories_count, $limit, $page), $page_link_template, $categories_count, $limit, $page);
-				}
-			} else {
-				$output = get_option ( 'dbem_no_categories_message' );
+				$category_count++;
 			}
+			//Add headers and footers to output
+			if( $format == get_option ( 'dbem_categories_list_item_format' ) ){
+				$single_event_format_header = get_option ( 'dbem_categories_list_item_format_header' );
+				$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='em-categories-list'>";
+				$single_event_format_footer = get_option ( 'dbem_categories_list_item_format_footer' );
+				$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
+				$output =  $single_event_format_header .  $output . $single_event_format_footer;
+			}
+			//Pagination (if needed/requested)
+			if( !empty($args['pagination']) && !empty($limit) && $categories_count >= $limit ){
+				//Show the pagination links (unless there's less than 10 events, or the custom limit)
+				$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
+				$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
+				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $categories_count, $limit, $page), $page_link_template, $categories_count, $limit, $page);
+			}
+		} else {
+			$output = get_option ( 'dbem_no_categories_message' );
 		}
 		//FIXME check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Category_old= $EM_Category;

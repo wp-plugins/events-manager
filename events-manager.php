@@ -66,7 +66,6 @@ include_once('classes/em-events.php');
 include_once('classes/em-location.php');
 include_once('classes/em-locations.php');
 include_once("classes/em-mailer.php") ;
-include_once('classes/em-map.php');
 include_once('classes/em-notices.php');
 include_once('classes/em-people.php');
 include_once('classes/em-person.php');
@@ -105,10 +104,15 @@ add_action( 'bp_init', 'bp_em_init' );
 // Setting constants
 define('EM_VERSION', 4.0019); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
-if( file_exists('wp-content/uploads/locations-pics' ) ){
-	define("EM_IMAGE_UPLOAD_DIR", "wp-content/uploads/locations-pics");
+$upload_dir = wp_upload_dir();
+if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
+	define("EM_IMAGE_UPLOAD_DIR", $upload_dir['basedir']."/locations-pics/");
+	define("EM_IMAGE_UPLOAD_URI", $upload_dir['baseurl']."/locations-pics/");
+	define("EM_IMAGE_DS",'-');
 }else{
-	define("EM_IMAGE_UPLOAD_DIR", "wp-content/uploads/events-manager");
+	define("EM_IMAGE_UPLOAD_DIR", $upload_dir['basedir']."/events-manager/");
+	define("EM_IMAGE_UPLOAD_URI", $upload_dir['baseurl']."/events-manager/");
+	define("EM_IMAGE_DS",'/');
 }
 
 //Table names

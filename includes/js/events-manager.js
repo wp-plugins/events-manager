@@ -1,17 +1,19 @@
 jQuery(document).ready( function($){
 
 	/* Calendar AJAX */
+	$('.em-calendar-wrapper a').unbind("click");
+	$('.em-calendar-wrapper a').die("click");
 	$('a.em-calnav, a.em-calnav').live('click', function(e){
 		e.preventDefault();
 		$(this).closest('.em-calendar-wrapper').prepend('<div class="loading" id="em-loading"></div>');
 		var url = em_ajaxify($(this).attr('href'));
-		$(this).closest('.em-calendar-wrapper').load(url);
+		$(this).closest('.em-calendar-wrapper').load(url, function(){$(this).trigger('em_calendar_load');});
 	} ); 
 	
 	/* Load any maps */	
 	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 ){
 		var script = document.createElement("script");
-		script.setAttribute("src", "http://maps.google.com/maps/api/js?sensor=false&callback=em_maps");
+		script.setAttribute("src", "http://maps.google.com/maps/api/js?v=3.2&sensor=false&callback=em_maps");
 		script.setAttribute("type", "text/javascript");
 		document.documentElement.firstChild.appendChild(script);
 	}
@@ -457,7 +459,7 @@ function em_maps() {
 		infowindow.open(maps[map_id],marker);
 		//JS Hook for handling map after instantiation
 		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
-		jQuery(document).trigger('em_maps_location_hook', [maps[map_id], infowindow]);
+		jQuery(document).trigger('em_maps_location_hook', [maps[map_id], infowindow, marker]);
 	});
 	jQuery('.em-locations-map').each( function(index){
 		var el = jQuery(this);
@@ -507,9 +509,7 @@ function em_maps() {
 		});
 	});
 }
- 
-// The five markers show a secret message when clicked
-// but that message is not within the marker's instance data 
+  
 function em_map_infobox(marker, message, map) {
   var infowindow = new google.maps.InfoWindow({ content: message });
   google.maps.event.addListener(marker, 'click', function() {

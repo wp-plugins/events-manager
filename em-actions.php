@@ -383,9 +383,9 @@ function em_init_actions() {
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,6) == 'search' ){
 		if( $_REQUEST['action'] == 'search_states' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_states') ){
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_country=%s", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_country=%s", $_REQUEST['country']));
 			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE, $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE, $_REQUEST['country']));
 			}
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
@@ -406,9 +406,9 @@ function em_init_actions() {
 		}
 		if( $_REQUEST['action'] == 'search_regions' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_regions') ){
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
 			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != ''", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != ''", $_REQUEST['country']));
 			}
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
@@ -428,20 +428,9 @@ function em_init_actions() {
 			}
 		}elseif( $_REQUEST['action'] == 'search_events' && wp_verify_nonce($_POST['_wpnonce'], 'search_events') && get_option('dbem_events_page_search') ){
 			$args = EM_Events::get_post_search();
-			$events = EM_Events::get( $args );
-			$template = em_locate_template('templates/events-list.php'); //if successful, this template overrides the settings and defaults, including search
-			if( $template ){
-				ob_start();
-				include($template);
-				$content = ob_get_clean();					
-			}else{
-				if( count($events) > 0 ){
-					$content = EM_Events::output( $events );
-				}else{
-					$content = get_option ( 'dbem_no_events_message' );
-				}
-			}
-			echo apply_filters('em_ajax_search_events', $content, $args);	
+			ob_start();
+			em_locate_template('templates/events-list.php', true, array('args'=>$args)); //if successful, this template overrides the settings and defaults, including search
+			echo apply_filters('em_ajax_search_events', ob_get_clean(), $args);	
 			exit();			
 		}
 	}

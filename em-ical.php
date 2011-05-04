@@ -7,9 +7,10 @@
 		if ( $cal_file_request || $regenerate ) {
 			ob_start();
 			em_locate_template('templates/ical.php', true);
-			$calendar = ob_get_clean(); //get the contents to output
-			
+			$calendar = str_replace("\n", "\r\n", ob_get_clean());//get the contents to output and clean crlf issues
+			$calendar = str_replace("\n\n","\n", $calendar);
 			//let's create a cache file
+			/*
 			if( get_option('dbem_regenerate_ical') || !file_exists(ABSPATH . "/events.ics") ){
 				$file = fopen( ABSPATH . "/events.ics", 'w');
 				if($file){
@@ -18,6 +19,7 @@
 					update_option('dbem_regenerate_ical',false);
 				}
 			}
+			*/
 			echo $calendar;		
 			die ();
 		}

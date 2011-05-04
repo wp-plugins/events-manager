@@ -474,7 +474,7 @@ function em_admin_event_page() {
 							<?php _e ( 'Event image', 'dbem' ); ?>
 						</h3>
 						<div class="inside" style="padding:10px;">
-								<?php if ($EM_Event->image_url != '') : ?> 
+								<?php if ($EM_Event->get_image_url() != '') : ?> 
 									<img src='<?php echo $EM_Event->image_url; ?>' alt='<?php echo $EM_Event->name ?>'/>
 								<?php else : ?> 
 									<?php _e('No image uploaded for this event yet', 'debm') ?>
@@ -611,7 +611,7 @@ function em_admin_event_page() {
 								$has_depreciated = false;
 								?>
 								<div class="wrap">
-									<?php if( count( $attributes ) > 0 ) : ?>
+									<?php if( count( $attributes['names'] ) > 0 ) : ?>
 										<table class="form-table">
 											<thead>
 												<tr valign="top">
@@ -622,12 +622,25 @@ function em_admin_event_page() {
 											<tbody id="mtm_body">
 												<?php
 												$count = 1;
-												foreach( $attributes as $name){
+												foreach( $attributes['names'] as $name){
 													?>
 													<tr valign="top" id="em_attribute_<?php echo $count ?>">
 														<td scope="row"><?php echo $name ?></td>
 														<td>
+															<?php if( count($attributes['values'][$name]) > 0 ): ?>
+															<select name="em_attributes[<?php echo $name ?>]">
+																<option><?php echo __('No Value','dbem'); ?></option>
+																<?php foreach($attributes['values'][$name] as $attribute_val): ?>
+																	<?php if( array_key_exists($name, $EM_Event->attributes) && $EM_Event->attributes[$name]==$attribute_val ): ?>
+																		<option selected="selected"><?php echo $attribute_val; ?></option>
+																	<?php else: ?>
+																		<option><?php echo $attribute_val; ?></option>
+																	<?php endif; ?>
+																<?php endforeach; ?>
+															</select>
+															<?php else: ?>
 															<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Event->attributes) ? htmlspecialchars($EM_Event->attributes[$name], ENT_QUOTES):''; ?>" />
+															<?php endif; ?>
 														</td>
 													</tr>
 													<?php
@@ -641,7 +654,7 @@ function em_admin_event_page() {
 												?>
 											</tbody>
 										</table>
-										<?php if( count(array_diff(array_keys($EM_Event->attributes), $attributes)) > 0 ): ?>
+										<?php if( count(array_diff(array_keys($EM_Event->attributes), $attributes['names'])) > 0 ): ?>
 										<p><strong><?php _e('Depreciated Attributes')?></strong></p>
 										<p><em><?php _e("If you see any attributes under here, that means they're not used in Events Manager anymore. To add them, you need to add the custom attribute again to a formatting option in the settings page. To remove any of these depreciated attributes, give it a blank value and save.") ?></em></p>
 										<table class="form-table">
@@ -655,7 +668,7 @@ function em_admin_event_page() {
 												<?php
 												if( is_array($EM_Event->attributes) and count($EM_Event->attributes) > 0){
 													foreach( $EM_Event->attributes as $name => $value){
-														if( !in_array($name, $attributes) ){
+														if( !in_array($name, $attributes['names']) ){
 															?>
 															<tr valign="top" id="em_attribute_<?php echo $count ?>">
 																<td scope="row"><?php echo $name ?></td>

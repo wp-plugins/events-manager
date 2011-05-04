@@ -259,7 +259,7 @@ function em_admin_location($message = "") {
 								<?php _e ( 'Location image', 'dbem' ); ?>
 							</h3>
 							<div class="inside" style="padding:10px;">
-									<?php if ($EM_Location->image_url != '') : ?> 
+									<?php if ($EM_Location->get_image_url() != '') : ?> 
 										<img src='<?php echo $EM_Location->image_url; ?>' alt='<?php echo $EM_Location->name ?>'/>
 									<?php else : ?> 
 										<?php _e('No image uploaded for this location yet', 'debm') ?>

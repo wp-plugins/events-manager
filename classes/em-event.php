@@ -276,8 +276,11 @@ class EM_Event extends EM_Object{
 		$event_available_attributes = em_get_attributes();
 		if( !empty($_POST['em_attributes']) && is_array($_POST['em_attributes']) ){
 			foreach($_POST['em_attributes'] as $att_key => $att_value ){
-				if( (in_array($att_key, $event_available_attributes) || array_key_exists($att_key, $this->attributes) ) && trim($att_value) != '' ){
-					$event_attributes[$att_key] = $att_value;
+				if( (in_array($att_key, $event_available_attributes['names']) || array_key_exists($att_key, $this->attributes) ) && trim($att_value) != '' ){
+					$att_vals = count($event_available_attributes['values'][$att_key]);
+					if( $att_vals == 0 || ($att_vals > 0 && in_array($event_available_attributes['values'][$att_key])) ){
+						$event_attributes[$att_key] = $att_value;
+					}
 				}
 			}
 		}
@@ -660,15 +663,8 @@ class EM_Event extends EM_Object{
 	 * @return string
 	 */
 	function output_single($target='html'){
-		$located = em_locate_template('templates/event-single.php');
-		if( $located ){
-			ob_start();
-			include($located);
-			return apply_filters('em_event_output_single', ob_get_clean(), $this, $target);	
-		}else{
-			$format = get_option ( 'dbem_single_event_format' );
-			return apply_filters('em_event_output_single', $this->output($format, $target), $this, $target);			
-		}
+		$format = get_option ( 'dbem_single_event_format' );
+		return apply_filters('em_event_output_single', $this->output($format, $target), $this, $target);
 	}
 	
 	/**
@@ -914,7 +910,7 @@ class EM_Event extends EM_Object{
 			$event_string = str_replace($result,$replace,$event_string );
 		}
 		//This is for the custom attributes
-		preg_match_all('/#_ATT\{.+?\}(\{.+?\})?/', $format, $results);
+		preg_match_all('/#_ATT\{([^}]+)\}\{([^}]+)\}?/', $format, $results);
 		foreach($results[0] as $resultKey => $result) {
 			//Strip string of placeholder and just leave the reference
 			$attRef = substr( substr($result, 0, strpos($result, '}')), 6 );

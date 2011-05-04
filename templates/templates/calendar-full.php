@@ -4,7 +4,7 @@
  * 
  * There are two variables made available to you: 
  * 
- * 	$calendar_array - contains an array of information regarding the calendar and is used to generate the content
+ * 	$calendar - contains an array of information regarding the calendar and is used to generate the content
  *  $args - the arguments passed to EM_Calendar::output()
  * 
  * Note that leaving the class names for the previous/next links will keep the AJAX navigation working.

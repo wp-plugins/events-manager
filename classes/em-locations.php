@@ -139,41 +139,34 @@ class EM_Locations extends EM_Object implements Iterator {
 		
 		$output = "";
 		$locations_count = count($locations);
-		$locations = apply_filters('em_locations_output_locations', $locations);
-		$template = em_locate_template('templates/locations-list.php');
-		if( $template && empty($args['format']) ){
-			ob_start();
-			include($template);
-			$output = ob_get_clean();
-		}else{		
-			if ( count($locations) > 0 ) {
-				$location_count = 0;
-				$locations_shown = 0;
-				foreach ( $locations as $EM_Location ) {
-					if( ($locations_shown < $limit || empty($limit)) && ($location_count >= $offset || $offset === 0) ){
-						$output .= $EM_Location->output($format);
-						$locations_shown++;
-					}
-					$location_count++;
+		$locations = apply_filters('em_locations_output_locations', $locations);	
+		if ( count($locations) > 0 ) {
+			$location_count = 0;
+			$locations_shown = 0;
+			foreach ( $locations as $EM_Location ) {
+				if( ($locations_shown < $limit || empty($limit)) && ($location_count >= $offset || $offset === 0) ){
+					$output .= $EM_Location->output($format);
+					$locations_shown++;
 				}
-				//Add headers and footers to output
-				if( $format == get_option ( 'dbem_location_list_item_format' ) ){
-					$single_event_format_header = get_option ( 'dbem_location_list_item_format_header' );
-					$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='em-locations-list'>";
-					$single_event_format_footer = get_option ( 'dbem_location_list_item_format_footer' );
-					$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
-					$output =  $single_event_format_header .  $output . $single_event_format_footer;
-				}
-				//Pagination (if needed/requested)
-				if( !empty($args['pagination']) && !empty($limit) && $locations_count >= $limit ){
-					//Show the pagination links (unless there's less than 10 events
-					$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
-					$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
-					$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $locations_count, $limit, $page), $page_link_template, $locations_count, $limit, $page);
-				}
-			} else {
-				$output = get_option ( 'dbem_no_locations_message' );
+				$location_count++;
 			}
+			//Add headers and footers to output
+			if( $format == get_option ( 'dbem_location_list_item_format' ) ){
+				$single_event_format_header = get_option ( 'dbem_location_list_item_format_header' );
+				$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='em-locations-list'>";
+				$single_event_format_footer = get_option ( 'dbem_location_list_item_format_footer' );
+				$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
+				$output =  $single_event_format_header .  $output . $single_event_format_footer;
+			}
+			//Pagination (if needed/requested)
+			if( !empty($args['pagination']) && !empty($limit) && $locations_count >= $limit ){
+				//Show the pagination links (unless there's less than 10 events
+				$page_link_template = preg_replace('/(&|\?)page=\d+/i','',$_SERVER['REQUEST_URI']);
+				$page_link_template = em_add_get_params($page_link_template, array('page'=>'%PAGE%'));
+				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $locations_count, $limit, $page), $page_link_template, $locations_count, $limit, $page);
+			}
+		} else {
+			$output = get_option ( 'dbem_no_locations_message' );
 		}
 		//FIXME check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Location_old= $EM_Location;

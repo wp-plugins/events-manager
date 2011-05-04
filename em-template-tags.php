@@ -116,7 +116,7 @@ function dbem_are_events_available($scope = "future"){ em_are_events_available($
  */
 function em_is_events_page() {
 	global $post;
-	return ($post->ID == get_option('dbem_events_page'));
+	return ($post->ID == get_option('dbem_events_page') && get_option ( 'dbem_events_page' ) != 0);
 }
 function dbem_is_events_page(){ em_is_events_page(); } //Depreciated
 

@@ -233,13 +233,13 @@
 				</div>
 				<div>
 				<?php if(get_option('dbem_categories_enabled')) :?>
-					<?php $categories = EM_Categories::get(array('orderby'=>'category_name')); ?>
-					<?php if( count($categories) > 0 ): ?>
+					<?php $locations = EM_Categories::get(array('orderby'=>'category_name')); ?>
+					<?php if( count($locations) > 0 ): ?>
 						<!-- START Categories -->
 						<label for="event_category_id"><?php _e ( 'Category:', 'dbem' ); ?></label>
 						<select name="event_category_id" multiple size="10">
 							<?php
-							foreach ( $categories as $EM_Category ){
+							foreach ( $locations as $EM_Category ){
 								$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
 								?>
 								<option value="<?php echo $EM_Category->id ?>" <?php echo $selected ?>>
@@ -259,11 +259,24 @@
 					$attributes = em_get_attributes();
 					$has_depreciated = false;
 					?>
-					<?php if( count( $attributes ) > 0 ) : ?>
-						<?php foreach( $attributes as $name) : ?>
+					<?php if( count( $attributes['names'] ) > 0 ) : ?>
+						<?php foreach( $attributes['names'] as $name) : ?>
 						<div>
 							<label for="em_attributes[<?php echo $name ?>]"><?php echo $name ?></label>
-							<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo ( is_array($EM_Event->attributes) && array_key_exists($name, $EM_Event->attributes) ) ? htmlspecialchars($EM_Event->attributes[$name], ENT_QUOTES):''; ?>" />
+							<?php if( count($attributes['values'][$name]) > 0 ): ?>
+							<select name="em_attributes[<?php echo $name ?>]">
+								<option><?php echo __('No Value','dbem'); ?></option>
+								<?php foreach($attributes['values'][$name] as $attribute_val): ?>
+									<?php if( array_key_exists($name, $EM_Event->attributes) && $EM_Event->attributes[$name]==$attribute_val ): ?>
+										<option selected="selected"><?php echo $attribute_val; ?></option>
+									<?php else: ?>
+										<option><?php echo $attribute_val; ?></option>
+									<?php endif; ?>
+								<?php endforeach; ?>
+							</select>
+							<?php else: ?>
+							<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Event->attributes) ? htmlspecialchars($EM_Event->attributes[$name], ENT_QUOTES):''; ?>" />
+							<?php endif; ?>
 						</div>
 						<?php endforeach; ?>
 					<?php endif; ?>

@@ -232,15 +232,8 @@ class EM_Location extends EM_Object {
 	}
 	
 	function output_single($target = 'html'){
-		$located = em_locate_template('templates/location-single.php');
-		if( $located ){
-			ob_start();
-			include($located);
-			return apply_filters('em_location_output_single', ob_get_clean(), $this, $target);	
-		}else{
-			$format = get_option ( 'dbem_single_location_format' );
-			return apply_filters('em_location_output_single', $this->output($format, $target), $this, $target);			
-		}
+		$format = get_option ( 'dbem_single_location_format' );
+		return apply_filters('em_location_output_single', $this->output($format, $target), $this, $target);			
 	}
 	
 	function output($format, $target="html") { 
@@ -283,7 +276,9 @@ class EM_Location extends EM_Object {
 					break;
 				case '#_MAP': //Depreciated
 				case '#_LOCATIONMAP':
-			 		$replace = EM_Map::get_single( array('location' => $this) );
+					ob_start();
+					$template = em_locate_template('placeholders/locationmap.php', true, array('EM_Location'=>$this));
+					$replace = ob_get_clean();					
 					break;
 				case '#_DESCRIPTION':  //Depreciated
 				case '#_EXCERPT': //Depreciated

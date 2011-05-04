@@ -26,8 +26,14 @@ function em_install() {
 	  	update_option('dbem_version', EM_VERSION); 
 	  	
 		// wp-content must be chmodded 777. Maybe just wp-content.
-		if(!file_exists(ABSPATH.EM_IMAGE_UPLOAD_DIR))
-			mkdir(ABSPATH.EM_IMAGE_UPLOAD_DIR, 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
+		if(!file_exists(EM_IMAGE_UPLOAD_DIR)){
+			mkdir(EM_IMAGE_UPLOAD_DIR, 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
+			if(EM_IMAGE_DS == '/'){
+				mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
+				mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
+				mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777); //do we need to 777 it? it'll be owner apache anyway, like normal uploads
+			}
+		}
 		
 		em_create_events_page(); 
 	}
