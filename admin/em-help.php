@@ -16,6 +16,8 @@ function em_admin_help_page(){
 			<p><?php echo sprintf( __("In the <a href='%s'>settings page</a>, you'll find various textboxes where you can edit how event information looks, such as for event and location lists. Using the placeholders below, you can choose what information should be displayed.",'dbem'), 'admin.php?page=events-manager-options'); ?></p>
 			<h3><a name="event-placeholders"><?php _e('Event Related Placeholders','dbem'); ?></a></h3>
 			<?php echo em_docs_placeholders( array('type'=>'events') ); ?>
+			<h3><a name="category-placeholders"><?php _e('Category Related Placeholders','dbem'); ?></a></h3>
+			<?php echo em_docs_placeholders( array('type'=>'categories') ); ?>
 			<h3><a name="location-placeholders"><?php _e('Location Related Placeholders','dbem'); ?></a></h3>
 			<?php echo em_docs_placeholders( array('type'=>'locations') ); ?>
 			<h3><a name="booking-placeholders"><?php _e('Booking Related Placeholders','dbem'); ?></a></h3>

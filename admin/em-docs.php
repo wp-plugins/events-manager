@@ -41,8 +41,8 @@ function em_docs_init(){
 					'offset' => array( 'desc'=>'For example, if you have ten results, if you set this to 5, only the last 5 results will be returned. Useful for pagination.', 'default'=>0), 
 					'recurrence' => array( 'desc'=>'If set to 1, will show only events that are recurring (i.e. events that are repeated over different dates).', 'default'=>0),
 					'recurring' => array( 'desc'=>'If set to 1, will only show recurring event templates. Only useful if you know what you\'re doing, use recurrence if you want events that are recurrences.', 'default'=>0),
-					'month' => array( 'desc'=>'If set to a month (1 to 12) only events that start or end during this month/year will be retured. Must be used in conjunction with year', 'default'=>''),
-					'year' => array( 'desc'=>'If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Must be used in conjunction with year', 'default'=>''),
+					'month' => array( 'desc'=>'If set to a month (1 to 12) only events that start or end during this month/year will be retured. Must be used in conjunction with year and does not work as intended if used with scope.', 'default'=>''),
+					'year' => array( 'desc'=>'If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Does not work as intended if used with scope.', 'default'=>''),
 					'array' => array( 'desc'=>'If you supply this as an argument, the returned data will be in an array, no objects (only useful wen using PHP, not shortcodes)', 'default'=>0),
 					'pagination' => array('desc'=>'When using a function or shortcode that outputs items (e.g. [events_list] for events, [locations_list] for locations), if the number of items supercede the limit of items to show, setting this to 1 will show page links under the list.', 'default'=>0)
 				)
@@ -54,15 +54,10 @@ function em_docs_init(){
 							'#_NAME' => array( 'desc' => 'Displays the name of the event.' ),
 							'#_NOTES' => array( 'desc' => 'Shows the description of the event.' ),
 							'#_EXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show (currently, no read more link is added).' ),
-							'#_EVENTID' => array( 'desc' => 'Shows the event\'s corresponding ID number in the database table.' )
+							'#_EVENTID' => array( 'desc' => 'Shows the event corresponding ID number in the database table.' ),
+							'#_EVENTIMAGE' => array( 'desc' => 'Shows the event image, if available.' )
 						)
-					),
-					'Category Details' => array(
-						'placeholders' => array(
-							'#_CATEGORYNAME' => array( 'desc' => 'Shows the category name of the event.' ),
-							'#_CATEGORYID' => array( 'desc' => 'Shows the category ID of the event.' )
-						)
-					),					
+					),			
 					'Time' => array(
 						'desc' => '',
 						'placeholders' => array(
@@ -82,8 +77,10 @@ function em_docs_init(){
 					'Links' => array(
 						'placeholders' => array(
 							'#_EVENTURL' => array( 'desc' => 'Simply prints the event URL. You can use this placeholder to build your own customised links.' ),
+							'#_EVENTIMAGEURL' => array( 'desc' => 'Shows the event image url, if available.' ),
 							'#_EVENTLINK' => array( 'desc' => 'Displays the event name with a link to the event page.' ),
-							'#_EDITEVENTLINK' => array( 'desc' => 'Inserts a link to the edit event page, only if a user is logged in and is allowed to edit the event.' )
+							'#_EDITEVENTLINK' => array( 'desc' => 'Inserts a link to the admin  or buddypress (if activated) edit event page, only if a user is logged in and is allowed to edit the event.' ),
+							'#_EDITEVENTURL' => array( 'desc' => 'Inserts a url to the admin or buddypress (if activated) edit event page, only if a user is logged in and is allowed to edit the event.' )
 						)
 					),
 					'Custom Attributes' => array(
@@ -95,14 +92,15 @@ function em_docs_init(){
 					'Bookings/RSVP' => array(
 						'desc' => 'These placeholders will only show if RSVP is enabled for the given event and in the events manager settings page. Spaces placeholders will default to 0',
 						'placeholders' => array(
-							'#_ADDBOOKINGFORM' => array( 'desc' => 'Adds a form which allows the visitors to register for an event.' ),
-							'#_REMOVEBOOKINGFORM' => array( 'desc' => 'Adds a form which allows the visitors to remove their booking.' ),
-							'#_BOOKINGFORM' => array( 'desc' => 'Adds a both booking forms (add and remove).' ),
+							'#_BOOKINGFORM' => array( 'desc' => 'Adds a booking forms for this event.' ),
 							'#_AVAILABLESPACES' => array( 'desc' => 'Shows available spaces for the event.' ),
 							'#_BOOKEDSPACES' => array( 'desc' => 'Shows the amount of currently booked spaces for the event.' ),
 							'#_PENDINGSPACES' => array( 'desc' => 'Shows the amount of pending spaces for the event.' ),
 							'#_SPACES' => array( 'desc' => 'Shows the total spaces for the event.' ),
-							'#_ATTENDEES' => array( 'desc' => 'Shows the list of user avatars attending events.' )
+							'#_ATTENDEES' => array( 'desc' => 'Shows the list of user avatars attending events.' ),
+							'#_BOOKINGBUTTON' => array( 'desc' => 'A single button that will appear to logged in users, if they click on it, they apply for a booking. This button will only display if there is one ticket.' ),
+							'#_BOOKINGSURL' => array( 'desc' => 'Shows the url to the admin or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' ),
+							'#_BOOKINGSLINK' => array( 'desc' => 'Shows a link to the admin or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' )							
 						)
 					),
 					'Contact Details' => array(
@@ -119,6 +117,17 @@ function em_docs_init(){
 						)
 					),			
 				),
+				'categories' => array(
+					'Category Details' => array(
+						'placeholders' => array(
+							'#_CATEGORYNAME' => array( 'desc' => 'Shows the category name of the event.' ),
+							'#_CATEGORYID' => array( 'desc' => 'Shows the category ID of the event.' ),
+							'#_CATEGORYIMAGE' => array( 'desc' => 'Shows the event image, if available.' ),
+							'#_CATEGORYIMAGEURL' => array( 'desc' => 'Shows the event image url, if available.' ),
+							'#_CATEGORYNOTES' => array( 'desc' => 'Shows the location description.' )
+						)
+					)					
+				),
 				'locations' => array(
 					'Location Details' => array(
 						'desc' => '',
@@ -126,6 +135,9 @@ function em_docs_init(){
 							'#_LOCATIONNAME' => array( 'desc' => 'Displays the location name.' ),
 							'#_LOCATIONADDRESS' => array( 'desc' => 'Displays the address.' ),
 							'#_LOCATIONTOWN' => array( 'desc' => 'Displays the town.' ),
+							'#_LOCATIONSTATE' => array( 'desc' => 'Displays the state/county.' ),
+							'#_LOCATIONPOSTCODE' => array( 'desc' => 'Displays the postcode.' ),
+							'#_LOCATIONCOUNTRY' => array( 'desc' => 'Displays the country.' ),
 							'#_LOCATIONMAP' => array( 'desc' => 'Displays a google map showing where the event is located (Will not show if maps are disabled in the settings page)' ),
 							'#_LOCATIONNOTES' => array( 'desc' => 'Shows the location description.' ),
 							'#_LOCATIONEXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your location description, only the content before this tag will show (currently, no read more link is added).' ),
@@ -157,6 +169,12 @@ function em_docs_init(){
 							'#_BOOKINGPHONE' => array( 'desc' => 'Phone number of person who made the booking.' ),
 							'#_BOOKINGSPACES' => array( 'desc' => 'Number of spaces the person has booked.' ),
 							'#_BOOKINGCOMMENT' => array( 'desc' => 'Any specific comments made by the person who made the booking.' )
+						)
+					),
+					'Links' => array(
+						'desc' => 'People are able to manage their bookings. Below are some placeholder which automatically provides correctly formatted urls',
+						'placeholders' => array(
+							'#_BOOKINGLISTURL' => array( 'desc' => 'URL to page showing that users booked events.' )
 						)
 					)
 				),

@@ -4,7 +4,25 @@
  * Optimized for specifically retreiving locations (whether eventful or not). If you want event data AND location information for each event, use EM_Events
  * 
  */
-class EM_Locations extends EM_Object {
+class EM_Locations extends EM_Object implements Iterator {
+	/**
+	 * Array of EM_Location objects
+	 * @var array EM_Location
+	 */
+	var $locations = array();
+	
+	function EM_Events( $args = array() ){
+		if( is_array($args) ){
+			if( is_object(current($args)) && get_class(current($args)) == 'EM_Event' ){
+				$this->locations = $args;
+			}else{
+				$this->locations = EM_Events::get($args);
+			}
+		}else{
+			$this->locations = EM_Events::get();
+		}
+		do_action('em_events',$this);
+	}
 	/**
 	 * Returns an array of EM_Location objects
 	 * @param boolean $eventful
@@ -13,8 +31,8 @@ class EM_Locations extends EM_Object {
 	 */
 	function get( $args = array(), $count=false ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
-		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
+		$locations_table = EM_LOCATIONS_TABLE;
 		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
@@ -101,7 +119,8 @@ class EM_Locations extends EM_Object {
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
 			$func_args = func_get_args();
 			$locations = $func_args[0];
-			$args = apply_filters('em_locations_output_args', self::get_default_search($func_args[1]), $locations);
+			$args = (!empty($func_args[1])) ? $func_args[1] : array();
+			$args = apply_filters('em_locations_output_args', self::get_default_search($args), $locations);
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
 			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
@@ -120,8 +139,7 @@ class EM_Locations extends EM_Object {
 		
 		$output = "";
 		$locations_count = count($locations);
-		$locations = apply_filters('em_locations_output_locations', $locations);
-		
+		$locations = apply_filters('em_locations_output_locations', $locations);	
 		if ( count($locations) > 0 ) {
 			$location_count = 0;
 			$locations_shown = 0;
@@ -135,7 +153,7 @@ class EM_Locations extends EM_Object {
 			//Add headers and footers to output
 			if( $format == get_option ( 'dbem_location_list_item_format' ) ){
 				$single_event_format_header = get_option ( 'dbem_location_list_item_format_header' );
-				$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='dbem_events_list'>";
+				$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='em-locations-list'>";
 				$single_event_format_footer = get_option ( 'dbem_location_list_item_format_footer' );
 				$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
 				$output =  $single_event_format_header .  $output . $single_event_format_footer;
@@ -148,7 +166,7 @@ class EM_Locations extends EM_Object {
 				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $locations_count, $limit, $page), $page_link_template, $locations_count, $limit, $page);
 			}
 		} else {
-			$output = get_option ( 'dbem_no_events_message' );
+			$output = get_option ( 'dbem_no_locations_message' );
 		}
 		//FIXME check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Location_old= $EM_Location;
@@ -175,8 +193,8 @@ class EM_Locations extends EM_Object {
 	 */
 	function build_sql_conditions( $args = array() ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
-		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
+		$locations_table = EM_LOCATIONS_TABLE;
 		
 		$conditions = parent::build_sql_conditions($args);
 		//eventful locations
@@ -188,6 +206,14 @@ class EM_Locations extends EM_Object {
 		//owner lookup
 		if( !empty($args['owner']) ){
 			$conditions['owner'] = "location_owner=".$args['owner'];
+		}
+		//blog id in events table
+		if( is_multisite() && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
+			if( is_main_site($args['blog']) ){
+				$conditions['blog'] = "(`blog_id`={$args['blog']} OR blog_id IS NULL)";
+			}else{
+				$conditions['blog'] = "(`blog_id`={$args['blog']})";
+			}
 		}
 		return apply_filters('em_locations_build_sql_conditions', $conditions, $args);
 	}
@@ -208,7 +234,10 @@ class EM_Locations extends EM_Object {
 			'eventful' => false, //Locations that have an event (scope will also play a part here
 			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
 			'orderby' => 'name',
-			'scope' => 'all' //we probably want to search all locations by default, not like events
+			'state' => false,
+			'country' => false,
+			'scope' => 'all', //we probably want to search all locations by default, not like events
+			'blog' => get_current_blog_id()
 		);
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );
@@ -217,5 +246,31 @@ class EM_Locations extends EM_Object {
 		}
 		return apply_filters('em_locations_get_default_search', parent::get_default_search($defaults, $array), $array, $defaults);
 	}
+
+	//Iteratior methods
+    public function rewind(){
+        reset($this->locations);
+    }
+  
+    public function current(){
+        $var = current($this->locations);
+        return $var;
+    }
+  
+    public function key(){
+        $var = key($this->locations);
+        return $var;
+    }
+  
+    public function next(){
+        $var = next($this->locations);
+        return $var;
+    }
+  
+    public function valid(){
+        $key = key($this->locations);
+        $var = ($key !== NULL && $key !== FALSE);
+        return $var;
+    }
 }
 ?>

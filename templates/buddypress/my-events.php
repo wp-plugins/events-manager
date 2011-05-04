@@ -9,11 +9,7 @@
 	$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
 	$search = ( !empty($_REQUEST['em_search']) ) ? $_REQUEST['em_search']:'';
-	$scope_names = array (
-		'past' => __ ( 'Past events', 'dbem' ),
-		'all' => __ ( 'All events', 'dbem' ),
-		'future' => __ ( 'Future events', 'dbem' )
-	);
+	$scope_names = em_get_scopes();
 	$scope = ( !empty($_REQUEST ['scope']) && array_key_exists($_REQUEST ['scope'], $scope_names) ) ? $_REQUEST ['scope']:'future';
 	if( isset($_REQUEST['status']) ){
 		$status = ($_REQUEST['status']) ? 1:0;
@@ -28,8 +24,8 @@
 		'owner' => get_current_user_id(),
 		'status' => $status
 	);
-	$events = EM_Events::get( $args );
-	$events_count = count ( $events );
+	$EM_Events = EM_Events::get( $args );
+	$events_count = count ( $EM_Events );
 	$future_count = EM_Events::count( array('status'=>1, 'owner' =>get_current_user_id(), 'scope' => 'future'));
 	$pending_count = EM_Events::count( array('status'=>0, 'owner' =>get_current_user_id(), 'scope' => 'all') );
 	$use_events_end = get_option('dbem_use_event_end');
@@ -62,7 +58,7 @@
 			</div>
 				
 			<?php
-			if (empty ( $events )) {
+			if (empty ( $EM_Events )) {
 				// TODO localize
 				_e ( 'no events','dbem' );
 			} else {
@@ -84,7 +80,7 @@
 					<?php 
 					$rowno = 0;
 					$event_count = 0;
-					foreach ( $events as $event ) {
+					foreach ( $EM_Events as $event ) {
 						/* @var $event EM_Event */
 						if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
 							$rowno++;
@@ -95,7 +91,6 @@
 							$style = "";
 							$today = date ( "Y-m-d" );
 							$location_summary = "<b>" . $event->location->name . "</b><br/>" . $event->location->address . " - " . $event->location->town;
-							$category = new EM_Category($event->category_id);
 							
 							if ($event->start_date < $today && $event->end_date < $today){
 								$class .= " past";

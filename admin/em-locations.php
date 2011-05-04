@@ -23,13 +23,13 @@ function em_admin_locations($message='', $fill_fields = false) {
 	$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
 	if( !empty($_REQUEST['owner']) && current_user_can('read_others_locations') ){
-		$locations = EM_Locations::get();
+		$locations = EM_Locations::get(array('blog'=>false));
 		$locations_mine_count = EM_Locations::count( array('owner'=>get_current_user_id()) );
 		$locations_all_count = count($locations);
 	}else{
-		$locations = EM_Locations::get( array('owner'=>get_current_user_id()) );
+		$locations = EM_Locations::get( array('owner'=>get_current_user_id(), 'blog'=>false) );
 		$locations_mine_count = count($locations);
-		$locations_all_count = current_user_can('read_others_locations') ? EM_Locations::count():0;
+		$locations_all_count = current_user_can('read_others_locations') ? EM_Locations::count(array('blog'=>false)):0;
 	}
 	$locations_count = count($locations);
 	?>
@@ -155,6 +155,16 @@ function em_admin_location($message = "") {
 								<?php _e('The name of the location', 'dbem') ?>
 							</div>
 						</div>
+						<div id="location_owner" class="stuffbox">
+							<h3>
+								<?php _e ( 'Location Owner', 'dbem' ); ?>
+							</h3>
+							<div class="inside">
+								<?php
+									wp_dropdown_users ( array ('name' => 'location_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Location->owner  ) );
+								?>
+							</div>
+						</div>
 						<div id="location_coordinates" class="stuffbox" style='display: none;'>
 							<h3>
 								<?php _e ( 'Coordinates', 'dbem' ); ?>
@@ -200,6 +210,13 @@ function em_admin_location($message = "") {
 													</td>
 												</tr>
 												<tr>
+													<th><?php _e ( 'Region:' )?>&nbsp;</th>
+													<td>
+														<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Location->region, ENT_QUOTES); ?>" />
+														<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
+													</td>
+												</tr>
+												<tr>
 													<th><?php _e ( 'Country:' )?>&nbsp;</th>
 													<td>
 														<select id="location-country" name="location_country">
@@ -242,7 +259,7 @@ function em_admin_location($message = "") {
 								<?php _e ( 'Location image', 'dbem' ); ?>
 							</h3>
 							<div class="inside" style="padding:10px;">
-									<?php if ($EM_Location->image_url != '') : ?> 
+									<?php if ($EM_Location->get_image_url() != '') : ?> 
 										<img src='<?php echo $EM_Location->image_url; ?>' alt='<?php echo $EM_Location->name ?>'/>
 									<?php else : ?> 
 										<?php _e('No image uploaded for this location yet', 'debm') ?>
@@ -251,6 +268,7 @@ function em_admin_location($message = "") {
 									<label for='location_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='location-image' name='location_image' id='location_image' type='file' size='40' />
 							</div>
 						</div>
+						<?php do_action('em_admin_location_form_footer'); ?>
 						
 					</div>
 				</div>

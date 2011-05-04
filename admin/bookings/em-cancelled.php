@@ -75,7 +75,7 @@ function em_bookings_cancelled_table(){
 				<div class="clear"></div>
 				<?php if( $bookings_count > 0 ): ?>
 				<div class='table-wrap'>
-				<table id='dbem-bookings-table' class='widefat post fixed'>
+				<table id='dbem-bookings-table' class='widefat post '>
 					<thead>
 						<tr>
 							<th class='manage-column column-cb check-column' scope='col'>
@@ -106,9 +106,10 @@ function em_bookings_cancelled_table(){
 										<?php
 										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'booking_id'=>$EM_Booking->id));
 										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'booking_id'=>$EM_Booking->id));
+										$edit_url = em_add_get_params($_SERVER['REQUEST_URI'], array('booking_id'=>$EM_Booking->id));
 										?>
 										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Restore','dbem'); ?></a> |
-										<a class="em-bookings-edit" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;booking_id=<?php echo $EM_Booking->id; ?>"><?php _e('Edit/View','dbem'); ?></a> |
+										<a class="em-bookings-edit" href="<?php echo $edit_url; ?>"><?php _e('Edit/View','dbem'); ?></a> |
 										<a class="em-bookings-delete" href="<?php echo $delete_url ?>"><?php _e('Delete','dbem'); ?></a>
 									</td>
 								</tr>

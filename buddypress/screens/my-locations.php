@@ -53,7 +53,7 @@ function bp_em_my_locations_title() {
  * @return null
  */
 function bp_em_my_locations_content() {
-	em_locate_template('buddypress/locations/my-locations.php', true);
+	em_locate_template('buddypress/my-locations.php', true);
 }
 
 function bp_em_my_locations_editor_title() {
@@ -66,7 +66,7 @@ function bp_em_my_locations_editor_title() {
 }
 
 function bp_em_my_locations_editor_content(){
-	em_locate_template('forms/locations/editor.php', true);
+	em_locate_template('forms/location-editor.php', true);
 }
 
 ?>

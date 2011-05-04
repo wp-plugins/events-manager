@@ -26,7 +26,8 @@ class EM_Widget extends WP_Widget {
 
     /** @see WP_Widget::widget */
     function widget($args, $instance) {	
-    	$instance = array_merge($this->defaults, $instance);   	
+    	$instance = array_merge($this->defaults, $instance);   
+    	$instance = $this->fix_scope($instance); // depcreciate	
     	echo $args['before_widget'];
 	    echo $args['before_title'];
 	    echo $instance['title'];
@@ -71,7 +72,8 @@ class EM_Widget extends WP_Widget {
 
     /** @see WP_Widget::form */
     function form($instance) {
-    	$instance = array_merge($this->defaults, $instance);   
+    	$instance = array_merge($this->defaults, $instance);
+    	$instance = $this->fix_scope($instance); // depcreciate
         ?>
 		<p>
 			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title'); ?>: </label>
@@ -90,14 +92,13 @@ class EM_Widget extends WP_Widget {
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('time_limit'); ?>"><?php _e('Time Limit','dbem'); ?>: </label><br/>
-			<select id="<?php echo $this->get_field_id('time_limit'); ?>" name="<?php echo $this->get_field_name('time_limit'); ?>" >
-				<option value="no-limit" <?php echo ( empty($instance['time_limit']) ) ? 'selected="selected"':''; ?>><?php _e('no limit','dbem'); ?></option>
-				<option value="1" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '1') ? 'selected="selected"':''; ?>><?php _e('This month','dbem'); ?></option>
-				<option value="2" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '2') ? 'selected="selected"':''; ?>><?php _e('Next two months','dbem'); ?></option>
-				<option value="3" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '3') ? 'selected="selected"':''; ?>><?php _e('Next three month','dbem'); ?></option>
-				<option value="6" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '6') ? 'selected="selected"':''; ?>><?php _e('Next six month','dbem'); ?></option>
-				<option value="12" <?php echo (!empty($instance['time_limit']) && $instance['time_limit'] == '12') ? 'selected="selected"':''; ?>><?php _e('Next twelve month','dbem'); ?></option>
+			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope','dbem'); ?>: </label><br/>
+			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >
+				<?php foreach( em_get_scopes() as $key => $value) : ?>   
+				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_page_scope')) ? "selected='selected'" : ''; ?>>
+					<?php echo $value; ?>
+				</option>
+				<?php endforeach; ?>
 			</select>
 		</p>
 		<script type="text/javascript">
@@ -158,6 +159,22 @@ class EM_Widget extends WP_Widget {
 			<input type="text" id="<?php echo $this->get_field_id('all_events_text'); ?>" name="<?php echo $this->get_field_name('all_events_text'); ?>" value="<?php echo (!empty($instance['all_events_text'])) ? $instance['all_events_text']:__('all events','dbem'); ?>" >
 		</p>
         <?php 
+    }
+    
+    /**
+     * Backwards compatability for an old setting which is now just another scope.
+     * @param unknown_type $instance
+     * @return string
+     */
+    function fix_scope($instance){
+    	if( !empty($instance['time_limit']) && is_numeric($instance['time_limit']) && $instance['time_limit'] > 1 ){
+    		$instance['scope'] = $instance['time_limit'].'-months';
+    	}elseif( !empty($instance['time_limit']) && $instance['time_limit'] == 1){
+    		$instance['scope'] = 'month';
+    	}elseif( !empty($instance['time_limit']) && $instance['time_limit'] == 'no-limit'){
+    		$instance['scope'] = 'any';
+    	}
+    	return $instance;
     }
 }
 add_action('widgets_init', create_function('', 'return register_widget("EM_Widget");'));

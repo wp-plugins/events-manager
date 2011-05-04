@@ -1,63 +1,11 @@
 <?php
 
-/**
- * Notification functions are used to send email notifications to users on specific events
- * They will check to see the users notification settings first, if the user has the notifications
- * turned on, they will be sent a formatted email notification. 
- *
- * You should use your own custom actions to determine when an email notification should be sent.
- */
-
-function bp_em_send_high_five_notification( $to_user_id, $from_user_id ) {
-	global $bp;
-	
-	/* Let's grab both user's names to use in the email. */
-	$sender_name = bp_core_get_user_displayname( $from_user_id, false );
-	$reciever_name = bp_core_get_user_displayname( $to_user_id, false );
-
-	/* We need to check to see if the recipient has opted not to recieve high-five emails */
-	if ( 'no' == get_usermeta( (int)$to_user_id, 'notification_em_new_high_five' ) )
-		return false;
-	
-	/* Get the userdata for the reciever and sender, this will include usernames and emails that we need. */
-	$reciever_ud = get_userdata( $to_user_id );
-	$sender_ud = get_userdata( $from_user_id );
-	
-	/* Now we need to construct the URL's that we are going to use in the email */
-	$sender_profile_link = site_url( BP_MEMBERS_SLUG . '/' . $sender_ud->user_login . '/' . $bp->profile->slug );
-	$sender_highfive_link = site_url( BP_MEMBERS_SLUG . '/' . $sender_ud->user_login . '/' . $bp->events->slug . '/screen-one' );
-	$reciever_settings_link = site_url( BP_MEMBERS_SLUG . '/' . $reciever_ud->user_login . '/settings/notifications' );
-		
-	/* Set up and send the message */
-	$to = $reciever_ud->user_email;
-	$subject = '[' . get_blog_option( 1, 'blogname' ) . '] ' . sprintf( __( '%s high-fived you!', 'bp-em' ), stripslashes($sender_name) );
-
-	$message = sprintf( __( 
-'%s sent you a high-five! Why not send one back?
-
-To see %s\'s profile: %s
-
-To send %s a high five: %s
-
----------------------
-', 'bp-em' ), $sender_name, $sender_name, $sender_profile_link, $sender_name, $sender_highfive_link );
-
-	$message .= sprintf( __( 'To disable these notifications please log in and go to: %s', 'bp-em' ), $reciever_settings_link );
-
-	// Send it!
-	wp_mail( $to, $subject, $message );
-}
-add_action( 'bp_em_send_high_five', 'bp_em_send_high_five_notification', 10, 2 );
-
-
 /********************************************************************************
  * Activity & Notification Functions
  *
  * These functions handle the recording, deleting and formatting of activity and
  * notifications for the user and for this specific component.
  */
-
-
 /**
  * bp_em_screen_notification_settings()
  *
@@ -83,7 +31,7 @@ function bp_em_screen_notification_settings() {
 	  * For em, notifications[notification_friends_friendship_accepted] could be
 	  * used like this:
 	  *
-	  * if ( 'no' == get_usermeta( $bp['loggedin_userid], 'notification_friends_friendship_accepted' ) )
+	  * if ( 'no' == get_usermeta( $bp['loggedin_userid'], 'notification_friends_friendship_accepted' ) )
 	  *		// don't send the email notification
 	  *	else
 	  *		// send the email notification.
@@ -114,7 +62,7 @@ function bp_em_screen_notification_settings() {
 	</table>
 <?php
 }
-add_action( 'bp_notification_settings', 'bp_em_screen_notification_settings' );
+//add_action( 'bp_notification_settings', 'bp_em_screen_notification_settings' );
 
 /**
  * bp_em_format_notifications()
@@ -131,27 +79,53 @@ add_action( 'bp_notification_settings', 'bp_em_screen_notification_settings' );
  */
 function bp_em_format_notifications( $action, $item_id, $secondary_item_id, $total_items ) {
 	global $bp;
-
 	switch ( $action ) {
-		case 'new_high_five':
-			/* In this case, $item_id is the user ID of the user who sent the high five. */
-
-			/***
-			 * We don't want a whole list of similar notifications in a users list, so we group them.
-			 * If the user has more than one action from the same component, they are counted and the
-			 * notification is rendered differently.
-			 */
-			if ( (int)$total_items > 1 ) {
-				return apply_filters( 'bp_em_multiple_new_high_five_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/screen-one/" title="' . __( 'Multiple high-fives', 'bp-em' ) . '">' . sprintf( __( '%d new high-fives, multi-five!', 'bp-em' ), (int)$total_items ) . '</a>', $total_items );
+		case 'pending_booking':
+			//Count pending bookings
+			if( get_option('dbem_bookings_approval')){ 
+				$EM_Bookings = EM_Bookings::get(array('status'=>0, 'owner'=>get_current_user_id()));
+				if ( count($EM_Bookings->bookings) > 1 ) {
+					return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/?event_id" title="' . __( 'My Bookings', 'bp-em' ) . '">' . __('You have a pending booking','dbem'). '</a>', $EM_Bookings );
+				} else {
+					return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'bp-em' ) . '">' . sprintf(__('You have %s pending bookings','dbem'), $bookings_pending_count). '</a>', $EM_Bookings );
+				}
+			}
+		break;
+		case 'confirmed_booking':
+			//Count pending bookings
+			$EM_Bookings = EM_Bookings::get(array('status'=>0, 'owner'=>get_current_user_id()));
+			if ( count($EM_Bookings->bookings) > 1 ) {
+				return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/?event_id="'.$EM_Bookings->first()->event_id.'" title="' . __( 'My Bookings', 'bp-em' ) . '">' . __('You have a new booking','dbem'). '</a>', $EM_Bookings );
 			} else {
-				$user_fullname = bp_core_get_user_displayname( $item_id, false );
-				$user_url = bp_core_get_userurl( $item_id );
-				return apply_filters( 'bp_em_single_new_high_five_notification', '<a href="' . $user_url . '?new" title="' . $user_fullname .'\'s profile">' . sprintf( __( '%s sent you a high-five!', 'bp-em' ), $user_fullname ) . '</a>', $user_fullname );
+				return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'bp-em' ) . '">' . sprintf(__('You have %s new bookings','dbem'), $bookings_pending_count). '</a>', $EM_Bookings );
 			}
 		break;
 	}
+	die($action);
 
 	do_action( 'bp_em_format_notifications', $action, $item_id, $secondary_item_id, $total_items );
 
 	return false;
 }
+
+/**
+ * Catch booking saves and add a BP notification.
+ * @param boolean $result
+ * @param EM_Booking $EM_Booking
+ * @return boolean
+ */
+function bp_em_add_booking_notification($result, $EM_Booking){
+	global $bp;
+	if( get_option('dbem_bookings_approval') && $EM_Booking->status == 0 ){
+		$action = 'pending_booking';
+	}elseif( $EM_Booking->status == 1 || (get_option('dbem_bookings_approval') && $EM_Booking->status == 0) ){
+		$action = 'confirmed_booking';
+	}elseif( $EM_Booking->status == 3 ){
+		$action = 'cancelled_booking';
+	}
+	if( !empty($action) ){
+		bp_core_add_notification( $EM_Booking->id, $EM_Booking->get_event()->owner, 'events', $action );
+	}
+	return $result;
+}
+add_filter('em_booking_save','bp_em_add_booking_notification',1,2);

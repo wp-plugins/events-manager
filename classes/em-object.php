@@ -8,6 +8,7 @@ class EM_Object {
 	var $required_fields = array();
 	var $feedback_message = "";
 	var $errors = array();
+	var $mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
 	
 	/**
 	 * Takes the array and provides a clean array of search parameters, along with details
@@ -47,12 +48,12 @@ class EM_Object {
 		//TODO decide on search defaults shared across all objects and then validate here
 		$defaults = array_merge($super_defaults, $defaults);
 		
-		//We are still dealing with recurrence_id, location_id, category_id in some place, so we do a quick replace here just in case
-		if( array_key_exists('recurrence_id', $array) && !array_key_exists('recurrence', $array) ) { $array['recurrence'] = $array['recurrence_id']; }
-		if( array_key_exists('location_id', $array) && !array_key_exists('location', $array) ) { $array['location'] = $array['location_id']; }
-		if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
-		
 		if(is_array($array)){
+			//We are still dealing with recurrence_id, location_id, category_id in some place, so we do a quick replace here just in case
+			if( array_key_exists('recurrence_id', $array) && !array_key_exists('recurrence', $array) ) { $array['recurrence'] = $array['recurrence_id']; }
+			if( array_key_exists('location_id', $array) && !array_key_exists('location', $array) ) { $array['location'] = $array['location_id']; }
+			if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
+		
 			//Clean all id lists
 			$array = self::clean_id_atts($array, array('location', 'event', 'category'));
 			
@@ -69,7 +70,9 @@ class EM_Object {
 			}
 			//return clean array
 			$defaults = array_merge ( $defaults, $array ); //No point using WP's cleaning function, we're doing it already.
+			
 		}
+		
 		//Do some spring cleaning for known values
 		//Month & Year - may be array or single number
 		$month_regex = '/^[0-9]{1,2}$/';
@@ -83,6 +86,17 @@ class EM_Object {
 			$defaults['year'] = ( preg_match($year_regex, $defaults['year'][0]) && preg_match($year_regex, $defaults['year'][1]) ) ? $defaults['year']:'';
 		}else{
 			$defaults['year'] = preg_match($year_regex, $defaults['year']) ? $defaults['year']:'';
+		}
+		//Deal with scope and date searches
+		if ( !is_array($defaults['scope']) && preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $defaults['scope'] ) ) {
+			//This is to become an array, so let's split it up
+			$defaults['scope'] = explode(',', $defaults['scope']);
+		}
+		if( is_array($defaults['scope']) ){
+			//looking for a date range here, so we'll verify the dates validate, if not get the default.
+			if ( !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $defaults['scope'][0]) || !preg_match("/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $defaults['scope'][1]) ) {
+				$defaults['scope'] = $super_defaults['scope'];
+			}
 		}
 		//Order - it's either ASC or DESC, so let's just validate
 		if( !is_array($defaults['order']) && preg_match('/,/', $defaults['order']) ) {
@@ -101,8 +115,8 @@ class EM_Object {
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
 		$defaults['owner'] = (is_numeric($defaults['owner'])) ? $defaults['owner']:$super_defaults['owner'];
-		$defaults['search'] = ($defaults['search']) ? $wpdb->escape(like_escape($defaults['search'])):false;
-		//Calculate offset in event page is set
+		$defaults['search'] = ($defaults['search']) ? trim($wpdb->escape(like_escape($defaults['search']))):false;
+		//Calculate offset if event page is set
 		if($defaults['page'] > 1){
 			$defaults['offset'] = $defaults['limit'] * ($defaults['page']-1);	
 		}else{
@@ -118,8 +132,8 @@ class EM_Object {
 	 */
 	function build_sql_conditions( $args = array() ){
 		global $wpdb;
-		$events_table = $wpdb->prefix . EM_EVENTS_TABLE;
-		$locations_table = $wpdb->prefix . EM_LOCATIONS_TABLE;
+		$events_table = EM_EVENTS_TABLE;
+		$locations_table = EM_LOCATIONS_TABLE;
 		
 		$args = apply_filters('em_object_build_sql_conditions_args',$args);
 		
@@ -164,25 +178,66 @@ class EM_Object {
 			}
 			$date_start = $date_year_start."-".$date_month_start."-01";
 			$date_end = date('Y-m-t', mktime(0,0,0,$date_month_end,1,$date_year_end));
-			$scope = "$date_start,$date_end"; //just modify the scope here
+			$scope = array($date_start,$date_end); //just modify the scope here
 		}
 		//No date requested, so let's look at scope
-		if ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2},[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
+		if ( is_array($scope) ) {
 			//This is an array, let's split it up
-			$dates = explode(',', $scope);
-			$date_start = $dates[0];
-			$date_end = $dates[1];
+			$date_start = $scope[0];
+			$date_end = $scope[1];
 			$conditions['scope'] = " ( ( event_start_date <= CAST('$date_end' AS DATE) AND event_end_date >= CAST('$date_start' AS DATE) ) OR (event_start_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) OR (event_end_date BETWEEN CAST('$date_start' AS DATE) AND CAST('$date_end' AS DATE)) )";
 		} elseif ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
 			//Scope can also be a specific date. However, if 'day', 'month', or 'year' are set, that will take precedence
 			$conditions['scope'] = " ( event_start_date = CAST('$scope' AS DATE) OR ( event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE) ) )";
 		} else {
 			if ($scope == "past"){
-				$conditions['scope'] = " event_start_date < '$today'";  
+				if( get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] = " event_start_date < '$today'";
+				}else{
+					$conditions['scope'] = " event_end_date < '$today'";
+				}  
 			}elseif ($scope == "today"){
-				$conditions['scope'] = " ( (event_start_date = CAST('$today' AS DATE)) OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE)) )";
+				$conditions['scope'] = " (event_start_date = CAST('$today' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date <= CAST('$today' AS DATE) AND event_end_date >= CAST('$today' AS DATE))";
+				}
+			}elseif ($scope == "tomorrow"){
+				$tomorrow = date('Y-m-d',current_time('timestamp')+60*60*24);
+				$conditions['scope'] = "(event_start_date = CAST('$tomorrow' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date <= CAST('$tomorrow' AS DATE) AND event_end_date >= CAST('$tomorrow' AS DATE))";
+				}
+			}elseif ($scope == "month"){
+				$start_month = date('Y-m-d',current_time('timestamp'));
+				$end_month = date('Y-m-t',current_time('timestamp'));
+				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
+				}
+			}elseif ($scope == "next-month"){
+				$start_month_timestamp = strtotime('+1 month', current_time('timestamp')); //get the end of this month + 1 day
+				$start_month = date('Y-m-1',$start_month_timestamp);
+				$end_month = date('Y-m-t',$start_month_timestamp);
+				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
+				}
+			}elseif( preg_match('/(\d\d?)\-months/',$scope,$matches) ){ // next x months means this month (what's left of it), plus the following x-1 months until the end of that month.
+				$months_to_add = $matches[1];
+				$start_month = date('Y-m-d',current_time('timestamp'));
+				$end_month = date('Y-m-t',strtotime("+$months_to_add month", current_time('timestamp')));
+				$conditions['scope'] = " (event_start_date BETWEEN CAST('$start_month' AS DATE) AND CAST('$end_month' AS DATE))";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
+				}
 			}elseif ($scope == "future"){
-				$conditions['scope'] = " (event_start_date >= CAST('$today' AS DATE) OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL))";
+				$conditions['scope'] = " event_start_date >= CAST('$today' AS DATE)";
+				if( !get_option('dbem_events_current_are_past') ){
+					$conditions['scope'] .= " OR (event_end_date >= CAST('$today' AS DATE) AND event_end_date != '0000-00-00' AND event_end_date IS NOT NULL)";
+				}
+			}
+			if( !empty($conditions['scope']) ){
+				$conditions['scope'] = '('.$conditions['scope'].')';
 			}
 		}
 		
@@ -213,14 +268,31 @@ class EM_Object {
 			}
 			$conditions['event'] = "( {$events_table}.event_id=". implode(" {$events_table}.event_id=", $event_ids) ." )";
 		}
+		//Location specific filters
+		//country lookup
+		if( !empty($args['country']) ){
+			$countries = em_get_countries();
+			//we can accept country codes or names
+			if( in_array($args['country'], $countries) ){
+				//we have a country name, 
+				$conditions['country'] = "location_country='".array_search($args['country'])."'";	
+			}elseif( array_key_exists($args['country'], $countries) ){
+				//we have a country code
+				$conditions['country'] = "location_country='".$args['country']."'";					
+			}
+		}
+		//state lookup
+		if( !empty($args['state']) ){
+			$conditions['state'] = "location_state='".$args['state']."'";
+		}
 				
 		//Add conditions for category selection
 		//Filter by category, can be id or comma seperated ids
 		//TODO create an exclude category option
 		if ( is_numeric($category) && $category > 0 ){
-			$conditions['category'] = " event_category_id = $category";
+			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value='$category' ) ";
 		}elseif( self::array_is_numeric($category) ){
-			$conditions['category'] = "( event_category_id = ". implode(' OR event_category_id = ', $category).")";
+			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$category).") ) ";
 		}
 	
 		//If we want rsvped items, we usually check the event
@@ -289,12 +361,24 @@ class EM_Object {
 		}elseif( $is_owner && array_key_exists($owner_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$owner_capability];
 		}
-		if( !$is_owner && current_user_can($admin_capability) ){
+		//Figure out if this is multisite and require an extra bit of validation
+		$multisite_check = true;
+		if( !empty($this->id) && is_multisite() && get_site_option('dbem_ms_global_table') ){
+			if( get_class($this) == "EM_Event" ){
+				//Other user-owned events can be modified by admins if it's on the same blog, otherwise it must be an admin on the main site.
+				$multisite_check = !( $this->blog_id == get_current_blog_id() || is_main_site() );
+			}else{
+				//User can't admin this bit, as they're on a sub-blog
+				$multisite_check = is_main_site();
+				$can_manage = false;
+			}
+		}
+		if( !$is_owner && current_user_can($admin_capability) && $multisite_check ){
 			$can_manage = true;
 		}elseif( !$is_owner && array_key_exists($admin_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$admin_capability];
 		}
-		if( !$can_manage ){
+		if( !$can_manage && !empty($error_msg) ){
 			$this->add_error($error_msg);
 		}
 		return $can_manage;
@@ -551,4 +635,114 @@ class EM_Object {
 	    }		
 	    return $result;
 	}	
+	
+	/*
+	 * START IMAGE UPlOAD FUNCTIONS
+	 * Used for various objects, so shared in one place 
+	 */
+	function get_image_type(){
+		switch( get_class($this) ){
+			case 'EM_Event':
+				$dir = (EM_IMAGE_DS == '/') ? 'events/':'';
+				return $dir.'event';
+				break;
+			case 'EM_Location':
+				$dir = (EM_IMAGE_DS == '/') ? 'locations/':'';
+				return $dir.'location';
+				break;
+			case 'EM_Category':
+				$dir = (EM_IMAGE_DS == '/') ? 'categories/':'';
+				return $dir.'category';
+				break;
+		} 	
+	}
+	
+	function get_image_url(){
+		$type = $this->get_image_type();
+		if( $type ){
+			if($this->image_url == ''){
+			  	foreach($this->mime_types as $mime_type) { 
+					$file_name = "{$type}-{$this->id}.$mime_type";
+					if( file_exists( EM_IMAGE_UPLOAD_DIR . $file_name) ) {
+			  			$this->image_url = EM_IMAGE_UPLOAD_URI.$file_name;
+					}
+				}
+			}
+		}
+		return apply_filters('em_object_get_image_url', $this->image_url, $this);
+	}
+	
+	function image_delete() {
+		$type = $this->get_image_type();
+		if( $type ){
+			if( $this->image_url == '' ){
+				$result = true;
+			}else{
+				$file_name= EM_IMAGE_UPLOAD_DIR."{$type}-".$this->id;
+				$result = false;
+				foreach($this->mime_types as $mime_type) { 
+					if (file_exists($file_name.".".$mime_type)){
+				  		$result = unlink($file_name.".".$mime_type);
+					}
+				}
+			}
+		}
+		return apply_filters('em_object_get_image_url', $result, $this);
+	}
+	
+	function image_upload($result){
+		$type = $this->get_image_type();
+		if( $type ){
+			do_action('em_object_image_upload_pre', $type, $this);
+			$result = true;
+			if ( !empty($_FILES[$type.'_image']['size']) && file_exists($_FILES[$type.'_image']['tmp_name'])) {
+				$this->image_delete();   
+				list($width, $height, $mime_type, $attr) = getimagesize($_FILES[$type.'_image']['tmp_name']);
+				$image_path = "{$type}-".$this->id.".".$this->mime_types[$mime_type];	
+				if( $this->image_validate()){
+					if ( move_uploaded_file($_FILES[$type.'_image']['tmp_name'], EM_IMAGE_UPLOAD_DIR.$image_path) ){
+						$this->image_url = EM_IMAGE_UPLOAD_URI.$image_path;
+					}else{
+						if($result){				
+							$this->feedback_message .= ' '. __('However, the image could not be saved.','dbem');
+						}
+						$this->add_error(__('The image could not be saved','dbem'));
+					}					
+				}else{
+					if($result){
+						$this->feedback_message .= ' '.  __('However, the image could not be saved:','dbem');
+						$this->feedback_message .= '<p>'.implode('<br />',$this->errors).'</p>';
+					}
+				}
+			}
+		}
+		return apply_filters('em_object_image_upload', $result, $this);
+	}
+	
+	function image_validate(){
+		$type = $this->get_image_type();
+		if( $type ){
+			if ( !empty($_FILES[$type.'_image']) && $_FILES[$type.'_image']['size'] > 0 ) { 
+				if (is_uploaded_file($_FILES[$type.'_image']['tmp_name'])) {
+			  		list($width, $height, $mime_type, $attr) = getimagesize($_FILES[$type.'_image']['tmp_name']);
+					$maximum_size = get_option('dbem_image_max_size'); 
+					if ($_FILES[$type.'_image']['size'] > $maximum_size){ 
+				     	$this->add_error( __('The image file is too big! Maximum size:', 'dbem')." $maximum_size");
+					}
+					$maximum_width = get_option('dbem_image_max_width'); 
+					$maximum_height = get_option('dbem_image_max_height'); 
+				  	if (($width > $maximum_width) || ($height > $maximum_height)) { 
+						$this->add_error( __('The image is too big! Maximum size allowed:','dbem')." $maximum_width x $maximum_height");
+				  	}
+				  	if ( empty($mime_type) || !array_key_exists($mime_type, $this->mime_types) ){ 
+						$this->add_error(__('The image is in a wrong format!','dbem'));
+				  	}
+		  		}
+			}
+		}
+		return apply_filters('em_object_image_validate', count($this->errors) == 0, $this);
+	}
+	/*
+	 * END IMAGE UPlOAD FUNCTIONS
+	 */
 }

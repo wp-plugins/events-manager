@@ -20,21 +20,10 @@ function bp_em_attending() {
 }
 
 	function bp_em_attending_title() {
-		_e( 'Attending', 'bp-em' );
+		_e( 'Events I\'m Attending', 'bp-em' );
 	}
 
 	function bp_em_attending_content() {
-		global $bp;
-		$EM_Person = new EM_Person($bp->displayed_user->id);
-		$events = $EM_Person->get_events();
-		$args = array(
-			'format_header' => get_option('dbem_bp_events_list_format_header'),
-			'format' => get_option('dbem_bp_events_list_format'),
-			'format_footer' => get_option('dbem_bp_events_list_format_footer')
-		);
-		if( count($events) > 0 ){
-			echo EM_Events::output($events, $args);
-		}else{
-			echo get_option('dbem_bp_events_list_none_format');
-		}
+		//We can use the same template as the public user interface for non bp sites
+		em_locate_template('templates/my-bookings.php',true);
 	}

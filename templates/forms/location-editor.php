@@ -27,6 +27,7 @@
 		<h3><?php echo $title ?></h3>   
  		
 		<?php global $EM_Notices; echo $EM_Notices; ?>
+		<?php do_action('em_front_location_form_header'); ?>
 		<h4>
 			<?php _e ( 'Location Name', 'dbem' ); ?>
 		</h4>
@@ -113,5 +114,6 @@
 				<br /><br />
 				<label for='location_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='location-image' name='location_image' id='location_image' type='file' size='40' />
 		</div>
+		<?php do_action('em_front_location_form_footer'); ?>
 		<p class='submit'><input type='submit' class='button-primary' name='submit' value='<?php _e('Update location', 'dbem') ?>' /></p>
 	</form>

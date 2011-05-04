@@ -1,5 +1,5 @@
 <?php
-function bp_em_settings() {
+function bp_em_screen_settings_menu() {
 	global $bp, $current_user, $bp_settings_updated, $pass_error;
 
 	if ( isset( $_POST['submit'] ) ) {
@@ -19,7 +19,7 @@ function bp_em_settings() {
 	add_action( 'bp_template_title', 'bp_em_screen_settings_menu_title' );
 	add_action( 'bp_template_content', 'bp_em_screen_settings_menu_content' );
 
-	bp_core_load_template( apply_filters( 'bp_core_template_plugin', 'plugin-template' ) );
+	bp_core_load_template( apply_filters( 'bp_core_template_plugin', 'members/single/plugins' ) );
 }
 
 	function bp_em_screen_settings_menu_header() {
@@ -39,7 +39,7 @@ function bp_em_settings() {
 			</div>
 		<?php } ?>
 
-		<form action="<?php echo $bp->loggedin_user->domain . 'settings/events'; ?>" name="bp-em-admin-form" id="account-delete-form" class="bp-em-admin-form" method="post">
+		<form action="<?php echo $bp->loggedin_user->domain . 'settings/events-settings/'; ?>" name="bp-em-admin-form" id="account-delete-form" class="bp-em-admin-form" method="post">
 
 			<input type="checkbox" name="bp-em-option-one" id="bp-em-option-one" value="1"<?php if ( '1' == get_usermeta( $bp->loggedin_user->id, 'bp-em-option-one' ) ) : ?> checked="checked"<?php endif; ?> /> <?php _e( 'Do you love clicking checkboxes?', 'bp-em' ); ?>
 			<p class="submit">
