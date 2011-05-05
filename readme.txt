@@ -2,9 +2,9 @@
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://wp-events-plugin.com
 Tags: events, booking, calendar, locations, maps, geotagging, admin, dashboard, plugin, template, theme, widget
-Requires at least: 2.9 
+Requires at least: 2.9
 Tested up to: 3.1.2
-Stable tag: 3.0.97
+Stable tag: 3.0.98
 
 Fully featured events management including recurring events, location management, calendar, Google map integration, booking management and more.
              
