@@ -2,13 +2,15 @@
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://wp-events-plugin.com
 Tags: events, booking, calendar, locations, maps, geotagging, admin, dashboard, plugin, template, theme, widget
-Requires at least: 2.9
+Requires at least: 3.0
 Tested up to: 3.1.2
-Stable tag: 3.0.98
+Stable tag: 4.0
 
 Fully featured events management including recurring events, location management, calendar, Google map integration, booking management and more.
              
 == Description ==
+
+Readme update coming very shortly... check the site for more info on recent updates and features.
 
 Events Manager 3.0 is a full-featured event management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
 

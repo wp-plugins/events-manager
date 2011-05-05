@@ -273,6 +273,7 @@ function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//Count pending bookings
 		$bookings_num = '';
+		$bookings_pending_count = 0;
 		if( get_option('dbem_bookings_approval') == 1){ 
 			$bookings_pending_count = count(EM_Bookings::get(array('status'=>0))->bookings);
 			//TODO Add flexible permissions

@@ -88,8 +88,10 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 		//split further into associative array
 		$url_params = array();
 		foreach($url_params_dirty as $url_param){
-			$url_param = explode('=', $url_param);
-			$url_params[$url_param[0]] = $url_param[1];
+			if( !empty($url_param[1]) ){
+				$url_param = explode('=', $url_param);
+				$url_params[$url_param[0]] = $url_param[1];
+			}
 		}
 		//Merge it together
 		$params = array_merge($url_params, $params);
@@ -210,7 +212,7 @@ function em_get_attributes(){
 	//Now grab all the unique attributes we can use in our event.
 	$attributes = array();
 	foreach($matches[1] as $key => $attribute) {
-		if( !in_array($attribute, $attributes['names']) ){			
+		if( !empty($attributes['names']) && !in_array($attribute, $attributes['names']) ){			
 			$attributes['names'][] = $attribute ;
 			//check if there's ddm values
 			$attribute_values = array();

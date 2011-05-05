@@ -580,7 +580,7 @@ class EM_Event extends EM_Object{
 	 */
 	function get_categories() {
 		global $EM_Categories;
-		if( is_object($this->categories) && get_class($this->categories)=='EM_Categories' && ( empty($this->categories->event->id) || $this->categories->event->id == $this->id ) ){
+		if( !empty($this->categories) && is_object($this->categories) && get_class($this->categories)=='EM_Categories' && ( empty($this->categories->event->id) || $this->categories->event->id == $this->id ) ){
 			$this->categories = $this->categories;
 		}elseif( is_object($EM_Categories) && $EM_Categories->get_event()->id == $this->id ){
 			$this->categories = $EM_Categories;

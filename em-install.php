@@ -3,8 +3,8 @@
 function em_install() {
 	$old_version = get_option('dbem_version');
 	//Won't upgrade 2 anymore, let 3 do that and we worry about 3.
-   	if( $old_version != '' && $old_version < 3.095 ){
-   		die('Cannot proceed with installation, please upgrade to the version 3.0.96 from <a href="http://wordpress.org/extend/plugins/events-manager/download/">here</a> first before upgrading to this version.');
+   	if( $old_version != '' && $old_version < 3.096 ){
+   		die('Cannot proceed with installation, please upgrade to the version 3.0.96 or higher from <a href="http://wordpress.org/extend/plugins/events-manager/download/">here</a> first before upgrading to this version.');
    	}
 	if( EM_VERSION > $old_version || $old_version == '' ){
 	 	// Creates the events table if necessary

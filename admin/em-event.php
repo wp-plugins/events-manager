@@ -611,7 +611,7 @@ function em_admin_event_page() {
 								$has_depreciated = false;
 								?>
 								<div class="wrap">
-									<?php if( count( $attributes['names'] ) > 0 ) : ?>
+									<?php if( !empty($attributes['names']) && count( $attributes['names'] ) > 0 ) : ?>
 										<table class="form-table">
 											<thead>
 												<tr valign="top">
