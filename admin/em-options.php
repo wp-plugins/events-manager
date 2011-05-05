@@ -111,7 +111,7 @@ function em_admin_options_page() {
 			}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'bookings_migrate_delete'){
 				require_once( dirname(__FILE__).'/../em-install.php');
 				em_migrate_bookings_delete();
-			}		
+			}
 		?>
 		<?php if( $wpdb->get_var("SHOW TABLES LIKE '".EM_PEOPLE_TABLE."'") == EM_PEOPLE_TABLE ): ?>
 			<?php if( $wpdb->get_var('SELECT COUNT(*) FROM '.EM_TICKETS_BOOKINGS_TABLE) > 0 ): ?>

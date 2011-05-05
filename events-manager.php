@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.0rc1
+Version: 4.0
 Plugin URI: http://wp-events-plugin.com
 Description: A complete event management solution for wordpress. Recurring events, locations, google maps, rss, booking registration and more!
 Author: Marcus Sykes
@@ -102,7 +102,7 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.0019); //self expanatory
+define('EM_VERSION', 4.002); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
 $upload_dir = wp_upload_dir();
 if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
@@ -273,6 +273,7 @@ function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//Count pending bookings
 		$bookings_num = '';
+		$bookings_pending_count = 0;
 		if( get_option('dbem_bookings_approval') == 1){ 
 			$bookings_pending_count = count(EM_Bookings::get(array('status'=>0))->bookings);
 			//TODO Add flexible permissions
