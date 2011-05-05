@@ -21,6 +21,10 @@ function em_install() {
 		//Migrate?
 		if( $old_version < 4 && $old_version != '' ){
 			em_migrate_v3();
+		}else{
+			if( $old_version < 4.002 && $old_version > 4 ){
+		   		add_option('dbem_notice_rc_reimport',1);
+		   	}
 		}
 		//Upate Version	
 	  	update_option('dbem_version', EM_VERSION); 
@@ -451,10 +455,11 @@ function em_migrate_v3(){
 	$wpdb->query('UPDATE '.EM_EVENTS_TABLE.' SET event_status=1');
 	
 	//give all old events a default ticket
+	$wpdb->query('TRUNCATE TABLE '.EM_TICKETS_TABLE);
 	$wpdb->query("INSERT INTO ".EM_TICKETS_TABLE." (`event_id`, `ticket_name`, `ticket_spaces`) SELECT event_id, 'Standard' as ticket_name, event_spaces FROM ".EM_EVENTS_TABLE." WHERE recurrence!=1 and event_rsvp=1");
 	
 	//create permalinks for each location, category, event
-	$array = array('event' => EM_CATEGORIES_TABLE);
+	$array = array('event' => EM_EVENTS_TABLE, 'location' => EM_LOCATIONS_TABLE, 'category' => EM_CATEGORIES_TABLE);
 	foreach( $array as $prefix => $table ){
 		$used_slugs = array();
 		$results = $wpdb->get_results("SELECT {$prefix}_id AS id, {$prefix}_slug AS slug, {$prefix}_name AS name FROM $table", ARRAY_A);
@@ -470,6 +475,7 @@ function em_migrate_v3(){
 		}
 	}
 	//categories
+	$wpdb->query('DELETE FROM '.EM_META_TABLE." WHERE meta_key='event-category'");
 	$wpdb->query('INSERT INTO '.EM_META_TABLE." (`meta_key`,`meta_value`,`object_id`) SELECT 'event-category' as meta_key, event_category_id, event_id FROM ".EM_EVENTS_TABLE ." WHERE recurrence!=1 AND event_category_id IS NOT NULL");
 	
 	update_option('em_notice_migrate_v3',1);
@@ -537,6 +543,7 @@ function em_migrate_bookings(){
 function em_migrate_bookings_delete(){
 	global $wpdb;
 	if( wp_verify_nonce($_REQUEST['_wpnonce'], 'bookings_migrate_delete') ){
+		$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix. 'em_bookings');
 		$wpdb->query('DROP TABLE '.$wpdb->prefix.'em_people');
 		echo "<div class='updated'><p>Old People table deleted, enjoy Events Manager 4!</p></div>";
 	}

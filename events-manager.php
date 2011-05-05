@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.0rc2
+Version: 4.0rc3
 Plugin URI: http://wp-events-plugin.com
 Description: A complete event management solution for wordpress. Recurring events, locations, google maps, rss, booking registration and more!
 Author: Marcus Sykes
@@ -102,7 +102,7 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.0019); //self expanatory
+define('EM_VERSION', 4.002); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
 $upload_dir = wp_upload_dir();
 if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
