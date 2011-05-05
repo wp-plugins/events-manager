@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.0rc3
+Version: 4.0
 Plugin URI: http://wp-events-plugin.com
 Description: A complete event management solution for wordpress. Recurring events, locations, google maps, rss, booking registration and more!
 Author: Marcus Sykes
