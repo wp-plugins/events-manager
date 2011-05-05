@@ -138,7 +138,7 @@ function em_wp_the_title($data){
 	}
 	return apply_filters('em_wp_the_title', $data) ;
 }
-add_filter ( 'the_title', 'em_wp_the_title' );
+add_filter ( 'wp_title', 'em_wp_the_title' );
 
 /**
  * Filters the get_pages functions so it includes the event pages?

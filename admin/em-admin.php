@@ -40,6 +40,25 @@ function em_admin_warnings() {
 				<?php		
 			}
 		}
+		//If events page couldn't be created
+		if( !empty($_GET['em_dismiss_rc_notice']) ){
+			delete_option('dbem_admin_notice_rc');
+		}elseif( get_option('dbem_admin_notice_rc')){
+			?>
+			<div class="updated">
+				<p>
+					<strong>Events Manager 4.0 on its way!</strong>
+					We've just about finished with 4.0, which boasts TONS of long awaited features including advanced booking, permalinks, MultiSite and BuddPress integration, and much more!
+					It is undergoing final testing to be released in the coming days, and the website has already had a documentation and tutorial overhaul in preparation. 
+				</p><p>
+					To read up on the changes and get a hold of the Release Candidate 
+					<a href="http://wp-events-plugin.com/try-the-beta/?utm_source=plugin&utm_medium=html&utm_campaign=rc_notice">click here</a>. 
+					Please make sure to have a look at this page if you use EM for bookings or have made any mods to the plugin, as there are some considerations to make when upgrading.<br />
+					<a href="http://wp-events-plugin.com/try-the-beta/?utm_source=plugin&utm_medium=html&utm_campaign=rc_notice">See what's new</a> | <a href="<?php echo $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'em_dismiss_rc_notice=1' ?>">Dismiss this message.</a>			
+				</p>
+			</div>
+			<?php	
+		}
 	
 		//If events page couldn't be created
 		if( !empty($_GET['em_dismiss_events_page']) ){

@@ -3,7 +3,7 @@ var maps = {};
 jQuery(document).ready( function($){
 	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 ){
 		var script = document.createElement("script");
-		script.setAttribute("src", "http://maps.google.com/maps/api/js?sensor=false&callback=em_maps");
+		script.setAttribute("src", "http://maps.google.com/maps/api/js?v=3.2&sensor=false&callback=em_maps");
 		script.setAttribute("type", "text/javascript");
 		document.documentElement.firstChild.appendChild(script);
 	}
