@@ -6,7 +6,7 @@ Requires at least: 3.0
 Tested up to: 3.1.2
 Stable tag: 4.0
 
-Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management and more.
+Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
              
 == Description ==
 
