@@ -12,119 +12,119 @@ function em_docs_init(){
 		$EM_Documentation = array(
 			'arguments' => array(
 				'events' => array(
-					'limit' => array( 'default'=>'See the events lists limit option on the settings page.' ),					
-					'orderby' => array( 'desc'=>'Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name").', 'default'=>'See the event lists ordering option on the settings page.', 'args'=>'name, start_date, start_time, end_date, end_time'),
-					'order' => array( 'default'=>'See the event lists ordering option on the settings page.' )
+					'limit' => array( 'default'=> __('See the events lists limit option on the settings page.', 'dbem') ),					
+					'orderby' => array( 'desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name").', 'dbem'), 'default'=> __('See the event lists ordering option on the settings page.', 'dbem'), 'args'=>'name, start_date, start_time, end_date, end_time'),
+					'order' => array( 'default'=> __('See the event lists ordering option on the settings page.', 'dbem') )
 				),
 				'locations' => array(
-					'eventful' => array( 'desc'=>'If set to 1 will only show locations that have at least one event occurring during the scope.', 'default' => 0),
-					'eventless' => array( 'desc'=>'If set to 1 will only show locations that have no events occurring during the scope.', 'default' => 0),
-					'orderby' => array('desc'=>'Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name").', 'default'=>'name', 'args' => 'name, address, town'),
+					'eventful' => array( 'desc'=> __('If set to 1 will only show locations that have at least one event occurring during the scope.', 'dbem'), 'default' => 0),
+					'eventless' => array( 'desc'=> __('If set to 1 will only show locations that have no events occurring during the scope.', 'dbem'), 'default' => 0),
+					'orderby' => array('desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name").', 'dbem'), 'default'=>'name', 'args' => 'name, address, town'),
 					'scope' => array( 'default' => 'all')
 				),
 				'calendar' => array(
-					'full' => array( 'desc'=>'If set to 1 it will display a full calendar that shows event names.', 'default' => 0),
-					'long_events' => array( 'desc'=>'If set to 1, will show events that last longer than a day.', 'default' => 0),
-					'order' => array( 'desc'=>'Same as for events.' ),
+					'full' => array( 'desc'=> __('If set to 1 it will display a full calendar that shows event names.', 'dbem'), 'default' => 0),
+					'long_events' => array( 'desc'=> __('If set to 1, will show events that last longer than a day.', 'dbem'), 'default' => 0),
+					'order' => array( 'desc'=> __('Same as for events.', 'dbem') ),
 					'scope' => array( 'default' => 'future')
 				),
 				//The object is commonly shared by all, so entries above overwrite entries here
 				'general' => array(
-					'limit' => array( 'desc'=>'Limits the amount of values returned to this number.', 'default'=>'0 (no limit)'),
-					'scope' => array( 'desc'=>'Choose the time frame of events to show. Accepted values are "future", "past" or "all" events. Additionally you can supply dates (in format of YYYY-MM-DD), either single for events on a specific date or two dates seperated by a comma (e.g. 2010-12-25,2010-12-31) for events ocurring between these dates.', 'default'=>'future'),
-					'order' => array( 'desc'=>'Indicates the order of the events. Choose between ASC (ascending) and DESC (descending).', 'default'=>'ASC'),
-					'orderby' => array( 'desc'=>'Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name"). See specific instances (e.g. events, locations, etc.) for field names.', 'default'=>0),
-					'format' => array( 'desc'=>'If you are displaying some information with the shortcode or function (e.g. listing events), you can supply the html and placeholders here.', 'default'=>'The relevant default format will be taken from the settings page.'), 
-					'event' => array( 'desc'=>'Supply a single id or comma-seperated ids (e.g. "1,2,3") to limit the search to events with these id(s).', 'default'=>0),
-					'category' => array( 'desc'=>'Supply a single id or comma-seperated ids (e.g. "1,2,3") to limit the search to events in these categories.', 'default'=>0), 
-					'location' => array( 'desc'=>'Supply a single id or comma-seperated ids to limit the search to these locations (or events in these locations).', 'default'=>0), 
-					'offset' => array( 'desc'=>'For example, if you have ten results, if you set this to 5, only the last 5 results will be returned. Useful for pagination.', 'default'=>0), 
-					'recurrence' => array( 'desc'=>'If set to 1, will show only events that are recurring (i.e. events that are repeated over different dates).', 'default'=>0),
-					'recurring' => array( 'desc'=>'If set to 1, will only show recurring event templates. Only useful if you know what you\'re doing, use recurrence if you want events that are recurrences.', 'default'=>0),
-					'month' => array( 'desc'=>'If set to a month (1 to 12) only events that start or end during this month/year will be retured. Must be used in conjunction with year and does not work as intended if used with scope.', 'default'=>''),
-					'year' => array( 'desc'=>'If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Does not work as intended if used with scope.', 'default'=>''),
-					'array' => array( 'desc'=>'If you supply this as an argument, the returned data will be in an array, no objects (only useful wen using PHP, not shortcodes)', 'default'=>0),
-					'pagination' => array('desc'=>'When using a function or shortcode that outputs items (e.g. [events_list] for events, [locations_list] for locations), if the number of items supercede the limit of items to show, setting this to 1 will show page links under the list.', 'default'=>0)
+					'limit' => array( 'desc'=> __('Limits the amount of values returned to this number.', 'dbem'), 'default'=>'0 (no limit)'),
+					'scope' => array( 'desc'=> __('Choose the time frame of events to show. Accepted values are "future", "past" or "all" events. Additionally you can supply dates (in format of YYYY-MM-DD), either single for events on a specific date or two dates seperated by a comma (e.g. 2010-12-25,2010-12-31) for events ocurring between these dates.', 'dbem'), 'default'=>'future'),
+					'order' => array( 'desc'=> __('Indicates the order of the events. Choose between ASC (ascending) and DESC (descending).', 'dbem'), 'default'=>'ASC'),
+					'orderby' => array( 'desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name"). See specific instances (e.g. events, locations, etc.) for field names.', 'dbem'), 'default'=>0),
+					'format' => array( 'desc'=> __('If you are displaying some information with the shortcode or function (e.g. listing events), you can supply the html and placeholders here.', 'dbem'), 'default'=> __('The relevant default format will be taken from the settings page.', 'dbem')), 
+					'event' => array( 'desc'=> __('Supply a single id or comma-seperated ids (e.g. "1,2,3") to limit the search to events with these id(s).', 'dbem'), 'default'=>0),
+					'category' => array( 'desc'=> __('Supply a single id or comma-seperated ids (e.g. "1,2,3") to limit the search to events in these categories.', 'dbem'), 'default'=>0), 
+					'location' => array( 'desc'=> __('Supply a single id or comma-seperated ids to limit the search to these locations (or events in these locations).', 'dbem'), 'default'=>0), 
+					'offset' => array( 'desc'=> __('For example, if you have ten results, if you set this to 5, only the last 5 results will be returned. Useful for pagination.', 'dbem'), 'default'=>0), 
+					'recurrence' => array( 'desc'=> __('If set to 1, will show only events that are recurring (i.e. events that are repeated over different dates).', 'dbem'), 'default'=>0),
+					'recurring' => array( 'desc'=> __('If set to 1, will only show recurring event templates. Only useful if you know what you\'re doing, use recurrence if you want events that are recurrences.', 'dbem'), 'default'=>0),
+					'month' => array( 'desc'=> __('If set to a month (1 to 12) only events that start or end during this month/year will be retured. Must be used in conjunction with year and does not work as intended if used with scope.', 'dbem'), 'default'=>''),
+					'year' => array( 'desc'=> __('If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Does not work as intended if used with scope.', 'dbem'), 'default'=>''),
+					'array' => array( 'desc'=> __('If you supply this as an argument, the returned data will be in an array, no objects (only useful wen using PHP, not shortcodes)', 'dbem'), 'default'=>0),
+					'pagination' => array('desc'=> __('When using a function or shortcode that outputs items (e.g. [events_list] for events, [locations_list] for locations), if the number of items supercede the limit of items to show, setting this to 1 will show page links under the list.', 'dbem'), 'default'=>0)
 				)
 			),
 			'placeholders' => array(
 				'events' => array(
 					'Event Details' => array(
 						'placeholders' => array(
-							'#_NAME' => array( 'desc' => 'Displays the name of the event.' ),
-							'#_NOTES' => array( 'desc' => 'Shows the description of the event.' ),
-							'#_EXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show (currently, no read more link is added).' ),
-							'#_EVENTID' => array( 'desc' => 'Shows the event corresponding ID number in the database table.' ),
-							'#_EVENTIMAGE' => array( 'desc' => 'Shows the event image, if available.' )
+							'#_NAME' => array( 'desc' => __('Displays the name of the event.', 'dbem') ),
+							'#_NOTES' => array( 'desc' => __('Shows the description of the event.', 'dbem') ),
+							'#_EXCERPT' => array( 'desc' => __('If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show (currently, no read more link is added).', 'dbem') ),
+							'#_EVENTID' => array( 'desc' => __('Shows the event corresponding ID number in the database table.', 'dbem') ),
+							'#_EVENTIMAGE' => array( 'desc' => __('Shows the event image, if available.', 'dbem') )
 						)
 					),			
 					'Time' => array(
 						'desc' => '',
 						'placeholders' => array(
-							'#_24HSTARTTIME' => array( 'desc' => 'Displays the start time in a 24 hours format (e.g. 16:30).' ),
-							'#_24HENDTIME' => array( 'desc' => 'Displays the end time in a 24 hours format (e.g. 18:30).' ),
-							'#_12HSTARTTIME' => array( 'desc' => 'Displays the start time in a 12 hours format (e.g. 4:30 PM).' ),
-							'#_12HENDTIME' => array( 'desc' => 'Displays the end time in a 12 hours format (e.g. 6:30 PM).' )
+							'#_24HSTARTTIME' => array( 'desc' => __('Displays the start time in a 24 hours format (e.g. 16:30).', 'dbem') ),
+							'#_24HENDTIME' => array( 'desc' => __('Displays the end time in a 24 hours format (e.g. 18:30).', 'dbem') ),
+							'#_12HSTARTTIME' => array( 'desc' => __('Displays the start time in a 12 hours format (e.g. 4:30 PM).', 'dbem') ),
+							'#_12HENDTIME' => array( 'desc' => __('Displays the end time in a 12 hours format (e.g. 6:30 PM).', 'dbem') )
 						)
 					),
 					'Custom Date/Time Formatting' => array(
-						'desc' => 'Events Manager allows extremely flexible date formatting by using <a href="http://www.php.net/manual/en/function.date.php">PHP date syntax format characters</a> along with placeholders.',
+						'desc' => __('Events Manager allows extremely flexible date formatting by using <a href="http://www.php.net/manual/en/function.date.php">PHP date syntax format characters</a> along with placeholders.', 'dbem'),
 						'placeholders' => array(
-							'# or #@' => array( 'desc' => 'Prepend <code>#</code> or <code>#@</code> before a valid PHP date syntax format character to show start and end date/time information respectively (e.g. <code>#F</code> will show the starting month name like "January", #@h shows the end hour).' ),
-							'#{x} or #@{x}' => array( 'desc' => 'You can also create a date format without prepending # to each character by wrapping a valid php date() format in <code>#{}</code> or <code>#@{}</code> (e.g. <code>#_{d/m/Y}</code>). If there is no end date (or is same as start date), the value is not shown. This is useful if you want to show event end dates only on events that are longer than on day, e.g. <code>#j #M #Y #@_{ \u\n\t\i\l j M Y}</code>.' ),
+							'# or #@' => array( 'desc' => __('Prepend <code>#</code> or <code>#@</code> before a valid PHP date syntax format character to show start and end date/time information respectively (e.g. <code>#F</code> will show the starting month name like "January", #@h shows the end hour).', 'dbem') ),
+							'#{x} or #@{x}' => array( 'desc' => __('You can also create a date format without prepending # to each character by wrapping a valid php date() format in <code>#{}</code> or <code>#@{}</code> (e.g. <code>#_{d/m/Y}</code>). If there is no end date (or is same as start date), the value is not shown. This is useful if you want to show event end dates only on events that are longer than on day, e.g. <code>#j #M #Y #@_{ \u\n\t\i\l j M Y}</code>.', 'dbem') ),
 						)
 					),
 					'Links' => array(
 						'placeholders' => array(
-							'#_EVENTURL' => array( 'desc' => 'Simply prints the event URL. You can use this placeholder to build your own customised links.' ),
-							'#_EVENTIMAGEURL' => array( 'desc' => 'Shows the event image url, if available.' ),
-							'#_EVENTLINK' => array( 'desc' => 'Displays the event name with a link to the event page.' ),
-							'#_EDITEVENTLINK' => array( 'desc' => 'Inserts a link to the admin  or buddypress (if activated) edit event page, only if a user is logged in and is allowed to edit the event.' ),
-							'#_EDITEVENTURL' => array( 'desc' => 'Inserts a url to the admin or buddypress (if activated) edit event page, only if a user is logged in and is allowed to edit the event.' )
+							'#_EVENTURL' => array( 'desc' => __('Simply prints the event URL. You can use this placeholder to build your own customised links.', 'dbem') ),
+							'#_EVENTIMAGEURL' => array( 'desc' => __('Shows the event image url, if available.', 'dbem') ),
+							'#_EVENTLINK' => array( 'desc' => __('Displays the event name with a link to the event page.', 'dbem') ),
+							'#_EDITEVENTLINK' => array( 'desc' => __('Inserts a link to the admin  or buddypress (if activated) edit event page, only if a user is logged in and is allowed to edit the event.', 'dbem') ),
+							'#_EDITEVENTURL' => array( 'desc' => __('Inserts a url to the admin or buddypress (if activated) edit event page, only if a user is logged in and is allowed to edit the event.', 'dbem') )
 						)
 					),
 					'Custom Attributes' => array(
-						'desc' => 'Events Manager allows you to create dynamic attributes to your events, which act as extra information fields for your events (e.g. "Dress Code"). For more information see <a href="http://wp-events-plugin.com/documentation/categories-and-attributes/">our online documentation</a> for more info on attributes.',
+						'desc' => __('Events Manager allows you to create dynamic attributes to your events, which act as extra information fields for your events (e.g. "Dress Code"). For more information see <a href="http://wp-events-plugin.com/documentation/categories-and-attributes/">our online documentation</a> for more info on attributes.', 'dbem'),
 						'placeholders' => array( 
-							'#_ATT{key}{alternative text}' => array('desc'=>'This key will appear as an option when adding attributes to your event. The second braces are optional and will appear if the attribute is not defined or left blank for that event.')
+							'#_ATT{key}{alternative text}' => array('desc'=> __('This key will appear as an option when adding attributes to your event. The second braces are optional and will appear if the attribute is not defined or left blank for that event.', 'dbem'))
 						)
 					),
 					'Bookings/RSVP' => array(
-						'desc' => 'These placeholders will only show if RSVP is enabled for the given event and in the events manager settings page. Spaces placeholders will default to 0',
+						'desc' => __('These placeholders will only show if RSVP is enabled for the given event and in the events manager settings page. Spaces placeholders will default to 0', 'dbem'),
 						'placeholders' => array(
-							'#_BOOKINGFORM' => array( 'desc' => 'Adds a booking forms for this event.' ),
-							'#_AVAILABLESPACES' => array( 'desc' => 'Shows available spaces for the event.' ),
-							'#_BOOKEDSPACES' => array( 'desc' => 'Shows the amount of currently booked spaces for the event.' ),
-							'#_PENDINGSPACES' => array( 'desc' => 'Shows the amount of pending spaces for the event.' ),
-							'#_SPACES' => array( 'desc' => 'Shows the total spaces for the event.' ),
-							'#_ATTENDEES' => array( 'desc' => 'Shows the list of user avatars attending events.' ),
-							'#_BOOKINGBUTTON' => array( 'desc' => 'A single button that will appear to logged in users, if they click on it, they apply for a booking. This button will only display if there is one ticket.' ),
-							'#_BOOKINGSURL' => array( 'desc' => 'Shows the url to the admin or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' ),
-							'#_BOOKINGSLINK' => array( 'desc' => 'Shows a link to the admin or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' )							
+							'#_BOOKINGFORM' => array( 'desc' => __('Adds a booking forms for this event.', 'dbem') ),
+							'#_AVAILABLESPACES' => array( 'desc' => __('Shows available spaces for the event.', 'dbem') ),
+							'#_BOOKEDSPACES' => array( 'desc' => __('Shows the amount of currently booked spaces for the event.', 'dbem') ),
+							'#_PENDINGSPACES' => array( 'desc' => __('Shows the amount of pending spaces for the event.', 'dbem') ),
+							'#_SPACES' => array( 'desc' => __('Shows the total spaces for the event.', 'dbem') ),
+							'#_ATTENDEES' => array( 'desc' => __('Shows the list of user avatars attending events.', 'dbem') ),
+							'#_BOOKINGBUTTON' => array( 'desc' => __('A single button that will appear to logged in users, if they click on it, they apply for a booking. This button will only display if there is one ticket.', 'dbem') ),
+							'#_BOOKINGSURL' => array( 'desc' => __('Shows the url to the admin or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.', 'dbem') ),
+							'#_BOOKINGSLINK' => array( 'desc' => __('Shows a link to the admin or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.', 'dbem') )							
 						)
 					),
 					'Contact Details' => array(
-						'desc' => 'The values here are taken from the chosen contact for the specific event, or the default contact in the settings page.',
+						'desc' => __('The values here are taken from the chosen contact for the specific event, or the default contact in the settings page.', 'dbem'),
 						'placeholders' => array(
-							'#_CONTACTNAME' => array( 'desc' => 'Name of the contact person for this event (as shown in the dropdown when adding an event).' ),
-							'#_CONTACTUSERNAME' => array( 'desc' => 'Contact person\'s username.' ),
-							'#_CONTACTEMAIL' => array( 'desc' => 'E-mail of the contact person for this event.' ),
-							'#_CONTACTPHONE' => array( 'desc' => 'Phone number of the contact person for this event. Can be set in the user profile page.' ),
-							'#_CONTACTAVATAR' => array( 'desc' => 'Contact person\'s avatar.' ),
-							'#_CONTACTPROFILELINK' => array( 'desc' => 'Contact person\'s "Profile" link. Only works with BuddyPress enabled.' ),
-							'#_CONTACTPROFILEURL' => array( 'desc' => 'Contact person\'s profile url. Only works with BuddyPress enabled.' ),
-							'#_CONTACTID' => array( 'desc' => 'Contact person\'s wordpress user ID.')
+							'#_CONTACTNAME' => array( 'desc' => __('Name of the contact person for this event (as shown in the dropdown when adding an event).', 'dbem') ),
+							'#_CONTACTUSERNAME' => array( 'desc' => __('Contact person\'s username.', 'dbem') ),
+							'#_CONTACTEMAIL' => array( 'desc' => __('E-mail of the contact person for this event.', 'dbem') ),
+							'#_CONTACTPHONE' => array( 'desc' => __('Phone number of the contact person for this event. Can be set in the user profile page.', 'dbem') ),
+							'#_CONTACTAVATAR' => array( 'desc' => __('Contact person\'s avatar.', 'dbem') ),
+							'#_CONTACTPROFILELINK' => array( 'desc' => __('Contact person\'s "Profile" link. Only works with BuddyPress enabled.', 'dbem') ),
+							'#_CONTACTPROFILEURL' => array( 'desc' => __('Contact person\'s profile url. Only works with BuddyPress enabled.', 'dbem') ),
+							'#_CONTACTID' => array( 'desc' => __('Contact person\'s wordpress user ID.', 'dbem'))
 						)
 					),			
 				),
 				'categories' => array(
 					'Category Details' => array(
 						'placeholders' => array(
-							'#_CATEGORYNAME' => array( 'desc' => 'Shows the category name of the event.' ),
-							'#_CATEGORYID' => array( 'desc' => 'Shows the category ID of the event.' ),
-							'#_CATEGORYIMAGE' => array( 'desc' => 'Shows the event image, if available.' ),
-							'#_CATEGORYIMAGEURL' => array( 'desc' => 'Shows the event image url, if available.' ),
-							'#_CATEGORYNOTES' => array( 'desc' => 'Shows the location description.' )
+							'#_CATEGORYNAME' => array( 'desc' => __('Shows the category name of the event.', 'dbem') ),
+							'#_CATEGORYID' => array( 'desc' => __('Shows the category ID of the event.', 'dbem') ),
+							'#_CATEGORYIMAGE' => array( 'desc' => __('Shows the event image, if available.', 'dbem') ),
+							'#_CATEGORYIMAGEURL' => array( 'desc' => __('Shows the event image url, if available.', 'dbem') ),
+							'#_CATEGORYNOTES' => array( 'desc' => __('Shows the location description.', 'dbem') )
 						)
 					)					
 				),
@@ -132,49 +132,49 @@ function em_docs_init(){
 					'Location Details' => array(
 						'desc' => '',
 						'placeholders' => array(
-							'#_LOCATIONNAME' => array( 'desc' => 'Displays the location name.' ),
-							'#_LOCATIONADDRESS' => array( 'desc' => 'Displays the address.' ),
-							'#_LOCATIONTOWN' => array( 'desc' => 'Displays the town.' ),
-							'#_LOCATIONSTATE' => array( 'desc' => 'Displays the state/county.' ),
-							'#_LOCATIONPOSTCODE' => array( 'desc' => 'Displays the postcode.' ),
-							'#_LOCATIONCOUNTRY' => array( 'desc' => 'Displays the country.' ),
-							'#_LOCATIONMAP' => array( 'desc' => 'Displays a google map showing where the event is located (Will not show if maps are disabled in the settings page)' ),
-							'#_LOCATIONNOTES' => array( 'desc' => 'Shows the location description.' ),
-							'#_LOCATIONEXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your location description, only the content before this tag will show (currently, no read more link is added).' ),
-							'#_LOCATIONIMAGE' => array( 'desc' => 'Shows the location image.' ),
-							'#_LOCATIONID' => array( 'desc' => 'Displays the location ID number.' )
+							'#_LOCATIONNAME' => array( 'desc' => __('Displays the location name.', 'dbem') ),
+							'#_LOCATIONADDRESS' => array( 'desc' => __('Displays the address.', 'dbem') ),
+							'#_LOCATIONTOWN' => array( 'desc' => __('Displays the town.', 'dbem') ),
+							'#_LOCATIONSTATE' => array( 'desc' => __('Displays the state/county.', 'dbem') ),
+							'#_LOCATIONPOSTCODE' => array( 'desc' => __('Displays the postcode.', 'dbem') ),
+							'#_LOCATIONCOUNTRY' => array( 'desc' => __('Displays the country.', 'dbem') ),
+							'#_LOCATIONMAP' => array( 'desc' => __('Displays a google map showing where the event is located (Will not show if maps are disabled in the settings page)', 'dbem') ),
+							'#_LOCATIONNOTES' => array( 'desc' => __('Shows the location description.', 'dbem') ),
+							'#_LOCATIONEXCERPT' => array( 'desc' => __('If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your location description, only the content before this tag will show (currently, no read more link is added).', 'dbem') ),
+							'#_LOCATIONIMAGE' => array( 'desc' => __('Shows the location image.', 'dbem') ),
+							'#_LOCATIONID' => array( 'desc' => __('Displays the location ID number.', 'dbem') )
 						)
 					),
 					'Links' => array(
 						'placeholders' => array(
-							'#_LOCATIONURL' => array( 'desc' => 'Simply prints the location URL. You can use this placeholder to build your own customised links.' ),
-							'#_LOCATIONLINK' => array( 'desc' => 'Displays the location name with a link to the location page.' )
+							'#_LOCATIONURL' => array( 'desc' => __('Simply prints the location URL. You can use this placeholder to build your own customised links.', 'dbem') ),
+							'#_LOCATIONLINK' => array( 'desc' => __('Displays the location name with a link to the location page.', 'dbem') )
 						)
 					),			
 					'Related Events' => array(
-						'desc' => 'You can show lists of other events that are being held at this location. The formatting of the list is the same as a normal events list.',
+						'desc' => __('You can show lists of other events that are being held at this location. The formatting of the list is the same as a normal events list.', 'dbem'),
 						'placeholders' => array(
-							'#_LOCATIONPASTEVENTS' => array( 'desc' => 'Will show a list of all past events at this location.' ),
-							'#_LOCATIONNEXTEVENTS' => array( 'desc' => 'Will show a list of all future events at this location.' ),
-							'#_LOCATIONALLEVENTS' => array( 'desc' => 'Will show a list of all events at this location.' )
+							'#_LOCATIONPASTEVENTS' => array( 'desc' => __('Will show a list of all past events at this location.', 'dbem') ),
+							'#_LOCATIONNEXTEVENTS' => array( 'desc' => __('Will show a list of all future events at this location.', 'dbem') ),
+							'#_LOCATIONALLEVENTS' => array( 'desc' => __('Will show a list of all events at this location.', 'dbem') )
 						)
 					),
 				),
 				'bookings' => array(
 					'Booking Person Information' => array(
-						'desc' => 'When a specific booking is displayed (on screen and on email), you can use these placeholders to show specific information about the booking. For contact details of the contact of this event, see the events placeholders.',
+						'desc' => __('When a specific booking is displayed (on screen and on email), you can use these placeholders to show specific information about the booking. For contact details of the contact of this event, see the events placeholders.', 'dbem'),
 						'placeholders' => array(
-							'#_BOOKINGNAME' => array( 'desc' => 'Name of person who made the booking.' ),
-							'#_BOOKINGEMAIL' => array( 'desc' => 'Email of person who made the booking.' ),
-							'#_BOOKINGPHONE' => array( 'desc' => 'Phone number of person who made the booking.' ),
-							'#_BOOKINGSPACES' => array( 'desc' => 'Number of spaces the person has booked.' ),
-							'#_BOOKINGCOMMENT' => array( 'desc' => 'Any specific comments made by the person who made the booking.' )
+							'#_BOOKINGNAME' => array( 'desc' => __('Name of person who made the booking.', 'dbem') ),
+							'#_BOOKINGEMAIL' => array( 'desc' => __('Email of person who made the booking.', 'dbem') ),
+							'#_BOOKINGPHONE' => array( 'desc' => __('Phone number of person who made the booking.', 'dbem') ),
+							'#_BOOKINGSPACES' => array( 'desc' => __('Number of spaces the person has booked.', 'dbem') ),
+							'#_BOOKINGCOMMENT' => array( 'desc' => __('Any specific comments made by the person who made the booking.', 'dbem') )
 						)
 					),
 					'Links' => array(
-						'desc' => 'People are able to manage their bookings. Below are some placeholder which automatically provides correctly formatted urls',
+						'desc' => __('People are able to manage their bookings. Below are some placeholder which automatically provides correctly formatted urls', 'dbem'),
 						'placeholders' => array(
-							'#_BOOKINGLISTURL' => array( 'desc' => 'URL to page showing that users booked events.' )
+							'#_BOOKINGLISTURL' => array( 'desc' => __('URL to page showing that users booked events.', 'dbem') )
 						)
 					)
 				),
