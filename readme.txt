@@ -1,41 +1,48 @@
 === Events Manager ===  
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://wp-events-plugin.com
-Tags: events, booking, calendar, locations, maps, geotagging, admin, dashboard, plugin, template, theme, widget
+Tags: attendance, attendee, buddypress, calendar, registration, event, event calendar, event management, event registration, events, events calendar, gigs, payment, payments, paypal, registration, sports, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking
 Requires at least: 3.0
 Tested up to: 3.1.2
 Stable tag: 4.0
 
-Fully featured events management including recurring events, location management, calendar, Google map integration, booking management and more.
+Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management and more.
              
 == Description ==
 
-Readme update coming very shortly... check the site for more info on recent updates and features.
+Events Manager 4.0 is a full-featured event registration management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
 
-Events Manager 3.0 is a full-featured event management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
-
-For more documentation and support please visit the [plugin website](http://wp-events-plugin.com/).
+For documentation, tutorials and support please visit the [plugin website](http://wp-events-plugin.com/).
 
 Main Features
 
-* Easy event creation (single day with start/end times)
-* Recurring and long (multi-day) events
+* Easy event registration (single day with start/end times)
+* Recurring and long (multi-day) event registration
+* Bookings Management (including approval/rejections, export CVS, and more!)
+* Multiple Tickets
+* Multisite Support
+* BuddyPress Support
+**Group Events
+**Personal Events
+**Activity Stream
+**more on the way!
+* SEO Permalinks
 * Assign event locations and view events by location
 * Event categories
 * Easily create custom event attributes (e.g. dress code)
-* Bookings Management (including approval/rejections, export CVS, and more!)
 * Google Map integration straight out the box!
-* Advanced permissions - restrict user management of events.
+* Advanced permissions - restrict user management of events and locations.
 * Sidebars to display your events and locations
 * Calendaring widgets show your events in an AJAX calendar format
-* Fine grained control of how every aspect of your events are shown on your site, easily modify templates from the settings page
+* Fine grained control of how every aspect of your events are shown on your site, easily modify templates from the settings pages and template files
+* iCal Feed
 * RSS Feeds
 * Plenty of template tags and shortcodes for use in your posts and pages
 * Actively maintained and supported
-* Fully localizable, translations already available in German, Spanish, Czech, Italian, Dutch, Portuguese and Swedish
+* Lots of documentation and tutorials
 * And much more!
 
-Events Manager 3.0 was written from the ground up with flexibility in mind. Through use of object oriented programming and exposing hooks and filters throughout the site, you can modify Events Manager just like you would Wordpress!
+Events Manager was rewritten in 3.0 from the ground up with flexibility in mind. Through use of object oriented programming and exposing hooks and filters throughout the site, you can modify Events Manager just like you would Wordpress! Aside from this
 
 Events Manager is fully localisable and already localised in Italian, Spanish, German and Swedish.
 
@@ -57,17 +64,13 @@ Once installed, you can start adding events straight away, although you may want
 1. When upgrading, visit the plugins page in your admin area, scroll down to events manager and click upgrade.
 2. Wordpress will help you upgrade automatically.
 
-= Upgrading from 2.x to 3.x =
+= Upgrading from 3.x to 4.x =
 
-Version 3.x uses different tables than 2.x. Events should be migrated automatically without any action needed from you. However, in the event something does go wrong (very rare, we've done it many times), you can downgrade immediately without losing any settings, or you can click on the help page and try re-importing your events. If you run into any issues, let us know in the forums and we'll be happy to help you through the upgrade.
+Please view [this page](http://wp-events-plugin.com/news/events-manager-4-0-released/) for information on upgrading events manager.
  
 == Frequently Asked Questions ==
 
 See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is updated regularly.
-
-= This plugin is *almost* right for me, but there's this feature I *desperately* need. Can you add it? =
-
-We have a pretty big to-do list and we intend on implementing many cool new features over time. If you really really need this feature you can offer to sponsor the feature for the plugin and we may be able to accommodate you. Sponsored features will also be made available to other users, so you're also giving back to the community and help us make this plugin better, faster!
 
 = How do I resize the map? =
 
@@ -104,11 +107,17 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 
 == Screenshots ==
 
-1. A default event page with a map automatically pulled from Google Maps through the #_MAP placeholder.
-2. The events management page.
-3. The Events Manager Options page.
+1. Event registration and user submitted events pending approval
+2. Event ticketing and bookings forms, easily styleable.
+3. Multiple tickets with constraints and prices
+4. Locations with google map integration
+5. Event registration page
+6. Manage attendees with various booking reports
 
 == Changelog ==
+
+= 4.0 =
+* see http://wp-events-plugin.com/news/events-manager-4-0-released/
 
 = 3.0.97 =
 * Restoring stable version
