@@ -266,13 +266,16 @@ class EM_Location extends EM_Object {
 					$replace = $this->town;
 					break;
 				case '#_LOCATIONSTATE':
-					$replace = $this->id;
+					$replace = $this->state;
 					break;
 				case '#_LOCATIONPOSTCODE':
-					$replace = $this->id;
+					$replace = $this->postcode;
+					break;
+				case '#_LOCATIONREGION':
+					$replace = $this->region;
 					break;
 				case '#_LOCATIONCOUNTRY':
-					$replace = $this->id;
+					$replace = $this->get_country();
 					break;
 				case '#_MAP': //Depreciated
 				case '#_LOCATIONMAP':

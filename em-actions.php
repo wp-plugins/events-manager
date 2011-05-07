@@ -3,7 +3,7 @@
  * Performs actions on init. This works for both ajax and normal requests, the return results depends if an em_ajax flag is passed via POST or GET.
  */
 function em_init_actions() {
-	global $wpdb,$EM_Notices; 
+	global $wpdb,$EM_Notices,$EM_Event; 
 	//NOTE - No EM objects are globalized at this point, as we're hitting early init mode.
 	//TODO Clean this up.... use a uniformed way of calling EM Ajax actions
 	if( !empty($_REQUEST['em_ajax']) || !empty($_REQUEST['em_ajax_action']) ){
@@ -51,7 +51,6 @@ function em_init_actions() {
 	
 	//Event Actions
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,5) == 'event' ){
-		global $EM_Event, $EM_Notices;
 		//Load the event object, with saved event if requested
 		if( !empty($_REQUEST['event_id']) ){
 			$EM_Event = new EM_Event($_REQUEST['event_id']);
@@ -78,9 +77,7 @@ function em_init_actions() {
 				}
 				$events_result = true;
 			}else{
-				foreach($EM_Event->get_errors() as $error){
-					$EM_Notices->add_error( $error );	
-				}
+				$EM_Notices->add_error( $EM_Event->get_errors() );
 				$events_result = false;				
 			}
 		}
@@ -383,9 +380,11 @@ function em_init_actions() {
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,6) == 'search' ){
 		if( $_REQUEST['action'] == 'search_states' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_states') ){
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_country=%s", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
+			}elseif( !empty($_REQUEST['region']) ){
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_region=%s", $_REQUEST['region']));
 			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE, $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE, $_REQUEST['country'] . "WHERE  location_state IS NOT NULL AND location_state != ''"));
 			}
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
@@ -406,16 +405,16 @@ function em_init_actions() {
 		}
 		if( $_REQUEST['action'] == 'search_regions' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_regions') ){
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s", $_REQUEST['country']));
 			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != ''", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != ''", $_REQUEST['country']));
 			}
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
 				ob_start();
 				?>
 				<option value=''><?php _e('All Regions','dbem'); ?></option>
-				<?php			
+				<?php	
 				foreach( $results as $result ){
 					echo "<option>{$result->value}</option>";
 				}

@@ -29,13 +29,13 @@ function em_admin_warnings() {
 		}	
 		
 		//Image upload folders
-		if( is_super_admin() && EM_IMAGE_DS == '/' ){
+		if( is_admin() && EM_IMAGE_DS == '/' ){
 			$errs = array();
-			if( !file_exists(EM_IMAGE_UPLOAD_DIR) && @mkdir(EM_IMAGE_UPLOAD_DIR, 0777)){
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/events/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777) ){ $errs[] = 'events'; }
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/locations/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777) ){ $errs[] = 'locations'; }
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/categories/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777) ){ $errs[] = 'categories'; }
-			}elseif( !file_exists(EM_IMAGE_UPLOAD_DIR) ){
+			if( is_writable(EM_IMAGE_UPLOAD_DIR) || @mkdir(EM_IMAGE_UPLOAD_DIR, 0777)){
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/events/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777) ){ $errs[] = 'events'; }
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/locations/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777) ){ $errs[] = 'locations'; }
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/categories/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777) ){ $errs[] = 'categories'; }
+			}elseif( !is_writable(EM_IMAGE_UPLOAD_DIR) ){
 				$errs = array('events','categories','locations');
 			}
 			if( count($errs) > 0 ){

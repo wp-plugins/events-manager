@@ -37,6 +37,7 @@ class EM_Event extends EM_Object{
 		'recurrence_byday' => array( 'name'=>'byday', 'type'=>'%s' ), //if weekly or monthly, what days of the week?
 		'recurrence_byweekno' => array( 'name'=>'byweekno', 'type'=>'%d' ), //if monthly which week (-1 is last)
 		'event_status' => array( 'name'=>'status', 'type'=>'%d' ), //if monthly which week (-1 is last)
+		'event_date_created' => array( 'name'=>'date_created', 'type'=>'%s' ),
 		'event_date_modified' => array( 'name'=>'date_modified', 'type'=>'%s' ),
 		'group_id' => array( 'name'=>'group_id', 'type'=>'%d' )
 	);
@@ -278,8 +279,10 @@ class EM_Event extends EM_Object{
 			foreach($_POST['em_attributes'] as $att_key => $att_value ){
 				if( (in_array($att_key, $event_available_attributes['names']) || array_key_exists($att_key, $this->attributes) ) && trim($att_value) != '' ){
 					$att_vals = count($event_available_attributes['values'][$att_key]);
-					if( $att_vals == 0 || ($att_vals > 0 && in_array($event_available_attributes['values'][$att_key])) ){
+					if( $att_vals == 0 || ($att_vals > 0 && in_array($att_value, $event_available_attributes['values'][$att_key])) ){
 						$event_attributes[$att_key] = $att_value;
+					}elseif($att_vals > 0){
+						$event_attributes[$att_key] = $event_available_attributes['values'][$att_key][0];
 					}
 				}
 			}
@@ -356,6 +359,7 @@ class EM_Event extends EM_Object{
 		if ( !$this->id ) {
 			// Insert New Event
 			$this->owner = $current_user->ID; //Record creator of event
+			$this->date_created = current_time('mysql');
 			$event = $this->to_array(true);
 			$event['event_attributes'] = serialize($this->attributes);
 			$event['recurrence_id'] = ( is_numeric($this->recurrence_id) ) ? $this->recurrence_id : 0;
@@ -365,6 +369,7 @@ class EM_Event extends EM_Object{
 			}
 			$result = $wpdb->insert ( $events_table, $event, $this->get_types($event) );
 			if($result !== false){
+				//$event['event_date_created'] = current_time('mysql');
 				$this->id = $wpdb->insert_id;
 				$this->is_new = true;
 				//Add Tickets
@@ -381,8 +386,8 @@ class EM_Event extends EM_Object{
 				if ( $this->is_recurring() ) {
 					//Recurrence master event saved, now Save Events & check errors
 				 	if( !$this->save_events() ){
-						$this->errors[] = 	__ ( 'Something went wrong with the recurrence update...', 'dbem' ).
-											__ ( 'There was a problem saving the recurring events.', 'dbem' );
+						$this->add_error(__ ( 'Something went wrong with the recurrence update...', 'dbem' ).
+											__ ( 'There was a problem saving the recurring events.', 'dbem' ));
 						$this->delete();
 				 		return apply_filters('em_event_save', false, $this);
 				 	}
@@ -404,6 +409,7 @@ class EM_Event extends EM_Object{
 			$this->recurrence_id = 0; // If it's saved here, it becomes individual
 			$event = $this->to_array();
 			$event['event_attributes'] = serialize($event['event_attributes']);
+			unset($event['event_date_created']);
 			$event['event_date_modified'] = current_time('mysql');
 			$event = apply_filters('em_event_save_pre',$event,$this);
 			$result = $wpdb->update ( $events_table, $event, array('event_id' => $this->id), $this->get_types($event) );
@@ -929,7 +935,10 @@ class EM_Event extends EM_Object{
 		$event_string = $this->location->output($event_string, $target);
 		
 		//for backwards compat and easy use, take over the individual category placeholders with the frirst cat in th elist.
-		$EM_Category = $this->get_categories()->categories[0];
+		$EM_Categories = $this->get_categories();
+		if( count($EM_Categories->categories) > 0 ){
+			$EM_Category = $EM_Categories->categories[0];
+		}	
 		if( empty($EM_Category) ) $EM_Category = new EM_Category();
 		$event_string = $EM_Category->output($event_string, $target);
 		
@@ -954,6 +963,7 @@ class EM_Event extends EM_Object{
 			//Make template event (and we just change dates)
 			$event = $this->to_array();
 			unset($event['event_id']); //remove id and we have a event template to feed to wpdb insert
+			unset($event['event_date_modified']);		
 			$event['event_attributes'] = serialize($event['event_attributes']);
 			foreach($event as $key => $value ){ //remove recurrence information
 				if( substr($key, 0, 10) == 'recurrence' ){
@@ -964,9 +974,10 @@ class EM_Event extends EM_Object{
 			//Save event template with different dates
 			foreach( $matching_days as $day ) {
 				$event['event_start_date'] = date("Y-m-d", $day);
-				$event['event_end_date'] = $event['event_start_date'];				
+				$event['event_slug'] = $this->slug.'-'.$event['event_start_date'];
+				$event['event_end_date'] = $event['event_start_date'];		
 				$event_saves[] = $wpdb->insert(EM_EVENTS_TABLE, $event, $this->get_types($event));
-				if( EM_DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
+				//if( EM_DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
 		 	}
 		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves), $this);
 		}

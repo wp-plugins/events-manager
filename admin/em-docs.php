@@ -137,6 +137,7 @@ function em_docs_init(){
 							'#_LOCATIONTOWN' => array( 'desc' => __('Displays the town.', 'dbem') ),
 							'#_LOCATIONSTATE' => array( 'desc' => __('Displays the state/county.', 'dbem') ),
 							'#_LOCATIONPOSTCODE' => array( 'desc' => __('Displays the postcode.', 'dbem') ),
+							'#_LOCATIONREGION' => array( 'desc' => __('Displays the region.', 'dbem') ),
 							'#_LOCATIONCOUNTRY' => array( 'desc' => __('Displays the country.', 'dbem') ),
 							'#_LOCATIONMAP' => array( 'desc' => __('Displays a google map showing where the event is located (Will not show if maps are disabled in the settings page)', 'dbem') ),
 							'#_LOCATIONNOTES' => array( 'desc' => __('Shows the location description.', 'dbem') ),
