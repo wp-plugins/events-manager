@@ -26,9 +26,9 @@
 	}
 	add_action ( 'init', 'em_ical' );
 	
-	function em_update_ical($result, $EM_Event){
+	function em_update_ical($result){
 		update_option('dbem_regenerate_ical',true);
 		return $result;
 	}
-	add_filter('em_event_save','em_update_ical', 1, 2);
+	add_filter('em_event_save','em_update_ical', 1, 1);
 ?>

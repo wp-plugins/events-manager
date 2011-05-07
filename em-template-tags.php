@@ -10,7 +10,7 @@
  * @return string
  */
 function em_get_events( $args = array() ){
-	if (strpos ( $args, "=" )) {
+	if ( is_string($args) && strpos ( $args, "=" )) {
 		// allows the use of arguments without breaking the legacy code
 		$defaults = EM_Events::get_default_search();		
 		$args = wp_parse_args ( $args, $defaults );
