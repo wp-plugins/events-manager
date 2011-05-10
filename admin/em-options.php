@@ -111,7 +111,7 @@ function em_admin_options_page() {
 			}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'bookings_migrate_delete'){
 				require_once( dirname(__FILE__).'/../em-install.php');
 				em_migrate_bookings_delete();
-			}		
+			}
 		?>
 		<?php if( $wpdb->get_var("SHOW TABLES LIKE '".EM_PEOPLE_TABLE."'") == EM_PEOPLE_TABLE ): ?>
 			<?php if( $wpdb->get_var('SELECT COUNT(*) FROM '.EM_TICKETS_BOOKINGS_TABLE) > 0 ): ?>
@@ -198,7 +198,8 @@ function em_admin_options_page() {
 					em_options_select ( __( 'Default Location Country' ), 'dbem_location_default_country', em_get_countries(__('no default country', 'dbem')), __('If you select a default country, that will be pre-selected when creating a new location.','dbem') );
 										
 					em_options_textarea ( __( 'Event Attributes', 'dbem' ), 'dbem_placeholders_custom', sprintf(__( "You can also add event attributes here, one per line in this format <code>#_ATT{key}</code>. They will not appear on event pages unless you insert them into another template below, but you may want to store extra information about an event for other uses. <a href='%s'>More information on placeholders.</a>", 'dbem' ), 'wp-events-plugin.com/documentation/event-attributes/') );
-										
+					
+					em_options_radio_binary ( __( 'Show some love?' ), 'dbem_attributes_enabled', __( 'Hundreds of free hours have gone into making this free plugin, show your support and add a small link to the plugin website at the bottom of your event pages.','dbem' ) );
 					echo $save_button;
 					?>
 				</table>

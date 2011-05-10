@@ -106,10 +106,10 @@ function em_bookings_person_table(){
 									</td>
 									<td>
 										<?php
-										$unapprove_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_unapprove', 'bookings'=>$EM_Booking->id));
-										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'bookings'=>$EM_Booking->id));
-										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'bookings'=>$EM_Booking->id));
-										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'bookings'=>$EM_Booking->id));
+										$unapprove_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_unapprove', 'booking_id'=>$EM_Booking->id));
+										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'booking_id'=>$EM_Booking->id));
+										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'booking_id'=>$EM_Booking->id));
+										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'booking_id'=>$EM_Booking->id));
 										?>
 										<?php if( get_option('dbem_bookings_approval') && ($EM_Booking->status == 0 ) ): ?>
 										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Approve','dbem'); ?></a> |

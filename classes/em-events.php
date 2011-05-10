@@ -297,8 +297,10 @@ class EM_Events extends EM_Object implements Iterator {
 			'status' => 1, //approved events only
 			'format_header' => '', //events can have custom html above the list
 			'format_footer' => '', //events can have custom html below the list
-			'state' => '',
-			'country' => '',
+			'town' => false,
+			'state' => false,
+			'country' => false,
+			'region' => false,
 			'blog' => get_current_blog_id(),
 		);
 		if(is_multisite()){

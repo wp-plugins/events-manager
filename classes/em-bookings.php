@@ -477,7 +477,6 @@ class EM_Bookings extends EM_Object implements Iterator{
 			$orderby_sql
 			$limit $offset
 		";
-	
 		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?

@@ -97,7 +97,8 @@ class EM_Booking extends EM_Object{
 			1 => __('Approved','dbem'),
 			2 => __('Rejected','dbem'),
 			3 => __('Cancelled','dbem'),
-			4 => __('Awaiting Online Payment','dbem')
+			4 => __('Awaiting Online Payment','dbem'),
+			5 => __('Awaiting Payment','dbem')
 		);
 		do_action('em_booking', $this, $booking_data);
 	}
@@ -119,6 +120,7 @@ class EM_Booking extends EM_Object{
 					$update = true;
 					$where = array( 'booking_id' => $this->id );  
 					$result = $wpdb->update($table, $data, $where, $this->get_types($data));
+					$result = ($result !== false);
 					$this->feedback_message = __('Changes saved','dbem');
 				}else{
 					$update = false;
@@ -399,8 +401,8 @@ class EM_Booking extends EM_Object{
 	
 	/**
 	 * Change the status of the booking. This will save to the Database too. 
-	 * @param unknown_type $status
-	 * @return string
+	 * @param int $status
+	 * @return boolean
 	 */
 	function set_status($status){
 		$action_string = strtolower($this->status_array[$status]); 

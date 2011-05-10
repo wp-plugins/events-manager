@@ -1,10 +1,12 @@
 <?php
 
 function em_install() {
+	global $wp_rewrite;
+   	$wp_rewrite->flush_rules();
 	$old_version = get_option('dbem_version');
 	//Won't upgrade 2 anymore, let 3 do that and we worry about 3.
-   	if( $old_version != '' && $old_version < 3.095 ){
-   		die('Cannot proceed with installation, please upgrade to the version 3.0.96 from <a href="http://wordpress.org/extend/plugins/events-manager/download/">here</a> first before upgrading to this version.');
+   	if( $old_version != '' && $old_version < 3.096 ){
+   		die('Cannot proceed with installation, please upgrade to the version 3.0.96 or higher from <a href="http://wordpress.org/extend/plugins/events-manager/download/">here</a> first before upgrading to this version.');
    	}
 	if( EM_VERSION > $old_version || $old_version == '' ){
 	 	// Creates the events table if necessary
@@ -21,6 +23,10 @@ function em_install() {
 		//Migrate?
 		if( $old_version < 4 && $old_version != '' ){
 			em_migrate_v3();
+		}else{
+			if( $old_version < 4.002 ){
+		   		add_option('dbem_notice_rc_reimport',1);
+		   	}
 		}
 		//Upate Version	
 	  	update_option('dbem_version', EM_VERSION); 
@@ -286,23 +292,73 @@ function em_add_options() {
 		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_events_page_scope' => 'future',
 		'dbem_events_page_search' => 1,
-		'dbem_event_list_item_format' => '<li>#j #M #Y - #H:#i<br/> #_EVENTLINK<br/>#_LOCATIONTOWN </li>',
+		'dbem_event_list_item_format_header' => '<table cellpadding="0" cellspacing="0" id="current-events" >
+    <thead>
+        <tr>
+			<th id="event-time" width="150">Date/Time</th>
+			<th id="event-description" width="*">Event</th>
+   	</thead>
+    <tbody>',
+		'dbem_event_list_item_format' => '<tr>
+			<td>
+                #_{d/m/Y} #@_{- d/m/Y}<br/>
+                #H:#i -#@H:#@i
+            </td>
+            <td>
+                #_EVENTLINK<br/>
+                <i>#_LOCATIONNAME, #_LOCATIONTOWN #_LOCATIONSTATE</i>
+            </td>
+        </tr>',
+		'dbem_event_list_item_format_footer' => '</tbody></table>',
 		'dbem_display_calendar_in_events_page' => 0,
-		'dbem_single_event_format' => '<p>Date(s) - #j #M #Y #@_{ \u\n\t\i\l j M Y}<br />#_DESCRIPTION<br />Time - #_24HSTARTTIME - #_24HENDTIME<br /></p><p>Where - #_LOCATIONLINK, #_LOCATIONTOWN</p>#_MAP<br/>#_BOOKINGFORM',
+		'dbem_single_event_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_MAP</div>
+<p>	
+	<strong>Date/Time</strong><br/>
+	Date(s) - #j #M #Y #@_{ \u\n\t\i\l j M Y}<br />
+	<i>#_12HSTARTTIME - #_12HENDTIME</i>
+</p>
+<p>	
+	<strong>Location</strong><br/>
+	#_LOCATIONLINK
+</p>
+<p>	
+	<strong>Category(ies)</strong>
+	#_CATEGORIES
+</p>
+<br style="clear:both" />
+#_NOTES
+{has_bookings}
+<h3>Bookings</h3>
+#_BOOKINGFORM
+{/has_bookings}',
 		'dbem_event_page_title_format' => '#_NAME',
 		'dbem_no_events_message' => sprintf(__( 'No %s', 'dbem' ),__('Events','dbem')),
 		//Location Formatting
 		'dbem_location_default_country' => 'US',
-		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_LOCATIONADDRESS</li><li>#_LOCATIONTOWN</li></ul>',
+		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_ADDRESS, #_LOCATIONTOWN, #_LOCATIONSTATE</li></ul>',
 		'dbem_locations_page_title' => __('Event','dbem')." ".__('Locations','dbem'),
 		'dbem_no_locations_message' => sprintf(__( 'No %s', 'dbem' ),__('Locations','dbem')),
 		'dbem_location_page_title_format' => '#_LOCATIONNAME',
-		'dbem_single_location_format' => '<p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
+		'dbem_single_location_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_MAP</div>
+<p>	
+	<strong>Address</strong><br/>
+	#_LOCATIONADDRESS<br/>
+	#_LOCATIONTOWN<br/>
+	#_LOCATIONSTATE<br/>
+	#_LOCATIONREGION<br/>
+	#_LOCATIONPOSTCODE<br/>
+	#_LOCATIONCOUNTRY
+</p>
+<br style="clear:both" />
+#_DESCRIPTION
+
+<h3>Upcoming Events</h3>
+<p>#_NEXTEVENTS</p>',
 		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
-		'dbem_location_event_list_item_format' => "<li>#_LOCATIONNAME - #j #M #Y - #H:#i</li>",
+		'dbem_location_event_list_item_format' => "<li>#_NAME - #j #M #Y - #H:#i</li>",
 		//Category Formatting
 		'dbem_category_page_title_format' => '#_CATEGORYNAME',
-		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYIMAGE #_CATEGORYNOTES <div>#_CATEGORYEVENTSNEXT',
+		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<div><h3>Upcoming Events</h3>#_CATEGORYEVENTSNEXT',
 		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
 		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
@@ -328,7 +384,7 @@ function em_add_options() {
 		'dbem_rsvp_mail_port' => 465,
 		'dbem_smtp_host' => 'localhost',
 		'dbem_mail_sender_name' => '',
-		'dbem_rsvp_mail_send_method' => 'smtp',  
+		'dbem_rsvp_mail_send_method' => 'mail',
 		'dbem_rsvp_mail_SMTPAuth' => 1,
 		//Image Manipulation
 		'dbem_image_max_width' => 700,
@@ -341,6 +397,7 @@ function em_add_options() {
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ", 
 		//General Settings
+		'dbem_credits'=>1,
 		'dbem_use_select_for_locations' => 0,
 		'dbem_attributes_enabled' => 1,
 		'dbem_recurrence_enabled'=> 1,
@@ -451,10 +508,11 @@ function em_migrate_v3(){
 	$wpdb->query('UPDATE '.EM_EVENTS_TABLE.' SET event_status=1');
 	
 	//give all old events a default ticket
+	$wpdb->query('TRUNCATE TABLE '.EM_TICKETS_TABLE);
 	$wpdb->query("INSERT INTO ".EM_TICKETS_TABLE." (`event_id`, `ticket_name`, `ticket_spaces`) SELECT event_id, 'Standard' as ticket_name, event_spaces FROM ".EM_EVENTS_TABLE." WHERE recurrence!=1 and event_rsvp=1");
 	
 	//create permalinks for each location, category, event
-	$array = array('event' => EM_CATEGORIES_TABLE);
+	$array = array('event' => EM_EVENTS_TABLE, 'location' => EM_LOCATIONS_TABLE, 'category' => EM_CATEGORIES_TABLE);
 	foreach( $array as $prefix => $table ){
 		$used_slugs = array();
 		$results = $wpdb->get_results("SELECT {$prefix}_id AS id, {$prefix}_slug AS slug, {$prefix}_name AS name FROM $table", ARRAY_A);
@@ -470,6 +528,7 @@ function em_migrate_v3(){
 		}
 	}
 	//categories
+	$wpdb->query('DELETE FROM '.EM_META_TABLE." WHERE meta_key='event-category'");
 	$wpdb->query('INSERT INTO '.EM_META_TABLE." (`meta_key`,`meta_value`,`object_id`) SELECT 'event-category' as meta_key, event_category_id, event_id FROM ".EM_EVENTS_TABLE ." WHERE recurrence!=1 AND event_category_id IS NOT NULL");
 	
 	update_option('em_notice_migrate_v3',1);
@@ -537,6 +596,7 @@ function em_migrate_bookings(){
 function em_migrate_bookings_delete(){
 	global $wpdb;
 	if( wp_verify_nonce($_REQUEST['_wpnonce'], 'bookings_migrate_delete') ){
+		$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix. 'em_bookings');
 		$wpdb->query('DROP TABLE '.$wpdb->prefix.'em_people');
 		echo "<div class='updated'><p>Old People table deleted, enjoy Events Manager 4!</p></div>";
 	}
