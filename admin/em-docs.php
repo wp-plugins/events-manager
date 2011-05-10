@@ -20,7 +20,12 @@ function em_docs_init(){
 					'eventful' => array( 'desc'=> __('If set to 1 will only show locations that have at least one event occurring during the scope.', 'dbem'), 'default' => 0),
 					'eventless' => array( 'desc'=> __('If set to 1 will only show locations that have no events occurring during the scope.', 'dbem'), 'default' => 0),
 					'orderby' => array('desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name").', 'dbem'), 'default'=>'name', 'args' => 'name, address, town'),
-					'scope' => array( 'default' => 'all')
+					'scope' => array( 'default' => 'all'),
+					'town' => array( 'desc'=> __('Search for locations in this town (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'state' => array( 'desc'=> __('Search for locations in this state (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'region' => array( 'desc'=> __('Search for locations in this region (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'country' => array( 'desc'=> __('Search for locations in this country (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'postcode' => array( 'desc'=> __('Search for locations in this postcode (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem'))
 				),
 				'calendar' => array(
 					'full' => array( 'desc'=> __('If set to 1 it will display a full calendar that shows event names.', 'dbem'), 'default' => 0),
@@ -86,7 +91,9 @@ function em_docs_init(){
 					'Custom Attributes' => array(
 						'desc' => __('Events Manager allows you to create dynamic attributes to your events, which act as extra information fields for your events (e.g. "Dress Code"). For more information see <a href="http://wp-events-plugin.com/documentation/categories-and-attributes/">our online documentation</a> for more info on attributes.', 'dbem'),
 						'placeholders' => array( 
-							'#_ATT{key}{alternative text}' => array('desc'=> __('This key will appear as an option when adding attributes to your event. The second braces are optional and will appear if the attribute is not defined or left blank for that event.', 'dbem'))
+							'#_ATT{key}' => array('desc'=> __('This key will appear as an option when adding attributes to your event.', 'dbem')),
+							'#_ATT{key}{alternative text}' => array('desc'=> __('This key will appear as an option when adding attributes to your event. The text in the second braces will appear if the attribute is not defined or left blank for that event.', 'dbem')),
+							'#_ATT{key}{option 1|option 2|option 3|etc.}' => array('desc'=> __('This key will appear as an option when adding attributes to your event. The second braces are optional and will use a select box with these values as input. If no valid value is defined, the first option is used.', 'dbem')),
 						)
 					),
 					'Bookings/RSVP' => array(

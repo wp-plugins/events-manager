@@ -161,10 +161,16 @@
 <?php ob_start(); ?>
 <script type="text/javascript">
 	jQuery(document).ready( function($){
+		var em_booking_doing_ajax = false;
 		$('#em-booking-form').ajaxForm({
 			url: EM.ajaxurl,
 			dataType: 'jsonp',
 			beforeSubmit: function(formData, jqForm, options) {
+				if(em_booking_doing_ajax){
+					alert('<?php _e('Please wait while the booking is being submitted.','dbem'); ?>');
+					return false;
+				}
+				em_booking_doing_ajax = true;
 				$('.em-booking-message').remove();
 				$('#em-booking').append('<div id="em-loading"></div>');
 			},
@@ -191,6 +197,7 @@
 						$('<div class="em-booking-message-error em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
 					}					
 				}
+				em_booking_doing_ajax = false;
 			}
 		});								
 	});

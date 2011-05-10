@@ -285,6 +285,14 @@ class EM_Object {
 		if( !empty($args['state']) ){
 			$conditions['state'] = "location_state='".$args['state']."'";
 		}
+		//state lookup
+		if( !empty($args['town']) ){
+			$conditions['town'] = "location_town='".$args['town']."'";
+		}
+		//region lookup
+		if( !empty($args['region']) ){
+			$conditions['region'] = "location_region='".$args['region']."'";
+		}
 				
 		//Add conditions for category selection
 		//Filter by category, can be id or comma seperated ids

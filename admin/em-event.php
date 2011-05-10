@@ -235,6 +235,7 @@ function em_admin_event_page() {
 															<a id='printable' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&event_id=".$EM_Event->id ?>'><?php _e('manage bookings','dbem')?></a><br />
 															<a target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_report&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a>
 															<a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a>
+															<?php do_action('em_admin_event_booking_options'); ?>
 															<br class='clear'/>             
 												        </div>
 														<br class='clear'/>    

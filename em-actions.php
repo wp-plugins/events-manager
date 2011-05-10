@@ -237,10 +237,10 @@ function em_init_actions() {
 	//Booking Actions
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,7) == 'booking' && (is_user_logged_in() || ($_REQUEST['action'] == 'booking_add' && get_option('dbem_bookings_anonymous'))) ){
 		global $EM_Event, $EM_Booking, $EM_Person;
-		//Load the event object, with saved event if requested
-		$EM_Event = ( !empty($_REQUEST['event_id']) ) ? new EM_Event($_REQUEST['event_id']): new EM_Event();
 		//Load the booking object, with saved booking if requested
 		$EM_Booking = ( !empty($_REQUEST['booking_id']) ) ? new EM_Booking($_REQUEST['booking_id']) : new EM_Booking();
+		//Load the event object, with saved event if requested
+		$EM_Event = $EM_Booking->get_event();
 		
 		$allowed_actions = array('bookings_approve'=>'approve','bookings_reject'=>'reject','bookings_unapprove'=>'unapprove', 'bookings_delete'=>'delete');
 		$result = false;
@@ -282,7 +282,7 @@ function em_init_actions() {
 					$result = true;
 					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
 				}else{
-					ob_start(); echo "<pre>"; print_r($id); echo "</pre>";
+					ob_start();
 					$EM_Booking->feedback_message = ob_get_clean();
 					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
 				}
@@ -349,7 +349,7 @@ function em_init_actions() {
 			}
 			//FIXME not adhereing to object's feedback or error message, like other bits in this file.
 			//TODO multiple deletion won't work in ajax
-			if( isset($result) && !empty($_REQUEST['em_ajax']) ){
+			if( !empty($_REQUEST['em_ajax']) ){
 				if( $result ){
 					echo $feedback;
 				}else{

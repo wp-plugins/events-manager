@@ -77,6 +77,9 @@ function em_content($page_content) {
 		if( preg_match('/CONTENTS/', $page_content) ){
 			$content = str_replace('CONTENTS',$content,$page_content);
 		}
+		if(get_option('dbem_credits')){
+			$content .= '<p style="color:#999; font-size:11px;">Powered by <a href="http://wp-events-plugin.com" style="color:#999;" target="_blank">Events Manager</a></p>';
+		}
 		//TODO FILTER - filter em page content before display
 		return apply_filters('em_content', '<div id="em-wrapper">'.$content.'</div>');
 	}
@@ -113,8 +116,7 @@ function em_content_page_title($content) {
 					$content =  $event->output( get_option('dbem_event_page_title_format') );
 				}
 			}elseif ( is_object($EM_Location) ) {
-				$location = new EM_Location( EM_Object::sanitize($_REQUEST ['location_id']) );
-				$content =  $location->output(get_option( 'dbem_location_page_title_format' ));
+				$content = $EM_Location->output(get_option( 'dbem_location_page_title_format' ));
 			}elseif ( is_object($EM_Category) ) {
 				//Just a single location
 				$content =  $EM_Category->output(get_option( 'dbem_category_page_title_format' ));

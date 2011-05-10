@@ -1,6 +1,8 @@
 <?php
 
 function em_install() {
+	global $wp_rewrite;
+   	$wp_rewrite->flush_rules();
 	$old_version = get_option('dbem_version');
 	//Won't upgrade 2 anymore, let 3 do that and we worry about 3.
    	if( $old_version != '' && $old_version < 3.096 ){
@@ -22,7 +24,7 @@ function em_install() {
 		if( $old_version < 4 && $old_version != '' ){
 			em_migrate_v3();
 		}else{
-			if( $old_version < 4.002 && $old_version > 4 ){
+			if( $old_version < 4.002 ){
 		   		add_option('dbem_notice_rc_reimport',1);
 		   	}
 		}
@@ -290,23 +292,73 @@ function em_add_options() {
 		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_events_page_scope' => 'future',
 		'dbem_events_page_search' => 1,
-		'dbem_event_list_item_format' => '<li>#j #M #Y - #H:#i<br/> #_EVENTLINK<br/>#_LOCATIONTOWN </li>',
+		'dbem_event_list_item_format_header' => '<table cellpadding="0" cellspacing="0" id="current-events" >
+    <thead>
+        <tr>
+			<th id="event-time" width="150">Date/Time</th>
+			<th id="event-description" width="*">Event</th>
+   	</thead>
+    <tbody>',
+		'dbem_event_list_item_format' => '<tr>
+			<td>
+                #_{d/m/Y} #@_{- d/m/Y}<br/>
+                #H:#i -#@H:#@i
+            </td>
+            <td>
+                #_EVENTLINK<br/>
+                <i>#_LOCATIONNAME, #_LOCATIONTOWN #_LOCATIONSTATE</i>
+            </td>
+        </tr>',
+		'dbem_event_list_item_format_footer' => '</tbody></table>',
 		'dbem_display_calendar_in_events_page' => 0,
-		'dbem_single_event_format' => '<p>Date(s) - #j #M #Y #@_{ \u\n\t\i\l j M Y}<br />#_DESCRIPTION<br />Time - #_24HSTARTTIME - #_24HENDTIME<br /></p><p>Where - #_LOCATIONLINK, #_LOCATIONTOWN</p>#_MAP<br/>#_BOOKINGFORM',
+		'dbem_single_event_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_MAP</div>
+<p>	
+	<strong>Date/Time</strong><br/>
+	Date(s) - #j #M #Y #@_{ \u\n\t\i\l j M Y}<br />
+	<i>#_12HSTARTTIME - #_12HENDTIME</i>
+</p>
+<p>	
+	<strong>Location</strong><br/>
+	#_LOCATIONLINK
+</p>
+<p>	
+	<strong>Category(ies)</strong>
+	#_CATEGORIES
+</p>
+<br style="clear:both" />
+#_NOTES
+{has_bookings}
+<h3>Bookings</h3>
+#_BOOKINGFORM
+{/has_bookings}',
 		'dbem_event_page_title_format' => '#_NAME',
 		'dbem_no_events_message' => sprintf(__( 'No %s', 'dbem' ),__('Events','dbem')),
 		//Location Formatting
 		'dbem_location_default_country' => 'US',
-		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_LOCATIONADDRESS</li><li>#_LOCATIONTOWN</li></ul>',
+		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_ADDRESS, #_LOCATIONTOWN, #_LOCATIONSTATE</li></ul>',
 		'dbem_locations_page_title' => __('Event','dbem')." ".__('Locations','dbem'),
 		'dbem_no_locations_message' => sprintf(__( 'No %s', 'dbem' ),__('Locations','dbem')),
 		'dbem_location_page_title_format' => '#_LOCATIONNAME',
-		'dbem_single_location_format' => '<p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
+		'dbem_single_location_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_MAP</div>
+<p>	
+	<strong>Address</strong><br/>
+	#_LOCATIONADDRESS<br/>
+	#_LOCATIONTOWN<br/>
+	#_LOCATIONSTATE<br/>
+	#_LOCATIONREGION<br/>
+	#_LOCATIONPOSTCODE<br/>
+	#_LOCATIONCOUNTRY
+</p>
+<br style="clear:both" />
+#_DESCRIPTION
+
+<h3>Upcoming Events</h3>
+<p>#_NEXTEVENTS</p>',
 		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
-		'dbem_location_event_list_item_format' => "<li>#_LOCATIONNAME - #j #M #Y - #H:#i</li>",
+		'dbem_location_event_list_item_format' => "<li>#_NAME - #j #M #Y - #H:#i</li>",
 		//Category Formatting
 		'dbem_category_page_title_format' => '#_CATEGORYNAME',
-		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYIMAGE #_CATEGORYNOTES <div>#_CATEGORYEVENTSNEXT',
+		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<div><h3>Upcoming Events</h3>#_CATEGORYEVENTSNEXT',
 		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
 		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
@@ -332,7 +384,7 @@ function em_add_options() {
 		'dbem_rsvp_mail_port' => 465,
 		'dbem_smtp_host' => 'localhost',
 		'dbem_mail_sender_name' => '',
-		'dbem_rsvp_mail_send_method' => 'smtp',  
+		'dbem_rsvp_mail_send_method' => 'mail',
 		'dbem_rsvp_mail_SMTPAuth' => 1,
 		//Image Manipulation
 		'dbem_image_max_width' => 700,
@@ -345,6 +397,7 @@ function em_add_options() {
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ", 
 		//General Settings
+		'dbem_credits'=>1,
 		'dbem_use_select_for_locations' => 0,
 		'dbem_attributes_enabled' => 1,
 		'dbem_recurrence_enabled'=> 1,

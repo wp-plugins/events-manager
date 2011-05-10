@@ -334,7 +334,7 @@ class EM_Event extends EM_Object{
 		$request = $_REQUEST;
 		//First let's save the location, no location no event!
 		if ( !$this->get_location()->id && !$this->location->save() ){ //shouldn't try to save if location exists
-			$this->errors[] = __ ( 'There was a problem saving the location so event was not saved.', 'dbem' );
+			$this->errors[] = __('There was a problem saving the location so event was not saved.', 'dbem');
 	 		return apply_filters('em_event_save', false, $this);
 		}
 		$this->location_id = $this->location->id;
@@ -488,6 +488,8 @@ class EM_Event extends EM_Object{
 			if($result !== false){
 				$result = $this->get_bookings()->delete();
 			}
+			//delete categories
+			$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". EM_META_TABLE ." WHERE meta_key='event-category' AND object_id=%d", $this->id) );
 		}
 		return apply_filters('em_event_delete', $result !== false, $this);
 	}
@@ -688,7 +690,7 @@ class EM_Event extends EM_Object{
 				$replacement = $conditionals[0][$key];
 				if ($condition == 'has_bookings') {
 					//check if there's a booking, if not, remove this section of code.
-					if($this->rsvp){
+					if($this->rsvp && get_option('dbem_rsvp_enabled')){
 						$replacement = substr($conditionals[0][$key], 14, strlen($conditionals[0][$key])-29); //29 = (15+14)
 					}else{
 						$replacement = '';
@@ -696,7 +698,7 @@ class EM_Event extends EM_Object{
 				}
 				if ($condition == 'no_bookings') {
 					//check if there's a booking, if not, remove this section of code.
-					if(!$this->rsvp){
+					if(!$this->rsvp && get_option('dbem_rsvp_enabled')){
 						$replacement = substr($conditionals[0][$key], 13, strlen($conditionals[0][$key])-28); //28 = (13+14)
 					}else{
 						$replacement = '';
@@ -781,14 +783,18 @@ class EM_Event extends EM_Object{
 				case '#_ADDBOOKINGFORM': //Depreciated
 				case '#_REMOVEBOOKINGFORM': //Depreciated
 				case '#_BOOKINGFORM':
-					ob_start();
-					$template = em_locate_template('placeholders/bookingform.php', true, array('EM_Event'=>$this));
-					$replace = ob_get_clean();
+					if( get_option('dbem_rsvp_enabled')){
+						ob_start();
+						$template = em_locate_template('placeholders/bookingform.php', true, array('EM_Event'=>$this));
+						$replace = ob_get_clean();
+					}
 					break;
 				case '#_BOOKINGBUTTON':
-					ob_start();
-					$template = em_locate_template('placeholders/bookingbutton.php', true, array('EM_Event'=>$this));
-					$replace = ob_get_clean();
+					if( get_option('dbem_rsvp_enabled')){
+						ob_start();
+						$template = em_locate_template('placeholders/bookingbutton.php', true, array('EM_Event'=>$this));
+						$replace = ob_get_clean();
+					}
 					break;
 				case '#_AVAILABLESEATS': //Depreciated
 				case '#_AVAILABLESPACES':
@@ -957,7 +963,6 @@ class EM_Event extends EM_Object{
 		if( $this->is_recurring() && $this->can_manage('edit_events','edit_others_events') ){
 			do_action('em_event_save_events_pre', $this); //actions/filters only run if event is recurring
 			global $wpdb;
-			$event_saves = array();
 			$matching_days = $this->get_recurrence_days(); //Get days where events recur
 			$this->delete_events(); //Delete old events beforehand
 			//Make template event (and we just change dates)
@@ -972,14 +977,27 @@ class EM_Event extends EM_Object{
 			}
 			$event['recurrence_id'] = $this->id;
 			//Save event template with different dates
+			$event_saves = array();
+			$event_ids = array();
 			foreach( $matching_days as $day ) {
 				$event['event_start_date'] = date("Y-m-d", $day);
 				$event['event_slug'] = $this->slug.'-'.$event['event_start_date'];
 				$event['event_end_date'] = $event['event_start_date'];		
 				$event_saves[] = $wpdb->insert(EM_EVENTS_TABLE, $event, $this->get_types($event));
+				$event_ids[] = $wpdb->insert_id;
 				//if( EM_DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
 		 	}
-		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves), $this);
+		 	//save categories
+		 	$category_ids = $this->get_categories()->get_ids();
+		 	foreach($event_ids as $event_id){
+		 		//create the meta inserts for each event
+		 		foreach($category_ids as $category_id){
+		 			$inserts[] = "($event_id,'event-category', $category_id)";
+		 		}
+		 	}
+		 	$result = $wpdb->query("INSERT INTO ".EM_META_TABLE." (object_id,meta_key,meta_value) VALUES ".implode(',',$inserts));
+		 	
+		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this);
 		}
 		return apply_filters('em_event_save_events', false, $this);;
 	}
@@ -1003,6 +1021,10 @@ class EM_Event extends EM_Object{
 				}
 			}
 			$result = EM_Events::delete( $event_ids );
+			//delete categories
+			if(count($event_ids) > 0){
+				$wpdb->query('DELETE FROM '.EM_META_TABLE." WHERE meta_key='event-category' AND object_id IN (".implode(',', $event_ids).")");
+			}
 		}
 		return apply_filters('delete_events', $result, $this);
 	}
