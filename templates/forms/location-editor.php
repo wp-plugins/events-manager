@@ -109,7 +109,7 @@
 				<?php if ($EM_Location->image_url != '') : ?> 
 					<img src='<?php echo $EM_Location->image_url; ?>' alt='<?php echo $EM_Location->name ?>'/>
 				<?php else : ?> 
-					<?php _e('No image uploaded for this location yet', 'debm') ?>
+					<?php _e('No image uploaded for this location yet', 'dbem') ?>
 				<?php endif; ?>
 				<br /><br />
 				<label for='location_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='location-image' name='location_image' id='location_image' type='file' size='40' />

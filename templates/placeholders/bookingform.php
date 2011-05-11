@@ -1,6 +1,6 @@
 <?php  
-	/* @var $EM_Event EM_Event */   
-	global $EM_Notices;
+/* @var $EM_Event EM_Event */   
+global $EM_Notices;
 	$booked_places_options = array();
 	for ( $i = 1; $i <= 10; $i++ ) {
 		$booking_spaces = (!empty($_POST['booking_spaces']) && $_POST['booking_spaces'] == $i) ? 'selected="selected"':'';
@@ -13,6 +13,8 @@
 	<?php // We are firstly checking if the user has already booked a ticket at this event, if so offer a link to view their bookings. ?>
 	<?php if( $EM_Event->get_bookings()->has_booking() ): ?>
 		<p><?php echo sprintf(__('You are currently attending this event. <a href="%s">Manage my bookings</a>','dbem'), em_get_my_bookings_url()); ?></p>
+	<?php elseif( !$EM_Event->rsvp ): ?>
+		<p><?php _e('Online bookings are not available for this event.','dbem'); ?></p>
 	<?php elseif( $EM_Event->start < current_time('timestamp') ): ?>
 		<p><?php _e('Bookings are closed for this event.','dbem'); ?></p>
 	<?php else: ?>
@@ -152,7 +154,7 @@
 	               </form>
 				</div>
 			<?php endif; ?>
-			<br class="clear"/>
+			<br class="clear" style="clear:left;" />
 		<?php elseif( count($EM_Tickets->tickets) == 0 ): ?>
 			<div><?php _e('No more tickets available at this time.','dbem'); ?></div>
 		<?php endif; ?>  
@@ -161,10 +163,16 @@
 <?php ob_start(); ?>
 <script type="text/javascript">
 	jQuery(document).ready( function($){
+		var em_booking_doing_ajax = false;
 		$('#em-booking-form').ajaxForm({
 			url: EM.ajaxurl,
 			dataType: 'jsonp',
 			beforeSubmit: function(formData, jqForm, options) {
+				if(em_booking_doing_ajax){
+					alert('<?php _e('Please wait while the booking is being submitted.','dbem'); ?>');
+					return false;
+				}
+				em_booking_doing_ajax = true;
 				$('.em-booking-message').remove();
 				$('#em-booking').append('<div id="em-loading"></div>');
 			},
@@ -191,6 +199,7 @@
 						$('<div class="em-booking-message-error em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
 					}					
 				}
+				em_booking_doing_ajax = false;
 			}
 		});								
 	});

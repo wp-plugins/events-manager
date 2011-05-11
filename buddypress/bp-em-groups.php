@@ -3,7 +3,7 @@
  * @param EM_Event $EM_Event
  */
 function bp_em_group_event_save($EM_Event){
-	if( empty($EM_Event->id) && !empty($_REQUEST['group_id']) ){
+	if( is_object($EM_Event) && empty($EM_Event->group_id) && !empty($_REQUEST['group_id']) && is_numeric($_REQUEST['group_id']) ){
 		//we have been requested an event creation tied to a group, so does this group exist, and does this person have admin rights to it?
 		if( groups_is_user_admin(get_current_user_id(), $_REQUEST['group_id']) ){
 			$EM_Event->group_id = $_REQUEST['group_id'];

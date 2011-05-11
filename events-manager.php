@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.0rc1
+Version: 4.0.3
 Plugin URI: http://wp-events-plugin.com
-Description: A complete event management solution for wordpress. Recurring events, locations, google maps, rss, booking registration and more!
+Description: Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
 Author URI: http://wp-events-plugin.com
 */
@@ -102,7 +102,7 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.0019); //self expanatory
+define('EM_VERSION', 4.03); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
 $upload_dir = wp_upload_dir();
 if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
@@ -172,10 +172,10 @@ function em_enqueue_public() {
 		'ajaxurl' => admin_url( 'admin-ajax.php' )
 	));
 	//Locale Script
-	$locale_code = substr ( get_locale (), 0, 2 );
+	$locale_code = str_replace('_','-',get_locale());
 	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
 	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
-		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager'));
+		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager')); 
 	}
 	//Styles
 	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
@@ -219,6 +219,13 @@ function em_init(){
 	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
 	define('EM_RSS_URI', trailingslashit(EM_URI)."rss/"); //RSS PAGE URI
 	$EM_Mailer = new EM_Mailer();
+	//Upgrade/Install Routine
+	if( is_admin() && current_user_can('activate_plugins') ){
+		if( EM_VERSION > get_option('dbem_version', 0) ){
+			require_once( dirname(__FILE__).'/em-install.php');
+			em_install();
+		}
+	}
 }
 add_filter('init','em_init',1);
 
@@ -273,8 +280,9 @@ function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//Count pending bookings
 		$bookings_num = '';
+		$bookings_pending_count = 0;
 		if( get_option('dbem_bookings_approval') == 1){ 
-			$bookings_pending_count = count(EM_Bookings::get(array('status'=>0))->bookings);
+			$bookings_pending_count = apply_filters('em_bookings_pending_count',count(EM_Bookings::get(array('status'=>'0'))->bookings));
 			//TODO Add flexible permissions
 			if($bookings_pending_count > 0){
 				$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
@@ -444,13 +452,4 @@ function em_set_plugin_meta($links, $file) {
 	return $links;
 }
 add_filter( 'plugin_row_meta', 'em_set_plugin_meta', 10, 2 );
-
-/* Creating the wp_events table to store event data*/
-function em_activate() {
-	global $wp_rewrite;
-   	$wp_rewrite->flush_rules();
-	require_once( dirname(__FILE__).'/em-install.php');
-	em_install();
-}
-register_activation_hook( __FILE__,'em_activate');
 ?>

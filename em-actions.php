@@ -3,7 +3,7 @@
  * Performs actions on init. This works for both ajax and normal requests, the return results depends if an em_ajax flag is passed via POST or GET.
  */
 function em_init_actions() {
-	global $wpdb,$EM_Notices; 
+	global $wpdb,$EM_Notices,$EM_Event; 
 	//NOTE - No EM objects are globalized at this point, as we're hitting early init mode.
 	//TODO Clean this up.... use a uniformed way of calling EM Ajax actions
 	if( !empty($_REQUEST['em_ajax']) || !empty($_REQUEST['em_ajax_action']) ){
@@ -51,7 +51,6 @@ function em_init_actions() {
 	
 	//Event Actions
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,5) == 'event' ){
-		global $EM_Event, $EM_Notices;
 		//Load the event object, with saved event if requested
 		if( !empty($_REQUEST['event_id']) ){
 			$EM_Event = new EM_Event($_REQUEST['event_id']);
@@ -78,9 +77,7 @@ function em_init_actions() {
 				}
 				$events_result = true;
 			}else{
-				foreach($EM_Event->get_errors() as $error){
-					$EM_Notices->add_error( $error );	
-				}
+				$EM_Notices->add_error( $EM_Event->get_errors() );
 				$events_result = false;				
 			}
 		}
@@ -240,10 +237,10 @@ function em_init_actions() {
 	//Booking Actions
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,7) == 'booking' && (is_user_logged_in() || ($_REQUEST['action'] == 'booking_add' && get_option('dbem_bookings_anonymous'))) ){
 		global $EM_Event, $EM_Booking, $EM_Person;
-		//Load the event object, with saved event if requested
-		$EM_Event = ( !empty($_REQUEST['event_id']) ) ? new EM_Event($_REQUEST['event_id']): new EM_Event();
 		//Load the booking object, with saved booking if requested
 		$EM_Booking = ( !empty($_REQUEST['booking_id']) ) ? new EM_Booking($_REQUEST['booking_id']) : new EM_Booking();
+		//Load the event object, with saved event if requested
+		$EM_Event = $EM_Booking->get_event();
 		
 		$allowed_actions = array('bookings_approve'=>'approve','bookings_reject'=>'reject','bookings_unapprove'=>'unapprove', 'bookings_delete'=>'delete');
 		$result = false;
@@ -280,12 +277,16 @@ function em_init_actions() {
 							$EM_Notices->add_error( __('There was a problem creating a user account, please contact a website administrator.','dbem') );
 						}
 					}
+				}elseif( !is_user_logged_in() ){
+					$registration = false;
+					$EM_Notices->add_error( __('You must log in or register to make a booking.','dbem') );
 				}
 				if( $EM_Event->get_bookings()->add($EM_Booking) && $registration ){
 					$result = true;
 					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
 				}else{
-					ob_start(); echo "<pre>"; print_r($id); echo "</pre>";
+					$result = false;
+					ob_start();
 					$EM_Booking->feedback_message = ob_get_clean();
 					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
 				}
@@ -304,10 +305,10 @@ function em_init_actions() {
 			$EM_Booking->tickets_bookings->tickets_bookings[] = $EM_Ticket_Booking;
 			//Now save booking
 			if( $EM_Event->get_bookings()->add($EM_Booking) ){
-				$EM_Booking = $booking;
 				$result = true;
 				$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
 			}else{
+				$result = false;
 				$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
 			}
 	  	}elseif ( $_REQUEST['action'] == 'booking_cancel') {
@@ -352,7 +353,7 @@ function em_init_actions() {
 			}
 			//FIXME not adhereing to object's feedback or error message, like other bits in this file.
 			//TODO multiple deletion won't work in ajax
-			if( isset($result) && !empty($_REQUEST['em_ajax']) ){
+			if( !empty($_REQUEST['em_ajax']) ){
 				if( $result ){
 					echo $feedback;
 				}else{
@@ -382,10 +383,11 @@ function em_init_actions() {
 	//AJAX call for searches
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,6) == 'search' ){
 		if( $_REQUEST['action'] == 'search_states' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_states') ){
+			$results = array();
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_country=%s", $_REQUEST['country']));
-			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE, $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
+			}elseif( !empty($_REQUEST['region']) ){
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_region=%s", $_REQUEST['region']));
 			}
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
@@ -406,16 +408,16 @@ function em_init_actions() {
 		}
 		if( $_REQUEST['action'] == 'search_regions' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_regions') ){
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s", $_REQUEST['country']));
 			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != ''", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != ''", $_REQUEST['country']));
 			}
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
 				ob_start();
 				?>
 				<option value=''><?php _e('All Regions','dbem'); ?></option>
-				<?php			
+				<?php	
 				foreach( $results as $result ){
 					echo "<option>{$result->value}</option>";
 				}

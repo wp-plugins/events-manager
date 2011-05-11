@@ -235,6 +235,7 @@ function em_admin_event_page() {
 															<a id='printable' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&event_id=".$EM_Event->id ?>'><?php _e('manage bookings','dbem')?></a><br />
 															<a target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_report&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a>
 															<a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a>
+															<?php do_action('em_admin_event_booking_options'); ?>
 															<br class='clear'/>             
 												        </div>
 														<br class='clear'/>    
@@ -477,7 +478,7 @@ function em_admin_event_page() {
 								<?php if ($EM_Event->get_image_url() != '') : ?> 
 									<img src='<?php echo $EM_Event->image_url; ?>' alt='<?php echo $EM_Event->name ?>'/>
 								<?php else : ?> 
-									<?php _e('No image uploaded for this event yet', 'debm') ?>
+									<?php _e('No image uploaded for this event yet', 'dbem') ?>
 								<?php endif; ?>
 								<br /><br />
 								<label for='event_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='event-image' name='event_image' id='event_image' type='file' size='40' />
@@ -611,7 +612,7 @@ function em_admin_event_page() {
 								$has_depreciated = false;
 								?>
 								<div class="wrap">
-									<?php if( count( $attributes['names'] ) > 0 ) : ?>
+									<?php if( !empty($attributes['names']) && count( $attributes['names'] ) > 0 ) : ?>
 										<table class="form-table">
 											<thead>
 												<tr valign="top">
