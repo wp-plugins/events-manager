@@ -277,11 +277,15 @@ function em_init_actions() {
 							$EM_Notices->add_error( __('There was a problem creating a user account, please contact a website administrator.','dbem') );
 						}
 					}
+				}elseif( !is_user_logged_in() ){
+					$registration = false;
+					$EM_Notices->add_error( __('You must log in or register to make a booking.','dbem') );
 				}
 				if( $EM_Event->get_bookings()->add($EM_Booking) && $registration ){
 					$result = true;
 					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
 				}else{
+					$result = false;
 					ob_start();
 					$EM_Booking->feedback_message = ob_get_clean();
 					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
@@ -301,10 +305,10 @@ function em_init_actions() {
 			$EM_Booking->tickets_bookings->tickets_bookings[] = $EM_Ticket_Booking;
 			//Now save booking
 			if( $EM_Event->get_bookings()->add($EM_Booking) ){
-				$EM_Booking = $booking;
 				$result = true;
 				$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
 			}else{
+				$result = false;
 				$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
 			}
 	  	}elseif ( $_REQUEST['action'] == 'booking_cancel') {
@@ -379,12 +383,11 @@ function em_init_actions() {
 	//AJAX call for searches
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,6) == 'search' ){
 		if( $_REQUEST['action'] == 'search_states' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_states') ){
+			$results = array();
 			if( !empty($_REQUEST['country']) ){
 				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
 			}elseif( !empty($_REQUEST['region']) ){
 				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_region=%s", $_REQUEST['region']));
-			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE, $_REQUEST['country'] . "WHERE  location_state IS NOT NULL AND location_state != ''"));
 			}
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation

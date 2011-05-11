@@ -57,8 +57,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function add( $EM_Booking ){
 		global $wpdb,$EM_Mailer;
-		$EM_Booking->get_spaces(true);
-		if ( $this->get_available_spaces() >= $EM_Booking->get_spaces() ) {
+		if ( $this->get_available_spaces() >= $EM_Booking->get_spaces(true) ) {
 			//Save the booking
 			$email = false;
 			$result = $EM_Booking->save();

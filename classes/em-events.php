@@ -240,7 +240,7 @@ class EM_Events extends EM_Object implements Iterator {
 	}
 	
 	function get_post_search($args = array()){
-		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state'), $args);
+		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state','region','town'), $args);
 		foreach($_REQUEST as $post_key => $post_value){
 			if( in_array($post_key, $accepted_searches) && !empty($post_value) ){
 				if(is_array($post_value)){
@@ -264,7 +264,10 @@ class EM_Events extends EM_Object implements Iterator {
 			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
 		}
 		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
-			$conditions['status'] = "(`event_status`={$args['status']})";
+			if($args['status'] == 0){
+				$null = ' OR `event_status` IS NULL';
+			}
+			$conditions['status'] = "(`event_status`={$args['status']}{$null} )";
 		}
 		if( is_multisite() && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
 			if( is_main_site($args['blog']) ){

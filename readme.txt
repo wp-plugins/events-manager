@@ -4,10 +4,14 @@ Donate link: http://wp-events-plugin.com
 Tags: attendance, attendee, buddypress, calendar, registration, event, event calendar, event management, event registration, events, events calendar, gigs, payment, payments, paypal, registration, sports, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking
 Requires at least: 3.0
 Tested up to: 3.1.2
-Stable tag: 4.0.2
+Stable tag: 4.0.3
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
-             
+
+== Upgrade Notice ==
+
+For those upgrading from version 3 to 4, you must upgrade to version 3.0.98 manually and then to the latest version as usual. Please [see this screencast](http://wp-events-plugin.com/news/upgrade-issues-screencast-walkthrough/) for a walkthrough.
+           
 == Description ==
 
 Events Manager 4.0 is a full-featured event registration management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
@@ -22,10 +26,10 @@ Main Features
 * Multiple Tickets
 * Multisite Support
 * BuddyPress Support
-**Group Events
-**Personal Events
-**Activity Stream
-**more on the way!
+** Group Events
+** Personal Events
+** Activity Stream
+** more on the way!
 * SEO Permalinks
 * Assign event locations and view events by location
 * Event categories
@@ -115,6 +119,15 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 4.0.3 =
+* Fixed the update method for good now
+* fixed booking pending email discrepency
+* other minor booking bugs
+* ics file formatting fix
+* buddypress group events working as expected again
+* booking form and rsvps showing fixed
+* fixes to search form
+
 = 4.0.2 =
 * updated default formats and event options on install
 * fixed title meta location problem

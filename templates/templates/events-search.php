@@ -42,13 +42,13 @@
 		<select name="region">
 			<option value=''><?php _e('All Regions','dbem'); ?></option>
 			<?php 
-			if( !empty($_REQUEST['country']) ){
+			if( !empty($_REQUEST['region']) ){
 				//get the counties from locations table
 				global $wpdb;
 				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region FROM ".EM_LOCATIONS_TABLE." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s", $_REQUEST['country']), ARRAY_N);
 				foreach($em_states as $state){
 					?>
-					 <option <?php echo ($_POST['state'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
+					 <option <?php echo ($_POST['region'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
 					<?php 
 				}
 			} ?>
@@ -58,7 +58,7 @@
 		<select name="state">
 			<option value=''><?php _e('All States','dbem'); ?></option>
 			<?php 
-			if( !empty($_REQUEST['country']) ){
+			if( !empty($_REQUEST['state']) ){
 				//get the counties from locations table
 				global $wpdb;
 				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state FROM ".EM_LOCATIONS_TABLE." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']), ARRAY_N);
@@ -107,6 +107,7 @@
 				_wpnonce : '<?php echo wp_create_nonce('search_states'); ?>',
 				action : 'search_states',
 				region : $(this).val(),
+				country : $('.em-events-search-form select[name=country]').val(),
 				return_html : true
 			};
 			$('.em-events-search select[name=state]').load( EM.ajaxurl, data );

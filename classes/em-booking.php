@@ -471,7 +471,7 @@ class EM_Booking extends EM_Object{
 			if( get_option('dbem_bookings_approval') == 0 && $this->status < 2 || $this->status == 1 ){
 				$booker_subject = get_option('dbem_bookings_email_confirmed_subject');
 				$booker_body = get_option('dbem_bookings_email_confirmed_body');
-			}elseif( $this->status == 0 || $this->previous_status == 4 ){
+			}elseif( $this->status == 0 || $this->status == 5 || ( $this->status == 0 && ($this->previous_status == 4 || $this->previous_status == 5) )  ){
 				$booker_subject = get_option('dbem_bookings_email_pending_subject');
 				$booker_body = get_option('dbem_bookings_email_pending_body');
 			}elseif( $this->status == 2 ){

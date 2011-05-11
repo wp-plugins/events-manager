@@ -60,7 +60,7 @@
 				<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
 				<br />
 				<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
-				<?php if( !empty($EM_Event->group_id) ): ?>
+				<?php if( empty($EM_Event->group_id) ): ?>
 					<?php 
 					$user_groups = array();
 					if( !empty($bp->groups) ){
@@ -391,7 +391,7 @@
 												$col_count++;
 											}
 											if( !empty($delete_temp_ticket) ){
-												array_pop($EM_Tickets->tickets[0]);
+												array_pop($EM_Tickets->tickets);
 											}
 										?>
 									</tbody>

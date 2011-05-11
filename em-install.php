@@ -6,7 +6,12 @@ function em_install() {
 	$old_version = get_option('dbem_version');
 	//Won't upgrade 2 anymore, let 3 do that and we worry about 3.
    	if( $old_version != '' && $old_version < 3.096 ){
-   		die('Cannot proceed with installation, please upgrade to the version 3.0.96 or higher from <a href="http://wordpress.org/extend/plugins/events-manager/download/">here</a> first before upgrading to this version.');
+		function em_update_required_notification(){ 
+			global $EM_Booking; 
+			?><div class="error"><p><strong>Events Manager upgrade not complete, please upgrade to the version 3.0.96 or higher first from <a href="http://wordpress.org/extend/plugins/events-manager/download/">here</a> first before upgrading to this version. <a href="http://wp-events-plugin.com/news/upgrade-issues-screencast-walkthrough/">We made a screencast</a> to help you out.</strong></p></div><?php
+		}
+		add_action ( 'admin_notices', 'em_update_required_notification' );
+		return; 
    	}
 	if( EM_VERSION > $old_version || $old_version == '' ){
 	 	// Creates the events table if necessary
@@ -397,7 +402,6 @@ function em_add_options() {
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ", 
 		//General Settings
-		'dbem_credits'=>1,
 		'dbem_use_select_for_locations' => 0,
 		'dbem_attributes_enabled' => 1,
 		'dbem_recurrence_enabled'=> 1,
@@ -451,6 +455,7 @@ function em_add_options() {
 	foreach($dbem_options as $key => $value){
 		add_option($key, $value);
 	}
+	if( !get_option('dbem_version') ){ add_option('dbem_credits',1); }
 }    
 
 function em_set_mass_caps( $roles, $caps ){
