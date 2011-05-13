@@ -119,7 +119,8 @@ if( !class_exists('EM_Permalinks') ){
 			$events_page = get_post($events_page_id);
 			$em_rules = array();
 			if( is_object($events_page) ){
-				$events_slug = $events_page->post_name;
+				$events_slug = str_replace(trailingslashit(get_bloginfo('wpurl')),'', get_permalink($events_page->ID));
+				$events_slug = preg_replace('/\/$/','',$events_slug);
 				$em_rules[$events_slug.'/('.self::$scopes.')$'] = 'index.php?pagename='.$events_slug.'&scope=$matches[1]'; //events with scope
 				$em_rules[$events_slug.'/(\d{4}-\d{2}-\d{2})$'] = 'index.php?pagename='.$events_slug.'&calendar_day=$matches[1]'; //event calendar date search
 				$em_rules[$events_slug.'/event/(\d*)$'] = 'index.php?pagename='.$events_slug.'&event_id=$matches[1]'; //single event page with id

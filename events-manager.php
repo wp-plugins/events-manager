@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.0.3
+Version: 4.0.4
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -452,4 +452,11 @@ function em_set_plugin_meta($links, $file) {
 	return $links;
 }
 add_filter( 'plugin_row_meta', 'em_set_plugin_meta', 10, 2 );
+
+/* Creating the wp_events table to store event data*/
+function em_activate() {
+	global $wp_rewrite;
+   	$wp_rewrite->flush_rules();
+}
+register_activation_hook( __FILE__,'em_activate');
 ?>

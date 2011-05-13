@@ -44,7 +44,7 @@ global $EM_Notices;
 						<?php foreach( $EM_Tickets->tickets as $EM_Ticket ): ?>
 							<?php if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') ): ?>
 							<tr>
-								<td><?php echo $EM_Ticket->output_property('name'); ?></td>
+								<td><?php echo $EM_Ticket->output_property('name'); ?><?php if(!empty($EM_Ticket->description)) :?><br><span class="ticket-desc"><?php echo $EM_Ticket->description; ?></span><?php endif; ?></td>
 								<?php if( !$EM_Event->is_free() ): ?>
 								<td><?php echo $EM_Ticket->get_price(true); ?></td>
 								<?php endif; ?>
@@ -70,6 +70,7 @@ global $EM_Notices;
 					<?php $EM_Ticket = $EM_Tickets->get_first(); ?>
 					<?php if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 ): ?>
 					<p>
+						<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo $EM_Ticket->description; ?></p><?php endif; ?>
 						<label for='em_tickets'><?php _e('Spaces', 'dbem') ?></label>
 						<?php 
 							$spaces_options = $EM_Ticket->get_spaces_options(false);
@@ -96,7 +97,7 @@ global $EM_Notices;
 							<input type="text" name="user_phone" id="user_phone"" class="input" />
 						</p>
 						<p>
-							<label for='user_email'><?php _e('E-mail','dbem') ?></label>
+							<label for='user_email'><?php _e('E-mail','dbem') ?></label> 
 							<input type="text" name="user_email" id="user_email" class="input"  />
 						</p>
 						<?php do_action('register_form'); ?>					

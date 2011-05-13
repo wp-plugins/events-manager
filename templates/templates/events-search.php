@@ -16,6 +16,14 @@
 		<?php /* This general search will find matches within event_name, event_notes, and the location_name, address, town, state and country. */ ?>
 		<input type="text" name="search" value="<?php echo $s; ?>" onfocus="if(this.value=='<?php echo $s_default; ?>')this.value=''" onblur="if(this.value=='')this.value='<?php echo $s_default; ?>'" />
 		<!-- END General Search -->
+		<!-- START Date Search -->
+		between:
+		<input type="text" id="em-date-start-loc" />
+		<input type="hidden" id="em-date-start" name="scope[0]" value="<?php if( !empty($_POST['scope'][0]) ) echo $_POST['scope'][0]; ?>" />
+		and
+		<input type="text" id="em-date-end-loc" />
+		<input type="hidden" id="em-date-end" name="scope[1]" value="<?php if( !empty($_POST['scope'][1]) ) echo $_POST['scope'][1]; ?>" />
+		<!-- END Date Search -->		
 		<!-- START Category Search -->
 		<select name="category">
 			<option value=''><?php _e('All Categories','dbem'); ?></option>
@@ -71,14 +79,7 @@
 		</select>
 		<!-- END State/County Search -->
 		<?php do_action('em_template_events_search_form_ddm'); ?>
-		<!-- START Date Search -->
-		or search between:
-		<input type="text" id="em-date-start-loc" />
-		<input type="hidden" id="em-date-start" name="scope[0]" value="<?php if( !empty($_POST['scope'][0]) ) echo $_POST['scope'][0]; ?>" />
-		and
-		<input type="text" id="em-date-end-loc" />
-		<input type="hidden" id="em-date-end" name="scope[1]" value="<?php if( !empty($_POST['scope'][1]) ) echo $_POST['scope'][1]; ?>" />
-		<!-- END Date Search -->
+
 		<?php do_action('em_template_events_search_form_footer'); ?>
 		<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('search_events'); ?>" />
 		<input type="submit" value="<?php _e('Search','dbem'); ?>" />		
