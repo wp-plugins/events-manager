@@ -11,7 +11,7 @@
 	$search = ( !empty($_REQUEST['em_search']) ) ? $_REQUEST['em_search']:'';
 	$scope_names = em_get_scopes();
 	$scope = ( !empty($_REQUEST ['scope']) && array_key_exists($_REQUEST ['scope'], $scope_names) ) ? $_REQUEST ['scope']:'future';
-	if( isset($_REQUEST['status']) ){
+	if( array_key_exists('status', $_REQUEST) ){
 		$status = ($_REQUEST['status']) ? 1:0;
 	}else{
 		$status = false;
