@@ -285,14 +285,22 @@ class EM_Object {
 		if( !empty($args['state']) ){
 			$conditions['state'] = "location_state='".$args['state']."'";
 		}
+		//state lookup
+		if( !empty($args['town']) ){
+			$conditions['town'] = "location_town='".$args['town']."'";
+		}
+		//region lookup
+		if( !empty($args['region']) ){
+			$conditions['region'] = "location_region='".$args['region']."'";
+		}
 				
 		//Add conditions for category selection
 		//Filter by category, can be id or comma seperated ids
 		//TODO create an exclude category option
 		if ( is_numeric($category) && $category > 0 ){
-			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value='$category' ) ";
+			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_key='event-category' AND meta_value='$category' ) ";
 		}elseif( self::array_is_numeric($category) ){
-			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$category).") ) ";
+			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_key='event-category' AND meta_value IN (".implode(',',$category).") ) ";
 		}
 	
 		//If we want rsvped items, we usually check the event
@@ -352,6 +360,8 @@ class EM_Object {
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false ){
 		global $em_capabilities_array;
+		//if multisite and supoer admin, just return true
+		if( is_multisite() && is_super_admin() ){ return true; }
 		//do they own this?
 		$is_owner = ( $this->owner == get_current_user_id() || empty($this->id) );
 		//now check capability
@@ -640,21 +650,31 @@ class EM_Object {
 	 * START IMAGE UPlOAD FUNCTIONS
 	 * Used for various objects, so shared in one place 
 	 */
-	function get_image_type(){
+	/**
+	 * Returns the type of image in lowercase, if $path is true, a base filename is returned which indicates where to store the file from the root upload folder.
+	 * @param unknown_type $path
+	 * @return mixed|mixed
+	 */
+	function get_image_type($path = false){
+		$type = false;
 		switch( get_class($this) ){
 			case 'EM_Event':
 				$dir = (EM_IMAGE_DS == '/') ? 'events/':'';
-				return $dir.'event';
+				$type = 'event';
 				break;
 			case 'EM_Location':
 				$dir = (EM_IMAGE_DS == '/') ? 'locations/':'';
-				return $dir.'location';
+				$type = 'location';
 				break;
 			case 'EM_Category':
 				$dir = (EM_IMAGE_DS == '/') ? 'categories/':'';
-				return $dir.'category';
+				$type = 'category';
 				break;
 		} 	
+		if($path){
+			return apply_filters('em_object_get_image_type',$dir.$type, $path, $this);
+		}
+		return apply_filters('em_object_get_image_type',$type, $path, $this);
 	}
 	
 	function get_image_url(){
@@ -662,7 +682,7 @@ class EM_Object {
 		if( $type ){
 			if($this->image_url == ''){
 			  	foreach($this->mime_types as $mime_type) { 
-					$file_name = "{$type}-{$this->id}.$mime_type";
+					$file_name = $this->get_image_type(true)."-{$this->id}.$mime_type";
 					if( file_exists( EM_IMAGE_UPLOAD_DIR . $file_name) ) {
 			  			$this->image_url = EM_IMAGE_UPLOAD_URI.$file_name;
 					}
@@ -678,7 +698,7 @@ class EM_Object {
 			if( $this->image_url == '' ){
 				$result = true;
 			}else{
-				$file_name= EM_IMAGE_UPLOAD_DIR."{$type}-".$this->id;
+				$file_name= EM_IMAGE_UPLOAD_DIR.$this->get_image_type(true)."-".$this->id;
 				$result = false;
 				foreach($this->mime_types as $mime_type) { 
 					if (file_exists($file_name.".".$mime_type)){
@@ -694,11 +714,10 @@ class EM_Object {
 		$type = $this->get_image_type();
 		if( $type ){
 			do_action('em_object_image_upload_pre', $type, $this);
-			$result = true;
 			if ( !empty($_FILES[$type.'_image']['size']) && file_exists($_FILES[$type.'_image']['tmp_name'])) {
 				$this->image_delete();   
 				list($width, $height, $mime_type, $attr) = getimagesize($_FILES[$type.'_image']['tmp_name']);
-				$image_path = "{$type}-".$this->id.".".$this->mime_types[$mime_type];	
+				$image_path = $this->get_image_type(true)."-".$this->id.".".$this->mime_types[$mime_type];	
 				if( $this->image_validate()){
 					if ( move_uploaded_file($_FILES[$type.'_image']['tmp_name'], EM_IMAGE_UPLOAD_DIR.$image_path) ){
 						$this->image_url = EM_IMAGE_UPLOAD_URI.$image_path;

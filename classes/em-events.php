@@ -33,7 +33,7 @@ class EM_Events extends EM_Object implements Iterator {
 	 * @return EM_Event array()
 	 */
 	function get( $args = array(), $count=false ) {
-		global $wpdb;
+		global $wpdb;	 
 		$events_table = EM_EVENTS_TABLE;
 		$locations_table = EM_LOCATIONS_TABLE;
 		
@@ -79,7 +79,6 @@ class EM_Events extends EM_Object implements Iterator {
 			$orderby_sql
 			$limit $offset
 		";
-			
 		//If we're only counting results, return the number of results
 		if( $count ){
 			return $wpdb->get_var($sql);		
@@ -240,7 +239,7 @@ class EM_Events extends EM_Object implements Iterator {
 	}
 	
 	function get_post_search($args = array()){
-		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state'), $args);
+		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state','region','town'), $args);
 		foreach($_REQUEST as $post_key => $post_value){
 			if( in_array($post_key, $accepted_searches) && !empty($post_value) ){
 				if(is_array($post_value)){
@@ -264,7 +263,8 @@ class EM_Events extends EM_Object implements Iterator {
 			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
 		}
 		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
-			$conditions['status'] = "(`event_status`={$args['status']})";
+			$null = ($args['status'] == 0) ? ' OR `event_status` IS NULL':'';
+			$conditions['status'] = "(`event_status`={$args['status']}{$null} )";
 		}
 		if( is_multisite() && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
 			if( is_main_site($args['blog']) ){
@@ -297,8 +297,10 @@ class EM_Events extends EM_Object implements Iterator {
 			'status' => 1, //approved events only
 			'format_header' => '', //events can have custom html above the list
 			'format_footer' => '', //events can have custom html below the list
-			'state' => '',
-			'country' => '',
+			'town' => false,
+			'state' => false,
+			'country' => false,
+			'region' => false,
 			'blog' => get_current_blog_id(),
 		);
 		if(is_multisite()){
