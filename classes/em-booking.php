@@ -482,6 +482,8 @@ class EM_Booking extends EM_Object{
 				$booker_body = get_option('dbem_bookings_email_cancelled_body');
 				$contact_subject = get_option('dbem_contactperson_email_cancelled_subject');
 				$contact_body = get_option('dbem_contactperson_email_cancelled_body');
+			}else{
+				return true;
 			}
 			
 			// email specific placeholders

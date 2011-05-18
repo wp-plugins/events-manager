@@ -360,6 +360,8 @@ class EM_Object {
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false ){
 		global $em_capabilities_array;
+		//if multisite and supoer admin, just return true
+		if( is_multisite() && is_super_admin() ){ return true; }
 		//do they own this?
 		$is_owner = ( $this->owner == get_current_user_id() || empty($this->id) );
 		//now check capability

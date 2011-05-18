@@ -65,7 +65,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 				//Success
 				$this->bookings[] = $EM_Booking;
 				$email = $EM_Booking->email();
-				if( get_option('dbem_bookings_approval') == 1 ){
+				if( get_option('dbem_bookings_approval') == 1 && $EM_Booking->status == 0){
 					$this->feedback_message = __('Booking successful, pending confirmation (you will also receive an email once confirmed).', 'dbem');
 				}else{
 					$this->feedback_message = __('Booking successful.', 'dbem');
@@ -189,7 +189,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 		global $wpdb;
 		$booking_ids = array();
 		if( is_object($this->event) ){
-			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id='{$this->event_id}'");
+			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id='{$this->event->id}'");
 		}else{
 			foreach( $this->bookings as $EM_Booking ){
 				$booking_ids[] = $EM_Booking->id;

@@ -252,7 +252,7 @@ function em_init_actions() {
 				//Does this user need to be registered first?
 				$registration = true;
 				//TODO do some ticket validation before registering the user
-				if( $_REQUEST['register_user'] && get_option('dbem_bookings_anonymous') ){
+				if( !is_user_logged_in() && !empty($_REQUEST['register_user']) && get_option('dbem_bookings_anonymous') ){
 					//find random username - less options for user, less things go wrong
 					$username_root = explode('@', $_REQUEST['user_email']);
 					$username_rand = $username_root[0].rand(1,1000);
@@ -281,7 +281,7 @@ function em_init_actions() {
 					$registration = false;
 					$EM_Notices->add_error( __('You must log in or register to make a booking.','dbem') );
 				}
-				if( $EM_Event->get_bookings()->add($EM_Booking) && $registration ){
+				if( $registration && $EM_Event->get_bookings()->add($EM_Booking) ){
 					$result = true;
 					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
 				}else{

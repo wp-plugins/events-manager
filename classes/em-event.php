@@ -174,7 +174,7 @@ class EM_Event extends EM_Object{
 			}
 			$event['recurrence_byday'] = ( empty($event['recurrence_byday']) || $event['recurrence_byday'] == 7 ) ? 0:$event['recurrence_byday']; //Backward compatibility (since 3.0.3), using 0 makes more sense due to date() function
 			$this->to_object($event, true);
-			$this->blog_id = $event['blog_id'];
+			$this->blog_id = (!empty($event['blog_id'])) ? $event['blog_id']:0;
 			
 			//Start/End times should be available as timestamp
 			$this->start = strtotime($this->start_date." ".$this->start_time);
@@ -989,13 +989,19 @@ class EM_Event extends EM_Object{
 		 	}
 		 	//save categories
 		 	$category_ids = $this->get_categories()->get_ids();
+		 	$inserts = array();
 		 	foreach($event_ids as $event_id){
 		 		//create the meta inserts for each event
 		 		foreach($category_ids as $category_id){
 		 			$inserts[] = "($event_id,'event-category', $category_id)";
 		 		}
 		 	}
-		 	$result = $wpdb->query("INSERT INTO ".EM_META_TABLE." (object_id,meta_key,meta_value) VALUES ".implode(',',$inserts));
+		 	if( count($inserts) > 0 ){
+			 	$result = $wpdb->query("INSERT INTO ".EM_META_TABLE." (object_id,meta_key,meta_value) VALUES ".implode(',',$inserts));
+		 	}else{
+		 		$this->add_error('You have not defined an end date long enough to create a recurrence.');
+		 		$result = false;
+		 	}
 		 	
 		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this);
 		}

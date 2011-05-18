@@ -33,7 +33,7 @@ class EM_Events extends EM_Object implements Iterator {
 	 * @return EM_Event array()
 	 */
 	function get( $args = array(), $count=false ) {
-		global $wpdb;
+		global $wpdb;	 
 		$events_table = EM_EVENTS_TABLE;
 		$locations_table = EM_LOCATIONS_TABLE;
 		
@@ -79,7 +79,6 @@ class EM_Events extends EM_Object implements Iterator {
 			$orderby_sql
 			$limit $offset
 		";
-			
 		//If we're only counting results, return the number of results
 		if( $count ){
 			return $wpdb->get_var($sql);		
@@ -264,9 +263,7 @@ class EM_Events extends EM_Object implements Iterator {
 			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
 		}
 		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
-			if($args['status'] == 0){
-				$null = ' OR `event_status` IS NULL';
-			}
+			$null = ($args['status'] == 0) ? ' OR `event_status` IS NULL':'';
 			$conditions['status'] = "(`event_status`={$args['status']}{$null} )";
 		}
 		if( is_multisite() && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
