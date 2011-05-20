@@ -68,9 +68,15 @@ global $EM_Notices;
 				<div class='em-booking-form-details'>
 				
 					<?php $EM_Ticket = $EM_Tickets->get_first(); ?>
+
+					<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo $EM_Ticket->description; ?></p><?php endif; ?>					
 					<?php if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 ): ?>
+					<?php if( !$EM_Event->is_free() ): ?>
+						<p>
+							<label><?php _e('Price','dbem') ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong>
+						</p>
+					<?php endif; ?>						
 					<p>
-						<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo $EM_Ticket->description; ?></p><?php endif; ?>
 						<label for='em_tickets'><?php _e('Spaces', 'dbem') ?></label>
 						<?php 
 							$spaces_options = $EM_Ticket->get_spaces_options(false);

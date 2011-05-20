@@ -158,14 +158,7 @@ function em_admin_load_scripts(){
 		wp_enqueue_script('em-google-maps', 'http://maps.google.com/maps/api/js?sensor=false');	
 	}
 	//Time Entry
-	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));	
-	
-	//Date Picker Locale
-	$locale_code = substr ( get_locale (), 0, 2 );
-	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
-	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
-		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager'));
-	}
+	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));
 	
 	//TinyMCE Editor
 	remove_filter('the_editor',	'qtrans_modifyRichEditor'); //qtranslate filter

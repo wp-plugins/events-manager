@@ -701,7 +701,13 @@ function em_admin_event_page() {
 						<?php do_action('em_admin_event_form_footer'); ?>
 					</div>
 					<p class="submit">
-						<input type="submit" name="events_update" value="<?php _e ( 'Submit Event', 'dbem' ); ?> &raquo;" />
+						<?php 
+						if ( $EM_Event->is_recurring() ) {
+							$recurrence_delete_confirm = __('WARNING! You are about to re-create all your recurrent events including erasing your old booking data! Are you sure you want to do this?','dbem');
+							$js = 'onclick = "if( !confirm(\''. $recurrence_delete_confirm.'\') ){ return false; }"';
+						}
+						?>					
+						<input type="submit" name="events_update" value="<?php _e ( 'Submit Event', 'dbem' ); ?> &raquo;" <?php if(!empty($js)) echo $js; ?> />						
 					</p>
 					<input type="hidden" name="p" value="<?php echo ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:''; ?>" /><a>
 					<input type="hidden" name="scope" value="<?php echo ( !empty($_REQUEST['scope']) ) ? $_REQUEST['scope']:'' ?>" /></a>

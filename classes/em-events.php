@@ -136,11 +136,17 @@ class EM_Events extends EM_Object implements Iterator {
 			//First we have to check that they're all deletable by this user.
 			if ( self::can_manage($event_ids) ) {
 				apply_filters('em_events_delete_pre', $event_ids);
-				$condition = implode(" OR event_id=", $event_ids);
+				$condition = "event_id IN (". implode(',',$event_ids).")";
+				//Delete all tickets bookings
+				$result_tickets_bookings = $wpdb->query("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id IN (SELECT booking_id FROM ". EM_BOOKINGS_TABLE ." WHERE $condition)");
+				//Delete all tickets
+				$result_tickets = $wpdb->query("DELETE FROM ". EM_TICKETS_TABLE ." WHERE $condition;");
 				//Delete all the bookings
-				$result_bookings = $wpdb->query("DELETE FROM ". EM_BOOKINGS_TABLE ." WHERE event_id=$condition;");
+				$result_bookings = $wpdb->query("DELETE FROM ". EM_BOOKINGS_TABLE ." WHERE $condition;");
 				//Now delete the events
-				$result = $wpdb->query ( "DELETE FROM ". EM_EVENTS_TABLE ." WHERE event_id=$condition;" );
+				$result_events = $wpdb->query ( "DELETE FROM ". EM_EVENTS_TABLE ." WHERE $condition;" );
+				//delete category links
+				$result_categories = $wpdb->query('DELETE FROM '.EM_META_TABLE." WHERE meta_key='event-category' AND object_id IN (".implode(',', $event_ids).")");
 				return apply_filters('em_events_delete', true, $event_ids);
 			}else{
 				return apply_filters('em_events_delete', true, $event_ids);

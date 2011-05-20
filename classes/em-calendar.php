@@ -243,7 +243,7 @@ class EM_Calendar extends EM_Object {
 				//Get the link to this calendar day
 				global $wp_rewrite;
 				$event_page_link = trailingslashit(get_permalink(get_option('dbem_events_page'))); //don't use EM_URI here, since ajax calls this before EM_URI is defined.
-				if( $wp_rewrite->using_permalinks() ){
+				if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){
 					$calendar_array['cells'][$day_key]['link'] = $event_page_link.$day_key."/";
 				}else{
 					$joiner = (stristr($event_page_link, "?")) ? "&amp;" : "?";				

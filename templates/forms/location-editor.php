@@ -17,7 +17,7 @@
 	$required = "<i>(".__('required','dbem').")</i>";
 	echo $EM_Notices;
 	?>
-	<form enctype='multipart/form-data' name='editcat' id='location-form' method='post' action='admin.php?page=events-manager-locations' class='validate'>
+	<form enctype='multipart/form-data' name='editcat' id='location-form' method='post' action='' class='validate'>
 		<input type='hidden' name='action' value='location_save' />
 		<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('location_save'); ?>' />
 		<input type='hidden' name='location_id' value='<?php echo $EM_Location->id ?>'/>

@@ -195,10 +195,12 @@ function em_admin_events_page() {
 								<td>
 									<?php 
 									if ( $event->is_recurrence() ) {
+										$recurrence_delete_confirm = __('WARNING! You will delete ALL recurrences of this event, including booking history associated with any event in this recurrence. To keep booking information, go to the relevant single event and save it to detach it from this recurrence series.','dbem');
 										?>
 										<strong>
 										<?php echo $event->get_recurrence_description(); ?> <br />
-										<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->recurrence_id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+										<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $event->recurrence_id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a> |
+										<span class="trash"><a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;action=event_delete&amp;event_id=<?php echo $event->recurrence_id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>" class="em-event-rec-delete" onclick ="if( !confirm('<?php echo $recurrence_delete_confirm; ?>') ){ return false; }"><?php _e('Delete','dbem'); ?></a></span>
 										</strong>
 										<?php
 									}

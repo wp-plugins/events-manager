@@ -39,7 +39,7 @@ if( !class_exists('EM_Permalinks') ){
 		
 		function rewrite_urls($replace, $object, $result){
 			global $wp_query, $wp_rewrite;
-			if( $wp_rewrite->using_permalinks() ){
+			if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS')){
 				switch( $result ){
 					case '#_EVENTPAGEURL': //Depreciated	
 					case '#_LINKEDNAME': //Depreciated
@@ -84,7 +84,7 @@ if( !class_exists('EM_Permalinks') ){
 		 */
 		function redirection(){
 			global $wp_rewrite, $post, $wp_query;
-			if( $wp_rewrite->using_permalinks() && !is_admin() ){
+			if( $wp_rewrite->using_permalinks() && !is_admin() && !defined('EM_DISABLE_PERMALINKS') ){
 				//is this a querystring url?
 				$events_page_id = get_option ( 'dbem_events_page' );
 				if ( is_object($post) && $post->ID == $events_page_id && $events_page_id != 0 ) {
@@ -120,6 +120,7 @@ if( !class_exists('EM_Permalinks') ){
 			$em_rules = array();
 			if( is_object($events_page) ){
 				$events_slug = str_replace(trailingslashit(get_bloginfo('wpurl')),'', get_permalink($events_page->ID));
+        		$events_slug = str_replace(trailingslashit(get_bloginfo('url')),'', get_permalink($events_page->ID));				
 				$events_slug = preg_replace('/\/$/','',$events_slug);
 				$em_rules[$events_slug.'/('.self::$scopes.')$'] = 'index.php?pagename='.$events_slug.'&scope=$matches[1]'; //events with scope
 				$em_rules[$events_slug.'/(\d{4}-\d{2}-\d{2})$'] = 'index.php?pagename='.$events_slug.'&calendar_day=$matches[1]'; //event calendar date search
@@ -150,7 +151,7 @@ if( !class_exists('EM_Permalinks') ){
 			global $wp_rewrite;
 			$args = func_get_args();
 			$em_uri = get_permalink(get_option("dbem_events_page")); //PAGE URI OF EM
-			if ( $wp_rewrite->using_permalinks() ) {
+			if ( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ) {
 				$event_link = trailingslashit(trailingslashit($em_uri). implode('/',$args));
 			}
 			return $event_link;
@@ -182,7 +183,7 @@ if( !class_exists('EM_Permalinks') ){
 		function init_objects(){
 			//Build permalinks here
 			global $wp_query, $wp_rewrite;
-			if ( $wp_rewrite->using_permalinks() ) {
+			if ( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ) {
 				foreach(self::$em_queryvars as $em_queryvar){
 					if( $wp_query->get($em_queryvar) ) {
 						$_REQUEST[$em_queryvar] = $wp_query->get($em_queryvar);
@@ -212,7 +213,7 @@ function em_get_my_bookings_url(){
 	}elseif( get_option('dbem_bookings_my_page') ){
 		return get_permalink(get_option('dbem_bookings_my_page'));
 	}else{
-		if( $wp_rewrite->using_permalinks() ){
+		if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){
 			return trailingslashit(EM_URI)."my-bookings/";
 		}else{
 			return EM_URI.'&bookings_page=1';

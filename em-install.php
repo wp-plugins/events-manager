@@ -588,7 +588,7 @@ function em_migrate_bookings(){
 		} 
 		//modify the booking to have data about the new people, we do this here to avoid duplicate names
 		foreach($new_people as $old_id => $new_id){
-			$wpdb->query('UPDATE '.EM_BOOKINGS_TABLE." SET person_id='".$new_id."', booking_status=1 WHERE person_id='".$old_id."'");	
+			$wpdb->query('UPDATE '.EM_BOOKINGS_TABLE." SET person_id='".$new_id."', booking_status=1 WHERE person_id='".$old_id."'");
 		}
 		//Finally insert all the tickets bookings
 		$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix. 'em_tickets_bookings'); //empty tickets bookings table first

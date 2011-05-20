@@ -168,15 +168,13 @@ add_filter('dbem_notes_map', 'js_escape');
 function em_enqueue_public() {
 	//Scripts
 	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-form')); //jQuery will load as dependency
+	//Localise vars
+	$locale_code = substr ( get_locale (), 0, 2 );
 	wp_localize_script('events-manager','EM', array(
-		'ajaxurl' => admin_url( 'admin-ajax.php' )
+		'ajaxurl' => admin_url('admin-ajax.php'),
+		'firstDay' => get_option('start_of_week'),
+		'locale' => $locale_code
 	));
-	//Locale Script
-	$locale_code = str_replace('_','-',get_locale());
-	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
-	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
-		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager')); 
-	}
 	//Styles
 	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
 	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css

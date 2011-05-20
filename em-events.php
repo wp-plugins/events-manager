@@ -57,6 +57,7 @@ function em_content($page_content) {
 			} else {
 				// Multiple events page
 				if (get_option ( 'dbem_display_calendar_in_events_page' )){
+					$args['long_events'] = 1;
 					em_locate_template('templates/events-calendar.php',true, array('args'=>$args));
 				}else{
 					//Intercept search request, if defined

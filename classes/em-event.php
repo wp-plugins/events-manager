@@ -239,9 +239,9 @@ class EM_Event extends EM_Object{
 		//TODO make time handling less painful
 		$match = array();
 		if( !empty($_POST['event_start_time']) && preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_start_time'], $match ) ){
-			if( $match[3] == 'PM' && $match[1] != 12 ){
+			if( !empty($match[3]) && $match[3] == 'PM' && $match[1] != 12 ){
 				$match[1] = 12+$match[1];
-			}elseif( $match[3] == 'AM' && $match[1] == 12 ){
+			}elseif( !empty($match[3]) && $match[3] == 'AM' && $match[1] == 12 ){
 				$match[1] = '00';
 			} 
 			$this->start_time = $match[1].":".$match[2].":00";
@@ -249,9 +249,9 @@ class EM_Event extends EM_Object{
 			$this->start_time = "00:00:00";
 		}
 		if( !empty($_POST['event_end_time']) && preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_end_time'], $match ) ){
-			if( $match[3] == 'PM' && $match[1] != 12 ){
+			if( !empty($match[3]) && $match[3] == 'PM' && $match[1] != 12 ){
 				$match[1] = 12+$match[1];
-			}elseif( $match[3] == 'AM' && $match[1] == 12 ){
+			}elseif( !empty($match[3]) && $match[3] == 'AM' && $match[1] == 12 ){
 				$match[1] = '00';
 			}  
 			$this->end_time = $match[1].":".$match[2].":00";
@@ -486,10 +486,14 @@ class EM_Event extends EM_Object{
 			}
 			$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". EM_EVENTS_TABLE ." WHERE event_id=%d", $this->id) );
 			if($result !== false){
-				$result = $this->get_bookings()->delete();
+				//delete bookings
+				$result_bookings = $this->get_bookings()->delete();
+				//delete tickets
+				$result_tickets = $this->get_bookings()->get_tickets()->delete();
+				//delete categories
+				$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". EM_META_TABLE ." WHERE meta_key='event-category' AND object_id=%d", $this->id) );
+				$this->id = false;
 			}
-			//delete categories
-			$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". EM_META_TABLE ." WHERE meta_key='event-category' AND object_id=%d", $this->id) );
 		}
 		return apply_filters('em_event_delete', $result !== false, $this);
 	}
@@ -979,30 +983,60 @@ class EM_Event extends EM_Object{
 			//Save event template with different dates
 			$event_saves = array();
 			$event_ids = array();
-			foreach( $matching_days as $day ) {
-				$event['event_start_date'] = date("Y-m-d", $day);
-				$event['event_slug'] = $this->slug.'-'.$event['event_start_date'];
-				$event['event_end_date'] = $event['event_start_date'];		
-				$event_saves[] = $wpdb->insert(EM_EVENTS_TABLE, $event, $this->get_types($event));
-				$event_ids[] = $wpdb->insert_id;
-				//if( EM_DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
-		 	}
-		 	//save categories
-		 	$category_ids = $this->get_categories()->get_ids();
-		 	$inserts = array();
-		 	foreach($event_ids as $event_id){
-		 		//create the meta inserts for each event
-		 		foreach($category_ids as $category_id){
-		 			$inserts[] = "($event_id,'event-category', $category_id)";
-		 		}
-		 	}
-		 	if( count($inserts) > 0 ){
-			 	$result = $wpdb->query("INSERT INTO ".EM_META_TABLE." (object_id,meta_key,meta_value) VALUES ".implode(',',$inserts));
-		 	}else{
-		 		$this->add_error('You have not defined an end date long enough to create a recurrence.');
+			if( count($matching_days) > 0 ){
+				foreach( $matching_days as $day ) {
+					$event['event_start_date'] = date("Y-m-d", $day);
+					$event['event_slug'] = $this->slug.'-'.$event['event_start_date'];
+					$event['event_end_date'] = $event['event_start_date'];		
+					$event_saves[] = $wpdb->insert(EM_EVENTS_TABLE, $event, $this->get_types($event));
+					$event_ids[] = $wpdb->insert_id;
+					//if( EM_DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
+			 	}
+			 	//save bookings
+			 	if( $this->rsvp ){
+			 		$inserts = array();
+			 		foreach($this->get_bookings()->get_tickets() as $EM_Ticket){
+			 			/* @var $EM_Ticket EM_Ticket */
+			 			//get array, modify event id and insert
+			 			$ticket = $EM_Ticket->to_array();
+			 			unset($ticket['ticket_id']);
+			 			//clean up ticket values
+			 			foreach($ticket as $k => $v){
+			 				if( empty($v) && $k != 'ticket_name' ){ 
+			 					$ticket[$k] = 'NULL';
+			 				}else{
+			 					$ticket[$k] = "'$v'";
+			 				}
+			 			}
+			 			foreach($event_ids as $event_id){
+			 				$ticket['event_id'] = $event_id;
+			 				$inserts[] = "(".implode(",",$ticket).")";
+			 			}
+			 		}
+			 		$keys = "(".implode(",",array_keys($ticket)).")";
+			 		$values = implode(',',$inserts);
+			 		$sql = "INSERT INTO ".EM_TICKETS_TABLE." $keys VALUES $values";
+			 		$result = $wpdb->query($sql);
+			 	}
+			 	//save categories
+			 	$category_ids = $this->get_categories()->get_ids();
+			 	$inserts = array();
+			 	foreach($event_ids as $event_id){
+			 		//create the meta inserts for each event
+			 		foreach($category_ids as $category_id){
+			 			$inserts[] = "($event_id,'event-category', $category_id)";
+			 		}
+			 	}
+			 	if( count($inserts) > 0 ){
+				 	$result = $wpdb->query("INSERT INTO ".EM_META_TABLE." (object_id,meta_key,meta_value) VALUES ".implode(',',$inserts));
+				 	if($result === false){
+				 		$this->add_error('There was a problem adding categories to your recurring events.','dbem');
+				 	}
+			 	}
+			}else{
+		 		$this->add_error('You have not defined a date range long enough to create a recurrence.','dbem');
 		 		$result = false;
 		 	}
-		 	
 		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this);
 		}
 		return apply_filters('em_event_save_events', false, $this);;
@@ -1027,10 +1061,6 @@ class EM_Event extends EM_Object{
 				}
 			}
 			$result = EM_Events::delete( $event_ids );
-			//delete categories
-			if(count($event_ids) > 0){
-				$wpdb->query('DELETE FROM '.EM_META_TABLE." WHERE meta_key='event-category' AND object_id IN (".implode(',', $event_ids).")");
-			}
 		}
 		return apply_filters('delete_events', $result, $this);
 	}
