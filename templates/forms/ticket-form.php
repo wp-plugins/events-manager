@@ -4,6 +4,7 @@ $col_count = empty($col_count) ? 1:$col_count;
 ?>
 
 <div class="em-ticket-form">
+	<input type="hidden" name="em_tickets[<?php echo $col_count; ?>][ticket_id]" value="<?php echo $EM_Ticket->id ?>" />
 	<input type="hidden" name="em_tickets[<?php echo $col_count; ?>][ticket_name]" value="<?php echo $EM_Ticket->name ?>" />
 	<div><label><?php _e('Price','dbem') ?></label><input type="text" name="em_tickets[<?php echo $col_count; ?>][ticket_price]" value="<?php echo $EM_Ticket->price ?>" /></div>
 	<div>
