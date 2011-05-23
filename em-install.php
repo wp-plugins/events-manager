@@ -561,39 +561,63 @@ function em_migrate_bookings(){
 	if( $wpdb->get_var("SHOW TABLES LIKE '".EM_PEOPLE_TABLE."'") == EM_PEOPLE_TABLE && current_user_can('activate_plugins') && wp_verify_nonce($_REQUEST['_wpnonce'], 'bookings_migrate') ){
 		$new_people = array();
 		$ticket_bookings = array();
-		$wpdb->query('TRUNCATE TABLE '.EM_TICKETS_TABLE); //empty tickets bookings table first
+		$errors = array();
 		foreach( $wpdb->get_results("SELECT ticket_id, b.booking_id, booking_spaces, b.person_id, person_name, person_email, person_phone FROM ".EM_BOOKINGS_TABLE." b LEFT JOIN ".EM_PEOPLE_TABLE." p ON p.person_id=b.person_id LEFT JOIN ".EM_EVENTS_TABLE." e ON e.event_id=b.event_id LEFT JOIN ".EM_TICKETS_TABLE." tt ON tt.event_id=e.event_id", ARRAY_A) as $booking_array ){
-			//first we create the user if we hadn't before
-			$user = get_user_by_email($booking_array['person_email']);
-			if( is_object($user) ){
-				//User exists, whether from current insert or not, so ammend array
-				$new_people[$booking_array['person_id']] = $user->ID;
-			}else{
-	 			$username_root = explode('@', $booking_array['person_email']);
-				$username_rand = $username_root[0];
-				while( username_exists($username_root[0].rand(1,1000)) ){
+			if( $booking_array['person_email'] != ''){
+				//first we create the user if we hadn't before
+				$user = get_user_by_email($booking_array['person_email']);
+				if( is_object($user) ){
+					//User exists, whether from current insert or not, so ammend array
+					$new_people[$booking_array['person_id']] = $user->ID;
+				}else{
+		 			$username_root = explode('@', $booking_array['person_email']);
 					$username_rand = $username_root[0].rand(1,1000);
+					while( username_exists($username_rand) ){
+						$username_rand = $username_root[0].rand(1,1000);
+					}
+					$user_array = array(
+						'user_email' => $booking_array['person_email'],
+						'user_login' => $username_rand,
+						'first_name' => $booking_array['person_name'],
+						'display_name'=> $booking_array['person_name'],
+					);
+					$new_people[$booking_array['person_id']] = wp_insert_user($user_array);
+					update_user_meta($new_people[$booking_array['person_id']], 'dbem_phone', $booking_array['person_phone']);
+				}	
+				//save the booking
+				if( !is_object($new_people[$booking_array['person_id']]) ){
+					$ticket_bookings[] = "({$booking_array['booking_id']} , {$booking_array['ticket_id']}, {$booking_array['booking_spaces']}, '0')";
 				}
-				$user_array = array(
-					'user_email' => $booking_array['person_email'],
-					'user_login' => $username_rand,
-					'first_name' => $booking_array['person_name'],
-					'display_name'=> $booking_array['person_name'],
-				);
-				$new_people[$booking_array['person_id']] = wp_insert_user($user_array);
-				update_user_meta($new_people[$booking_array['person_id']], 'dbem_phone', $booking_array['person_phone']);
-			}	
-			//save the booking
-			$ticket_bookings[] = "({$booking_array['booking_id']} , {$booking_array['ticket_id']}, {$booking_array['booking_spaces']}, '0')"; 
+			}else{
+				if( !in_array('You have some bookings without a corresponding person in the database. These bookings will be deleted when you delete the people table.', $errors) ){
+					$errors[] = 'You have some bookings without a corresponding person in the database. These bookings will be deleted when you delete the people table.';
+				} 
+			} 
 		} 
 		//modify the booking to have data about the new people, we do this here to avoid duplicate names
 		foreach($new_people as $old_id => $new_id){
-			$wpdb->query('UPDATE '.EM_BOOKINGS_TABLE." SET person_id='".$new_id."', booking_status=1 WHERE person_id='".$old_id."'");
+			if( !is_object($new_id) ){
+				$wpdb->query('UPDATE '.EM_BOOKINGS_TABLE." SET person_id='".$new_id."', booking_status=1 WHERE person_id='".$old_id."'");
+			}elseif( get_class($new_id) == 'WP_Error' ){
+				/* @var $new_id WP_Error */
+				$errors[] = "Person ID - $old_id : ".$new_id->get_error_message();
+			}
 		}
 		//Finally insert all the tickets bookings
-		$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix. 'em_tickets_bookings'); //empty tickets bookings table first
-		$sql = "INSERT INTO ". $wpdb->prefix. 'em_tickets_bookings ( `booking_id` ,`ticket_id` ,`ticket_booking_spaces` ,`ticket_booking_price`) VALUES' . implode(',',$ticket_bookings);
-		$wpdb->query($sql);
+		$wpdb->query('TRUNCATE TABLE '.EM_TICKETS_BOOKINGS_TABLE); //empty tickets bookings table first
+		$sql = "INSERT INTO ". EM_TICKETS_BOOKINGS_TABLE.' ( `booking_id` ,`ticket_id` ,`ticket_booking_spaces` ,`ticket_booking_price`) VALUES' . implode(',',$ticket_bookings);
+		$ticket_inserts = $wpdb->query($sql);
+		if($ticket_inserts === false){
+			/* @var $wpdb WPDB */
+			$errors[] = 'DB Error when adding ticket bookings : '.$wpdb->last_error;
+		}
+		if( count($errors) > 0 ){
+			echo "<div class='error'><p>There were some errors during the upgrade. It might be that you can ignore these errors, depending on what kind of data was on your database.</p>";
+			foreach($errors as $error){
+				echo "<p>$error</p>";
+			}
+			echo "</div>";
+		}
 		echo "<div class='updated'><p>Bookings have been migrated. Please verify this in the <a href='admin.php?page=events-manager-bookings'>bookings</a> and wordpress <a href='users.php'>users</a> sections (or for older bookings, access the booking info via the admin events list). If this didn't work you can try migrating again or delete the old persons database table which is not in use anymore.</p></div>";
 	}
 }
@@ -601,7 +625,8 @@ function em_migrate_bookings(){
 function em_migrate_bookings_delete(){
 	global $wpdb;
 	if( wp_verify_nonce($_REQUEST['_wpnonce'], 'bookings_migrate_delete') ){
-		$wpdb->query('TRUNCATE TABLE '.$wpdb->prefix. 'em_bookings');
+		//REMOVE ALL NULL BOOKINGS
+		$wpdb->query('DELETE FROM '.EM_BOOKINGS_TABLE." WHERE booking_id IN (SELECT b.booking_id FROM ".EM_BOOKINGS_TABLE." b LEFT JOIN ".EM_PEOPLE_TABLE." p ON p.person_id=b.person_id LEFT JOIN ".EM_EVENTS_TABLE." e ON e.event_id=b.event_id LEFT JOIN ".EM_TICKETS_TABLE." tt ON tt.event_id=e.event_id) WHERE person_email IS NULL");
 		$wpdb->query('DROP TABLE '.$wpdb->prefix.'em_people');
 		echo "<div class='updated'><p>Old People table deleted, enjoy Events Manager 4!</p></div>";
 	}
