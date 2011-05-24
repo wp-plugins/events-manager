@@ -40,9 +40,12 @@
 			global $wpdb;
 			$countries = em_get_countries();
 			$em_countries = $wpdb->get_results("SELECT DISTINCT location_country FROM ".EM_LOCATIONS_TABLE." WHERE location_country IS NOT NULL AND location_country != '' ORDER BY location_country ASC", ARRAY_N);
+			if( empty($_REQUEST['country']) ){
+				$_REQUEST['country'] = get_option('dbem_location_default_country');
+			}
 			foreach($em_countries as $em_country): 
 			?>
-			 <option value="<?php echo $em_country[0]; ?>" <?php echo (!empty($_POST['country']) && $_POST['country'] == $em_country[0]) ? 'selected="selected"':''; ?>><?php echo $countries[$em_country[0]]; ?></option>
+			 <option value="<?php echo $em_country[0]; ?>" <?php echo (!empty($_REQUEST['country']) && $_REQUEST['country'] == $em_country[0]) ? 'selected="selected"':''; ?>><?php echo $countries[$em_country[0]]; ?></option>
 			<?php endforeach; ?>
 		</select>
 		<!-- END Country Search -->	
@@ -50,29 +53,30 @@
 		<select name="region">
 			<option value=''><?php _e('All Regions','dbem'); ?></option>
 			<?php 
-			if( !empty($_REQUEST['region']) ){
+			if( !empty($_REQUEST['country']) ){
 				//get the counties from locations table
 				global $wpdb;
 				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region FROM ".EM_LOCATIONS_TABLE." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s", $_REQUEST['country']), ARRAY_N);
 				foreach($em_states as $state){
 					?>
-					 <option <?php echo ($_POST['region'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
+					 <option <?php echo ($_REQUEST['region'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
 					<?php 
 				}
-			} ?>
+			}
+			?>
 		</select>	
 		<!-- END Region Search -->	
 		<!-- START State/County Search -->
 		<select name="state">
 			<option value=''><?php _e('All States','dbem'); ?></option>
 			<?php 
-			if( !empty($_REQUEST['state']) ){
+			if( !empty($_REQUEST['country']) ){
 				//get the counties from locations table
 				global $wpdb;
 				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state FROM ".EM_LOCATIONS_TABLE." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']), ARRAY_N);
 				foreach($em_states as $state){
 					?>
-					 <option <?php echo ($_POST['state'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
+					 <option <?php echo ($_REQUEST['state'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
 					<?php 
 				}
 			} ?>

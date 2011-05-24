@@ -39,6 +39,7 @@ class EM_Event extends EM_Object{
 		'event_status' => array( 'name'=>'status', 'type'=>'%d' ), //if monthly which week (-1 is last)
 		'event_date_created' => array( 'name'=>'date_created', 'type'=>'%s' ),
 		'event_date_modified' => array( 'name'=>'date_modified', 'type'=>'%s' ),
+		'blog_id' => array( 'name'=>'blog_id', 'type'=>'%d' ),
 		'group_id' => array( 'name'=>'group_id', 'type'=>'%d' )
 	);
 	/* Field Names  - see above for matching DB field names and other field meta data */
@@ -261,15 +262,15 @@ class EM_Event extends EM_Object{
 		//Start/End times should be available as timestamp
 		$this->start = strtotime($this->start_date." ".$this->start_time);
 		$this->end = strtotime($this->end_date." ".$this->end_time);
-		
 		//owner
 		if( !empty($_REQUEST['event_owner']) && is_numeric($_REQUEST['event_owner']) ){
 			$this->owner = current_user_can('edit_others_events') ? $_REQUEST['event_owner']:get_current_user_id();
 		}
-		
 		//categories
 		if( !empty($_POST['event_categories']) && is_array($_POST['event_categories']) ){
 			$this->categories = new EM_Categories($_POST['event_categories']);
+		}else{
+			$this->categories = new EM_Categories();
 		}
 		//Attributes
 		$event_attributes = array();
@@ -358,15 +359,15 @@ class EM_Event extends EM_Object{
 		//Now save the event
 		if ( !$this->id ) {
 			// Insert New Event
+			if( is_multisite() ){
+				$this->blog_id = get_current_blog_id();
+			}
 			$this->owner = $current_user->ID; //Record creator of event
 			$this->date_created = current_time('mysql');
 			$event = $this->to_array(true);
 			$event['event_attributes'] = serialize($this->attributes);
 			$event['recurrence_id'] = ( is_numeric($this->recurrence_id) ) ? $this->recurrence_id : 0;
 			$event = apply_filters('em_event_save_pre',$event,$this);
-			if( is_multisite() ){
-				$event['blog_id'] = get_current_blog_id();
-			}
 			$result = $wpdb->insert ( $events_table, $event, $this->get_types($event) );
 			if($result !== false){
 				//$event['event_date_created'] = current_time('mysql');

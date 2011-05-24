@@ -718,7 +718,11 @@ function em_admin_event_page() {
 			</div>
 		</div>
 	</form>
-	<?php em_locate_template('forms/tickets-form.php', true); //put here as it can't be in the add event form ?>
+	<?php 
+		if( !get_option('dbem_bookings_tickets_single') ){
+			em_locate_template('forms/tickets-form.php', true); //put here as it can't be in the add event form
+		} 
+	?>
 	<script type="text/javascript">
 		jQuery(document).ready( function($) {
 			<?php if( $EM_Event->is_recurring() ): ?>
