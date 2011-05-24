@@ -234,8 +234,10 @@ class EM_Locations extends EM_Object implements Iterator {
 			'eventful' => false, //Locations that have an event (scope will also play a part here
 			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
 			'orderby' => 'name',
+			'town' => false,
 			'state' => false,
 			'country' => false,
+			'region' => false,
 			'scope' => 'all', //we probably want to search all locations by default, not like events
 			'blog' => get_current_blog_id()
 		);

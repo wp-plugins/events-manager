@@ -171,7 +171,7 @@ function em_categories_edit_layout($message = "") {
 										<?php if ($EM_Category->get_image_url() != '') : ?> 
 											<img src='<?php echo $EM_Category->image_url; ?>' alt='<?php echo $EM_Category->name ?>'/>
 										<?php else : ?> 
-											<em><?php _e('No image uploaded for this category yet', 'debm') ?></em>
+											<em><?php _e('No image uploaded for this category yet', 'dbem') ?></em>
 										<?php endif; ?>
 										<br /><br />
 										<label for='category_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='locacategoryge' name='category_image' id='category_image' type='file' size='40' />

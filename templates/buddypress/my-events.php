@@ -11,7 +11,7 @@
 	$search = ( !empty($_REQUEST['em_search']) ) ? $_REQUEST['em_search']:'';
 	$scope_names = em_get_scopes();
 	$scope = ( !empty($_REQUEST ['scope']) && array_key_exists($_REQUEST ['scope'], $scope_names) ) ? $_REQUEST ['scope']:'future';
-	if( isset($_REQUEST['status']) ){
+	if( array_key_exists('status', $_REQUEST) ){
 		$status = ($_REQUEST['status']) ? 1:0;
 	}else{
 		$status = false;
@@ -153,6 +153,21 @@
 										<strong>
 										<?php echo $event->get_recurrence_description(); ?> <br />
 										<a href="<?php echo $url ?>edit/?event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+										</strong>
+										<?php
+									}
+									?>
+									<?php 
+									if ( $event->is_recurrence() ) {
+										$recurrence_delete_confirm = __('WARNING! You will delete ALL recurrences of this event, including booking history associated with any event in this recurrence. To keep booking information, go to the relevant single event and save it to detach it from this recurrence series.','dbem');
+										?>
+										<strong>
+										<?php echo $event->get_recurrence_description(); ?> <br />
+										<a href="<?php echo $url ?>edit/?event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+										<a href="<?php echo $url ?>wp-admin/admin.php?page=events-manager&amp;action=event_delete&amp;event_id=<?php echo $event->recurrence_id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>" class="em-event-rec-delete" onclick ="if( !confirm('<?php echo $recurrence_delete_confirm; ?>') ){ return false; }"><?php _e('Delete','dbem'); ?></a>
+										<?php if( current_user_can('delete_events')) : ?>
+										<span class="trash"><a href="<?php echo $url ?>?action=event_delete&amp;event_id=<?php echo $event->id ?>" class="em-event-rec-delete" onclick ="if( !confirm('<?php echo $recurrence_delete_confirm; ?>') ){ return false; }"><?php _e('Delete','dbem'); ?></a></span>
+										<?php endif; ?>										
 										</strong>
 										<?php
 									}

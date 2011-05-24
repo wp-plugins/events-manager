@@ -5,7 +5,8 @@ class EM_Calendar extends EM_Object {
 		//nothing to init anymore
 	}
 	
-	function output($args = array()) {
+	function get( $args ){
+	
 	 	global $wpdb; 
 	 	
 		$calendar_array = array();
@@ -241,8 +242,8 @@ class EM_Calendar extends EM_Object {
 							
 				//Get the link to this calendar day
 				global $wp_rewrite;
-				$event_page_link = get_permalink(get_option('dbem_events_page')); //don't use EM_URI here, since ajax calls this before EM_URI is defined.
-				if( $wp_rewrite->using_permalinks() ){
+				$event_page_link = trailingslashit(get_permalink(get_option('dbem_events_page'))); //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+				if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){
 					$calendar_array['cells'][$day_key]['link'] = $event_page_link.$day_key."/";
 				}else{
 					$joiner = (stristr($event_page_link, "?")) ? "&amp;" : "?";				
@@ -252,7 +253,11 @@ class EM_Calendar extends EM_Object {
 				$calendar_array['cells'][$day_key]['events'] = $events;
 			}
 		}
-		
+		return apply_filters('em_calendar_get',$calendar_array, $args);
+	}
+	
+	function output($args = array()) {	
+		$calendar_array  = self::get($args);	
 		$template = ($args['full']) ? 'templates/calendar-full.php':'templates/calendar-small.php';
 		ob_start();
 		em_locate_template($template, true, array('calendar'=>$calendar_array,'args'=>$args));

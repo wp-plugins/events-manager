@@ -97,7 +97,8 @@ class EM_Booking extends EM_Object{
 			1 => __('Approved','dbem'),
 			2 => __('Rejected','dbem'),
 			3 => __('Cancelled','dbem'),
-			4 => __('Awaiting Online Payment','dbem')
+			4 => __('Awaiting Online Payment','dbem'),
+			5 => __('Awaiting Payment','dbem')
 		);
 		do_action('em_booking', $this, $booking_data);
 	}
@@ -119,6 +120,7 @@ class EM_Booking extends EM_Object{
 					$update = true;
 					$where = array( 'booking_id' => $this->id );  
 					$result = $wpdb->update($table, $data, $where, $this->get_types($data));
+					$result = ($result !== false);
 					$this->feedback_message = __('Changes saved','dbem');
 				}else{
 					$update = false;
@@ -399,8 +401,8 @@ class EM_Booking extends EM_Object{
 	
 	/**
 	 * Change the status of the booking. This will save to the Database too. 
-	 * @param unknown_type $status
-	 * @return string
+	 * @param int $status
+	 * @return boolean
 	 */
 	function set_status($status){
 		$action_string = strtolower($this->status_array[$status]); 
@@ -469,7 +471,7 @@ class EM_Booking extends EM_Object{
 			if( get_option('dbem_bookings_approval') == 0 && $this->status < 2 || $this->status == 1 ){
 				$booker_subject = get_option('dbem_bookings_email_confirmed_subject');
 				$booker_body = get_option('dbem_bookings_email_confirmed_body');
-			}elseif( $this->status == 0 || $this->previous_status == 4 ){
+			}elseif( $this->status == 0 || $this->status == 5 || ( $this->status == 0 && ($this->previous_status == 4 || $this->previous_status == 5) )  ){
 				$booker_subject = get_option('dbem_bookings_email_pending_subject');
 				$booker_body = get_option('dbem_bookings_email_pending_body');
 			}elseif( $this->status == 2 ){
@@ -480,6 +482,8 @@ class EM_Booking extends EM_Object{
 				$booker_body = get_option('dbem_bookings_email_cancelled_body');
 				$contact_subject = get_option('dbem_contactperson_email_cancelled_subject');
 				$contact_body = get_option('dbem_contactperson_email_cancelled_body');
+			}else{
+				return true;
 			}
 			
 			// email specific placeholders

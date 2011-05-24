@@ -29,13 +29,13 @@ function em_admin_warnings() {
 		}	
 		
 		//Image upload folders
-		if( is_super_admin() && EM_IMAGE_DS == '/' ){
+		if( is_admin() && EM_IMAGE_DS == '/' ){
 			$errs = array();
-			if( !file_exists(EM_IMAGE_UPLOAD_DIR) && @mkdir(EM_IMAGE_UPLOAD_DIR, 0777)){
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/events/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777) ){ $errs[] = 'events'; }
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/locations/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777) ){ $errs[] = 'locations'; }
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/categories/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777) ){ $errs[] = 'categories'; }
-			}elseif( !file_exists(EM_IMAGE_UPLOAD_DIR) ){
+			if( is_writable(EM_IMAGE_UPLOAD_DIR) || @mkdir(EM_IMAGE_UPLOAD_DIR, 0777)){
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/events/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777) ){ $errs[] = 'events'; }
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/locations/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777) ){ $errs[] = 'locations'; }
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/categories/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777) ){ $errs[] = 'categories'; }
+			}elseif( !is_writable(EM_IMAGE_UPLOAD_DIR) ){
 				$errs = array('events','categories','locations');
 			}
 			if( count($errs) > 0 ){
@@ -83,6 +83,27 @@ function em_admin_warnings() {
 				</div>
 				<?php		
 			}
+		}
+		//Fixing the RC2 fiasco
+		if( !empty($_GET['em_dismiss_notice_rc_reimport']) ){
+			delete_option('dbem_notice_rc_reimport');
+		}else{
+			if( get_option('dbem_notice_rc_reimport') ){
+				?>
+				<div id="em_page_error" class="updated">
+					<p><?php echo sprintf ( __( 'If you upgraded from 3.x to the RC2 and the update did not go so well, <a href="%s">try reimporting old settings</a>. Warning! Re-importing will rename all event slugs, re-import your old category settings from events, and recreate all tickets, so changes to these areas will be lost. <a href="%s">Dismiss</a>' ), 'admin.php?page=events-manager-options&action=em_rc_reimport&_wpnonce='.wp_create_nonce('em_rc_reimport'),  em_add_get_params($_SERVER['REQUEST_URI'], array('em_dismiss_notice_rc_reimport'=>1))); ?></p>
+				</div>
+				<?php		
+			}
+		}
+		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'em_rc_reimport' && wp_verify_nonce($_REQUEST['_wpnonce'], 'em_rc_reimport') ){
+			require_once( dirname(__FILE__).'/../em-install.php');
+			em_migrate_v3();
+			?>
+			<div id="em_page_error" class="updated">
+				<p>Reimporting old settings was successful. Click the dismiss button on the other notification if after checking things are now working.</p>
+			</div>
+			<?php
 		}
 	}
 	//Warn about EM page edit
@@ -137,14 +158,7 @@ function em_admin_load_scripts(){
 		wp_enqueue_script('em-google-maps', 'http://maps.google.com/maps/api/js?sensor=false');	
 	}
 	//Time Entry
-	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));	
-	
-	//Date Picker Locale
-	$locale_code = substr ( get_locale (), 0, 2 );
-	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
-	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
-		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager'));
-	}
+	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));
 	
 	//TinyMCE Editor
 	remove_filter('the_editor',	'qtrans_modifyRichEditor'); //qtranslate filter

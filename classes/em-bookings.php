@@ -57,8 +57,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function add( $EM_Booking ){
 		global $wpdb,$EM_Mailer;
-		$EM_Booking->get_spaces(true);
-		if ( $this->get_available_spaces() >= $EM_Booking->get_spaces() ) {
+		if ( $this->get_available_spaces() >= $EM_Booking->get_spaces(true) ) {
 			//Save the booking
 			$email = false;
 			$result = $EM_Booking->save();
@@ -66,7 +65,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 				//Success
 				$this->bookings[] = $EM_Booking;
 				$email = $EM_Booking->email();
-				if( get_option('dbem_bookings_approval') == 1 ){
+				if( get_option('dbem_bookings_approval') == 1 && $EM_Booking->status == 0){
 					$this->feedback_message = __('Booking successful, pending confirmation (you will also receive an email once confirmed).', 'dbem');
 				}else{
 					$this->feedback_message = __('Booking successful.', 'dbem');
@@ -189,15 +188,18 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function delete(){
 		global $wpdb;
 		$booking_ids = array();
-		if( is_object($this->event) ){
-			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id='{$this->event_id}'");
-		}else{
-			foreach( $this->bookings as $EM_Booking ){
-				$booking_ids[] = $EM_Booking->id;
-			}
+		//get the booking ids tied to this event
+		foreach( $this->bookings as $EM_Booking ){
+			$booking_ids[] = $EM_Booking->id;
+		}
+		$result_tickets = true;
+		$result = true;
+		if( count($booking_ids) > 0 ){
+			//Delete bookings and ticket bookings
+			$result_tickets = $wpdb->query("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE ." WHERE booing_id IN (".implode(',',$booking_ids).");");
 			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id IN (".implode(',',$booking_ids).")");
 		}
-		return ($result !== false);
+		return ($result !== false && $result_tickets !== false);
 	}
 
 	
@@ -477,7 +479,6 @@ class EM_Bookings extends EM_Object implements Iterator{
 			$orderby_sql
 			$limit $offset
 		";
-	
 		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?

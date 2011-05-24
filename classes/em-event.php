@@ -37,7 +37,9 @@ class EM_Event extends EM_Object{
 		'recurrence_byday' => array( 'name'=>'byday', 'type'=>'%s' ), //if weekly or monthly, what days of the week?
 		'recurrence_byweekno' => array( 'name'=>'byweekno', 'type'=>'%d' ), //if monthly which week (-1 is last)
 		'event_status' => array( 'name'=>'status', 'type'=>'%d' ), //if monthly which week (-1 is last)
+		'event_date_created' => array( 'name'=>'date_created', 'type'=>'%s' ),
 		'event_date_modified' => array( 'name'=>'date_modified', 'type'=>'%s' ),
+		'blog_id' => array( 'name'=>'blog_id', 'type'=>'%d' ),
 		'group_id' => array( 'name'=>'group_id', 'type'=>'%d' )
 	);
 	/* Field Names  - see above for matching DB field names and other field meta data */
@@ -173,7 +175,7 @@ class EM_Event extends EM_Object{
 			}
 			$event['recurrence_byday'] = ( empty($event['recurrence_byday']) || $event['recurrence_byday'] == 7 ) ? 0:$event['recurrence_byday']; //Backward compatibility (since 3.0.3), using 0 makes more sense due to date() function
 			$this->to_object($event, true);
-			$this->blog_id = $event['blog_id'];
+			$this->blog_id = (!empty($event['blog_id'])) ? $event['blog_id']:0;
 			
 			//Start/End times should be available as timestamp
 			$this->start = strtotime($this->start_date." ".$this->start_time);
@@ -238,9 +240,9 @@ class EM_Event extends EM_Object{
 		//TODO make time handling less painful
 		$match = array();
 		if( !empty($_POST['event_start_time']) && preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_start_time'], $match ) ){
-			if( $match[3] == 'PM' && $match[1] != 12 ){
+			if( !empty($match[3]) && $match[3] == 'PM' && $match[1] != 12 ){
 				$match[1] = 12+$match[1];
-			}elseif( $match[3] == 'AM' && $match[1] == 12 ){
+			}elseif( !empty($match[3]) && $match[3] == 'AM' && $match[1] == 12 ){
 				$match[1] = '00';
 			} 
 			$this->start_time = $match[1].":".$match[2].":00";
@@ -248,9 +250,9 @@ class EM_Event extends EM_Object{
 			$this->start_time = "00:00:00";
 		}
 		if( !empty($_POST['event_end_time']) && preg_match ( '/^([01]\d|2[0-3]):([0-5]\d)(AM|PM)?$/', $_POST['event_end_time'], $match ) ){
-			if( $match[3] == 'PM' && $match[1] != 12 ){
+			if( !empty($match[3]) && $match[3] == 'PM' && $match[1] != 12 ){
 				$match[1] = 12+$match[1];
-			}elseif( $match[3] == 'AM' && $match[1] == 12 ){
+			}elseif( !empty($match[3]) && $match[3] == 'AM' && $match[1] == 12 ){
 				$match[1] = '00';
 			}  
 			$this->end_time = $match[1].":".$match[2].":00";
@@ -260,15 +262,15 @@ class EM_Event extends EM_Object{
 		//Start/End times should be available as timestamp
 		$this->start = strtotime($this->start_date." ".$this->start_time);
 		$this->end = strtotime($this->end_date." ".$this->end_time);
-		
 		//owner
 		if( !empty($_REQUEST['event_owner']) && is_numeric($_REQUEST['event_owner']) ){
 			$this->owner = current_user_can('edit_others_events') ? $_REQUEST['event_owner']:get_current_user_id();
 		}
-		
 		//categories
 		if( !empty($_POST['event_categories']) && is_array($_POST['event_categories']) ){
 			$this->categories = new EM_Categories($_POST['event_categories']);
+		}else{
+			$this->categories = new EM_Categories();
 		}
 		//Attributes
 		$event_attributes = array();
@@ -278,8 +280,10 @@ class EM_Event extends EM_Object{
 			foreach($_POST['em_attributes'] as $att_key => $att_value ){
 				if( (in_array($att_key, $event_available_attributes['names']) || array_key_exists($att_key, $this->attributes) ) && trim($att_value) != '' ){
 					$att_vals = count($event_available_attributes['values'][$att_key]);
-					if( $att_vals == 0 || ($att_vals > 0 && in_array($event_available_attributes['values'][$att_key])) ){
+					if( $att_vals == 0 || ($att_vals > 0 && in_array($att_value, $event_available_attributes['values'][$att_key])) ){
 						$event_attributes[$att_key] = $att_value;
+					}elseif($att_vals > 0){
+						$event_attributes[$att_key] = $event_available_attributes['values'][$att_key][0];
 					}
 				}
 			}
@@ -331,7 +335,7 @@ class EM_Event extends EM_Object{
 		$request = $_REQUEST;
 		//First let's save the location, no location no event!
 		if ( !$this->get_location()->id && !$this->location->save() ){ //shouldn't try to save if location exists
-			$this->errors[] = __ ( 'There was a problem saving the location so event was not saved.', 'dbem' );
+			$this->errors[] = __('There was a problem saving the location so event was not saved.', 'dbem');
 	 		return apply_filters('em_event_save', false, $this);
 		}
 		$this->location_id = $this->location->id;
@@ -355,16 +359,18 @@ class EM_Event extends EM_Object{
 		//Now save the event
 		if ( !$this->id ) {
 			// Insert New Event
+			if( is_multisite() ){
+				$this->blog_id = get_current_blog_id();
+			}
 			$this->owner = $current_user->ID; //Record creator of event
+			$this->date_created = current_time('mysql');
 			$event = $this->to_array(true);
 			$event['event_attributes'] = serialize($this->attributes);
 			$event['recurrence_id'] = ( is_numeric($this->recurrence_id) ) ? $this->recurrence_id : 0;
 			$event = apply_filters('em_event_save_pre',$event,$this);
-			if( is_multisite() ){
-				$event['blog_id'] = get_current_blog_id();
-			}
 			$result = $wpdb->insert ( $events_table, $event, $this->get_types($event) );
 			if($result !== false){
+				//$event['event_date_created'] = current_time('mysql');
 				$this->id = $wpdb->insert_id;
 				$this->is_new = true;
 				//Add Tickets
@@ -381,8 +387,8 @@ class EM_Event extends EM_Object{
 				if ( $this->is_recurring() ) {
 					//Recurrence master event saved, now Save Events & check errors
 				 	if( !$this->save_events() ){
-						$this->errors[] = 	__ ( 'Something went wrong with the recurrence update...', 'dbem' ).
-											__ ( 'There was a problem saving the recurring events.', 'dbem' );
+						$this->add_error(__ ( 'Something went wrong with the recurrence update...', 'dbem' ).
+											__ ( 'There was a problem saving the recurring events.', 'dbem' ));
 						$this->delete();
 				 		return apply_filters('em_event_save', false, $this);
 				 	}
@@ -404,6 +410,7 @@ class EM_Event extends EM_Object{
 			$this->recurrence_id = 0; // If it's saved here, it becomes individual
 			$event = $this->to_array();
 			$event['event_attributes'] = serialize($event['event_attributes']);
+			unset($event['event_date_created']);
 			$event['event_date_modified'] = current_time('mysql');
 			$event = apply_filters('em_event_save_pre',$event,$this);
 			$result = $wpdb->update ( $events_table, $event, array('event_id' => $this->id), $this->get_types($event) );
@@ -480,7 +487,13 @@ class EM_Event extends EM_Object{
 			}
 			$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". EM_EVENTS_TABLE ." WHERE event_id=%d", $this->id) );
 			if($result !== false){
-				$result = $this->get_bookings()->delete();
+				//delete bookings
+				$result_bookings = $this->get_bookings()->delete();
+				//delete tickets
+				$result_tickets = $this->get_bookings()->get_tickets()->delete();
+				//delete categories
+				$result = $wpdb->query ( $wpdb->prepare("DELETE FROM ". EM_META_TABLE ." WHERE meta_key='event-category' AND object_id=%d", $this->id) );
+				$this->id = false;
 			}
 		}
 		return apply_filters('em_event_delete', $result !== false, $this);
@@ -580,7 +593,7 @@ class EM_Event extends EM_Object{
 	 */
 	function get_categories() {
 		global $EM_Categories;
-		if( is_object($this->categories) && get_class($this->categories)=='EM_Categories' && ( empty($this->categories->event->id) || $this->categories->event->id == $this->id ) ){
+		if( !empty($this->categories) && is_object($this->categories) && get_class($this->categories)=='EM_Categories' && ( empty($this->categories->event->id) || $this->categories->event->id == $this->id ) ){
 			$this->categories = $this->categories;
 		}elseif( is_object($EM_Categories) && $EM_Categories->get_event()->id == $this->id ){
 			$this->categories = $EM_Categories;
@@ -682,7 +695,7 @@ class EM_Event extends EM_Object{
 				$replacement = $conditionals[0][$key];
 				if ($condition == 'has_bookings') {
 					//check if there's a booking, if not, remove this section of code.
-					if($this->rsvp){
+					if($this->rsvp && get_option('dbem_rsvp_enabled')){
 						$replacement = substr($conditionals[0][$key], 14, strlen($conditionals[0][$key])-29); //29 = (15+14)
 					}else{
 						$replacement = '';
@@ -690,7 +703,7 @@ class EM_Event extends EM_Object{
 				}
 				if ($condition == 'no_bookings') {
 					//check if there's a booking, if not, remove this section of code.
-					if(!$this->rsvp){
+					if(!$this->rsvp && get_option('dbem_rsvp_enabled')){
 						$replacement = substr($conditionals[0][$key], 13, strlen($conditionals[0][$key])-28); //28 = (13+14)
 					}else{
 						$replacement = '';
@@ -775,14 +788,18 @@ class EM_Event extends EM_Object{
 				case '#_ADDBOOKINGFORM': //Depreciated
 				case '#_REMOVEBOOKINGFORM': //Depreciated
 				case '#_BOOKINGFORM':
-					ob_start();
-					$template = em_locate_template('placeholders/bookingform.php', true, array('EM_Event'=>$this));
-					$replace = ob_get_clean();
+					if( get_option('dbem_rsvp_enabled')){
+						ob_start();
+						$template = em_locate_template('placeholders/bookingform.php', true, array('EM_Event'=>$this));
+						$replace = ob_get_clean();
+					}
 					break;
 				case '#_BOOKINGBUTTON':
-					ob_start();
-					$template = em_locate_template('placeholders/bookingbutton.php', true, array('EM_Event'=>$this));
-					$replace = ob_get_clean();
+					if( get_option('dbem_rsvp_enabled')){
+						ob_start();
+						$template = em_locate_template('placeholders/bookingbutton.php', true, array('EM_Event'=>$this));
+						$replace = ob_get_clean();
+					}
 					break;
 				case '#_AVAILABLESEATS': //Depreciated
 				case '#_AVAILABLESPACES':
@@ -910,16 +927,16 @@ class EM_Event extends EM_Object{
 			$event_string = str_replace($result,$replace,$event_string );
 		}
 		//This is for the custom attributes
-		preg_match_all('/#_ATT\{([^}]+)\}\{([^}]+)\}?/', $format, $results);
+		preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $format, $results);
 		foreach($results[0] as $resultKey => $result) {
 			//Strip string of placeholder and just leave the reference
 			$attRef = substr( substr($result, 0, strpos($result, '}')), 6 );
 			$attString = '';
 			if( is_array($this->attributes) && array_key_exists($attRef, $this->attributes) ){
 				$attString = $this->attributes[$attRef];
-			}elseif( !empty($results[2][$resultKey]) ){
+			}elseif( !empty($results[3][$resultKey]) ){
 				//Check to see if we have a second set of braces;
-				$attString = $results[2][$resultKey];
+				$attString = $results[3][$resultKey];
 			}
 			$attString = apply_filters('em_event_output_placeholder', $attString, $this, $result, $target);
 			$event_string = str_replace($result, $attString ,$event_string );
@@ -929,7 +946,10 @@ class EM_Event extends EM_Object{
 		$event_string = $this->location->output($event_string, $target);
 		
 		//for backwards compat and easy use, take over the individual category placeholders with the frirst cat in th elist.
-		$EM_Category = $this->get_categories()->categories[0];
+		$EM_Categories = $this->get_categories();
+		if( count($EM_Categories->categories) > 0 ){
+			$EM_Category = $EM_Categories->categories[0];
+		}	
 		if( empty($EM_Category) ) $EM_Category = new EM_Category();
 		$event_string = $EM_Category->output($event_string, $target);
 		
@@ -948,12 +968,12 @@ class EM_Event extends EM_Object{
 		if( $this->is_recurring() && $this->can_manage('edit_events','edit_others_events') ){
 			do_action('em_event_save_events_pre', $this); //actions/filters only run if event is recurring
 			global $wpdb;
-			$event_saves = array();
 			$matching_days = $this->get_recurrence_days(); //Get days where events recur
 			$this->delete_events(); //Delete old events beforehand
 			//Make template event (and we just change dates)
 			$event = $this->to_array();
 			unset($event['event_id']); //remove id and we have a event template to feed to wpdb insert
+			unset($event['event_date_modified']);		
 			$event['event_attributes'] = serialize($event['event_attributes']);
 			foreach($event as $key => $value ){ //remove recurrence information
 				if( substr($key, 0, 10) == 'recurrence' ){
@@ -962,13 +982,63 @@ class EM_Event extends EM_Object{
 			}
 			$event['recurrence_id'] = $this->id;
 			//Save event template with different dates
-			foreach( $matching_days as $day ) {
-				$event['event_start_date'] = date("Y-m-d", $day);
-				$event['event_end_date'] = $event['event_start_date'];				
-				$event_saves[] = $wpdb->insert(EM_EVENTS_TABLE, $event, $this->get_types($event));
-				if( EM_DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
+			$event_saves = array();
+			$event_ids = array();
+			if( count($matching_days) > 0 ){
+				foreach( $matching_days as $day ) {
+					$event['event_start_date'] = date("Y-m-d", $day);
+					$event['event_slug'] = $this->slug.'-'.$event['event_start_date'];
+					$event['event_end_date'] = $event['event_start_date'];		
+					$event_saves[] = $wpdb->insert(EM_EVENTS_TABLE, $event, $this->get_types($event));
+					$event_ids[] = $wpdb->insert_id;
+					//if( EM_DEBUG ){ echo "Entering recurrence " . date("D d M Y", $day)."<br/>"; }
+			 	}
+			 	//save bookings
+			 	if( $this->rsvp ){
+			 		$inserts = array();
+			 		foreach($this->get_bookings()->get_tickets() as $EM_Ticket){
+			 			/* @var $EM_Ticket EM_Ticket */
+			 			//get array, modify event id and insert
+			 			$ticket = $EM_Ticket->to_array();
+			 			unset($ticket['ticket_id']);
+			 			//clean up ticket values
+			 			foreach($ticket as $k => $v){
+			 				if( empty($v) && $k != 'ticket_name' ){ 
+			 					$ticket[$k] = 'NULL';
+			 				}else{
+			 					$ticket[$k] = "'$v'";
+			 				}
+			 			}
+			 			foreach($event_ids as $event_id){
+			 				$ticket['event_id'] = $event_id;
+			 				$inserts[] = "(".implode(",",$ticket).")";
+			 			}
+			 		}
+			 		$keys = "(".implode(",",array_keys($ticket)).")";
+			 		$values = implode(',',$inserts);
+			 		$sql = "INSERT INTO ".EM_TICKETS_TABLE." $keys VALUES $values";
+			 		$result = $wpdb->query($sql);
+			 	}
+			 	//save categories
+			 	$category_ids = $this->get_categories()->get_ids();
+			 	$inserts = array();
+			 	foreach($event_ids as $event_id){
+			 		//create the meta inserts for each event
+			 		foreach($category_ids as $category_id){
+			 			$inserts[] = "($event_id,'event-category', $category_id)";
+			 		}
+			 	}
+			 	if( count($inserts) > 0 ){
+				 	$result = $wpdb->query("INSERT INTO ".EM_META_TABLE." (object_id,meta_key,meta_value) VALUES ".implode(',',$inserts));
+				 	if($result === false){
+				 		$this->add_error('There was a problem adding categories to your recurring events.','dbem');
+				 	}
+			 	}
+			}else{
+		 		$this->add_error('You have not defined a date range long enough to create a recurrence.','dbem');
+		 		$result = false;
 		 	}
-		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves), $this);
+		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this);
 		}
 		return apply_filters('em_event_save_events', false, $this);;
 	}

@@ -77,7 +77,9 @@ function em_admin_locations($message='', $fill_fields = false) {
 							<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
 							<th><?php _e('Name', 'dbem') ?></th>
 							<th><?php _e('Address', 'dbem') ?></th>
-							<th><?php _e('Town', 'dbem') ?></th>                
+							<th><?php _e('Town', 'dbem') ?></th>  
+							<th><?php _e('State', 'dbem') ?></th>    
+							<th><?php _e('Country', 'dbem') ?></th>                
 						</tr> 
 					</thead>
 					<tfoot>
@@ -85,7 +87,9 @@ function em_admin_locations($message='', $fill_fields = false) {
 							<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
 							<th><?php _e('Name', 'dbem') ?></th>
 							<th><?php _e('Address', 'dbem') ?></th>
-							<th><?php _e('Town', 'dbem') ?></th>      
+							<th><?php _e('Town', 'dbem') ?></th>    
+							<th><?php _e('State', 'dbem') ?></th>    
+							<th><?php _e('Country', 'dbem') ?></th>     
 						</tr>             
 					</tfoot>
 					<tbody>
@@ -96,7 +100,9 @@ function em_admin_locations($message='', $fill_fields = false) {
 									<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Location->id ?>' name='locations[]'/></td>
 									<td><a href='admin.php?page=events-manager-locations&amp;action=edit&amp;location_id=<?php echo $EM_Location->id ?>'><?php echo $EM_Location->name ?></a></td>
 									<td><?php echo $EM_Location->address ?></td>
-									<td><?php echo $EM_Location->town ?></td>                         
+									<td><?php echo $EM_Location->town ?></td>     
+									<td><?php echo $EM_Location->state ?></td>  
+									<td><?php echo $EM_Location->get_country() ?></td>                      
 								</tr>
 							<?php endif; ?>
 							<?php $i++; ?> 
@@ -262,7 +268,7 @@ function em_admin_location($message = "") {
 									<?php if ($EM_Location->get_image_url() != '') : ?> 
 										<img src='<?php echo $EM_Location->image_url; ?>' alt='<?php echo $EM_Location->name ?>'/>
 									<?php else : ?> 
-										<?php _e('No image uploaded for this location yet', 'debm') ?>
+										<?php _e('No image uploaded for this location yet', 'dbem') ?>
 									<?php endif; ?>
 									<br /><br />
 									<label for='location_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='location-image' name='location_image' id='location_image' type='file' size='40' />
