@@ -277,6 +277,20 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONCOUNTRY':
 					$replace = $this->get_country();
 					break;
+				case '#_LOCATIONFULLLINE':
+					$replace = $this->address.', ';
+					$replace = empty($this->town) ? '':', '.$this->town;
+					$replace = empty($this->state) ? '':', '.$this->state;
+					$replace = empty($this->postcode) ? '':', '.$this->postcode;
+					$replace = empty($this->region) ? '':', '.$this->region;
+					break;
+				case '#_LOCATIONFULLBR':
+					$replace = $this->address.'<br /> ';
+					$replace = empty($this->town) ? '':'<br /> '.$this->town;
+					$replace = empty($this->state) ? '':'<br /> '.$this->state;
+					$replace = empty($this->postcode) ? '':'<br /> '.$this->postcode;
+					$replace = empty($this->region) ? '':'<br /> '.$this->region;
+					break;
 				case '#_MAP': //Depreciated
 				case '#_LOCATIONMAP':
 					ob_start();
@@ -328,9 +342,13 @@ class EM_Location extends EM_Object {
 					break;
 			}
 			if($match){ //if true, we've got a placeholder that needs replacing
-				//TODO FILTER - placeholder filter
 				$replace = apply_filters('em_location_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
 				$location_string = str_replace($result, $replace , $location_string );
+			}else{
+				$custom_replace = apply_filters('em_location_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+				if($custom_replace != $replace){
+					$location_string = str_replace($result, $custom_replace , $location_string );
+				}
 			}
 		}
 		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters

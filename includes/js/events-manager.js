@@ -453,12 +453,6 @@ jQuery(document).ready( function($){
 	$('select#recurrence-frequency').change(updateIntervalDescriptor);
 	$('select#recurrence-frequency').change(updateIntervalSelectors);
 	
-	// hiding or showing notes according to their content	
-	$('.postbox h3').prepend('<a class="togbox">+</a> ');
-	$('#event_notes h3').click( function() {
-		 $(this).parent().first().toggleClass('closed');
-	});	
-	
 	/* Useful function for adding the em_ajax flag to a url, regardless of querystring format */
 	var em_ajaxify = function(url){
 		if ( url.search('em_ajax=0') != -1){

@@ -102,7 +102,7 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.03); //self expanatory
+define('EM_VERSION', 4.06); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
 $upload_dir = wp_upload_dir();
 if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
@@ -169,7 +169,10 @@ function em_enqueue_public() {
 	//Scripts
 	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-form')); //jQuery will load as dependency
 	//Localise vars
-	$locale_code = substr ( get_locale (), 0, 2 );
+	$locale_code = substr ( WPLANG, 0, 2 );
+	if( WPLANG == 'en_GB'){
+		$locale_code = 'en-GB';
+	}
 	wp_localize_script('events-manager','EM', array(
 		'ajaxurl' => admin_url('admin-ajax.php'),
 		'firstDay' => get_option('start_of_week'),
@@ -179,6 +182,7 @@ function em_enqueue_public() {
 	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
 	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
 }
+if(!is_admin())
 add_action ( 'init', 'em_enqueue_public' );
 
 /**
@@ -315,6 +319,11 @@ function em_create_events_submenu () {
 }
 add_action('admin_menu','em_create_events_submenu');
 
+/**
+ * Catches various option names and returns a network-wide option value instead of the individual blog option. Uses the magc __call function to catch unprecedented names.
+ * @author marcus
+ *	
+ */
 class EM_MS_Globals {
 	function __construct(){ add_action( 'init', array(&$this, 'add_filters')); }	
 	function add_filters(){

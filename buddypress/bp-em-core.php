@@ -136,22 +136,26 @@ function bp_em_setup_nav() {
 	
 
 	/* Create two sub nav items for this component */
-	$group_link = $bp->root_domain . '/' . $bp->groups->slug . '/' . $bp->groups->current_group->slug . '/';
-	
-	if( $bp->current_component == 'groups' ){
-		$count = EM_Events::count(array('group'=>$bp->groups->current_group->id));
-		if( empty($count) ) $count = 0;
+	$user_access = false;
+	$group_link = '';
+	if( !empty($bp->groups->current_group) ){
+		$group_link = $bp->root_domain . '/' . $bp->groups->slug . '/' . $bp->groups->current_group->slug . '/';
+		$user_access = $bp->groups->current_group->user_has_access;
+		if( !empty($bp->current_component) && $bp->current_component == 'groups' ){
+			$count = EM_Events::count(array('group'=>$bp->groups->current_group->id));
+			if( empty($count) ) $count = 0;
+		}
+		bp_core_new_subnav_item( array( 
+			'name' => sprintf(__( 'Events (%s)', 'dbem' ), $count),
+			'slug' => 'events', 
+			'parent_url' => $group_link, 
+			'parent_slug' => $bp->groups->slug, 
+			'screen_function' => 'bp_em_group_events', 
+			'position' => 50, 
+			'user_has_access' => $user_access, 
+			'item_css_id' => 'forums' 
+		));
 	}
-	bp_core_new_subnav_item( array( 
-		'name' => sprintf(__( 'Events (%s)', 'dbem' ), $count),
-		'slug' => 'events', 
-		'parent_url' => $group_link, 
-		'parent_slug' => $bp->groups->slug, 
-		'screen_function' => 'bp_em_group_events', 
-		'position' => 50, 
-		'user_has_access' => $bp->groups->current_group->user_has_access, 
-		'item_css_id' => 'forums' 
-	) );
 	
 }
 

@@ -29,7 +29,7 @@ function bp_em_group_event_can_manage( $result, $EM_Event){
 add_action('em_event_can_manage','bp_em_group_event_can_manage',1,2);
 
 
-function bp_em_group_accepted_searches($searches){
+function bp_em_group_events_accepted_searches($searches){
 	$searches[] = 'group';
 	return $searches;
 }
@@ -46,7 +46,7 @@ add_filter('em_events_get_default_search','bp_em_group_events_get_default_search
 function bp_em_group_events_build_sql_conditions( $conditions, $args ){
 	if( !empty($args['group']) && is_numeric($args['group']) ){
 		$conditions['group'] = "( `group_id`={$args['group']} )";
-	}elseif( $args['group'] == 'my' ){
+	}elseif( !empty($args['group']) && $args['group'] == 'my' ){
 		$groups = groups_get_user_groups(get_current_user_id());
 		if( count($groups) > 0 ){
 			$conditions['group'] = "( `group_id` IN (".implode(',',$groups['groups']).") )";

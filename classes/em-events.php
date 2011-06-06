@@ -79,6 +79,7 @@ class EM_Events extends EM_Object implements Iterator {
 			$orderby_sql
 			$limit $offset
 		";
+			
 		//If we're only counting results, return the number of results
 		if( $count ){
 			return $wpdb->get_var($sql);		
@@ -310,7 +311,11 @@ class EM_Events extends EM_Object implements Iterator {
 			'blog' => get_current_blog_id(),
 		);
 		if(is_multisite()){
-			if( !is_main_site() ){
+			global $bp;
+			//echo "<pre>"; print_r($bp); echo "</pre>";
+			if( !empty($bp->current_component) && $bp->current_component == 'events' && !empty($bp->current_action)){
+				$array['blog'] = false; //This is the buddypress root blog so we also show all event data
+			}elseif( !is_main_site() ){
 				//not the main blog, force single blog search
 				$array['blog'] = get_current_blog_id();
 			}elseif( empty($array['blog']) && get_site_option('dbem_ms_global_events') ) {

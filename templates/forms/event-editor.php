@@ -1,6 +1,5 @@
 <?php
 	global $EM_Event, $current_user, $localised_date_formats, $EM_Notices, $bp;
-	
 	//check that user can access this page
 	if( is_object($EM_Event) && !$EM_Event->can_manage('edit_events','edit_others_events') ){
 		?>
@@ -210,7 +209,7 @@
 								?>
 							</select>
 							<?php endif; ?>
-							<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),'#'); ?></p>
+							<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),$bp->events->link . 'my-locations/add/'); ?></p>
 						</td>
 						<?php if ( get_option ( 'dbem_gmap_is_active' ) ) : ?>
 						<td width="400">

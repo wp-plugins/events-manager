@@ -339,10 +339,12 @@ function em_add_options() {
 		'dbem_event_page_title_format' => '#_NAME',
 		'dbem_no_events_message' => sprintf(__( 'No %s', 'dbem' ),__('Events','dbem')),
 		//Location Formatting
-		'dbem_location_default_country' => 'US',
-		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_ADDRESS, #_LOCATIONTOWN, #_LOCATIONSTATE</li></ul>',
+		'dbem_locations_default_orderby' => 'name',
+		'dbem_locations_default_order' => 'ASC',
 		'dbem_locations_page_title' => __('Event','dbem')." ".__('Locations','dbem'),
 		'dbem_no_locations_message' => sprintf(__( 'No %s', 'dbem' ),__('Locations','dbem')),
+		'dbem_location_default_country' => 'US',
+		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_ADDRESS, #_LOCATIONTOWN, #_LOCATIONSTATE</li></ul>',
 		'dbem_location_page_title_format' => '#_LOCATIONNAME',
 		'dbem_single_location_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_MAP</div>
 <p>	
@@ -367,6 +369,8 @@ function em_add_options() {
 		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
 		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
+		'dbem_categories_default_orderby' => 'name',
+		'dbem_categories_default_order' =>  'ASC',
 		//RSS Stuff
 		'dbem_rss_limit' => 10,
 		'dbem_rss_scope' => 'future',

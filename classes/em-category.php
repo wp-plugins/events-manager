@@ -168,6 +168,7 @@ class EM_Category extends EM_Object {
 				case '#_CATEGORYID':
 					$replace = $this->id;
 					break;
+				case '#_CATEGORYNOTES':
 				case '#_CATEGORYDESCRIPTION':
 					$replace = $this->description;
 					break;
@@ -215,6 +216,8 @@ class EM_Category extends EM_Object {
 		//Figure out if this is multisite and require an extra bit of validation
 		$multisite_check = true;
 		$can_manage = current_user_can($capability_owner);
+		//if multisite and supoer admin, just return true
+		if( is_multisite() && is_super_admin() ){ return true; }
 		if( is_multisite() && get_site_option('dbem_ms_global_table') && !is_main_site() ){
 			//User can't admin this bit, as they're on a sub-blog
 			$can_manage = false;

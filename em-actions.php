@@ -438,7 +438,7 @@ function em_init_actions() {
 	}
 		
 	//EM Ajax requests require this flag.
-	if( is_admin() && is_user_logged_in() ){
+	if( is_user_logged_in() ){
 		//Admin operations
 		//Specific Oject Ajax
 		if( !empty($_REQUEST['em_obj']) ){
@@ -446,10 +446,14 @@ function em_init_actions() {
 				case 'em_bookings_events_table':
 				case 'em_bookings_pending_table':
 				case 'em_bookings_confirmed_table':
+					//add some admin files just in case
+					include_once('admin/bookings/em-confirmed.php');
+					include_once('admin/bookings/em-events.php');
+					include_once('admin/bookings/em-pending.php');
 					call_user_func($_REQUEST['em_obj']);
+					exit();
 					break;
 			}
-			die();
 		}
 	}	
 }  
