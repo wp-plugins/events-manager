@@ -232,14 +232,14 @@
 				</div>
 				<div>
 				<?php if(get_option('dbem_categories_enabled')) :?>
-					<?php $locations = EM_Categories::get(array('orderby'=>'category_name')); ?>
-					<?php if( count($locations) > 0 ): ?>
+					<?php $categories = EM_Categories::get(array('orderby'=>'category_name')); ?>
+					<?php if( count($categories) > 0 ): ?>
 						<!-- START Categories -->
-						<label for="event_category_id"><?php _e ( 'Category:', 'dbem' ); ?></label>
-						<select name="event_category_id" multiple size="10">
+						<label for="event_categories[]"><?php _e ( 'Category:', 'dbem' ); ?></label>
+						<select name="event_categories[]" multiple size="10">
 							<?php
-							foreach ( $locations as $EM_Category ){
-								$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
+							foreach ( $categories as $EM_Category ){
+								$selected = ($EM_Event->get_categories()->has($EM_Category->id)) ? "selected='selected'": ''; 
 								?>
 								<option value="<?php echo $EM_Category->id ?>" <?php echo $selected ?>>
 								<?php echo $EM_Category->name ?>

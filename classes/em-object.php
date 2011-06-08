@@ -678,13 +678,16 @@ class EM_Object {
 	}
 	
 	function get_image_url(){
-		$type = $this->get_image_type();
-		if( $type ){
-			if($this->image_url == ''){
-			  	foreach($this->mime_types as $mime_type) { 
-					$file_name = $this->get_image_type(true)."-{$this->id}.$mime_type";
-					if( file_exists( EM_IMAGE_UPLOAD_DIR . $file_name) ) {
-			  			$this->image_url = EM_IMAGE_UPLOAD_URI.$file_name;
+		if( !empty($this->id) ){
+			$type = $this->get_image_type();
+			$id = ( get_class($this) == "EM_Event" && $this->is_recurrence() ) ? $this->recurrence_id:$this->id; //quick fix for recurrences
+			if( $type ){
+				if($this->image_url == ''){
+				  	foreach($this->mime_types as $mime_type) { 
+						$file_name = $this->get_image_type(true)."-{$id}.$mime_type";
+						if( file_exists( EM_IMAGE_UPLOAD_DIR . $file_name) ) {
+				  			$this->image_url = EM_IMAGE_UPLOAD_URI.$file_name;
+						}
 					}
 				}
 			}
@@ -710,32 +713,33 @@ class EM_Object {
 		return apply_filters('em_object_get_image_url', $result, $this);
 	}
 	
-	function image_upload($result){
-		$type = $this->get_image_type();
-		if( $type ){
-			do_action('em_object_image_upload_pre', $type, $this);
+	function image_upload($result, $object){
+		//due to php versions and handling of refernece we'll just reference the $object instead of $this, essentially making this a static function
+		$type = $object->get_image_type();
+		if( $result && $type ){
+			do_action('em_object_image_upload_pre', $type, $object);
 			if ( !empty($_FILES[$type.'_image']['size']) && file_exists($_FILES[$type.'_image']['tmp_name'])) {
-				$this->image_delete();   
+				$object->image_delete();   
 				list($width, $height, $mime_type, $attr) = getimagesize($_FILES[$type.'_image']['tmp_name']);
-				$image_path = $this->get_image_type(true)."-".$this->id.".".$this->mime_types[$mime_type];	
-				if( $this->image_validate()){
+				$image_path = $object->get_image_type(true)."-".$object->id.".".$object->mime_types[$mime_type];	
+				if( $object->image_validate()){
 					if ( move_uploaded_file($_FILES[$type.'_image']['tmp_name'], EM_IMAGE_UPLOAD_DIR.$image_path) ){
-						$this->image_url = EM_IMAGE_UPLOAD_URI.$image_path;
+						$object->image_url = EM_IMAGE_UPLOAD_URI.$image_path;
 					}else{
 						if($result){				
-							$this->feedback_message .= ' '. __('However, the image could not be saved.','dbem');
+							$object->feedback_message .= ' '. __('However, the image could not be saved.','dbem');
 						}
-						$this->add_error(__('The image could not be saved','dbem'));
+						$object->add_error(__('The image could not be saved','dbem'));
 					}					
 				}else{
 					if($result){
-						$this->feedback_message .= ' '.  __('However, the image could not be saved:','dbem');
-						$this->feedback_message .= '<p>'.implode('<br />',$this->errors).'</p>';
+						$object->feedback_message .= ' '.  __('However, the image could not be saved:','dbem');
+						$object->feedback_message .= '<p>'.implode('<br />',$object->errors).'</p>';
 					}
 				}
 			}
 		}
-		return apply_filters('em_object_image_upload', $result, $this);
+		return apply_filters('em_object_image_upload', $result, $object);
 	}
 	
 	function image_validate(){

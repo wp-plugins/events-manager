@@ -218,7 +218,7 @@ class EM_Event extends EM_Object{
 			$this->warnings['group'] = sprintf(__('WARNING: This is a event belonging to the group "%s". Other group admins can also modify this event.', 'dbem'), $group->name);
 		}
 		$this->get_image_url();
-		add_action('em_event_save',array(&$this, 'image_upload'), 1, 1);
+		add_filter('em_event_save',array(&$this, 'image_upload'), 1, 2);
 		do_action('em_event', $this, $event_data);
 	}
 	
@@ -404,9 +404,6 @@ class EM_Event extends EM_Object{
 			}
 		} else {
 			// Update Event
-			//TODO event privacy protection, only authors and authorized users can edit events
-			//$this->owner = $current_user->ID; //Record creator of event
-			//FIXME Saving recurrence and disabling recurrence doesn't work
 			$this->recurrence_id = 0; // If it's saved here, it becomes individual
 			$event = $this->to_array();
 			$event['event_attributes'] = serialize($event['event_attributes']);

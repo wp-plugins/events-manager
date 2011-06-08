@@ -105,9 +105,10 @@ class EM_Booking extends EM_Object{
 	
 	/**
 	 * Saves the booking into the database, whether a new or existing booking
+	 * @param $mail whether or not to email the user and contact people
 	 * @return boolean
 	 */
-	function save(){
+	function save($mail = true){
 		global $wpdb;
 		$table = EM_BOOKINGS_TABLE;
 		do_action('em_booking_save_pre',$this);
@@ -142,6 +143,9 @@ class EM_Booking extends EM_Object{
 						$this->errors[] = __('There was a problem saving the booking.', 'dbem');
 						$this->add_errors( $this->get_tickets_bookings()->get_errors() );
 					}
+				}
+				if ( count($this->errors) == 0  && $mail ) {
+					$this->email();
 				}
 				return apply_filters('em_booking_save', ( count($this->errors) == 0 ), $this);
 			}else{
@@ -415,7 +419,7 @@ class EM_Booking extends EM_Object{
 		}
 		$this->previous_status = $this->status;
 		$this->status = $status;
-		$result = $this->save();
+		$result = $this->save(false);
 		if($result){
 			$this->feedback_message = sprintf(__('Booking %s.','dbem'), $action_string);
 			if( !($this->status == 0 && $this->previous_status > 0) || $this->previous_status == 4 ){
@@ -487,6 +491,10 @@ class EM_Booking extends EM_Object{
 			}
 			
 			// email specific placeholders
+			foreach( $this->get_tickets() as $EM_Ticket){ break; }
+			ob_start();
+			em_locate_template('emails/bookingtickets.php', true, array('EM_Booking'=>$this));
+			$tickets = ob_get_clean();
 			$placeholders = array(
 				'#_RESPNAME' =>  '#_BOOKINGNAME',//Depreciated
 				'#_RESPEMAIL' => '#_BOOKINGEMAIL',//Depreciated
@@ -499,6 +507,9 @@ class EM_Booking extends EM_Object{
 				'#_BOOKINGSPACES' => $this->get_spaces(),
 				'#_BOOKINGLISTURL' => em_get_my_bookings_url(),
 				'#_BOOKINGCOMMENT' => $this->comment,
+				'#_BOOKINGTICKETDESCRIPTION' => $EM_Ticket->description,
+				'#_BOOKINGTICKETPRICE' => $EM_Ticket->get_price(true),
+				'#_BOOKINGTICKETS' => $tickets
 			);		 
 			foreach($placeholders as $key => $value) {
 				$contact_subject = str_replace($key, $value, $contact_subject);

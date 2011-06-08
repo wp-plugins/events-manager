@@ -263,7 +263,8 @@ function em_init_actions() {
 					if( is_numeric($id) ){
 						$EM_Person = new EM_Person($id);
 						$EM_Booking->person_id = $id;
-						$EM_Notices->add_confirm( __('A new user account has been created for you. Please check your email for access details.','dbem') );
+						$feedback = __('A new user account has been created for you. Please check your email for access details.','dbem');
+						$EM_Notices->add_confirm( $feedback );
 					}else{
 						$registration = false;
 						if( is_object($id) && get_class($id) == 'WP_Error'){
@@ -283,12 +284,14 @@ function em_init_actions() {
 				}
 				if( $registration && $EM_Event->get_bookings()->add($EM_Booking) ){
 					$result = true;
-					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
+					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );		
+					$feedback = $EM_Event->get_bookings()->feedback_message;	
 				}else{
 					$result = false;
 					ob_start();
 					$EM_Booking->feedback_message = ob_get_clean();
-					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
+					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );			
+					$feedback = $EM_Event->get_bookings()->feedback_message;				
 				}
 			}else{
 				$result = false;
@@ -306,10 +309,12 @@ function em_init_actions() {
 			//Now save booking
 			if( $EM_Event->get_bookings()->add($EM_Booking) ){
 				$result = true;
-				$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
+				$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );		
+				$feedback = $EM_Event->get_bookings()->feedback_message;	
 			}else{
 				$result = false;
-				$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
+				$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );			
+				$feedback = $EM_Event->get_bookings()->feedback_message;	
 			}
 	  	}elseif ( $_REQUEST['action'] == 'booking_cancel') {
 	  		//Cancel Booking
@@ -328,6 +333,7 @@ function em_init_actions() {
 					}
 				}else{
 					$EM_Notices->add_error( $EM_Booking->get_errors() );
+					$feedback = $EM_Booking->feedback_message;
 				}
 			}else{
 				$EM_Notices->add_error( __('You must log in to cancel your booking.', 'dbem') );
@@ -363,11 +369,11 @@ function em_init_actions() {
 			}
 		}
 		if( $result && defined('DOING_AJAX') ){
-			$return = array('result'=>true, 'message'=>$EM_Booking->feedback_message);
+			$return = array('result'=>true, 'message'=>$feedback);
 			echo EM_Object::json_encode($return);
 			die();
 		}elseif( !$result && defined('DOING_AJAX') ){
-			$return = array('result'=>false, 'message'=>$EM_Booking->feedback_message, 'errors'=>$EM_Notices->get_errors());
+			$return = array('result'=>false, 'message'=>$feedback, 'errors'=>$EM_Notices->get_errors());
 			echo EM_Object::json_encode($return);
 			die();
 		}

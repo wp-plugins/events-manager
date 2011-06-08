@@ -49,7 +49,7 @@ add_action( 'wp', 'bp_em_setup_globals', 2 );
 function bp_em_setup_nav() {
 	global $bp;
 	$count = 0; 
-
+	if( empty($bp->events) ) bp_em_setup_globals();
 	/* Add 'Events' to the main user profile navigation */
 	bp_core_new_nav_item( array(
 		'name' => __( 'Events', 'bp-em' ),

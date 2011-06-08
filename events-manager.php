@@ -103,8 +103,16 @@ add_action( 'bp_init', 'bp_em_init' );
 
 // Setting constants
 define('EM_VERSION', 4.06); //self expanatory
-define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
-$upload_dir = wp_upload_dir();
+define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
+if( get_site_option('dbem_ms_global_table') && is_multisite() ){
+	//If in ms recurrence mode, we are getting the default wp-content/uploads folder
+	$upload_dir = array(
+		'basedir' => WP_CONTENT_DIR.'/uploads/',
+		'baseurl' => WP_CONTENT_URL.'/uploads/'
+	);
+}else{
+	$upload_dir = wp_upload_dir();	
+}
 if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
 	define("EM_IMAGE_UPLOAD_DIR", $upload_dir['basedir']."/locations-pics/");
 	define("EM_IMAGE_UPLOAD_URI", $upload_dir['baseurl']."/locations-pics/");
@@ -168,7 +176,15 @@ add_filter('dbem_notes_map', 'js_escape');
 function em_enqueue_public() {
 	//Scripts
 	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-form')); //jQuery will load as dependency
-	//Localise vars
+	//Styles
+	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
+	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
+	em_js_localize_vars();
+}
+if(!is_admin()){ add_action ( 'init', 'em_enqueue_public' ); }
+
+function em_js_localize_vars(){
+	//Localise vars regardless
 	$locale_code = substr ( WPLANG, 0, 2 );
 	if( WPLANG == 'en_GB'){
 		$locale_code = 'en-GB';
@@ -178,12 +194,7 @@ function em_enqueue_public() {
 		'firstDay' => get_option('start_of_week'),
 		'locale' => $locale_code
 	));
-	//Styles
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
-	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
 }
-if(!is_admin())
-add_action ( 'init', 'em_enqueue_public' );
 
 /**
  * Perform plugins_loaded actions 
@@ -325,9 +336,9 @@ add_action('admin_menu','em_create_events_submenu');
  *	
  */
 class EM_MS_Globals {
-	function __construct(){ add_action( 'init', array(&$this, 'add_filters')); }	
+	function __construct(){ add_action( 'init', array(&$this, 'add_filters'), 1); }	
 	function add_filters(){
-		foreach( self::get_globals() as $global_option_name ){
+		foreach( $this->get_globals() as $global_option_name ){
 			add_filter('pre_option_'.$global_option_name, array(&$this, 'pre_option_'.$global_option_name), 1,1);
 			add_filter('pre_update_option_'.$global_option_name, array(&$this, 'pre_update_option_'.$global_option_name), 1,2);
 			add_action('add_option_'.$global_option_name, array(&$this, 'add_option_'.$global_option_name), 1,1);
@@ -338,7 +349,7 @@ class EM_MS_Globals {
 			//multisite settings
 			'dbem_ms_global_table', 'dbem_ms_global_events', 'dbem_ms_global_events_links',
 			//mail
-			'dbem_rsvp_mail_port', 'dbem_mail_sender_address', 'dbem_smtp_host', 'dbem_mail_sender_name','dbem_smtp_host','dbem_rsvp_mail_send_method','dbem_rsvp_mail_SMTPAuth',
+			'dbem_rsvp_mail_port', 'dbem_mail_sender_address', 'dbem_smtp_password', 'dbem_smtp_username','dbem_smtp_host', 'dbem_mail_sender_name','dbem_smtp_host','dbem_rsvp_mail_send_method','dbem_rsvp_mail_SMTPAuth',
 			//images	
 			'dbem_image_max_width','dbem_image_max_height','dbem_image_max_size'	
 		));
