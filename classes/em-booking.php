@@ -507,8 +507,9 @@ class EM_Booking extends EM_Object{
 				'#_BOOKINGSPACES' => $this->get_spaces(),
 				'#_BOOKINGLISTURL' => em_get_my_bookings_url(),
 				'#_BOOKINGCOMMENT' => $this->comment,
+				'#_BOOKINGTICKETNAME' => $EM_Ticket->name,
 				'#_BOOKINGTICKETDESCRIPTION' => $EM_Ticket->description,
-				'#_BOOKINGTICKETPRICE' => $EM_Ticket->get_price(true),
+				'#_BOOKINGTICKETPRICE' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(true),2),
 				'#_BOOKINGTICKETS' => $tickets
 			);		 
 			foreach($placeholders as $key => $value) {

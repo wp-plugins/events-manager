@@ -71,7 +71,7 @@ class EM_Location extends EM_Object {
 			//Save into the object
 			$this->to_object($location, true);
 			$this->get_image_url();
-			add_filter('em_location_save',array(&$this,'image_upload'));
+			add_filter('em_location_save',array(&$this,'image_upload'),1,2);
 		} 
 		do_action('em_location', $this, $location_data);
 	}
@@ -82,6 +82,7 @@ class EM_Location extends EM_Object {
 		$location = array();
 		$location['location_id'] = ( !empty($_POST['location_id']) ) ? $_POST['location_id']:'';
 		$location['location_name'] = ( !empty($_POST['location_name']) ) ? stripslashes($_POST['location_name']):'';
+		$location['location_slug'] = ( !empty($_POST['location_slug']) ) ? sanitize_title($_POST['location_slug']) : '' ;
 		if( current_user_can('edit_others_events') ){
 			$location['location_owner'] = ( !empty($_POST['location_owner']) && is_numeric($_POST['location_owner']) ) ? $_POST['location_owner']:'';
 		}

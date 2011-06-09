@@ -169,7 +169,7 @@ class EM_Event extends EM_Object{
 			//Sort out attributes
 			if( !empty($event['event_attributes']) ){
 				if( is_serialized($event['event_attributes']) ){
-					$event['event_attributes'] = @unserialize($event['event_attributes']);					
+					$event['event_attributes'] =  @unserialize($event['event_attributes']);
 				}
 				$event['event_attributes'] = (!is_array($event['event_attributes'])) ?  array() : $event['event_attributes'] ;
 			}
@@ -230,7 +230,7 @@ class EM_Event extends EM_Object{
 		//Build Event Array
 		do_action('em_event_get_post_pre', $this);
 		$this->name = ( !empty($_POST['event_name']) ) ? stripslashes($_POST['event_name']) : '' ;
-		$this->slug = ( !empty($_POST['event_slug']) ) ? $_POST['event_slug'] : '' ;
+		$this->slug = ( !empty($_POST['event_slug']) ) ? sanitize_title($_POST['event_slug']) : '' ;
 		$this->start_date = ( !empty($_POST['event_start_date']) ) ? $_POST['event_start_date'] : '';
 		$this->end_date = ( !empty($_POST['event_end_date']) ) ? $_POST['event_end_date'] : $this->start_date; 
 		$this->rsvp = ( !empty($_POST['event_rsvp']) ) ? 1:0;
@@ -288,7 +288,7 @@ class EM_Event extends EM_Object{
 				}
 			}
 		}
-	 	$this->attributes = $event_attributes;
+	 	$this->attributes = stripslashes_deep($event_attributes);
 		//Recurrence data
 		$this->recurrence_id = ( !empty($_POST['recurrence_id']) && is_numeric($_POST['recurrence_id']) ) ? $_POST['recurrence_id'] : 0 ;
 		if( !empty($_POST['repeated_event']) ){
@@ -404,6 +404,17 @@ class EM_Event extends EM_Object{
 			}
 		} else {
 			// Update Event
+			if($this->is_recurrence()){
+				//duplicate the original recurrence image
+				$dir = (EM_IMAGE_DS == '/') ? 'events/event':'event';
+			  	foreach($this->mime_types as $mime_type) { 
+					$file_name = $dir."-{$this->recurrence_id}.$mime_type";
+					if( file_exists( EM_IMAGE_UPLOAD_DIR . $file_name) ) {
+						$replacement = $dir."-{$this->id}.$mime_type";
+			  			copy(EM_IMAGE_UPLOAD_DIR . $file_name, EM_IMAGE_UPLOAD_DIR . $replacement);
+					}
+				}	
+			}
 			$this->recurrence_id = 0; // If it's saved here, it becomes individual
 			$event = $this->to_array();
 			$event['event_attributes'] = serialize($event['event_attributes']);

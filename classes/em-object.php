@@ -408,6 +408,8 @@ class EM_Object {
 				if(array_key_exists($key, $array)){
 					if( !is_object($array[$key]) && !is_array($array[$key]) ){
 						$array[$key] = ($addslashes) ? stripslashes($array[$key]):$array[$key];
+					}elseif( is_array($array[$key]) ){
+						$array[$key] = ($addslashes) ? stripslashes_deep($array[$key]):$array[$key];
 					}
 					$this->$val['name'] = $array[$key];
 				}

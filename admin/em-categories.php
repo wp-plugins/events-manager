@@ -144,9 +144,29 @@ function em_categories_edit_layout($message = "") {
 							<div id="category_description" class="postbox">
 								<h3><?php echo __('Category name', 'dbem') ?></h3>
 								<div class="inside">					
-									<input name='category_name' id='category-name' type='text' value='<?php echo $EM_Category->name ?>' size='40'  />
+									<input name='category_name' id='category-name' type='text' value='<?php echo htmlspecialchars($EM_Category->name,ENT_QUOTES); ?>' size='40'  />
 									<br />
 					           		<em><?php echo __('The name of the category', 'dbem') ?></em>
+									<?php $slug_link = __('View Slug','dbem'); ?>
+									<a href="#" id="category-slug-trigger"><?php echo $slug_link; ?></a>
+									<script type="text/javascript">
+										jQuery(document).ready(function($){
+											$('#category-slug-trigger').click(function(){
+												if( $(this).text() == '<?php echo $slug_link; ?>'){
+													$('.category-slug').show(); 
+													 $(this).text('<?php _e('Hide Slug','dbem'); ?>');
+												}else{ 
+													$('.category-slug').hide(); 
+													 $(this).text('<?php echo $slug_link; ?>'); 
+												}
+											});
+										});
+									</script>
+									<p class='category-slug' style="display:none">
+										<?php echo sprintf(__('%s Slug','dbem'),__('Category','dbem')); ?>: <input type="text" name="category_slug" id="category-slug" value="<?php echo $EM_Category->slug; ?>" />
+										<br />
+										<?php _e ( 'The event slug. If the event slug already exists, a random number will be appended to the end.', 'dbem' )?>
+									</p>					           		
 								</div>
 							</div>
 											

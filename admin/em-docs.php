@@ -176,7 +176,11 @@ function em_docs_init(){
 							'#_BOOKINGEMAIL' => array( 'desc' => __('Email of person who made the booking.', 'dbem') ),
 							'#_BOOKINGPHONE' => array( 'desc' => __('Phone number of person who made the booking.', 'dbem') ),
 							'#_BOOKINGSPACES' => array( 'desc' => __('Number of spaces the person has booked.', 'dbem') ),
-							'#_BOOKINGCOMMENT' => array( 'desc' => __('Any specific comments made by the person who made the booking.', 'dbem') )
+							'#_BOOKINGCOMMENT' => array( 'desc' => __('Any specific comments made by the person who made the booking.', 'dbem') ),
+							'#_BOOKINGTICKETNAME' => array( 'desc' => __('Name of the ticket booked. Useful in single ticket mode, if multiple tickets are booked a random ticket is used.', 'dbem') ),
+							'#_BOOKINGTICKETDESCRIPTION' => array( 'desc' => __('Description of the ticket booked. Useful in single ticket mode, if multiple tickets are booked a random ticket is used.', 'dbem') ),
+							'#_BOOKINGTICKETPRICE' => array( 'desc' => __('Booked ticket price with currency symbol (e.g. $ 10.00). Useful in single ticket mode, if multiple tickets are booked a random ticket is used.', 'dbem') ),
+							'#_BOOKINGTICKETS' => array( 'desc' => __('A list of booked tickets. You can modify this by using template files and modifying templates/emails/bookingtickets.php', 'dbem') ),
 						)
 					),
 					'Links' => array(

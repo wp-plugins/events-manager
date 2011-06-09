@@ -159,18 +159,43 @@ function em_admin_location($message = "") {
 								<input name='location_name' id='location-name' type='text' value='<?php echo htmlspecialchars($EM_Location->name, ENT_QUOTES); ?>' size='40'  />
 								<br />
 								<?php _e('The name of the location', 'dbem') ?>
+								<?php $slug_link = __('View Slug','dbem'); ?>
+								<a href="#" id="location-slug-trigger"><?php echo $slug_link; ?></a>
+								<script type="text/javascript">
+									jQuery(document).ready(function($){
+										$('#location-slug-trigger').click(function(){
+											if( $(this).text() == '<?php echo $slug_link; ?>'){
+												$('.location-slug').show(); 
+												 $(this).text('<?php _e('Hide Slug','dbem'); ?>');
+											}else{ 
+												$('.location-slug').hide(); 
+												 $(this).text('<?php echo $slug_link; ?>'); 
+											}
+										});
+									});
+								</script>
+								<p class='location-slug' style="display:none">
+									<?php echo sprintf(__('%s Slug','dbem'),__('Location','dbem')); ?>: <input type="text" name="location_slug" id="location-slug" value="<?php echo $EM_Location->slug; ?>" />
+									<br />
+									<?php _e ( 'The event slug. If the event slug already exists, a random number will be appended to the end.', 'dbem' )?>
+								</p>
 							</div>
 						</div>
+						<?php if( current_user_can('edit_others_locations') ): ?>
 						<div id="location_owner" class="stuffbox">
 							<h3>
 								<?php _e ( 'Location Owner', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
 								<?php
-									wp_dropdown_users ( array ('name' => 'location_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Location->owner  ) );
+									$location_owner = (empty($EM_Location->id)) ? $EM_Location->owner:get_current_user_id();
+									$user_args = array ('name' => 'location_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => get_current_user_id() );
+									if( is_super_admin() || is_main_site() ){ $user_args['blog_id'] = false; }
+									wp_dropdown_users ( $user_args );
 								?>
 							</div>
 						</div>
+						<?php endif; ?>
 						<div id="location_coordinates" class="stuffbox" style='display: none;'>
 							<h3>
 								<?php _e ( 'Coordinates', 'dbem' ); ?>
