@@ -6,7 +6,6 @@
 		<div><label><?php _e('Price','dbem') ?></label><input type="text" name="ticket_price" /></div>
 		<div>
 			<label><?php _e('Available ticket spaces','dbem') ?></label><input type="text" name="ticket_spaces" /><br />
-			<em><?php _e('If left blank, spaces are determined by event limit.','dbem'); ?></em>
 		</div><br />
 		<div><label><?php _e('Start date of ticket availability','dbem') ?></label><input type="hidden" name="ticket_start" class="start" /><input type="text" name="ticket_start_pub" class="start-loc" /></div>
 		<div><label><?php _e('End date of ticket availability','dbem') ?></label><input type="hidden" name="ticket_end" class="end" /><input type="text" name="ticket_end_pub" class="end-loc" /></div>

@@ -42,7 +42,7 @@ function em_bookings_events_table() {
 	$use_events_end = get_option ( 'dbem_use_event_end' );
 	?>
 	<div class="wrap em_bookings_events_table em_obj">
-		<form id="posts-filter" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="get">
+		<form id="posts-filter" action="" method="get">
 			<input type="hidden" name="em_obj" value="em_bookings_events_table" />
 			<?php if(!empty($_GET['page'])): ?>
 			<input type='hidden' name='page' value='events-manager-bookings' />

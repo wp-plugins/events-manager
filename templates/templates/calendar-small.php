@@ -14,7 +14,7 @@
 	<thead>
 		<tr>
 			<td><a class="em-calnav" href="<?php echo $calendar['links']['previous_url']; ?>">&lt;&lt;</a></td>
-			<td class="month_name" colspan="5"><?php echo ucfirst(date_i18n('M', $calendar['month_start'])); ?></td>
+			<td class="month_name" colspan="5"><?php echo ucfirst(date_i18n('M Y', $calendar['month_start'])); ?></td>
 			<td><a class="em-calnav" href="<?php echo $calendar['links']['next_url']; ?>">&gt;&gt;</a></td>
 		</tr>
 	</thead>
@@ -27,7 +27,7 @@
 			$col_count = 1; //this counts collumns in the $calendar_array['cells'] array
 			$col_max = count($calendar['row_headers']); //each time this collumn number is reached, we create a new collumn, the number of cells should divide evenly by the number of row_headers
 			foreach($calendar['cells'] as $date => $cell_data ){
-				$class = ( count($cell_data['events']) > 0 ) ? 'eventful':'eventless';
+				$class = ( !empty($cell_data['events']) && count($cell_data['events']) > 0 ) ? 'eventful':'eventless';
 				if(!empty($cell_data['type'])){
 					$class .= "-".$cell_data['type']; 
 				}

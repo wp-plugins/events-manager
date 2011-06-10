@@ -19,7 +19,6 @@ function bp_em_my_events() {
 	$template_content = 'bp_em_my_events_content';
 
 	if( count($bp->action_variables) > 0 ){
-		if( is_object($EM_Event) && !$EM_Event->can_manage('edit_events','edit_others_events') ) return false;
 		if( !empty($bp->action_variables[0]) ){
 			switch($bp->action_variables[0]){
 				case 'edit':
