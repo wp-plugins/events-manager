@@ -197,8 +197,8 @@ class EM_Booking extends EM_Object{
 		$this->tickets_bookings = new EM_Tickets_Bookings($this->id);
 		$result = array();
 		$this->event_id = $this->get_event()->id;
-		if( !empty($_POST['em_tickets']) && is_array($_POST['em_tickets']) ){
-			foreach( $_POST['em_tickets'] as $ticket_id => $values){
+		if( !empty($_REQUEST['em_tickets']) && is_array($_REQUEST['em_tickets']) ){
+			foreach( $_REQUEST['em_tickets'] as $ticket_id => $values){
 				//make sure ticket exists
 				if( !empty($values['spaces']) ){
 					$args = array('ticket_id'=>$ticket_id, 'ticket_booking_spaces'=>$values['spaces'], 'booking_id'=>$this->id);

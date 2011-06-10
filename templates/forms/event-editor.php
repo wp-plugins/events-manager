@@ -185,42 +185,37 @@
 			
 			<h4><?php _e ( 'Where', 'dbem' ); ?></h4>
 			<div class="inside">
-				<table id="dbem-location-data">     
-					<tr>
-						<td style="padding-right:20px; vertical-align:top;">
-							<?php
-								$args = array();
-								$args['owner'] = current_user_can('read_others_locations') ? false:get_current_user_id(); 
-								$locations = EM_Locations::get($args); 
-							?>
-							<?php  if( count($locations) > 0): ?>
-							<select name="location_id" id='location-select-id' size="1">  
-								<?php 
-								foreach($locations as $location) {    
-									$selected = "";  
-									if( is_object($EM_Event->location) )  {
-										if ($EM_Event->location->id == $location->id) 
-											$selected = "selected='selected' ";
-									}
-							   		?>          
-							    	<option value="<?php echo $location->id ?>" title="<?php echo "{$location->latitude},{$location->longitude}" ?>" <?php echo $selected ?>><?php echo $location->name; ?></option>
-							    	<?php
-								}
-								?>
-							</select>
-							<?php endif; ?>
-							<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),$bp->events->link . 'my-locations/add/'); ?></p>
-						</td>
-						<?php if ( get_option ( 'dbem_gmap_is_active' ) ) : ?>
-						<td width="400">
-							<div id='em-map-404' style='width: 400px; vertical-align:middle; text-align: center;'>
-								<p><em><?php _e ( 'Location not found', 'dbem' ); ?></em></p>
-							</div>
-							<div id='em-map' style='width: 400px; height: 300px; display: none;'></div>
-						</td>
-						<?php endif; ?>
-					</tr>
-				</table>
+				<div id="em-location-data" style="padding-right:20px; vertical-align:top;">
+					<?php
+						$args = array();
+						$args['owner'] = current_user_can('read_others_locations') ? false:get_current_user_id(); 
+						$locations = EM_Locations::get($args); 
+					?>
+					<?php  if( count($locations) > 0): ?>
+					<select name="location_id" id='location-select-id' size="1">  
+						<?php 
+						foreach($locations as $location) {    
+							$selected = "";  
+							if( is_object($EM_Event->location) )  {
+								if ($EM_Event->location->id == $location->id) 
+									$selected = "selected='selected' ";
+							}
+					   		?>          
+					    	<option value="<?php echo $location->id ?>" title="<?php echo "{$location->latitude},{$location->longitude}" ?>" <?php echo $selected ?>><?php echo $location->name; ?></option>
+					    	<?php
+						}
+						?>
+					</select>
+					<?php endif; ?>
+					<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),$bp->events->link . 'my-locations/add/'); ?></p>
+				
+					<?php if ( get_option ( 'dbem_gmap_is_active' ) ) : ?>
+					<div id='em-map-404' style='width: 400px; vertical-align:middle; text-align: center;'>
+						<p><em><?php _e ( 'Location not found', 'dbem' ); ?></em></p>
+					</div>
+					<div id='em-map' style='width: 400px; height: 300px; display: none;'></div>
+					<?php endif; ?>
+				</div>
 			</div>
 			
 			<h4><?php _e ( 'Details', 'dbem' ); ?></h4>

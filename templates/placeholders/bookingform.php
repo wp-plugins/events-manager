@@ -171,44 +171,50 @@ global $EM_Notices;
 <script type="text/javascript">
 	jQuery(document).ready( function($){
 		var em_booking_doing_ajax = false;
-		$('#em-booking-form').ajaxForm({
-			url: EM.ajaxurl,
-			dataType: 'jsonp',
-			beforeSubmit: function(formData, jqForm, options) {
-				if(em_booking_doing_ajax){
-					alert('<?php _e('Please wait while the booking is being submitted.','dbem'); ?>');
-					return false;
-				}
-				em_booking_doing_ajax = true;
-				$('.em-booking-message').remove();
-				$('#em-booking').append('<div id="em-loading"></div>');
-			},
-			success : function(response, statusText, xhr, $form) {
-				$('#em-loading').remove();
-				if(response.result){
-					$('#em-booking-form').fadeOut( 'fast', function(){
-						$('<div class="em-booking-message-success em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
-						$(this).remove();
-						$('.em-booking-login').remove();
-					} );
-				}else{
-					if( response.errors != '' ){
-						if( $.isArray() ){
-							var error_msg;
-							response.errors.each(function(i, el){ 
-								error_msg = error_msg + el;
-							});
-							$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');
-						}else{
-							$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');							
-						}
+		$('#em-booking-form').submit( function(e){
+			e.preventDefault();
+			$.ajax({
+				url: EM.ajaxurl,
+				dataType: 'jsonp',
+				data:$('#em-booking-form').serializeArray(),
+				type:'post',
+				beforeSend: function(formData, jqForm, options) {
+					if(em_booking_doing_ajax){
+						alert('<?php _e('Please wait while the booking is being submitted.','dbem'); ?>');
+						return false;
+					}
+					em_booking_doing_ajax = true;
+					$('.em-booking-message').remove();
+					$('#em-booking').append('<div id="em-loading"></div>');
+				},
+				success : function(response, statusText, xhr, $form) {
+					$('#em-loading').remove();
+					if(response.result){
+						$('#em-booking-form').fadeOut( 'fast', function(){
+							$('<div class="em-booking-message-success em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
+							$(this).remove();
+							$('.em-booking-login').remove();
+						} );
 					}else{
-						$('<div class="em-booking-message-error em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
-					}					
+						if( response.errors != '' ){
+							if( $.isArray() ){
+								var error_msg;
+								response.errors.each(function(i, el){ 
+									error_msg = error_msg + el;
+								});
+								$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');
+							}else{
+								$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');							
+							}
+						}else{
+							$('<div class="em-booking-message-error em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
+						}					
+					}
+					em_booking_doing_ajax = false;
 				}
-				em_booking_doing_ajax = false;
-			}
-		});								
+			});	
+			return false;
+		});							
 	});
 </script>
 <?php echo apply_filters( 'em_booking_form_js', ob_get_clean(), $EM_Event ); ?>

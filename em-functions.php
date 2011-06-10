@@ -304,6 +304,9 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 function em_new_user_notification($user_id, $plaintext_pass = '') {
 	global $LoginWithAjax;
 	
+	//if you want you can disable this email from going out, and will still consider registration as successful.
+	if( get_option('dbem_email_disable_registration') ){ return true;  }
+	
 	//Copied out of /wp-includes/pluggable.php
 	$user = new WP_User($user_id);
 

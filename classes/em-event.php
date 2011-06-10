@@ -552,7 +552,7 @@ class EM_Event extends EM_Object{
 				return apply_filters('em_event_duplicate', $EM_Event, $this);
 			}
 		}else{
-			$EM_Event->add_error( sprintf(__('You are not allowed to manage this %s.'), __('event','dbem')) );
+			$this->add_error( sprintf(__('You are not allowed to manage this %s.'), __('event','dbem')) );
 		}
 		//TODO add error notifications for duplication failures.
 		return apply_filters('em_event_duplicate', false, $this);;

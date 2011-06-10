@@ -2,9 +2,9 @@
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://wp-events-plugin.com
 Tags: attendance, attendee, buddypress, calendar, registration, event, event calendar, event management, event registration, events, events calendar, gigs, payment, payments, paypal, registration, sports, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking
-Requires at least: 3.0
-Tested up to: 3.1.2
-Stable tag: 4.0.6
+Requires at least: 3.1
+Tested up to: 3.1.3
+Stable tag: 4.0.7
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -26,10 +26,10 @@ Main Features
 * Multiple Tickets
 * Multisite Support
 * BuddyPress Support
-** Group Events
-** Personal Events
-** Activity Stream
-** more on the way!
+* * Group Events
+* * Personal Events
+* * Activity Stream
+* * more on the way!
 * SEO Permalinks
 * Assign event locations and view events by location
 * Event categories
@@ -119,6 +119,26 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 6. Manage attendees with various booking reports
 
 == Changelog ==
+
+= 4.0.7 =
+* minium WP version is now 3.1
+* prevented JS loading in non-EM admin screens again
+* updated jQuery ui objects to use the 1.8.x core
+* removed dependency on ajaxForm javascript
+* new booking ticket placeholders for emails
+* images now saving in recurrence mode
+* images now saving in multisite global/local modes
+* LOADS of bugfixes in buddypress
+* removed user list showing for normal location editors
+* cleaning up the attributes e.g. apostrophes
+* images kept when detaching recurrent event
+* location and categories now have slug choice and get properly cleaned
+* added and corrected some countries (Syria, Peru, corrected Panama code)
+* added option to disable registration emails going out
+* tickets now accept digits, e.g $1.50
+* location form in event more intuitive when using previous locations
+* location form and map degrade more gracefully with small screens now.
+* removed various php warnings
 
 = 4.0.6 =
 * removed more php warnings

@@ -367,27 +367,26 @@ class EM_Object {
 		//now check capability
 		$can_manage = false;
 		if( $is_owner && current_user_can($owner_capability) ){
+			//user owns the object and can therefore manage it
 			$can_manage = true;
-		}elseif( $is_owner && array_key_exists($owner_capability, $em_capabilities_array) ){
+		}elseif( array_key_exists($owner_capability, $em_capabilities_array) ){
+			//currently user is not able to manage as they aren't the owner
 			$error_msg = $em_capabilities_array[$owner_capability];
 		}
-		//Figure out if this is multisite and require an extra bit of validation
-		$multisite_check = true;
+		//admins have special rights
+		if( current_user_can($admin_capability) ){
+			$can_manage = true;
+		}elseif( array_key_exists($admin_capability, $em_capabilities_array) ){
+			$error_msg = $em_capabilities_array[$admin_capability];
+		}
+		//Figure out if this is multisite in global mode and require an extra bit of validation
 		if( !empty($this->id) && is_multisite() && get_site_option('dbem_ms_global_table') ){
 			if( get_class($this) == "EM_Event" ){
 				//Other user-owned events can be modified by admins if it's on the same blog, otherwise it must be an admin on the main site.
-				$multisite_check = !( $this->blog_id == get_current_blog_id() || is_main_site() );
-			}else{
-				//User can't admin this bit, as they're on a sub-blog
-				$multisite_check = is_main_site();
-				$can_manage = false;
+				$can_manage = $this->blog_id == get_current_blog_id() || is_main_site() || (defined('BP_ROOT_BLOG') && get_current_blog_id() == BP_ROOT_BLOG);
 			}
 		}
-		if( !$is_owner && current_user_can($admin_capability) && $multisite_check ){
-			$can_manage = true;
-		}elseif( !$is_owner && array_key_exists($admin_capability, $em_capabilities_array) ){
-			$error_msg = $em_capabilities_array[$admin_capability];
-		}
+		
 		if( !$can_manage && !empty($error_msg) ){
 			$this->add_error($error_msg);
 		}

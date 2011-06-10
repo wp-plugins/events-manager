@@ -72,7 +72,7 @@ function em_admin_options_page() {
 		jQuery(document).ready(function($){
 			var close_text = '<?php _e('Collapse All','dbem'); ?>';
 			var open_text = '<?php _e('Expand All','dbem'); ?>';
-			var open_close = $('<a href="#" style="display:block; float:right; clear:right; margin:10px;">'+close_text+'</a>');
+			var open_close = $('<a href="#" style="display:block; float:right; clear:right; margin:10px;">'+open_text+'</a>');
 			$('#icon-options-general').after(open_close);
 			open_close.click( function(e){
 				e.preventDefault();
@@ -94,7 +94,16 @@ function em_admin_options_page() {
 				}
 			});
 			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');
-			$(".postbox").addClass('closed'); //Let's start off closing everything for now.			
+			$(".postbox").addClass('closed').unbind('click');
+			$(".postbox").click(function(event){
+				if($.type(event) == 'object'){
+					event.preventDefault();
+				}else{
+					$(event).preventDefault();
+				}
+				$(this).toggleClass('closed');
+				return false;
+			});		
 		});
 	</script>
 	<div class="wrap">
@@ -146,7 +155,7 @@ function em_admin_options_page() {
 			<div class="metabox-holder">         
 			<!-- // TODO Move style in css -->
 			<div class='postbox-container' style='width: 99.5%'>
-			<div id="" class="meta-box-sortables" >
+			<div id="">
 		  
 			<?php if ( is_multisite() && is_super_admin() ) : ?>
 			<div  class="postbox " >
@@ -446,6 +455,7 @@ function em_admin_options_page() {
 					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users (), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
 					em_options_input_text ( __( 'Email events admin?', 'dbem' ), 'dbem_bookings_notify_admin', __( "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email).", 'dbem' ) );
 					em_options_radio_binary ( __( 'Email contact person?', 'dbem' ), 'dbem_bookings_contact_email', __( 'Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)', 'dbem' ) );
+					em_options_radio_binary ( __( 'Disable new registration email?', 'dbem' ), 'dbem_email_disable_registration', __( 'Check this option if you want to prevent the wordpress registration email from going out when a user anonymously books an event.', 'dbem' ) );
 					?>
 					<tr><td colspan='2'><h4><?php _e('Contact person booking confirmed','dbem') ?></h4></td></tr>
 					<tr><td colspan='2'><?php echo __('An email will be sent to the event contact when a booking is first made.','dbem').$bookings_placeholder_tip ?></td></tr>

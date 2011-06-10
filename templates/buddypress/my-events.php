@@ -126,7 +126,7 @@
 									</div>
 								</td>
 								<td>
-									<a href="<?php echo $url ?>duplicate/?event_id=<?php echo $event->id ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
+									<a href="<?php echo $url ?>edit/?action=event_duplicate&amp;event_id=<?php echo $event->id ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
 										<strong>+</strong>
 									</a>
 								</td>

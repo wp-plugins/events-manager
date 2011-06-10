@@ -8,7 +8,9 @@
 <div class="em-events-search">
 	<?php 
 	$s_default = __('Search Events', 'dbem'); 
-	$s = !empty($_POST['search']) ? $_POST['search']:$s_default; 
+	$s = !empty($_REQUEST['search']) ? $_REQUEST['search']:$s_default; 
+	//convert scope to an array in event of pagination
+	if(!empty($_REQUEST['scope']) && !is_array($_REQUEST['scope'])){ $_REQUEST['scope'] = explode(',',$_REQUEST['scope']); }
 	?>
 	<form action="<?php echo EM_URI; ?>" method="post" class="em-events-search-form">
 		<?php do_action('em_template_events_search_form_header'); ?>
@@ -19,16 +21,16 @@
 		<!-- START Date Search -->
 		between:
 		<input type="text" id="em-date-start-loc" />
-		<input type="hidden" id="em-date-start" name="scope[0]" value="<?php if( !empty($_POST['scope'][0]) ) echo $_POST['scope'][0]; ?>" />
+		<input type="hidden" id="em-date-start" name="scope[0]" value="<?php if( !empty($_REQUEST['scope'][0]) ) echo $_REQUEST['scope'][0]; ?>" />
 		and
 		<input type="text" id="em-date-end-loc" />
-		<input type="hidden" id="em-date-end" name="scope[1]" value="<?php if( !empty($_POST['scope'][1]) ) echo $_POST['scope'][1]; ?>" />
+		<input type="hidden" id="em-date-end" name="scope[1]" value="<?php if( !empty($_REQUEST['scope'][1]) ) echo $_REQUEST['scope'][1]; ?>" />
 		<!-- END Date Search -->		
 		<!-- START Category Search -->
 		<select name="category">
 			<option value=''><?php _e('All Categories','dbem'); ?></option>
 			<?php foreach(EM_Categories::get(array('orderby'=>'category_name')) as $EM_Category): ?>
-			 <option value="<?php echo $EM_Category->id; ?>" <?php echo (!empty($_POST['category']) && $_POST['category'] == $EM_Category->id) ? 'selected="selected"':''; ?>><?php echo $EM_Category->name; ?></option>
+			 <option value="<?php echo $EM_Category->id; ?>" <?php echo (!empty($_REQUEST['category']) && $_REQUEST['category'] == $EM_Category->id) ? 'selected="selected"':''; ?>><?php echo $EM_Category->name; ?></option>
 			<?php endforeach; ?>
 		</select>
 		<!-- END Category Search -->

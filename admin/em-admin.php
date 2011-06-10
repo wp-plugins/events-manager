@@ -151,7 +151,7 @@ function em_admin_paginate($total, $limit, $page=1, $vars=false){
 function em_admin_load_scripts(){
 	//Load the UI items, currently date picker and autocomplete plus dependencies
 	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
-	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core'));
+	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position'));
 	
 	//Add maps
 	if( get_option('dbem_gmap_is_active') ){
@@ -163,8 +163,8 @@ function em_admin_load_scripts(){
 	if( is_admin() ){
 		//TinyMCE Editor
 		remove_filter('the_editor',	'qtrans_modifyRichEditor'); //qtranslate filter
-		add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 25 );
-		add_action( 'admin_print_footer_scripts', 'wp_tiny_mce_preload_dialogs', 30 );
+		if( function_exists('wp_tiny_mce')) add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 25 );
+		if( function_exists('wp_tiny_mce_preload_dialogs')) add_action( 'admin_print_footer_scripts', 'wp_tiny_mce_preload_dialogs', 30 );
 		wp_enqueue_script('post');
 		if ( user_can_richedit() )
 			wp_enqueue_script('editor');
@@ -182,7 +182,7 @@ function em_admin_load_scripts(){
  */
 function em_admin_load_styles() {
 	add_thickbox();
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
+	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
 	wp_enqueue_style('events-manager-admin', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager_admin.css');
 }
 
