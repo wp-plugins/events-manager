@@ -26,10 +26,10 @@ Main Features
 * Multiple Tickets
 * Multisite Support
 * BuddyPress Support
-* * Group Events
-* * Personal Events
-* * Activity Stream
-* * more on the way!
+ * Group Events
+ * Personal Events
+ * Activity Stream
+ * more on the way!
 * SEO Permalinks
 * Assign event locations and view events by location
 * Event categories
