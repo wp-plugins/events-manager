@@ -161,7 +161,10 @@ function em_admin_event_page() {
 							<h3 class='hndle'><span><?php _e ( 'Event Owner/Contact Person', 'dbem' ); ?></span></h3>
 							<div class="inside">
 								<?php
-									wp_dropdown_users ( array ('name' => 'event_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->owner  ) );
+									$event_owner = (empty($EM_Event->id)) ? $EM_Event->owner:get_current_user_id();
+									$user_args = array ('name' => 'event_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->owner  );
+									if( is_super_admin() || is_main_site() ){ $user_args['blog_id'] = false; }
+									wp_dropdown_users ( $user_args );
 								?>
 							</div>
 						</div>
@@ -235,6 +238,7 @@ function em_admin_event_page() {
 															<a id='printable' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&event_id=".$EM_Event->id ?>'><?php _e('manage bookings','dbem')?></a><br />
 															<a target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_report&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a>
 															<a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a>
+															<?php do_action('em_admin_event_booking_options'); ?>
 															<br class='clear'/>             
 												        </div>
 														<br class='clear'/>    
@@ -362,100 +366,99 @@ function em_admin_event_page() {
 								<?php _e ( 'Location', 'dbem' ); ?>
 							</h3>
 							<div class="inside">
-								<table id="dbem-location-data">     
-									<tr>
-										<td style="padding-right:20px; width:100%;">
-											<table>
-												<?php if($use_select_for_locations) : ?> 
-												<tr>
-													<th><?php _e('Location:','dbem') ?></th>
-													<td> 
-														<select name="location_id" id='location-select-id' size="1">  
-															<?php 
-															$locations = EM_Locations::get();
-															foreach($locations as $location) {    
-																$selected = "";  
-																if ($EM_Event->get_location()->id == $location->id){ 
-																	$selected = "selected='selected' ";
-																}
-														   		?>          
-														    	<option value="<?php echo $location->id ?>" title="<?php echo "{$location->latitude},{$location->longitude}" ?>" <?php echo $selected ?>><?php echo $location->name; ?></option>
-														    	<?php
-															}
-															?>
-														</select>
-														<p><?php _e ( 'The name of the location where the event takes place. You can use the name of a venue, a square, etc', 'dbem' )?></p>
-													</td>
-												</tr>
-												<?php else : ?>
-												<tr>
-													<th><?php _e ( 'Name:' )?></th>
-													<td>
-														<input id='location-id' name='location_id' type='hidden' value='<?php echo $EM_Event->get_location()->id; ?>' size='15' />
-														<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Event->location->name, ENT_QUOTES); ?>" /><?php echo $required; ?>													
-					                            		<p><em><?php _e ( 'Create a location or start typing to search a previously created location.', 'dbem' )?></em></p>
-					                            	</td>
-										 		</tr>
-												<tr>
-													<th><?php _e ( 'Address:' )?>&nbsp;</th>
-													<td>
-														<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Event->location->address, ENT_QUOTES); ; ?>" /><?php echo $required; ?>
-													</td>
-												</tr>
-												<tr>
-													<th><?php _e ( 'City/Town:' )?>&nbsp;</th>
-													<td>
-														<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Event->location->town, ENT_QUOTES); ?>" /><?php echo $required; ?>
-														<input id="location-town-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_town'); ?>" />
-													</td>
-												</tr>
-												<tr>
-													<th><?php _e ( 'State/County:' )?>&nbsp;</th>
-													<td>
-														<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Event->location->state, ENT_QUOTES); ?>" />
-														<input id="location-state-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_states'); ?>" />
-													</td>
-												</tr>
-												<tr>
-													<th><?php _e ( 'Postcode:' )?>&nbsp;</th>
-													<td>
-														<input id="location-postcode" type="text" name="location_postcode" value="<?php echo htmlspecialchars($EM_Event->location->postcode, ENT_QUOTES); ?>" />
-													</td>
-												</tr>
-												<tr>
-													<th><?php _e ( 'Region:' )?>&nbsp;</th>
-													<td>
-														<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Event->location->region, ENT_QUOTES); ?>" />
-														<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
-													</td>
-												</tr>
-												<tr>
-													<th><?php _e ( 'Country:' )?>&nbsp;</th>
-													<td>
-														<select id="location-country" name="location_country">
-															<option value="0" <?php echo ( $EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country') == '' ) ? 'selected="selected"':''; ?>><?php _e('none selected','dbem'); ?></option>
-															<?php foreach(em_get_countries() as $country_key => $country_name): ?>
-															<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Event->location->country == $country_key || ($EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
-															<?php endforeach; ?>
-														</select><?php echo $required; ?>
-														<!-- <p><em><?php _e('Filling this in first will allow you to quickly find previously filled states and regions for the country.','dbem'); ?></em></p> -->
-													</td>
-												</tr>
-												<?php endif; ?>
-											</table>
-										</td>
-										<?php if ( get_option ( 'dbem_gmap_is_active' ) ) : ?>
-										<td width="400">
-											<div id='em-map-404' style='width: 400px; vertical-align:middle; text-align: center;'>
-												<p><em><?php _e ( 'Location not found', 'dbem' ); ?></em></p>
-											</div>
-											<div id='em-map' style='width: 400px; height: 300px; display: none;'></div>
-										</td>
+								<div id="em-location-data">
+									<table>
+										<?php if($use_select_for_locations) : ?> 
+										<tr>
+											<th><?php _e('Location:','dbem') ?></th>
+											<td> 
+												<select name="location_id" id='location-select-id' size="1">  
+													<?php 
+													$locations = EM_Locations::get();
+													foreach($locations as $location) {    
+														$selected = "";  
+														if ($EM_Event->get_location()->id == $location->id){ 
+															$selected = "selected='selected' ";
+														}
+												   		?>          
+												    	<option value="<?php echo $location->id ?>" title="<?php echo "{$location->latitude},{$location->longitude}" ?>" <?php echo $selected ?>><?php echo $location->name; ?></option>
+												    	<?php
+													}
+													?>
+												</select>
+												<p><?php _e ( 'The name of the location where the event takes place. You can use the name of a venue, a square, etc', 'dbem' )?></p>
+											</td>
+										</tr>
+										<?php else : ?>
+										<tr>
+											<th><?php _e ( 'Name:' )?></th>
+											<td>
+												<input id='location-id' name='location_id' type='hidden' value='<?php echo $EM_Event->get_location()->id; ?>' size='15' />
+												<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Event->location->name, ENT_QUOTES); ?>" /><?php echo $required; ?>													
+			                            		<p><em><?php _e ( 'Create a location or start typing to search a previously created location.', 'dbem' )?></em></p>
+			                            		<p id="em-location-reset" style="display:none;"><em><?php _e('You cannot edit saved locations here.', 'dbem'); ?> <a href="#"><?php _e('Reset this form to create a location.', 'dbem')?></a></em></p>
+			                            	</td>
+								 		</tr>
+										<tr>
+											<th><?php _e ( 'Address:' )?>&nbsp;</th>
+											<td>
+												<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Event->location->address, ENT_QUOTES); ; ?>" /><?php echo $required; ?>
+											</td>
+										</tr>
+										<tr>
+											<th><?php _e ( 'City/Town:' )?>&nbsp;</th>
+											<td>
+												<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Event->location->town, ENT_QUOTES); ?>" /><?php echo $required; ?>
+												<input id="location-town-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_town'); ?>" />
+											</td>
+										</tr>
+										<tr>
+											<th><?php _e ( 'State/County:' )?>&nbsp;</th>
+											<td>
+												<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Event->location->state, ENT_QUOTES); ?>" />
+												<input id="location-state-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_states'); ?>" />
+											</td>
+										</tr>
+										<tr>
+											<th><?php _e ( 'Postcode:' )?>&nbsp;</th>
+											<td>
+												<input id="location-postcode" type="text" name="location_postcode" value="<?php echo htmlspecialchars($EM_Event->location->postcode, ENT_QUOTES); ?>" />
+											</td>
+										</tr>
+										<tr>
+											<th><?php _e ( 'Region:' )?>&nbsp;</th>
+											<td>
+												<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Event->location->region, ENT_QUOTES); ?>" />
+												<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
+											</td>
+										</tr>
+										<tr>
+											<th><?php _e ( 'Country:' )?>&nbsp;</th>
+											<td>
+												<select id="location-country" name="location_country">
+													<option value="0" <?php echo ( $EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country') == '' ) ? 'selected="selected"':''; ?>><?php _e('none selected','dbem'); ?></option>
+													<?php foreach(em_get_countries() as $country_key => $country_name): ?>
+													<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Event->location->country == $country_key || ($EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
+													<?php endforeach; ?>
+												</select><?php echo $required; ?>
+												<!-- <p><em><?php _e('Filling this in first will allow you to quickly find previously filled states and regions for the country.','dbem'); ?></em></p> -->
+											</td>
+										</tr>
 										<?php endif; ?>
-									</tr>
-							</table>
+									</table>
+									
+									<?php if ( get_option( 'dbem_gmap_is_active' ) ) : ?>
+									<div style="width: 400px; height: 300px; float:left; ">
+										<div id='em-map-404' style='width: 400px; height:300px; vertical-align:middle; text-align: center;'>
+											<p><em><?php _e ( 'Location not found', 'dbem' ); ?></em></p>
+										</div>
+										<div id='em-map' style='width: 400px; height: 300px; display: none;'></div>
+									</div>
+									<?php endif; ?>
+									<br style="clear:both;" />
+								</div>
+							</div>
 						</div>
-					</div>
 					<div id="event_notes" class="stuffbox">
 						<h3>
 							<?php _e ( 'Details', 'dbem' ); ?>
@@ -477,7 +480,7 @@ function em_admin_event_page() {
 								<?php if ($EM_Event->get_image_url() != '') : ?> 
 									<img src='<?php echo $EM_Event->image_url; ?>' alt='<?php echo $EM_Event->name ?>'/>
 								<?php else : ?> 
-									<?php _e('No image uploaded for this event yet', 'debm') ?>
+									<?php _e('No image uploaded for this event yet', 'dbem') ?>
 								<?php endif; ?>
 								<br /><br />
 								<label for='event_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='event-image' name='event_image' id='event_image' type='file' size='40' />
@@ -536,7 +539,7 @@ function em_admin_event_page() {
 														?>
 														<tr valign="top" id="em-tickets-row-<?php echo $count ?>" class="em-tickets-row">
 															<td class="ticket-status"><span class="<?php echo ($EM_Ticket->is_available()) ? 'ticket_on':'ticket_off'; ?>"></span></td>													
-															<td class="ticket-name"><span class="ticket_name"><?php echo $EM_Ticket->name ?></span><br /><span class="ticket_description"></span></td>
+															<td class="ticket-name"><span class="ticket_name"><?php echo $EM_Ticket->name ?></span><br /><span class="ticket_description"><?php echo $EM_Ticket->description; ?></span></td>
 															<td class="ticket-price">
 																<span class="ticket_price"><?php echo ($EM_Ticket->price) ? $EM_Ticket->price : __('Free','dbem'); ?></span>
 															</td>
@@ -575,7 +578,7 @@ function em_admin_event_page() {
 																<?php endif; ?>
 																<input type="hidden" class="ticket_id" name="em_tickets[<?php echo $count; ?>][ticket_id]" value="<?php echo $EM_Ticket->id ?>" />
 																<input type="hidden" class="ticket_name" name="em_tickets[<?php echo $count; ?>][ticket_name]" value="<?php echo $EM_Ticket->name ?>" />
-																<input type="hidden" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo $EM_Ticket->description ?>" />
+																<input type="hidden" class="ticket_description" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo $EM_Ticket->description ?>" />
 																<input type="hidden" class="ticket_price" name="em_tickets[<?php echo $count; ?>][ticket_price]" value="<?php echo $EM_Ticket->price ?>" />
 																<input type="hidden" class="ticket_spaces" name="em_tickets[<?php echo $count; ?>][ticket_spaces]" value="<?php echo $EM_Ticket->spaces ?>" />
 																<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
@@ -611,7 +614,7 @@ function em_admin_event_page() {
 								$has_depreciated = false;
 								?>
 								<div class="wrap">
-									<?php if( count( $attributes['names'] ) > 0 ) : ?>
+									<?php if( !empty($attributes['names']) && count( $attributes['names'] ) > 0 ) : ?>
 										<table class="form-table">
 											<thead>
 												<tr valign="top">
@@ -700,7 +703,13 @@ function em_admin_event_page() {
 						<?php do_action('em_admin_event_form_footer'); ?>
 					</div>
 					<p class="submit">
-						<input type="submit" name="events_update" value="<?php _e ( 'Submit Event', 'dbem' ); ?> &raquo;" />
+						<?php 
+						if ( $EM_Event->is_recurring() ) {
+							$recurrence_delete_confirm = __('WARNING! You are about to re-create all your recurrent events including erasing your old booking data! Are you sure you want to do this?','dbem');
+							$js = 'onclick = "if( !confirm(\''. $recurrence_delete_confirm.'\') ){ return false; }"';
+						}
+						?>					
+						<input type="submit" name="events_update" value="<?php _e ( 'Submit Event', 'dbem' ); ?> &raquo;" <?php if(!empty($js)) echo $js; ?> />						
 					</p>
 					<input type="hidden" name="p" value="<?php echo ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:''; ?>" /><a>
 					<input type="hidden" name="scope" value="<?php echo ( !empty($_REQUEST['scope']) ) ? $_REQUEST['scope']:'' ?>" /></a>
@@ -711,7 +720,11 @@ function em_admin_event_page() {
 			</div>
 		</div>
 	</form>
-	<?php em_locate_template('forms/tickets-form.php', true); //put here as it can't be in the add event form ?>
+	<?php 
+		if( !get_option('dbem_bookings_tickets_single') ){
+			em_locate_template('forms/tickets-form.php', true); //put here as it can't be in the add event form
+		} 
+	?>
 	<script type="text/javascript">
 		jQuery(document).ready( function($) {
 			<?php if( $EM_Event->is_recurring() ): ?>

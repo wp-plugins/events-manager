@@ -88,8 +88,10 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 		//split further into associative array
 		$url_params = array();
 		foreach($url_params_dirty as $url_param){
-			$url_param = explode('=', $url_param);
-			$url_params[$url_param[0]] = $url_param[1];
+			if( !empty($url_param[1]) ){
+				$url_param = explode('=', $url_param);
+				$url_params[$url_param[0]] = $url_param[1];
+			}
 		}
 		//Merge it together
 		$params = array_merge($url_params, $params);
@@ -116,7 +118,7 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 function em_get_countries($add_blank = false){
 	global $em_countries_array;
 	if( !is_array($em_countries_array) ){
-		$em_countries_array = array('AF' => 'Afghanistan', 	'DZ' => 'Algeria', 	'AS' => 'American Samoa', 	'AD' => 'Andorra', 	'AO' => 'Angola', 	'AR' => 'Argentina', 	'AU' => 'Australia', 	'AT' => 'Austria', 	'BH' => 'Bahrain', 	'BD' => 'Bangladesh', 	'BE' => 'Belgium', 	'BJ' => 'Benin', 	'BT' => 'Bhutan', 	'BW' => 'Botswana', 	'BR' => 'Brazil', 	'BN' => 'Brunei', 	'BG' => 'Bulgaria', 	'BI' => 'Burundi', 	'KH' => 'Cambodia', 	'CA' => 'Canada', 	'CF' => 'Central African Republic', 	'TD' => 'Chad', 	'CL' => 'Chile', 	'CN' => 'China', 	'CI' => 'Côte D\'ivoire', 	'HR' => 'Croatia', 	'CZ' => 'Czech Republic', 	'CD' => 'Democratic Republic of the Congo', 	'DK' => 'Denmark', 	'DJ' => 'Djibouti', 	'EG' => 'Egypt', 	'EE' => 'Estonia', 	'ET' => 'Ethiopia', 	'FJ' => 'Fiji', 	'FI' => 'Finland', 	'FR' => 'France', 	'PF' => 'French Polynesia', 	'GA' => 'Gabon', 	'GM' => 'Gambia', 	'DE' => 'Germany', 	'GH' => 'Ghana', 	'GR' => 'Greece', 	'GU' => 'Guam', 	'HK' => 'Hong Kong', 	'HU' => 'Hungary', 	'IS' => 'Iceland', 	'IN' => 'India', 	'ID' => 'Indonesia', 	'IQ' => 'Iraq', 	'IE' => 'Ireland', 	'IL' => 'Israel', 	'IT' => 'Italy', 	'JP' => 'Japan', 	'JO' => 'Jordan', 	'KZ' => 'Kazakhstan', 	'KE' => 'Kenya', 	'KW' => 'Kuwait', 	'KG' => 'Kyrgyzstan', 	'LA' => 'Laos', 	'LV' => 'Latvia', 	'LB' => 'Lebanon', 	'LI' => 'Liechtenstein', 	'LT' => 'Lithuania', 	'LU' => 'Luxembourg', 	'MO' => 'Macao', 	'MK' => 'Macedonia', 	'MG' => 'Madagascar', 	'MW' => 'Malawi', 	'MY' => 'Malaysia', 	'MV' => 'Maldives', 	'MT' => 'Malta', 	'MU' => 'Mauritius', 	'MX' => 'Mexico', 	'MN' => 'Mongolia', 	'MA' => 'Morocco', 	'MZ' => 'Mozambique', 	'MM' => 'Myanmar(Burma)', 	'NA' => 'Namibia', 	'NP' => 'Nepal', 	'NL' => 'Netherlands', 	'NC' => 'New Caledonia', 	'NZ' => 'New Zealand', 	'NG' => 'Nigeria', 	'MP' => 'Northern Mariana Islands', 	'NO' => 'Norway', 	'OM' => 'Oman', 'PA' => 'Panama', 	'PK' => 'Pakistan', 	'PW' => 'Palau', 	'PG' => 'Papua New Guinea', 	'PH' => 'Philippines', 	'PL' => 'Poland', 	'PT' => 'Portugal', 	'QA' => 'Qatar', 	'CG' => 'Republic of the Congo', 	'RO' => 'Romania', 	'RU' => 'Russia', 	'RW' => 'Rwanda', 	'WS' => 'Samoa', 	'ST' => 'São Tomé And Príncipe', 	'SA' => 'Saudi Arabia', 	'SN' => 'Senegal', 	'RS' => 'Serbia', 	'SC' => 'Seychelles', 	'SL' => 'Sierra Leone', 	'SG' => 'Singapore', 	'SK' => 'Slovakia', 	'SI' => 'Slovenia', 	'SB' => 'Solomon Islands', 	'ZA' => 'South Africa', 	'KR' => 'South Korea', 	'ES' => 'Spain', 	'LK' => 'Sri Lanka', 	'SE' => 'Sweden', 	'CH' => 'Switzerland', 	'TW' => 'Taiwan', 	'TJ' => 'Tajikistan', 	'TZ' => 'Tanzania', 	'TH' => 'Thailand', 	'TG' => 'Togo', 	'TO' => 'Tonga', 	'TN' => 'Tunisia', 	'TR' => 'Turkey', 	'TM' => 'Turkmenistan', 	'UG' => 'Uganda', 	'UA' => 'Ukraine', 	'AE' => 'United Arab Emirates', 	'GB' => 'United Kingdom', 	'US' => 'United States', 	'UZ' => 'Uzbekistan',	'VE' => 'Venezuela', 	'VU' => 'Vanuatu', 	'VN' => 'Vietnam', 	'YE' => 'Yemen', 	'ZM' => 'Zambia', 	'ZW' => 'Zimbabwe' );
+		$em_countries_array = array('AF' => 'Afghanistan', 	'DZ' => 'Algeria', 	'AS' => 'American Samoa', 	'AD' => 'Andorra', 	'AO' => 'Angola', 	'AR' => 'Argentina', 	'AU' => 'Australia', 	'AT' => 'Austria', 	'BH' => 'Bahrain', 	'BD' => 'Bangladesh', 	'BE' => 'Belgium', 	'BJ' => 'Benin', 	'BT' => 'Bhutan', 	'BW' => 'Botswana', 	'BR' => 'Brazil', 	'BN' => 'Brunei', 	'BG' => 'Bulgaria', 	'BI' => 'Burundi', 	'KH' => 'Cambodia', 	'CA' => 'Canada', 	'CF' => 'Central African Republic', 	'TD' => 'Chad', 	'CL' => 'Chile', 	'CN' => 'China', 	'CI' => 'C&ocirc;te D\'Ivoire', 	'HR' => 'Croatia', 	'CZ' => 'Czech Republic', 	'CD' => 'Democratic Republic of the Congo', 	'DK' => 'Denmark', 	'DJ' => 'Djibouti', 	'EG' => 'Egypt', 	'EE' => 'Estonia', 	'ET' => 'Ethiopia', 	'FJ' => 'Fiji', 	'FI' => 'Finland', 	'FR' => 'France', 	'PF' => 'French Polynesia', 	'GA' => 'Gabon', 	'GM' => 'Gambia', 	'DE' => 'Germany', 	'GH' => 'Ghana', 	'GR' => 'Greece', 'GL' => 'Greenland',	'GU' => 'Guam', 	'HK' => 'Hong Kong', 	'HU' => 'Hungary', 	'IS' => 'Iceland', 	'IN' => 'India', 	'ID' => 'Indonesia', 	'IQ' => 'Iraq', 	'IE' => 'Ireland', 	'IL' => 'Israel', 	'IT' => 'Italy', 	'JP' => 'Japan', 	'JO' => 'Jordan', 	'KZ' => 'Kazakhstan', 	'KE' => 'Kenya', 	'KW' => 'Kuwait', 	'KG' => 'Kyrgyzstan', 	'LA' => 'Laos', 	'LV' => 'Latvia', 	'LB' => 'Lebanon', 	'LI' => 'Liechtenstein', 	'LT' => 'Lithuania', 	'LU' => 'Luxembourg', 	'MO' => 'Macao', 	'MK' => 'Macedonia', 	'MG' => 'Madagascar', 	'MW' => 'Malawi', 	'MY' => 'Malaysia', 	'MV' => 'Maldives', 	'MT' => 'Malta', 	'MU' => 'Mauritius', 	'MX' => 'Mexico', 	'MN' => 'Mongolia', 	'MA' => 'Morocco', 	'MZ' => 'Mozambique', 	'MM' => 'Myanmar(Burma)', 	'NA' => 'Namibia', 	'NP' => 'Nepal', 	'NL' => 'Netherlands', 	'NC' => 'New Caledonia', 	'NZ' => 'New Zealand', 	'NG' => 'Nigeria', 	'MP' => 'Northern Mariana Islands', 	'NO' => 'Norway', 	'OM' => 'Oman', 'PA' => 'Panama', 'PE' => 'Peru', 	'PK' => 'Pakistan', 	'PW' => 'Palau', 	'PG' => 'Papua New Guinea', 	'PH' => 'Philippines', 	'PL' => 'Poland', 	'PT' => 'Portugal', 	'QA' => 'Qatar', 	'CG' => 'Republic of the Congo', 	'RO' => 'Romania', 	'RU' => 'Russia', 	'RW' => 'Rwanda', 	'WS' => 'Samoa', 	'ST' => 'S&agrave;o Tom&eacute; And Pr&iacute;ncipe', 	'SA' => 'Saudi Arabia', 	'SN' => 'Senegal', 	'RS' => 'Serbia', 	'SC' => 'Seychelles', 	'SL' => 'Sierra Leone', 	'SG' => 'Singapore', 	'SK' => 'Slovakia', 	'SI' => 'Slovenia', 	'SB' => 'Solomon Islands', 	'ZA' => 'South Africa', 	'KR' => 'South Korea', 	'ES' => 'Spain', 	'LK' => 'Sri Lanka', 	'SE' => 'Sweden', 	'CH' => 'Switzerland', 'SY' => 'Syria',	'TW' => 'Taiwan', 	'TJ' => 'Tajikistan', 	'TZ' => 'Tanzania', 	'TH' => 'Thailand', 	'TG' => 'Togo', 	'TO' => 'Tonga', 	'TN' => 'Tunisia', 	'TR' => 'Turkey', 	'TM' => 'Turkmenistan', 	'UG' => 'Uganda', 	'UA' => 'Ukraine', 	'AE' => 'United Arab Emirates', 	'GB' => 'United Kingdom', 	'US' => 'United States', 	'UZ' => 'Uzbekistan',	'VE' => 'Venezuela', 'VG' => 'British Virgin Islands', 'VI' => 'US Virgin Islands', 'VU' => 'Vanuatu', 	'VN' => 'Vietnam', 	'YE' => 'Yemen', 	'ZM' => 'Zambia', 	'ZW' => 'Zimbabwe' );
 		array_walk($em_countries_array, '__');
 	}
 	if($add_blank !== false){
@@ -153,10 +155,14 @@ function em_get_currencies(){
 	$currencies = new stdClass();
 	$currencies->names = array('EUR' => 'EUR - Euros','USD' => 'USD - U.S. Dollars','GBP' => 'GBP - British Pounds','CAD' => 'CAD - Canadian Dollars','AUD' => 'AUD - Australian Dollars','BRL' => 'BRL - Brazilian Reais','CZK' => 'CZK - Czech Koruny','DKK' => 'DKK - Danish Kroner','HKD' => 'HKD - Hong Kong Dollars','HUF' => 'HUF - Hungarian Forints','ILS' => 'ILS - Israeli New Shekels','JPY' => 'JPY - Japanese Yen','MYR' => 'MYR - Malaysian Ringgit','MXN' => 'MXN - Mexican Pesos','TWD' => 'TWD - New Taiwan Dollars','NZD' => 'NZD - New Zealand Dollars','NOK' => 'NOK - Norwegian Kroner','PHP' => 'PHP - Philippine Pesos','PLN' => 'PLN - Polish Zlotys','SGD' => 'SGD - Singapore Dollars','SEK' => 'SEK - Swedish Kronor','CHF' => 'CHF - Swiss Francs','THB' => 'THB - Thai Baht','TRY' => 'TRY - Turkish Liras');
 	$currencies->symbols = array( 'EUR' => '&euro;','USD' => '$','GBP' => '&pound;','CAD' => '$','AUD' => '$','BRL' => 'R$','DKK' => 'kr','HKD' => '$','HUF' => 'Ft','JPY' => '&#165;','MYR' => 'RM','MXN' => '$','TWD' => '$','NZD' => '$','NOK' => 'kr','PHP' => 'Php','SGD' => '$','SEK' => 'kr','CHF' => 'CHF','TRY' => 'TL');
+	$currencies->true_symbols = array( 'EUR' => '€','USD' => '$','GBP' => '£','CAD' => '$','AUD' => '$','BRL' => 'R$','DKK' => 'kr','HKD' => '$','HUF' => 'Ft','JPY' => '&#165;','MYR' => 'RM','MXN' => '$','TWD' => '$','NZD' => '$','NOK' => 'kr','PHP' => 'Php','SGD' => '$','SEK' => 'kr','CHF' => 'CHF','TRY' => 'TL');
 	return apply_filters('em_get_currencies',$currencies);
 }
 
-function em_get_currency_symbol(){
+function em_get_currency_symbol($true_symbol = false){
+	if($true_symbol){
+		return em_get_currencies()->true_symbols[get_option('dbem_bookings_currency','USD')];
+	}
 	return em_get_currencies()->symbols[get_option('dbem_bookings_currency','USD')];
 }
 
@@ -208,7 +214,7 @@ function em_get_attributes(){
 	//We now have one long string of formats, get all the attribute placeholders
 	preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $formats, $matches);
 	//Now grab all the unique attributes we can use in our event.
-	$attributes = array();
+	$attributes = array('names'=>array(), 'values'=>array());
 	foreach($matches[1] as $key => $attribute) {
 		if( !in_array($attribute, $attributes['names']) ){			
 			$attributes['names'][] = $attribute ;
@@ -297,6 +303,9 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
  */
 function em_new_user_notification($user_id, $plaintext_pass = '') {
 	global $LoginWithAjax;
+	
+	//if you want you can disable this email from going out, and will still consider registration as successful.
+	if( get_option('dbem_email_disable_registration') ){ return true;  }
 	
 	//Copied out of /wp-includes/pluggable.php
 	$user = new WP_User($user_id);
