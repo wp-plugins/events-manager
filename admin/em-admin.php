@@ -105,6 +105,13 @@ function em_admin_warnings() {
 			</div>
 			<?php
 		}
+		
+		if( defined('EMP_VERSION') && EMP_VERSION <= EM_PRO_MIN_VERSION ){?>
+			<div id="em_page_error" class="updated">
+				<p>There is a newer version of Events Manager Pro which is required for this current version of Events Manager. Please go to the plugin website and download the latest update.</p>
+			</div>
+			<?php
+		}
 	}
 	//Warn about EM page edit
 	if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {

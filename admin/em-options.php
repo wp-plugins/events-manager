@@ -72,7 +72,7 @@ function em_admin_options_page() {
 		jQuery(document).ready(function($){
 			var close_text = '<?php _e('Collapse All','dbem'); ?>';
 			var open_text = '<?php _e('Expand All','dbem'); ?>';
-			var open_close = $('<a href="#" style="display:block; float:right; clear:right; margin:10px;">'+open_text+'</a>');
+			var open_close = $('<a href="#" style="display:block; float:right; clear:right; margin:10px;">'+close_text+'</a>');
 			$('#icon-options-general').after(open_close);
 			open_close.click( function(e){
 				e.preventDefault();
@@ -93,17 +93,7 @@ function em_admin_options_page() {
 					$('#dbem_title_html_row').hide();					
 				}
 			});
-			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');
-			$(".postbox").addClass('closed').unbind('click');
-			$(".postbox").click(function(event){
-				if($.type(event) == 'object'){
-					event.preventDefault();
-				}else{
-					$(event).preventDefault();
-				}
-				$(this).toggleClass('closed');
-				return false;
-			});		
+			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');	
 		});
 	</script>
 	<div class="wrap">
