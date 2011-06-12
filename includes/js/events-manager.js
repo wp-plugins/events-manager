@@ -359,8 +359,8 @@ jQuery(document).ready( function($){
 						$('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
 					}
 					get_map_by_id(ui.item.id);
-					$('#em-location-data input, #em-location-data select').attr('disabled',true);
-					$('#em-location-data input#location-name').attr('disabled',false);
+					$('#em-location-data input, #em-location-data select').css('background-color','#ccc');
+					$('#em-location-data input#location-name').css('background-color','#fff');
 					$('#em-location-reset').show();
 					return false;
 				}
@@ -369,14 +369,14 @@ jQuery(document).ready( function($){
 				return $( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
 			};
 			$('#em-location-reset').click( function(){
-				$('#em-location-data input').attr('disabled',false).val('');
-				$('#em-location-data select').attr('disabled',false);
+				$('#em-location-data input').css('background-color','#fff').val('');
+				$('#em-location-data select').css('background-color','#fff');
 				$('#em-location-data option:selected').removeAttr('selected');
 				$('#em-location-reset').hide();
 			});
 			if( $('input#location-id').val() != '' ){
-				$('#em-location-data input, #em-location-data select').attr('disabled',true);
-				$('#em-location-data input#location-name').attr('disabled',false);
+				$('#em-location-data input, #em-location-data select').css('background-color','#ccc');
+				$('#em-location-data input#location-name').css('background-color','#fff');
 				$('#em-location-reset').show();
 			}
 		}
