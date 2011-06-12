@@ -63,6 +63,9 @@ class EM_Calendar extends EM_Object {
 		if($month == 1) { 
 		   $month_last = 12;
 		   $year_last = $year -1;
+		}elseif($month == 12){
+			$month_next = 1;
+			$year_next = $year + 1; 
 		}
 		$calendar_array['month_last'] = $month_last;
 		$calendar_array['year_last'] = $year_last;

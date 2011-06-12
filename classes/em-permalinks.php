@@ -216,7 +216,7 @@ function em_get_my_bookings_url(){
 		if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){
 			return trailingslashit(EM_URI)."my-bookings/";
 		}else{
-			return EM_URI.'&bookings_page=1';
+			return preg_match('/\?/',EM_URI) ? EM_URI.'&bookings_page=1':EM_URI.'?bookings_page=1';
 		}
 	}
 }

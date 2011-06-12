@@ -106,7 +106,7 @@ function em_admin_warnings() {
 			<?php
 		}
 		
-		if( defined('EMP_VERSION') && EMP_VERSION <= EM_PRO_MIN_VERSION ){?>
+		if( defined('EMP_VERSION') && EMP_VERSION < EM_PRO_MIN_VERSION ){?>
 			<div id="em_page_error" class="updated">
 				<p>There is a newer version of Events Manager Pro which is required for this current version of Events Manager. Please go to the plugin website and download the latest update.</p>
 			</div>
