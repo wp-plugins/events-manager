@@ -4,6 +4,7 @@ $col_count = empty($col_count) ? 1:$col_count;
 ?>
 
 <div class="em-ticket-form">
+	<input type="hidden" name="em_tickets[<?php echo $col_count; ?>][ticket_id]" value="<?php echo $EM_Ticket->id ?>" />
 	<input type="hidden" name="em_tickets[<?php echo $col_count; ?>][ticket_name]" value="<?php echo $EM_Ticket->name ?>" />
 	<div><label><?php _e('Price','dbem') ?></label><input type="text" name="em_tickets[<?php echo $col_count; ?>][ticket_price]" value="<?php echo $EM_Ticket->price ?>" /></div>
 	<div>
@@ -12,7 +13,7 @@ $col_count = empty($col_count) ? 1:$col_count;
 	</div>
 	<div class="date-limits">
 		<?php _e('Available from','dbem') ?> 
-		<input type="hidden" name="em_tickets[<?php echo $col_count; ?>][ti[<?php echo $col_count; ?>]t_start]" class="start" value="<?php echo ( !empty($EM_Ticket->start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
+		<input type="hidden" name="em_tickets[<?php echo $col_count; ?>][ticket_start]" class="start" value="<?php echo ( !empty($EM_Ticket->start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
 		<input type="text" name="ticket_start_pub"  class="start-loc" />
 		<?php _e('to','dbem'); ?>
 		<input type="hidden" name="em_tickets[<?php echo $col_count; ?>][ticket_end]" class="end" value="<?php echo ( !empty($EM_Ticket->end) ) ? date("Y-m-d H:i", $EM_Ticket->end_timestamp):''; ?>" />

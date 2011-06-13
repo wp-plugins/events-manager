@@ -285,14 +285,22 @@ class EM_Object {
 		if( !empty($args['state']) ){
 			$conditions['state'] = "location_state='".$args['state']."'";
 		}
+		//state lookup
+		if( !empty($args['town']) ){
+			$conditions['town'] = "location_town='".$args['town']."'";
+		}
+		//region lookup
+		if( !empty($args['region']) ){
+			$conditions['region'] = "location_region='".$args['region']."'";
+		}
 				
 		//Add conditions for category selection
 		//Filter by category, can be id or comma seperated ids
 		//TODO create an exclude category option
 		if ( is_numeric($category) && $category > 0 ){
-			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value='$category' ) ";
+			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_key='event-category' AND meta_value='$category' ) ";
 		}elseif( self::array_is_numeric($category) ){
-			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$category).") ) ";
+			$conditions['category'] = " event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_key='event-category' AND meta_value IN (".implode(',',$category).") ) ";
 		}
 	
 		//If we want rsvped items, we usually check the event
@@ -352,32 +360,33 @@ class EM_Object {
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false ){
 		global $em_capabilities_array;
+		//if multisite and supoer admin, just return true
+		if( is_multisite() && is_super_admin() ){ return true; }
 		//do they own this?
 		$is_owner = ( $this->owner == get_current_user_id() || empty($this->id) );
 		//now check capability
 		$can_manage = false;
 		if( $is_owner && current_user_can($owner_capability) ){
+			//user owns the object and can therefore manage it
 			$can_manage = true;
-		}elseif( $is_owner && array_key_exists($owner_capability, $em_capabilities_array) ){
+		}elseif( array_key_exists($owner_capability, $em_capabilities_array) ){
+			//currently user is not able to manage as they aren't the owner
 			$error_msg = $em_capabilities_array[$owner_capability];
 		}
-		//Figure out if this is multisite and require an extra bit of validation
-		$multisite_check = true;
+		//admins have special rights
+		if( current_user_can($admin_capability) ){
+			$can_manage = true;
+		}elseif( array_key_exists($admin_capability, $em_capabilities_array) ){
+			$error_msg = $em_capabilities_array[$admin_capability];
+		}
+		//Figure out if this is multisite in global mode and require an extra bit of validation
 		if( !empty($this->id) && is_multisite() && get_site_option('dbem_ms_global_table') ){
 			if( get_class($this) == "EM_Event" ){
 				//Other user-owned events can be modified by admins if it's on the same blog, otherwise it must be an admin on the main site.
-				$multisite_check = !( $this->blog_id == get_current_blog_id() || is_main_site() );
-			}else{
-				//User can't admin this bit, as they're on a sub-blog
-				$multisite_check = is_main_site();
-				$can_manage = false;
+				$can_manage = $this->blog_id == get_current_blog_id() || is_main_site() || (defined('BP_ROOT_BLOG') && get_current_blog_id() == BP_ROOT_BLOG);
 			}
 		}
-		if( !$is_owner && current_user_can($admin_capability) && $multisite_check ){
-			$can_manage = true;
-		}elseif( !$is_owner && array_key_exists($admin_capability, $em_capabilities_array) ){
-			$error_msg = $em_capabilities_array[$admin_capability];
-		}
+		
 		if( !$can_manage && !empty($error_msg) ){
 			$this->add_error($error_msg);
 		}
@@ -398,6 +407,8 @@ class EM_Object {
 				if(array_key_exists($key, $array)){
 					if( !is_object($array[$key]) && !is_array($array[$key]) ){
 						$array[$key] = ($addslashes) ? stripslashes($array[$key]):$array[$key];
+					}elseif( is_array($array[$key]) ){
+						$array[$key] = ($addslashes) ? stripslashes_deep($array[$key]):$array[$key];
 					}
 					$this->$val['name'] = $array[$key];
 				}
@@ -640,31 +651,44 @@ class EM_Object {
 	 * START IMAGE UPlOAD FUNCTIONS
 	 * Used for various objects, so shared in one place 
 	 */
-	function get_image_type(){
+	/**
+	 * Returns the type of image in lowercase, if $path is true, a base filename is returned which indicates where to store the file from the root upload folder.
+	 * @param unknown_type $path
+	 * @return mixed|mixed
+	 */
+	function get_image_type($path = false){
+		$type = false;
 		switch( get_class($this) ){
 			case 'EM_Event':
 				$dir = (EM_IMAGE_DS == '/') ? 'events/':'';
-				return $dir.'event';
+				$type = 'event';
 				break;
 			case 'EM_Location':
 				$dir = (EM_IMAGE_DS == '/') ? 'locations/':'';
-				return $dir.'location';
+				$type = 'location';
 				break;
 			case 'EM_Category':
 				$dir = (EM_IMAGE_DS == '/') ? 'categories/':'';
-				return $dir.'category';
+				$type = 'category';
 				break;
 		} 	
+		if($path){
+			return apply_filters('em_object_get_image_type',$dir.$type, $path, $this);
+		}
+		return apply_filters('em_object_get_image_type',$type, $path, $this);
 	}
 	
 	function get_image_url(){
-		$type = $this->get_image_type();
-		if( $type ){
-			if($this->image_url == ''){
-			  	foreach($this->mime_types as $mime_type) { 
-					$file_name = "{$type}-{$this->id}.$mime_type";
-					if( file_exists( EM_IMAGE_UPLOAD_DIR . $file_name) ) {
-			  			$this->image_url = EM_IMAGE_UPLOAD_URI.$file_name;
+		if( !empty($this->id) ){
+			$type = $this->get_image_type();
+			$id = ( get_class($this) == "EM_Event" && $this->is_recurrence() ) ? $this->recurrence_id:$this->id; //quick fix for recurrences
+			if( $type ){
+				if($this->image_url == ''){
+				  	foreach($this->mime_types as $mime_type) { 
+						$file_name = $this->get_image_type(true)."-{$id}.$mime_type";
+						if( file_exists( EM_IMAGE_UPLOAD_DIR . $file_name) ) {
+				  			$this->image_url = EM_IMAGE_UPLOAD_URI.$file_name;
+						}
 					}
 				}
 			}
@@ -678,7 +702,7 @@ class EM_Object {
 			if( $this->image_url == '' ){
 				$result = true;
 			}else{
-				$file_name= EM_IMAGE_UPLOAD_DIR."{$type}-".$this->id;
+				$file_name= EM_IMAGE_UPLOAD_DIR.$this->get_image_type(true)."-".$this->id;
 				$result = false;
 				foreach($this->mime_types as $mime_type) { 
 					if (file_exists($file_name.".".$mime_type)){
@@ -690,33 +714,33 @@ class EM_Object {
 		return apply_filters('em_object_get_image_url', $result, $this);
 	}
 	
-	function image_upload($result){
-		$type = $this->get_image_type();
-		if( $type ){
-			do_action('em_object_image_upload_pre', $type, $this);
-			$result = true;
+	function image_upload($result, $object){
+		//due to php versions and handling of refernece we'll just reference the $object instead of $this, essentially making this a static function
+		$type = $object->get_image_type();
+		if( $result && $type ){
+			do_action('em_object_image_upload_pre', $type, $object);
 			if ( !empty($_FILES[$type.'_image']['size']) && file_exists($_FILES[$type.'_image']['tmp_name'])) {
-				$this->image_delete();   
+				$object->image_delete();   
 				list($width, $height, $mime_type, $attr) = getimagesize($_FILES[$type.'_image']['tmp_name']);
-				$image_path = "{$type}-".$this->id.".".$this->mime_types[$mime_type];	
-				if( $this->image_validate()){
+				$image_path = $object->get_image_type(true)."-".$object->id.".".$object->mime_types[$mime_type];	
+				if( $object->image_validate()){
 					if ( move_uploaded_file($_FILES[$type.'_image']['tmp_name'], EM_IMAGE_UPLOAD_DIR.$image_path) ){
-						$this->image_url = EM_IMAGE_UPLOAD_URI.$image_path;
+						$object->image_url = EM_IMAGE_UPLOAD_URI.$image_path;
 					}else{
 						if($result){				
-							$this->feedback_message .= ' '. __('However, the image could not be saved.','dbem');
+							$object->feedback_message .= ' '. __('However, the image could not be saved.','dbem');
 						}
-						$this->add_error(__('The image could not be saved','dbem'));
+						$object->add_error(__('The image could not be saved','dbem'));
 					}					
 				}else{
 					if($result){
-						$this->feedback_message .= ' '.  __('However, the image could not be saved:','dbem');
-						$this->feedback_message .= '<p>'.implode('<br />',$this->errors).'</p>';
+						$object->feedback_message .= ' '.  __('However, the image could not be saved:','dbem');
+						$object->feedback_message .= '<p>'.implode('<br />',$object->errors).'</p>';
 					}
 				}
 			}
 		}
-		return apply_filters('em_object_image_upload', $result, $this);
+		return apply_filters('em_object_image_upload', $result, $object);
 	}
 	
 	function image_validate(){

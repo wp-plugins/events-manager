@@ -46,7 +46,7 @@ class EM_Category extends EM_Object {
 			$this->to_object($category);
 		} 
 		$this->get_image_url();
-		add_action('em_category_save',array(&$this, 'image_upload'), 1, 1);
+		add_action('em_category_save',array(&$this, 'image_upload'), 1, 2);
 		do_action('em_category',$this, $category_data);
 	}
 	
@@ -56,6 +56,7 @@ class EM_Category extends EM_Object {
 		$category = array();
 		$category['category_id'] = ( !empty($_POST['category_id']) ) ? $_POST['category_id']:'';
 		$category['category_name'] = ( !empty($_POST['category_name']) ) ? stripslashes($_POST['category_name']):'';
+		$category['category_slug'] = ( !empty($_POST['category_slug']) ) ? sanitize_title($_POST['category_slug']) : '' ;
 		$category['category_description'] = ( !empty($_POST['content']) ) ? stripslashes($_POST['content']) : ''; //WP TinyMCE field
 		$category['category_owner'] = ( !empty($_POST['category_owner']) && is_numeric($_POST['category_owner']) ) ? $_POST['category_owner']:get_current_user_id();
 		$this->to_object( apply_filters('em_category_get_post', $category, $this) );
@@ -120,7 +121,7 @@ class EM_Category extends EM_Object {
 				$this->sanitize_title($iteration+1);
 			}
 		}
-		return apply_filters('em_location_sanitize_title', $this->slug, $this);
+		return apply_filters('em_category_title', $this->slug, $this);
 	}
 	
 	function delete(){
@@ -168,6 +169,7 @@ class EM_Category extends EM_Object {
 				case '#_CATEGORYID':
 					$replace = $this->id;
 					break;
+				case '#_CATEGORYNOTES':
 				case '#_CATEGORYDESCRIPTION':
 					$replace = $this->description;
 					break;
@@ -215,6 +217,8 @@ class EM_Category extends EM_Object {
 		//Figure out if this is multisite and require an extra bit of validation
 		$multisite_check = true;
 		$can_manage = current_user_can($capability_owner);
+		//if multisite and supoer admin, just return true
+		if( is_multisite() && is_super_admin() ){ return true; }
 		if( is_multisite() && get_site_option('dbem_ms_global_table') && !is_main_site() ){
 			//User can't admin this bit, as they're on a sub-blog
 			$can_manage = false;

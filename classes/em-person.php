@@ -15,13 +15,13 @@ class EM_Person extends WP_User{
 			$person_id = $person_id->ID; //create new object if passed a wp_user
 		}
 		if($username){
-			parent::WP_User($person_id, $username);
+			parent::__construct($person_id, $username);
 		}elseif( is_numeric($person_id) && $person_id == 0 ){
 			$this->ID = 0;
 			$this->display_name = 'Non-Registered User';
 			$this->user_email = 'n/a';
 		}else{
-			parent::WP_User($person_id);
+			parent::__construct($person_id);
 		}
 		$this->phone = get_metadata('user', $this->ID, 'dbem_phone', true); //extra field for EM
 		do_action('em_person',$this, $person_id, $username);
