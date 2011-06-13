@@ -29,7 +29,7 @@ Main Features
  * Group Events
  * Personal Events
  * Activity Stream
- * more on the way!
+ * more on the way
 * SEO Permalinks
 * Assign event locations and view events by location
 * Event categories
