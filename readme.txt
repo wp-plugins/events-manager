@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: attendance, attendee, buddypress, calendar, registration, event, event calendar, event management, event registration, events, events calendar, gigs, payment, payments, paypal, registration, sports, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking
 Requires at least: 3.1
 Tested up to: 3.1.3
-Stable tag: 4.0.81
+Stable tag: 4.0.82
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -120,11 +120,13 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 
 == Changelog ==
 
+= 4.0.82 =
+* fixed bookings missing in non-approval mode
+
 = 4.0.81 =
 * fixed events not editing due to new location js
 * fixed pro notification
 * fixed calendar ajax year switching issue
-* fixed bookings missing in non-approval mode
 
 = 4.0.8 =
 * just made settings page expanded
