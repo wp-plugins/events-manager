@@ -10,8 +10,8 @@
         function __construct(){
         	session_start();
         	//Grab from session
-        	if( !empty($_SESSION['events']['notices']) && is_serialized($_SESSION['events']['notices']) ){
-        		$this->notices = unserialize($_SESSION['events']['notices']);
+        	if( !empty($_SESSION['events-manager']['notices']) && is_serialized($_SESSION['events-manager']['notices']) ){
+        		$this->notices = unserialize($_SESSION['events-manager']['notices']);
         	}
         	//Flush notices that weren't made to stay cross-requests, we can do this if initialized immediately.
         	foreach($this->notices as $notice_type => $notices){
@@ -28,7 +28,7 @@
         }
         
         function destruct($redirect = false){
-        	$_SESSION['events']['notices'] = serialize($this->notices);
+        	$_SESSION['events-manager']['notices'] = serialize($this->notices);
         	return $redirect;
         }
         

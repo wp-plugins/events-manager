@@ -3,7 +3,7 @@
  * @param EM_Event $EM_Event
  */
 function bp_em_group_event_save($EM_Event){
-	if( empty($EM_Event->id) && !empty($_REQUEST['group_id']) ){
+	if( is_object($EM_Event) && empty($EM_Event->group_id) && !empty($_REQUEST['group_id']) && is_numeric($_REQUEST['group_id']) ){
 		//we have been requested an event creation tied to a group, so does this group exist, and does this person have admin rights to it?
 		if( groups_is_user_admin(get_current_user_id(), $_REQUEST['group_id']) ){
 			$EM_Event->group_id = $_REQUEST['group_id'];
@@ -29,7 +29,7 @@ function bp_em_group_event_can_manage( $result, $EM_Event){
 add_action('em_event_can_manage','bp_em_group_event_can_manage',1,2);
 
 
-function bp_em_group_accepted_searches($searches){
+function bp_em_group_events_accepted_searches($searches){
 	$searches[] = 'group';
 	return $searches;
 }
@@ -46,7 +46,7 @@ add_filter('em_events_get_default_search','bp_em_group_events_get_default_search
 function bp_em_group_events_build_sql_conditions( $conditions, $args ){
 	if( !empty($args['group']) && is_numeric($args['group']) ){
 		$conditions['group'] = "( `group_id`={$args['group']} )";
-	}elseif( $args['group'] == 'my' ){
+	}elseif( !empty($args['group']) && $args['group'] == 'my' ){
 		$groups = groups_get_user_groups(get_current_user_id());
 		if( count($groups) > 0 ){
 			$conditions['group'] = "( `group_id` IN (".implode(',',$groups['groups']).") )";

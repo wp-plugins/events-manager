@@ -1,6 +1,5 @@
 <?php
 	global $EM_Event, $current_user, $localised_date_formats, $EM_Notices, $bp;
-	
 	//check that user can access this page
 	if( is_object($EM_Event) && !$EM_Event->can_manage('edit_events','edit_others_events') ){
 		?>
@@ -60,7 +59,7 @@
 				<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
 				<br />
 				<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
-				<?php if( !empty($EM_Event->group_id) ): ?>
+				<?php if( empty($EM_Event->group_id) ): ?>
 					<?php 
 					$user_groups = array();
 					if( !empty($bp->groups) ){
@@ -186,42 +185,37 @@
 			
 			<h4><?php _e ( 'Where', 'dbem' ); ?></h4>
 			<div class="inside">
-				<table id="dbem-location-data">     
-					<tr>
-						<td style="padding-right:20px; vertical-align:top;">
-							<?php
-								$args = array();
-								$args['owner'] = current_user_can('read_others_locations') ? false:get_current_user_id(); 
-								$locations = EM_Locations::get($args); 
-							?>
-							<?php  if( count($locations) > 0): ?>
-							<select name="location_id" id='location-select-id' size="1">  
-								<?php 
-								foreach($locations as $location) {    
-									$selected = "";  
-									if( is_object($EM_Event->location) )  {
-										if ($EM_Event->location->id == $location->id) 
-											$selected = "selected='selected' ";
-									}
-							   		?>          
-							    	<option value="<?php echo $location->id ?>" title="<?php echo "{$location->latitude},{$location->longitude}" ?>" <?php echo $selected ?>><?php echo $location->name; ?></option>
-							    	<?php
-								}
-								?>
-							</select>
-							<?php endif; ?>
-							<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),'#'); ?></p>
-						</td>
-						<?php if ( get_option ( 'dbem_gmap_is_active' ) ) : ?>
-						<td width="400">
-							<div id='em-map-404' style='width: 400px; vertical-align:middle; text-align: center;'>
-								<p><em><?php _e ( 'Location not found', 'dbem' ); ?></em></p>
-							</div>
-							<div id='em-map' style='width: 400px; height: 300px; display: none;'></div>
-						</td>
-						<?php endif; ?>
-					</tr>
-				</table>
+				<div id="em-location-data" style="padding-right:20px; vertical-align:top;">
+					<?php
+						$args = array();
+						$args['owner'] = current_user_can('read_others_locations') ? false:get_current_user_id(); 
+						$locations = EM_Locations::get($args); 
+					?>
+					<?php  if( count($locations) > 0): ?>
+					<select name="location_id" id='location-select-id' size="1">  
+						<?php 
+						foreach($locations as $location) {    
+							$selected = "";  
+							if( is_object($EM_Event->location) )  {
+								if ($EM_Event->location->id == $location->id) 
+									$selected = "selected='selected' ";
+							}
+					   		?>          
+					    	<option value="<?php echo $location->id ?>" title="<?php echo "{$location->latitude},{$location->longitude}" ?>" <?php echo $selected ?>><?php echo $location->name; ?></option>
+					    	<?php
+						}
+						?>
+					</select>
+					<?php endif; ?>
+					<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),$bp->events->link . 'my-locations/add/'); ?></p>
+				
+					<?php if ( get_option ( 'dbem_gmap_is_active' ) ) : ?>
+					<div id='em-map-404' style='width: 400px; vertical-align:middle; text-align: center;'>
+						<p><em><?php _e ( 'Location not found', 'dbem' ); ?></em></p>
+					</div>
+					<div id='em-map' style='width: 400px; height: 300px; display: none;'></div>
+					<?php endif; ?>
+				</div>
 			</div>
 			
 			<h4><?php _e ( 'Details', 'dbem' ); ?></h4>
@@ -233,14 +227,14 @@
 				</div>
 				<div>
 				<?php if(get_option('dbem_categories_enabled')) :?>
-					<?php $locations = EM_Categories::get(array('orderby'=>'category_name')); ?>
-					<?php if( count($locations) > 0 ): ?>
+					<?php $categories = EM_Categories::get(array('orderby'=>'category_name')); ?>
+					<?php if( count($categories) > 0 ): ?>
 						<!-- START Categories -->
-						<label for="event_category_id"><?php _e ( 'Category:', 'dbem' ); ?></label>
-						<select name="event_category_id" multiple size="10">
+						<label for="event_categories[]"><?php _e ( 'Category:', 'dbem' ); ?></label>
+						<select name="event_categories[]" multiple size="10">
 							<?php
-							foreach ( $locations as $EM_Category ){
-								$selected = ($EM_Category->id == $EM_Event->category_id) ? "selected='selected'": ''; 
+							foreach ( $categories as $EM_Category ){
+								$selected = ($EM_Event->get_categories()->has($EM_Category->id)) ? "selected='selected'": ''; 
 								?>
 								<option value="<?php echo $EM_Category->id ?>" <?php echo $selected ?>>
 								<?php echo $EM_Category->name ?>
@@ -391,7 +385,7 @@
 												$col_count++;
 											}
 											if( !empty($delete_temp_ticket) ){
-												array_pop($EM_Tickets->tickets[0]);
+												array_pop($EM_Tickets->tickets);
 											}
 										?>
 									</tbody>

@@ -58,7 +58,8 @@ table.events-table .category { color:#888; }
 
 /* Events Add Page */
 #event-form #event-name, #location-form, #location-name { margin: 2px 0 7px; padding: 6px 5px; width: 98%; }
-
+	/*Locations*/
+	#em-location-data table { float:left; margin:0px 15px 0px 0px; }
 	/*Bookings */
 		#event-rsvp-box { margin:10px; }
 		/*Tickets*/

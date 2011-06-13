@@ -155,6 +155,5 @@ function em_bookings_pending_table($event_id = false){
 			<?php endif; ?>
 		</div>	
 	<?php
-	
 }
 ?>
