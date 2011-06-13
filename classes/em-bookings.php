@@ -333,7 +333,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function get_bookings(){
 		$confirmed = array();
 		foreach ( $this->bookings as $booking ){
-			if( $booking->status == 1 || (get_option('dbem_bookings_approval') == 0 && in_array($booking->status, array(1,2,5))) ){
+			if( $booking->status == 1 || (get_option('dbem_bookings_approval') == 0 && in_array($booking->status, array(0,1,2,5))) ){
 				$confirmed[] = $booking;
 			}
 		}

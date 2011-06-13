@@ -124,6 +124,7 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 * fixed events not editing due to new location js
 * fixed pro notification
 * fixed calendar ajax year switching issue
+* fixed bookings missing in non-approval mode
 
 = 4.0.8 =
 * just made settings page expanded
