@@ -23,7 +23,7 @@ function em_admin_locations($message='', $fill_fields = false) {
 	$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
 	if( !empty($_REQUEST['owner']) && current_user_can('read_others_locations') ){
-		$locations = EM_Locations::get(array('blog'=>false));
+		$locations = EM_Locations::get(array('owner'=>false));
 		$locations_mine_count = EM_Locations::count( array('owner'=>get_current_user_id()) );
 		$locations_all_count = count($locations);
 	}else{
@@ -188,8 +188,8 @@ function em_admin_location($message = "") {
 							</h3>
 							<div class="inside">
 								<?php
-									$location_owner = (empty($EM_Location->id)) ? $EM_Location->owner:get_current_user_id();
-									$user_args = array ('name' => 'location_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => get_current_user_id() );
+									$location_owner = (!empty($EM_Location->id)) ? $EM_Location->owner:get_current_user_id();
+									$user_args = array ('name' => 'location_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $location_owner );
 									if( is_super_admin() || is_main_site() ){ $user_args['blog_id'] = false; }
 									wp_dropdown_users ( $user_args );
 								?>

@@ -8,7 +8,7 @@ require_once('../../../../wp-load.php');
 global $wpdb;
 
 $locations_table = EM_LOCATIONS_TABLE;
-$location_cond = ( !current_user_can('edit_others_locations') ) ? "AND location_owner=".get_current_user_id() : '';
+$location_cond = ( !current_user_can('edit_others_locations') && !current_user_can('read_others_locations') ) ? "AND location_owner=".get_current_user_id() : '';
 
 $term = (isset($_GET['term'])) ? '%'.$_GET['term'].'%' : '%'.$_GET['q'].'%';
 $sql = $wpdb->prepare("
