@@ -257,7 +257,7 @@ class EM_Events extends EM_Object implements Iterator {
 				}
 			}
 		}
-		return $args;
+		return apply_filters('em_events_get_post_search', $args);
 	}
 
 	/* Overrides EM_Object method to apply a filter to result
