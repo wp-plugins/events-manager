@@ -7,7 +7,7 @@
 		if ( $cal_file_request || $regenerate ) {
 			ob_start();
 			em_locate_template('templates/ical.php', true);
-			$calendar = preg_replace("/[^\r]\n/", "\r\n", ob_get_clean());//get the contents to output and clean crlf issues
+			$calendar = preg_replace("/([^\r])\n/", "$1\r\n", ob_get_clean());//get the contents to output and clean crlf issues
 			//let's create a cache file
 			/*
 			if( get_option('dbem_regenerate_ical') || !file_exists(ABSPATH . "/events.ics") ){
@@ -19,7 +19,7 @@
 				}
 			}
 			*/
-			echo $calendar;		
+			echo $calendar;	
 			die ();
 		}
 	}
