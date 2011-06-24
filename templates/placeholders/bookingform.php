@@ -68,9 +68,9 @@ global $EM_Notices;
 				<div class='em-booking-form-details'>
 				
 					<?php $EM_Ticket = $EM_Tickets->get_first(); ?>
-
-					<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo $EM_Ticket->description; ?></p><?php endif; ?>					
+					
 					<?php if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') ): ?>
+						<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo $EM_Ticket->description; ?></p><?php endif; ?>
 						<?php if( !$EM_Event->is_free() ): ?>
 							<p>
 								<label><?php _e('Price','dbem') ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong>
@@ -120,10 +120,10 @@ global $EM_Notices;
 					 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_add'); ?>'/>
 					</div>
 				</div>
-			</form>	
 			<?php else: ?>
 			<p class="em-booking-form-details"><?php _e('You must log in before you make a booking.','dbem'); ?></p>
-			<?php endif; ?>	
+			<?php endif; ?>
+			</form>	
 			<?php if( !is_user_logged_in() && get_option('dbem_bookings_login_form') ): ?>
 				<div class="em-booking-login">
 	        		<form class="em-booking-login-form" action="<?php echo site_url('wp-login.php', 'login_post'); ?>" method="post">
