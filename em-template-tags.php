@@ -111,35 +111,74 @@ function dbem_are_events_available($scope = "future"){ em_are_events_available($
 
 
 /**
- * Returns true if the page is the events page. This may be a locations page, single event, multiple events, etc. so be careful!
+ * Returns true if the page is the events page. this is now only an events page, before v4.0.83 this would be true for any multiple page (e.g. locations) 
  * @return boolean
  */
 function em_is_events_page() {
 	global $post;
-	return ($post->ID == get_option('dbem_events_page') && get_option ( 'dbem_events_page' ) != 0);
+	return em_get_page_type() == 'events';
 }
 function dbem_is_events_page(){ em_is_events_page(); } //Depreciated
-
+function dbem_is_multiple_events_page(){ em_is_events_page(); } //Depreciated
+function em_is_multiple_events_page(){ em_is_events_page(); } //Depreciated
 
 /**
- * Returns true if this is a single event
+ * Is this a a single event page?
  * @return boolean
  */
-function em_is_single_event_page() {
-	return (em_is_events_page () && (isset ( $_REQUEST ['event_id'] ) && $_REQUEST ['event_id'] != ''));
+function em_is_event_page(){
+	return em_get_page_type() == 'event';
 }
 function dbem_is_single_event_page(){ em_is_single_event_page(); } //Depreciated
+function em_is_single_event_page(){ em_is_event_page(); } //Depreciated
 
 
 /**
- * If this is a page is a multiple events page
+ * Is this a a single calendar day page?
  * @return boolean
  */
-function em_is_multiple_events_page() {
-	//FIXME this will also show true if it's not a locations page
-	return ( em_is_events_page () && !em_is_single_event_page() );
+function em_is_calendar_day_page(){
+	return em_get_page_type() == 'calendar_day';
 }
-function dbem_is_multiple_events_page(){ em_is_multiple_events_page(); } //Depreciated
+
+/**
+ * Is this a a single category page?
+ * @return boolean
+ */
+function em_is_category_page(){
+	return em_get_page_type() == 'category';
+}
+/**
+ * Is this a categories list page?
+ * @return boolean
+ */
+function em_is_categories_page(){
+	return em_get_page_type() == 'categories';
+}
+
+/**
+ * Is this a a single location page?
+ * @return boolean
+ */
+function em_is_location_page(){
+	return em_get_page_type() == 'location';
+}
+/**
+ * Is this a locations list page?
+ * @return boolean
+ */
+function em_is_locations_page(){
+	return em_get_page_type() == 'locations';
+}
+
+/**
+ * Is this my bookings page?
+ * @return boolean
+ */
+function em_is_my_bookings_page(){
+	return em_get_page_type() == 'my_bookings';
+}
+
 
 
 /**

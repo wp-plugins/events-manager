@@ -42,7 +42,7 @@
 			global $wpdb;
 			$countries = em_get_countries();
 			$em_countries = $wpdb->get_results("SELECT DISTINCT location_country FROM ".EM_LOCATIONS_TABLE." WHERE location_country IS NOT NULL AND location_country != '' ORDER BY location_country ASC", ARRAY_N);
-			if( empty($_REQUEST['country']) ){
+			if( !isset($_REQUEST['country']) ){
 				$_REQUEST['country'] = get_option('dbem_location_default_country');
 			}
 			foreach($em_countries as $em_country): 

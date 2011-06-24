@@ -42,7 +42,7 @@ class EM_Tickets extends EM_Object implements Iterator{
 		}elseif( is_object($object) && get_class($object) == "EM_Booking"){
 			$this->booking = $object;
 			$this->event = $this->booking->get_event();
-			$sql = "SELECT * FROM ". EM_TICKETS_TABLE ." t LEFT JOIN ". EM_TICKETS_BOOKINGS_TABLE ." bt ON bt.ticket_id=t.ticket_id  WHERE booking_id ='{$this->booking->id}'";
+			$sql = "SELECT * FROM ". EM_TICKETS_TABLE ." WHERE event_id ='{$this->event->id}'";
 			$tickets = $wpdb->get_results($sql, ARRAY_A);
 			foreach ($tickets as $ticket){
 				$EM_Ticket = new EM_Ticket($ticket);

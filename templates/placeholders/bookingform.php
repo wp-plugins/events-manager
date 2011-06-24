@@ -32,7 +32,7 @@ global $EM_Notices;
 					 * the price collumn will be ommited.
 					 */
 				?>
-				<?php if( count($EM_Tickets->tickets) > 1 ): ?>
+				<?php if( count($EM_Tickets->tickets) > 1 || get_option('dbem_bookings_tickets_single_form') ): ?>
 					<table class="em-tickets" cellspacing="0" cellpadding="0">
 						<tr>
 							<td><?php _e('Ticket Type','dbem') ?></td>
@@ -70,23 +70,23 @@ global $EM_Notices;
 					<?php $EM_Ticket = $EM_Tickets->get_first(); ?>
 
 					<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo $EM_Ticket->description; ?></p><?php endif; ?>					
-					<?php if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 ): ?>
-					<?php if( !$EM_Event->is_free() ): ?>
+					<?php if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') ): ?>
+						<?php if( !$EM_Event->is_free() ): ?>
+							<p>
+								<label><?php _e('Price','dbem') ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong>
+							</p>
+						<?php endif; ?>						
 						<p>
-							<label><?php _e('Price','dbem') ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong>
-						</p>
-					<?php endif; ?>						
-					<p>
-						<label for='em_tickets'><?php _e('Spaces', 'dbem') ?></label>
-						<?php 
-							$spaces_options = $EM_Ticket->get_spaces_options(false);
-							if( $spaces_options ){
-								echo $spaces_options;
-							}else{
-								echo "<strong>".__('N/A','dbem')."</strong>";
-							}
-						?>
-					</p>	
+							<label for='em_tickets'><?php _e('Spaces', 'dbem') ?></label>
+							<?php 
+								$spaces_options = $EM_Ticket->get_spaces_options(false);
+								if( $spaces_options ){
+									echo $spaces_options;
+								}else{
+									echo "<strong>".__('N/A','dbem')."</strong>";
+								}
+							?>
+						</p>	
 					<?php endif; ?>
 					
 					<?php //Here we have extra information required for the booking. ?>
@@ -124,7 +124,7 @@ global $EM_Notices;
 			<?php else: ?>
 			<p class="em-booking-form-details"><?php _e('You must log in before you make a booking.','dbem'); ?></p>
 			<?php endif; ?>	
-			<?php if( !is_user_logged_in() ): ?>
+			<?php if( !is_user_logged_in() && get_option('dbem_bookings_login_form') ): ?>
 				<div class="em-booking-login">
 	        		<form class="em-booking-login-form" action="<?php echo site_url('wp-login.php', 'login_post'); ?>" method="post">
 			            <p><?php _e('Log in if you already have an account with us.','dbem'); ?>

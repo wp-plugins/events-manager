@@ -24,8 +24,8 @@ X-WR-CALNAME:{$blog_desc}";
 				$description = str_replace(',','\,',$description);
 				$description = str_replace(':','":"',$description);
 				
-				$dateStart	= date('Ymd\THis\Z',$EM_Event->start));
-				$dateEnd = date('Ymd\THis\Z',$EM_Event->end));
+				$dateStart	= date('Ymd\THis\Z',$EM_Event->start - (60*60*get_option('gmt_offset')));
+				$dateEnd = date('Ymd\THis\Z',$EM_Event->end - (60*60*get_option('gmt_offset')));
 				$dateModified = date('Ymd\THis\Z', $EM_Event->modified);			
 				
 				$location		= $EM_Event->output('#_LOCATION');

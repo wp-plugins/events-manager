@@ -120,6 +120,11 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 
 == Changelog ==
 
+= 4.0.83 =
+* added option to remove booking login form
+* added option to show ticket table even in single ticket mode
+* fixed search defaulting to default country when all countries selected
+
 = 4.0.82 =
 * fixed bookings missing in non-approval mode
 

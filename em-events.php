@@ -220,8 +220,4 @@ function em_get_page_type(){
 		}
 	}
 }
-
-function em_is_event_page(){
-	return em_get_page_type() == 'event';
-}
 ?>

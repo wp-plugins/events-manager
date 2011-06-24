@@ -421,6 +421,7 @@ function em_add_options() {
 		'dbem_bookings_anonymous' => 1, 
 		'dbem_bookings_approval' => 1, //approval is on by default
 		'dbem_bookings_approval_reserved' => 0, //overbooking before approval?
+		'dbem_bookings_login_form' => 1, //show login form on booking area
 		'dbem_bookings_approval_overbooking' => 0, //overbooking possible when approving?
 			//Emails
 			'dbem_default_contact_person' => 1, //admin
@@ -446,6 +447,7 @@ function em_add_options() {
 			'dbem_bookings_tickets_show_unavailable' => 0,
 			'dbem_bookings_tickets_show_loggedout' => 1,
 			'dbem_bookings_tickets_single' => 0,
+			'dbem_bookings_tickets_single_form' => 0, 
 			//My Bookings Page
 			'dbem_bookings_my_title_format' => __('My Bookings','dbem'),
 		//Flags
