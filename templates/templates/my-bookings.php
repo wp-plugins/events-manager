@@ -7,6 +7,7 @@
 		$bookings_count = count($bookings);
 		if($bookings_count > 0){
 			//Get events here in one query to speed things up
+			$event_ids = array();
 			foreach($bookings as $EM_Booking){
 				$event_ids[] = $EM_Booking->event_id;
 			}

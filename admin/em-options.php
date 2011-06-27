@@ -93,8 +93,7 @@ function em_admin_options_page() {
 					$('#dbem_title_html_row').hide();					
 				}
 			});
-			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');
-			$(".postbox").addClass('closed'); //Let's start off closing everything for now.			
+			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');	
 		});
 	</script>
 	<div class="wrap">
@@ -111,7 +110,7 @@ function em_admin_options_page() {
 			}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'bookings_migrate_delete'){
 				require_once( dirname(__FILE__).'/../em-install.php');
 				em_migrate_bookings_delete();
-			}		
+			}
 		?>
 		<?php if( $wpdb->get_var("SHOW TABLES LIKE '".EM_PEOPLE_TABLE."'") == EM_PEOPLE_TABLE ): ?>
 			<?php if( $wpdb->get_var('SELECT COUNT(*) FROM '.EM_TICKETS_BOOKINGS_TABLE) > 0 ): ?>
@@ -146,7 +145,7 @@ function em_admin_options_page() {
 			<div class="metabox-holder">         
 			<!-- // TODO Move style in css -->
 			<div class='postbox-container' style='width: 99.5%'>
-			<div id="" class="meta-box-sortables" >
+			<div id="">
 		  
 			<?php if ( is_multisite() && is_super_admin() ) : ?>
 			<div  class="postbox " >
@@ -198,7 +197,8 @@ function em_admin_options_page() {
 					em_options_select ( __( 'Default Location Country' ), 'dbem_location_default_country', em_get_countries(__('no default country', 'dbem')), __('If you select a default country, that will be pre-selected when creating a new location.','dbem') );
 										
 					em_options_textarea ( __( 'Event Attributes', 'dbem' ), 'dbem_placeholders_custom', sprintf(__( "You can also add event attributes here, one per line in this format <code>#_ATT{key}</code>. They will not appear on event pages unless you insert them into another template below, but you may want to store extra information about an event for other uses. <a href='%s'>More information on placeholders.</a>", 'dbem' ), 'wp-events-plugin.com/documentation/event-attributes/') );
-										
+					
+					em_options_radio_binary ( __( 'Show some love?' ), 'dbem_credits', __( 'Hundreds of free hours have gone into making this free plugin, show your support and add a small link to the plugin website at the bottom of your event pages.','dbem' ) );
 					echo $save_button;
 					?>
 				</table>
@@ -426,13 +426,16 @@ function em_admin_options_page() {
 					em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
 					em_options_select ( __( 'Currency', 'dbem' ), 'dbem_bookings_currency', em_get_currencies()->names, __( 'Choose your currency for displaying event pricing.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Single ticket mode?', 'dbem' ), 'dbem_bookings_tickets_single', __( 'In single ticket mode, users can only create one ticket per booking (and will not see options to add more tickets).', 'dbem' ) );
+					em_options_radio_binary ( __( 'Show ticket table in single ticket mode?', 'dbem' ), 'dbem_bookings_tickets_single_form', __( 'If you prefer a ticket table like with multiple tickets, even for single ticket events, enable this.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Show unavailable tickets?', 'dbem' ), 'dbem_bookings_tickets_show_unavailable', __( 'You can choose whether or not to show unavailable tickets to visitors.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Reserved unconfirmed spaces?', 'dbem' ), 'dbem_bookings_approval_reserved', __( 'By default, event spaces become unavailable once there are enough CONFIRMED bookings. To reserve spaces even if unnapproved, choose yes.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Show multiple tickets if logged out?', 'dbem' ), 'dbem_bookings_tickets_show_loggedout', __( 'If logged out, a user will be asked to register in order to book. However, we can show available tickets if you have more than one ticket.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Allow overbooking when approving?', 'dbem' ), 'dbem_bookings_approval_overbooking', __( 'If you get a lot of pending bookings and you decide to allow more bookings than spaces allow, setting this to yes will allow you to override the event space limit when manually approving.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Allow guest bookings?', 'dbem' ), 'dbem_bookings_anonymous', __( 'If enabled, guest visitors can supply an email address and a user account will automatically be created for them along with their booking. They will be also be able to log back in with that newly created account.', 'dbem' ) );
+					em_options_radio_binary ( __( 'Display login form?', 'dbem' ), 'dbem_bookings_login_form', __( 'Choose whether or not to display a login form in the booking form area to remind your members to log in before booking.', 'dbem' ) );
+					
 					echo $save_button;     
-					?> 
+					?>
 				</table>
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
@@ -442,9 +445,10 @@ function em_admin_options_page() {
 			<div class="inside">
 				<table class='form-table'>
 					<?php
-					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users (), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
+					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users(), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
 					em_options_input_text ( __( 'Email events admin?', 'dbem' ), 'dbem_bookings_notify_admin', __( "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email).", 'dbem' ) );
 					em_options_radio_binary ( __( 'Email contact person?', 'dbem' ), 'dbem_bookings_contact_email', __( 'Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)', 'dbem' ) );
+					em_options_radio_binary ( __( 'Disable new registration email?', 'dbem' ), 'dbem_email_disable_registration', __( 'Check this option if you want to prevent the wordpress registration email from going out when a user anonymously books an event.', 'dbem' ) );
 					?>
 					<tr><td colspan='2'><h4><?php _e('Contact person booking confirmed','dbem') ?></h4></td></tr>
 					<tr><td colspan='2'><?php echo __('An email will be sent to the event contact when a booking is first made.','dbem').$bookings_placeholder_tip ?></td></tr>
@@ -514,10 +518,10 @@ function em_admin_options_page() {
 					<?php
 					em_options_input_text ( __( 'Maximum width (px)', 'dbem' ), 'dbem_image_max_width', __( 'The maximum allowed width for images uploades', 'dbem' ) );
 					em_options_input_text ( __( 'Maximum height (px)', 'dbem' ), 'dbem_image_max_height', __( "The maximum allowed height for images uploaded, in pixels", 'dbem' ) );
-					em_options_input_text ( __( 'Maximum size (bytes)', 'dbem' ), 'dbem_image_max_size', __( "The maximum allowed size for images uploaded, in pixels", 'dbem' ) );
+					em_options_input_text ( __( 'Maximum size (bytes)', 'dbem' ), 'dbem_image_max_size', __( "The maximum allowed size for images uploaded, in bytes", 'dbem' ) );
 					echo $save_button;
 					?>
-				</table> 
+				</table>
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
 			
@@ -582,9 +586,26 @@ function em_admin_options_page() {
 			        <?php echo $save_button; ?>
 				</table>
 			</div> <!-- . inside --> 
-			</div> <!-- .postbox -->    
-			<?php endif; ?>
-
+			</div> <!-- .postbox -->     
+			<?php endif; ?> 
+			
+			<div  class="postbox" >
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Anonymous Event Submission', 'dbem' ); ?> (Beta)<?php echo $multisite_view; ?></span></h3>
+			<div class="inside">
+	            <table class="form-table">
+	            	<tr><td colspan="2">
+	            		<strong><?php _e('You can allow users to publicly submit events on your blog by using the [event_form] shortcode, and enabling anonymous submissions below.','dbem')?> (beta)</strong><br />
+					</td></tr>
+            		<?php
+						em_options_radio_binary ( __( 'Allow anonymous event submissions?', 'dbem' ), 'dbem_events_anonymous_submissions', __( 'Would you like to allow users to submit bookings anonymously? If so, you can use the new [event_form] shortcode or <code>em_event_form()</code> template tag with this enabled.', 'dbem' ) );
+		            	em_options_select ( __('Guest Default User', 'dbem'), 'dbem_events_anonymous_user', em_get_wp_users (), __( 'Events require a user to own them. In order to allow events to be submitted anonymously you need to assign that event a specific user. We recommend you create a "Anonymous" subscriber with a very good password and use that.', 'dbem' ) );
+		            	em_options_textarea ( __( 'Success Message', 'dbem' ), 'dbem_events_anonymous_result_success', __( 'Anonymous submitters cannot see or modify their event once submitted. You can customize the success message they see here.', 'dbem' ).$events_placeholder_tip );
+					?>
+			        <?php echo $save_button; ?>
+				</table>
+			</div> <!-- . inside --> 
+			</div> <!-- .postbox --> 
+			
 			<?php /*
 			<div  class="postbox " >
 			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Debug Modes', 'dbem' ); ?> </span></h3>

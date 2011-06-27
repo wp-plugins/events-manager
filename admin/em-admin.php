@@ -29,13 +29,13 @@ function em_admin_warnings() {
 		}	
 		
 		//Image upload folders
-		if( is_super_admin() && EM_IMAGE_DS == '/' ){
+		if( is_admin() && EM_IMAGE_DS == '/' ){
 			$errs = array();
-			if( !file_exists(EM_IMAGE_UPLOAD_DIR) && @mkdir(EM_IMAGE_UPLOAD_DIR, 0777)){
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/events/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777) ){ $errs[] = 'events'; }
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/locations/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777) ){ $errs[] = 'locations'; }
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/categories/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777) ){ $errs[] = 'categories'; }
-			}elseif( !file_exists(EM_IMAGE_UPLOAD_DIR) ){
+			if( is_writable(EM_IMAGE_UPLOAD_DIR) || @mkdir(EM_IMAGE_UPLOAD_DIR, 0777)){
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/events/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777) ){ $errs[] = 'events'; }
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/locations/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777) ){ $errs[] = 'locations'; }
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/categories/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777) ){ $errs[] = 'categories'; }
+			}elseif( !is_writable(EM_IMAGE_UPLOAD_DIR) ){
 				$errs = array('events','categories','locations');
 			}
 			if( count($errs) > 0 ){
@@ -84,6 +84,34 @@ function em_admin_warnings() {
 				<?php		
 			}
 		}
+		//Fixing the RC2 fiasco
+		if( !empty($_GET['em_dismiss_notice_rc_reimport']) ){
+			delete_option('dbem_notice_rc_reimport');
+		}else{
+			if( get_option('dbem_notice_rc_reimport') ){
+				?>
+				<div id="em_page_error" class="updated">
+					<p><?php echo sprintf ( __( 'If you upgraded from 3.x to the RC2 and the update did not go so well, <a href="%s">try reimporting old settings</a>. Warning! Re-importing will rename all event slugs, re-import your old category settings from events, and recreate all tickets, so changes to these areas will be lost. <a href="%s">Dismiss</a>' ), 'admin.php?page=events-manager-options&action=em_rc_reimport&_wpnonce='.wp_create_nonce('em_rc_reimport'),  em_add_get_params($_SERVER['REQUEST_URI'], array('em_dismiss_notice_rc_reimport'=>1))); ?></p>
+				</div>
+				<?php		
+			}
+		}
+		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'em_rc_reimport' && wp_verify_nonce($_REQUEST['_wpnonce'], 'em_rc_reimport') ){
+			require_once( dirname(__FILE__).'/../em-install.php');
+			em_migrate_v3();
+			?>
+			<div id="em_page_error" class="updated">
+				<p>Reimporting old settings was successful. Click the dismiss button on the other notification if after checking things are now working.</p>
+			</div>
+			<?php
+		}
+		
+		if( defined('EMP_VERSION') && EMP_VERSION < EM_PRO_MIN_VERSION ){?>
+			<div id="em_page_error" class="updated">
+				<p>There is a newer version of Events Manager Pro which is required for this current version of Events Manager. Please go to the plugin website and download the latest update.</p>
+			</div>
+			<?php
+		}
 	}
 	//Warn about EM page edit
 	if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
@@ -130,34 +158,26 @@ function em_admin_paginate($total, $limit, $page=1, $vars=false){
 function em_admin_load_scripts(){
 	//Load the UI items, currently date picker and autocomplete plus dependencies
 	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
-	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core'));
+	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position'));
 	
-	//Add maps
-	if( get_option('dbem_gmap_is_active') ){
-		wp_enqueue_script('em-google-maps', 'http://maps.google.com/maps/api/js?sensor=false');	
-	}
 	//Time Entry
-	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));	
+	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));
 	
-	//Date Picker Locale
-	$locale_code = substr ( get_locale (), 0, 2 );
-	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
-	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
-		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager'));
-	}
-	
-	//TinyMCE Editor
-	remove_filter('the_editor',	'qtrans_modifyRichEditor'); //qtranslate filter
-	add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 25 );
-	add_action( 'admin_print_footer_scripts', 'wp_tiny_mce_preload_dialogs', 30 );
-	wp_enqueue_script('post');
-	if ( user_can_richedit() )
-		wp_enqueue_script('editor');
-	
-	add_thickbox();
-	wp_enqueue_script('media-upload');
-	wp_enqueue_script('word-count');
-	wp_enqueue_script('quicktags');	
+	if( is_admin() ){
+		//TinyMCE Editor
+		remove_filter('the_editor',	'qtrans_modifyRichEditor'); //qtranslate filter
+		if( function_exists('wp_tiny_mce')) add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 25 );
+		if( function_exists('wp_tiny_mce_preload_dialogs')) add_action( 'admin_print_footer_scripts', 'wp_tiny_mce_preload_dialogs', 30 );
+		wp_enqueue_script('post');
+		if ( user_can_richedit() )
+			wp_enqueue_script('editor');
+		
+		add_thickbox();
+		wp_enqueue_script('media-upload');
+		wp_enqueue_script('word-count');
+		wp_enqueue_script('quicktags');
+	}	
+	em_js_localize_vars();
 }
 
 /**
@@ -165,7 +185,7 @@ function em_admin_load_scripts(){
  */
 function em_admin_load_styles() {
 	add_thickbox();
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
+	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
 	wp_enqueue_style('events-manager-admin', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager_admin.css');
 }
 

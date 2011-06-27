@@ -33,7 +33,7 @@ class EM_Events extends EM_Object implements Iterator {
 	 * @return EM_Event array()
 	 */
 	function get( $args = array(), $count=false ) {
-		global $wpdb;
+		global $wpdb;	 
 		$events_table = EM_EVENTS_TABLE;
 		$locations_table = EM_LOCATIONS_TABLE;
 		
@@ -137,11 +137,17 @@ class EM_Events extends EM_Object implements Iterator {
 			//First we have to check that they're all deletable by this user.
 			if ( self::can_manage($event_ids) ) {
 				apply_filters('em_events_delete_pre', $event_ids);
-				$condition = implode(" OR event_id=", $event_ids);
+				$condition = "event_id IN (". implode(',',$event_ids).")";
+				//Delete all tickets bookings
+				$result_tickets_bookings = $wpdb->query("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id IN (SELECT booking_id FROM ". EM_BOOKINGS_TABLE ." WHERE $condition)");
+				//Delete all tickets
+				$result_tickets = $wpdb->query("DELETE FROM ". EM_TICKETS_TABLE ." WHERE $condition;");
 				//Delete all the bookings
-				$result_bookings = $wpdb->query("DELETE FROM ". EM_BOOKINGS_TABLE ." WHERE event_id=$condition;");
+				$result_bookings = $wpdb->query("DELETE FROM ". EM_BOOKINGS_TABLE ." WHERE $condition;");
 				//Now delete the events
-				$result = $wpdb->query ( "DELETE FROM ". EM_EVENTS_TABLE ." WHERE event_id=$condition;" );
+				$result_events = $wpdb->query ( "DELETE FROM ". EM_EVENTS_TABLE ." WHERE $condition;" );
+				//delete category links
+				$result_categories = $wpdb->query('DELETE FROM '.EM_META_TABLE." WHERE meta_key='event-category' AND object_id IN (".implode(',', $event_ids).")");
 				return apply_filters('em_events_delete', true, $event_ids);
 			}else{
 				return apply_filters('em_events_delete', true, $event_ids);
@@ -240,7 +246,7 @@ class EM_Events extends EM_Object implements Iterator {
 	}
 	
 	function get_post_search($args = array()){
-		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state'), $args);
+		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state','region','town'), $args);
 		foreach($_REQUEST as $post_key => $post_value){
 			if( in_array($post_key, $accepted_searches) && !empty($post_value) ){
 				if(is_array($post_value)){
@@ -251,7 +257,7 @@ class EM_Events extends EM_Object implements Iterator {
 				}
 			}
 		}
-		return $args;
+		return apply_filters('em_events_get_post_search', $args);
 	}
 
 	/* Overrides EM_Object method to apply a filter to result
@@ -264,7 +270,8 @@ class EM_Events extends EM_Object implements Iterator {
 			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
 		}
 		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
-			$conditions['status'] = "(`event_status`={$args['status']})";
+			$null = ($args['status'] == 0) ? ' OR `event_status` IS NULL':'';
+			$conditions['status'] = "(`event_status`={$args['status']}{$null} )";
 		}
 		if( is_multisite() && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
 			if( is_main_site($args['blog']) ){
@@ -297,12 +304,18 @@ class EM_Events extends EM_Object implements Iterator {
 			'status' => 1, //approved events only
 			'format_header' => '', //events can have custom html above the list
 			'format_footer' => '', //events can have custom html below the list
-			'state' => '',
-			'country' => '',
+			'town' => false,
+			'state' => false,
+			'country' => false,
+			'region' => false,
 			'blog' => get_current_blog_id(),
 		);
 		if(is_multisite()){
-			if( !is_main_site() ){
+			global $bp;
+			//echo "<pre>"; print_r($bp); echo "</pre>";
+			if( !empty($bp->current_component) && $bp->current_component == 'events' && !empty($bp->current_action)){
+				$array['blog'] = false; //This is the buddypress root blog so we also show all event data
+			}elseif( !is_main_site() ){
 				//not the main blog, force single blog search
 				$array['blog'] = get_current_blog_id();
 			}elseif( empty($array['blog']) && get_site_option('dbem_ms_global_events') ) {
