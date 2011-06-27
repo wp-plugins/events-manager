@@ -91,16 +91,20 @@ class EM_Tickets extends EM_Object implements Iterator{
 	function delete(){
 		global $wpdb;
 		//get all the ticket ids
+		$result = false;
+		$ticket_ids = array();
 		foreach( $this->tickets as $EM_Ticket ){
 			$ticket_ids[] = $EM_Ticket->id;
 		}
 		//check that tickets don't have bookings
-		$bookings = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_id IN (".implode(',',$ticket_ids).")");
-		if( $bookings > 0 ){
-			$result = false;
-			$this->add_error(__('You cannot delete tickets if there are any bookings associated with them. Please delete these bookings first.','dbem'));
-		}else{
-			$result = $wpdb->query("DELETE FROM ".EM_TICKETS_TABLE." WHERE event_id IN (".implode(',',$ticket_ids).")");
+		if(count($ticket_ids) > 0){
+			$bookings = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_id IN (".implode(',',$ticket_ids).")");
+			if( $bookings > 0 ){
+				$result = false;
+				$this->add_error(__('You cannot delete tickets if there are any bookings associated with them. Please delete these bookings first.','dbem'));
+			}else{
+				$result = $wpdb->query("DELETE FROM ".EM_TICKETS_TABLE." WHERE event_id IN (".implode(',',$ticket_ids).")");
+			}
 		}
 		return ($result !== false);
 	}

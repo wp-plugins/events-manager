@@ -42,12 +42,9 @@
 			global $wpdb;
 			$countries = em_get_countries();
 			$em_countries = $wpdb->get_results("SELECT DISTINCT location_country FROM ".EM_LOCATIONS_TABLE." WHERE location_country IS NOT NULL AND location_country != '' ORDER BY location_country ASC", ARRAY_N);
-			if( !isset($_REQUEST['country']) ){
-				$_REQUEST['country'] = get_option('dbem_location_default_country');
-			}
 			foreach($em_countries as $em_country): 
 			?>
-			 <option value="<?php echo $em_country[0]; ?>" <?php echo (!empty($_REQUEST['country']) && $_REQUEST['country'] == $em_country[0]) ? 'selected="selected"':''; ?>><?php echo $countries[$em_country[0]]; ?></option>
+			 <option value="<?php echo $em_country[0]; ?>" <?php echo (!empty($_REQUEST['country']) && $_REQUEST['country'] == $em_country[0]) || (empty($_REQUEST['country']) && $em_country == get_option('dbem_location_default_country')) ? 'selected="selected"':''; ?>><?php echo $countries[$em_country[0]]; ?></option>
 			<?php endforeach; ?>
 		</select>
 		<!-- END Country Search -->	

@@ -12,6 +12,7 @@ function em_docs_init(){
 		$EM_Documentation = array(
 			'arguments' => array(
 				'events' => array(
+					'search' => array( 'default'=> __('Do a search for this string within event name, details and location address.', 'dbem') ),	
 					'limit' => array( 'default'=> __('See the events lists limit option on the settings page.', 'dbem') ),					
 					'orderby' => array( 'desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name").', 'dbem'), 'default'=> __('See the event lists ordering option on the settings page.', 'dbem'), 'args'=>'name, start_date, start_time, end_date, end_time'),
 					'order' => array( 'default'=> __('See the event lists ordering option on the settings page.', 'dbem') )

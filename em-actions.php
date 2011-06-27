@@ -4,6 +4,8 @@
  */
 function em_init_actions() {
 	global $wpdb,$EM_Notices,$EM_Event; 
+	if( defined('DOING_AJAX') && DOING_AJAX ) $_REQUEST['em_ajax'] = true;
+	
 	//NOTE - No EM objects are globalized at this point, as we're hitting early init mode.
 	//TODO Clean this up.... use a uniformed way of calling EM Ajax actions
 	if( !empty($_REQUEST['em_ajax']) || !empty($_REQUEST['em_ajax_action']) ){
@@ -57,7 +59,7 @@ function em_init_actions() {
 		}else{
 			$EM_Event = new EM_Event();
 		}
-		if( $_REQUEST['action'] == 'event_save' && current_user_can('edit_events') ){
+		if( $_REQUEST['action'] == 'event_save' && (current_user_can('edit_events') || (!is_user_logged_in() && get_option('dbem_events_anonymous_submissions'))) ){
 			//Check Nonces
 			if( is_admin() ){
 				if( !wp_verify_nonce($_REQUEST['_wpnonce'] && 'event_save') ) check_admin_referer('trigger_error');				
@@ -170,6 +172,24 @@ function em_init_actions() {
 					$result = false;
 				}
 			}
+		}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "locations_search" && (!empty($_REQUEST['term']) || !empty($_REQUEST['q'])) ){
+			$location_cond = ( !current_user_can('edit_others_locations') && !current_user_can('read_others_locations') ) ? "AND location_owner=".get_current_user_id() : '';
+			$term = (isset($_REQUEST['term'])) ? '%'.$_REQUEST['term'].'%' : '%'.$_REQUEST['q'].'%';
+			$sql = $wpdb->prepare("
+				SELECT 
+					location_id AS `id`,
+					Concat( location_name, ', ', location_address, ', ', location_town)  AS `label`,
+					location_name AS `value`,
+					location_address AS `address`, 
+					location_town AS `town`, 
+					location_state AS `state`,
+					location_postcode AS `postcode`,
+					location_country AS `country`
+				FROM ".EM_LOCATIONS_TABLE." 
+				WHERE ( `location_name` LIKE %s ) $location_cond LIMIT 10
+			", $term);
+			echo EM_Object::json_encode($wpdb->get_results($sql));
+			die();
 		}
 		if( isset($result) && $result && !empty($_REQUEST['em_ajax']) ){
 			$return = array('result'=>true, 'message'=>$EM_Location->feedback_message);

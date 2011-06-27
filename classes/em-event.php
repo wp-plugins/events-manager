@@ -308,10 +308,11 @@ class EM_Event extends EM_Object{
 			$this->location_id = $_POST['location_id'];
 			$this->location = new EM_Location($_POST['location_id']);			
 		} else {
+			$this->location_id = '';
 			$this->location = new EM_Location();
 			$this->location->get_post();  
 		}
-		if( !$this->get_bookings()->get_tickets()->get_post() ){
+		if( !empty($_REQUEST['event_rsvp']) && $_REQUEST['event_rsvp'] && !$this->get_bookings()->get_tickets()->get_post() ){
 			$EM_Tickets = $this->get_bookings()->get_tickets();
 			array_merge($this->errors, $this->get_bookings()->get_tickets()->errors);
 		}
@@ -326,15 +327,15 @@ class EM_Event extends EM_Object{
 	function save(){
 		//FIXME Event doesn't save title when inserting first time
 		global $wpdb, $current_user;
-		if( !$this->can_manage('edit_events', 'edit_others_events')){
+		if( !$this->can_manage('edit_events', 'edit_others_events') && ( get_option('dbem_events_anonymous_submissions') && empty($this->id)) ){
 			return apply_filters('em_event_save', false, $this);
 		}
 		do_action('em_event_save_pre', $this);
    		get_currentuserinfo();
 		$events_table = EM_EVENTS_TABLE;
 		$request = $_REQUEST;
-		//First let's save the location, no location no event!
-		if ( !$this->get_location()->id && !$this->location->save() ){ //shouldn't try to save if location exists
+		//First let's save the location if location doesn't already exist, no location no event!
+		if ( empty($this->get_location()->id) && !$this->location->save() ){ //shouldn't try to save if location exists
 			$this->errors[] = __('There was a problem saving the location so event was not saved.', 'dbem');
 	 		return apply_filters('em_event_save', false, $this);
 		}
@@ -342,6 +343,8 @@ class EM_Event extends EM_Object{
 		//owner person can be anyone the admin wants, but the creator if not.
 		if( current_user_can('edit_others_events') ){
 			$this->owner = ( $this->owner > 0 ) ? $this->owner:0;
+		}elseif( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') && get_option('dbem_events_anonymous_user') ){
+			$this->owner = get_option('dbem_events_anonymous_user'); //user is anonymous, so give the event
 		}else{
 			//force 
 			$this->owner = get_current_user_id();
@@ -362,7 +365,6 @@ class EM_Event extends EM_Object{
 			if( is_multisite() ){
 				$this->blog_id = get_current_blog_id();
 			}
-			$this->owner = $current_user->ID; //Record creator of event
 			$this->date_created = current_time('mysql');
 			$event = $this->to_array(true);
 			$event['event_attributes'] = serialize($this->attributes);
@@ -1103,6 +1105,9 @@ class EM_Event extends EM_Object{
 	 * Can the user manage this? 
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false ){
+		if( $owner_capability == 'edit_events' && $this->id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
+			return apply_filters('em_event_can_manage',true);
+		}
 		return apply_filters('em_event_can_manage', parent::can_manage($owner_capability, $admin_capability), $this);
 	}
 	

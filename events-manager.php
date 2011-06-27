@@ -102,7 +102,7 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.0831); //self expanatory
+define('EM_VERSION', 4.0832); //self expanatory
 define('EM_PRO_MIN_VERSION', 1.2); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 if( get_site_option('dbem_ms_global_table') && is_multisite() ){
@@ -192,6 +192,7 @@ function em_js_localize_vars(){
 	}
 	wp_localize_script('events-manager','EM', array(
 		'ajaxurl' => admin_url('admin-ajax.php'),
+		'locationajaxurl' => admin_url('admin-ajax.php?action=locations_search'),
 		'firstDay' => get_option('start_of_week'),
 		'locale' => $locale_code
 	));
@@ -229,9 +230,13 @@ add_filter('plugins_loaded','em_plugins_loaded');
  */
 function em_init(){
 	//Hard Links
-	global $EM_Mailer, $wpdb;
+	global $EM_Mailer, $wpdb, $wp_rewrite;
 	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
-	define('EM_RSS_URI', trailingslashit(EM_URI)."rss/"); //RSS PAGE URI
+	if( $wp_rewrite->using_permalinks() ){
+		define('EM_RSS_URI', trailingslashit(EM_URI)."rss/"); //RSS PAGE URI
+	}else{
+		define('EM_RSS_URI', EM_URI."&rss=1"); //RSS PAGE URI
+	}
 	$EM_Mailer = new EM_Mailer();
 	//Upgrade/Install Routine
 	if( is_admin() && current_user_can('activate_plugins') ){

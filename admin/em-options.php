@@ -445,7 +445,7 @@ function em_admin_options_page() {
 			<div class="inside">
 				<table class='form-table'>
 					<?php
-					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users (), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
+					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users(), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
 					em_options_input_text ( __( 'Email events admin?', 'dbem' ), 'dbem_bookings_notify_admin', __( "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email).", 'dbem' ) );
 					em_options_radio_binary ( __( 'Email contact person?', 'dbem' ), 'dbem_bookings_contact_email', __( 'Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)', 'dbem' ) );
 					em_options_radio_binary ( __( 'Disable new registration email?', 'dbem' ), 'dbem_email_disable_registration', __( 'Check this option if you want to prevent the wordpress registration email from going out when a user anonymously books an event.', 'dbem' ) );
@@ -521,7 +521,7 @@ function em_admin_options_page() {
 					em_options_input_text ( __( 'Maximum size (bytes)', 'dbem' ), 'dbem_image_max_size', __( "The maximum allowed size for images uploaded, in bytes", 'dbem' ) );
 					echo $save_button;
 					?>
-				</table> 
+				</table>
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
 			
@@ -586,9 +586,26 @@ function em_admin_options_page() {
 			        <?php echo $save_button; ?>
 				</table>
 			</div> <!-- . inside --> 
-			</div> <!-- .postbox -->    
-			<?php endif; ?>
-
+			</div> <!-- .postbox -->     
+			<?php endif; ?> 
+			
+			<div  class="postbox" >
+			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Anonymous Event Submission', 'dbem' ); ?> (Beta)<?php echo $multisite_view; ?></span></h3>
+			<div class="inside">
+	            <table class="form-table">
+	            	<tr><td colspan="2">
+	            		<strong><?php _e('You can allow users to publicly submit events on your blog by using the [event_form] shortcode, and enabling anonymous submissions below.','dbem')?> (beta)</strong><br />
+					</td></tr>
+            		<?php
+						em_options_radio_binary ( __( 'Allow anonymous event submissions?', 'dbem' ), 'dbem_events_anonymous_submissions', __( 'Would you like to allow users to submit bookings anonymously? If so, you can use the new [event_form] shortcode or <code>em_event_form()</code> template tag with this enabled.', 'dbem' ) );
+		            	em_options_select ( __('Guest Default User', 'dbem'), 'dbem_events_anonymous_user', em_get_wp_users (), __( 'Events require a user to own them. In order to allow events to be submitted anonymously you need to assign that event a specific user. We recommend you create a "Anonymous" subscriber with a very good password and use that.', 'dbem' ) );
+		            	em_options_textarea ( __( 'Success Message', 'dbem' ), 'dbem_events_anonymous_result_success', __( 'Anonymous submitters cannot see or modify their event once submitted. You can customize the success message they see here.', 'dbem' ).$events_placeholder_tip );
+					?>
+			        <?php echo $save_button; ?>
+				</table>
+			</div> <!-- . inside --> 
+			</div> <!-- .postbox --> 
+			
 			<?php /*
 			<div  class="postbox " >
 			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Debug Modes', 'dbem' ); ?> </span></h3>

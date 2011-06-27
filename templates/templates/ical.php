@@ -22,7 +22,6 @@ X-WR-CALNAME:{$blog_desc}";
 				$description = str_replace('"','DQUOTE',$description);
 				$description = str_replace(';','\;',$description);
 				$description = str_replace(',','\,',$description);
-				$description = str_replace(':','":"',$description);
 				
 				$dateStart	= date('Ymd\THis\Z',$EM_Event->start - (60*60*get_option('gmt_offset')));
 				$dateEnd = date('Ymd\THis\Z',$EM_Event->end - (60*60*get_option('gmt_offset')));
@@ -33,7 +32,6 @@ X-WR-CALNAME:{$blog_desc}";
 				$location = str_replace('"','DQUOTE',$location);
 				$location = str_replace(';','\;',$location);
 				$location = str_replace(',','\,',$location);
-				$location = str_replace(':','":"',$location);
 				
 				$locations = array();
 				foreach($EM_Event->get_categories() as $EM_Category){

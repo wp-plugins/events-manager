@@ -293,6 +293,10 @@ function em_add_options() {
 		'dbem_events_default_order' => 'ASC',
 		'dbem_events_default_limit' => 10,
 		'dbem_list_events_page' => 1,
+		//Event Anonymous submissions
+		'dbem_events_anonymous_submissions' => 0,
+		'dbem_events_anonymous_user' => 0,
+		'dbem_events_anonymous_result_success' => 'You have successfully submitted your event, which will be published pending approval.',
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_events_page_scope' => 'future',

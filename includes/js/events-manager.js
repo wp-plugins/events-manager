@@ -10,14 +10,6 @@ jQuery(document).ready( function($){
 		$(this).closest('.em-calendar-wrapper').load(url, function(){$(this).trigger('em_calendar_load');});
 	} ); 
 	
-	/* Load any maps */	
-	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 ){
-		var script = document.createElement("script");
-		script.setAttribute("src", "http://maps.google.com/maps/api/js?v=3.2&sensor=false&callback=em_maps");
-		script.setAttribute("type", "text/javascript");
-		document.documentElement.firstChild.appendChild(script);
-	}
-	
 	/*
 	 * ADMIN AREA AND PUBLIC FORMS (Still polishing this section up, note that form ids and classes may change accordingly)
 	 */
@@ -242,146 +234,6 @@ jQuery(document).ready( function($){
 		});
 	}
 	
-	//Location stuff - only needed if inputs for location exist
-	if( $('select#location-select-id, input#location-name').length > 0 ){
-	
-		//Load map
-		if($('#em-map').length > 0){
-			var em_LatLng = new google.maps.LatLng(0, 0);
-			var map = new google.maps.Map( document.getElementById('em-map'), {
-			    zoom: 14,
-			    center: em_LatLng,
-			    mapTypeId: google.maps.MapTypeId.ROADMAP,
-			    mapTypeControl: false
-			});
-			var marker = new google.maps.Marker({
-			    position: em_LatLng,
-			    map: map
-			});
-			var infoWindow = new google.maps.InfoWindow({
-			    content: ''
-			});
-			var geocoder = new google.maps.Geocoder();
-			google.maps.event.addListener(infoWindow, 'domready', function() { 
-				document.getElementById('location-balloon-content').parentNode.style.overflow=''; 
-				document.getElementById('location-balloon-content').parentNode.parentNode.style.overflow=''; 
-			});
-		}
-		
-		//Add listeners for changes to address
-		var get_map_by_id = function(id){
-			if($('#em-map').length > 0){
-				$.getJSON(document.URL,{ em_ajax_action:'get_location', id:id }, function(data){
-					if( data.location_latitude!=0 && data.location_longitude!=0 ){
-						loc_latlng = new google.maps.LatLng(data.location_latitude, data.location_longitude);
-						marker.setPosition(loc_latlng);
-						marker.setTitle( data.location_name );
-						$('#em-map').show();
-						$('#em-map-404').hide();
-						map.setCenter(loc_latlng);
-						map.panBy(40,-55);
-						infoWindow.setContent( '<div id="location-balloon-content">'+ data.location_balloon +'</div>');
-						infoWindow.open(map, marker);
-						google.maps.event.trigger(map, 'resize');
-					}else{
-						$('#em-map').hide();
-						$('#em-map-404').show();
-					}
-				});
-			}
-		}
-		$('#location-select-id').change( function(){get_map_by_id($(this).val())} );
-		$('#location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
-			//build address
-			var addresses = [ $('#location-address').val(), $('#location-town').val(), $('#location-state').val(), $('#location-postcode').val() ];
-			var address = '';
-			jQuery.each( addresses, function(i, val){
-				if( val != '' ){
-					address = ( address == '' ) ? address+val:address+', '+val;
-				}
-			});
-			//do country last, as it's using the text version
-			if( $('#location-country option:selected').val() != 0 ){
-				address = ( address == '' ) ? address+$('#location-country option:selected').text():address+', '+$('#location-country option:selected').text();
-			}
-			if( address != '' && $('#em-map').length > 0 ){
-				geocoder.geocode( { 'address': address }, function(results, status) {
-				    if (status == google.maps.GeocoderStatus.OK) {
-						marker.setPosition(results[0].geometry.location);
-						marker.setTitle( $('#location-name, #location-select-id').first().val() );
-						$('#location-latitude').val(results[0].geometry.location.lat());
-						$('#location-longitude').val(results[0].geometry.location.lng());
-	        			$('#em-map').show();
-	        			$('#em-map-404').hide();
-	        			google.maps.event.trigger(map, 'resize');
-						map.setCenter(results[0].geometry.location);
-						map.panBy(40,-55);
-						infoWindow.setContent( 
-							'<div id="location-balloon-content"><strong>' + 
-							$('#location-name').val() + 
-							'</strong><br/>' + 
-							$('#location-address').val() + 
-							'<br/>' + $('#location-town').val()+ 
-							'</div>'
-						);
-						infoWindow.open(map, marker);
-					} else {
-	        			$('#em-map').hide();
-	        			$('#em-map-404').show();
-					}
-				});
-			}
-		});
-		
-		$("input#location-town, select#location-select-id").triggerHandler('change');
-		
-		//Finally, add autocomplete here
-		//Autocomplete
-		if( $( "#event-form input#location-name" ).length > 0 ){
-			$( "#event-form input#location-name" ).autocomplete({
-				source: '../wp-content/plugins/events-manager/admin/em-locations-search.php',
-				action: 'locations_search',
-				minLength: 2,
-				focus: function( event, ui ){
-					$("input#location-id" ).val( ui.item.value );
-					return false;
-				},			 
-				select: function( event, ui ){
-					$("input#location-id" ).val(ui.item.id);
-					$("input#location-name" ).val(ui.item.value);
-					$('input#location-address').val(ui.item.address);
-					$('input#location-town').val(ui.item.town);
-					$('input#location-state').val(ui.item.state);
-					$('input#location-postcode').val(ui.item.postcode);
-					if( ui.item.country == '' ){
-						$('select#location-country option:selected').removeAttr('selected');
-					}else{
-						$('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
-					}
-					get_map_by_id(ui.item.id);
-					$('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-					$('#em-location-data input#location-name').css('background-color','#fff');
-					$('#em-location-reset').show();
-					return false;
-				}
-			}).data( "autocomplete" )._renderItem = function( ul, item ) {
-				html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
-				return $( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
-			};
-			$('#em-location-reset').click( function(){
-				$('#em-location-data input').css('background-color','#fff').val('');
-				$('#em-location-data select').css('background-color','#fff');
-				$('#em-location-data option:selected').removeAttr('selected');
-				$('#em-location-reset').hide();
-			});
-			if( $('input#location-id').val() != '' ){
-				$('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-				$('#em-location-data input#location-name').css('background-color','#fff');
-				$('#em-location-reset').show();
-			}
-		}
-	}
-	
 	//previously in em-admin.php
 	function updateIntervalDescriptor () { 
 		$(".interval-desc").hide();
@@ -445,7 +297,159 @@ jQuery(document).ready( function($){
 		}
 		return url;
 	}
+
+	/* Load any maps */	
+	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
+		var script = document.createElement("script");
+		script.setAttribute("src", "http://maps.google.com/maps/api/js?v=3.2&sensor=false&callback=em_maps");
+		script.setAttribute("type", "text/javascript");
+		document.documentElement.firstChild.appendChild(script);
+	}else{
+		em_location_input_ajax();
+	}
+	
 });
+
+//Location functions
+function em_location_input_ajax(){
+	//Location stuff - only needed if inputs for location exist
+	if( jQuery('select#location-select-id, input#location-name').length > 0 ){	
+		//Load map
+		if(jQuery('#em-map').length > 0){
+			var em_LatLng = new google.maps.LatLng(0, 0);
+			var map = new google.maps.Map( document.getElementById('em-map'), {
+			    zoom: 14,
+			    center: em_LatLng,
+			    mapTypeId: google.maps.MapTypeId.ROADMAP,
+			    mapTypeControl: false
+			});
+			var marker = new google.maps.Marker({
+			    position: em_LatLng,
+			    map: map
+			});
+			var infoWindow = new google.maps.InfoWindow({
+			    content: ''
+			});
+			var geocoder = new google.maps.Geocoder();
+			google.maps.event.addListener(infoWindow, 'domready', function() { 
+				document.getElementById('location-balloon-content').parentNode.style.overflow=''; 
+				document.getElementById('location-balloon-content').parentNode.parentNode.style.overflow=''; 
+			});
+		}
+		
+		//Add listeners for changes to address
+		var get_map_by_id = function(id){
+			if(jQuery('#em-map').length > 0){
+				jQuery.getJSON(document.URL,{ em_ajax_action:'get_location', id:id }, function(data){
+					if( data.location_latitude!=0 && data.location_longitude!=0 ){
+						loc_latlng = new google.maps.LatLng(data.location_latitude, data.location_longitude);
+						marker.setPosition(loc_latlng);
+						marker.setTitle( data.location_name );
+						jQuery('#em-map').show();
+						jQuery('#em-map-404').hide();
+						map.setCenter(loc_latlng);
+						map.panBy(40,-55);
+						infoWindow.setContent( '<div id="location-balloon-content">'+ data.location_balloon +'</div>');
+						infoWindow.open(map, marker);
+						google.maps.event.trigger(map, 'resize');
+					}else{
+						jQuery('#em-map').hide();
+						jQuery('#em-map-404').show();
+					}
+				});
+			}
+		}
+		jQuery('#location-select-id').change( function(){get_map_by_id(jQuery(this).val())} );
+		jQuery('#location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
+			//build address
+			var addresses = [ jQuery('#location-address').val(), jQuery('#location-town').val(), jQuery('#location-state').val(), jQuery('#location-postcode').val() ];
+			var address = '';
+			jQuery.each( addresses, function(i, val){
+				if( val != '' ){
+					address = ( address == '' ) ? address+val:address+', '+val;
+				}
+			});
+			//do country last, as it's using the text version
+			if( jQuery('#location-country option:selected').val() != 0 ){
+				address = ( address == '' ) ? address+jQuery('#location-country option:selected').text():address+', '+jQuery('#location-country option:selected').text();
+			}
+			if( address != '' && jQuery('#em-map').length > 0 ){
+				geocoder.geocode( { 'address': address }, function(results, status) {
+				    if (status == google.maps.GeocoderStatus.OK) {
+						marker.setPosition(results[0].geometry.location);
+						marker.setTitle( jQuery('#location-name, #location-select-id').first().val() );
+						jQuery('#location-latitude').val(results[0].geometry.location.lat());
+						jQuery('#location-longitude').val(results[0].geometry.location.lng());
+	        			jQuery('#em-map').show();
+	        			jQuery('#em-map-404').hide();
+	        			google.maps.event.trigger(map, 'resize');
+						map.setCenter(results[0].geometry.location);
+						map.panBy(40,-55);
+						infoWindow.setContent( 
+							'<div id="location-balloon-content"><strong>' + 
+							jQuery('#location-name').val() + 
+							'</strong><br/>' + 
+							jQuery('#location-address').val() + 
+							'<br/>' + jQuery('#location-town').val()+ 
+							'</div>'
+						);
+						infoWindow.open(map, marker);
+					} else {
+	        			jQuery('#em-map').hide();
+	        			jQuery('#em-map-404').show();
+					}
+				});
+			}
+		});
+		
+		jQuery("input#location-town, select#location-select-id").triggerHandler('change');
+		
+		//Finally, add autocomplete here
+		//Autocomplete
+		if( jQuery( "#event-form input#location-name" ).length > 0 ){
+			jQuery( "#event-form input#location-name" ).autocomplete({
+				source: EM.locationajaxurl,
+				minLength: 2,
+				focus: function( event, ui ){
+					jQuery("input#location-id" ).val( ui.item.value );
+					return false;
+				},			 
+				select: function( event, ui ){
+					jQuery("input#location-id" ).val(ui.item.id);
+					jQuery("input#location-name" ).val(ui.item.value);
+					jQuery('input#location-address').val(ui.item.address);
+					jQuery('input#location-town').val(ui.item.town);
+					jQuery('input#location-state').val(ui.item.state);
+					jQuery('input#location-postcode').val(ui.item.postcode);
+					if( ui.item.country == '' ){
+						jQuery('select#location-country option:selected').removeAttr('selected');
+					}else{
+						jQuery('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
+					}
+					get_map_by_id(ui.item.id);
+					jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
+					jQuery('#em-location-data input#location-name').css('background-color','#fff');
+					jQuery('#em-location-reset').show();
+					return false;
+				}
+			}).data( "autocomplete" )._renderItem = function( ul, item ) {
+				html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
+				return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
+			};
+			jQuery('#em-location-reset').click( function(){
+				jQuery('#em-location-data input').css('background-color','#fff').val('');
+				jQuery('#em-location-data select').css('background-color','#fff');
+				jQuery('#em-location-data option:selected').removeAttr('selected');
+				jQuery('#em-location-reset').hide();
+			});
+			if( jQuery('input#location-id').val() != '' ){
+				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
+				jQuery('#em-location-data input#location-name').css('background-color','#fff');
+				jQuery('#em-location-reset').show();
+			}
+		}
+	}
+}
 
 /*
  * MAP FUNCTIONS
@@ -521,6 +525,7 @@ function em_maps() {
 			}
 		});
 	});
+	em_location_input_ajax();
 }
   
 function em_map_infobox(marker, message, map) {

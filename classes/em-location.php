@@ -229,6 +229,9 @@ class EM_Location extends EM_Object {
 	 * Can the user manage this location? 
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false ){
+		if( $owner_capability == 'edit_locations' && $this->id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
+			return apply_filters('em_event_can_manage',true);
+		}
 		return apply_filters('em_location_can_manage', parent::can_manage($owner_capability, $admin_capability), $this);
 	}
 	

@@ -160,10 +160,6 @@ function em_admin_load_scripts(){
 	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
 	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position'));
 	
-	//Add maps
-	if( get_option('dbem_gmap_is_active') ){
-		wp_enqueue_script('em-google-maps', 'http://maps.google.com/maps/api/js?sensor=false');	
-	}
 	//Time Entry
 	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));
 	
