@@ -239,7 +239,7 @@ class EM_Events extends EM_Object implements Iterator {
 		if( EM_Object::array_is_numeric($event_ids) ){
 			$condition = implode(" OR event_id=", $event_ids);
 			//we try to find any of these events that don't belong to this user
-			$results = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_BOOKINGS_TABLE ." WHERE event_owner != '". get_current_user_id() ."' event_id=$condition;");
+			$results = $wpdb->get_var("SELECT COUNT(*) FROM ". EM_EVENTS_TABLE ." WHERE event_owner != '". get_current_user_id() ."' event_id=$condition;");
 			return apply_filters('em_events_can_manage', ($results == 0), $event_ids);
 		}
 		return apply_filters('em_events_can_manage', false, $event_ids);

@@ -169,11 +169,11 @@ function em_admin_options_page() {
 			<div class="inside">
 	            <table class="form-table">
 					<?php 
-					em_options_radio_binary ( __( 'Use dropdown for locations?' ), 'dbem_use_select_for_locations', __( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );  
-					em_options_radio_binary ( __( 'Use recurrence?' ), 'dbem_recurrence_enabled', __( 'Select yes to enable the recurrence features feature','dbem' ) ); 
-					em_options_radio_binary ( __( 'Enable bookings?' ), 'dbem_rsvp_enabled', __( 'Select yes to allow bookings and tickets for events.','dbem' ) );     
-					em_options_radio_binary ( __( 'Use categories?' ), 'dbem_categories_enabled', __( 'Select yes to enable the category features','dbem' ) );     
-					em_options_radio_binary ( __( 'Use event attributes?' ), 'dbem_attributes_enabled', __( 'Select yes to enable the attributes feature','dbem' ) );
+					em_options_radio_binary ( __( 'Use dropdown for locations?', 'dbem' ), 'dbem_use_select_for_locations', __( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );  
+					em_options_radio_binary ( __( 'Use recurrence?', 'dbem' ), 'dbem_recurrence_enabled', __( 'Select yes to enable the recurrence features feature','dbem' ) ); 
+					em_options_radio_binary ( __( 'Enable bookings?', 'dbem' ), 'dbem_rsvp_enabled', __( 'Select yes to allow bookings and tickets for events.','dbem' ) );     
+					em_options_radio_binary ( __( 'Use categories?', 'dbem' ), 'dbem_categories_enabled', __( 'Select yes to enable the category features','dbem' ) );     
+					em_options_radio_binary ( __( 'Use event attributes?', 'dbem' ), 'dbem_attributes_enabled', __( 'Select yes to enable the attributes feature','dbem' ) );
 					
 					/*default category*/
 					$category_options = array();
@@ -182,7 +182,7 @@ function em_admin_options_page() {
 					foreach($EM_Categories as $EM_Category){
 				 		$category_options[$EM_Category->id] = $EM_Category->name;
 				 	}
-					em_options_select ( __( 'Default Category' ), 'dbem_default_category', $category_options, __( 'This option allows you to select the default category when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
+					em_options_select ( __( 'Default Category', 'dbem' ), 'dbem_default_category', $category_options, __( 'This option allows you to select the default category when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
 					
 					/*default location*/
 					$location_options = array();
@@ -191,14 +191,14 @@ function em_admin_options_page() {
 					foreach($EM_Locations as $EM_Location){
 				 		$location_options[$EM_Location->id] = $EM_Location->name;
 				 	}
-					em_options_select ( __( 'Default Location' ), 'dbem_default_location', $location_options, __( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
+					em_options_select ( __( 'Default Location', 'dbem' ), 'dbem_default_location', $location_options, __( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
 					
 					/*default location country*/
-					em_options_select ( __( 'Default Location Country' ), 'dbem_location_default_country', em_get_countries(__('no default country', 'dbem')), __('If you select a default country, that will be pre-selected when creating a new location.','dbem') );
+					em_options_select ( __( 'Default Location Country', 'dbem' ), 'dbem_location_default_country', em_get_countries(__('no default country', 'dbem')), __('If you select a default country, that will be pre-selected when creating a new location.','dbem') );
 										
 					em_options_textarea ( __( 'Event Attributes', 'dbem' ), 'dbem_placeholders_custom', sprintf(__( "You can also add event attributes here, one per line in this format <code>#_ATT{key}</code>. They will not appear on event pages unless you insert them into another template below, but you may want to store extra information about an event for other uses. <a href='%s'>More information on placeholders.</a>", 'dbem' ), 'wp-events-plugin.com/documentation/event-attributes/') );
 					
-					em_options_radio_binary ( __( 'Show some love?' ), 'dbem_credits', __( 'Hundreds of free hours have gone into making this free plugin, show your support and add a small link to the plugin website at the bottom of your event pages.','dbem' ) );
+					em_options_radio_binary ( __( 'Show some love?', 'dbem' ), 'dbem_credits', __( 'Hundreds of free hours have gone into making this free plugin, show your support and add a small link to the plugin website at the bottom of your event pages.','dbem' ) );
 					echo $save_button;
 					?>
 				</table>
@@ -216,12 +216,12 @@ function em_admin_options_page() {
 				 	$em_disable_filter = true;     
 				 	$get_pages = get_pages();
 				 	$events_page_options = array();
-				 	$events_page_options[0] = __('[No Events Page]');
+				 	$events_page_options[0] = __('[No Events Page]', 'dbem');
 				 	//TODO Add the hierarchy style ddm, like when choosing page parents
 				 	foreach($get_pages as $page){
 				 		$events_page_options[$page->ID] = $page->post_title;
 				 	}
-				   	em_options_select ( __( 'Events page' ), 'dbem_events_page', $events_page_options, __( 'This option allows you to select which page to use as an events page','dbem' ) );
+				   	em_options_select ( __( 'Events page', 'dbem' ), 'dbem_events_page', $events_page_options, __( 'This option allows you to select which page to use as an events page','dbem' ) );
 					$em_disable_filter = false;
 					//Rest
 					em_options_radio_binary ( __( 'Show events page in lists?', 'dbem' ), 'dbem_list_events_page', __( 'Check this option if you want the events page to appear together with other pages in pages lists.', 'dbem' ) ); 

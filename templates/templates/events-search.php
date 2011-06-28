@@ -44,7 +44,7 @@
 			$em_countries = $wpdb->get_results("SELECT DISTINCT location_country FROM ".EM_LOCATIONS_TABLE." WHERE location_country IS NOT NULL AND location_country != '' ORDER BY location_country ASC", ARRAY_N);
 			foreach($em_countries as $em_country): 
 			?>
-			 <option value="<?php echo $em_country[0]; ?>" <?php echo (!empty($_REQUEST['country']) && $_REQUEST['country'] == $em_country[0]) || (empty($_REQUEST['country']) && $em_country == get_option('dbem_location_default_country')) ? 'selected="selected"':''; ?>><?php echo $countries[$em_country[0]]; ?></option>
+			 <option value="<?php echo $em_country[0]; ?>" <?php echo (!empty($_REQUEST['country']) && $_REQUEST['country'] == $em_country[0]) || (empty($_REQUEST['country']) && empty($_REQUEST['page']) && $em_country[0] == get_option('dbem_location_default_country')) ? 'selected="selected"':''; ?>><?php echo $countries[$em_country[0]]; ?></option>
 			<?php endforeach; ?>
 		</select>
 		<!-- END Country Search -->	
@@ -119,7 +119,7 @@
 		
 		//in order for this to work, you need the above classes to be present in your theme
 		$('.em-events-search-form').submit(function(){
-	    	if( this.search.value=='<?php echo $s; ?>'){
+	    	if( this.search.value=='<?php echo $s_default; ?>'){
 	    		this.search.value = '';
 	    	}
 	    	if( $('#em-wrapper .em-events-list').length == 1 ){

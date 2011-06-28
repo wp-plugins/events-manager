@@ -196,7 +196,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 		$result = true;
 		if( count($booking_ids) > 0 ){
 			//Delete bookings and ticket bookings
-			$result_tickets = $wpdb->query("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE ." WHERE booing_id IN (".implode(',',$booking_ids).");");
+			$result_tickets = $wpdb->query("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE ." WHERE booking_id IN (".implode(',',$booking_ids).");");
 			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id IN (".implode(',',$booking_ids).")");
 		}
 		return ($result !== false && $result_tickets !== false);
