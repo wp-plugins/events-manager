@@ -368,7 +368,7 @@ function em_checkbox_items($name, $array, $saved_values, $horizontal = true) {
 function em_options_input_text($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
-		<th scope="row"><?php _e($title, 'dbem') ?></th>
+		<th scope="row"><?php echo $title; ?></th>
 	    <td>
 			<input name="<?php echo $name ?>" type="text" id="<?php echo $title ?>" style="width: 95%" value="<?php echo htmlspecialchars(get_option($name), ENT_QUOTES); ?>" size="45" /><br />
 			<em><?php echo $description; ?></em>
@@ -379,7 +379,7 @@ function em_options_input_text($title, $name, $description) {
 function em_options_input_password($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
-		<th scope="row"><?php _e($title, 'dbem') ?></th>
+		<th scope="row"><?php echo $title; ?></th>
 	    <td>
 			<input name="<?php echo $name ?>" type="password" id="<?php echo $title ?>" style="width: 95%" value="<?php echo get_option($name); ?>" size="45" /><br />
 			<em><?php echo $description; ?></em>
@@ -391,7 +391,7 @@ function em_options_input_password($title, $name, $description) {
 function em_options_textarea($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
-		<th scope="row"><?php _e($title,'dbem')?></th>
+		<th scope="row"><?php echo $title; ?></th>
 			<td>
 				<textarea name="<?php echo $name ?>" id="<?php echo $name ?>" rows="6" cols="60"><?php echo htmlspecialchars(get_option($name), ENT_QUOTES);?></textarea><br/>
 				<em><?php echo $description; ?></em>
@@ -405,7 +405,7 @@ function em_options_radio($name, $options, $title='') {
 		?>		 
 	   	<tr valign="top" id='<?php echo $name;?>_row'>
 	   		<?php if( !empty($title) ): ?>
-	   		<th scope="row"><?php _e($title,'dbem'); ?></th>
+	   		<th scope="row"><?php  echo $title; ?></th>
 	   		<td>
 	   		<?php else: ?>
 	   		<td colspan="2">
@@ -431,10 +431,10 @@ function em_options_radio_binary($title, $name, $description) {
 	}
 	?>		 
    	<tr valign="top" id='<?php echo $name;?>_row'>
-   		<th scope="row"><?php _e($title,'dbem'); ?></th>
+   		<th scope="row"><?php echo $title; ?></th>
    		<td>  
-   			<?php _e('Yes'); ?> <input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
-			<?php _e('No'); ?> <input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
+   			<?php _e('Yes','dbem'); ?> <input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
+			<?php _e('No','dbem'); ?> <input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
 			<br/><em><?php echo $description; ?></em>
 		</td>
    	</tr>
@@ -448,7 +448,7 @@ function em_options_select($title, $name, $list, $description) {
 	}
 	?>
    	<tr valign="top" id='<?php echo $name;?>_row'>
-   		<th scope="row"><?php _e($title,'dbem'); ?></th>
+   		<th scope="row"><?php echo $title; ?></th>
    		<td>   
 			<select name="<?php echo $name; ?>" > 
 				<?php foreach($list as $key => $value) : ?>   
