@@ -39,7 +39,7 @@ function em_options_save(){
 		do_action('em_options_save');
 		function em_options_saved_notice(){
 			?>
-			<div class="updated"><p><strong><?php _e('Changes saved.'); ?></strong></p></div>
+			<div class="updated"><p><strong><?php _e('Changes saved.', 'dbem'); ?></strong></p></div>
 			<?php
 		}
 		add_action ( 'admin_notices', 'em_options_saved_notice' );
@@ -64,7 +64,7 @@ function em_admin_options_page() {
 	$categories_placeholder_tip = " ". sprintf(__('This accepts %s placeholders.','dbem'), $categories_placeholders);
 	$bookings_placeholder_tip = " ". sprintf(__('This accepts %s, %s and %s placeholders.','dbem'), $bookings_placeholders, $events_placeholders, $locations_placeholders);
 	
-	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes' ) .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
+	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes', 'dbem') .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
 	//Do some multisite checking here for reuse
 	$multisite_view = (is_multisite() && is_super_admin()) ? ' - ('.__('Only Network Admins see this','dbem').')':'';
 	?>	
@@ -149,13 +149,13 @@ function em_admin_options_page() {
 		  
 			<?php if ( is_multisite() && is_super_admin() ) : ?>
 			<div  class="postbox " >
-				<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Multi Site Options', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
+				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Multi Site Options', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
 				<div class="inside">
 		            <table class="form-table">
 						<?php 
-						em_options_radio_binary ( __( 'Enable global tables mode?' ), 'dbem_ms_global_table', __( 'Setting this to yes will make all events save in the main site event tables (EM must also be activated). This allows you to share events across different blogs, such as showing events in your network whilst allowing users to display and manage their events within their own blog. Bear in mind that activating this will mean old events created on the sub-blogs will not be accessible anymore, and if you switch back they will be but new events created during global events mode will only remain on the main site.','dbem' ) );
-						em_options_radio_binary ( __( 'Display global events on main blog?' ), 'dbem_ms_global_events', __( 'Displays events from all sites on the network by default. You can still restrict events by blog using shortcodes and template tags coupled with the <code>blog</code> attribute. Requires global tables to be turned on.','dbem' ) );
-						em_options_radio_binary ( __( 'Link sub-site events directly to sub-site?' ), 'dbem_ms_global_events_links', __( 'When displaying global events on the main site you have the option of users viewing the event details on the main site or being directed to the sub-site.','dbem' ) );
+						em_options_radio_binary ( __( 'Enable global tables mode?', 'dbem'), 'dbem_ms_global_table', __( 'Setting this to yes will make all events save in the main site event tables (EM must also be activated). This allows you to share events across different blogs, such as showing events in your network whilst allowing users to display and manage their events within their own blog. Bear in mind that activating this will mean old events created on the sub-blogs will not be accessible anymore, and if you switch back they will be but new events created during global events mode will only remain on the main site.','dbem' ) );
+						em_options_radio_binary ( __( 'Display global events on main blog?', 'dbem'), 'dbem_ms_global_events', __( 'Displays events from all sites on the network by default. You can still restrict events by blog using shortcodes and template tags coupled with the <code>blog</code> attribute. Requires global tables to be turned on.','dbem' ) );
+						em_options_radio_binary ( __( 'Link sub-site events directly to sub-site?', 'dbem'), 'dbem_ms_global_events_links', __( 'When displaying global events on the main site you have the option of users viewing the event details on the main site or being directed to the sub-site.','dbem' ) );
 						echo $save_button;
 						?>
 					</table>
@@ -165,7 +165,7 @@ function em_admin_options_page() {
 			<?php endif; ?>
 		  
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'General options', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'General options', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 	            <table class="form-table">
 					<?php 
@@ -297,7 +297,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Events format', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Events format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
 				 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Events','dbem')); ?></strong></td></tr>
@@ -320,7 +320,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			      
            	<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Calendar format', 'dbem' ); ?></span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Calendar format', 'dbem' ); ?></span></h3>
 			<div class="inside">
             	<table class="form-table">
 					<?php
@@ -336,7 +336,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Locations format', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Locations format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
 				 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Locations','dbem')); ?></strong></td></tr>
@@ -361,7 +361,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Categories format', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Categories format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
 				 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Categories','dbem')); ?></strong></td></tr>
@@ -383,7 +383,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'RSS feed format', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'RSS feed format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
 					<?php				
@@ -398,7 +398,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Maps and geotagging', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Maps and geotagging', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'> 
 					<?php $gmap_is_active = get_option ( 'dbem_gmap_is_active' ); ?>
@@ -419,7 +419,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking and Ticketing Options', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking and Ticketing Options', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'> 
 					<?php 
@@ -441,7 +441,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking Email Templates', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking Email Templates', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
@@ -493,7 +493,7 @@ function em_admin_options_page() {
 			
 			<?php if ( !is_multisite() || (is_multisite() && is_super_admin()) ) : ?>
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Email Settings', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Email Settings', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
@@ -512,7 +512,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Images size', 'dbem' ); ?> <?php echo $multisite_view; ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Images size', 'dbem' ); ?> <?php echo $multisite_view; ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
@@ -526,11 +526,11 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox" >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'User Capabilities', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'User Capabilities', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
 			<div class="inside">
 	            <table class="form-table">
 	            	<tr><td colspan="2">
-	            		<strong><?php _e('Warning: Changing these values may result in exposing previously hidden information to all users.')?></strong><br />
+	            		<strong><?php _e('Warning: Changing these values may result in exposing previously hidden information to all users.', 'dbem')?></strong><br />
 	            	</td></tr>
 					<?php
             		global $wp_roles;
@@ -590,7 +590,7 @@ function em_admin_options_page() {
 			<?php endif; ?> 
 			
 			<div  class="postbox" >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Anonymous Event Submission', 'dbem' ); ?> (Beta)<?php echo $multisite_view; ?></span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Anonymous Event Submission', 'dbem' ); ?> (Beta)<?php echo $multisite_view; ?></span></h3>
 			<div class="inside">
 	            <table class="form-table">
 	            	<tr><td colspan="2">
@@ -608,7 +608,7 @@ function em_admin_options_page() {
 			
 			<?php /*
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Debug Modes', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Debug Modes', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php

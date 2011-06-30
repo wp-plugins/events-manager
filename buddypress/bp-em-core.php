@@ -176,7 +176,7 @@ function em_bp_rewrite_links($replace, $object, $result){
 				if( $object->can_manage('edit_events','edit_others_events') && !is_admin() ){
 					$replace = $bp->events->link.'my-events/edit/?event_id='.$object->id;
 					if($result == '#_EDITEVENTLINK'){
-						$replace = "<a href='".$replace."'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+						$replace = "<a href='".$replace."'>".__('Edit', 'dbem').' '.__('Event', 'dbem')."</a>";
 					}
 				}	 
 				break;

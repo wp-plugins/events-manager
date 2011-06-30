@@ -55,7 +55,7 @@ function em_categories_table_layout($message = "") {
 		</div>
   		<h2>
   			<?php echo __('Categories', 'dbem') ?>
-  			<a href="admin.php?page=events-manager-categories&action=add" class="button add-new-h2"><?php _e('Add New') ?></a>
+  			<a href="admin.php?page=events-manager-categories&action=add" class="button add-new-h2"><?php _e('Add New', 'dbem') ?></a>
   		</h2>
 	 		
 		<?php echo $EM_Notices; ?>

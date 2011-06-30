@@ -378,14 +378,14 @@ function em_add_options() {
 		//RSS Stuff
 		'dbem_rss_limit' => 10,
 		'dbem_rss_scope' => 'future',
-		'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events'),
-		'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events'),
+		'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events', 'dbem'),
+		'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events', 'dbem'),
 		'dbem_rss_description_format' => "#j #M #y - #H:#i <br/>#_LOCATION <br/>#_LOCATIONADDRESS <br/>#_LOCATIONTOWN",
 		'dbem_rss_title_format' => "#_NAME",
 		//iCal Stuff
 		'dbem_ical_limit' => 10,
 		'dbem_ical_scope' => 'future',
-		'dbem_ical_main_title' => get_bloginfo('title')." - ".__('Events'),
+		'dbem_ical_main_title' => get_bloginfo('title')." - ".__('Events', 'dbem'),
 		'dbem_ical_main_description' => get_bloginfo('description'),
 		'dbem_ical_description_format' => "#_NAME - #_LOCATIONNAME - #j #M #y #H:#i",
 		'dbem_ical_title_format' => "#_NAME",

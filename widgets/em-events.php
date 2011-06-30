@@ -73,7 +73,7 @@ class EM_Widget extends WP_Widget {
     	$instance = $this->fix_scope($instance); // depcreciate
         ?>
 		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'dbem'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $instance['title']; ?>" />
 		</p>
 		<p>

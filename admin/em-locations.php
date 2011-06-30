@@ -39,7 +39,7 @@ function em_admin_locations($message='', $fill_fields = false) {
 			</div>
  	 		<h2>
  	 			<?php _e('Locations', 'dbem'); ?>
- 	 			<a href="admin.php?page=events-manager-locations&action=add" class="button add-new-h2"><?php _e('Add New') ?></a>
+ 	 			<a href="admin.php?page=events-manager-locations&action=add" class="button add-new-h2"><?php _e('Add New', 'dbem') ?></a>
  	 		</h2>  
 
 			<?php echo $EM_Notices; ?>  

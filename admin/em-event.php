@@ -246,7 +246,7 @@ function em_admin_event_page() {
 													<?php                                                     
 												} else {
 													?>
-													<p><em><?php _e('No responses yet!')?></em></p>
+													<p><em><?php _e('No responses yet!', 'dbem')?></em></p>
 													<?php
 												} 
 										?>
@@ -658,7 +658,7 @@ function em_admin_event_page() {
 											</tbody>
 										</table>
 										<?php if( count(array_diff(array_keys($EM_Event->attributes), $attributes['names'])) > 0 ): ?>
-										<p><strong><?php _e('Depreciated Attributes')?></strong></p>
+										<p><strong><?php _e('Depreciated Attributes', 'dbem')?></strong></p>
 										<p><em><?php _e("If you see any attributes under here, that means they're not used in Events Manager anymore. To add them, you need to add the custom attribute again to a formatting option in the settings page. To remove any of these depreciated attributes, give it a blank value and save.") ?></em></p>
 										<table class="form-table">
 											<thead>

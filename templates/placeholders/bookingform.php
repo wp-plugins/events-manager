@@ -137,7 +137,7 @@ global $EM_Notices;
 			                <input type="password" name="pwd" class="input" value="" />
 			            </p>
 			            <?php do_action('login_form'); ?>
-	                    <input type="submit" name="wp-submit" id="em_wp-submit" value="<?php _e('Log In'); ?>" tabindex="100" />
+	                    <input type="submit" name="wp-submit" id="em_wp-submit" value="<?php _e('Log In', 'dbem'); ?>" tabindex="100" />
 	                    <input name="rememberme" type="checkbox" id="em_rememberme" value="forever" /> <label><?php _e( 'Remember Me','login-with-ajax' ) ?></label>
                         <input type="hidden" name="redirect_to" value="http://<?php echo $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] ?>#em-booking" />
 	                    <br />
@@ -157,7 +157,7 @@ global $EM_Notices;
                                 <?php
                             }
                         ?>	                    
-	                    <a href="<?php echo site_url('wp-login.php?action=lostpassword', 'login') ?>" title="<?php _e('Password Lost and Found') ?>"><?php _e('Lost your password?') ?></a>                        
+	                    <a href="<?php echo site_url('wp-login.php?action=lostpassword', 'login') ?>" title="<?php _e('Password Lost and Found', 'dbem') ?>"><?php _e('Lost your password?', 'dbem') ?></a>                        
 	               </form>
 				</div>
 			<?php endif; ?>

@@ -222,7 +222,7 @@ class EM_Object {
 				if( !get_option('dbem_events_current_are_past') ){
 					$conditions['scope'] .= " OR (event_start_date < CAST('$start_month' AS DATE) AND event_end_date >= CAST('$start_month' AS DATE))";
 				}
-			}elseif( preg_match('/(\d\d?)\-months/',$scope,$matches) ){ // next x months means this month (what's left of it), plus the following x-1 months until the end of that month.
+			}elseif( preg_match('/(\d\d?)\-months/',$scope,$matches) ){ // next x months means this month (what's left of it), plus the following x months until the end of that month.
 				$months_to_add = $matches[1];
 				$start_month = date('Y-m-d',current_time('timestamp'));
 				$end_month = date('Y-m-t',strtotime("+$months_to_add month", current_time('timestamp')));

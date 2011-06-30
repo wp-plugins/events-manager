@@ -249,9 +249,9 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 
 	// Check the username
 	if ( $sanitized_user_login == '' ) {
-		$errors->add( 'empty_username', __( '<strong>ERROR</strong>: Please enter a username.' ) );
+		$errors->add( 'empty_username', __( '<strong>ERROR</strong>: Please enter a username.', 'dbem') );
 	} elseif ( ! validate_username( $user_login ) ) {
-		$errors->add( 'invalid_username', __( '<strong>ERROR</strong>: This username is invalid because it uses illegal characters. Please enter a valid username.' ) );
+		$errors->add( 'invalid_username', __( '<strong>ERROR</strong>: This username is invalid because it uses illegal characters. Please enter a valid username.', 'dbem') );
 		$sanitized_user_login = '';
 	} elseif ( username_exists( $sanitized_user_login ) ) {
 		$errors->add( 'username_exists', __( '<strong>ERROR</strong>: This username is already registered, please choose another one.' ) );
@@ -259,9 +259,9 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 
 	// Check the e-mail address
 	if ( $user_email == '' ) {
-		$errors->add( 'empty_email', __( '<strong>ERROR</strong>: Please type your e-mail address.' ) );
+		$errors->add( 'empty_email', __( '<strong>ERROR</strong>: Please type your e-mail address.', 'dbem') );
 	} elseif ( ! is_email( $user_email ) ) {
-		$errors->add( 'invalid_email', __( '<strong>ERROR</strong>: The email address isn&#8217;t correct.' ) );
+		$errors->add( 'invalid_email', __( '<strong>ERROR</strong>: The email address isn&#8217;t correct.', 'dbem') );
 		$user_email = '';
 	} elseif ( email_exists( $user_email ) ) {
 		$errors->add( 'email_exists', __( '<strong>ERROR</strong>: This email is already registered, please choose another one.' ) );
@@ -282,7 +282,7 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 	}
 	
 	if ( ! $user_id ) {
-		$errors->add( 'registerfail', sprintf( __( '<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !' ), get_option( 'admin_email' ) ) );
+		$errors->add( 'registerfail', sprintf( __( '<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !', 'dbem'), get_option( 'admin_email' ) ) );
 		return $errors;
 	}
 
@@ -317,10 +317,10 @@ function em_new_user_notification($user_id, $plaintext_pass = '') {
 	// we want to reverse this for the plain text arena of emails.
 	$blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES);
 
-	$message  = sprintf(__('New user registration on your blog %s:'), $blogname) . "\r\n\r\n";
-	$message .= sprintf(__('Username: %s'), $user_login) . "\r\n\r\n";
-	$message .= sprintf(__('E-mail: %s'), $user_email) . "\r\n";
-	@wp_mail(get_option('admin_email'), sprintf(__('[%s] New User Registration'), $blogname), $message);
+	$message  = sprintf(__('New user registration on your blog %s:', 'dbem'), $blogname) . "\r\n\r\n";
+	$message .= sprintf(__('Username: %s', 'dbem'), $user_login) . "\r\n\r\n";
+	$message .= sprintf(__('E-mail: %s', 'dbem'), $user_email) . "\r\n";
+	@wp_mail(get_option('admin_email'), sprintf(__('[%s] New User Registration', 'dbem'), $blogname), $message);
 
 	if ( empty($plaintext_pass) )
 		return;
@@ -331,7 +331,7 @@ function em_new_user_notification($user_id, $plaintext_pass = '') {
 	$message = ob_get_clean();
 	$message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), $message);
 	
-	return wp_mail($user_email, sprintf(__('[%s] Your username and password'), $blogname), $message);
+	return wp_mail($user_email, sprintf(__('[%s] Your username and password', 'dbem'), $blogname), $message);
 }
 
 /*

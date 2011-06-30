@@ -554,7 +554,7 @@ class EM_Event extends EM_Object{
 				return apply_filters('em_event_duplicate', $EM_Event, $this);
 			}
 		}else{
-			$this->add_error( sprintf(__('You are not allowed to manage this %s.'), __('event','dbem')) );
+			$this->add_error( sprintf(__('You are not allowed to manage this %s.', 'dbem'), __('event','dbem')) );
 		}
 		//TODO add error notifications for duplication failures.
 		return apply_filters('em_event_duplicate', false, $this);;
@@ -575,7 +575,7 @@ class EM_Event extends EM_Object{
 		}
 		if ( count($missing_fields) > 0){
 			// TODO Create friendly equivelant names for missing fields notice in validation 
-			$this->add_error( __( 'Missing fields: ' ) . implode ( ", ", $missing_fields ) . ". " );
+			$this->add_error( __( 'Missing fields: ', 'dbem') . implode ( ", ", $missing_fields ) . ". " );
 		}
 		if ( !empty($_POST['repeated_event']) && $_POST['repeated_event'] == "1" && $this->end_date == "" ){
 			$this->add_error( __( 'Since the event is repeated, you must specify an event date.', 'dbem' ));
@@ -790,7 +790,7 @@ class EM_Event extends EM_Object{
 							$replace = get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}";
 						}
 						if( $result == '#_EDITEVENTLINK'){
-							$replace = "<a href='{$replace}'>".__('Edit').' '.__('Event', 'dbem')."</a>";
+							$replace = "<a href='{$replace}'>".__('Edit', 'dbem').' '.__('Event', 'dbem')."</a>";
 						}
 					}	 
 					break;
@@ -873,7 +873,7 @@ class EM_Event extends EM_Object{
 					if( function_exists('bp_core_get_user_domain') ){
 						$replace = bp_core_get_user_domain($this->contact->ID);
 						if( $result == '#_CONTACTPROFILELINK' ){
-							$replace = '<a href="'.$replace.'">'.__('Profile').'</a>';
+							$replace = '<a href="'.$replace.'">'.__('Profile', 'dbem').'</a>';
 						}
 					}
 					break;
@@ -882,7 +882,7 @@ class EM_Event extends EM_Object{
 					if( function_exists('bp_core_get_user_domain') ){
 						$replace = bp_core_get_user_domain($this->contact->ID);
 						if( $result == '#_CONTACTPROFILELINK' ){
-							$replace = '<a href="'.$replace.'">'.__('Profile').'</a>';
+							$replace = '<a href="'.$replace.'">'.__('Profile', 'dbem').'</a>';
 						}
 					}
 					break;
@@ -1236,7 +1236,7 @@ class EM_Event extends EM_Object{
 	function get_recurrence_description() { 
 		if( $this->is_individual() ) return false;
 		$recurrence = $this->get_recurrence()->to_array();
-		$weekdays_name = array(__('Sunday'),__('Monday'),__('Tuesday'),__('Wednesday'),__('Thursday'),__('Friday'),__('Saturday'));
+		$weekdays_name = array(__('Sunday', 'dbem'),__('Monday', 'dbem'),__('Tuesday', 'dbem'),__('Wednesday', 'dbem'),__('Thursday', 'dbem'),__('Friday', 'dbem'),__('Saturday', 'dbem'));
 		$monthweek_name = array('1' => __('the first %s of the month', 'dbem'),'2' => __('the second %s of the month', 'dbem'), '3' => __('the third %s of the month', 'dbem'), '4' => __('the fourth %s of the month', 'dbem'), '-1' => __('the last %s of the month', 'dbem'));
 		$output = sprintf (__('From %1$s to %2$s', 'dbem'),  $recurrence['event_start_date'], $recurrence['event_end_date']).", ";
 		if ($recurrence['recurrence_freq'] == 'daily')  {

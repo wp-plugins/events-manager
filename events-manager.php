@@ -319,7 +319,7 @@ function em_create_events_submenu () {
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,'edit_events','events-manager','em_admin_events_page', '../wp-content/plugins/events-manager/includes/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu:
 	   		$plugin_pages = array(); 
-			$plugin_pages[] = add_submenu_page('events-manager', __('Edit'),__('Edit').$events_num,'edit_events','events-manager','em_admin_events_page');
+			$plugin_pages[] = add_submenu_page('events-manager', __('Edit', 'dbem'),__('Edit', 'dbem').$events_num,'edit_events','events-manager','em_admin_events_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Add new', 'dbem'), __('Add new','dbem'), 'edit_events', 'events-manager-event', "em_admin_event_page");
 			$plugin_pages[] = add_submenu_page('events-manager', __('Locations', 'dbem'), __('Locations', 'dbem'), 'edit_locations', 'events-manager-locations', "em_admin_locations_page");
 			$plugin_pages[] = add_submenu_page('events-manager', __('Bookings', 'dbem'), __('Bookings', 'dbem').$bookings_num, 'manage_bookings', 'events-manager-bookings', "em_bookings_page");
@@ -470,7 +470,7 @@ function em_set_plugin_meta($links, $file) {
 	if ($file == $plugin) {
 		return array_merge(
 			$links,
-			array( sprintf( '<a href="admin.php?page=events-manager-options">%s</a>', __('Settings') ) )
+			array( sprintf( '<a href="admin.php?page=events-manager-options">%s</a>', __('Settings', 'dbem') ) )
 		);
 	}
 	return $links;

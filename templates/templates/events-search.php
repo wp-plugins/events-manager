@@ -19,10 +19,10 @@
 		<input type="text" name="search" value="<?php echo $s; ?>" onfocus="if(this.value=='<?php echo $s_default; ?>')this.value=''" onblur="if(this.value=='')this.value='<?php echo $s_default; ?>'" />
 		<!-- END General Search -->
 		<!-- START Date Search -->
-		between:
+		<?php __('between','dbem'); ?>:
 		<input type="text" id="em-date-start-loc" />
 		<input type="hidden" id="em-date-start" name="scope[0]" value="<?php if( !empty($_REQUEST['scope'][0]) ) echo $_REQUEST['scope'][0]; ?>" />
-		and
+		<?php __('and','dbem'); ?>
 		<input type="text" id="em-date-end-loc" />
 		<input type="hidden" id="em-date-end" name="scope[1]" value="<?php if( !empty($_REQUEST['scope'][1]) ) echo $_REQUEST['scope'][1]; ?>" />
 		<!-- END Date Search -->		
