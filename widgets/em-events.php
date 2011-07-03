@@ -14,6 +14,7 @@ class EM_Widget extends WP_Widget {
     		'scope' => 'future',
     		'order' => 'ASC',
     		'limit' => 5,
+    		'category' => get_option('dbem_default_category'),
     		'format' => '#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul>',
     		'nolistwrap' => false,
     		'orderby' => 'start_date,start_time,name',
@@ -124,6 +125,11 @@ class EM_Widget extends WP_Widget {
 				<?php endforeach; ?>
 			</select>
 		</p>
+		<p>
+            <label for="<?php echo $this->get_field_id('category'); ?>"><?php _e('Category IDs','dbem'); ?>: </label>
+            <input type="text" id="<?php echo $this->get_field_id('category'); ?>" name="<?php echo $this->get_field_name('category'); ?>" size="3" value="<?php echo $instance['category']; ?>" /><br />
+            <em><?php _e('1,2,3 or 2 (0 = all)','dbem'); ?> </em>
+        </p>
 		<p>
 			<label for="<?php echo $this->get_field_id('format'); ?>"><?php _e('List item format','dbem'); ?>: </label>
 			<textarea rows="5" cols="24" id="<?php echo $this->get_field_id('format'); ?>" name="<?php echo $this->get_field_name('format'); ?>"><?php echo $instance['format']; ?></textarea>

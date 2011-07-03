@@ -4,11 +4,11 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Events Manager 4.0.83\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/events-manager\n"
-"POT-Creation-Date: 2011-06-28 19:12:43+00:00\n"
+"POT-Creation-Date: 2011-06-30 14:49:00+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2011-06-28 21:20+0100\n"
+"PO-Revision-Date: 2011-06-30 16:56+0100\n"
 "Last-Translator: Marcus Sykes <marcus@netweblogic.com>\n"
 "Language-Team: \n"
 
@@ -443,7 +443,7 @@ msgid ""
 "You can also create a date format without prepending # to each character by wrapping a valid php date() format in <code>#{}</code> or <code>#@{}</code> (e.g. <code>#_{d/m/Y}</code>). If there is no end date (or is same as start date), the value is not shown. This is useful if you want to show event end dates only on events that are longer than on day, e.g. <code>#j #M #Y #@_{ \\u\\n"
 "\\t\\i\\l j M Y}</code>."
 msgstr ""
-"Vous pouvez également créer une date au format valide sans précéder chaque caractère d'un dièze, en entourant le code php date() ainsi : <code>#{}</code> ou <code>#@{}</code> (par ex. <code>#_{d/m/Y}</code>). S'il n'y a pas de date de fin (ou si celle-ci est identique à la date de début), la valeur ne sera pas affichée. Ceci est utile si vous voulez afficher les dates de fin d'évènement uniquement pour les évènements de plus d'une journée, par ex. <code>#j #M #Y #@_{ \\u\n"
+"Vous pouvez également créer une date au format valide sans précéder chaque caractère d'un dièze, en entourant le code php date() ainsi : <code>#{}</code> ou <code>#@{}</code> (par ex. <code>#_{d/m/Y}</code>). S'il n'y a pas de date de fin (ou si celle-ci est identique à la date de début), la valeur ne sera pas affichée. Ceci est utile si vous voulez afficher les dates de fin d'évènement uniquement pour les évènements de plus d'une journée, par ex. <code>#j #M #Y #@_{ \\u\\n"
 "\\t\\i\\l j M Y}</code>."
 
 # @ dbem
@@ -848,6 +848,7 @@ msgstr "Aucune catégorie n'a encore été insérée !"
 #: admin/em-bookings.php:213
 #: admin/em-bookings.php:351
 #: admin/em-people.php:9
+#: templates/templates/event-form.php:16
 #: templates/forms/location-editor.php:7
 #: templates/forms/event-editor.php:6
 msgid "Unauthorized Access"
@@ -910,6 +911,7 @@ msgstr "Le nom court de l'évènement. Si ce nom est déjà pris, un nombre alé
 #: admin/em-categories.php:175
 #: admin/em-locations.php:274
 #: admin/em-event.php:464
+#: templates/templates/event-form.php:326
 #: templates/forms/location-editor.php:95
 #: templates/forms/event-editor.php:221
 msgid "Details"
@@ -1101,6 +1103,7 @@ msgstr "Si vous utilisez la carte Google Maps, plus vous fournirez de détails, 
 # @ default
 #: admin/em-locations.php:218
 #: admin/em-event.php:403
+#: templates/templates/event-form.php:267
 #: templates/forms/location-editor.php:48
 msgid "Address:"
 msgstr "Adresse :"
@@ -1108,6 +1111,7 @@ msgstr "Adresse :"
 # @ default
 #: admin/em-locations.php:224
 #: admin/em-event.php:409
+#: templates/templates/event-form.php:273
 #: templates/forms/location-editor.php:54
 msgid "City/Town:"
 msgstr "Ville :"
@@ -1115,6 +1119,7 @@ msgstr "Ville :"
 # @ default
 #: admin/em-locations.php:230
 #: admin/em-event.php:416
+#: templates/templates/event-form.php:280
 #: templates/forms/location-editor.php:60
 msgid "State/County:"
 msgstr "Etat / Comté :"
@@ -1122,6 +1127,7 @@ msgstr "Etat / Comté :"
 # @ default
 #: admin/em-locations.php:236
 #: admin/em-event.php:423
+#: templates/templates/event-form.php:287
 #: templates/forms/location-editor.php:66
 msgid "Postcode:"
 msgstr "Code Postal :"
@@ -1129,12 +1135,14 @@ msgstr "Code Postal :"
 # @ default
 #: admin/em-locations.php:242
 #: admin/em-event.php:429
+#: templates/templates/event-form.php:293
 msgid "Region:"
 msgstr "Région :"
 
 # @ default
 #: admin/em-locations.php:249
 #: admin/em-event.php:436
+#: templates/templates/event-form.php:300
 #: templates/forms/location-editor.php:72
 msgid "Country:"
 msgstr "Pays :"
@@ -1142,6 +1150,7 @@ msgstr "Pays :"
 # @ dbem
 #: admin/em-locations.php:252
 #: admin/em-event.php:439
+#: templates/templates/event-form.php:303
 #: templates/forms/location-editor.php:75
 msgid "none selected"
 msgstr "aucune sélection"
@@ -1149,6 +1158,7 @@ msgstr "aucune sélection"
 # @ dbem
 #: admin/em-locations.php:262
 #: admin/em-event.php:453
+#: templates/templates/event-form.php:316
 #: templates/forms/location-editor.php:85
 #: templates/forms/event-editor.php:214
 msgid "Location not found"
@@ -1306,6 +1316,8 @@ msgstr "ATTENTION! Vous allez supprimer TOUTES les occurrences de cet évènemen
 #: admin/em-events.php:202
 #: admin/em-event.php:23
 #: admin/em-event.php:145
+#: templates/templates/event-form.php:23
+#: templates/templates/event-form.php:184
 #: templates/buddypress/my-events.php:155
 #: templates/buddypress/my-events.php:166
 #: templates/forms/event-editor.php:13
@@ -1384,6 +1396,7 @@ msgstr "Évènements Futurs"
 #: admin/bookings/em-events.php:101
 #: admin/em-event.php:14
 #: admin/em-options.php:312
+#: templates/templates/event-form.php:16
 #: templates/forms/event-editor.php:6
 #: buddypress/bp-em-core.php:179
 #: classes/em-event.php:553
@@ -1427,6 +1440,7 @@ msgstr "Aucune réservation n'est encore en attente."
 
 # @ dbem
 #: admin/em-event.php:14
+#: templates/templates/event-form.php:16
 #: templates/forms/location-editor.php:7
 #: templates/forms/event-editor.php:6
 #: classes/em-tickets-bookings.php:141
@@ -1435,6 +1449,7 @@ msgstr "Vous n'avez pas le droit de gérer ce %s."
 
 # @ dbem
 #: admin/em-event.php:25
+#: templates/templates/event-form.php:25
 #: templates/forms/event-editor.php:15
 #: buddypress/screens/my-events.php:54
 msgid "Edit Event"
@@ -1442,6 +1457,7 @@ msgstr "Éditer l'Évènement"
 
 # @ dbem
 #: admin/em-event.php:29
+#: templates/templates/event-form.php:29
 #: templates/forms/event-editor.php:19
 msgid "Insert New Event"
 msgstr "Ajouter un Nouvel Évènement"
@@ -1493,18 +1509,21 @@ msgstr "Évènement répétitif"
 
 # @ dbem
 #: admin/em-event.php:95
+#: templates/templates/event-form.php:137
 #: templates/forms/event-editor.php:127
 msgid "Daily"
 msgstr "Quotidiennement"
 
 # @ dbem
 #: admin/em-event.php:95
+#: templates/templates/event-form.php:137
 #: templates/forms/event-editor.php:127
 msgid "Weekly"
 msgstr "Hebdomadairement"
 
 # @ dbem
 #: admin/em-event.php:95
+#: templates/templates/event-form.php:137
 #: templates/forms/event-editor.php:127
 msgid "Monthly"
 msgstr "Mensuellement"
@@ -1517,12 +1536,14 @@ msgstr "Chaque"
 
 # @ dbem
 #: admin/em-event.php:104
+#: templates/templates/event-form.php:144
 #: templates/forms/event-editor.php:134
 msgid "day"
 msgstr "jour"
 
 # @ dbem
 #: admin/em-event.php:106
+#: templates/templates/event-form.php:146
 #: templates/forms/event-editor.php:136
 msgid "days"
 msgstr "jours"
@@ -1549,42 +1570,49 @@ msgstr "mois"
 
 # @ dbem
 #: admin/em-event.php:127
+#: templates/templates/event-form.php:165
 #: templates/forms/event-editor.php:155
 msgid "first"
 msgstr "premier"
 
 # @ dbem
 #: admin/em-event.php:127
+#: templates/templates/event-form.php:165
 #: templates/forms/event-editor.php:155
 msgid "second"
 msgstr "second"
 
 # @ dbem
 #: admin/em-event.php:127
+#: templates/templates/event-form.php:165
 #: templates/forms/event-editor.php:155
 msgid "third"
 msgstr "troisième"
 
 # @ dbem
 #: admin/em-event.php:127
+#: templates/templates/event-form.php:165
 #: templates/forms/event-editor.php:155
 msgid "fourth"
 msgstr "quatrième"
 
 # @ dbem
 #: admin/em-event.php:127
+#: templates/templates/event-form.php:165
 #: templates/forms/event-editor.php:155
 msgid "last"
 msgstr "dernier"
 
 # @ dbem
 #: admin/em-event.php:138
+#: templates/templates/event-form.php:177
 #: templates/forms/event-editor.php:167
 msgid "Check if your event happens more than once according to a regular pattern"
 msgstr "Vérifiez si votre évènement se produit plus d'une fois suivant un rythme régulier"
 
 # @ dbem
 #: admin/em-event.php:150
+#: templates/templates/event-form.php:189
 #: templates/forms/event-editor.php:179
 msgid "This is't a recurrent event"
 msgstr "Ceci n'est pas un évènement périodique"
@@ -1601,6 +1629,7 @@ msgstr "Propriété de Groupe"
 
 # @ dbem
 #: admin/em-event.php:206
+#: templates/templates/event-form.php:97
 #: templates/forms/event-editor.php:87
 msgid "Select a group you admin to attach this event to it. Note that all other admins of that group can modify the booking, and you will not be able to unattach the event without deleting it."
 msgstr "Sélectionnez un groupe que vous administrez pour y fixer cet évènement. Notez que tous les autres administrateurs de ce groupe peuvent modifier la réservation, et vous ne serez pas en mesure de détacher l'évènement sans le supprimer."
@@ -1656,6 +1685,7 @@ msgstr "Aucune catégorie disponible, <a href=\"%s\">créez une catégorie maint
 
 # @ dbem
 #: admin/em-event.php:296
+#: templates/templates/event-form.php:71
 #: templates/forms/event-editor.php:61
 msgid "The event name. Example: Birthday party"
 msgstr "Le nom de l'évènement. Exemple: Fête d'anniversaire"
@@ -1702,36 +1732,43 @@ msgstr "L'heure de début et l'heure de fin de cet évènement"
 
 # @ dbem
 #: admin/em-event.php:373
+#: templates/templates/event-form.php:237
 msgid "Location:"
 msgstr "Emplacement :"
 
 # @ dbem
 #: admin/em-event.php:389
+#: templates/templates/event-form.php:253
 msgid "The name of the location where the event takes place. You can use the name of a venue, a square, etc"
 msgstr "Le nom de l'emplacement où l'évènement aura lieu. Vous pouvez utiliser le nom d'une salle, d'une place, etc..."
 
 # @ default
 #: admin/em-event.php:394
+#: templates/templates/event-form.php:258
 msgid "Name:"
 msgstr "Nom :"
 
 # @ dbem
 #: admin/em-event.php:398
+#: templates/templates/event-form.php:262
 msgid "Create a location or start typing to search a previously created location."
 msgstr "Créez un emplacement ou recherchez un emplacement précédemment créé."
 
 # @ dbem
 #: admin/em-event.php:399
+#: templates/templates/event-form.php:263
 msgid "You cannot edit saved locations here."
 msgstr "Vous ne pouvez pas modifier ici les emplacements sauvegardés."
 
 # @ dbem
 #: admin/em-event.php:399
+#: templates/templates/event-form.php:263
 msgid "Reset this form to create a location."
 msgstr "Recommencez ce formulaire pour créer un emplacement."
 
 # @ dbem
 #: admin/em-event.php:444
+#: templates/templates/event-form.php:308
 msgid "Filling this in first will allow you to quickly find previously filled states and regions for the country."
 msgstr "Remplir ceci en premier vous permettra de trouver rapidement les régions et les états déjà remplis pour le pays."
 
@@ -1836,6 +1873,7 @@ msgstr "Attributs"
 
 # @ dbem
 #: admin/em-event.php:635
+#: templates/templates/event-form.php:367
 #: templates/forms/event-editor.php:262
 msgid "No Value"
 msgstr "Pas de Valeur"
@@ -1867,6 +1905,7 @@ msgstr "ATTENTION ! Vous êtes sur le point de re-créer toutes vos occurrences,
 
 # @ dbem
 #: admin/em-event.php:712
+#: templates/templates/event-form.php:388
 #: templates/forms/event-editor.php:403
 msgid "Submit Event"
 msgstr "Soumettre"
@@ -1921,6 +1960,7 @@ msgstr "Voir / Éditer un évènement"
 
 # @ dbem
 #: admin/em-bookings.php:126
+#: templates/templates/event-form.php:67
 #: templates/forms/event-editor.php:57
 msgid "Event Name"
 msgstr "Nom de l’Évènement"
@@ -2093,14 +2133,14 @@ msgstr "Réservations Passées et Courantes"
 #, fuzzy
 msgid ""
 "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> \r\n"
-"\t\t\t<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\r\n"
-"\t\t\t<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>\r\n"
-"\t\t\t<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>"
+"			<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\r\n"
+"			<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>\r\n"
+"			<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>"
 msgstr ""
 "<p>Salut, <strong>%s</strong>, bienvenue dans <strong>Events Manager</strong>! Nous espérons que vous l'apprécierez.</p> \n"
-"\\\t\\\t\\\t<p>Commencez par insérer des listes d'évènements via les <a href='%s' title='page des Widgets'>widgets</a>, les <a href='%s' title='documentation sur les marqueurs de modèles'>marqueurs de modèles</a> ou les <a href='%s' title='documentation sur les minicodes'>minicodes</a>.</p>\n"
-"\\\t\\\t\\\t<p>A propos, avez-vous jeté un oeil sur la <a href='%s' title='paramètres'>page des paramètres</a> ? C'est là que vous modifierez la façon d'afficher les évènements et les emplacements.</p>\n"
-"\\\t\\\t\\\t<p>de quoi ? Marre de lire ce message ? OK, <a href='%s' title='Ne plus afficher ce message'>cliquez ici</a> et vous ne le reverrez plus jamais !</p>"
+"<p>Commencez par insérer des listes d'évènements via les <a href='%s' title='page des Widgets'>widgets</a>, les <a href='%s' title='documentation sur les marqueurs de modèles'>marqueurs de modèles</a> ou les <a href='%s' title='documentation sur les minicodes'>minicodes</a>.</p>\n"
+"<p>A propos, avez-vous jeté un oeil sur la <a href='%s' title='paramètres'>page des paramètres</a> ? C'est là que vous modifierez la façon d'afficher les évènements et les emplacements.</p>\n"
+"<p>de quoi ? Marre de lire ce message ? OK, <a href='%s' title='Ne plus afficher ce message'>cliquez ici</a> et vous ne le reverrez plus jamais !</p>"
 
 # @ dbem
 #: admin/em-admin.php:57
@@ -3464,6 +3504,16 @@ msgstr "Events Manager"
 msgid "Loading Map...."
 msgstr "Chargement de la Carte ...."
 
+#: templates/templates/events-search.php:22
+msgid "between"
+msgstr "entre les"
+
+# @ dbem
+#: templates/templates/events-search.php:25
+#: templates/forms/ticket-form.php:26
+msgid "and"
+msgstr "et"
+
 # @ dbem
 #: templates/templates/events-search.php:31
 msgid "All Categories"
@@ -3503,6 +3553,176 @@ msgstr "Recherche en cours..."
 #: widgets/em-calendar.php:13
 msgid "Calendar"
 msgstr "Calendrier"
+
+# @ dbem
+#: templates/templates/event-form.php:103
+#: templates/forms/event-editor.php:93
+msgid "When"
+msgstr "Quand"
+
+# @ dbem
+#: templates/templates/event-form.php:106
+#: templates/forms/event-editor.php:96
+msgid "Starts on "
+msgstr "Démarre le "
+
+# @ dbem
+#: templates/templates/event-form.php:109
+#: templates/forms/event-editor.php:99
+msgid "from"
+msgstr "de"
+
+# @ dbem
+#: templates/templates/event-form.php:111
+#: templates/forms/ticket-form.php:18
+#: templates/forms/event-editor.php:101
+msgid "to"
+msgstr "à"
+
+# @ dbem
+#: templates/templates/event-form.php:113
+#: templates/forms/event-editor.php:103
+msgid "and ends on"
+msgstr "et finit le"
+
+# @ dbem
+#: templates/templates/event-form.php:119
+#: templates/forms/event-editor.php:109
+msgid "This event spans every day between the beginning and end date, with start/end times applying to each day."
+msgstr "Cet évènement est récurrent depuis le premier jour et jusqu'au dernier, les horaires s'appliquent chaque jour."
+
+# @ dbem
+#: templates/templates/event-form.php:122
+#: templates/forms/event-editor.php:112
+msgid "For a recurring event, a one day event will be created on each recurring date within this date range."
+msgstr "Pour un évènement périodique, une occurrence sera créée à chaque date dans la plage de périodicité définie."
+
+# @ default
+#: templates/templates/event-form.php:130
+#: templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Monday"
+msgstr "Lundi"
+
+# @ default
+#: templates/templates/event-form.php:130
+#: templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Tuesday"
+msgstr "Mardi"
+
+# @ default
+#: templates/templates/event-form.php:130
+#: templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Wednesday"
+msgstr "Mercredi"
+
+# @ default
+#: templates/templates/event-form.php:130
+#: templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Thursday"
+msgstr "Jeudi"
+
+# @ default
+#: templates/templates/event-form.php:130
+#: templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Friday"
+msgstr "Vendredi"
+
+# @ default
+#: templates/templates/event-form.php:130
+#: templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Saturday"
+msgstr "Samedi"
+
+# @ default
+#: templates/templates/event-form.php:130
+#: templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Sunday"
+msgstr "Dimanche"
+
+# @ dbem
+#: templates/templates/event-form.php:134
+#: templates/forms/event-editor.php:124
+msgid "This event repeats"
+msgstr "Cet évènement se répète"
+
+# @ dbem
+#: templates/templates/event-form.php:141
+#: templates/forms/event-editor.php:131
+msgid "every"
+msgstr "chaque"
+
+# @ dbem
+#: templates/templates/event-form.php:148
+#: templates/forms/event-editor.php:138
+msgid "week on"
+msgstr "semaine le"
+
+# @ dbem
+#: templates/templates/event-form.php:150
+#: templates/forms/event-editor.php:140
+msgid "weeks on"
+msgstr "semaines le"
+
+# @ dbem
+#: templates/templates/event-form.php:152
+#: templates/forms/event-editor.php:142
+msgid "month on the"
+msgstr "mois le"
+
+# @ dbem
+#: templates/templates/event-form.php:154
+#: templates/forms/event-editor.php:144
+msgid "months on the"
+msgstr "mois le"
+
+# @ dbem
+#: templates/templates/event-form.php:172
+#: templates/forms/event-editor.php:162
+msgid "of each month"
+msgstr "de chaque mois"
+
+# @ dbem
+#: templates/templates/event-form.php:196
+#: templates/forms/event-editor.php:186
+msgid "Where"
+msgstr "Où"
+
+# @ dbem
+#: templates/templates/event-form.php:230
+#: templates/forms/event-editor.php:210
+msgid "Choose from one of your locations"
+msgstr "Choisir parmi l'un de vos emplacements définis"
+
+# @ dbem
+#: templates/templates/event-form.php:230
+#: templates/forms/event-editor.php:210
+msgid "or <a href=\"%s\">add a new location</a>"
+msgstr "ou <a href=\"%s\">ajoutez un nouvel emplacement</a>"
+
+# @ dbem
+#: templates/templates/event-form.php:331
+#: templates/forms/event-editor.php:226
+msgid "Details about the event."
+msgstr "Détails à propos de l'évènement."
+
+# @ dbem
+#: templates/templates/event-form.php:331
+#: templates/forms/event-editor.php:226
+msgid "HTML Allowed."
+msgstr "HTML Autorisé."
+
+# @ dbem
+#: templates/templates/event-form.php:338
+#: templates/forms/event-editor.php:233
+msgid "Category:"
+msgstr "Catégorie :"
 
 # @ dbem
 #: templates/templates/my-bookings.php:73
@@ -3666,12 +3886,6 @@ msgid "Available from"
 msgstr "Disponible auprès de"
 
 # @ dbem
-#: templates/forms/ticket-form.php:18
-#: templates/forms/event-editor.php:101
-msgid "to"
-msgstr "à"
-
-# @ dbem
 #: templates/forms/ticket-form.php:21
 msgid "Add a start or end date (or both) to impose time constraints on ticket availability. Leave either blank for no upper/lower limit."
 msgstr "Ajouter une date de début ou fin (ou les deux) pour imposer des contraintes de temps sur la disponibilité des billets. Laissez ce champ vide si vous ne souhaitez pas de limite supérieure / inférieure."
@@ -3680,11 +3894,6 @@ msgstr "Ajouter une date de début ou fin (ou les deux) pour imposer des contrai
 #: templates/forms/ticket-form.php:24
 msgid "Bookings must order between"
 msgstr "Les réservations doivent être effectuées entre"
-
-# @ dbem
-#: templates/forms/ticket-form.php:26
-msgid "and"
-msgstr "et"
 
 # @ dbem
 #: templates/forms/ticket-form.php:28
@@ -3730,143 +3939,6 @@ msgstr "Nombre de billets maximum requis par réservation"
 #: templates/forms/tickets-form.php:18
 msgid "Add Ticket"
 msgstr "Ajouter un Billet"
-
-# @ dbem
-#: templates/forms/event-editor.php:93
-msgid "When"
-msgstr "Quand"
-
-# @ dbem
-#: templates/forms/event-editor.php:96
-msgid "Starts on "
-msgstr "Démarre le "
-
-# @ dbem
-#: templates/forms/event-editor.php:99
-msgid "from"
-msgstr "de"
-
-# @ dbem
-#: templates/forms/event-editor.php:103
-msgid "and ends on"
-msgstr "et finit le"
-
-# @ dbem
-#: templates/forms/event-editor.php:109
-msgid "This event spans every day between the beginning and end date, with start/end times applying to each day."
-msgstr "Cet évènement est récurrent depuis le premier jour et jusqu'au dernier, les horaires s'appliquent chaque jour."
-
-# @ dbem
-#: templates/forms/event-editor.php:112
-msgid "For a recurring event, a one day event will be created on each recurring date within this date range."
-msgstr "Pour un évènement périodique, une occurrence sera créée à chaque date dans la plage de périodicité définie."
-
-# @ default
-#: templates/forms/event-editor.php:120
-#: classes/em-event.php:1239
-msgid "Monday"
-msgstr "Lundi"
-
-# @ default
-#: templates/forms/event-editor.php:120
-#: classes/em-event.php:1239
-msgid "Tuesday"
-msgstr "Mardi"
-
-# @ default
-#: templates/forms/event-editor.php:120
-#: classes/em-event.php:1239
-msgid "Wednesday"
-msgstr "Mercredi"
-
-# @ default
-#: templates/forms/event-editor.php:120
-#: classes/em-event.php:1239
-msgid "Thursday"
-msgstr "Jeudi"
-
-# @ default
-#: templates/forms/event-editor.php:120
-#: classes/em-event.php:1239
-msgid "Friday"
-msgstr "Vendredi"
-
-# @ default
-#: templates/forms/event-editor.php:120
-#: classes/em-event.php:1239
-msgid "Saturday"
-msgstr "Samedi"
-
-# @ default
-#: templates/forms/event-editor.php:120
-#: classes/em-event.php:1239
-msgid "Sunday"
-msgstr "Dimanche"
-
-# @ dbem
-#: templates/forms/event-editor.php:124
-msgid "This event repeats"
-msgstr "Cet évènement se répète"
-
-# @ dbem
-#: templates/forms/event-editor.php:131
-msgid "every"
-msgstr "chaque"
-
-# @ dbem
-#: templates/forms/event-editor.php:138
-msgid "week on"
-msgstr "semaine le"
-
-# @ dbem
-#: templates/forms/event-editor.php:140
-msgid "weeks on"
-msgstr "semaines le"
-
-# @ dbem
-#: templates/forms/event-editor.php:142
-msgid "month on the"
-msgstr "mois le"
-
-# @ dbem
-#: templates/forms/event-editor.php:144
-msgid "months on the"
-msgstr "mois le"
-
-# @ dbem
-#: templates/forms/event-editor.php:162
-msgid "of each month"
-msgstr "de chaque mois"
-
-# @ dbem
-#: templates/forms/event-editor.php:186
-msgid "Where"
-msgstr "Où"
-
-# @ dbem
-#: templates/forms/event-editor.php:210
-msgid "Choose from one of your locations"
-msgstr "Choisir parmi l'un de vos emplacements définis"
-
-# @ dbem
-#: templates/forms/event-editor.php:210
-msgid "or <a href=\"%s\">add a new location</a>"
-msgstr "ou <a href=\"%s\">ajoutez un nouvel emplacement</a>"
-
-# @ dbem
-#: templates/forms/event-editor.php:226
-msgid "Details about the event."
-msgstr "Détails à propos de l'évènement."
-
-# @ dbem
-#: templates/forms/event-editor.php:226
-msgid "HTML Allowed."
-msgstr "HTML Autorisé."
-
-# @ dbem
-#: templates/forms/event-editor.php:233
-msgid "Category:"
-msgstr "Catégorie :"
 
 # @ bp-em
 #: buddypress/bp-em-admin.php:33
@@ -4876,14 +4948,14 @@ msgstr "Events Manager fonctionne en mode déboguage. Pour arrêter ce mode, ren
 #, fuzzy
 msgid ""
 "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> \r\n"
-"\t\t<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\r\n"
-"\t\t<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>\r\n"
-"\t\t<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>"
+"		<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\r\n"
+"		<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>\r\n"
+"		<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>"
 msgstr ""
 "<p>Salut, <strong>%s</strong>, bienvenue dans <strong>Events Manager</strong>! Nous espérons que vous l'apprécierez.</p> \n"
-"\\\t\\\t\\\t<p>Commencez par insérer des listes d'évènements via les <a href='%s' title='page des Widgets'>widgets</a>, les <a href='%s' title='documentation sur les marqueurs de modèles'>marqueurs de modèles</a> ou les <a href='%s' title='documentation sur les minicodes'>minicodes</a>.</p>\n"
-"\\\t\\\t\\\t<p>A propos, avez-vous jeté un oeil sur la <a href='%s' title='paramètres'>page des paramètres</a> ? C'est là que vous modifierez la façon d'afficher les évènements et les emplacements.</p>\n"
-"\\\t\\\t\\\t<p>de quoi ? Marre de lire ce message ? OK, <a href='%s' title='Ne plus afficher ce message'>cliquez ici</a> et vous ne le reverrez plus jamais !</p>"
+"<p>Commencez par insérer des listes d'évènements via les <a href='%s' title='page des Widgets'>widgets</a>, les <a href='%s' title='documentation sur les marqueurs de modèles'>marqueurs de modèles</a> ou les <a href='%s' title='documentation sur les minicodes'>minicodes</a>.</p>\n"
+"<p>A propos, avez-vous jeté un oeil sur la <a href='%s' title='paramètres'>page des paramètres</a> ? C'est là que vous modifierez la façon d'afficher les évènements et les emplacements.</p>\n"
+"<p>de quoi ? Marre de lire ce message ? OK, <a href='%s' title='Ne plus afficher ce message'>cliquez ici</a> et vous ne le reverrez plus jamais !</p>"
 
 # @ dbem
 #: em-functions.php:142
@@ -4978,7 +5050,7 @@ msgstr "Nom d'utilisateur : %s"
 # @ default
 #: em-functions.php:322
 msgid "E-mail: %s"
-msgstr ""
+msgstr "E-mail:%s"
 
 # @ default
 #: em-functions.php:323
@@ -4995,13 +5067,13 @@ msgstr "[%s] Vos Idenficiant & Mot de Passe"
 #. #-#-#-#-#  plugin.pot (Events Manager 4.0.83)  #-#-#-#-#
 #. Author URI of the plugin/theme
 msgid "http://wp-events-plugin.com"
-msgstr ""
+msgstr "http://wp-events-plugin.com"
 
 #. Description of the plugin/theme
 msgid "Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!"
-msgstr ""
+msgstr "Enregistrement des événements et de gestion des réservations pour Wordpress. Les événements récurrents, les lieux, Google Maps, flux RSS, iCal, enregistrement de la réservation et plus encore!"
 
 #. Author of the plugin/theme
 msgid "Marcus Sykes"
-msgstr ""
+msgstr "Marcus Sykes"
 

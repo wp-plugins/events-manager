@@ -8,7 +8,12 @@
 <div class="em-events-search">
 	<?php 
 	$s_default = __('Search Events', 'dbem'); 
-	$s = !empty($_REQUEST['search']) ? $_REQUEST['search']:$s_default; 
+	$s = !empty($_REQUEST['search']) ? $_REQUEST['search']:$s_default;
+	if( empty($_REQUEST['country']) && empty($_REQUEST['page']) ){
+		$country = get_option('dbem_location_default_country');
+	}elseif( empty($_REQUEST['country']) ){
+		$country = $_REQUEST['country'];
+	}
 	//convert scope to an array in event of pagination
 	if(!empty($_REQUEST['scope']) && !is_array($_REQUEST['scope'])){ $_REQUEST['scope'] = explode(',',$_REQUEST['scope']); }
 	?>
@@ -19,10 +24,10 @@
 		<input type="text" name="search" value="<?php echo $s; ?>" onfocus="if(this.value=='<?php echo $s_default; ?>')this.value=''" onblur="if(this.value=='')this.value='<?php echo $s_default; ?>'" />
 		<!-- END General Search -->
 		<!-- START Date Search -->
-		<?php __('between','dbem'); ?>:
+		<?php _e('between','dbem'); ?>:
 		<input type="text" id="em-date-start-loc" />
 		<input type="hidden" id="em-date-start" name="scope[0]" value="<?php if( !empty($_REQUEST['scope'][0]) ) echo $_REQUEST['scope'][0]; ?>" />
-		<?php __('and','dbem'); ?>
+		<?php _e('and','dbem'); ?>
 		<input type="text" id="em-date-end-loc" />
 		<input type="hidden" id="em-date-end" name="scope[1]" value="<?php if( !empty($_REQUEST['scope'][1]) ) echo $_REQUEST['scope'][1]; ?>" />
 		<!-- END Date Search -->		
@@ -44,7 +49,7 @@
 			$em_countries = $wpdb->get_results("SELECT DISTINCT location_country FROM ".EM_LOCATIONS_TABLE." WHERE location_country IS NOT NULL AND location_country != '' ORDER BY location_country ASC", ARRAY_N);
 			foreach($em_countries as $em_country): 
 			?>
-			 <option value="<?php echo $em_country[0]; ?>" <?php echo (!empty($_REQUEST['country']) && $_REQUEST['country'] == $em_country[0]) || (empty($_REQUEST['country']) && empty($_REQUEST['page']) && $em_country[0] == get_option('dbem_location_default_country')) ? 'selected="selected"':''; ?>><?php echo $countries[$em_country[0]]; ?></option>
+			 <option value="<?php echo $em_country[0]; ?>" <?php echo (!empty($country) && $country == $em_country[0]) ? 'selected="selected"':''; ?>><?php echo $countries[$em_country[0]]; ?></option>
 			<?php endforeach; ?>
 		</select>
 		<!-- END Country Search -->	
@@ -52,10 +57,10 @@
 		<select name="region">
 			<option value=''><?php _e('All Regions','dbem'); ?></option>
 			<?php 
-			if( !empty($_REQUEST['country']) ){
+			if( !empty($country) ){
 				//get the counties from locations table
 				global $wpdb;
-				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region FROM ".EM_LOCATIONS_TABLE." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s", $_REQUEST['country']), ARRAY_N);
+				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region FROM ".EM_LOCATIONS_TABLE." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s", $country), ARRAY_N);
 				foreach($em_states as $state){
 					?>
 					 <option <?php echo ($_REQUEST['region'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
@@ -69,16 +74,17 @@
 		<select name="state">
 			<option value=''><?php _e('All States','dbem'); ?></option>
 			<?php 
-			if( !empty($_REQUEST['country']) ){
+			if( !empty($country) ){
 				//get the counties from locations table
 				global $wpdb;
-				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state FROM ".EM_LOCATIONS_TABLE." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']), ARRAY_N);
+				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state FROM ".EM_LOCATIONS_TABLE." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $country), ARRAY_N);
 				foreach($em_states as $state){
 					?>
 					 <option <?php echo ($_REQUEST['state'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
 					<?php 
 				}
-			} ?>
+			}
+			?>
 		</select>
 		<!-- END State/County Search -->
 		<?php do_action('em_template_events_search_form_ddm'); ?>

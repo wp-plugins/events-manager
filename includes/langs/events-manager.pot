@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Events Manager 4.0.83\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/events-manager\n"
-"POT-Creation-Date: 2011-06-28 19:12:43+00:00\n"
+"POT-Creation-Date: 2011-06-30 14:49:00+00:00\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -739,7 +739,8 @@ msgstr ""
 #: admin/em-categories.php:118 admin/em-locations.php:125
 #: admin/em-event.php:14 admin/em-bookings.php:107 admin/em-bookings.php:163
 #: admin/em-bookings.php:213 admin/em-bookings.php:351 admin/em-people.php:9
-#: templates/forms/location-editor.php:7 templates/forms/event-editor.php:6
+#: templates/templates/event-form.php:16 templates/forms/location-editor.php:7
+#: templates/forms/event-editor.php:6
 msgid "Unauthorized Access"
 msgstr ""
 
@@ -783,8 +784,8 @@ msgid ""
 msgstr ""
 
 #: admin/em-categories.php:175 admin/em-locations.php:274
-#: admin/em-event.php:464 templates/forms/location-editor.php:95
-#: templates/forms/event-editor.php:221
+#: admin/em-event.php:464 templates/templates/event-form.php:326
+#: templates/forms/location-editor.php:95 templates/forms/event-editor.php:221
 msgid "Details"
 msgstr ""
 
@@ -918,40 +919,48 @@ msgid ""
 msgstr ""
 
 #: admin/em-locations.php:218 admin/em-event.php:403
+#: templates/templates/event-form.php:267
 #: templates/forms/location-editor.php:48
 msgid "Address:"
 msgstr ""
 
 #: admin/em-locations.php:224 admin/em-event.php:409
+#: templates/templates/event-form.php:273
 #: templates/forms/location-editor.php:54
 msgid "City/Town:"
 msgstr ""
 
 #: admin/em-locations.php:230 admin/em-event.php:416
+#: templates/templates/event-form.php:280
 #: templates/forms/location-editor.php:60
 msgid "State/County:"
 msgstr ""
 
 #: admin/em-locations.php:236 admin/em-event.php:423
+#: templates/templates/event-form.php:287
 #: templates/forms/location-editor.php:66
 msgid "Postcode:"
 msgstr ""
 
 #: admin/em-locations.php:242 admin/em-event.php:429
+#: templates/templates/event-form.php:293
 msgid "Region:"
 msgstr ""
 
 #: admin/em-locations.php:249 admin/em-event.php:436
+#: templates/templates/event-form.php:300
 #: templates/forms/location-editor.php:72
 msgid "Country:"
 msgstr ""
 
 #: admin/em-locations.php:252 admin/em-event.php:439
+#: templates/templates/event-form.php:303
 #: templates/forms/location-editor.php:75
 msgid "none selected"
 msgstr ""
 
 #: admin/em-locations.php:262 admin/em-event.php:453
+#: templates/templates/event-form.php:316
 #: templates/forms/location-editor.php:85 templates/forms/event-editor.php:214
 msgid "Location not found"
 msgstr ""
@@ -1057,6 +1066,8 @@ msgid ""
 msgstr ""
 
 #: admin/em-events.php:202 admin/em-event.php:23 admin/em-event.php:145
+#: templates/templates/event-form.php:23
+#: templates/templates/event-form.php:184
 #: templates/buddypress/my-events.php:155
 #: templates/buddypress/my-events.php:166 templates/forms/event-editor.php:13
 #: templates/forms/event-editor.php:174
@@ -1110,10 +1121,10 @@ msgid "Future Events"
 msgstr ""
 
 #: admin/bookings/em-events.php:101 admin/em-event.php:14
-#: admin/em-options.php:312 templates/forms/event-editor.php:6
-#: buddypress/bp-em-core.php:179 classes/em-event.php:553
-#: classes/em-event.php:793 em-install.php:348 em-install.php:373
-#: em-actions.php:107
+#: admin/em-options.php:312 templates/templates/event-form.php:16
+#: templates/forms/event-editor.php:6 buddypress/bp-em-core.php:179
+#: classes/em-event.php:553 classes/em-event.php:793 em-install.php:348
+#: em-install.php:373 em-actions.php:107
 msgid "Event"
 msgstr ""
 
@@ -1139,17 +1150,19 @@ msgstr ""
 msgid "No pending bookings."
 msgstr ""
 
-#: admin/em-event.php:14 templates/forms/location-editor.php:7
-#: templates/forms/event-editor.php:6 classes/em-tickets-bookings.php:141
+#: admin/em-event.php:14 templates/templates/event-form.php:16
+#: templates/forms/location-editor.php:7 templates/forms/event-editor.php:6
+#: classes/em-tickets-bookings.php:141
 msgid "You do not have the rights to manage this %s."
 msgstr ""
 
-#: admin/em-event.php:25 templates/forms/event-editor.php:15
-#: buddypress/screens/my-events.php:54
+#: admin/em-event.php:25 templates/templates/event-form.php:25
+#: templates/forms/event-editor.php:15 buddypress/screens/my-events.php:54
 msgid "Edit Event"
 msgstr ""
 
-#: admin/em-event.php:29 templates/forms/event-editor.php:19
+#: admin/em-event.php:29 templates/templates/event-form.php:29
+#: templates/forms/event-editor.php:19
 msgid "Insert New Event"
 msgstr ""
 
@@ -1189,15 +1202,18 @@ msgstr ""
 msgid "Repeated event"
 msgstr ""
 
-#: admin/em-event.php:95 templates/forms/event-editor.php:127
+#: admin/em-event.php:95 templates/templates/event-form.php:137
+#: templates/forms/event-editor.php:127
 msgid "Daily"
 msgstr ""
 
-#: admin/em-event.php:95 templates/forms/event-editor.php:127
+#: admin/em-event.php:95 templates/templates/event-form.php:137
+#: templates/forms/event-editor.php:127
 msgid "Weekly"
 msgstr ""
 
-#: admin/em-event.php:95 templates/forms/event-editor.php:127
+#: admin/em-event.php:95 templates/templates/event-form.php:137
+#: templates/forms/event-editor.php:127
 msgid "Monthly"
 msgstr ""
 
@@ -1205,11 +1221,13 @@ msgstr ""
 msgid "Every"
 msgstr ""
 
-#: admin/em-event.php:104 templates/forms/event-editor.php:134
+#: admin/em-event.php:104 templates/templates/event-form.php:144
+#: templates/forms/event-editor.php:134
 msgid "day"
 msgstr ""
 
-#: admin/em-event.php:106 templates/forms/event-editor.php:136
+#: admin/em-event.php:106 templates/templates/event-form.php:146
+#: templates/forms/event-editor.php:136
 msgid "days"
 msgstr ""
 
@@ -1229,32 +1247,39 @@ msgstr ""
 msgid "months"
 msgstr ""
 
-#: admin/em-event.php:127 templates/forms/event-editor.php:155
+#: admin/em-event.php:127 templates/templates/event-form.php:165
+#: templates/forms/event-editor.php:155
 msgid "first"
 msgstr ""
 
-#: admin/em-event.php:127 templates/forms/event-editor.php:155
+#: admin/em-event.php:127 templates/templates/event-form.php:165
+#: templates/forms/event-editor.php:155
 msgid "second"
 msgstr ""
 
-#: admin/em-event.php:127 templates/forms/event-editor.php:155
+#: admin/em-event.php:127 templates/templates/event-form.php:165
+#: templates/forms/event-editor.php:155
 msgid "third"
 msgstr ""
 
-#: admin/em-event.php:127 templates/forms/event-editor.php:155
+#: admin/em-event.php:127 templates/templates/event-form.php:165
+#: templates/forms/event-editor.php:155
 msgid "fourth"
 msgstr ""
 
-#: admin/em-event.php:127 templates/forms/event-editor.php:155
+#: admin/em-event.php:127 templates/templates/event-form.php:165
+#: templates/forms/event-editor.php:155
 msgid "last"
 msgstr ""
 
-#: admin/em-event.php:138 templates/forms/event-editor.php:167
+#: admin/em-event.php:138 templates/templates/event-form.php:177
+#: templates/forms/event-editor.php:167
 msgid ""
 "Check if your event happens more than once according to a regular pattern"
 msgstr ""
 
-#: admin/em-event.php:150 templates/forms/event-editor.php:179
+#: admin/em-event.php:150 templates/templates/event-form.php:189
+#: templates/forms/event-editor.php:179
 msgid "This is't a recurrent event"
 msgstr ""
 
@@ -1266,7 +1291,8 @@ msgstr ""
 msgid "Group Ownership"
 msgstr ""
 
-#: admin/em-event.php:206 templates/forms/event-editor.php:87
+#: admin/em-event.php:206 templates/templates/event-form.php:97
+#: templates/forms/event-editor.php:87
 msgid ""
 "Select a group you admin to attach this event to it. Note that all other "
 "admins of that group can modify the booking, and you will not be able to "
@@ -1310,7 +1336,8 @@ msgstr ""
 msgid "No categories available, <a href=\"%s\">create one here first</a>"
 msgstr ""
 
-#: admin/em-event.php:296 templates/forms/event-editor.php:61
+#: admin/em-event.php:296 templates/templates/event-form.php:71
+#: templates/forms/event-editor.php:61
 msgid "The event name. Example: Birthday party"
 msgstr ""
 
@@ -1347,34 +1374,34 @@ msgstr ""
 msgid "The time of the event beginning and end"
 msgstr ""
 
-#: admin/em-event.php:373
+#: admin/em-event.php:373 templates/templates/event-form.php:237
 msgid "Location:"
 msgstr ""
 
-#: admin/em-event.php:389
+#: admin/em-event.php:389 templates/templates/event-form.php:253
 msgid ""
 "The name of the location where the event takes place. You can use the name "
 "of a venue, a square, etc"
 msgstr ""
 
-#: admin/em-event.php:394
+#: admin/em-event.php:394 templates/templates/event-form.php:258
 msgid "Name:"
 msgstr ""
 
-#: admin/em-event.php:398
+#: admin/em-event.php:398 templates/templates/event-form.php:262
 msgid ""
 "Create a location or start typing to search a previously created location."
 msgstr ""
 
-#: admin/em-event.php:399
+#: admin/em-event.php:399 templates/templates/event-form.php:263
 msgid "You cannot edit saved locations here."
 msgstr ""
 
-#: admin/em-event.php:399
+#: admin/em-event.php:399 templates/templates/event-form.php:263
 msgid "Reset this form to create a location."
 msgstr ""
 
-#: admin/em-event.php:444
+#: admin/em-event.php:444 templates/templates/event-form.php:308
 msgid ""
 "Filling this in first will allow you to quickly find previously filled "
 "states and regions for the country."
@@ -1451,7 +1478,8 @@ msgstr ""
 msgid "Attributes"
 msgstr ""
 
-#: admin/em-event.php:635 templates/forms/event-editor.php:262
+#: admin/em-event.php:635 templates/templates/event-form.php:367
+#: templates/forms/event-editor.php:262
 msgid "No Value"
 msgstr ""
 
@@ -1486,7 +1514,8 @@ msgid ""
 "erasing your old booking data! Are you sure you want to do this?"
 msgstr ""
 
-#: admin/em-event.php:712 templates/forms/event-editor.php:403
+#: admin/em-event.php:712 templates/templates/event-form.php:388
+#: templates/forms/event-editor.php:403
 msgid "Submit Event"
 msgstr ""
 
@@ -1530,7 +1559,8 @@ msgstr ""
 msgid "View/Edit Event"
 msgstr ""
 
-#: admin/em-bookings.php:126 templates/forms/event-editor.php:57
+#: admin/em-bookings.php:126 templates/templates/event-form.php:67
+#: templates/forms/event-editor.php:57
 msgid "Event Name"
 msgstr ""
 
@@ -2907,6 +2937,14 @@ msgstr ""
 msgid "Loading Map...."
 msgstr ""
 
+#: templates/templates/events-search.php:22
+msgid "between"
+msgstr ""
+
+#: templates/templates/events-search.php:25 templates/forms/ticket-form.php:26
+msgid "and"
+msgstr ""
+
 #: templates/templates/events-search.php:31
 msgid "All Categories"
 msgstr ""
@@ -2935,6 +2973,126 @@ msgstr ""
 
 #: templates/templates/ical.php:9 widgets/em-calendar.php:13
 msgid "Calendar"
+msgstr ""
+
+#: templates/templates/event-form.php:103 templates/forms/event-editor.php:93
+msgid "When"
+msgstr ""
+
+#: templates/templates/event-form.php:106 templates/forms/event-editor.php:96
+msgid "Starts on "
+msgstr ""
+
+#: templates/templates/event-form.php:109 templates/forms/event-editor.php:99
+msgid "from"
+msgstr ""
+
+#: templates/templates/event-form.php:111 templates/forms/ticket-form.php:18
+#: templates/forms/event-editor.php:101
+msgid "to"
+msgstr ""
+
+#: templates/templates/event-form.php:113 templates/forms/event-editor.php:103
+msgid "and ends on"
+msgstr ""
+
+#: templates/templates/event-form.php:119 templates/forms/event-editor.php:109
+msgid ""
+"This event spans every day between the beginning and end date, with start/"
+"end times applying to each day."
+msgstr ""
+
+#: templates/templates/event-form.php:122 templates/forms/event-editor.php:112
+msgid ""
+"For a recurring event, a one day event will be created on each recurring "
+"date within this date range."
+msgstr ""
+
+#: templates/templates/event-form.php:130 templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Monday"
+msgstr ""
+
+#: templates/templates/event-form.php:130 templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Tuesday"
+msgstr ""
+
+#: templates/templates/event-form.php:130 templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Wednesday"
+msgstr ""
+
+#: templates/templates/event-form.php:130 templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Thursday"
+msgstr ""
+
+#: templates/templates/event-form.php:130 templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Friday"
+msgstr ""
+
+#: templates/templates/event-form.php:130 templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Saturday"
+msgstr ""
+
+#: templates/templates/event-form.php:130 templates/forms/event-editor.php:120
+#: classes/em-event.php:1239
+msgid "Sunday"
+msgstr ""
+
+#: templates/templates/event-form.php:134 templates/forms/event-editor.php:124
+msgid "This event repeats"
+msgstr ""
+
+#: templates/templates/event-form.php:141 templates/forms/event-editor.php:131
+msgid "every"
+msgstr ""
+
+#: templates/templates/event-form.php:148 templates/forms/event-editor.php:138
+msgid "week on"
+msgstr ""
+
+#: templates/templates/event-form.php:150 templates/forms/event-editor.php:140
+msgid "weeks on"
+msgstr ""
+
+#: templates/templates/event-form.php:152 templates/forms/event-editor.php:142
+msgid "month on the"
+msgstr ""
+
+#: templates/templates/event-form.php:154 templates/forms/event-editor.php:144
+msgid "months on the"
+msgstr ""
+
+#: templates/templates/event-form.php:172 templates/forms/event-editor.php:162
+msgid "of each month"
+msgstr ""
+
+#: templates/templates/event-form.php:196 templates/forms/event-editor.php:186
+msgid "Where"
+msgstr ""
+
+#: templates/templates/event-form.php:230 templates/forms/event-editor.php:210
+msgid "Choose from one of your locations"
+msgstr ""
+
+#: templates/templates/event-form.php:230 templates/forms/event-editor.php:210
+msgid "or <a href=\"%s\">add a new location</a>"
+msgstr ""
+
+#: templates/templates/event-form.php:331 templates/forms/event-editor.php:226
+msgid "Details about the event."
+msgstr ""
+
+#: templates/templates/event-form.php:331 templates/forms/event-editor.php:226
+msgid "HTML Allowed."
+msgstr ""
+
+#: templates/templates/event-form.php:338 templates/forms/event-editor.php:233
+msgid "Category:"
 msgstr ""
 
 #: templates/templates/my-bookings.php:73
@@ -3063,10 +3221,6 @@ msgstr ""
 msgid "Available from"
 msgstr ""
 
-#: templates/forms/ticket-form.php:18 templates/forms/event-editor.php:101
-msgid "to"
-msgstr ""
-
 #: templates/forms/ticket-form.php:21
 msgid ""
 "Add a start or end date (or both) to impose time constraints on ticket "
@@ -3075,10 +3229,6 @@ msgstr ""
 
 #: templates/forms/ticket-form.php:24
 msgid "Bookings must order between"
-msgstr ""
-
-#: templates/forms/ticket-form.php:26
-msgid "and"
 msgstr ""
 
 #: templates/forms/ticket-form.php:28
@@ -3115,114 +3265,6 @@ msgstr ""
 
 #: templates/forms/tickets-form.php:18
 msgid "Add Ticket"
-msgstr ""
-
-#: templates/forms/event-editor.php:93
-msgid "When"
-msgstr ""
-
-#: templates/forms/event-editor.php:96
-msgid "Starts on "
-msgstr ""
-
-#: templates/forms/event-editor.php:99
-msgid "from"
-msgstr ""
-
-#: templates/forms/event-editor.php:103
-msgid "and ends on"
-msgstr ""
-
-#: templates/forms/event-editor.php:109
-msgid ""
-"This event spans every day between the beginning and end date, with start/"
-"end times applying to each day."
-msgstr ""
-
-#: templates/forms/event-editor.php:112
-msgid ""
-"For a recurring event, a one day event will be created on each recurring "
-"date within this date range."
-msgstr ""
-
-#: templates/forms/event-editor.php:120 classes/em-event.php:1239
-msgid "Monday"
-msgstr ""
-
-#: templates/forms/event-editor.php:120 classes/em-event.php:1239
-msgid "Tuesday"
-msgstr ""
-
-#: templates/forms/event-editor.php:120 classes/em-event.php:1239
-msgid "Wednesday"
-msgstr ""
-
-#: templates/forms/event-editor.php:120 classes/em-event.php:1239
-msgid "Thursday"
-msgstr ""
-
-#: templates/forms/event-editor.php:120 classes/em-event.php:1239
-msgid "Friday"
-msgstr ""
-
-#: templates/forms/event-editor.php:120 classes/em-event.php:1239
-msgid "Saturday"
-msgstr ""
-
-#: templates/forms/event-editor.php:120 classes/em-event.php:1239
-msgid "Sunday"
-msgstr ""
-
-#: templates/forms/event-editor.php:124
-msgid "This event repeats"
-msgstr ""
-
-#: templates/forms/event-editor.php:131
-msgid "every"
-msgstr ""
-
-#: templates/forms/event-editor.php:138
-msgid "week on"
-msgstr ""
-
-#: templates/forms/event-editor.php:140
-msgid "weeks on"
-msgstr ""
-
-#: templates/forms/event-editor.php:142
-msgid "month on the"
-msgstr ""
-
-#: templates/forms/event-editor.php:144
-msgid "months on the"
-msgstr ""
-
-#: templates/forms/event-editor.php:162
-msgid "of each month"
-msgstr ""
-
-#: templates/forms/event-editor.php:186
-msgid "Where"
-msgstr ""
-
-#: templates/forms/event-editor.php:210
-msgid "Choose from one of your locations"
-msgstr ""
-
-#: templates/forms/event-editor.php:210
-msgid "or <a href=\"%s\">add a new location</a>"
-msgstr ""
-
-#: templates/forms/event-editor.php:226
-msgid "Details about the event."
-msgstr ""
-
-#: templates/forms/event-editor.php:226
-msgid "HTML Allowed."
-msgstr ""
-
-#: templates/forms/event-editor.php:233
-msgid "Category:"
 msgstr ""
 
 #: buddypress/bp-em-admin.php:33
