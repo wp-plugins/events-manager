@@ -53,7 +53,7 @@ class EM_Categories extends EM_Object implements Iterator{
 			foreach($results as $result){
 				$categories[$result['category_id']] = new EM_Category($result);
 			}
-			return $categories; //We return all the categories matched as an EM_Event array. 
+			return apply_filters('em_categories_get', $categories, $args); //We return all the categories matched as an EM_Event array. 
 		}
 		
 		//We assume it's either an empty array or array of search arguments to merge with defaults			
@@ -84,7 +84,7 @@ class EM_Categories extends EM_Object implements Iterator{
 		$results = $wpdb->get_results( apply_filters('em_categories_get_sql',$sql, $args), ARRAY_A);
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){
-			return $results;
+			return apply_filters('em_categories_get_array', $results, $args);
 		}
 		
 		//Make returned results EM_Event objects

@@ -13,14 +13,10 @@ function em_admin_warnings() {
 		//New User Intro
 		if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
 			// Disable Hello to new user if requested
-			update_option ( 'dbem_hello_to_user', 0 );
-		}elseif ( get_option ( 'dbem_hello_to_user' ) == 1 && !empty($_GET['page']) && $_GET['page'] == 'events-manager-events' ) {
-			$current_user = wp_get_current_user ();
+			delete_option('dbem_hello_to_user');
+		}elseif ( get_option ( 'dbem_hello_to_user' ) ) {
 			//FIXME update welcome msg with good links
-			$advice = sprintf ( __ ( "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> 
-			<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>
-			<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>
-			<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>", 'dbem' ), $current_user->display_name, get_bloginfo ( 'url' ) . '/wp-admin/widgets.php', 'http://wp-events-plugin.com/documentation/template-tags/', 'http://wp-events-plugin.com/documentation/shortcodes/', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager&disable_hello_to_user=true' );
+			$advice = sprintf( __("<p>Events Manager is ready to go! It is highly recommended you read the <a href='%s'>Getting Started</a> guide on our site, as well as checking out the <a href='%s'>Settings Page</a>. <a href='%s' title='Don't show this advice again'>Dismiss</a></p>", 'dbem'), 'http://wp-events-plugin.com/documentation/getting-started/?utm_source=em&utm_medium=plugin&utm_content=installationlink&utm_campaign=plugin_links', get_bloginfo('url').'/wp-admin/admin.php?page=events-manager-options',  $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'disable_hello_to_user=true');
 			?>
 			<div id="message" class="updated">
 				<?php echo $advice; ?>
@@ -84,18 +80,7 @@ function em_admin_warnings() {
 				<?php		
 			}
 		}
-		//Fixing the RC2 fiasco
-		if( !empty($_GET['em_dismiss_notice_rc_reimport']) ){
-			delete_option('dbem_notice_rc_reimport');
-		}else{
-			if( get_option('dbem_notice_rc_reimport') ){
-				?>
-				<div id="em_page_error" class="updated">
-					<p><?php echo sprintf ( __( 'If you upgraded from 3.x to the RC2 and the update did not go so well, <a href="%s">try reimporting old settings</a>. Warning! Re-importing will rename all event slugs, re-import your old category settings from events, and recreate all tickets, so changes to these areas will be lost. <a href="%s">Dismiss</a>' ), 'admin.php?page=events-manager-options&action=em_rc_reimport&_wpnonce='.wp_create_nonce('em_rc_reimport'),  em_add_get_params($_SERVER['REQUEST_URI'], array('em_dismiss_notice_rc_reimport'=>1))); ?></p>
-				</div>
-				<?php		
-			}
-		}
+		
 		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'em_rc_reimport' && wp_verify_nonce($_REQUEST['_wpnonce'], 'em_rc_reimport') ){
 			require_once( dirname(__FILE__).'/../em-install.php');
 			em_migrate_v3();

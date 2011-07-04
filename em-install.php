@@ -25,13 +25,11 @@ function em_install() {
 		em_set_capabilities();
 		em_add_options();
 		
-		//Migrate?
-		if( $old_version < 4 && $old_version != '' ){
+		//New install, or Migrate?
+		if( $old_version < 4 && !empty($old_version) ){
 			em_migrate_v3();
-		}else{
-			if( $old_version < 4.002 ){
-		   		add_option('dbem_notice_rc_reimport',1);
-		   	}
+		}elseif( empty($old_version) ){
+			update_option('dbem_hello_to_user',1);
 		}
 		//Upate Version	
 	  	update_option('dbem_version', EM_VERSION); 
@@ -96,13 +94,13 @@ function em_create_events_table() {
 		//Add default events
 		$in_one_week = date('Y-m-d', time() + 60*60*24*7);
 		$in_four_weeks = date('Y-m-d', time() + 60*60*24*7*4); 
-		$in_one_year = date('Y-m-d', time() + 60*60*24*7*365);
+		$in_one_year = date('Y-m-d', time() + 60*60*24*365);
 		
 		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id, event_slug, event_owner, event_status) VALUES ('Orality in James Joyce Conference', '$in_one_week', '16:00:00', '18:00:00', 1, 'oralty-in-james-joyce-conference','".get_current_user_id()."',1)");
 		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id, event_slug, event_owner, event_status)	VALUES ('Traditional music session', '$in_four_weeks', '20:00:00', '22:00:00', 2, 'traditional-music-session','".get_current_user_id()."',1)");
 		$wpdb->query("INSERT INTO ".$table_name." (event_name, event_start_date, event_start_time, event_end_time, location_id, event_slug, event_owner, event_status) VALUES ('6 Nations, Italy VS Ireland', '$in_one_year','22:00:00', '24:00:00', 3, '6-nations-italy-vs-ireland','".get_current_user_id()."',1)");
 	}else{
-		if( get_option('dbem_version') < 4 ){
+		if( get_option('dbem_version') < 4 && get_option('dbem_version') != '' ){
 			$wpdb->query("ALTER TABLE $table_name CHANGE event_seats event_spaces int(5)");
 			$wpdb->query("ALTER TABLE $table_name CHANGE event_author event_owner BIGINT( 20 ) UNSIGNED NULL DEFAULT NULL");
 		}

@@ -52,7 +52,7 @@ function bp_em_setup_nav() {
 	if( empty($bp->events) ) bp_em_setup_globals();
 	/* Add 'Events' to the main user profile navigation */
 	bp_core_new_nav_item( array(
-		'name' => __( 'Events', 'bp-em' ),
+		'name' => __( 'Events', 'dbem' ),
 		'slug' => $bp->events->slug,
 		'position' => 80,
 		'screen_function' => bp_is_my_profile() ? 'bp_em_my_events':'bp_em_events',

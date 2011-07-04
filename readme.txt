@@ -3,8 +3,8 @@ Contributors: nutsmuggler, netweblogic
 Donate link: http://wp-events-plugin.com
 Tags: attendance, attendee, buddypress, calendar, registration, event, event calendar, event management, event registration, events, events calendar, gigs, payment, payments, paypal, registration, sports, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking
 Requires at least: 3.1
-Tested up to: 3.1.3
-Stable tag: 4.0.83
+Tested up to: 3.2
+Stable tag: 4.0.9
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -14,7 +14,7 @@ For those upgrading from version 3 to 4, you must upgrade to version 3.0.98 manu
            
 == Description ==
 
-Events Manager 4.0 is a full-featured event registration management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
+Events Manager is a full-featured event registration management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
 
 For documentation, tutorials and support please visit the [plugin website](http://wp-events-plugin.com/).
 
@@ -45,9 +45,10 @@ Main Features
 * Plenty of template tags and shortcodes for use in your posts and pages
 * Actively maintained and supported
 * Lots of documentation and tutorials
+* Guest Event Submissions (new, beta)
 * And much more!
 
-We have just released a [pro add-on](http://wp-events-plugin.com/) which adds PayPal and priority support, as well as many more powerful upcoming features for those with serious eventing needs!
+We have just released a [pro add-on](http://wp-events-plugin.com/events-manager-pro/) which adds PayPal and priority support, as well as many more powerful upcoming features for those with serious eventing needs!
 
 Events Manager was rewritten in 3.0 from the ground up with flexibility in mind. Through use of object oriented programming and exposing hooks and filters throughout the site, you can modify Events Manager just like you would Wordpress!
 
@@ -75,40 +76,7 @@ Please view [this page](http://wp-events-plugin.com/news/events-manager-4-0-rele
  
 == Frequently Asked Questions ==
 
-See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is updated regularly.
-
-= How do I resize the map? =
-
-Insert some code similar to this in your css:
-
-`.em-location-map, .em-locations-map { width: 300px !important; height: 200px !important; }`    
-
-Do not leave out the `!important` directive; it is, needless to say, important.
-
-= Can I further customise the event page? =
-
-Sure, there are a few ways to do this:
-
-*   If you want to simply change what event info is displayed, you can do this in the settings page by providing a combination of html and placeholders (see plugin settings page).
-*   Add to your theme's CSS files to further style the page.
-*   Edit the wordpress event page (via Pages in the admin area) and changing its [template](http://codex.wordpress.org/Pages#Page_Templates).
-*   For heavy customisation, you can use the some of the plugins own conditional tags, described in the template tags section of our documentation.
-
-= How does Events Manager work? =
-
-When installed, events Manager creates a special â€œEventsâ€ page. This page is used for the dynamic content of the events. All the events link actually link to this page, which gets rendered differently for each event.
-
-= Are events posts? =
-
-Events aren't posts. They are stored in a different table and have no relationship whatsoever with posts.
-
-= Why aren't events posts? =
-
-We wanted our users to have a simple, straightforward way of inserting the events, without confusing them with posts. EM was also created before custom posts were available. If you need to treat events like posts, there may be other events plugins that do this.
-
-= Is Events Manager available in my language? =
-
-At this stage, Events Manager is available in German, Spanish, Czech, Italian, Dutch, Portuguese and Swedish. Yet, the plugin is fully localisable; I will welcome any translator willing to add a translation of Events Manager into their mother tongue for this plugin.
+See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is updated more regularly.
 
 == Screenshots ==
 
@@ -120,6 +88,16 @@ At this stage, Events Manager is available in German, Spanish, Czech, Italian, D
 6. Manage attendees with various booking reports
 
 == Changelog ==
+
+= 4.0.9 =
+* added various google/user translated languages and updated pot file
+* fixed various gettext domain errors
+* search form defaults and behaviour fixed
+* added dates to buddypress group events template
+* improved the google maps js insertion (updated with google's new recommended code)
+* no pending approvals when switching from auto-approval to approval mode
+* added new "within month" scope
+* various other nuances fixed
 
 = 4.0.83 =
 * added option to remove booking login form

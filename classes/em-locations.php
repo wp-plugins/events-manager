@@ -43,10 +43,10 @@ class EM_Locations extends EM_Object implements Iterator {
 			foreach($results as $result){
 				$locations[$result['location_id']] = new EM_Location($result);
 			}
-			return $locations; //We return all the events matched as an EM_Event array. 
+			return apply_filters('em_locations_get', $locations, $args); //We return all the events matched as an EM_Event array. 
 		}elseif( is_numeric($args) ){
 			//return an event in the usual array format
-			return apply_filters('em_locations_get', array(new EM_Event($args)), $args);
+			return apply_filters('em_locations_get', array(new EM_Location($args)), $args);
 		}elseif( is_array($args) && is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
 			return apply_filters('em_locations_get', $args, $args);
 		}	
@@ -87,13 +87,14 @@ class EM_Locations extends EM_Object implements Iterator {
 	
 		//If we're only counting results, return the number of results
 		if( $count ){
-			return count($wpdb->get_results($sql));		
+			$results = $wpdb->get_results($sql);	
+			return apply_filters('em_locations_get_array', count($results),$results, $args);	
 		}
 		$results = $wpdb->get_results($sql, ARRAY_A);
 		
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){
-			return $results;
+			return apply_filters('em_locations_get_array', $results, $args);
 		}
 		
 		$locations = array();

@@ -82,13 +82,13 @@ class EM_Events extends EM_Object implements Iterator {
 			
 		//If we're only counting results, return the number of results
 		if( $count ){
-			return $wpdb->get_var($sql);		
+			return apply_filters('em_events_get_count', $wpdb->get_var($sql), $args);		
 		}
 		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){
-			return $results;
+			return apply_filters('em_events_get_array',$results, $args);
 		}
 		
 		//Make returned results EM_Event objects

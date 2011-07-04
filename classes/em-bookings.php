@@ -60,6 +60,9 @@ class EM_Bookings extends EM_Object implements Iterator{
 		if ( $this->get_available_spaces() >= $EM_Booking->get_spaces(true) ) {
 			//Save the booking
 			$email = false;
+			if( !get_option('dbem_bookings_approval') ){
+				$EM_Booking->status = 1;
+			}
 			$result = $EM_Booking->save(false);
 			if($result){
 				//Success
