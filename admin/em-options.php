@@ -39,7 +39,7 @@ function em_options_save(){
 		do_action('em_options_save');
 		function em_options_saved_notice(){
 			?>
-			<div class="updated"><p><strong><?php _e('Changes saved.'); ?></strong></p></div>
+			<div class="updated"><p><strong><?php _e('Changes saved.', 'dbem'); ?></strong></p></div>
 			<?php
 		}
 		add_action ( 'admin_notices', 'em_options_saved_notice' );
@@ -64,7 +64,7 @@ function em_admin_options_page() {
 	$categories_placeholder_tip = " ". sprintf(__('This accepts %s placeholders.','dbem'), $categories_placeholders);
 	$bookings_placeholder_tip = " ". sprintf(__('This accepts %s, %s and %s placeholders.','dbem'), $bookings_placeholders, $events_placeholders, $locations_placeholders);
 	
-	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes' ) .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
+	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes', 'dbem') .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
 	//Do some multisite checking here for reuse
 	$multisite_view = (is_multisite() && is_super_admin()) ? ' - ('.__('Only Network Admins see this','dbem').')':'';
 	?>	
@@ -93,8 +93,7 @@ function em_admin_options_page() {
 					$('#dbem_title_html_row').hide();					
 				}
 			});
-			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');
-			$(".postbox").addClass('closed'); //Let's start off closing everything for now.			
+			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');	
 		});
 	</script>
 	<div class="wrap">
@@ -111,7 +110,7 @@ function em_admin_options_page() {
 			}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'bookings_migrate_delete'){
 				require_once( dirname(__FILE__).'/../em-install.php');
 				em_migrate_bookings_delete();
-			}		
+			}
 		?>
 		<?php if( $wpdb->get_var("SHOW TABLES LIKE '".EM_PEOPLE_TABLE."'") == EM_PEOPLE_TABLE ): ?>
 			<?php if( $wpdb->get_var('SELECT COUNT(*) FROM '.EM_TICKETS_BOOKINGS_TABLE) > 0 ): ?>
@@ -146,17 +145,17 @@ function em_admin_options_page() {
 			<div class="metabox-holder">         
 			<!-- // TODO Move style in css -->
 			<div class='postbox-container' style='width: 99.5%'>
-			<div id="" class="meta-box-sortables" >
+			<div id="">
 		  
 			<?php if ( is_multisite() && is_super_admin() ) : ?>
 			<div  class="postbox " >
-				<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Multi Site Options', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
+				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Multi Site Options', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
 				<div class="inside">
 		            <table class="form-table">
 						<?php 
-						em_options_radio_binary ( __( 'Enable global tables mode?' ), 'dbem_ms_global_table', __( 'Setting this to yes will make all events save in the main site event tables (EM must also be activated). This allows you to share events across different blogs, such as showing events in your network whilst allowing users to display and manage their events within their own blog. Bear in mind that activating this will mean old events created on the sub-blogs will not be accessible anymore, and if you switch back they will be but new events created during global events mode will only remain on the main site.','dbem' ) );
-						em_options_radio_binary ( __( 'Display global events on main blog?' ), 'dbem_ms_global_events', __( 'Displays events from all sites on the network by default. You can still restrict events by blog using shortcodes and template tags coupled with the <code>blog</code> attribute. Requires global tables to be turned on.','dbem' ) );
-						em_options_radio_binary ( __( 'Link sub-site events directly to sub-site?' ), 'dbem_ms_global_events_links', __( 'When displaying global events on the main site you have the option of users viewing the event details on the main site or being directed to the sub-site.','dbem' ) );
+						em_options_radio_binary ( __( 'Enable global tables mode?', 'dbem'), 'dbem_ms_global_table', __( 'Setting this to yes will make all events save in the main site event tables (EM must also be activated). This allows you to share events across different blogs, such as showing events in your network whilst allowing users to display and manage their events within their own blog. Bear in mind that activating this will mean old events created on the sub-blogs will not be accessible anymore, and if you switch back they will be but new events created during global events mode will only remain on the main site.','dbem' ) );
+						em_options_radio_binary ( __( 'Display global events on main blog?', 'dbem'), 'dbem_ms_global_events', __( 'Displays events from all sites on the network by default. You can still restrict events by blog using shortcodes and template tags coupled with the <code>blog</code> attribute. Requires global tables to be turned on.','dbem' ) );
+						em_options_radio_binary ( __( 'Link sub-site events directly to sub-site?', 'dbem'), 'dbem_ms_global_events_links', __( 'When displaying global events on the main site you have the option of users viewing the event details on the main site or being directed to the sub-site.','dbem' ) );
 						echo $save_button;
 						?>
 					</table>
@@ -166,15 +165,15 @@ function em_admin_options_page() {
 			<?php endif; ?>
 		  
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'General options', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'General options', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 	            <table class="form-table">
 					<?php 
-					em_options_radio_binary ( __( 'Use dropdown for locations?' ), 'dbem_use_select_for_locations', __( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );  
-					em_options_radio_binary ( __( 'Use recurrence?' ), 'dbem_recurrence_enabled', __( 'Select yes to enable the recurrence features feature','dbem' ) ); 
-					em_options_radio_binary ( __( 'Enable bookings?' ), 'dbem_rsvp_enabled', __( 'Select yes to allow bookings and tickets for events.','dbem' ) );     
-					em_options_radio_binary ( __( 'Use categories?' ), 'dbem_categories_enabled', __( 'Select yes to enable the category features','dbem' ) );     
-					em_options_radio_binary ( __( 'Use event attributes?' ), 'dbem_attributes_enabled', __( 'Select yes to enable the attributes feature','dbem' ) );
+					em_options_radio_binary ( __( 'Use dropdown for locations?', 'dbem' ), 'dbem_use_select_for_locations', __( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );  
+					em_options_radio_binary ( __( 'Use recurrence?', 'dbem' ), 'dbem_recurrence_enabled', __( 'Select yes to enable the recurrence features feature','dbem' ) ); 
+					em_options_radio_binary ( __( 'Enable bookings?', 'dbem' ), 'dbem_rsvp_enabled', __( 'Select yes to allow bookings and tickets for events.','dbem' ) );     
+					em_options_radio_binary ( __( 'Use categories?', 'dbem' ), 'dbem_categories_enabled', __( 'Select yes to enable the category features','dbem' ) );     
+					em_options_radio_binary ( __( 'Use event attributes?', 'dbem' ), 'dbem_attributes_enabled', __( 'Select yes to enable the attributes feature','dbem' ) );
 					
 					/*default category*/
 					$category_options = array();
@@ -183,7 +182,7 @@ function em_admin_options_page() {
 					foreach($EM_Categories as $EM_Category){
 				 		$category_options[$EM_Category->id] = $EM_Category->name;
 				 	}
-					em_options_select ( __( 'Default Category' ), 'dbem_default_category', $category_options, __( 'This option allows you to select the default category when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
+					em_options_select ( __( 'Default Category', 'dbem' ), 'dbem_default_category', $category_options, __( 'This option allows you to select the default category when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
 					
 					/*default location*/
 					$location_options = array();
@@ -192,13 +191,14 @@ function em_admin_options_page() {
 					foreach($EM_Locations as $EM_Location){
 				 		$location_options[$EM_Location->id] = $EM_Location->name;
 				 	}
-					em_options_select ( __( 'Default Location' ), 'dbem_default_location', $location_options, __( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
+					em_options_select ( __( 'Default Location', 'dbem' ), 'dbem_default_location', $location_options, __( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
 					
 					/*default location country*/
-					em_options_select ( __( 'Default Location Country' ), 'dbem_location_default_country', em_get_countries(__('no default country', 'dbem')), __('If you select a default country, that will be pre-selected when creating a new location.','dbem') );
+					em_options_select ( __( 'Default Location Country', 'dbem' ), 'dbem_location_default_country', em_get_countries(__('no default country', 'dbem')), __('If you select a default country, that will be pre-selected when creating a new location.','dbem') );
 										
 					em_options_textarea ( __( 'Event Attributes', 'dbem' ), 'dbem_placeholders_custom', sprintf(__( "You can also add event attributes here, one per line in this format <code>#_ATT{key}</code>. They will not appear on event pages unless you insert them into another template below, but you may want to store extra information about an event for other uses. <a href='%s'>More information on placeholders.</a>", 'dbem' ), 'wp-events-plugin.com/documentation/event-attributes/') );
-										
+					
+					em_options_radio_binary ( __('Show some love?','dbem'), 'dbem_credits', __( 'Hundreds of free hours have gone into making this free plugin, show your support and add a small link to the plugin website at the bottom of your event pages.','dbem' ) );
 					echo $save_button;
 					?>
 				</table>
@@ -207,7 +207,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox --> 
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Events page', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Events page', 'dbem' ); ?> </span></h3>
 			<div class="inside">
                  <table class="form-table">         
 				 	<?php
@@ -216,12 +216,12 @@ function em_admin_options_page() {
 				 	$em_disable_filter = true;     
 				 	$get_pages = get_pages();
 				 	$events_page_options = array();
-				 	$events_page_options[0] = __('[No Events Page]');
+				 	$events_page_options[0] = __('[No Events Page]', 'dbem');
 				 	//TODO Add the hierarchy style ddm, like when choosing page parents
 				 	foreach($get_pages as $page){
 				 		$events_page_options[$page->ID] = $page->post_title;
 				 	}
-				   	em_options_select ( __( 'Events page' ), 'dbem_events_page', $events_page_options, __( 'This option allows you to select which page to use as an events page','dbem' ) );
+				   	em_options_select ( __( 'Events page', 'dbem' ), 'dbem_events_page', $events_page_options, __( 'This option allows you to select which page to use as an events page','dbem' ) );
 					$em_disable_filter = false;
 					//Rest
 					em_options_radio_binary ( __( 'Show events page in lists?', 'dbem' ), 'dbem_list_events_page', __( 'Check this option if you want the events page to appear together with other pages in pages lists.', 'dbem' ) ); 
@@ -297,7 +297,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Events format', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Events format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
 				 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Events','dbem')); ?></strong></td></tr>
@@ -320,7 +320,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			      
            	<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Calendar format', 'dbem' ); ?></span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Calendar format', 'dbem' ); ?></span></h3>
 			<div class="inside">
             	<table class="form-table">
 					<?php
@@ -336,7 +336,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Locations format', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Locations format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
 				 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Locations','dbem')); ?></strong></td></tr>
@@ -361,7 +361,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Categories format', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Categories format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
 				 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Categories','dbem')); ?></strong></td></tr>
@@ -383,7 +383,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'RSS feed format', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'RSS feed format', 'dbem' ); ?> </span></h3>
 			<div class="inside">
             	<table class="form-table">
 					<?php				
@@ -398,7 +398,7 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Maps and geotagging', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Maps and geotagging', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'> 
 					<?php $gmap_is_active = get_option ( 'dbem_gmap_is_active' ); ?>
@@ -419,32 +419,36 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking and Ticketing Options', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking and Ticketing Options', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'> 
 					<?php 
 					em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
 					em_options_select ( __( 'Currency', 'dbem' ), 'dbem_bookings_currency', em_get_currencies()->names, __( 'Choose your currency for displaying event pricing.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Single ticket mode?', 'dbem' ), 'dbem_bookings_tickets_single', __( 'In single ticket mode, users can only create one ticket per booking (and will not see options to add more tickets).', 'dbem' ) );
+					em_options_radio_binary ( __( 'Show ticket table in single ticket mode?', 'dbem' ), 'dbem_bookings_tickets_single_form', __( 'If you prefer a ticket table like with multiple tickets, even for single ticket events, enable this.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Show unavailable tickets?', 'dbem' ), 'dbem_bookings_tickets_show_unavailable', __( 'You can choose whether or not to show unavailable tickets to visitors.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Reserved unconfirmed spaces?', 'dbem' ), 'dbem_bookings_approval_reserved', __( 'By default, event spaces become unavailable once there are enough CONFIRMED bookings. To reserve spaces even if unnapproved, choose yes.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Show multiple tickets if logged out?', 'dbem' ), 'dbem_bookings_tickets_show_loggedout', __( 'If logged out, a user will be asked to register in order to book. However, we can show available tickets if you have more than one ticket.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Allow overbooking when approving?', 'dbem' ), 'dbem_bookings_approval_overbooking', __( 'If you get a lot of pending bookings and you decide to allow more bookings than spaces allow, setting this to yes will allow you to override the event space limit when manually approving.', 'dbem' ) );
 					em_options_radio_binary ( __( 'Allow guest bookings?', 'dbem' ), 'dbem_bookings_anonymous', __( 'If enabled, guest visitors can supply an email address and a user account will automatically be created for them along with their booking. They will be also be able to log back in with that newly created account.', 'dbem' ) );
+					em_options_radio_binary ( __( 'Display login form?', 'dbem' ), 'dbem_bookings_login_form', __( 'Choose whether or not to display a login form in the booking form area to remind your members to log in before booking.', 'dbem' ) );
+					
 					echo $save_button;     
-					?> 
+					?>
 				</table>
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking Email Templates', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Booking Email Templates', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
-					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users (), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
+					em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users(), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
 					em_options_input_text ( __( 'Email events admin?', 'dbem' ), 'dbem_bookings_notify_admin', __( "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email).", 'dbem' ) );
 					em_options_radio_binary ( __( 'Email contact person?', 'dbem' ), 'dbem_bookings_contact_email', __( 'Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)', 'dbem' ) );
+					em_options_radio_binary ( __( 'Disable new registration email?', 'dbem' ), 'dbem_email_disable_registration', __( 'Check this option if you want to prevent the wordpress registration email from going out when a user anonymously books an event.', 'dbem' ) );
 					?>
 					<tr><td colspan='2'><h4><?php _e('Contact person booking confirmed','dbem') ?></h4></td></tr>
 					<tr><td colspan='2'><?php echo __('An email will be sent to the event contact when a booking is first made.','dbem').$bookings_placeholder_tip ?></td></tr>
@@ -489,7 +493,7 @@ function em_admin_options_page() {
 			
 			<?php if ( !is_multisite() || (is_multisite() && is_super_admin()) ) : ?>
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Email Settings', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Email Settings', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
@@ -508,25 +512,25 @@ function em_admin_options_page() {
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Images size', 'dbem' ); ?> <?php echo $multisite_view; ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Images size', 'dbem' ); ?> <?php echo $multisite_view; ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php
 					em_options_input_text ( __( 'Maximum width (px)', 'dbem' ), 'dbem_image_max_width', __( 'The maximum allowed width for images uploades', 'dbem' ) );
 					em_options_input_text ( __( 'Maximum height (px)', 'dbem' ), 'dbem_image_max_height', __( "The maximum allowed height for images uploaded, in pixels", 'dbem' ) );
-					em_options_input_text ( __( 'Maximum size (bytes)', 'dbem' ), 'dbem_image_max_size', __( "The maximum allowed size for images uploaded, in pixels", 'dbem' ) );
+					em_options_input_text ( __( 'Maximum size (bytes)', 'dbem' ), 'dbem_image_max_size', __( "The maximum allowed size for images uploaded, in bytes", 'dbem' ) );
 					echo $save_button;
 					?>
-				</table> 
+				</table>
 			</div> <!-- . inside -->
 			</div> <!-- .postbox -->
 			
 			<div  class="postbox" >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'User Capabilities', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'User Capabilities', 'dbem' ); ?> <?php echo $multisite_view; ?></span></h3>
 			<div class="inside">
 	            <table class="form-table">
 	            	<tr><td colspan="2">
-	            		<strong><?php _e('Warning: Changing these values may result in exposing previously hidden information to all users.')?></strong><br />
+	            		<strong><?php _e('Warning: Changing these values may result in exposing previously hidden information to all users.', 'dbem')?></strong><br />
 	            	</td></tr>
 					<?php
             		global $wp_roles;
@@ -582,12 +586,29 @@ function em_admin_options_page() {
 			        <?php echo $save_button; ?>
 				</table>
 			</div> <!-- . inside --> 
-			</div> <!-- .postbox -->    
-			<?php endif; ?>
-
+			</div> <!-- .postbox -->     
+			<?php endif; ?> 
+			
+			<div  class="postbox" >
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Anonymous Event Submission', 'dbem' ); ?> (Beta)<?php echo $multisite_view; ?></span></h3>
+			<div class="inside">
+	            <table class="form-table">
+	            	<tr><td colspan="2">
+	            		<strong><?php _e('You can allow users to publicly submit events on your blog by using the [event_form] shortcode, and enabling anonymous submissions below.','dbem')?> (beta)</strong><br />
+					</td></tr>
+            		<?php
+						em_options_radio_binary ( __( 'Allow anonymous event submissions?', 'dbem' ), 'dbem_events_anonymous_submissions', __( 'Would you like to allow users to submit bookings anonymously? If so, you can use the new [event_form] shortcode or <code>em_event_form()</code> template tag with this enabled.', 'dbem' ) );
+		            	em_options_select ( __('Guest Default User', 'dbem'), 'dbem_events_anonymous_user', em_get_wp_users (), __( 'Events require a user to own them. In order to allow events to be submitted anonymously you need to assign that event a specific user. We recommend you create a "Anonymous" subscriber with a very good password and use that.', 'dbem' ) );
+		            	em_options_textarea ( __( 'Success Message', 'dbem' ), 'dbem_events_anonymous_result_success', __( 'Anonymous submitters cannot see or modify their event once submitted. You can customize the success message they see here.', 'dbem' ).$events_placeholder_tip );
+					?>
+			        <?php echo $save_button; ?>
+				</table>
+			</div> <!-- . inside --> 
+			</div> <!-- .postbox --> 
+			
 			<?php /*
 			<div  class="postbox " >
-			<div class="handlediv" title="<?php __('Click to toggle'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Debug Modes', 'dbem' ); ?> </span></h3>
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Debug Modes', 'dbem' ); ?> </span></h3>
 			<div class="inside">
 				<table class='form-table'>
 					<?php

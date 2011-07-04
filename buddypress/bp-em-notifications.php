@@ -41,19 +41,19 @@ function bp_em_screen_notification_settings() {
 	<table class="notification-settings" id="bp-em-notification-settings">
 		<tr>
 			<th class="icon"></th>
-			<th class="title"><?php _e( 'Events', 'bp-em' ) ?></th>
-			<th class="yes"><?php _e( 'Yes', 'bp-em' ) ?></th>
-			<th class="no"><?php _e( 'No', 'bp-em' )?></th>
+			<th class="title"><?php _e( 'Events', 'dbem' ) ?></th>
+			<th class="yes"><?php _e( 'Yes', 'dbem' ) ?></th>
+			<th class="no"><?php _e( 'No', 'dbem' )?></th>
 		</tr>
 		<tr>
 			<td></td>
-			<td><?php _e( 'Action One', 'bp-em' ) ?></td>
+			<td><?php _e( 'Action One', 'dbem' ) ?></td>
 			<td class="yes"><input type="radio" name="notifications[notification_em_action_one]" value="yes" <?php if ( !get_usermeta( $current_user->id,'notification_em_action_one') || 'yes' == get_usermeta( $current_user->id,'notification_em_action_one') ) { ?>checked="checked" <?php } ?>/></td>
 			<td class="no"><input type="radio" name="notifications[notification_em_action_one]" value="no" <?php if ( get_usermeta( $current_user->id,'notification_em_action_one') == 'no' ) { ?>checked="checked" <?php } ?>/></td>
 		</tr>
 		<tr>
 			<td></td>
-			<td><?php _e( 'Action Two', 'bp-em' ) ?></td>
+			<td><?php _e( 'Action Two', 'dbem' ) ?></td>
 			<td class="yes"><input type="radio" name="notifications[notification_em_action_two]" value="yes" <?php if ( !get_usermeta( $current_user->id,'notification_em_action_two') || 'yes' == get_usermeta( $current_user->id,'notification_em_action_two') ) { ?>checked="checked" <?php } ?>/></td>
 			<td class="no"><input type="radio" name="notifications[notification_em_action_two]" value="no" <?php if ( 'no' == get_usermeta( $current_user->id,'notification_em_action_two') ) { ?>checked="checked" <?php } ?>/></td>
 		</tr>
@@ -83,26 +83,30 @@ function bp_em_format_notifications( $action, $item_id, $secondary_item_id, $tot
 		case 'pending_booking':
 			//Count pending bookings
 			if( get_option('dbem_bookings_approval')){ 
-				$EM_Bookings = EM_Bookings::get(array('status'=>0, 'owner'=>get_current_user_id()));
-				if ( count($EM_Bookings->bookings) > 1 ) {
-					return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/?event_id" title="' . __( 'My Bookings', 'bp-em' ) . '">' . __('You have a pending booking','dbem'). '</a>', $EM_Bookings );
+				if ( $total_items > 1 ) {
+					return '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . __('You have a pending booking','dbem'). '</a>';
 				} else {
-					return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'bp-em' ) . '">' . sprintf(__('You have %s pending bookings','dbem'), $bookings_pending_count). '</a>', $EM_Bookings );
+					return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . sprintf(__('You have %s pending bookings','dbem'), $total_items). '</a>' );
 				}
 			}
 		break;
 		case 'confirmed_booking':
 			//Count pending bookings
-			$EM_Bookings = EM_Bookings::get(array('status'=>0, 'owner'=>get_current_user_id()));
-			if ( count($EM_Bookings->bookings) > 1 ) {
-				return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/?event_id="'.$EM_Bookings->first()->event_id.'" title="' . __( 'My Bookings', 'bp-em' ) . '">' . __('You have a new booking','dbem'). '</a>', $EM_Bookings );
+			if ( $total_items > 1 ) {
+				return apply_filters( 'bp_em_format_confirmed_booking_notifications', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . __('You have a confirmed booking','dbem'). '</a>' );
 			} else {
-				return apply_filters( 'bp_em_format_new_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'bp-em' ) . '">' . sprintf(__('You have %s new bookings','dbem'), $bookings_pending_count). '</a>', $EM_Bookings );
+				return apply_filters( 'bp_em_format_confirmed_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . sprintf(__('You have %s confirmed bookings','dbem'), $total_items). '</a>' );
+			}
+		break;
+		case 'cancelled_booking':
+			//Count pending bookings
+			if ( $total_items > 1 ) {
+				return apply_filters( 'bp_em_format_cancelled_booking_notifications', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . __('A user cancelled a booking','dbem'). '</a>' );
+			} else {
+				return apply_filters( 'bp_em_format_cancelled_booking_notification', '<a href="' . $bp->loggedin_user->domain . $bp->events->slug . '/my-bookings/" title="' . __( 'My Bookings', 'dbem' ) . '">' . sprintf(__('%s users cancelled bookings.','dbem'), $total_items). '</a>' );
 			}
 		break;
 	}
-	die($action);
-
 	do_action( 'bp_em_format_notifications', $action, $item_id, $secondary_item_id, $total_items );
 
 	return false;

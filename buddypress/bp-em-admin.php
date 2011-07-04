@@ -30,28 +30,28 @@ function bp_em_admin() {
 	$setting_two = get_option( 'em-setting-two' );
 ?>
 	<div class="wrap">
-		<h2><?php _e( 'Events Admin', 'bp-em' ) ?></h2>
+		<h2><?php _e( 'Events Admin', 'dbem' ) ?></h2>
 		<br />
 
-		<?php if ( isset($updated) ) : ?><?php echo "<div id='message' class='updated fade'><p>" . __( 'Settings Updated.', 'bp-em' ) . "</p></div>" ?><?php endif; ?>
+		<?php if ( isset($updated) ) : ?><?php echo "<div id='message' class='updated fade'><p>" . __( 'Settings Updated.', 'dbem' ) . "</p></div>" ?><?php endif; ?>
 
 		<form action="<?php echo site_url() . '/wp-admin/admin.php?page=bp-em-settings' ?>" name="em-settings-form" id="em-settings-form" method="post">
 
 			<table class="form-table">
 				<tr valign="top">
-					<th scope="row"><label for="target_uri"><?php _e( 'Option One', 'bp-em' ) ?></label></th>
+					<th scope="row"><label for="target_uri"><?php _e( 'Option One', 'dbem' ) ?></label></th>
 					<td>
 						<input name="em-setting-one" type="text" id="em-setting-one" value="<?php echo attribute_escape( $setting_one ); ?>" size="60" />
 					</td>
 				</tr>
-					<th scope="row"><label for="target_uri"><?php _e( 'Option Two', 'bp-em' ) ?></label></th>
+					<th scope="row"><label for="target_uri"><?php _e( 'Option Two', 'dbem' ) ?></label></th>
 					<td>
 						<input name="em-setting-two" type="text" id="em-setting-two" value="<?php echo attribute_escape( $setting_two ); ?>" size="60" />
 					</td>
 				</tr>
 			</table>
 			<p class="submit">
-				<input type="submit" name="submit" value="<?php _e( 'Save Settings', 'bp-em' ) ?>"/>
+				<input type="submit" name="submit" value="<?php _e( 'Save Settings', 'dbem' ) ?>"/>
 			</p>
 
 			<?php
