@@ -14,6 +14,7 @@ class EM_Widget extends WP_Widget {
     		'scope' => 'future',
     		'order' => 'ASC',
     		'limit' => 5,
+    		'category' => get_option('dbem_default_category'),
     		'format' => '#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul>',
     		'nolistwrap' => false,
     		'orderby' => 'start_date,start_time,name',
@@ -25,18 +26,15 @@ class EM_Widget extends WP_Widget {
     }
 
     /** @see WP_Widget::widget */
-    function widget($args, $instance) {	
-    	$instance = array_merge($this->defaults, $instance);   
+    function widget($args, $instance) {
+    	$instance = array_merge($this->defaults, $instance);
     	$instance = $this->fix_scope($instance); // depcreciate	
     	echo $args['before_widget'];
 	    echo $args['before_title'];
 	    echo $instance['title'];
 	    echo $args['after_title'];
-		if ( is_numeric($instance['time_limit']) && $instance['time_limit'] > 0 ){
-			$instance['scope'] = date('Y-m-d').",".date('Y-m-t', strtotime('+'.($instance['time_limit']-1).' month'));
-		}	
 		$instance['owner'] = false;
-	
+		 
 		$events = EM_Events::get($instance);
 		echo "<ul>";
 		$li_wrap = !preg_match('/^<li>/i', trim($instance['format']));
@@ -76,20 +74,12 @@ class EM_Widget extends WP_Widget {
     	$instance = $this->fix_scope($instance); // depcreciate
         ?>
 		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'dbem'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $instance['title']; ?>" />
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php _e('Number of events','dbem'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" size="3" value="<?php echo $instance['limit']; ?>" />
-		</p>
-		<p>
-			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope of the events','dbem'); ?>:</label><br/>
-			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >
-				<option value="future" <?php echo ($instance['scope'] == 'future') ? 'selected="selected"':''; ?>><?php _e('Future events','dbem'); ?></option>
-				<option value="all" <?php echo ($instance['scope'] == 'all') ? 'selected="selected"':''; ?>><?php _e('All events','dbem'); ?></option>
-				<option value="past" <?php echo ($instance['scope'] == 'past') ? 'selected="selected"':''; ?>><?php _e('Past events','dbem'); ?></option>
-			</select>
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope','dbem'); ?>: </label><br/>
@@ -101,17 +91,6 @@ class EM_Widget extends WP_Widget {
 				<?php endforeach; ?>
 			</select>
 		</p>
-		<script type="text/javascript">
-			jQuery(document).ready( function($) {
-				$('#<?php echo $this->get_field_id('scope'); ?>').change(function(e){
-					if( $(this).val() == 'future' ){
-						$('#<?php echo $this->get_field_id('time_limit'); ?>').parent().show();
-					}else{
-						$('#<?php echo $this->get_field_id('time_limit'); ?>').parent().hide();
-					}
-				}).trigger('change');				
-			});
-		</script>
 		<p>
 			<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Order By','dbem'); ?>: </label>
 			<select  id="<?php echo $this->get_field_id('orderby'); ?>" name="<?php echo $this->get_field_name('orderby'); ?>">
@@ -147,6 +126,11 @@ class EM_Widget extends WP_Widget {
 			</select>
 		</p>
 		<p>
+            <label for="<?php echo $this->get_field_id('category'); ?>"><?php _e('Category IDs','dbem'); ?>: </label>
+            <input type="text" id="<?php echo $this->get_field_id('category'); ?>" name="<?php echo $this->get_field_name('category'); ?>" size="3" value="<?php echo $instance['category']; ?>" /><br />
+            <em><?php _e('1,2,3 or 2 (0 = all)','dbem'); ?> </em>
+        </p>
+		<p>
 			<label for="<?php echo $this->get_field_id('format'); ?>"><?php _e('List item format','dbem'); ?>: </label>
 			<textarea rows="5" cols="24" id="<?php echo $this->get_field_id('format'); ?>" name="<?php echo $this->get_field_name('format'); ?>"><?php echo $instance['format']; ?></textarea>
 		</p>
@@ -172,7 +156,7 @@ class EM_Widget extends WP_Widget {
     	}elseif( !empty($instance['time_limit']) && $instance['time_limit'] == 1){
     		$instance['scope'] = 'month';
     	}elseif( !empty($instance['time_limit']) && $instance['time_limit'] == 'no-limit'){
-    		$instance['scope'] = 'any';
+    		$instance['scope'] = 'all';
     	}
     	return $instance;
     }

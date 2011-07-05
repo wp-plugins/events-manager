@@ -3,7 +3,9 @@
  * Performs actions on init. This works for both ajax and normal requests, the return results depends if an em_ajax flag is passed via POST or GET.
  */
 function em_init_actions() {
-	global $wpdb,$EM_Notices; 
+	global $wpdb,$EM_Notices,$EM_Event; 
+	if( defined('DOING_AJAX') && DOING_AJAX ) $_REQUEST['em_ajax'] = true;
+	
 	//NOTE - No EM objects are globalized at this point, as we're hitting early init mode.
 	//TODO Clean this up.... use a uniformed way of calling EM Ajax actions
 	if( !empty($_REQUEST['em_ajax']) || !empty($_REQUEST['em_ajax_action']) ){
@@ -51,14 +53,13 @@ function em_init_actions() {
 	
 	//Event Actions
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,5) == 'event' ){
-		global $EM_Event, $EM_Notices;
 		//Load the event object, with saved event if requested
 		if( !empty($_REQUEST['event_id']) ){
 			$EM_Event = new EM_Event($_REQUEST['event_id']);
 		}else{
 			$EM_Event = new EM_Event();
 		}
-		if( $_REQUEST['action'] == 'event_save' && current_user_can('edit_events') ){
+		if( $_REQUEST['action'] == 'event_save' && (current_user_can('edit_events') || (!is_user_logged_in() && get_option('dbem_events_anonymous_submissions'))) ){
 			//Check Nonces
 			if( is_admin() ){
 				if( !wp_verify_nonce($_REQUEST['_wpnonce'] && 'event_save') ) check_admin_referer('trigger_error');				
@@ -78,9 +79,7 @@ function em_init_actions() {
 				}
 				$events_result = true;
 			}else{
-				foreach($EM_Event->get_errors() as $error){
-					$EM_Notices->add_error( $error );	
-				}
+				$EM_Notices->add_error( $EM_Event->get_errors() );
 				$events_result = false;				
 			}
 		}
@@ -173,6 +172,24 @@ function em_init_actions() {
 					$result = false;
 				}
 			}
+		}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "locations_search" && (!empty($_REQUEST['term']) || !empty($_REQUEST['q'])) ){
+			$location_cond = ( !current_user_can('edit_others_locations') && !current_user_can('read_others_locations') ) ? "AND location_owner=".get_current_user_id() : '';
+			$term = (isset($_REQUEST['term'])) ? '%'.$_REQUEST['term'].'%' : '%'.$_REQUEST['q'].'%';
+			$sql = $wpdb->prepare("
+				SELECT 
+					location_id AS `id`,
+					Concat( location_name, ', ', location_address, ', ', location_town)  AS `label`,
+					location_name AS `value`,
+					location_address AS `address`, 
+					location_town AS `town`, 
+					location_state AS `state`,
+					location_postcode AS `postcode`,
+					location_country AS `country`
+				FROM ".EM_LOCATIONS_TABLE." 
+				WHERE ( `location_name` LIKE %s ) $location_cond LIMIT 10
+			", $term);
+			echo EM_Object::json_encode($wpdb->get_results($sql));
+			die();
 		}
 		if( isset($result) && $result && !empty($_REQUEST['em_ajax']) ){
 			$return = array('result'=>true, 'message'=>$EM_Location->feedback_message);
@@ -240,10 +257,10 @@ function em_init_actions() {
 	//Booking Actions
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,7) == 'booking' && (is_user_logged_in() || ($_REQUEST['action'] == 'booking_add' && get_option('dbem_bookings_anonymous'))) ){
 		global $EM_Event, $EM_Booking, $EM_Person;
-		//Load the event object, with saved event if requested
-		$EM_Event = ( !empty($_REQUEST['event_id']) ) ? new EM_Event($_REQUEST['event_id']): new EM_Event();
 		//Load the booking object, with saved booking if requested
 		$EM_Booking = ( !empty($_REQUEST['booking_id']) ) ? new EM_Booking($_REQUEST['booking_id']) : new EM_Booking();
+		//Load the event object, with saved event if requested
+		$EM_Event = $EM_Booking->get_event();
 		
 		$allowed_actions = array('bookings_approve'=>'approve','bookings_reject'=>'reject','bookings_unapprove'=>'unapprove', 'bookings_delete'=>'delete');
 		$result = false;
@@ -255,7 +272,7 @@ function em_init_actions() {
 				//Does this user need to be registered first?
 				$registration = true;
 				//TODO do some ticket validation before registering the user
-				if( $_REQUEST['register_user'] && get_option('dbem_bookings_anonymous') ){
+				if( !is_user_logged_in() && !empty($_REQUEST['register_user']) && get_option('dbem_bookings_anonymous') ){
 					//find random username - less options for user, less things go wrong
 					$username_root = explode('@', $_REQUEST['user_email']);
 					$username_rand = $username_root[0].rand(1,1000);
@@ -266,7 +283,8 @@ function em_init_actions() {
 					if( is_numeric($id) ){
 						$EM_Person = new EM_Person($id);
 						$EM_Booking->person_id = $id;
-						$EM_Notices->add_confirm( __('A new user account has been created for you. Please check your email for access details.','dbem') );
+						$feedback = __('A new user account has been created for you. Please check your email for access details.','dbem');
+						$EM_Notices->add_confirm( $feedback );
 					}else{
 						$registration = false;
 						if( is_object($id) && get_class($id) == 'WP_Error'){
@@ -280,14 +298,20 @@ function em_init_actions() {
 							$EM_Notices->add_error( __('There was a problem creating a user account, please contact a website administrator.','dbem') );
 						}
 					}
+				}elseif( !is_user_logged_in() ){
+					$registration = false;
+					$EM_Notices->add_error( __('You must log in or register to make a booking.','dbem') );
 				}
-				if( $EM_Event->get_bookings()->add($EM_Booking) && $registration ){
+				if( $registration && $EM_Event->get_bookings()->add($EM_Booking) ){
 					$result = true;
-					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
+					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );		
+					$feedback = $EM_Event->get_bookings()->feedback_message;	
 				}else{
-					ob_start(); echo "<pre>"; print_r($id); echo "</pre>";
+					$result = false;
+					ob_start();
 					$EM_Booking->feedback_message = ob_get_clean();
-					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
+					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );			
+					$feedback = $EM_Event->get_bookings()->feedback_message;				
 				}
 			}else{
 				$result = false;
@@ -296,19 +320,28 @@ function em_init_actions() {
 	  	}elseif ( $_REQUEST['action'] == 'booking_add_one' && is_object($EM_Event) && is_user_logged_in() ) {
 			//ADD/EDIT Booking
 			em_verify_nonce('booking_add_one');
-			$EM_Booking = new EM_Booking(array('person_id'=>get_current_user_id(), 'event_id'=>$EM_Event->id)); //new booking
-			//get first ticket in this event and book one place there.
-			$EM_Ticket = $EM_Event->get_bookings()->get_tickets()->get_first();		
-			$EM_Ticket_Booking = new EM_Ticket_Booking(array('ticket_id'=>$EM_Ticket->id, 'ticket_booking_spaces'=>1));
-			$EM_Booking->get_tickets_bookings();
-			$EM_Booking->tickets_bookings->tickets_bookings[] = $EM_Ticket_Booking;
-			//Now save booking
-			if( $EM_Event->get_bookings()->add($EM_Booking) ){
-				$EM_Booking = $booking;
-				$result = true;
-				$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );
+			if( !$EM_Event->get_bookings()->has_booking(get_current_user_id()) ){
+				$EM_Booking = new EM_Booking(array('person_id'=>get_current_user_id(), 'event_id'=>$EM_Event->id)); //new booking
+				$EM_Ticket = $EM_Event->get_bookings()->get_tickets()->get_first();			
+				//get first ticket in this event and book one place there. similar to getting the form values in EM_Booking::get_post_values()
+				$EM_Ticket_Booking = new EM_Ticket_Booking(array('ticket_id'=>$EM_Ticket->id, 'ticket_booking_spaces'=>1));
+				$EM_Booking->get_tickets_bookings();
+				$EM_Booking->tickets_bookings->booking = $EM_Booking;
+				$EM_Booking->tickets_bookings->add( $EM_Ticket_Booking );
+				//Now save booking
+				if( $EM_Event->get_bookings()->add($EM_Booking) ){
+					$result = true;
+					$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );		
+					$feedback = $EM_Event->get_bookings()->feedback_message;	
+				}else{
+					$result = false;
+					$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );			
+					$feedback = $EM_Event->get_bookings()->feedback_message;	
+				}
 			}else{
-				$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );				
+				$result = false;
+				$feedback = __('You already have booked a seat at this event.','dbem');
+				$EM_Notices->add_error( $feedback );
 			}
 	  	}elseif ( $_REQUEST['action'] == 'booking_cancel') {
 	  		//Cancel Booking
@@ -327,6 +360,7 @@ function em_init_actions() {
 					}
 				}else{
 					$EM_Notices->add_error( $EM_Booking->get_errors() );
+					$feedback = $EM_Booking->feedback_message;
 				}
 			}else{
 				$EM_Notices->add_error( __('You must log in to cancel your booking.', 'dbem') );
@@ -352,7 +386,7 @@ function em_init_actions() {
 			}
 			//FIXME not adhereing to object's feedback or error message, like other bits in this file.
 			//TODO multiple deletion won't work in ajax
-			if( isset($result) && !empty($_REQUEST['em_ajax']) ){
+			if( !empty($_REQUEST['em_ajax']) ){
 				if( $result ){
 					echo $feedback;
 				}else{
@@ -362,11 +396,11 @@ function em_init_actions() {
 			}
 		}
 		if( $result && defined('DOING_AJAX') ){
-			$return = array('result'=>true, 'message'=>$EM_Booking->feedback_message);
+			$return = array('result'=>true, 'message'=>$feedback);
 			echo EM_Object::json_encode($return);
 			die();
 		}elseif( !$result && defined('DOING_AJAX') ){
-			$return = array('result'=>false, 'message'=>$EM_Booking->feedback_message, 'errors'=>$EM_Notices->get_errors());
+			$return = array('result'=>false, 'message'=>$feedback, 'errors'=>$EM_Notices->get_errors());
 			echo EM_Object::json_encode($return);
 			die();
 		}
@@ -382,10 +416,11 @@ function em_init_actions() {
 	//AJAX call for searches
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,6) == 'search' ){
 		if( $_REQUEST['action'] == 'search_states' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_states') ){
+			$results = array();
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_country=%s", $_REQUEST['country']));
-			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE, $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
+			}elseif( !empty($_REQUEST['region']) ){
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_region=%s", $_REQUEST['region']));
 			}
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
@@ -406,16 +441,16 @@ function em_init_actions() {
 		}
 		if( $_REQUEST['action'] == 'search_regions' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_regions') ){
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s", $_REQUEST['country']));
 			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != ''", $_REQUEST['country']));
+				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != ''", $_REQUEST['country']));
 			}
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
 				ob_start();
 				?>
 				<option value=''><?php _e('All Regions','dbem'); ?></option>
-				<?php			
+				<?php	
 				foreach( $results as $result ){
 					echo "<option>{$result->value}</option>";
 				}
@@ -436,7 +471,7 @@ function em_init_actions() {
 	}
 		
 	//EM Ajax requests require this flag.
-	if( is_admin() && is_user_logged_in() ){
+	if( is_user_logged_in() ){
 		//Admin operations
 		//Specific Oject Ajax
 		if( !empty($_REQUEST['em_obj']) ){
@@ -444,10 +479,14 @@ function em_init_actions() {
 				case 'em_bookings_events_table':
 				case 'em_bookings_pending_table':
 				case 'em_bookings_confirmed_table':
+					//add some admin files just in case
+					include_once('admin/bookings/em-confirmed.php');
+					include_once('admin/bookings/em-events.php');
+					include_once('admin/bookings/em-pending.php');
 					call_user_func($_REQUEST['em_obj']);
+					exit();
 					break;
 			}
-			die();
 		}
 	}	
 }  

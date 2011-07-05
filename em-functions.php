@@ -88,8 +88,10 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 		//split further into associative array
 		$url_params = array();
 		foreach($url_params_dirty as $url_param){
-			$url_param = explode('=', $url_param);
-			$url_params[$url_param[0]] = $url_param[1];
+			if( !empty($url_param[1]) ){
+				$url_param = explode('=', $url_param);
+				$url_params[$url_param[0]] = $url_param[1];
+			}
 		}
 		//Merge it together
 		$params = array_merge($url_params, $params);
@@ -116,7 +118,7 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 function em_get_countries($add_blank = false){
 	global $em_countries_array;
 	if( !is_array($em_countries_array) ){
-		$em_countries_array = array('AF' => 'Afghanistan', 	'DZ' => 'Algeria', 	'AS' => 'American Samoa', 	'AD' => 'Andorra', 	'AO' => 'Angola', 	'AR' => 'Argentina', 	'AU' => 'Australia', 	'AT' => 'Austria', 	'BH' => 'Bahrain', 	'BD' => 'Bangladesh', 	'BE' => 'Belgium', 	'BJ' => 'Benin', 	'BT' => 'Bhutan', 	'BW' => 'Botswana', 	'BR' => 'Brazil', 	'BN' => 'Brunei', 	'BG' => 'Bulgaria', 	'BI' => 'Burundi', 	'KH' => 'Cambodia', 	'CA' => 'Canada', 	'CF' => 'Central African Republic', 	'TD' => 'Chad', 	'CL' => 'Chile', 	'CN' => 'China', 	'CI' => 'Côte D\'ivoire', 	'HR' => 'Croatia', 	'CZ' => 'Czech Republic', 	'CD' => 'Democratic Republic of the Congo', 	'DK' => 'Denmark', 	'DJ' => 'Djibouti', 	'EG' => 'Egypt', 	'EE' => 'Estonia', 	'ET' => 'Ethiopia', 	'FJ' => 'Fiji', 	'FI' => 'Finland', 	'FR' => 'France', 	'PF' => 'French Polynesia', 	'GA' => 'Gabon', 	'GM' => 'Gambia', 	'DE' => 'Germany', 	'GH' => 'Ghana', 	'GR' => 'Greece', 	'GU' => 'Guam', 	'HK' => 'Hong Kong', 	'HU' => 'Hungary', 	'IS' => 'Iceland', 	'IN' => 'India', 	'ID' => 'Indonesia', 	'IQ' => 'Iraq', 	'IE' => 'Ireland', 	'IL' => 'Israel', 	'IT' => 'Italy', 	'JP' => 'Japan', 	'JO' => 'Jordan', 	'KZ' => 'Kazakhstan', 	'KE' => 'Kenya', 	'KW' => 'Kuwait', 	'KG' => 'Kyrgyzstan', 	'LA' => 'Laos', 	'LV' => 'Latvia', 	'LB' => 'Lebanon', 	'LI' => 'Liechtenstein', 	'LT' => 'Lithuania', 	'LU' => 'Luxembourg', 	'MO' => 'Macao', 	'MK' => 'Macedonia', 	'MG' => 'Madagascar', 	'MW' => 'Malawi', 	'MY' => 'Malaysia', 	'MV' => 'Maldives', 	'MT' => 'Malta', 	'MU' => 'Mauritius', 	'MX' => 'Mexico', 	'MN' => 'Mongolia', 	'MA' => 'Morocco', 	'MZ' => 'Mozambique', 	'MM' => 'Myanmar(Burma)', 	'NA' => 'Namibia', 	'NP' => 'Nepal', 	'NL' => 'Netherlands', 	'NC' => 'New Caledonia', 	'NZ' => 'New Zealand', 	'NG' => 'Nigeria', 	'MP' => 'Northern Mariana Islands', 	'NO' => 'Norway', 	'OM' => 'Oman', 'PA' => 'Panama', 	'PK' => 'Pakistan', 	'PW' => 'Palau', 	'PG' => 'Papua New Guinea', 	'PH' => 'Philippines', 	'PL' => 'Poland', 	'PT' => 'Portugal', 	'QA' => 'Qatar', 	'CG' => 'Republic of the Congo', 	'RO' => 'Romania', 	'RU' => 'Russia', 	'RW' => 'Rwanda', 	'WS' => 'Samoa', 	'ST' => 'São Tomé And Príncipe', 	'SA' => 'Saudi Arabia', 	'SN' => 'Senegal', 	'RS' => 'Serbia', 	'SC' => 'Seychelles', 	'SL' => 'Sierra Leone', 	'SG' => 'Singapore', 	'SK' => 'Slovakia', 	'SI' => 'Slovenia', 	'SB' => 'Solomon Islands', 	'ZA' => 'South Africa', 	'KR' => 'South Korea', 	'ES' => 'Spain', 	'LK' => 'Sri Lanka', 	'SE' => 'Sweden', 	'CH' => 'Switzerland', 	'TW' => 'Taiwan', 	'TJ' => 'Tajikistan', 	'TZ' => 'Tanzania', 	'TH' => 'Thailand', 	'TG' => 'Togo', 	'TO' => 'Tonga', 	'TN' => 'Tunisia', 	'TR' => 'Turkey', 	'TM' => 'Turkmenistan', 	'UG' => 'Uganda', 	'UA' => 'Ukraine', 	'AE' => 'United Arab Emirates', 	'GB' => 'United Kingdom', 	'US' => 'United States', 	'UZ' => 'Uzbekistan',	'VE' => 'Venezuela', 	'VU' => 'Vanuatu', 	'VN' => 'Vietnam', 	'YE' => 'Yemen', 	'ZM' => 'Zambia', 	'ZW' => 'Zimbabwe' );
+		$em_countries_array = array('AF' => 'Afghanistan','DZ' => 'Algeria','AS' => 'American Samoa','AD' => 'Andorra','AO' => 'Angola','AR' => 'Argentina','AU' => 'Australia','AT' => 'Austria','BH' => 'Bahrain','BD' => 'Bangladesh','BE' => 'Belgium','BJ' => 'Benin','BT' => 'Bhutan','BO' => 'Bolivia','BW' => 'Botswana','BR' => 'Brazil','BN' => 'Brunei','BG' => 'Bulgaria','BI' => 'Burundi','KH' => 'Cambodia','CA' => 'Canada','CF' => 'Central African Republic','TD' => 'Chad','CL' => 'Chile','CN' => 'China','CO' => 'Colombia','CI' => 'C&ocirc;te D\'Ivoire','HR' => 'Croatia','CZ' => 'Czech Republic','CD' => 'Democratic Republic of the Congo','DK' => 'Denmark','DJ' => 'Djibouti','EC' => 'Ecuador', 'EG' => 'Egypt','EE' => 'Estonia','ET' => 'Ethiopia','FJ' => 'Fiji','FI' => 'Finland','FR' => 'France','PF' => 'French Polynesia','GA' => 'Gabon','GM' => 'Gambia','DE' => 'Germany','GH' => 'Ghana','GR' => 'Greece', 'GL' => 'Greenland',	'GU' => 'Guam','HK' => 'Hong Kong','HU' => 'Hungary','IS' => 'Iceland','IN' => 'India','ID' => 'Indonesia','IQ' => 'Iraq','IE' => 'Ireland','IL' => 'Israel','IT' => 'Italy','JP' => 'Japan', 'JM' => 'Jamaica','JO' => 'Jordan','KZ' => 'Kazakhstan','KE' => 'Kenya','KW' => 'Kuwait','KG' => 'Kyrgyzstan','LA' => 'Laos','LV' => 'Latvia','LB' => 'Lebanon','LI' => 'Liechtenstein','LT' => 'Lithuania','LU' => 'Luxembourg','MO' => 'Macao','MK' => 'Macedonia','MG' => 'Madagascar','MW' => 'Malawi','MY' => 'Malaysia','MV' => 'Maldives','MT' => 'Malta','MU' => 'Mauritius','MX' => 'Mexico','MN' => 'Mongolia','MA' => 'Morocco','MZ' => 'Mozambique','MM' => 'Myanmar(Burma)','NA' => 'Namibia','NP' => 'Nepal','NL' => 'Netherlands','NC' => 'New Caledonia','NZ' => 'New Zealand','NG' => 'Nigeria','MP' => 'Northern Mariana Islands','NO' => 'Norway','OM' => 'Oman', 'PA' => 'Panama', 'PE' => 'Peru','PK' => 'Pakistan','PW' => 'Palau','PG' => 'Papua New Guinea','PH' => 'Philippines','PL' => 'Poland','PT' => 'Portugal','QA' => 'Qatar','CG' => 'Republic of the Congo','RO' => 'Romania','RU' => 'Russia','RW' => 'Rwanda','WS' => 'Samoa','ST' => 'S&agrave;o Tom&eacute; And Pr&iacute;ncipe','SA' => 'Saudi Arabia','SN' => 'Senegal','RS' => 'Serbia','SC' => 'Seychelles','SL' => 'Sierra Leone','SG' => 'Singapore','SK' => 'Slovakia','SI' => 'Slovenia','SB' => 'Solomon Islands','ZA' => 'South Africa','KR' => 'South Korea','ES' => 'Spain','LK' => 'Sri Lanka','SE' => 'Sweden','CH' => 'Switzerland', 'SY' => 'Syria',	'TW' => 'Taiwan','TJ' => 'Tajikistan','TZ' => 'Tanzania','TH' => 'Thailand','TG' => 'Togo','TO' => 'Tonga','TN' => 'Tunisia','TR' => 'Turkey','TM' => 'Turkmenistan','UG' => 'Uganda','UA' => 'Ukraine','AE' => 'United Arab Emirates','GB' => 'United Kingdom','US' => 'United States','UZ' => 'Uzbekistan',	'VE' => 'Venezuela', 'VG' => 'British Virgin Islands', 'VI' => 'US Virgin Islands', 'VU' => 'Vanuatu','VN' => 'Vietnam','YE' => 'Yemen','ZM' => 'Zambia','ZW' => 'Zimbabwe' );
 		array_walk($em_countries_array, '__');
 	}
 	if($add_blank !== false){
@@ -141,6 +143,7 @@ function em_get_scopes(){
 		'tomorrow' => __('Tomorrow\'s events','dbem'),
 		'month' => __('Events this month','dbem'),
 		'next-month' => __('Events next month','dbem'),
+		'1-months'  => __('Events current and next month','dbem'),
 		'2-months'  => __('Events within 2 months','dbem'),
 		'3-months'  => __('Events within 3 months','dbem'),
 		'6-months'  => __('Events within 6 months','dbem'),
@@ -153,10 +156,14 @@ function em_get_currencies(){
 	$currencies = new stdClass();
 	$currencies->names = array('EUR' => 'EUR - Euros','USD' => 'USD - U.S. Dollars','GBP' => 'GBP - British Pounds','CAD' => 'CAD - Canadian Dollars','AUD' => 'AUD - Australian Dollars','BRL' => 'BRL - Brazilian Reais','CZK' => 'CZK - Czech Koruny','DKK' => 'DKK - Danish Kroner','HKD' => 'HKD - Hong Kong Dollars','HUF' => 'HUF - Hungarian Forints','ILS' => 'ILS - Israeli New Shekels','JPY' => 'JPY - Japanese Yen','MYR' => 'MYR - Malaysian Ringgit','MXN' => 'MXN - Mexican Pesos','TWD' => 'TWD - New Taiwan Dollars','NZD' => 'NZD - New Zealand Dollars','NOK' => 'NOK - Norwegian Kroner','PHP' => 'PHP - Philippine Pesos','PLN' => 'PLN - Polish Zlotys','SGD' => 'SGD - Singapore Dollars','SEK' => 'SEK - Swedish Kronor','CHF' => 'CHF - Swiss Francs','THB' => 'THB - Thai Baht','TRY' => 'TRY - Turkish Liras');
 	$currencies->symbols = array( 'EUR' => '&euro;','USD' => '$','GBP' => '&pound;','CAD' => '$','AUD' => '$','BRL' => 'R$','DKK' => 'kr','HKD' => '$','HUF' => 'Ft','JPY' => '&#165;','MYR' => 'RM','MXN' => '$','TWD' => '$','NZD' => '$','NOK' => 'kr','PHP' => 'Php','SGD' => '$','SEK' => 'kr','CHF' => 'CHF','TRY' => 'TL');
+	$currencies->true_symbols = array( 'EUR' => '€','USD' => '$','GBP' => '£','CAD' => '$','AUD' => '$','BRL' => 'R$','DKK' => 'kr','HKD' => '$','HUF' => 'Ft','JPY' => '&#165;','MYR' => 'RM','MXN' => '$','TWD' => '$','NZD' => '$','NOK' => 'kr','PHP' => 'Php','SGD' => '$','SEK' => 'kr','CHF' => 'CHF','TRY' => 'TL');
 	return apply_filters('em_get_currencies',$currencies);
 }
 
-function em_get_currency_symbol(){
+function em_get_currency_symbol($true_symbol = false){
+	if($true_symbol){
+		return em_get_currencies()->true_symbols[get_option('dbem_bookings_currency','USD')];
+	}
 	return em_get_currencies()->symbols[get_option('dbem_bookings_currency','USD')];
 }
 
@@ -208,7 +215,7 @@ function em_get_attributes(){
 	//We now have one long string of formats, get all the attribute placeholders
 	preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $formats, $matches);
 	//Now grab all the unique attributes we can use in our event.
-	$attributes = array();
+	$attributes = array('names'=>array(), 'values'=>array());
 	foreach($matches[1] as $key => $attribute) {
 		if( !in_array($attribute, $attributes['names']) ){			
 			$attributes['names'][] = $attribute ;
@@ -243,9 +250,9 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 
 	// Check the username
 	if ( $sanitized_user_login == '' ) {
-		$errors->add( 'empty_username', __( '<strong>ERROR</strong>: Please enter a username.' ) );
+		$errors->add( 'empty_username', __( '<strong>ERROR</strong>: Please enter a username.', 'dbem') );
 	} elseif ( ! validate_username( $user_login ) ) {
-		$errors->add( 'invalid_username', __( '<strong>ERROR</strong>: This username is invalid because it uses illegal characters. Please enter a valid username.' ) );
+		$errors->add( 'invalid_username', __( '<strong>ERROR</strong>: This username is invalid because it uses illegal characters. Please enter a valid username.', 'dbem') );
 		$sanitized_user_login = '';
 	} elseif ( username_exists( $sanitized_user_login ) ) {
 		$errors->add( 'username_exists', __( '<strong>ERROR</strong>: This username is already registered, please choose another one.' ) );
@@ -253,9 +260,9 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 
 	// Check the e-mail address
 	if ( $user_email == '' ) {
-		$errors->add( 'empty_email', __( '<strong>ERROR</strong>: Please type your e-mail address.' ) );
+		$errors->add( 'empty_email', __( '<strong>ERROR</strong>: Please type your e-mail address.', 'dbem') );
 	} elseif ( ! is_email( $user_email ) ) {
-		$errors->add( 'invalid_email', __( '<strong>ERROR</strong>: The email address isn&#8217;t correct.' ) );
+		$errors->add( 'invalid_email', __( '<strong>ERROR</strong>: The email address isn&#8217;t correct.', 'dbem') );
 		$user_email = '';
 	} elseif ( email_exists( $user_email ) ) {
 		$errors->add( 'email_exists', __( '<strong>ERROR</strong>: This email is already registered, please choose another one.' ) );
@@ -276,7 +283,7 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 	}
 	
 	if ( ! $user_id ) {
-		$errors->add( 'registerfail', sprintf( __( '<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !' ), get_option( 'admin_email' ) ) );
+		$errors->add( 'registerfail', sprintf( __( '<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !', 'dbem'), get_option( 'admin_email' ) ) );
 		return $errors;
 	}
 
@@ -298,6 +305,9 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 function em_new_user_notification($user_id, $plaintext_pass = '') {
 	global $LoginWithAjax;
 	
+	//if you want you can disable this email from going out, and will still consider registration as successful.
+	if( get_option('dbem_email_disable_registration') ){ return true;  }
+	
 	//Copied out of /wp-includes/pluggable.php
 	$user = new WP_User($user_id);
 
@@ -308,10 +318,10 @@ function em_new_user_notification($user_id, $plaintext_pass = '') {
 	// we want to reverse this for the plain text arena of emails.
 	$blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES);
 
-	$message  = sprintf(__('New user registration on your blog %s:'), $blogname) . "\r\n\r\n";
-	$message .= sprintf(__('Username: %s'), $user_login) . "\r\n\r\n";
-	$message .= sprintf(__('E-mail: %s'), $user_email) . "\r\n";
-	@wp_mail(get_option('admin_email'), sprintf(__('[%s] New User Registration'), $blogname), $message);
+	$message  = sprintf(__('New user registration on your blog %s:', 'dbem'), $blogname) . "\r\n\r\n";
+	$message .= sprintf(__('Username: %s', 'dbem'), $user_login) . "\r\n\r\n";
+	$message .= sprintf(__('E-mail: %s', 'dbem'), $user_email) . "\r\n";
+	@wp_mail(get_option('admin_email'), sprintf(__('[%s] New User Registration', 'dbem'), $blogname), $message);
 
 	if ( empty($plaintext_pass) )
 		return;
@@ -322,7 +332,7 @@ function em_new_user_notification($user_id, $plaintext_pass = '') {
 	$message = ob_get_clean();
 	$message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), $message);
 	
-	return wp_mail($user_email, sprintf(__('[%s] Your username and password'), $blogname), $message);
+	return wp_mail($user_email, sprintf(__('[%s] Your username and password', 'dbem'), $blogname), $message);
 }
 
 /*
@@ -359,7 +369,7 @@ function em_checkbox_items($name, $array, $saved_values, $horizontal = true) {
 function em_options_input_text($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
-		<th scope="row"><?php _e($title, 'dbem') ?></th>
+		<th scope="row"><?php echo $title; ?></th>
 	    <td>
 			<input name="<?php echo $name ?>" type="text" id="<?php echo $title ?>" style="width: 95%" value="<?php echo htmlspecialchars(get_option($name), ENT_QUOTES); ?>" size="45" /><br />
 			<em><?php echo $description; ?></em>
@@ -370,7 +380,7 @@ function em_options_input_text($title, $name, $description) {
 function em_options_input_password($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
-		<th scope="row"><?php _e($title, 'dbem') ?></th>
+		<th scope="row"><?php echo $title; ?></th>
 	    <td>
 			<input name="<?php echo $name ?>" type="password" id="<?php echo $title ?>" style="width: 95%" value="<?php echo get_option($name); ?>" size="45" /><br />
 			<em><?php echo $description; ?></em>
@@ -382,7 +392,7 @@ function em_options_input_password($title, $name, $description) {
 function em_options_textarea($title, $name, $description) {
 	?>
 	<tr valign="top" id='<?php echo $name;?>_row'>
-		<th scope="row"><?php _e($title,'dbem')?></th>
+		<th scope="row"><?php echo $title; ?></th>
 			<td>
 				<textarea name="<?php echo $name ?>" id="<?php echo $name ?>" rows="6" cols="60"><?php echo htmlspecialchars(get_option($name), ENT_QUOTES);?></textarea><br/>
 				<em><?php echo $description; ?></em>
@@ -396,7 +406,7 @@ function em_options_radio($name, $options, $title='') {
 		?>		 
 	   	<tr valign="top" id='<?php echo $name;?>_row'>
 	   		<?php if( !empty($title) ): ?>
-	   		<th scope="row"><?php _e($title,'dbem'); ?></th>
+	   		<th scope="row"><?php  echo $title; ?></th>
 	   		<td>
 	   		<?php else: ?>
 	   		<td colspan="2">
@@ -422,10 +432,10 @@ function em_options_radio_binary($title, $name, $description) {
 	}
 	?>		 
    	<tr valign="top" id='<?php echo $name;?>_row'>
-   		<th scope="row"><?php _e($title,'dbem'); ?></th>
+   		<th scope="row"><?php echo $title; ?></th>
    		<td>  
-   			<?php _e('Yes'); ?> <input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
-			<?php _e('No'); ?> <input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
+   			<?php _e('Yes','dbem'); ?> <input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
+			<?php _e('No','dbem'); ?> <input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
 			<br/><em><?php echo $description; ?></em>
 		</td>
    	</tr>
@@ -439,7 +449,7 @@ function em_options_select($title, $name, $list, $description) {
 	}
 	?>
    	<tr valign="top" id='<?php echo $name;?>_row'>
-   		<th scope="row"><?php _e($title,'dbem'); ?></th>
+   		<th scope="row"><?php echo $title; ?></th>
    		<td>   
 			<select name="<?php echo $name; ?>" > 
 				<?php foreach($list as $key => $value) : ?>   

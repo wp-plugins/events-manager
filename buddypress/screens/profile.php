@@ -24,7 +24,7 @@ function bp_em_events() {
 	 * display the corresponding information. The functions are presented below:
 	 */
 	function bp_em_events_title() {
-		_e( 'Events', 'bp-em' );
+		_e( 'Events', 'dbem' );
 	}
 
 	function bp_em_events_content() {

@@ -1,9 +1,9 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.0rc1
+Version: 4.1
 Plugin URI: http://wp-events-plugin.com
-Description: A complete event management solution for wordpress. Recurring events, locations, google maps, rss, booking registration and more!
+Description: Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
 Author URI: http://wp-events-plugin.com
 */
@@ -102,9 +102,18 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.0019); //self expanatory
-define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory 
-$upload_dir = wp_upload_dir();
+define('EM_VERSION', 4.0832); //self expanatory
+define('EM_PRO_MIN_VERSION', 1.2); //self expanatory
+define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
+if( get_site_option('dbem_ms_global_table') && is_multisite() ){
+	//If in ms recurrence mode, we are getting the default wp-content/uploads folder
+	$upload_dir = array(
+		'basedir' => WP_CONTENT_DIR.'/uploads/',
+		'baseurl' => WP_CONTENT_URL.'/uploads/'
+	);
+}else{
+	$upload_dir = wp_upload_dir();	
+}
 if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
 	define("EM_IMAGE_UPLOAD_DIR", $upload_dir['basedir']."/locations-pics/");
 	define("EM_IMAGE_UPLOAD_URI", $upload_dir['baseurl']."/locations-pics/");
@@ -167,21 +176,27 @@ add_filter('dbem_notes_map', 'js_escape');
  */
 function em_enqueue_public() {
 	//Scripts
-	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-form')); //jQuery will load as dependency
-	wp_localize_script('events-manager','EM', array(
-		'ajaxurl' => admin_url( 'admin-ajax.php' )
-	));
-	//Locale Script
-	$locale_code = substr ( get_locale (), 0, 2 );
-	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
-	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
-		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager'));
-	}
+	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position')); //jQuery will load as dependency
 	//Styles
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
+	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
 	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
+	em_js_localize_vars();
 }
-add_action ( 'init', 'em_enqueue_public' );
+if(!is_admin()){ add_action ( 'init', 'em_enqueue_public' ); }
+
+function em_js_localize_vars(){
+	//Localise vars regardless
+	$locale_code = substr ( WPLANG, 0, 2 );
+	if( WPLANG == 'en_GB'){
+		$locale_code = 'en-GB';
+	}
+	wp_localize_script('events-manager','EM', array(
+		'ajaxurl' => admin_url('admin-ajax.php'),
+		'locationajaxurl' => admin_url('admin-ajax.php?action=locations_search'),
+		'firstDay' => get_option('start_of_week'),
+		'locale' => $locale_code
+	));
+}
 
 /**
  * Perform plugins_loaded actions 
@@ -215,10 +230,21 @@ add_filter('plugins_loaded','em_plugins_loaded');
  */
 function em_init(){
 	//Hard Links
-	global $EM_Mailer, $wpdb;
+	global $EM_Mailer, $wpdb, $wp_rewrite;
 	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
-	define('EM_RSS_URI', trailingslashit(EM_URI)."rss/"); //RSS PAGE URI
+	if( $wp_rewrite->using_permalinks() ){
+		define('EM_RSS_URI', trailingslashit(EM_URI)."rss/"); //RSS PAGE URI
+	}else{
+		define('EM_RSS_URI', EM_URI."&rss=1"); //RSS PAGE URI
+	}
 	$EM_Mailer = new EM_Mailer();
+	//Upgrade/Install Routine
+	if( is_admin() && current_user_can('activate_plugins') ){
+		if( EM_VERSION > get_option('dbem_version', 0) ){
+			require_once( dirname(__FILE__).'/em-install.php');
+			em_install();
+		}
+	}
 }
 add_filter('init','em_init',1);
 
@@ -273,8 +299,9 @@ function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//Count pending bookings
 		$bookings_num = '';
+		$bookings_pending_count = 0;
 		if( get_option('dbem_bookings_approval') == 1){ 
-			$bookings_pending_count = count(EM_Bookings::get(array('status'=>0))->bookings);
+			$bookings_pending_count = apply_filters('em_bookings_pending_count',count(EM_Bookings::get(array('status'=>'0'))->bookings));
 			//TODO Add flexible permissions
 			if($bookings_pending_count > 0){
 				$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
@@ -292,7 +319,7 @@ function em_create_events_submenu () {
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,'edit_events','events-manager','em_admin_events_page', '../wp-content/plugins/events-manager/includes/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu:
 	   		$plugin_pages = array(); 
-			$plugin_pages[] = add_submenu_page('events-manager', __('Edit'),__('Edit').$events_num,'edit_events','events-manager','em_admin_events_page');
+			$plugin_pages[] = add_submenu_page('events-manager', __('Edit', 'dbem'),__('Edit', 'dbem').$events_num,'edit_events','events-manager','em_admin_events_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Add new', 'dbem'), __('Add new','dbem'), 'edit_events', 'events-manager-event', "em_admin_event_page");
 			$plugin_pages[] = add_submenu_page('events-manager', __('Locations', 'dbem'), __('Locations', 'dbem'), 'edit_locations', 'events-manager-locations', "em_admin_locations_page");
 			$plugin_pages[] = add_submenu_page('events-manager', __('Bookings', 'dbem'), __('Bookings', 'dbem').$bookings_num, 'manage_bookings', 'events-manager-bookings', "em_bookings_page");
@@ -309,10 +336,15 @@ function em_create_events_submenu () {
 }
 add_action('admin_menu','em_create_events_submenu');
 
+/**
+ * Catches various option names and returns a network-wide option value instead of the individual blog option. Uses the magc __call function to catch unprecedented names.
+ * @author marcus
+ *	
+ */
 class EM_MS_Globals {
-	function __construct(){ add_action( 'init', array(&$this, 'add_filters')); }	
+	function __construct(){ add_action( 'init', array(&$this, 'add_filters'), 1); }	
 	function add_filters(){
-		foreach( self::get_globals() as $global_option_name ){
+		foreach( $this->get_globals() as $global_option_name ){
 			add_filter('pre_option_'.$global_option_name, array(&$this, 'pre_option_'.$global_option_name), 1,1);
 			add_filter('pre_update_option_'.$global_option_name, array(&$this, 'pre_update_option_'.$global_option_name), 1,2);
 			add_action('add_option_'.$global_option_name, array(&$this, 'add_option_'.$global_option_name), 1,1);
@@ -323,7 +355,7 @@ class EM_MS_Globals {
 			//multisite settings
 			'dbem_ms_global_table', 'dbem_ms_global_events', 'dbem_ms_global_events_links',
 			//mail
-			'dbem_rsvp_mail_port', 'dbem_mail_sender_address', 'dbem_smtp_host', 'dbem_mail_sender_name','dbem_smtp_host','dbem_rsvp_mail_send_method','dbem_rsvp_mail_SMTPAuth',
+			'dbem_rsvp_mail_port', 'dbem_mail_sender_address', 'dbem_smtp_password', 'dbem_smtp_username','dbem_smtp_host', 'dbem_mail_sender_name','dbem_smtp_host','dbem_rsvp_mail_send_method','dbem_rsvp_mail_SMTPAuth',
 			//images	
 			'dbem_image_max_width','dbem_image_max_height','dbem_image_max_size'	
 		));
@@ -438,7 +470,7 @@ function em_set_plugin_meta($links, $file) {
 	if ($file == $plugin) {
 		return array_merge(
 			$links,
-			array( sprintf( '<a href="admin.php?page=events-manager-options">%s</a>', __('Settings') ) )
+			array( sprintf( '<a href="admin.php?page=events-manager-options">%s</a>', __('Settings', 'dbem') ) )
 		);
 	}
 	return $links;
@@ -449,8 +481,6 @@ add_filter( 'plugin_row_meta', 'em_set_plugin_meta', 10, 2 );
 function em_activate() {
 	global $wp_rewrite;
    	$wp_rewrite->flush_rules();
-	require_once( dirname(__FILE__).'/em-install.php');
-	em_install();
 }
 register_activation_hook( __FILE__,'em_activate');
 ?>
