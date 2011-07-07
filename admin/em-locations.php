@@ -215,38 +215,38 @@ function em_admin_location($message = "") {
 								<div id="em-location-data">
 									<table>
 										<tr>
-											<th><?php _e ( 'Address:' )?>&nbsp;</th>
+											<th><?php _e ( 'Address:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Location->address, ENT_QUOTES); ; ?>" /> <?php echo $required; ?>
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'City/Town:' )?>&nbsp;</th>
+											<th><?php _e ( 'City/Town:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Location->town, ENT_QUOTES); ?>" /> <?php echo $required; ?>
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'State/County:' )?>&nbsp;</th>
+											<th><?php _e ( 'State/County:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Location->state, ENT_QUOTES); ?>" />
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'Postcode:' )?>&nbsp;</th>
+											<th><?php _e ( 'Postcode:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-postcode" type="text" name="location_postcode" value="<?php echo htmlspecialchars($EM_Location->postcode, ENT_QUOTES); ?>" />
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'Region:' )?>&nbsp;</th>
+											<th><?php _e ( 'Region:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Location->region, ENT_QUOTES); ?>" />
 												<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'Country:' )?>&nbsp;</th>
+											<th><?php _e ( 'Country:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<select id="location-country" name="location_country">
 													<?php foreach(em_get_countries(__('none selected','dbem')) as $country_key => $country_name): ?>

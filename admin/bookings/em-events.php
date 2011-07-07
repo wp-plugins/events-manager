@@ -112,8 +112,8 @@ function em_bookings_events_table() {
 							$rowno++;
 							$class = ($rowno % 2) ? ' class="alternate"' : '';
 							// FIXME set to american
-							$localised_start_date = date_i18n('D d M Y', $event->start);
-							$localised_end_date = date_i18n('D d M Y', $event->end);
+							$localised_start_date = date_i18n(get_option('date_format'), $event->start);
+							$localised_end_date = date_i18n(get_option('date_format'), $event->end);
 							$style = "";
 							$today = date ( "Y-m-d" );
 							

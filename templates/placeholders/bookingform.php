@@ -130,16 +130,16 @@ global $EM_Notices;
 	        		<form class="em-booking-login-form" action="<?php echo site_url('wp-login.php', 'login_post'); ?>" method="post">
 			            <p><?php _e('Log in if you already have an account with us.','dbem'); ?>
 			            <p>
-			            	<label><?php _e( 'Username','login-with-ajax' ) ?></label>
+			            	<label><?php _e( 'Username','dbem' ) ?></label>
 	                        <input type="text" name="log" class="input" value="" />
 						</p>
 						<p>
-							<label><?php _e( 'Password','login-with-ajax' ) ?></label>
+							<label><?php _e( 'Password','dbem' ) ?></label>
 			                <input type="password" name="pwd" class="input" value="" />
 			            </p>
 			            <?php do_action('login_form'); ?>
 	                    <input type="submit" name="wp-submit" id="em_wp-submit" value="<?php _e('Log In', 'dbem'); ?>" tabindex="100" />
-	                    <input name="rememberme" type="checkbox" id="em_rememberme" value="forever" /> <label><?php _e( 'Remember Me','login-with-ajax' ) ?></label>
+	                    <input name="rememberme" type="checkbox" id="em_rememberme" value="forever" /> <label><?php _e( 'Remember Me','dbem' ) ?></label>
                         <input type="hidden" name="redirect_to" value="http://<?php echo $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] ?>#em-booking" />
 	                    <br />
 	                    <?php

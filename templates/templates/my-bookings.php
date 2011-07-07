@@ -43,10 +43,10 @@
 				<table id='dbem-bookings-table' class='widefat post fixed'>
 					<thead>
 						<tr>
-							<th class='manage-column' scope='col'>Event</th>
-							<th class='manage-column' scope='col'>Date</th>
-							<th class='manage-column' scope='col'>Spaces</th>
-							<th class='manage-column' scope='col'>Status</th>
+							<th class='manage-column' scope='col'><?php _e('Event', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Date', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Spaces', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Status', 'dbem'); ?></th>
 							<th class='manage-column' scope='col'>&nbsp;</th>
 						</tr>
 					</thead>
@@ -62,7 +62,7 @@
 								?>
 								<tr>
 									<td><?php echo $EM_Event->output("#_EVENTLINK"); ?></td>
-									<td><?php echo date( get_option('date_format'), $EM_Event->start ); ?></td>
+									<td><?php echo date_i18n( get_option('date_format'), $EM_Event->start ); ?></td>
 									<td><?php echo $EM_Booking->get_spaces() ?></td>
 									<td><?php echo $EM_Booking->status_array[$EM_Booking->status]; ?>
 									</td>

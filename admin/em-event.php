@@ -391,7 +391,7 @@ function em_admin_event_page() {
 										</tr>
 										<?php else : ?>
 										<tr>
-											<th><?php _e ( 'Name:' )?></th>
+											<th><?php _e ( 'Name:', 'dbem' )?></th>
 											<td>
 												<input id='location-id' name='location_id' type='hidden' value='<?php echo $EM_Event->get_location()->id; ?>' size='15' />
 												<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Event->location->name, ENT_QUOTES); ?>" /><?php echo $required; ?>													
@@ -400,40 +400,40 @@ function em_admin_event_page() {
 			                            	</td>
 								 		</tr>
 										<tr>
-											<th><?php _e ( 'Address:' )?>&nbsp;</th>
+											<th><?php _e ( 'Address:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Event->location->address, ENT_QUOTES); ; ?>" /><?php echo $required; ?>
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'City/Town:' )?>&nbsp;</th>
+											<th><?php _e ( 'City/Town:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Event->location->town, ENT_QUOTES); ?>" /><?php echo $required; ?>
 												<input id="location-town-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_town'); ?>" />
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'State/County:' )?>&nbsp;</th>
+											<th><?php _e ( 'State/County:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Event->location->state, ENT_QUOTES); ?>" />
 												<input id="location-state-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_states'); ?>" />
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'Postcode:' )?>&nbsp;</th>
+											<th><?php _e ( 'Postcode:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-postcode" type="text" name="location_postcode" value="<?php echo htmlspecialchars($EM_Event->location->postcode, ENT_QUOTES); ?>" />
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'Region:' )?>&nbsp;</th>
+											<th><?php _e ( 'Region:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Event->location->region, ENT_QUOTES); ?>" />
 												<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
 											</td>
 										</tr>
 										<tr>
-											<th><?php _e ( 'Country:' )?>&nbsp;</th>
+											<th><?php _e ( 'Country:', 'dbem' )?>&nbsp;</th>
 											<td>
 												<select id="location-country" name="location_country">
 													<option value="0" <?php echo ( $EM_Event->location->country == '' && $EM_Event->location->id == '' && get_option('dbem_location_default_country') == '' ) ? 'selected="selected"':''; ?>><?php _e('none selected','dbem'); ?></option>

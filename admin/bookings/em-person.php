@@ -83,9 +83,9 @@ function em_bookings_person_table(){
 							<th class='manage-column column-cb check-column' scope='col'>
 								<input class='select-all' type="checkbox" value='1' />
 							</th>
-							<th class='manage-column' scope='col'>Event</th>
-							<th class='manage-column' scope='col'>Spaces</th>
-							<th class='manage-column' scope='col'>Status</th>
+							<th class='manage-column' scope='col'><?php _e('Event', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Spaces', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Status', 'dbem'); ?></th>
 							<th class='manage-column' scope='col'>&nbsp;</th>
 						</tr>
 					</thead>

@@ -124,7 +124,7 @@ function em_bookings_event(){
   		<div><a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_export_csv&_wpnonce=".wp_create_nonce('bookings_export_csv')."&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a></div>  
 		<div>
 			<p><strong><?php _e('Event Name','dbem'); ?></strong> : <?php echo ($EM_Event->name); ?></p>
-			<p><strong>Availability :</strong> <?php echo $EM_Event->get_bookings()->get_booked_spaces() . '/'. $EM_Event->get_spaces() ." ". __('Spaces confirmed','dbem'); ?></p>
+			<p><strong><?php _e('Availability','dbem'); ?></strong> : <?php echo $EM_Event->get_bookings()->get_booked_spaces() . '/'. $EM_Event->get_spaces() ." ". __('Spaces confirmed','dbem'); ?></p>
 			<p>
 				<strong><?php _e('Date','dbem'); ?></strong> : 
 				<?php echo $localised_start_date; ?>

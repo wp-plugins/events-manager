@@ -82,10 +82,10 @@ function em_bookings_confirmed_table(){
 							<th class='manage-column column-cb check-column' scope='col'>
 								<input class='select-all' type="checkbox" value='1' />
 							</th>
-							<th class='manage-column' scope='col'>Booker</th>
-							<th class='manage-column' scope='col'>E-mail</th>
-							<th class='manage-column' scope='col'>Phone number</th>
-							<th class='manage-column' scope='col'>Spaces</th>
+							<th class='manage-column' scope='col'><?php _e('Booker', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('E-mail', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Phone number', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Spaces', 'dbem'); ?></th>
 							<th class='manage-column' scope='col'>&nbsp;</th>
 						</tr>
 					</thead>
