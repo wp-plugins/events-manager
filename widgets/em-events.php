@@ -14,7 +14,7 @@ class EM_Widget extends WP_Widget {
     		'scope' => 'future',
     		'order' => 'ASC',
     		'limit' => 5,
-    		'category' => get_option('dbem_default_category'),
+    		'category' => 0,
     		'format' => '#_LINKEDNAME<ul><li>#j #M #y</li><li>#_TOWN</li></ul>',
     		'nolistwrap' => false,
     		'orderby' => 'start_date,start_time,name',
