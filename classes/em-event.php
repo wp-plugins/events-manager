@@ -963,7 +963,7 @@ class EM_Event extends EM_Object{
 		if( empty($EM_Category) ) $EM_Category = new EM_Category();
 		$event_string = $EM_Category->output($event_string, $target);
 		
-		return apply_filters('em_event_output', $event_string, $this, $target);
+		return apply_filters('em_event_output', $event_string, $this, $format, $target);
 	}
 	
 	/**********************************************************

@@ -43,7 +43,7 @@ global $EM_Notices;
 						</tr>
 						<?php foreach( $EM_Tickets->tickets as $EM_Ticket ): ?>
 							<?php if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') ): ?>
-							<tr>
+							<tr class="em-ticket" id="em-ticket-<?php echo $EM_Ticket->id; ?>">
 								<td><?php echo $EM_Ticket->output_property('name'); ?><?php if(!empty($EM_Ticket->description)) :?><br><span class="ticket-desc"><?php echo $EM_Ticket->description; ?></span><?php endif; ?></td>
 								<?php if( !$EM_Event->is_free() ): ?>
 								<td><?php echo $EM_Ticket->get_price(true); ?></td>
@@ -59,6 +59,7 @@ global $EM_Notices;
 									?>
 								</td>
 							</tr>
+							<?php do_action('em_booking_form_tickets_loop', $EM_Ticket); ?>
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</table>		

@@ -4,7 +4,7 @@
 			header('Content-Disposition: inline; filename="events.ics"');
 					
 			$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_description_format' ) ) );
-			$EM_Events = new EM_Events( array( get_option('dbem_ical_limit'), 'owner'=>false, 'orderby'=>'event_start_date' ) );
+			$EM_Events = new EM_Events( apply_filters('em_calendar_template_args',array( get_option('dbem_ical_limit'), 'owner'=>false, 'orderby'=>'event_start_date' )) );
 			
 			$blog_desc = ent2ncr(convert_chars(strip_tags(get_bloginfo()))) . " - " . __('Calendar','dbem');
 			

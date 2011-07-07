@@ -327,7 +327,7 @@ class EM_Booking extends EM_Object{
 	 */
 	function get_tickets_bookings(){
 		global $wpdb;
-		if( !is_object($this->tickets_bookings) && get_class($this->tickets_bookings)!='EM_Tickets_Bookings'){
+		if( !is_object($this->tickets_bookings) || get_class($this->tickets_bookings)!='EM_Tickets_Bookings'){
 			$this->tickets_bookings = new EM_Tickets_Bookings($this);
 		}
 		return apply_filters('em_booking_get_tickets_bookings', $this->tickets_bookings, $this);
@@ -495,7 +495,7 @@ class EM_Booking extends EM_Object{
 			ob_start();
 			em_locate_template('emails/bookingtickets.php', true, array('EM_Booking'=>$this));
 			$tickets = ob_get_clean();
-			$placeholders = array(
+			$placeholders = apply_filters('em_booking_email_placeholders', array(
 				'#_RESPNAME' =>  '#_BOOKINGNAME',//Depreciated
 				'#_RESPEMAIL' => '#_BOOKINGEMAIL',//Depreciated
 				'#_RESPPHONE' => '#_BOOKINGPHONE',//Depreciated
@@ -509,9 +509,9 @@ class EM_Booking extends EM_Object{
 				'#_BOOKINGCOMMENT' => $this->comment,
 				'#_BOOKINGTICKETNAME' => $EM_Ticket->name,
 				'#_BOOKINGTICKETDESCRIPTION' => $EM_Ticket->description,
-				'#_BOOKINGTICKETPRICE' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(true),2),
+				'#_BOOKINGTICKETPRICE' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(),2),
 				'#_BOOKINGTICKETS' => $tickets
-			);		 
+			),$this);	 
 			foreach($placeholders as $key => $value) {
 				$contact_subject = str_replace($key, $value, $contact_subject);
 				$contact_body = str_replace($key, $value, $contact_body); 
@@ -521,14 +521,14 @@ class EM_Booking extends EM_Object{
 			
 			$booker_subject = $EM_Event->output($booker_subject, 'email'); 
 			$booker_body = $EM_Event->output($booker_body, 'email');
-			
+						
 			//Send to the person booking
 			if( !$this->email_send( $booker_subject,$booker_body, $this->person->user_email) ){
 				return false;
 			}
 			
 			//Send admin/contact emails
-			if( (get_option('dbem_bookings_approval') == 0 || $this->status == 0 || $this->status == 3) && (get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
+			if( (get_option('dbem_bookings_approval') == 0 || in_array($this->status, array(0,3,4,5))) && (get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
 				//Only gets sent if this is a pending booking, unless approvals are disabled.
 				$contact_subject = $EM_Event->output($contact_subject, 'email');
 				$contact_body = $EM_Event->output($contact_body, 'email');
