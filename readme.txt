@@ -95,6 +95,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * removed some php warnings
 * corrected filter misspelling of em_booking_get_prices to em_booking_get_price
 * added a few new filters
+* fixed initial notification emails not going out to event contact on pro payments
 
 = 4.1 =
 * nothing, just trying to get WP to recognize a new update
