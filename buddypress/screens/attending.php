@@ -20,7 +20,7 @@ function bp_em_attending() {
 }
 
 	function bp_em_attending_title() {
-		_e( 'Events I\'m Attending', 'bp-em' );
+		_e( 'Events I\'m Attending', 'dbem' );
 	}
 
 	function bp_em_attending_content() {

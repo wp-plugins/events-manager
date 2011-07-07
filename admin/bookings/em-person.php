@@ -37,9 +37,9 @@ function em_bookings_person_table(){
 					</li>
 				</ul>
 				<p class="search-box">
-					<label class="screen-reader-text" for="post-search-input"><?php _e('Search'); ?>:</label>
+					<label class="screen-reader-text" for="post-search-input"><?php _e('Search', 'dbem'); ?>:</label>
 					<input type="text" id="post-search-input" name="em_search" value="<?php echo (!empty($_GET['em_search'])) ? $_GET['em_search']:''; ?>" />
-					<input type="submit" value="<?php _e('Search'); ?>" class="button" />
+					<input type="submit" value="<?php _e('Search', 'dbem'); ?>" class="button" />
 				</p>
 				-->
 				<?php if ( $bookings_count >= $limit ) : ?>
@@ -48,7 +48,7 @@ function em_bookings_person_table(){
 					<div class="alignleft actions">
 						<select name="action">
 							<option value="-1" selected="selected">
-								<?php _e('Bulk Actions'); ?>
+								<?php _e('Bulk Actions', 'dbem'); ?>
 							</option>
 							<option value="approve">
 								<?php _e('Approve', 'dbem'); ?>
@@ -83,9 +83,9 @@ function em_bookings_person_table(){
 							<th class='manage-column column-cb check-column' scope='col'>
 								<input class='select-all' type="checkbox" value='1' />
 							</th>
-							<th class='manage-column' scope='col'>Event</th>
-							<th class='manage-column' scope='col'>Spaces</th>
-							<th class='manage-column' scope='col'>Status</th>
+							<th class='manage-column' scope='col'><?php _e('Event', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Spaces', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Status', 'dbem'); ?></th>
 							<th class='manage-column' scope='col'>&nbsp;</th>
 						</tr>
 					</thead>
@@ -106,10 +106,10 @@ function em_bookings_person_table(){
 									</td>
 									<td>
 										<?php
-										$unapprove_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_unapprove', 'bookings'=>$EM_Booking->id));
-										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'bookings'=>$EM_Booking->id));
-										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'bookings'=>$EM_Booking->id));
-										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'bookings'=>$EM_Booking->id));
+										$unapprove_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_unapprove', 'booking_id'=>$EM_Booking->id));
+										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'booking_id'=>$EM_Booking->id));
+										$reject_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'booking_id'=>$EM_Booking->id));
+										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'booking_id'=>$EM_Booking->id));
 										?>
 										<?php if( get_option('dbem_bookings_approval') && ($EM_Booking->status == 0 ) ): ?>
 										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Approve','dbem'); ?></a> |

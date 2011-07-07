@@ -19,7 +19,6 @@ function bp_em_my_locations() {
 	$template_content = 'bp_em_my_locations_content';
 
 	if( count($bp->action_variables) > 0 ){
-		if( is_object($EM_Location) && !$EM_Location->can_manage('edit_locations','edit_others_locations') ) return false;
 		if( !empty($bp->action_variables[0]) ){
 			switch($bp->action_variables[0]){
 				case 'edit':

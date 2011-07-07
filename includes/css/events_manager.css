@@ -124,7 +124,7 @@ table#bookings-table tr#booked-spaces td.spaces-number, table#bookings-table tr#
 	font-weight: bold;
 }
 
-table#dbem-location-data th {
+table#em-location-data th {
 	text-align: right;   
 	width: 50px;
 }            

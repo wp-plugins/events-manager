@@ -43,10 +43,10 @@ class EM_Locations extends EM_Object implements Iterator {
 			foreach($results as $result){
 				$locations[$result['location_id']] = new EM_Location($result);
 			}
-			return $locations; //We return all the events matched as an EM_Event array. 
+			return apply_filters('em_locations_get', $locations, $args); //We return all the events matched as an EM_Event array. 
 		}elseif( is_numeric($args) ){
 			//return an event in the usual array format
-			return apply_filters('em_locations_get', array(new EM_Event($args)), $args);
+			return apply_filters('em_locations_get', array(new EM_Location($args)), $args);
 		}elseif( is_array($args) && is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
 			return apply_filters('em_locations_get', $args, $args);
 		}	
@@ -87,13 +87,14 @@ class EM_Locations extends EM_Object implements Iterator {
 	
 		//If we're only counting results, return the number of results
 		if( $count ){
-			return count($wpdb->get_results($sql));		
+			$results = $wpdb->get_results($sql);	
+			return apply_filters('em_locations_get_array', count($results),$results, $args);	
 		}
 		$results = $wpdb->get_results($sql, ARRAY_A);
 		
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){
-			return $results;
+			return apply_filters('em_locations_get_array', $results, $args);
 		}
 		
 		$locations = array();
@@ -234,11 +235,25 @@ class EM_Locations extends EM_Object implements Iterator {
 			'eventful' => false, //Locations that have an event (scope will also play a part here
 			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
 			'orderby' => 'name',
+			'town' => false,
 			'state' => false,
 			'country' => false,
+			'region' => false,
 			'scope' => 'all', //we probably want to search all locations by default, not like events
 			'blog' => get_current_blog_id()
 		);
+		if(is_multisite()){
+			global $bp;
+			//echo "<pre>"; print_r($bp); echo "</pre>";
+			if( !empty($bp->current_component) && $bp->current_component == 'events' && !empty($bp->current_action)){
+				$array['blog'] = false; //This is the buddypress root blog so we also show all event data
+			}elseif( !is_main_site() ){
+				//not the main blog, force single blog search
+				$array['blog'] = get_current_blog_id();
+			}elseif( empty($array['blog']) && get_site_option('dbem_ms_global_events') ) {
+				$array['blog'] = false;
+			}
+		}
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );
 		if( is_admin() ){
