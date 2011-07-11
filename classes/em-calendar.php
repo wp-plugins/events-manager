@@ -261,7 +261,7 @@ class EM_Calendar extends EM_Object {
 	
 	function output($args = array()) {	
 		$calendar_array  = self::get($args);	
-		$template = ($args['full']) ? 'templates/calendar-full.php':'templates/calendar-small.php';
+		$template = (!empty($args['full'])) ? 'templates/calendar-full.php':'templates/calendar-small.php';
 		ob_start();
 		em_locate_template($template, true, array('calendar'=>$calendar_array,'args'=>$args));
 		$calendar = '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.ob_get_clean().'</div>';
