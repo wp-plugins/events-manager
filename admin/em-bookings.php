@@ -118,12 +118,13 @@ function em_bookings_event(){
   		<h2>
   			<?php echo sprintf(__('Manage %s Bookings', 'dbem'), "'{$EM_Event->name}'"); ?>
   			<a href="<?php echo $EM_Event->output('#_EDITEVENTURL'); ?>" class="button add-new-h2"><?php _e('View/Edit Event','dbem') ?></a>
+  			<?php do_action('em_admin_event_booking_options_buttons'); ?>
   		</h2>
   		<?php echo $EM_Notices; ?>
   		<div><a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_export_csv&_wpnonce=".wp_create_nonce('bookings_export_csv')."&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a></div>  
 		<div>
 			<p><strong><?php _e('Event Name','dbem'); ?></strong> : <?php echo ($EM_Event->name); ?></p>
-			<p><strong>Availability :</strong> <?php echo $EM_Event->get_bookings()->get_booked_spaces() . '/'. $EM_Event->get_spaces() ." ". __('Spaces confirmed','dbem'); ?></p>
+			<p><strong><?php _e('Availability','dbem'); ?></strong> : <?php echo $EM_Event->get_bookings()->get_booked_spaces() . '/'. $EM_Event->get_spaces() ." ". __('Spaces confirmed','dbem'); ?></p>
 			<p>
 				<strong><?php _e('Date','dbem'); ?></strong> : 
 				<?php echo $localised_start_date; ?>
@@ -266,6 +267,7 @@ function em_bookings_single(){
 							$localised_start_date = date_i18n('D d M Y', $EM_Event->start);
 							$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
 							?>
+							<p><strong><?php _e('Status','dbem'); ?> : </strong><?php echo $EM_Booking->get_status(); ?></p>
 							<table class="em-tickets-bookings-table" cellspacing="0" cellpadding="0">
 								<thead>
 								<tr>
@@ -300,7 +302,7 @@ function em_bookings_single(){
 							</table>
 						</div>
 					</div>
-					<div id="event_name" class="stuffbox">
+					<div id="em-booking-notes" class="stuffbox">
 						<h3>
 							<?php _e ( 'Booking Notes', 'dbem' ); ?>
 						</h3>
@@ -321,6 +323,7 @@ function em_bookings_single(){
 							</form>
 						</div>
 					</div> 
+					<?php do_action('em_bookings_single_metabox_footer', $EM_Booking); ?> 
 				</div>
 			</div>
 		</div>

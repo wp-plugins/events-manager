@@ -10,16 +10,16 @@ echo "<?xml version='1.0'?>\n";
 ?>
 <rss version="2.0">
 	<channel>
-		<title><?php echo get_option ( 'dbem_rss_main_title' ); ?></title>
+		<title><?php echo htmlentities(get_option ( 'dbem_rss_main_title' )); ?></title>
 		<link><?php	echo get_permalink ( get_option('dbem_events_page') ); ?></link>
-		<description><?php echo get_option ( 'dbem_rss_main_description' ); ?></description>
+		<description><?php echo htmlentities(get_option('dbem_rss_main_description')); ?></description>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 		<generator>Weblog Editor 2.0</generator>
 				
 		<?php
 		$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_rss_description_format' ) ) );
 		//$EM_Events = new EM_Events( array('limit'=>5, 'owner'=>false) );
-		$EM_Events = EM_Events::get( array('month'=>4, 'year'=>2011, 'owner'=>false) );
+		$EM_Events = EM_Events::get( array('scope'=>'future', 'owner'=>false) );
 		
 		foreach ( $EM_Events as $EM_Event ) {
 			$description = $EM_Event->output( get_option ( 'dbem_rss_description_format' ), "rss");

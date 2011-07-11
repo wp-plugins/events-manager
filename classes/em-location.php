@@ -71,7 +71,7 @@ class EM_Location extends EM_Object {
 			//Save into the object
 			$this->to_object($location, true);
 			$this->get_image_url();
-			add_filter('em_location_save',array(&$this,'image_upload'));
+			add_filter('em_location_save',array(&$this,'image_upload'),1,2);
 		} 
 		do_action('em_location', $this, $location_data);
 	}
@@ -82,6 +82,7 @@ class EM_Location extends EM_Object {
 		$location = array();
 		$location['location_id'] = ( !empty($_POST['location_id']) ) ? $_POST['location_id']:'';
 		$location['location_name'] = ( !empty($_POST['location_name']) ) ? stripslashes($_POST['location_name']):'';
+		$location['location_slug'] = ( !empty($_POST['location_slug']) ) ? sanitize_title($_POST['location_slug']) : '' ;
 		if( current_user_can('edit_others_events') ){
 			$location['location_owner'] = ( !empty($_POST['location_owner']) && is_numeric($_POST['location_owner']) ) ? $_POST['location_owner']:'';
 		}
@@ -228,6 +229,9 @@ class EM_Location extends EM_Object {
 	 * Can the user manage this location? 
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false ){
+		if( $owner_capability == 'edit_locations' && $this->id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
+			return apply_filters('em_event_can_manage',true);
+		}
 		return apply_filters('em_location_can_manage', parent::can_manage($owner_capability, $admin_capability), $this);
 	}
 	
@@ -266,13 +270,30 @@ class EM_Location extends EM_Object {
 					$replace = $this->town;
 					break;
 				case '#_LOCATIONSTATE':
-					$replace = $this->id;
+					$replace = $this->state;
 					break;
 				case '#_LOCATIONPOSTCODE':
-					$replace = $this->id;
+					$replace = $this->postcode;
+					break;
+				case '#_LOCATIONREGION':
+					$replace = $this->region;
 					break;
 				case '#_LOCATIONCOUNTRY':
-					$replace = $this->id;
+					$replace = $this->get_country();
+					break;
+				case '#_LOCATIONFULLLINE':
+					$replace = $this->address.', ';
+					$replace = empty($this->town) ? '':', '.$this->town;
+					$replace = empty($this->state) ? '':', '.$this->state;
+					$replace = empty($this->postcode) ? '':', '.$this->postcode;
+					$replace = empty($this->region) ? '':', '.$this->region;
+					break;
+				case '#_LOCATIONFULLBR':
+					$replace = $this->address.'<br /> ';
+					$replace = empty($this->town) ? '':'<br /> '.$this->town;
+					$replace = empty($this->state) ? '':'<br /> '.$this->state;
+					$replace = empty($this->postcode) ? '':'<br /> '.$this->postcode;
+					$replace = empty($this->region) ? '':'<br /> '.$this->region;
 					break;
 				case '#_MAP': //Depreciated
 				case '#_LOCATIONMAP':
@@ -325,9 +346,13 @@ class EM_Location extends EM_Object {
 					break;
 			}
 			if($match){ //if true, we've got a placeholder that needs replacing
-				//TODO FILTER - placeholder filter
 				$replace = apply_filters('em_location_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
 				$location_string = str_replace($result, $replace , $location_string );
+			}else{
+				$custom_replace = apply_filters('em_location_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+				if($custom_replace != $replace){
+					$location_string = str_replace($result, $custom_replace , $location_string );
+				}
 			}
 		}
 		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters

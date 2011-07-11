@@ -50,9 +50,9 @@ function em_bookings_pending_table($event_id = false){
 					</li>
 				</ul>
 				<p class="search-box">
-					<label class="screen-reader-text" for="post-search-input"><?php _e('Search'); ?>:</label>
+					<label class="screen-reader-text" for="post-search-input"><?php _e('Search', 'dbem'); ?>:</label>
 					<input type="text" id="post-search-input" name="em_search" value="<?php echo (!empty($_GET['em_search'])) ? $_GET['em_search']:''; ?>" />
-					<input type="submit" value="<?php _e('Search'); ?>" class="button" />
+					<input type="submit" value="<?php _e('Search', 'dbem'); ?>" class="button" />
 				</p>
 				-->
 				<?php if ( $bookings_count >= $limit ) : ?>
@@ -61,7 +61,7 @@ function em_bookings_pending_table($event_id = false){
 					<div class="alignleft actions">
 						<select name="action">
 							<option value="-1" selected="selected">
-								<?php _e('Bulk Actions'); ?>
+								<?php _e('Bulk Actions', 'dbem'); ?>
 							</option>
 							<option value="approve">
 								<?php _e('Approve', 'dbem'); ?>
@@ -96,13 +96,13 @@ function em_bookings_pending_table($event_id = false){
 							<th class='manage-column column-cb check-column' scope='col'>
 								<input class='select-all' type="checkbox" value='1' />
 							</th>
-							<th class='manage-column' scope='col'>Booker</th>
+							<th class='manage-column' scope='col'><?php _e('Booker', 'dbem'); ?></th>
 							<?php if( !is_object($EM_Event) && !is_object($EM_Ticket) ): ?>
-							<th class='manage-column' scope="col">Event</th>
+							<th class='manage-column' scope="col"><?php _e('Event', 'dbem'); ?></th>
 							<?php endif; ?>
-							<th class='manage-column' scope='col'>E-mail</th>
-							<th class='manage-column' scope='col'>Phone number</th>
-							<th class='manage-column' scope='col'>Spaces</th>
+							<th class='manage-column' scope='col'><?php _e('E-mail', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Phone number', 'dbem'); ?></th>
+							<th class='manage-column' scope='col'><?php _e('Spaces', 'dbem'); ?></th>
 							<th class='manage-column' scope='col'>&nbsp;</th>
 						</tr>
 					</thead>
@@ -155,6 +155,5 @@ function em_bookings_pending_table($event_id = false){
 			<?php endif; ?>
 		</div>	
 	<?php
-	
 }
 ?>

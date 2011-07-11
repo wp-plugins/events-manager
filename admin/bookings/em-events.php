@@ -42,7 +42,7 @@ function em_bookings_events_table() {
 	$use_events_end = get_option ( 'dbem_use_event_end' );
 	?>
 	<div class="wrap em_bookings_events_table em_obj">
-		<form id="posts-filter" action="<?php echo $_SERVER['REQUEST_URI'] ?>" method="get">
+		<form id="posts-filter" action="" method="get">
 			<input type="hidden" name="em_obj" value="em_bookings_events_table" />
 			<?php if(!empty($_GET['page'])): ?>
 			<input type='hidden' name='page' value='events-manager-bookings' />
@@ -112,8 +112,8 @@ function em_bookings_events_table() {
 							$rowno++;
 							$class = ($rowno % 2) ? ' class="alternate"' : '';
 							// FIXME set to american
-							$localised_start_date = date_i18n('D d M Y', $event->start);
-							$localised_end_date = date_i18n('D d M Y', $event->end);
+							$localised_start_date = date_i18n(get_option('date_format'), $event->start);
+							$localised_end_date = date_i18n(get_option('date_format'), $event->end);
 							$style = "";
 							$today = date ( "Y-m-d" );
 							

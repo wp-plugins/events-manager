@@ -52,6 +52,7 @@
 							<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
 							<th><?php _e('Name', 'dbem') ?></th>
 							<th><?php _e('Address', 'dbem') ?></th>
+							<th><?php _e('State', 'dbem') ?></th>  
 							<th><?php _e('Country', 'dbem') ?></th>                
 						</tr> 
 					</thead>
@@ -60,6 +61,7 @@
 							<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
 							<th><?php _e('Name', 'dbem') ?></th>
 							<th><?php _e('Address', 'dbem') ?></th>
+							<th><?php _e('State', 'dbem') ?></th> 
 							<th><?php _e('Country', 'dbem') ?></th>      
 						</tr>             
 					</tfoot>
@@ -70,8 +72,9 @@
 								<tr>
 									<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Location->id ?>' name='locations[]'/></td>
 									<td><a href='<?php echo $url; ?>edit/?location_id=<?php echo $EM_Location->id ?>'><?php echo $EM_Location->name ?></a></td>
-									<td><?php echo $EM_Location->address. ', '.$EM_Location->town. ', '.$EM_Location->state. ' '.$EM_Location->postcode ?></td>
-									<td><?php echo $EM_Location->get_country() ?></td>                         
+									<td><?php echo $EM_Location->address. ', '.$EM_Location->town. ', '.$EM_Location->postcode ?></td>
+									<td><?php echo $EM_Location->state ?></td>  
+									<td><?php echo $EM_Location->get_country() ?></td>                             
 								</tr>
 							<?php endif; ?>
 							<?php $i++; ?> 

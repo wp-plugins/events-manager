@@ -13,14 +13,10 @@ function em_admin_warnings() {
 		//New User Intro
 		if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
 			// Disable Hello to new user if requested
-			update_option ( 'dbem_hello_to_user', 0 );
-		}elseif ( get_option ( 'dbem_hello_to_user' ) == 1 && !empty($_GET['page']) && $_GET['page'] == 'events-manager-events' ) {
-			$current_user = wp_get_current_user ();
+			delete_option('dbem_hello_to_user');
+		}elseif ( get_option ( 'dbem_hello_to_user' ) ) {
 			//FIXME update welcome msg with good links
-			$advice = sprintf ( __ ( "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> 
-			<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>
-			<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>
-			<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>", 'dbem' ), $current_user->display_name, get_bloginfo ( 'url' ) . '/wp-admin/widgets.php', 'http://wp-events-plugin.com/documentation/template-tags/', 'http://wp-events-plugin.com/documentation/shortcodes/', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager-options', get_bloginfo ( 'url' ) . '/wp-admin/admin.php?page=events-manager&disable_hello_to_user=true' );
+			$advice = sprintf( __("<p>Events Manager is ready to go! It is highly recommended you read the <a href='%s'>Getting Started</a> guide on our site, as well as checking out the <a href='%s'>Settings Page</a>. <a href='%s' title='Don't show this advice again'>Dismiss</a></p>", 'dbem'), 'http://wp-events-plugin.com/documentation/getting-started/?utm_source=em&utm_medium=plugin&utm_content=installationlink&utm_campaign=plugin_links', get_bloginfo('url').'/wp-admin/admin.php?page=events-manager-options',  $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'disable_hello_to_user=true');
 			?>
 			<div id="message" class="updated">
 				<?php echo $advice; ?>
@@ -29,13 +25,13 @@ function em_admin_warnings() {
 		}	
 		
 		//Image upload folders
-		if( is_super_admin() && EM_IMAGE_DS == '/' ){
+		if( is_admin() && EM_IMAGE_DS == '/' ){
 			$errs = array();
-			if( !file_exists(EM_IMAGE_UPLOAD_DIR) && @mkdir(EM_IMAGE_UPLOAD_DIR, 0777)){
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/events/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777) ){ $errs[] = 'events'; }
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/locations/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777) ){ $errs[] = 'locations'; }
-				if( !file_exists(EM_IMAGE_UPLOAD_DIR.'/categories/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777) ){ $errs[] = 'categories'; }
-			}elseif( !file_exists(EM_IMAGE_UPLOAD_DIR) ){
+			if( is_writable(EM_IMAGE_UPLOAD_DIR) || @mkdir(EM_IMAGE_UPLOAD_DIR, 0777)){
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/events/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."events/", 0777) ){ $errs[] = 'events'; }
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/locations/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."locations/", 0777) ){ $errs[] = 'locations'; }
+				if( !is_writable(EM_IMAGE_UPLOAD_DIR.'/categories/') && !@mkdir(EM_IMAGE_UPLOAD_DIR."categories/", 0777) ){ $errs[] = 'categories'; }
+			}elseif( !is_writable(EM_IMAGE_UPLOAD_DIR) ){
 				$errs = array('events','categories','locations');
 			}
 			if( count($errs) > 0 ){
@@ -84,6 +80,23 @@ function em_admin_warnings() {
 				<?php		
 			}
 		}
+		
+		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'em_rc_reimport' && wp_verify_nonce($_REQUEST['_wpnonce'], 'em_rc_reimport') ){
+			require_once( dirname(__FILE__).'/../em-install.php');
+			em_migrate_v3();
+			?>
+			<div id="em_page_error" class="updated">
+				<p>Reimporting old settings was successful. Click the dismiss button on the other notification if after checking things are now working.</p>
+			</div>
+			<?php
+		}
+		
+		if( defined('EMP_VERSION') && EMP_VERSION < EM_PRO_MIN_VERSION ){?>
+			<div id="em_page_error" class="updated">
+				<p>There is a newer version of Events Manager Pro which is required for this current version of Events Manager. Please go to the plugin website and download the latest update.</p>
+			</div>
+			<?php
+		}
 	}
 	//Warn about EM page edit
 	if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
@@ -114,7 +127,7 @@ function em_admin_paginate($total, $limit, $page=1, $vars=false){
 		'current' => $page,
 		'add_args' => $vars
 	));
-	$return .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s' ) . '</span>%s',
+	$return .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'dbem') . '</span>%s',
 						number_format_i18n( ( $page - 1 ) * $limit + 1 ),
 						number_format_i18n( min( $page * $limit, $total ) ),
 						number_format_i18n( $total ),
@@ -130,34 +143,26 @@ function em_admin_paginate($total, $limit, $page=1, $vars=false){
 function em_admin_load_scripts(){
 	//Load the UI items, currently date picker and autocomplete plus dependencies
 	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
-	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core'));
+	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position'));
 	
-	//Add maps
-	if( get_option('dbem_gmap_is_active') ){
-		wp_enqueue_script('em-google-maps', 'http://maps.google.com/maps/api/js?sensor=false');	
-	}
 	//Time Entry
-	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));	
+	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));
 	
-	//Date Picker Locale
-	$locale_code = substr ( get_locale (), 0, 2 );
-	$locale_file = "/events-manager/includes/js/i18n/jquery.ui.datepicker-$locale_code.js";
-	if ( file_exists(WP_PLUGIN_DIR.$locale_file) ) {
-		wp_enqueue_script("em-ui-datepicker-$locale_code", WP_PLUGIN_URL.$locale_file, array('events-manager'));
-	}
-	
-	//TinyMCE Editor
-	remove_filter('the_editor',	'qtrans_modifyRichEditor'); //qtranslate filter
-	add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 25 );
-	add_action( 'admin_print_footer_scripts', 'wp_tiny_mce_preload_dialogs', 30 );
-	wp_enqueue_script('post');
-	if ( user_can_richedit() )
-		wp_enqueue_script('editor');
-	
-	add_thickbox();
-	wp_enqueue_script('media-upload');
-	wp_enqueue_script('word-count');
-	wp_enqueue_script('quicktags');	
+	if( is_admin() ){
+		//TinyMCE Editor
+		remove_filter('the_editor',	'qtrans_modifyRichEditor'); //qtranslate filter
+		if( function_exists('wp_tiny_mce')) add_action( 'admin_print_footer_scripts', 'wp_tiny_mce', 25 );
+		if( function_exists('wp_tiny_mce_preload_dialogs')) add_action( 'admin_print_footer_scripts', 'wp_tiny_mce_preload_dialogs', 30 );
+		wp_enqueue_script('post');
+		if ( user_can_richedit() )
+			wp_enqueue_script('editor');
+		
+		add_thickbox();
+		wp_enqueue_script('media-upload');
+		wp_enqueue_script('word-count');
+		wp_enqueue_script('quicktags');
+	}	
+	em_js_localize_vars();
 }
 
 /**
@@ -165,7 +170,7 @@ function em_admin_load_scripts(){
  */
 function em_admin_load_styles() {
 	add_thickbox();
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.7.3.custom.css');
+	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
 	wp_enqueue_style('events-manager-admin', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager_admin.css');
 }
 
