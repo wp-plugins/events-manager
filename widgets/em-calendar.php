@@ -11,7 +11,8 @@ class EM_Widget_Calendar extends WP_Widget {
     function EM_Widget_Calendar() {
     	$this->defaults = array(
     		'title' => __('Calendar','dbem'),
-    		'long_events' => 0
+    		'long_events' => 0,
+    		'category' => 0
     	);
     	$widget_ops = array('description' => __( "Display your events in a calendar widget.", 'dbem') );
         parent::WP_Widget(false, $name = __('Events Calendar','dbem'), $widget_ops);	
@@ -47,6 +48,7 @@ class EM_Widget_Calendar extends WP_Widget {
     	//filter the new instance and replace blanks with defaults
     	$new_instance['title'] = ($new_instance['title'] == '') ? $this->defaults['title']:$new_instance['title'];
     	$new_instance['long_events'] = ($new_instance['long_events'] == '') ? $this->defaults['long_events']:$new_instance['long_events'];
+    	$new_instance['category'] = ($new_instance['category'] == '') ? $this->defaults['category']:$new_instance['category'];
     	return $new_instance;
     }
 
@@ -62,6 +64,11 @@ class EM_Widget_Calendar extends WP_Widget {
 			<label for="<?php echo $this->get_field_id('long_events'); ?>"><?php _e('Show Long Events?', 'dbem'); ?>: </label>
 			<input type="checkbox" id="<?php echo $this->get_field_id('long_events'); ?>" name="<?php echo $this->get_field_name('long_events'); ?>" value="1" <?php echo ($instance['long_events'] == '1') ? 'checked="checked"':''; ?>/>
 		</p>
+		<p>
+            <label for="<?php echo $this->get_field_id('category'); ?>"><?php _e('Category IDs','dbem'); ?>: </label>
+            <input type="text" id="<?php echo $this->get_field_id('category'); ?>" name="<?php echo $this->get_field_name('category'); ?>" size="3" value="<?php echo $instance['category']; ?>" /><br />
+            <em><?php _e('1,2,3 or 2 (0 = all)','dbem'); ?> </em>
+        </p>
         <?php 
     }
 
