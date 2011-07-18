@@ -421,6 +421,7 @@ class EM_Booking extends EM_Object{
 		$this->status = $status;
 		$result = $this->save(false);
 		if($result){
+			$this->event = new EM_Event($this->event_id); //force a refresh of event object
 			$this->feedback_message = sprintf(__('Booking %s.','dbem'), $action_string);
 			if( !($this->status == 0 && $this->previous_status > 0) || $this->previous_status == 4 ){
 				if( $this->email() ){
@@ -518,7 +519,6 @@ class EM_Booking extends EM_Object{
 				$booker_subject = str_replace($key, $value, $booker_subject); 
 				$booker_body = str_replace($key, $value, $booker_body);
 			}
-			
 			$booker_subject = $EM_Event->output($booker_subject, 'email'); 
 			$booker_body = $EM_Event->output($booker_body, 'email');
 						
@@ -528,7 +528,7 @@ class EM_Booking extends EM_Object{
 			}
 			
 			//Send admin/contact emails
-			if( (get_option('dbem_bookings_approval') == 0 || in_array($this->status, array(0,3,4,5))) && (get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
+			if( (get_option('dbem_bookings_approval') == 0 || in_array($this->status, array(0,3,4,5)) || (in_array($this->previous_status, array(4)) && $this->status == 1)) && (get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
 				//Only gets sent if this is a pending booking, unless approvals are disabled.
 				$contact_subject = $EM_Event->output($contact_subject, 'email');
 				$contact_body = $EM_Event->output($contact_body, 'email');

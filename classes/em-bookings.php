@@ -302,12 +302,12 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 * Returns number of booked spaces for this event. If approval of bookings is on, will return number of booked confirmed spaces.
 	 * @return int
 	 */
-	function get_booked_spaces(){
+	function get_booked_spaces($force_refresh = false){
 		$booked_spaces = 0;
 		$EM_Bookings = $this->get_bookings(); //get bookings, automatically filtering approvals etc.
 		foreach ( $EM_Bookings->bookings as $EM_Booking ){
 			//never show cancelled status, nor pending if approvals required
-			$booked_spaces += $EM_Booking->get_spaces();
+			$booked_spaces += $EM_Booking->get_spaces($force_refresh);
 		}
 		return $booked_spaces;
 	}
@@ -336,7 +336,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function get_bookings(){
 		$confirmed = array();
 		foreach ( $this->bookings as $booking ){
-			if( $booking->status == 1 || (get_option('dbem_bookings_approval') == 0 && in_array($booking->status, array(0,1,2,5))) ){
+			if( $booking->status == 1 || (get_option('dbem_bookings_approval') == 0 && in_array($booking->status, array(0,1))) ){
 				$confirmed[] = $booking;
 			}
 		}
