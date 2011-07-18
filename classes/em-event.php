@@ -310,7 +310,8 @@ class EM_Event extends EM_Object{
 		} else {
 			$this->location_id = '';
 			$this->location = new EM_Location();
-			$this->location->get_post();  
+			$this->location->get_post();
+			$this->location->description = ''; //otherwise we get the same event details in the location  
 		}
 		if( !empty($_REQUEST['event_rsvp']) && $_REQUEST['event_rsvp'] && !$this->get_bookings()->get_tickets()->get_post() ){
 			$EM_Tickets = $this->get_bookings()->get_tickets();

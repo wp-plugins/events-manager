@@ -81,10 +81,10 @@ function em_create_events_table() {
 		blog_id bigint(20) unsigned NULL DEFAULT NULL,
 		group_id bigint(20) unsigned NULL DEFAULT NULL,
 		PRIMARY KEY  (event_id),
-		INDEX (event_status),
-		INDEX (blog_id),
-		INDEX (event_slug),
-		INDEX (group_id)
+		KEY (event_status),
+		KEY (blog_id),
+		KEY (event_slug),
+		KEY (group_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	$old_table_name = EM_OLD_EVENTS_TABLE; 
@@ -151,10 +151,10 @@ function em_create_locations_table() {
 		location_longitude float DEFAULT NULL,
 		location_description text DEFAULT NULL,
 		PRIMARY KEY  (location_id),
-		INDEX (location_state),
-		INDEX (location_region),
-		INDEX (location_country),
-		INDEX (location_slug)
+		KEY (location_state),
+		KEY (location_region),
+		KEY (location_country),
+		KEY (location_slug)
 		) DEFAULT CHARSET=utf8 ;";
 		
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -187,7 +187,7 @@ function em_create_bookings_table() {
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		booking_status bool NOT NULL DEFAULT 1,
- 		booking_price decimal(6,2) unsigned NOT NULL DEFAULT 0,
+ 		booking_price decimal(10,2) unsigned NOT NULL DEFAULT 0,
 		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -212,7 +212,7 @@ function em_create_categories_table() {
 		category_name tinytext NOT NULL,
 		category_description text DEFAULT NULL,
 		PRIMARY KEY  (category_id),
-		INDEX (category_slug)
+		KEY (category_slug)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
@@ -246,7 +246,7 @@ function em_create_tickets_table() {
 		ticket_max INT( 10 ) NULL ,
 		ticket_spaces INT NULL ,
 		PRIMARY KEY  (ticket_id),
-		INDEX (event_id)
+		KEY (event_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -264,10 +264,10 @@ function em_create_tickets_bookings_table() {
 		  booking_id bigint(20) unsigned NOT NULL,
 		  ticket_id bigint(20) unsigned NOT NULL,
 		  ticket_booking_spaces int(6) NOT NULL,
-		  ticket_booking_price decimal(6,2) NOT NULL,
+		  ticket_booking_price decimal(10,2) NOT NULL,
 		  PRIMARY KEY  (ticket_booking_id),
-		  INDEX (booking_id),
-		  INDEX (ticket_id)
+		  KEY (booking_id),
+		  KEY (ticket_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
