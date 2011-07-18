@@ -23,11 +23,11 @@ function bp_em_screen_settings_menu() {
 }
 
 	function bp_em_screen_settings_menu_header() {
-		_e( 'Events Settings Header', 'bp-em' );
+		_e( 'Events Settings Header', 'dbem' );
 	}
 
 	function bp_em_screen_settings_menu_title() {
-		_e( 'Events Settings', 'bp-em' );
+		_e( 'Events Settings', 'dbem' );
 	}
 
 	function bp_em_screen_settings_menu_content() {
@@ -35,15 +35,15 @@ function bp_em_screen_settings_menu() {
 
 		<?php if ( $bp_settings_updated ) { ?>
 			<div id="message" class="updated fade">
-				<p><?php _e( 'Changes Saved.', 'bp-em' ) ?></p>
+				<p><?php _e( 'Changes Saved.', 'dbem' ) ?></p>
 			</div>
 		<?php } ?>
 
 		<form action="<?php echo $bp->loggedin_user->domain . 'settings/events-settings/'; ?>" name="bp-em-admin-form" id="account-delete-form" class="bp-em-admin-form" method="post">
 
-			<input type="checkbox" name="bp-em-option-one" id="bp-em-option-one" value="1"<?php if ( '1' == get_usermeta( $bp->loggedin_user->id, 'bp-em-option-one' ) ) : ?> checked="checked"<?php endif; ?> /> <?php _e( 'Do you love clicking checkboxes?', 'bp-em' ); ?>
+			<input type="checkbox" name="bp-em-option-one" id="bp-em-option-one" value="1"<?php if ( '1' == get_usermeta( $bp->loggedin_user->id, 'bp-em-option-one' ) ) : ?> checked="checked"<?php endif; ?> /> <?php _e( 'Do you love clicking checkboxes?', 'dbem' ); ?>
 			<p class="submit">
-				<input type="submit" value="<?php _e( 'Save Settings', 'bp-em' ) ?> &raquo;" id="submit" name="submit" />
+				<input type="submit" value="<?php _e( 'Save Settings', 'dbem' ) ?> &raquo;" id="submit" name="submit" />
 			</p>
 
 			<?php

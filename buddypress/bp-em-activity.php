@@ -64,7 +64,7 @@ function bp_em_record_activity_event_save( $result, $EM_Event ){
 		$user = get_userdata($EM_Event->owner);
 		bp_em_record_activity( array(
 			'user_id' => $user->ID,
-			'action' => sprintf(__('%s added a the event %s','dbem'), "<a href='".get_bloginfo('wpurl').'/'.BP_MEMBERS_SLUG.'/'.$user->user_login."/'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK') ),
+			'action' => sprintf(__('%s added the event %s','dbem'), "<a href='".get_bloginfo('wpurl').'/'.BP_MEMBERS_SLUG.'/'.$user->user_login."/'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK') ),
 			'primary_link' => $EM_Event->output('#_EVENTURL'),
 			'type' => 'new_event',
 			'item_id' => $EM_Event->id,

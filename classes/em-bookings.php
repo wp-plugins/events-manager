@@ -57,16 +57,18 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function add( $EM_Booking ){
 		global $wpdb,$EM_Mailer;
-		$EM_Booking->get_spaces(true);
-		if ( $this->get_available_spaces() >= $EM_Booking->get_spaces() ) {
+		if ( $this->get_available_spaces() >= $EM_Booking->get_spaces(true) ) {
 			//Save the booking
 			$email = false;
-			$result = $EM_Booking->save();
+			if( !get_option('dbem_bookings_approval') && $EM_Booking->status < 2 ){
+				$EM_Booking->status = 1;
+			}
+			$result = $EM_Booking->save(false);
 			if($result){
 				//Success
 				$this->bookings[] = $EM_Booking;
 				$email = $EM_Booking->email();
-				if( get_option('dbem_bookings_approval') == 1 ){
+				if( get_option('dbem_bookings_approval') == 1 && $EM_Booking->status == 0){
 					$this->feedback_message = __('Booking successful, pending confirmation (you will also receive an email once confirmed).', 'dbem');
 				}else{
 					$this->feedback_message = __('Booking successful.', 'dbem');
@@ -189,15 +191,18 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function delete(){
 		global $wpdb;
 		$booking_ids = array();
-		if( is_object($this->event) ){
-			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id='{$this->event_id}'");
-		}else{
-			foreach( $this->bookings as $EM_Booking ){
-				$booking_ids[] = $EM_Booking->id;
-			}
+		//get the booking ids tied to this event
+		foreach( $this->bookings as $EM_Booking ){
+			$booking_ids[] = $EM_Booking->id;
+		}
+		$result_tickets = true;
+		$result = true;
+		if( count($booking_ids) > 0 ){
+			//Delete bookings and ticket bookings
+			$result_tickets = $wpdb->query("DELETE FROM ". EM_TICKETS_BOOKINGS_TABLE ." WHERE booking_id IN (".implode(',',$booking_ids).");");
 			$result = $wpdb->query("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id IN (".implode(',',$booking_ids).")");
 		}
-		return ($result !== false);
+		return ($result !== false && $result_tickets !== false);
 	}
 
 	
@@ -297,12 +302,12 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 * Returns number of booked spaces for this event. If approval of bookings is on, will return number of booked confirmed spaces.
 	 * @return int
 	 */
-	function get_booked_spaces(){
+	function get_booked_spaces($force_refresh = false){
 		$booked_spaces = 0;
 		$EM_Bookings = $this->get_bookings(); //get bookings, automatically filtering approvals etc.
 		foreach ( $EM_Bookings->bookings as $EM_Booking ){
 			//never show cancelled status, nor pending if approvals required
-			$booked_spaces += $EM_Booking->get_spaces();
+			$booked_spaces += $EM_Booking->get_spaces($force_refresh);
 		}
 		return $booked_spaces;
 	}
@@ -331,7 +336,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function get_bookings(){
 		$confirmed = array();
 		foreach ( $this->bookings as $booking ){
-			if( $booking->status == 1 || (get_option('dbem_bookings_approval') == 0 && $booking->status < 2) ){
+			if( $booking->status == 1 || (get_option('dbem_bookings_approval') == 0 && in_array($booking->status, array(0,1))) ){
 				$confirmed[] = $booking;
 			}
 		}
@@ -477,7 +482,6 @@ class EM_Bookings extends EM_Object implements Iterator{
 			$orderby_sql
 			$limit $offset
 		";
-	
 		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?

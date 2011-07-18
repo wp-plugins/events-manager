@@ -4,7 +4,7 @@
 			header('Content-Disposition: inline; filename="events.ics"');
 					
 			$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_description_format' ) ) );
-			$EM_Events = new EM_Events( array( get_option('dbem_ical_limit'), 'owner'=>false, 'orderby'=>'event_start_date' ) );
+			$EM_Events = new EM_Events( apply_filters('em_calendar_template_args',array( get_option('dbem_ical_limit'), 'owner'=>false, 'orderby'=>'event_start_date' )) );
 			
 			$blog_desc = ent2ncr(convert_chars(strip_tags(get_bloginfo()))) . " - " . __('Calendar','dbem');
 			
@@ -18,14 +18,20 @@ X-WR-CALNAME:{$blog_desc}";
 			foreach ( $EM_Events as $EM_Event ) {
 			
 				$description = $EM_Event->output($description_format);
-				$description = str_replace(',','\,',ent2ncr(convert_chars(strip_tags($description))));
+				$description = str_replace("\\","\\\\",ent2ncr(convert_chars(strip_tags($description))));
+				$description = str_replace('"','DQUOTE',$description);
+				$description = str_replace(';','\;',$description);
+				$description = str_replace(',','\,',$description);
 				
-				$dateStart	= date('Ymd\THis\Z',$EM_Event->start);
-				$dateEnd = date('Ymd\THis\Z',$EM_Event->end);	
+				$dateStart	= date('Ymd\THis\Z',$EM_Event->start - (60*60*get_option('gmt_offset')));
+				$dateEnd = date('Ymd\THis\Z',$EM_Event->end - (60*60*get_option('gmt_offset')));
 				$dateModified = date('Ymd\THis\Z', $EM_Event->modified);			
 				
 				$location		= $EM_Event->output('#_LOCATION');
 				$location		= str_replace(',','\,',ent2ncr(convert_chars(strip_tags($location))));
+				$location = str_replace('"','DQUOTE',$location);
+				$location = str_replace(';','\;',$location);
+				$location = str_replace(',','\,',$location);
 				
 				$locations = array();
 				foreach($EM_Event->get_categories() as $EM_Category){

@@ -18,9 +18,15 @@
 			<tbody>
 				<?php foreach( $events as $EM_Event ): ?>
 				<tr>
-					<td><b><?php echo $EM_Event->name; ?></b></td>
+					<td><b><?php echo $EM_Event->output('#_EVENTLINK'); ?></b></td>
 					<td><?php echo "<b>" . $EM_Event->location->name . "</b><br/>" . $EM_Event->location->address . " - " . $EM_Event->location->town;  ?></td>
 					<th>
+						<?php 
+							echo date_i18n('D d M Y', $EM_Event->start);
+							echo ($EM_Event->start != $EM_Event->end) ? " - ".date_i18n('D d M Y', $EM_Event->end):''; 
+						?>
+						<br />
+						<?php echo substr ( $EM_Event->start_time, 0, 5 ) . " - " . substr ( $EM_Event->end_time, 0, 5 );	?>
 						<?php if($EM_Event->can_manage('edit_events','edit_others_events')): ?>
 						<a href="<?php echo $EM_Event->output('#_EDITEVENTURL'); ?>"><?php _e ( 'edit', 'dbem' ); ?></a>
 						<?php endif; ?>

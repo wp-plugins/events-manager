@@ -4,7 +4,7 @@ $button_booking = __('Booking...','dbem');
 $button_success = __('Booking Submitted','dbem');
 $button_fail = __('Booking Error. Try again?','dbem');
 ?>
-<?php if( count($EM_Event->get_bookings()->get_available_tickets()->tickets) == 1 ):  ?>
+<?php if( count($EM_Event->get_bookings()->get_available_tickets()->tickets) == 1 && is_user_logged_in() ):  ?>
 	<?php ob_start(); ?>
 	<a id="em-booking-button-<?php echo $EM_Event->id; ?>" class="button"><?php echo $button_text; ?></a>
 	<?php echo apply_filters( 'em_booking_button', ob_get_clean(), $EM_Event ); ?>
@@ -30,8 +30,9 @@ $button_fail = __('Booking Error. Try again?','dbem');
 							if(response.result){
 								$('#em-booking-button-<?php echo $EM_Event->id; ?>').text('<?php echo $button_success; ?>');
 							}else{
-								$('#em-booking-button-<?php echo $EM_Event->id; ?>').text('<?php echo $button_fail; ?>');					
+								$('#em-booking-button-<?php echo $EM_Event->id; ?>').text('<?php echo $button_text; ?>');					
 							}
+							alert(response.message);
 						}
 					});
 				}

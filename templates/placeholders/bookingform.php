@@ -1,6 +1,6 @@
 <?php  
-	/* @var $EM_Event EM_Event */   
-	global $EM_Notices;
+/* @var $EM_Event EM_Event */   
+global $EM_Notices;
 	$booked_places_options = array();
 	for ( $i = 1; $i <= 10; $i++ ) {
 		$booking_spaces = (!empty($_POST['booking_spaces']) && $_POST['booking_spaces'] == $i) ? 'selected="selected"':'';
@@ -13,6 +13,8 @@
 	<?php // We are firstly checking if the user has already booked a ticket at this event, if so offer a link to view their bookings. ?>
 	<?php if( $EM_Event->get_bookings()->has_booking() ): ?>
 		<p><?php echo sprintf(__('You are currently attending this event. <a href="%s">Manage my bookings</a>','dbem'), em_get_my_bookings_url()); ?></p>
+	<?php elseif( !$EM_Event->rsvp ): ?>
+		<p><?php _e('Online bookings are not available for this event.','dbem'); ?></p>
 	<?php elseif( $EM_Event->start < current_time('timestamp') ): ?>
 		<p><?php _e('Bookings are closed for this event.','dbem'); ?></p>
 	<?php else: ?>
@@ -30,7 +32,7 @@
 					 * the price collumn will be ommited.
 					 */
 				?>
-				<?php if( count($EM_Tickets->tickets) > 1 ): ?>
+				<?php if( count($EM_Tickets->tickets) > 1 || get_option('dbem_bookings_tickets_single_form') ): ?>
 					<table class="em-tickets" cellspacing="0" cellpadding="0">
 						<tr>
 							<td><?php _e('Ticket Type','dbem') ?></td>
@@ -41,8 +43,8 @@
 						</tr>
 						<?php foreach( $EM_Tickets->tickets as $EM_Ticket ): ?>
 							<?php if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') ): ?>
-							<tr>
-								<td><?php echo $EM_Ticket->output_property('name'); ?></td>
+							<tr class="em-ticket" id="em-ticket-<?php echo $EM_Ticket->id; ?>">
+								<td><?php echo $EM_Ticket->output_property('name'); ?><?php if(!empty($EM_Ticket->description)) :?><br><span class="ticket-desc"><?php echo $EM_Ticket->description; ?></span><?php endif; ?></td>
 								<?php if( !$EM_Event->is_free() ): ?>
 								<td><?php echo $EM_Ticket->get_price(true); ?></td>
 								<?php endif; ?>
@@ -57,6 +59,7 @@
 									?>
 								</td>
 							</tr>
+							<?php do_action('em_booking_form_tickets_loop', $EM_Ticket); ?>
 							<?php endif; ?>
 						<?php endforeach; ?>
 					</table>		
@@ -66,18 +69,25 @@
 				<div class='em-booking-form-details'>
 				
 					<?php $EM_Ticket = $EM_Tickets->get_first(); ?>
-					<?php if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 ): ?>
-					<p>
-						<label for='em_tickets'><?php _e('Spaces', 'dbem') ?></label>
-						<?php 
-							$spaces_options = $EM_Ticket->get_spaces_options(false);
-							if( $spaces_options ){
-								echo $spaces_options;
-							}else{
-								echo "<strong>".__('N/A','dbem')."</strong>";
-							}
-						?>
-					</p>	
+					
+					<?php if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') ): ?>
+						<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo $EM_Ticket->description; ?></p><?php endif; ?>
+						<?php if( !$EM_Event->is_free() ): ?>
+							<p>
+								<label><?php _e('Price','dbem') ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong>
+							</p>
+						<?php endif; ?>						
+						<p>
+							<label for='em_tickets'><?php _e('Spaces', 'dbem') ?></label>
+							<?php 
+								$spaces_options = $EM_Ticket->get_spaces_options(false);
+								if( $spaces_options ){
+									echo $spaces_options;
+								}else{
+									echo "<strong>".__('N/A','dbem')."</strong>";
+								}
+							?>
+						</p>	
 					<?php endif; ?>
 					
 					<?php //Here we have extra information required for the booking. ?>
@@ -94,7 +104,7 @@
 							<input type="text" name="user_phone" id="user_phone"" class="input" />
 						</p>
 						<p>
-							<label for='user_email'><?php _e('E-mail','dbem') ?></label>
+							<label for='user_email'><?php _e('E-mail','dbem') ?></label> 
 							<input type="text" name="user_email" id="user_email" class="input"  />
 						</p>
 						<?php do_action('register_form'); ?>					
@@ -111,25 +121,25 @@
 					 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_add'); ?>'/>
 					</div>
 				</div>
-			</form>	
 			<?php else: ?>
 			<p class="em-booking-form-details"><?php _e('You must log in before you make a booking.','dbem'); ?></p>
-			<?php endif; ?>	
-			<?php if( !is_user_logged_in() ): ?>
+			<?php endif; ?>
+			</form>	
+			<?php if( !is_user_logged_in() && get_option('dbem_bookings_login_form') ): ?>
 				<div class="em-booking-login">
 	        		<form class="em-booking-login-form" action="<?php echo site_url('wp-login.php', 'login_post'); ?>" method="post">
 			            <p><?php _e('Log in if you already have an account with us.','dbem'); ?>
 			            <p>
-			            	<label><?php _e( 'Username','login-with-ajax' ) ?></label>
+			            	<label><?php _e( 'Username','dbem' ) ?></label>
 	                        <input type="text" name="log" class="input" value="" />
 						</p>
 						<p>
-							<label><?php _e( 'Password','login-with-ajax' ) ?></label>
+							<label><?php _e( 'Password','dbem' ) ?></label>
 			                <input type="password" name="pwd" class="input" value="" />
 			            </p>
 			            <?php do_action('login_form'); ?>
-	                    <input type="submit" name="wp-submit" id="em_wp-submit" value="<?php _e('Log In'); ?>" tabindex="100" />
-	                    <input name="rememberme" type="checkbox" id="em_rememberme" value="forever" /> <label><?php _e( 'Remember Me','login-with-ajax' ) ?></label>
+	                    <input type="submit" name="wp-submit" id="em_wp-submit" value="<?php _e('Log In', 'dbem'); ?>" tabindex="100" />
+	                    <input name="rememberme" type="checkbox" id="em_rememberme" value="forever" /> <label><?php _e( 'Remember Me','dbem' ) ?></label>
                         <input type="hidden" name="redirect_to" value="http://<?php echo $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] ?>#em-booking" />
 	                    <br />
 	                    <?php
@@ -148,11 +158,11 @@
                                 <?php
                             }
                         ?>	                    
-	                    <a href="<?php echo site_url('wp-login.php?action=lostpassword', 'login') ?>" title="<?php _e('Password Lost and Found') ?>"><?php _e('Lost your password?') ?></a>                        
+	                    <a href="<?php echo site_url('wp-login.php?action=lostpassword', 'login') ?>" title="<?php _e('Password Lost and Found', 'dbem') ?>"><?php _e('Lost your password?', 'dbem') ?></a>                        
 	               </form>
 				</div>
 			<?php endif; ?>
-			<br class="clear"/>
+			<br class="clear" style="clear:left;" />
 		<?php elseif( count($EM_Tickets->tickets) == 0 ): ?>
 			<div><?php _e('No more tickets available at this time.','dbem'); ?></div>
 		<?php endif; ?>  
@@ -161,38 +171,51 @@
 <?php ob_start(); ?>
 <script type="text/javascript">
 	jQuery(document).ready( function($){
-		$('#em-booking-form').ajaxForm({
-			url: EM.ajaxurl,
-			dataType: 'jsonp',
-			beforeSubmit: function(formData, jqForm, options) {
-				$('.em-booking-message').remove();
-				$('#em-booking').append('<div id="em-loading"></div>');
-			},
-			success : function(response, statusText, xhr, $form) {
-				$('#em-loading').remove();
-				if(response.result){
-					$('#em-booking-form').fadeOut( 'fast', function(){
-						$('<div class="em-booking-message-success em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
-						$(this).remove();
-						$('.em-booking-login').remove();
-					} );
-				}else{
-					if( response.errors != '' ){
-						if( $.isArray() ){
-							var error_msg;
-							response.errors.each(function(i, el){ 
-								error_msg = error_msg + el;
-							});
-							$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');
-						}else{
-							$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');							
-						}
+		var em_booking_doing_ajax = false;
+		$('#em-booking-form').submit( function(e){
+			e.preventDefault();
+			$.ajax({
+				url: EM.ajaxurl,
+				dataType: 'jsonp',
+				data:$('#em-booking-form').serializeArray(),
+				type:'post',
+				beforeSend: function(formData, jqForm, options) {
+					if(em_booking_doing_ajax){
+						alert('<?php _e('Please wait while the booking is being submitted.','dbem'); ?>');
+						return false;
+					}
+					em_booking_doing_ajax = true;
+					$('.em-booking-message').remove();
+					$('#em-booking').append('<div id="em-loading"></div>');
+				},
+				success : function(response, statusText, xhr, $form) {
+					$('#em-loading').remove();
+					if(response.result){
+						$('#em-booking-form').fadeOut( 'fast', function(){
+							$('<div class="em-booking-message-success em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
+							$(this).remove();
+							$('.em-booking-login').remove();
+						} );
 					}else{
-						$('<div class="em-booking-message-error em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
-					}					
+						if( response.errors != '' ){
+							if( $.isArray() ){
+								var error_msg;
+								response.errors.each(function(i, el){ 
+									error_msg = error_msg + el;
+								});
+								$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');
+							}else{
+								$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');							
+							}
+						}else{
+							$('<div class="em-booking-message-error em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
+						}					
+					}
+					em_booking_doing_ajax = false;
 				}
-			}
-		});								
+			});	
+			return false;
+		});							
 	});
 </script>
 <?php echo apply_filters( 'em_booking_form_js', ob_get_clean(), $EM_Event ); ?>
