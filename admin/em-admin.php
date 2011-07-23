@@ -13,7 +13,7 @@ function em_admin_warnings() {
 		//New User Intro
 		if (isset ( $_GET ['disable_hello_to_user'] ) && $_GET ['disable_hello_to_user'] == 'true'){
 			// Disable Hello to new user if requested
-			delete_option('dbem_hello_to_user');
+			update_option('dbem_hello_to_user',0);
 		}elseif ( get_option ( 'dbem_hello_to_user' ) ) {
 			//FIXME update welcome msg with good links
 			$advice = sprintf( __("<p>Events Manager is ready to go! It is highly recommended you read the <a href='%s'>Getting Started</a> guide on our site, as well as checking out the <a href='%s'>Settings Page</a>. <a href='%s' title='Don't show this advice again'>Dismiss</a></p>", 'dbem'), 'http://wp-events-plugin.com/documentation/getting-started/?utm_source=em&utm_medium=plugin&utm_content=installationlink&utm_campaign=plugin_links', get_bloginfo('url').'/wp-admin/admin.php?page=events-manager-options',  $_SERVER['REQUEST_URI'].$dismiss_link_joiner.'disable_hello_to_user=true');

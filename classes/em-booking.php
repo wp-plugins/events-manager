@@ -9,6 +9,7 @@ class EM_Booking extends EM_Object{
 	var $comment;
 	var $status = 0;
 	var $notes = array();
+	var $meta = array();
 	var $fields = array(
 		'booking_id' => array('name'=>'id','type'=>'%d'),
 		'event_id' => array('name'=>'event_id','type'=>'%d'),
@@ -16,7 +17,8 @@ class EM_Booking extends EM_Object{
 		'booking_price' => array('name'=>'price','type'=>'%d'),
 		'booking_spaces' => array('name'=>'spaces','type'=>'%d'),
 		'booking_comment' => array('name'=>'comment','type'=>'%s'),
-		'booking_status' => array('name'=>'status','type'=>'%d')
+		'booking_status' => array('name'=>'status','type'=>'%d'),
+		'booking_meta' => array('name'=>'meta','type'=>'%s')
 	);
 	//Other Vars
 	var $timestamp;
@@ -74,6 +76,8 @@ class EM_Booking extends EM_Object{
 				global $wpdb;			
 				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data'";
 				$booking = $wpdb->get_row($sql, ARRAY_A);
+				//booking meta
+				$booking['booking_meta'] = (!empty($booking['booking_meta'])) ? unserialize($booking['booking_meta']):array();
 				//Custom Fields
 				$custom = $wpdb->get_row("SELECT meta_key, meta_value FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data' AND meta_key='booking_custom'");
 			  	//Booking notes
@@ -117,6 +121,7 @@ class EM_Booking extends EM_Object{
 				$this->person_id = $this->get_person()->ID;			
 				//Step 1. Save the booking
 				$data = $this->to_array();
+				$data['booking_meta'] = serialize($data['booking_meta']);
 				if($this->id != ''){
 					$update = true;
 					$where = array( 'booking_id' => $this->id );  
@@ -195,6 +200,7 @@ class EM_Booking extends EM_Object{
 	 */
 	function get_post(){
 		$this->tickets_bookings = new EM_Tickets_Bookings($this->id);
+		do_action('em_booking_get_post_pre',$this);
 		$result = array();
 		$this->event_id = $this->get_event()->id;
 		if( !empty($_REQUEST['em_tickets']) && is_array($_REQUEST['em_tickets']) ){
@@ -292,7 +298,7 @@ class EM_Booking extends EM_Object{
 	}
 	
 	/**
-	 * Get custom fields for this booking.
+	 * Outdated, use booking meta array. Get custom fields for this booking.
 	 * @return array
 	 */
 	function get_custom(){
@@ -473,7 +479,7 @@ class EM_Booking extends EM_Object{
 			$contact_subject = get_option('dbem_bookings_contact_email_subject');
 			$contact_body = get_option('dbem_bookings_contact_email_body');
 			
-			if( get_option('dbem_bookings_approval') == 0 && $this->status < 2 || $this->status == 1 ){
+			if( (get_option('dbem_bookings_approval') == 0 && $this->status < 2) || $this->status == 1 ){
 				$booker_subject = get_option('dbem_bookings_email_confirmed_subject');
 				$booker_body = get_option('dbem_bookings_email_confirmed_body');
 			}elseif( $this->status == 0 || $this->status == 5 || ( $this->status == 0 && ($this->previous_status == 4 || $this->previous_status == 5) )  ){

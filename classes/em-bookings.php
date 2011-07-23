@@ -295,7 +295,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 		}else{
 			$available_spaces = $this->get_spaces() - $this->get_booked_spaces();	
 		}
-		return apply_filters('get_available_spaces', $available_spaces, $this);
+		return apply_filters('em_booking_get_available_spaces', $available_spaces, $this);
 	}
 
 	/**
@@ -514,55 +514,8 @@ class EM_Bookings extends EM_Object implements Iterator{
 		
 		header("Content-Type: application/octet-stream");
 		header("Content-Disposition: Attachment; filename=$file_name");
-		
-		//Headers
-		$labels = array(
-			'Booking ID',
-			'Name',
-			'Email',
-			'Phone',
-			'Date',
-			'Status',
-			'Ticket Name',
-			'Spaces',
-			'Price',
-			'Comment'
-		);
-		$file = sprintf(__('Booking details for "%s" as of %s','dbem'),$event_name, date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
-		$file = '"'. implode('","', $labels). '"' .  "\n";
-		
-		//Rows
-		foreach( $this->bookings as $EM_Booking ) {
-			/* @var $EM_Booking EM_Booking */
-			foreach( $EM_Booking->get_tickets_bookings() as $EM_Ticket_Booking){
-				/* @var $EM_Ticket EM_Ticket */
-				/* @var $EM_Ticket_Booking EM_Ticket_Booking */
-				$EM_Ticket = $EM_Ticket_Booking->get_ticket();
-				$row = array(
-					$EM_Booking->id,
-					$EM_Booking->person->display_name,
-					$EM_Booking->person->user_email,
-					$EM_Booking->person->phone,
-					date('Y-m-d h:i', $EM_Booking->timestamp),
-					$EM_Booking->get_status(),
-					$EM_Ticket->name,
-					$EM_Ticket_Booking->get_spaces(),
-					$EM_Ticket_Booking->get_price(),
-					$EM_Booking->comment
-				);
-				//Display all values
-				foreach($row as $value){
-					$value = str_replace('"', '""', $value);
-					$value = str_replace("=", "", $value);
-					$file .= '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
-				}
-				$file .= "\n";
-			}
-		}
-		
-		// $file holds the data
-		echo $file;
-		$file = "";
+		em_locate_template('templates/csv-event-bookings.php', true);
+		exit();
 	}
 	
 	/* Overrides EM_Object method to apply a filter to result

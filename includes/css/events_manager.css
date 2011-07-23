@@ -6,7 +6,9 @@
 		width:360px;
 		float:left;
 	}  
-	.em-booking-form-details input, .em-booking-form-details textarea { width:250px; }
+	.em-booking-form-details input.input, .em-booking-form-details textarea { width:250px; }
+	.em-booking-form-details .input-group label { display:block; float:left; }
+	.em-booking-form-details .input-group span { display:block; margin-left:110px; }
 	.em-booking-form-details .em-booking-submit { width:auto; }	
 	#em-booking-form label  {
 		display:inline-block;

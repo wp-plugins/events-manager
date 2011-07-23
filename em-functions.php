@@ -281,7 +281,7 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 	if(is_numeric($user_id)){
 		update_user_meta($user_id, 'dbem_phone', $user_phone);
 	}
-	
+
 	if ( ! $user_id ) {
 		$errors->add( 'registerfail', sprintf( __( '<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href="mailto:%s">webmaster</a> !', 'dbem'), get_option( 'admin_email' ) ) );
 		return $errors;

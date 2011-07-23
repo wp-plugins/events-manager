@@ -188,6 +188,7 @@ function em_create_bookings_table() {
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		booking_status bool NOT NULL DEFAULT 1,
  		booking_price decimal(10,2) unsigned NOT NULL DEFAULT 0,
+		booking_meta LONGTEXT NULL,
 		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');

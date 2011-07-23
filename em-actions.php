@@ -272,13 +272,14 @@ function em_init_actions() {
 				//Does this user need to be registered first?
 				$registration = true;
 				//TODO do some ticket validation before registering the user
-				if( !is_user_logged_in() && !empty($_REQUEST['register_user']) && get_option('dbem_bookings_anonymous') ){
+				if( !is_user_logged_in() && get_option('dbem_bookings_anonymous') ){
 					//find random username - less options for user, less things go wrong
 					$username_root = explode('@', $_REQUEST['user_email']);
 					$username_rand = $username_root[0].rand(1,1000);
 					while( username_exists($username_root[0].rand(1,1000)) ){
 						$username_rand = $username_root[0].rand(1,1000);
 					}
+					$_REQUEST['user_phone'] = (!empty($_REQUEST['user_phone'])) ? $_REQUEST['user_phone']:''; //fix to prevent warnings
 					$id = em_register_new_user($username_rand, $_REQUEST['user_email'], $_REQUEST['user_name'],$_REQUEST['user_phone']);
 					if( is_numeric($id) ){
 						$EM_Person = new EM_Person($id);

@@ -14,7 +14,8 @@ function em_admin_actions_bookings() {
 			function em_booking_save_notification(){ global $EM_Booking; ?><div class="updated"><p><strong><?php echo $EM_Booking->feedback_message; ?></strong></p></div><?php }
 			add_action ( 'admin_notices', 'em_booking_save_notification' );
 		}
-	}elseif( is_object($EM_Event) && !empty($_REQUEST['action']) ){
+	}
+	if( is_object($EM_Event) && !empty($_REQUEST['action']) ){
 		if( $_REQUEST['action'] == 'bookings_export_csv' && wp_verify_nonce($_REQUEST['_wpnonce'],'bookings_export_csv') ){
 			$EM_Event->get_bookings()->export_csv();
 			exit();
@@ -264,11 +265,13 @@ function em_bookings_single(){
 								</tfoot>
 							</table>
 							<table cellspacing="0" cellpadding="0">
+								<?php if( !get_option('em_booking_form_custom') ): ?>
 								<tr><td><strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td><td><?php echo $EM_Booking->comment; ?></td></tr>
 								<?php foreach( $EM_Booking->get_custom() as $custom_option ){
 									?><tr><td><strong><?php echo $custom_option['name'] ?></strong></td><td><?php echo $custom_option['value'] ?></td></tr><?php
-								} 
-								?>
+								} ?>
+								<?php else: do_action('em_bookings_single_custom',$EM_Booking); ?>
+								<?php endif; ?>
 							</table>
 						</div>
 					</div>
