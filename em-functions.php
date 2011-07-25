@@ -270,7 +270,9 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 
 	do_action( 'register_post', $sanitized_user_login, $user_email, $errors );
 
+	ob_start(); //prevent any errors going out here, e.g. with RPR
 	$errors = apply_filters( 'registration_errors', $errors, $sanitized_user_login, $user_email );
+	ob_clean();
 
 	if ( $errors->get_error_code() )
 		return $errors;
