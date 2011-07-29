@@ -280,7 +280,9 @@ function em_init_actions() {
 						$username_rand = $username_root[0].rand(1,1000);
 					}
 					$_REQUEST['user_phone'] = (!empty($_REQUEST['user_phone'])) ? $_REQUEST['user_phone']:''; //fix to prevent warnings
-					$id = em_register_new_user($username_rand, $_REQUEST['user_email'], $_REQUEST['user_name'],$_REQUEST['user_phone']);
+					$_REQUEST['user_name'] = (!empty($_REQUEST['user_name'])) ? $_REQUEST['user_name']:''; //fix to prevent warnings
+					$user_data = array('user_login' => $username_rand, 'user_email'=> $_REQUEST['user_email'], 'user_name'=> $_REQUEST['user_name'], 'dbem_phone'=> $_REQUEST['dbem_phone']);
+					$id = em_register_new_user($user_data);
 					if( is_numeric($id) ){
 						$EM_Person = new EM_Person($id);
 						$EM_Booking->person_id = $id;

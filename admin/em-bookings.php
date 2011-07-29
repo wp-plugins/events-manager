@@ -208,7 +208,7 @@ function em_bookings_single(){
 							$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
 							?>
 							<table>
-								<tr><td><strong><?php _e('Name','dbem'); ?></strong></td><td><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->id ?>"><?php echo ($EM_Event->name); ?></a></td></tr>
+								<tr><td><strong><?php _e('Name','dbem'); ?></strong></td><td><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->id ?>"><?php echo ($EM_Event->display_name); ?></a></td></tr>
 								<tr>
 									<td><strong><?php _e('Date/Time','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td>
 									<td>

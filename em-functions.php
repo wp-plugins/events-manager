@@ -234,24 +234,25 @@ function em_get_attributes(){
  * Copied straight from wp-login.php, only change atm is a function renaming. 
  * Handles registering a new user.
  *
- * @param string $user_login User's username for logging in
- * @param string $user_email User's email address to send password and add
+ * @param array associative array of user values to insert
  * @return int|WP_Error Either user's ID or error on failure.
  */
-function em_register_new_user( $user_login, $user_email, $user_name = '', $user_phone = '' ) {
-	
+function em_register_new_user( $user_data ) {
+	$user_data = apply_filters('em_register_new_user_pre',$user_data);
 	$errors = new WP_Error();
-	$name = explode(' ', $user_name);
-	$first_name = array_shift($name);
-	$last_name = implode(' ',$name);
-	
-	$sanitized_user_login = sanitize_user( $user_login );
-	$user_email = apply_filters( 'user_registration_email', $user_email );
+	if( !empty($user_data['user_name']) ){
+		$name = explode(' ', $user_data['user_name']);
+		$user_data['first_name'] = array_shift($name);
+		$user_data['last_name'] = implode(' ',$name);
+	}
+	$sanitized_user_login = sanitize_user( $user_data['user_login'] );
+	$user_data['user_login'] = $sanitized_user_login;
+	$user_email = apply_filters( 'user_registration_email', $user_data['user_email'] );
 
 	// Check the username
 	if ( $sanitized_user_login == '' ) {
 		$errors->add( 'empty_username', __( '<strong>ERROR</strong>: Please enter a username.', 'dbem') );
-	} elseif ( ! validate_username( $user_login ) ) {
+	} elseif ( ! validate_username( $user_data['user_login'] ) ) {
 		$errors->add( 'invalid_username', __( '<strong>ERROR</strong>: This username is invalid because it uses illegal characters. Please enter a valid username.', 'dbem') );
 		$sanitized_user_login = '';
 	} elseif ( username_exists( $sanitized_user_login ) ) {
@@ -279,9 +280,9 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 
 	$user_pass = wp_generate_password( 12, false);
 	
-	$user_id = wp_insert_user(array('user_login'=>$user_login, 'user_email'=>$user_email,'user_pass'=>$user_pass, 'first_name'=>$first_name, 'last_name'=>$last_name));
-	if(is_numeric($user_id)){
-		update_user_meta($user_id, 'dbem_phone', $user_phone);
+	$user_id = wp_insert_user( $user_data );
+	if( is_numeric($user_id) && !empty($user_data['dbem_phone']) ){
+		update_user_meta($user_id, 'dbem_phone', $user_data['dbem_phone']);
 	}
 
 	if ( ! $user_id ) {
@@ -293,7 +294,7 @@ function em_register_new_user( $user_login, $user_email, $user_name = '', $user_
 
 	em_new_user_notification( $user_id, $user_pass );
 
-	return $user_id;
+	return apply_filters('em_register_new_user',$user_id);
 }
 
 /**
