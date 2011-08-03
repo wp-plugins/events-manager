@@ -93,7 +93,7 @@
 
 		<?php do_action('em_template_events_search_form_footer'); ?>
 		<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('search_events'); ?>" />
-		<input type="submit" value="<?php _e('Search','dbem'); ?>" />		
+		<input type="submit" value="<?php _e('Search','dbem'); ?>" class="em-events-search-submit" />		
 	</form>
 </div>
 <script type="text/javascript">
