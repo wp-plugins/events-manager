@@ -34,10 +34,10 @@ jQuery(document).ready( function($){
 				},
 				closeOnClick: true,
 				onLoad: function(){
-					$('#ui-datepicker-div').appendTo('#em-tickets-form');
+					$('#ui-datepicker-div').appendTo('#em-tickets-form').hide();
 				},
 				onClose: function(){
-					$('#ui-datepicker-div').appendTo('body');
+					$('#ui-datepicker-div').appendTo('body').hide();
 				}
 			});
 		}

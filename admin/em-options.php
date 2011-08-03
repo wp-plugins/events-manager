@@ -6,7 +6,7 @@ function em_options_save(){
 	 * Here's the idea, we have an array of all options that need super admin approval if in multi-site mode
 	 * since options are only updated here, its one place fit all
 	 */
-	if( current_user_can('activate_plugins') && !empty($_POST['em-submitted']) ){
+	if( current_user_can('activate_plugins') && !empty($_POST['em-submitted']) && check_admin_referer('events-manager-options','_wpnonce') ){
 		//Build the array of options here
 		$post = $_POST;
 		foreach ($_POST as $postKey => $postValue){
@@ -140,8 +140,7 @@ function em_admin_options_page() {
 		 *  END MIGRATION BIT
 		 */
 		?>
-		<form id="dbem_options_form" method="post" action="">          
-
+		<form id="dbem_options_form" method="post" action="">
 			<div class="metabox-holder">         
 			<!-- // TODO Move style in css -->
 			<div class='postbox-container' style='width: 99.5%'>
@@ -625,6 +624,7 @@ function em_admin_options_page() {
 			<p class="submit">
 				<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e ( 'Save Changes' )?>" />
 				<input type="hidden" name="em-submitted" value="1" />
+				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('events-manager-options'); ?>" />
 			</p>  
 			
 			</div> <!-- .metabox-sortables -->

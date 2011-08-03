@@ -152,9 +152,9 @@ add_shortcode ( 'events_rss_url', 'em_get_rss_url_shortcode');
  */
 function em_get_event_form_shortcode(){
 	if( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
-		em_locate_template('templates/event-form.php',true);
+		em_locate_template('forms/event-editor-guest.php',true);
 	}else{
-		em_locate_template('templates/event-editor.php',true);
+		em_locate_template('forms/event-editor.php',true);
 	}
 }
 add_shortcode ( 'event_form', 'em_get_event_form_shortcode');

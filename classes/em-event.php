@@ -1315,6 +1315,8 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 			$result = apply_filters('dbem_notes', $result);
 		}elseif($target == 'map'){
 			$result = apply_filters('dbem_notes_map', $result);
+		}elseif($target == 'ical'){
+			$result = apply_filters('dbem_notes_ical', $result);
 		}else{
 			$result = apply_filters('dbem_notes_rss', $result);
 			$result = apply_filters('the_content_rss', $result);
@@ -1322,6 +1324,8 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 	}elseif( in_array($placeholder, array("#_NAME",'#_ADDRESS','#_LOCATION','#_TOWN')) ){
 		if ($target == "html"){    
 			$result = apply_filters('dbem_general', $result); 
+	  	}elseif ($target == "ical"){    
+			$result = apply_filters('dbem_general_ical', $result); 
 	  	}else{
 			$result = apply_filters('dbem_general_rss', $result);
 	  	}				

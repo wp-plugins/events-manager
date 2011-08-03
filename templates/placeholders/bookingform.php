@@ -35,20 +35,20 @@ global $EM_Notices;
 				<?php if( count($EM_Tickets->tickets) > 1 || get_option('dbem_bookings_tickets_single_form') ): ?>
 					<table class="em-tickets" cellspacing="0" cellpadding="0">
 						<tr>
-							<td><?php _e('Ticket Type','dbem') ?></td>
+							<th class="em-bookings-ticket-table-type"><?php _e('Ticket Type','dbem') ?></th>
 							<?php if( !$EM_Event->is_free() ): ?>
-							<td><?php _e('Price','dbem') ?></td>
+							<th class="em-bookings-ticket-table-price"><?php _e('Price','dbem') ?></th>
 							<?php endif; ?>
-							<td><?php _e('Spaces','dbem') ?></td>
+							<th class="em-bookings-ticket-table-spaces"><?php _e('Spaces','dbem') ?></th>
 						</tr>
 						<?php foreach( $EM_Tickets->tickets as $EM_Ticket ): ?>
 							<?php if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') ): ?>
 							<tr class="em-ticket" id="em-ticket-<?php echo $EM_Ticket->id; ?>">
-								<td><?php echo $EM_Ticket->output_property('name'); ?><?php if(!empty($EM_Ticket->description)) :?><br><span class="ticket-desc"><?php echo $EM_Ticket->description; ?></span><?php endif; ?></td>
+								<td class="em-bookings-ticket-table-type"><?php echo $EM_Ticket->output_property('name'); ?><?php if(!empty($EM_Ticket->description)) :?><br><span class="ticket-desc"><?php echo $EM_Ticket->description; ?></span><?php endif; ?></td>
 								<?php if( !$EM_Event->is_free() ): ?>
-								<td><?php echo $EM_Ticket->get_price(true); ?></td>
+								<td class="em-bookings-ticket-table-price"><?php echo $EM_Ticket->get_price(true); ?></td>
 								<?php endif; ?>
-								<td>
+								<td class="em-bookings-ticket-table-spaces">
 									<?php 
 										$spaces_options = $EM_Ticket->get_spaces_options();
 										if( $spaces_options ){

@@ -289,9 +289,9 @@
 						<a target='_blank' href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_report&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a> | 
 						<a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a>
 					</p>
-					<div id='bookings-data'>
+					<div id='bookings-data' style="<?php echo ($EM_Event->rsvp) ? '':'display:none;' ?>">
 						<!-- START Booking Ticket Details -->
-						<div id="event-tickets" style="<?php echo ($EM_Event->rsvp) ? '':'display:none;' ?>">
+						<div id="event-tickets">
 							<?php
 							//get tickets here and if there are none, create a blank ticket
 							$EM_Tickets = $EM_Event->get_bookings()->get_tickets();

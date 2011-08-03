@@ -14,10 +14,10 @@ METHOD:PUBLISH
 CALSCALE:GREGORIAN
 PRODID:-//Events Manager//1.0//EN
 X-WR-CALNAME:{$blog_desc}";
-			/* @var EM_Event $EM_Event */
+			/* @var $EM_Event EM_Event */
 			foreach ( $EM_Events as $EM_Event ) {
 			
-				$description = $EM_Event->output($description_format);
+				$description = $EM_Event->output($description_format,'ical');
 				$description = str_replace("\\","\\\\",ent2ncr(convert_chars(strip_tags($description))));
 				$description = str_replace('"','DQUOTE',$description);
 				$description = str_replace(';','\;',$description);

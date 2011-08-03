@@ -68,12 +68,13 @@ function em_init_actions() {
 			}
 			//Grab and validate submitted data
 			if ( $EM_Event->get_post() && $EM_Event->save() ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
-				$EM_Notices->add_confirm($EM_Event->feedback_message);
 				if( is_admin() ){
+					$EM_Notices->add_confirm($EM_Event->feedback_message);
 					$page = !empty($_REQUEST['pno']) ? $_REQUEST['pno']:'';
 					$scope = !empty($_REQUEST['scope']) ? $_REQUEST['scope']:'';
 					//wp_redirect( get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager&pno='.$page.'&scope='.$scope.'&message='.urlencode($EM_Event->feedback_message));
 				}else{
+					$EM_Notices->add_confirm($EM_Event->feedback_message, true);
 					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
 					wp_redirect( $redirect );
 				}

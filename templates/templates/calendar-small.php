@@ -33,7 +33,7 @@
 				}
 				?>
 				<td class="<?php echo $class; ?>">
-					<?php if( count($cell_data['events']) > 0 ): ?>
+					<?php if( $class == 'eventful' ): ?>
 					<a href="<?php echo $cell_data['link']; ?>" title="<?php echo $cell_data['link_title']; ?>"><?php echo date('j',$cell_data['date']); ?></a>
 					<?php else:?>
 					<?php echo date('j',$cell_data['date']); ?>
