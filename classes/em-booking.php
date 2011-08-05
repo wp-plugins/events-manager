@@ -124,6 +124,9 @@ class EM_Booking extends EM_Object{
 				$data['booking_meta'] = serialize($data['booking_meta']);
 				if($this->id != ''){
 					$update = true;
+					//update price and spaces
+					$this->get_spaces(true);
+					$this->get_price(true);
 					$where = array( 'booking_id' => $this->id );  
 					$result = $wpdb->update($table, $data, $where, $this->get_types($data));
 					$result = ($result !== false);
@@ -134,11 +137,11 @@ class EM_Booking extends EM_Object{
 				    $this->id = $wpdb->insert_id;  
 					$this->feedback_message = __('Your booking has been recorded','dbem'); 
 				}
+				//Step 2. Insert ticket bookings for this booking id if no errors so far
 				if( $result === false ){
 					$this->feedback_message = __('There was a problem saving the booking.', 'dbem');
 					$this->errors[] = __('There was a problem saving the booking.', 'dbem');
 				}else{
-					//Step 2. Insert ticket bookings for this booking id
 					$tickets_bookings_result = $this->get_tickets_bookings()->save();
 					if( !$tickets_bookings_result ){
 						if( !$update ){
@@ -149,6 +152,7 @@ class EM_Booking extends EM_Object{
 						$this->add_errors( $this->get_tickets_bookings()->get_errors() );
 					}
 				}
+				//Step 3. email if necessary
 				if ( count($this->errors) == 0  && $mail ) {
 					$this->email();
 				}
@@ -209,9 +213,9 @@ class EM_Booking extends EM_Object{
 				if( !empty($values['spaces']) ){
 					$args = array('ticket_id'=>$ticket_id, 'ticket_booking_spaces'=>$values['spaces'], 'booking_id'=>$this->id);
 					if($this->get_event()->get_bookings()->ticket_exists($ticket_id)){
-						$EM_Ticket_Booking = new EM_Ticket_Booking($args);
-						$EM_Ticket_Booking->booking = $this;
-						$this->tickets_bookings->add( $EM_Ticket_Booking );
+							$EM_Ticket_Booking = new EM_Ticket_Booking($args);
+							$EM_Ticket_Booking->booking = $this;
+							$this->tickets_bookings->add( $EM_Ticket_Booking );
 					}else{
 						$this->errors[]=__('You are trying to book a non-existent ticket for this event.','dbem');
 					}

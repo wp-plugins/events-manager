@@ -398,6 +398,20 @@ function em_init_actions() {
 				}	
 				die();
 			}
+		}elseif( $_REQUEST['action'] == 'booking_save' ){
+			em_verify_nonce('booking_save');
+			do_action('em_booking_save', $EM_Event, $EM_Booking);
+			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') ){
+				if ($EM_Booking->get_post() && $EM_Booking->save(false) ){
+					$result = true;
+					$EM_Notices->add_confirm( $EM_Booking->feedback_message );		
+					$feedback = $EM_Booking->feedback_message;	
+				}else{
+					$result = false;
+					$EM_Notices->add_error( $EM_Booking->get_errors() );			
+					$feedback = $EM_Booking->feedback_message;	
+				}	
+			}
 		}
 		if( $result && defined('DOING_AJAX') ){
 			$return = array('result'=>true, 'message'=>$feedback);

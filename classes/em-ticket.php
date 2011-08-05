@@ -284,7 +284,7 @@ class EM_Ticket extends EM_Object{
 	 * Get the html options for quantities to go within a <select> container
 	 * @return string
 	 */
-	function get_spaces_options($zero_value = true){
+	function get_spaces_options($zero_value = true, $default_value = 0){
 		$available_spaces = $this->get_available_spaces();
 		if( $this->is_available() ) {
 			ob_start();
@@ -296,7 +296,7 @@ class EM_Ticket extends EM_Object{
 				?>
 				<?php if($zero_value) : ?><option>0</option><?php endif; ?>
 				<?php for( $i=$min; $i<=$available_spaces && $i<=$max; $i++ ): ?>
-					<option><?php echo $i ?></option>
+					<option <?php if($i == $default_value){ echo 'selected="selected"'; } ?>><?php echo $i ?></option>
 				<?php endfor; ?>
 			</select>
 			<?php 

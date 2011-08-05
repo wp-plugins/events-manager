@@ -39,7 +39,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 				$this->ticket = $object;
 				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_TICKETS_TABLE ." t ON bt.ticket_id=t.ticket_id  WHERE t.ticket_id ='{$this->ticket->id}'";
 			}elseif( is_numeric($object) ){
-				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_BOOKINGS_TABLE ." t ON bt.booking_id=b.booking_id  WHERE b.booking_id ='{$object}'";
+				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_BOOKINGS_TABLE ." t ON bt.booking_id=t.booking_id  WHERE t.booking_id ='{$object}'";
 			}
 			$tickets_bookings = $wpdb->get_results($sql, ARRAY_A);
 			//Get tickets belonging to this tickets booking.
@@ -83,9 +83,17 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 		//Does the ticket we want to book have enough spaeces?
 		if( $EM_Ticket_Booking->get_spaces() > 0 ){
 			if ( $EM_Ticket_Booking->get_ticket()->get_available_spaces() >= $EM_Ticket_Booking->get_spaces() ) {  
-				$this->tickets_bookings[] = $EM_Ticket_Booking;
-				$this->get_spaces(true);
-				$this->get_price(true);
+				$ticket_booking_key = $this->has_ticket($EM_Ticket_Booking->ticket_id);
+				if( $ticket_booking_key !== false && is_object($this->tickets_bookings[$ticket_booking_key]) ){
+					//previously booked ticket, so let's just replace it
+					$this->tickets_bookings[$ticket_booking_key]->spaces = $EM_Ticket_Booking->get_spaces();
+					$this->tickets_bookings[$ticket_booking_key]->get_price(true);
+				}else{
+					//new ticket in booking
+					$this->tickets_bookings[] = $EM_Ticket_Booking;
+					$this->get_spaces(true);
+					$this->get_price(true);
+				}
 				return apply_filters('em_tickets_bookings_add',true,$this);
 			} else {
 				 $this->errors[] = __('Booking cannot be made, not enough spaces available!', 'dbem');
@@ -93,6 +101,20 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 			}
 		}
 		return apply_filters('em_tickets_bookings_add',false,$this);
+	}
+	
+	/**
+	 * Checks if this set has a specific ticket booked, returning the key of the ticket in the EM_Tickets_Bookings->ticket_bookings array
+	 * @param int $ticket_id
+	 * @return mixed
+	 */
+	function has_ticket( $ticket_id ){
+		foreach ($this->tickets_bookings as $key => $EM_Ticket_Booking){
+			if( $EM_Ticket_Booking->ticket_id == $ticket_id ){
+				return apply_filters('em_tickets_has_ticket',$key,$this);
+			}
+		}
+		return apply_filters('em_tickets_has_ticket',false,$this);
 	}
 	
 	/**
@@ -129,8 +151,9 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	 */
 	function delete(){
 		global $wpdb;
-		if( is_object($this->get_booking()) && $this->get_booking()->can_manage() ){
-			$result = $wpdb->query("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id='{$this->booking->id}'");
+		if( $this->get_booking()->can_manage() ){
+			$result = $wpdb->query("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id='{$this->get_booking()->id}'");
+			//echo "<pre>";print_r($this->get_booking());echo "</pre>";
 		}else{
 			//FIXME ticket bookings
 			$ticket_ids = array();
@@ -146,31 +169,6 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 			}
 		}
 		return apply_filters('em_tickets_bookings_get_booking_id', ($result == true), $this);
-	}
-	
-	/**
-	 * Retrieve multiple ticket info via POST
-	 * @return boolean
-	 */
-	function get_post(){
-		//Build Event Array
-		do_action('em_tickets_get_post_pre', $this);
-		$this->tickets = array(); //clean current tickets out
-		if( !empty($_POST['em_tickets']) && is_array($_POST['em_tickets']) ){
-			//get all ticket data and create objects
-			foreach($_POST['em_tickets'] as $ticket_data){
-				$EM_Ticket = new EM_Ticket($ticket_data);
-				$this->tickets[] = $EM_Ticket;
-			}
-		}elseif( is_object($this->booking) ){
-			//we create a blank standard ticket
-			$EM_Ticket = new EM_Ticket(array(
-				'event_id' => $this->booking->id,
-				'ticket_name' => __('Standard','dbem')
-			));
-			$this->tickets[] = $EM_Ticket;
-		}
-		return apply_filters('em_tickets_bookings_get_post', $this->validate(), $this);
 	}
 	
 	/**

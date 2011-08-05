@@ -239,40 +239,51 @@ function em_bookings_single(){
 							$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
 							?>
 							<p><strong><?php _e('Status','dbem'); ?> : </strong><?php echo $EM_Booking->get_status(); ?></p>
-							<table class="em-tickets-bookings-table" cellspacing="0" cellpadding="0">
-								<thead>
-								<tr>
-									<th><?php _e('Ticket Type','dbem'); ?></th>
-									<th><?php _e('Spaces','dbem'); ?></th>			
-									<th><?php _e('Price','dbem'); ?></th>
-								</tr>
-								</thead>
-								<tbody>
-									<?php foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking): ?>
+							<form action="" method="post">
+								<table class="em-tickets-bookings-table" cellspacing="0" cellpadding="0">
+									<thead>
 									<tr>
-										<td class="ticket-type"><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket_Booking->get_ticket()->id ?>"><?php echo $EM_Ticket_Booking->get_ticket()->name ?></a></td>
-										<td><?php echo $EM_Ticket_Booking->get_spaces(); ?></td>
-										<td><?php echo $EM_Ticket_Booking->get_price(); ?></td>
+										<th><?php _e('Ticket Type','dbem'); ?></th>
+										<th><?php _e('Spaces','dbem'); ?></th>			
+										<th><?php _e('Price','dbem'); ?></th>
 									</tr>
-									<?php endforeach; ?>
-								</tbody>
-								<tfoot>
-									<tr>
-										<th><?php _e('Totals','dbem'); ?></th>
-										<th><?php echo $EM_Booking->get_spaces(); ?></th>
-										<th><?php echo $EM_Booking->get_price(); ?></th>
-									</tr>
-								</tfoot>
-							</table>
-							<table cellspacing="0" cellpadding="0">
-								<?php if( !get_option('em_booking_form_custom') ): ?>
-								<tr><td><strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td><td><?php echo $EM_Booking->comment; ?></td></tr>
-								<?php foreach( $EM_Booking->get_custom() as $custom_option ){
-									?><tr><td><strong><?php echo $custom_option['name'] ?></strong></td><td><?php echo $custom_option['value'] ?></td></tr><?php
-								} ?>
-								<?php else: do_action('em_bookings_single_custom',$EM_Booking); ?>
-								<?php endif; ?>
-							</table>
+									</thead>
+									<tbody>
+										<?php foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking): ?>
+										<tr>
+											<td class="ticket-type"><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket_Booking->get_ticket()->id ?>"><?php echo $EM_Ticket_Booking->get_ticket()->name ?></a></td>
+											<td>
+												<?php echo $EM_Ticket_Booking->get_ticket()->get_spaces_options(true, $EM_Ticket_Booking->get_spaces()); ?>
+											</td>
+											<td><?php echo $EM_Ticket_Booking->get_price(); ?></td>
+										</tr>
+										<?php endforeach; ?>
+									</tbody>
+									<tfoot>
+										<tr>
+											<th><?php _e('Totals','dbem'); ?></th>
+											<th><?php echo $EM_Booking->get_spaces(); ?></th>
+											<th><?php echo $EM_Booking->get_price(); ?></th>
+										</tr>
+									</tfoot>
+								</table>
+								<p>
+									<input type="submit" class="em-booking-submit" id="em-booking-submit" value="<?php _e('Modify Booking', 'dbem'); ?>" />
+								 	<input type='hidden' name='action' value='booking_save'/>
+								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->id; ?>'/>
+								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->id; ?>'/>
+								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_save'); ?>'/>
+								</p>
+								<table cellspacing="0" cellpadding="0">
+									<?php if( !get_option('em_booking_form_custom') ): ?>
+									<tr><td><strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td><td><?php echo $EM_Booking->comment; ?></td></tr>
+									<?php foreach( $EM_Booking->get_custom() as $custom_option ){
+										?><tr><td><strong><?php echo $custom_option['name'] ?></strong></td><td><?php echo $custom_option['value'] ?></td></tr><?php
+									} ?>
+									<?php else: do_action('em_bookings_single_custom',$EM_Booking); ?>
+									<?php endif; ?>
+								</table>
+							</form>
 						</div>
 					</div>
 					<div id="em-booking-notes" class="stuffbox">
