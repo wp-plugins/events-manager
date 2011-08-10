@@ -149,7 +149,7 @@ class EM_Booking extends EM_Object{
 							$this->delete();
 						}
 						$this->errors[] = __('There was a problem saving the booking.', 'dbem');
-						$this->add_errors( $this->get_tickets_bookings()->get_errors() );
+						$this->add_error( $this->get_tickets_bookings()->get_errors() );
 					}
 				}
 				//Step 3. email if necessary
@@ -202,28 +202,28 @@ class EM_Booking extends EM_Object{
 	 * Get posted data and save it into the object (not db)
 	 * @return boolean
 	 */
-	function get_post(){
+	function get_post( $override_availability = false ){
 		$this->tickets_bookings = new EM_Tickets_Bookings($this->id);
 		do_action('em_booking_get_post_pre',$this);
 		$result = array();
 		$this->event_id = $this->get_event()->id;
-		if( !empty($_REQUEST['em_tickets']) && is_array($_REQUEST['em_tickets']) ){
+		if( isset($_REQUEST['em_tickets']) && is_array($_REQUEST['em_tickets']) && ($_REQUEST['em_tickets'] || $override_availability) ){
 			foreach( $_REQUEST['em_tickets'] as $ticket_id => $values){
 				//make sure ticket exists
-				if( !empty($values['spaces']) ){
+				if( !empty($values['spaces']) || $override_availability ){
 					$args = array('ticket_id'=>$ticket_id, 'ticket_booking_spaces'=>$values['spaces'], 'booking_id'=>$this->id);
 					if($this->get_event()->get_bookings()->ticket_exists($ticket_id)){
 							$EM_Ticket_Booking = new EM_Ticket_Booking($args);
 							$EM_Ticket_Booking->booking = $this;
-							$this->tickets_bookings->add( $EM_Ticket_Booking );
+							$this->tickets_bookings->add( $EM_Ticket_Booking, $override_availability );
 					}else{
 						$this->errors[]=__('You are trying to book a non-existent ticket for this event.','dbem');
 					}
 				}
 			}
 			$this->comment = (!empty($_REQUEST['booking_comment'])) ? $_REQUEST['booking_comment']:'';
-			$this->get_spaces();
-			$this->get_price();
+			$this->get_spaces(true);
+			$this->get_price(true);
 			$this->get_person();
 		}	
 		return apply_filters('em_booking_get_post',$this->validate(),$this);

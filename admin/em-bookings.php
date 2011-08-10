@@ -237,6 +237,7 @@ function em_bookings_single(){
 							$EM_Event = $EM_Booking->get_event();
 							$localised_start_date = date_i18n('D d M Y', $EM_Event->start);
 							$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
+							$shown_tickets = array();
 							?>
 							<p><strong><?php _e('Status','dbem'); ?> : </strong><?php echo $EM_Booking->get_status(); ?></p>
 							<form action="" method="post">
@@ -251,13 +252,27 @@ function em_bookings_single(){
 									<tbody>
 										<?php foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking): ?>
 										<tr>
-											<td class="ticket-type"><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket_Booking->get_ticket()->id ?>"><?php echo $EM_Ticket_Booking->get_ticket()->name ?></a></td>
+											<td class="ticket-type"><a class="row-title" href="<?php bloginfo ( 'wpurl' ); ?>/wp-admin/admin.php?page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket_Booking->get_ticket()->id ?>"><?php echo $EM_Ticket_Booking->get_ticket()->name ?></a></td>
 											<td>
-												<?php echo $EM_Ticket_Booking->get_ticket()->get_spaces_options(true, $EM_Ticket_Booking->get_spaces()); ?>
+												<input name="em_tickets[<?php echo $EM_Ticket_Booking->get_ticket()->id; ?>][spaces]" class="em-ticket-select" value="<?php echo $EM_Ticket_Booking->get_spaces(); ?>" />
 											</td>
 											<td><?php echo $EM_Ticket_Booking->get_price(); ?></td>
 										</tr>
+										<?php $shown_tickets[] = $EM_Ticket_Booking->ticket_id; ?>
 										<?php endforeach; ?>
+										<?php if( count($shown_tickets) < count($EM_Event->get_bookings()->get_tickets()->tickets)): ?><tr>
+											<?php foreach($EM_Event->get_bookings()->get_tickets()->tickets as $EM_Ticket): ?>
+												<?php if( !in_array($EM_Ticket->id, $shown_tickets) ): ?>
+												<tr>
+													<td class="ticket-type"><a class="row-title" href="<?php bloginfo ( 'wpurl' ); ?>/wp-admin/admin.php?page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket->id ?>"><?php echo $EM_Ticket->name ?></a></td>
+													<td>
+														<input name="em_tickets[<?php echo $EM_Ticket->id; ?>][spaces]" class="em-ticket-select" value="0" />
+													</td>
+													<td>0.00</td>
+												</tr>
+												<?php endif; ?>
+											<?php endforeach; ?>
+										<?php endif; ?>
 									</tbody>
 									<tfoot>
 										<tr>
@@ -273,6 +288,7 @@ function em_bookings_single(){
 								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->id; ?>'/>
 								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_save'); ?>'/>
+								 	<em><?php _e('<strong>Note:</strong> ticket availability not taken into account (i.e. you can overbook). Confirmation email is not resent automatically.','dbem'); ?></em>
 								</p>
 								<table cellspacing="0" cellpadding="0">
 									<?php if( !get_option('em_booking_form_custom') ): ?>

@@ -402,7 +402,7 @@ function em_init_actions() {
 			em_verify_nonce('booking_save');
 			do_action('em_booking_save', $EM_Event, $EM_Booking);
 			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') ){
-				if ($EM_Booking->get_post() && $EM_Booking->save(false) ){
+				if ($EM_Booking->get_post(true) && $EM_Booking->save(false) ){
 					$result = true;
 					$EM_Notices->add_confirm( $EM_Booking->feedback_message );		
 					$feedback = $EM_Booking->feedback_message;	

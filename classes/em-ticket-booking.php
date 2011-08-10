@@ -62,14 +62,23 @@ class EM_Ticket_Booking extends EM_Object{
 			$this->booking_id = $this->get_booking()->id; //event wouldn't exist before save, so refresh id
 			$data = $this->to_array(true); //add the true to remove the nulls
 			if($this->id != ''){
-				$where = array( 'ticket_booking_id' => $this->id );  
-				$result = $wpdb->update($table, $data, $where, $this->get_types($data));
-				$this->feedback_message = __('Changes saved','dbem');
+				if($this->get_spaces() > 0){
+					$where = array( 'ticket_booking_id' => $this->id );  
+					$result = $wpdb->update($table, $data, $where, $this->get_types($data));
+					$this->feedback_message = __('Changes saved','dbem');
+				}else{
+					$this->result = $this->delete(); 
+				}
 			}else{
-				//TODO better error handling
-				$result = $wpdb->insert($table, $data, $this->get_types($data));
-			    $this->id = $wpdb->insert_id;  
-				$this->feedback_message = __('Ticket booking created','dbem'); 
+				if($this->get_spaces() > 0){
+					//TODO better error handling
+					$result = $wpdb->insert($table, $data, $this->get_types($data));
+				    $this->id = $wpdb->insert_id;  
+					$this->feedback_message = __('Ticket booking created','dbem'); 
+				}else{
+					//no point saving a booking with no spaces
+					$result = false;
+				}
 			}
 			if( $result === false ){
 				$this->feedback_message = __('There was a problem saving the ticket booking.', 'dbem');

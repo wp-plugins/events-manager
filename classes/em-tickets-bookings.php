@@ -78,27 +78,26 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	 * @param EM_Ticket_Booking $EM_Ticket_Booking
 	 * @return boolean
 	 */
-	function add( $EM_Ticket_Booking ){
+	function add( $EM_Ticket_Booking, $override = false ){ //note, $override was a quick fix, not necessarily permanent, so don't depend on it just yet
 		global $wpdb,$EM_Mailer;
-		//Does the ticket we want to book have enough spaeces?
-		if( $EM_Ticket_Booking->get_spaces() > 0 ){
-			if ( $EM_Ticket_Booking->get_ticket()->get_available_spaces() >= $EM_Ticket_Booking->get_spaces() ) {  
-				$ticket_booking_key = $this->has_ticket($EM_Ticket_Booking->ticket_id);
-				if( $ticket_booking_key !== false && is_object($this->tickets_bookings[$ticket_booking_key]) ){
-					//previously booked ticket, so let's just replace it
-					$this->tickets_bookings[$ticket_booking_key]->spaces = $EM_Ticket_Booking->get_spaces();
-					$this->tickets_bookings[$ticket_booking_key]->get_price(true);
-				}else{
-					//new ticket in booking
-					$this->tickets_bookings[] = $EM_Ticket_Booking;
-					$this->get_spaces(true);
-					$this->get_price(true);
-				}
+		//Does the ticket we want to book have enough spaeces? 
+		if ( $override || $EM_Ticket_Booking->get_ticket()->get_available_spaces() >= $EM_Ticket_Booking->get_spaces() ) {  
+			$ticket_booking_key = $this->has_ticket($EM_Ticket_Booking->ticket_id);
+			if( $ticket_booking_key !== false && is_object($this->tickets_bookings[$ticket_booking_key]) ){
+				//previously booked ticket, so let's just replace it
+				$this->tickets_bookings[$ticket_booking_key]->spaces = $EM_Ticket_Booking->get_spaces();
+				$this->tickets_bookings[$ticket_booking_key]->get_price(true);
 				return apply_filters('em_tickets_bookings_add',true,$this);
-			} else {
-				 $this->errors[] = __('Booking cannot be made, not enough spaces available!', 'dbem');
-				return apply_filters('em_tickets_bookings_add',false,$this);
+			}elseif( $EM_Ticket_Booking->get_spaces() > 0 ){
+				//new ticket in booking
+				$this->tickets_bookings[] = $EM_Ticket_Booking;
+				$this->get_spaces(true);
+				$this->get_price(true);
+				return apply_filters('em_tickets_bookings_add',true,$this);
 			}
+		} else {
+			 $this->errors[] = __('Booking cannot be made, not enough spaces available!', 'dbem');
+			return apply_filters('em_tickets_bookings_add',false,$this);
 		}
 		return apply_filters('em_tickets_bookings_add',false,$this);
 	}

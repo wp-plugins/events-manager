@@ -296,8 +296,9 @@ class EM_Ticket extends EM_Object{
 				?>
 				<?php if($zero_value) : ?><option>0</option><?php endif; ?>
 				<?php for( $i=$min; $i<=$available_spaces && $i<=$max; $i++ ): ?>
-					<option <?php if($i == $default_value){ echo 'selected="selected"'; } ?>><?php echo $i ?></option>
+					<option <?php if($i == $default_value){ echo 'selected="selected"'; $shown_default = true; } ?>><?php echo $i ?></option>
 				<?php endfor; ?>
+				<?php if(empty($shown_default) && $default_value > 0 ): ?><option selected="selected"><?php echo $default_value; ?></option><?php endif; ?>
 			</select>
 			<?php 
 			return ob_get_clean();
