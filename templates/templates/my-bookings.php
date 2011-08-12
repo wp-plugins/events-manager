@@ -64,17 +64,20 @@
 									<td><?php echo $EM_Event->output("#_EVENTLINK"); ?></td>
 									<td><?php echo date_i18n( get_option('date_format'), $EM_Event->start ); ?></td>
 									<td><?php echo $EM_Booking->get_spaces() ?></td>
-									<td><?php echo $EM_Booking->status_array[$EM_Booking->status]; ?>
+									<td>
+										<?php echo apply_filters('em_my_bookings_booking_status', $EM_Booking->status_array[$EM_Booking->status], $EM_Booking); ?>
 									</td>
 									<td>
 										<?php
 										$cancel_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'booking_cancel', 'booking_id'=>$EM_Booking->id, '_wpnonce'=>$nonce));
+										$cancel_link = '<a class="em-bookings-cancel" href="'.$cancel_url.'" onclick="if( !confirm(\''. __('Are you sure you want to cancel your booking?','dbem') .'\') ){ return false; }">'.__('Cancel','dbem').'</a>';
+										echo apply_filters('em_my_bookings_booking_actions', $cancel_link, $EM_Booking);
 										?>
-										<a class="em-bookings-cancel" href="<?php echo $cancel_url; ?>" onclick="if( !confirm('<?php _e('Are you sure you want to cancel your booking?','dbem') ?>') ){ return false; }"><?php _e('Cancel','dbem'); ?></a>
 									</td>
-								</tr>
+								</tr>								
 								<?php
 							}
+							do_action('em_my_bookings_booking_loop',$EM_Booking);
 							$event_count++;
 						}
 						?>

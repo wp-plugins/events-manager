@@ -11,8 +11,8 @@ global $EM_Notices;
 <div id="em-booking">
 	<a name="em-booking"></a>
 	<?php // We are firstly checking if the user has already booked a ticket at this event, if so offer a link to view their bookings. ?>
-	<?php if( $EM_Event->get_bookings()->has_booking() ): ?>
-		<p><?php echo sprintf(__('You are currently attending this event. <a href="%s">Manage my bookings</a>','dbem'), em_get_my_bookings_url()); ?></p>
+	<?php if( $EM_Booking = $EM_Event->get_bookings()->has_booking() ): ?>
+		<p><?php echo apply_filters('em_my_bookings_booked_message', sprintf(__('You are currently attending this event. <a href="%s">Manage my bookings</a>','dbem'), em_get_my_bookings_url()), $EM_Booking); ?></p>
 	<?php elseif( !$EM_Event->rsvp ): ?>
 		<p><?php _e('Online bookings are not available for this event.','dbem'); ?></p>
 	<?php elseif( $EM_Event->start < current_time('timestamp') ): ?>

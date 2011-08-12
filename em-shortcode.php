@@ -148,13 +148,10 @@ add_shortcode ( 'events_rss_url', 'em_get_rss_url_shortcode');
 
 /**
  * Creates a form to submit events with
+ * @param array $atts
  * @return string
  */
-function em_get_event_form_shortcode(){
-	if( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
-		em_locate_template('forms/event-editor-guest.php',true);
-	}else{
-		em_locate_template('forms/event-editor.php',true);
-	}
+function em_get_event_form_shortcode( $args = array() ){
+	return em_get_event_form( $args );
 }
 add_shortcode ( 'event_form', 'em_get_event_form_shortcode');

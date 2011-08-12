@@ -97,8 +97,8 @@ function em_docs_init(){
 							'#_ATT{key}{option 1|option 2|option 3|etc.}' => array('desc'=> __('This key will appear as an option when adding attributes to your event. The second braces are optional and will use a select box with these values as input. If no valid value is defined, the first option is used.', 'dbem')),
 						)
 					),
-					'Bookings/RSVP' => array(
-						'desc' => __('These placeholders will only show if RSVP is enabled for the given event and in the events manager settings page. Spaces placeholders will default to 0', 'dbem'),
+					'Bookings' => array(
+						'desc' => __('These placeholders will only show if bookings are enabled for the given event and in the events manager settings page. Spaces placeholders will default to 0', 'dbem'),
 						'placeholders' => array(
 							'#_BOOKINGFORM' => array( 'desc' => __('Adds a booking forms for this event.', 'dbem') ),
 							'#_AVAILABLESPACES' => array( 'desc' => __('Shows available spaces for the event.', 'dbem') ),
@@ -182,6 +182,8 @@ function em_docs_init(){
 							'#_BOOKINGTICKETDESCRIPTION' => array( 'desc' => __('Description of the ticket booked. Useful in single ticket mode, if multiple tickets are booked a random ticket is used.', 'dbem') ),
 							'#_BOOKINGTICKETPRICE' => array( 'desc' => __('Booked ticket price with currency symbol (e.g. $ 10.00). Useful in single ticket mode, if multiple tickets are booked a random ticket is used.', 'dbem') ),
 							'#_BOOKINGTICKETS' => array( 'desc' => __('A list of booked tickets. You can modify this by using template files and modifying templates/emails/bookingtickets.php', 'dbem') ),
+							'#_BOOKINGFORMCUSTOM{field_id}' => array( 'desc' => sprintf(__('(<a href="%s">pro only</a>) Shows booking form custom fields. The field_id value must match that of your custom booking form field.', 'dbem'),'http://wp-events-plugin.com/upgrade/') ),
+							'#_BOOKINGFORMCUSTOMREG{field_id}' => array( 'desc' => sprintf(__('(<a href="%s">pro only</a>) Shows booking form custom fields that are used for guest user registration. The field_id value must match that of your custom booking form field.', 'dbem'),'http://wp-events-plugin.com/upgrade/') )
 						)
 					),
 					'Links' => array(
