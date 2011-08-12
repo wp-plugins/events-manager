@@ -55,7 +55,7 @@
 			<?php do_action('em_front_event_form_header'); ?>
 			
 			<h4><?php _e ( 'Event Name', 'dbem' ); ?></h4>
-			<div class="inside">
+			<div class="inside event-form-name">
 				<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
 				<br />
 				<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
@@ -91,7 +91,7 @@
 			</div>
 						
 			<h4 id='event-date-title'><?php _e ( 'When', 'dbem' ); ?></h4>
-			<div class="inside">
+			<div class="inside event-form-when">
 				<div>
 					<?php _e ( 'Starts on ', 'dbem' ); ?>					
 					<input id="em-date-start-loc" type="text" />
@@ -115,7 +115,7 @@
 			</div>  
 			<?php if( get_option('dbem_recurrence_enabled') && ($EM_Event->is_recurrence() || $EM_Event->is_recurring() || $EM_Event->id == '') ) : //for now we don't need to show recurrences for single saved events, as backend doesn't allow either ?>
 				<!-- START recurrence postbox -->
-				<div class="inside">
+				<div class="inside event-form-recurrence">
 					<?php	
 					$days_names = array (1 => __ ( 'Monday' ), 2 => __ ( 'Tuesday' ), 3 => __ ( 'Wednesday' ), 4 => __ ( 'Thursday' ), 5 => __ ( 'Friday' ), 6 => __ ( 'Saturday' ), 0 => __ ( 'Sunday' ) );
 					
@@ -184,7 +184,7 @@
 			
 			
 			<h4><?php _e ( 'Where', 'dbem' ); ?></h4>
-			<div class="inside">
+			<div class="inside event-form-where">
 				<div id="em-location-data" style="padding-right:20px; vertical-align:top;">
 					<?php
 						$args = array();
@@ -219,7 +219,7 @@
 			</div>
 			
 			<h4><?php _e ( 'Details', 'dbem' ); ?></h4>
-			<div class="event-details">
+			<div class="event-details event-form-details">
 				<div>
 					<textarea name="content" rows="10" style="width:100%"><?php echo $EM_Event->notes ?></textarea>
 					<br />
@@ -280,7 +280,7 @@
 			<?php if( get_option('dbem_rsvp_enabled') && $EM_Event->can_manage('manage_bookings','manage_others_bookings') ) : ?>
 				<!-- START Bookings -->
 				<h4><span><?php _e('Bookings/Registration','dbem'); ?></span></h4>
-				<div class="event-bookings">
+				<div class="event-bookings event-form-bookings">
 					<p>
 						<input id="bookings-checkbox" name='event_rsvp' value='1' type='checkbox' <?php echo ($EM_Event->rsvp) ? 'checked="checked"' : ''; ?> />
 						<?php _e ( 'Enable registration for this event', 'dbem' )?>
