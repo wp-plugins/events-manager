@@ -98,6 +98,24 @@ function em_get_rss_link($text = "RSS") {
 function em_rss_link($text = "RSS"){ echo em_get_rss_link($text); }
 
 /**
+ * Retreives the event submission form for guests and members.
+ * @param array $args
+ */
+function em_get_event_form( $args = array() ){
+	if( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
+		em_locate_template('forms/event-editor-guest.php',true);
+	}else{
+		em_locate_template('forms/event-editor.php',true);
+	}
+}
+/**
+ * Echo the em_get_event_form template tag
+ * @param array $args
+ */
+function em_event_form( $args = array() ){ echo em_get_event_form( $args ); }
+
+
+/**
  * Returns true if there are any events that exist in the given scope (default is future events).
  * @param string $scope
  * @return boolean

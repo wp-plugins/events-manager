@@ -181,7 +181,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 				return apply_filters('em_bookings_ticket_exists',true, $EM_Ticket, $this);
 			}
 		}
-		return apply_filters('em_bookings_ticket_exists',false, $EM_Ticket,$this);
+		return apply_filters('em_bookings_ticket_exists',false, false,$this);
 	}
 	
 	/**
