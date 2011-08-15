@@ -273,38 +273,40 @@ function em_init_actions() {
 				//Does this user need to be registered first?
 				$registration = true;
 				//TODO do some ticket validation before registering the user
-				if( !is_user_logged_in() && get_option('dbem_bookings_anonymous') ){
-					//find random username - less options for user, less things go wrong
-					$username_root = explode('@', $_REQUEST['user_email']);
-					$username_rand = $username_root[0].rand(1,1000);
-					while( username_exists($username_root[0].rand(1,1000)) ){
+				if ( $EM_Event->get_bookings()->get_available_spaces() < $EM_Booking->get_spaces(true) ) {
+					if( !is_user_logged_in() && get_option('dbem_bookings_anonymous') ){
+						//find random username - less options for user, less things go wrong
+						$username_root = explode('@', $_REQUEST['user_email']);
 						$username_rand = $username_root[0].rand(1,1000);
-					}
-					$_REQUEST['user_phone'] = (!empty($_REQUEST['user_phone'])) ? $_REQUEST['user_phone']:''; //fix to prevent warnings
-					$_REQUEST['user_name'] = (!empty($_REQUEST['user_name'])) ? $_REQUEST['user_name']:''; //fix to prevent warnings
-					$user_data = array('user_login' => $username_rand, 'user_email'=> $_REQUEST['user_email'], 'user_name'=> $_REQUEST['user_name'], 'dbem_phone'=> $_REQUEST['dbem_phone']);
-					$id = em_register_new_user($user_data);
-					if( is_numeric($id) ){
-						$EM_Person = new EM_Person($id);
-						$EM_Booking->person_id = $id;
-						$feedback = __('A new user account has been created for you. Please check your email for access details.','dbem');
-						$EM_Notices->add_confirm( $feedback );
-					}else{
-						$registration = false;
-						if( is_object($id) && get_class($id) == 'WP_Error'){
-							/* @var $id WP_Error */
-							if( $id->get_error_code() == 'email_exists' ){
-								$EM_Notices->add_error( __('This email already exists in our system, please log in to register to proceed with your booking.','dbem') );
-							}else{
-								$EM_Notices->add_error( $id->get_error_messages() );
-							}
-						}else{
-							$EM_Notices->add_error( __('There was a problem creating a user account, please contact a website administrator.','dbem') );
+						while( username_exists($username_root[0].rand(1,1000)) ){
+							$username_rand = $username_root[0].rand(1,1000);
 						}
+						$_REQUEST['user_phone'] = (!empty($_REQUEST['user_phone'])) ? $_REQUEST['user_phone']:''; //fix to prevent warnings
+						$_REQUEST['user_name'] = (!empty($_REQUEST['user_name'])) ? $_REQUEST['user_name']:''; //fix to prevent warnings
+						$user_data = array('user_login' => $username_rand, 'user_email'=> $_REQUEST['user_email'], 'user_name'=> $_REQUEST['user_name'], 'dbem_phone'=> $_REQUEST['dbem_phone']);
+						$id = em_register_new_user($user_data);
+						if( is_numeric($id) ){
+							$EM_Person = new EM_Person($id);
+							$EM_Booking->person_id = $id;
+							$feedback = __('A new user account has been created for you. Please check your email for access details.','dbem');
+							$EM_Notices->add_confirm( $feedback );
+						}else{
+							$registration = false;
+							if( is_object($id) && get_class($id) == 'WP_Error'){
+								/* @var $id WP_Error */
+								if( $id->get_error_code() == 'email_exists' ){
+									$EM_Notices->add_error( __('This email already exists in our system, please log in to register to proceed with your booking.','dbem') );
+								}else{
+									$EM_Notices->add_error( $id->get_error_messages() );
+								}
+							}else{
+								$EM_Notices->add_error( __('There was a problem creating a user account, please contact a website administrator.','dbem') );
+							}
+						}
+					}elseif( !is_user_logged_in() ){
+						$registration = false;
+						$EM_Notices->add_error( __('You must log in or register to make a booking.','dbem') );
 					}
-				}elseif( !is_user_logged_in() ){
-					$registration = false;
-					$EM_Notices->add_error( __('You must log in or register to make a booking.','dbem') );
 				}
 				if( $registration && $EM_Event->get_bookings()->add($EM_Booking) ){
 					$result = true;

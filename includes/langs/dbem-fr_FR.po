@@ -8,13 +8,11 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2011-06-30 16:56+0100\n"
+"PO-Revision-Date: 2011-08-12 20:45+0100\n"
 "Last-Translator: Marcus Sykes <marcus@netweblogic.com>\n"
 "Language-Team: \n"
 
 # @ dbem
-# @ bp-em
-# @ default
 #: em-template-tags.php:74
 #: events-manager.php:319
 #: admin/em-options.php:303
@@ -131,7 +129,6 @@ msgid "recurrences"
 msgstr "occurrences"
 
 # @ dbem
-# @ default
 #: events-manager.php:322
 #: admin/em-event.php:573
 #: templates/forms/event-editor.php:367
@@ -197,7 +194,6 @@ msgid "Events Manager Settings"
 msgstr "Paramètres Events Manager"
 
 # @ dbem
-# @ default
 #: events-manager.php:327
 #: events-manager.php:473
 msgid "Settings"
@@ -436,15 +432,11 @@ msgstr "Events Manager permet un formatage des dates extrêmement flexible en ut
 msgid "Prepend <code>#</code> or <code>#@</code> before a valid PHP date syntax format character to show start and end date/time information respectively (e.g. <code>#F</code> will show the starting month name like \"January\", #@h shows the end hour)."
 msgstr "Préfixez un format de date PHP valide avec <code>#</code> ou <code>#@</code> pour montrer les dates de début et de fin respectivement (par exemple <code>#F</code> affichera le nom du mois de début comme \"Janvier\", <code>#@h</code> affichera l'heure de fin)."
 
-# @ dbem
 #: admin/em-docs.php:80
-#, fuzzy
 msgid ""
 "You can also create a date format without prepending # to each character by wrapping a valid php date() format in <code>#{}</code> or <code>#@{}</code> (e.g. <code>#_{d/m/Y}</code>). If there is no end date (or is same as start date), the value is not shown. This is useful if you want to show event end dates only on events that are longer than on day, e.g. <code>#j #M #Y #@_{ \\u\\n"
 "\\t\\i\\l j M Y}</code>."
 msgstr ""
-"Vous pouvez également créer une date au format valide sans précéder chaque caractère d'un dièze, en entourant le code php date() ainsi : <code>#{}</code> ou <code>#@{}</code> (par ex. <code>#_{d/m/Y}</code>). S'il n'y a pas de date de fin (ou si celle-ci est identique à la date de début), la valeur ne sera pas affichée. Ceci est utile si vous voulez afficher les dates de fin d'évènement uniquement pour les évènements de plus d'une journée, par ex. <code>#j #M #Y #@_{ \\u\\n"
-"\\t\\i\\l j M Y}</code>."
 
 # @ dbem
 #: admin/em-docs.php:85
@@ -797,7 +789,6 @@ msgstr "La catégorie a été mise à jour."
 msgid "Categories Deleted"
 msgstr "Catégories Effacées"
 
-# @ default
 # @ dbem
 #: admin/em-categories.php:58
 #: admin/em-locations.php:42
@@ -958,6 +949,7 @@ msgstr "Mes %s"
 msgid "All %s"
 msgstr "Tous les %s"
 
+# @ dbem
 # @ default
 #: admin/em-locations.php:62
 #: admin/em-events.php:78
@@ -1100,6 +1092,7 @@ msgstr "Coordonnées"
 msgid "If you're using the Google Maps, the more detail you provide, the more accurate Google can be at finding your location. If your address isn't being found, please <a='http://maps.google.com'>try it on maps.google.com</a> by adding all the fields below seperated by commas."
 msgstr "Si vous utilisez la carte Google Maps, plus vous fournirez de détails, et plus Google Maps sera performant dans la détermination de votre emplacement. Si votre adresse n'est pas trouvée, essayez sur <a='http://maps.google.com'>maps.google.com</a> en ajoutant tous les champs ci-dessous séparés par des virgules."
 
+# @ dbem
 # @ default
 #: admin/em-locations.php:218
 #: admin/em-event.php:403
@@ -1108,6 +1101,7 @@ msgstr "Si vous utilisez la carte Google Maps, plus vous fournirez de détails, 
 msgid "Address:"
 msgstr "Adresse :"
 
+# @ dbem
 # @ default
 #: admin/em-locations.php:224
 #: admin/em-event.php:409
@@ -1116,6 +1110,7 @@ msgstr "Adresse :"
 msgid "City/Town:"
 msgstr "Ville :"
 
+# @ dbem
 # @ default
 #: admin/em-locations.php:230
 #: admin/em-event.php:416
@@ -1124,6 +1119,7 @@ msgstr "Ville :"
 msgid "State/County:"
 msgstr "Etat / Comté :"
 
+# @ dbem
 # @ default
 #: admin/em-locations.php:236
 #: admin/em-event.php:423
@@ -1132,6 +1128,7 @@ msgstr "Etat / Comté :"
 msgid "Postcode:"
 msgstr "Code Postal :"
 
+# @ dbem
 # @ default
 #: admin/em-locations.php:242
 #: admin/em-event.php:429
@@ -1139,6 +1136,7 @@ msgstr "Code Postal :"
 msgid "Region:"
 msgstr "Région :"
 
+# @ dbem
 # @ default
 #: admin/em-locations.php:249
 #: admin/em-event.php:436
@@ -1186,7 +1184,7 @@ msgstr "Aucune image n'a encore été téléchargée pour cet emplacement"
 #: admin/em-locations.php:304
 #: templates/forms/location-editor.php:115
 msgid "Update location"
-msgstr "Mettre à jour l'emplacement"
+msgstr "Mettre à jour"
 
 # @ dbem
 #: admin/em-events.php:47
@@ -1325,7 +1323,6 @@ msgstr "ATTENTION! Vous allez supprimer TOUTES les occurrences de cet évènemen
 msgid "Reschedule"
 msgstr "Reprogrammer"
 
-# @ default
 # @ dbem
 #: admin/bookings/em-cancelled.php:38
 #: admin/bookings/em-cancelled.php:40
@@ -1608,7 +1605,7 @@ msgstr "dernier"
 #: templates/templates/event-form.php:177
 #: templates/forms/event-editor.php:167
 msgid "Check if your event happens more than once according to a regular pattern"
-msgstr "Vérifiez si votre évènement se produit plus d'une fois suivant un rythme régulier"
+msgstr "Cochez la case si votre évènement se produit plus d'une fois suivant un rythme régulier"
 
 # @ dbem
 #: admin/em-event.php:150
@@ -1673,7 +1670,7 @@ msgstr "Vue imprimable"
 msgid "export csv"
 msgstr "Export CSV"
 
-# @ default
+# @ dbem
 #: admin/em-event.php:249
 msgid "No responses yet!"
 msgstr "Aucune réponse !"
@@ -1742,6 +1739,7 @@ msgstr "Emplacement :"
 msgid "The name of the location where the event takes place. You can use the name of a venue, a square, etc"
 msgstr "Le nom de l'emplacement où l'évènement aura lieu. Vous pouvez utiliser le nom d'une salle, d'une place, etc..."
 
+# @ dbem
 # @ default
 #: admin/em-event.php:394
 #: templates/templates/event-form.php:258
@@ -1752,19 +1750,19 @@ msgstr "Nom :"
 #: admin/em-event.php:398
 #: templates/templates/event-form.php:262
 msgid "Create a location or start typing to search a previously created location."
-msgstr "Créez un emplacement ou recherchez un emplacement précédemment créé."
+msgstr "Commencez à saisir le nom pour rechercher un emplacement déjà créé."
 
 # @ dbem
 #: admin/em-event.php:399
 #: templates/templates/event-form.php:263
 msgid "You cannot edit saved locations here."
-msgstr "Vous ne pouvez pas modifier ici les emplacements sauvegardés."
+msgstr "Vous ne pouvez pas modifier ici les emplacements enregistrés."
 
 # @ dbem
 #: admin/em-event.php:399
 #: templates/templates/event-form.php:263
 msgid "Reset this form to create a location."
-msgstr "Recommencez ce formulaire pour créer un emplacement."
+msgstr "Remettez à zéro ce formulaire pour créer un emplacement."
 
 # @ dbem
 #: admin/em-event.php:444
@@ -1883,7 +1881,7 @@ msgstr "Pas de Valeur"
 msgid "You don't have any custom attributes defined in any of your Events Manager template settings. Please add them the <a href='%s'>settings page</a>"
 msgstr "Vous n'avez pas défini d'attributs personnalisés dans vos réglages du modèle. Veuillez les ajouter à la <a href='%s'>page des paramètres</a>"
 
-# @ default
+# @ dbem
 #: admin/em-event.php:661
 msgid "Depreciated Attributes"
 msgstr "Attributs Obsoletes"
@@ -2128,19 +2126,13 @@ msgstr "Éditer l'Utilisateur"
 msgid "Past And Present Bookings"
 msgstr "Réservations Passées et Courantes"
 
-# @ dbem
 #: admin/em-admin.php:20
-#, fuzzy
 msgid ""
 "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> \r\n"
-"			<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\r\n"
-"			<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>\r\n"
-"			<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>"
+"\t\t\t<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\r\n"
+"\t\t\t<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>\r\n"
+"\t\t\t<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>"
 msgstr ""
-"<p>Salut, <strong>%s</strong>, bienvenue dans <strong>Events Manager</strong>! Nous espérons que vous l'apprécierez.</p> \n"
-"<p>Commencez par insérer des listes d'évènements via les <a href='%s' title='page des Widgets'>widgets</a>, les <a href='%s' title='documentation sur les marqueurs de modèles'>marqueurs de modèles</a> ou les <a href='%s' title='documentation sur les minicodes'>minicodes</a>.</p>\n"
-"<p>A propos, avez-vous jeté un oeil sur la <a href='%s' title='paramètres'>page des paramètres</a> ? C'est là que vous modifierez la façon d'afficher les évènements et les emplacements.</p>\n"
-"<p>de quoi ? Marre de lire ce message ? OK, <a href='%s' title='Ne plus afficher ce message'>cliquez ici</a> et vous ne le reverrez plus jamais !</p>"
 
 # @ dbem
 #: admin/em-admin.php:57
@@ -2157,25 +2149,24 @@ msgstr "Houlala ! Pour une raison inconnue, WordPress n'a pas pu créer une page
 msgid "A <strong>LOT</strong> has changed since Events Manager 3. We recommend you take a look at the <a href=\"%s\">settings page</a> for new features and upgrade instructions, and you may particualarly be interested in modifying permissions. <a href=\"%s\">Dismiss</a>"
 msgstr "<strong>BEAUCOUP</strong> de choses ont changé depuis Events Manager 3. Nous vous suggérons de vous rendre à la page des <a href=\"%s\">paramètres</a> pour les nouvelles fonctionnalités et les instructions de mise à jour, en particulier les modifications de permissions. <a href=\"%s\">Ignorer</a>"
 
-# @ default
 #: admin/em-admin.php:94
 msgid "If you upgraded from 3.x to the RC2 and the update did not go so well, <a href=\"%s\">try reimporting old settings</a>. Warning! Re-importing will rename all event slugs, re-import your old category settings from events, and recreate all tickets, so changes to these areas will be lost. <a href=\"%s\">Dismiss</a>"
-msgstr "Si vous venez de mettre à jour depuis la version 3.x que cela ne s'est pas bien passé, essayez de <a href=\"%s\">réimporter les anciens paramètres</a>. Attention ! Réimporter signifie renommer les noms courts des évènements, réimporter les paramètres de votre ancienne catégorie depuis les évènements, recréer les billets, donc tout changement sera perdu. <a href=\"%s\">Ignorer</a>"
+msgstr ""
 
 # @ dbem
 #: admin/em-admin.php:118
 msgid "This page corresponds to <strong>Events Manager</strong> events page. Its content will be overriden by Events Manager, although if you include the word CONTENTS (exactly in capitals) and surround it with other text, only CONTENTS will be overwritten. If you want to change the way your events look, go to the <a href='%s'>settings</a> page. "
 msgstr "Cette page correspond à la page des évènements <strong>Events Manager</strong>. Son contenu sera écrasé par Events Manager, quoique si vous incluez le mot CONTENTS (exactement et en capitales) en l'entourant avec du texte, seul CONTENTS sera remplacé et votre texte sera conservé. Si vous voulez changer la façon dont vos évènements s'affichent, aller à la <a href='%s'>page des paramètres</a>. "
 
-# @ default
+# @ dbem
 #: admin/em-admin.php:145
 msgid "Displaying %s&#8211;%s of %s"
 msgstr "Affichage de %s&#8211;%s de %s"
 
-# @ default
+# @ dbem
 #: admin/em-options.php:42
 msgid "Changes saved."
-msgstr "Modifications sauvegardées."
+msgstr "Modifications enregistrées."
 
 # @ dbem
 #: admin/em-options.php:62
@@ -2193,11 +2184,12 @@ msgstr "Accepte les %s."
 msgid "This accepts %s, %s and %s placeholders."
 msgstr "Accepte les %s, les %s et les %s."
 
+# @ dbem
 # @ default
 #: admin/em-options.php:67
 #: admin/em-options.php:626
 msgid "Save Changes"
-msgstr "Sauvegarder les modifications"
+msgstr "Enregistrer les modifications"
 
 # @ dbem
 #: admin/em-options.php:67
@@ -2224,7 +2216,7 @@ msgstr "Déplier Tout"
 msgid "Event Manager Options"
 msgstr "Paramètres du Gestionnaire d’Évènements"
 
-# @ default
+# @ dbem
 #: admin/em-options.php:152
 #: admin/em-options.php:168
 #: admin/em-options.php:210
@@ -2248,7 +2240,7 @@ msgstr "Cliquer pour basculer"
 msgid "Multi Site Options"
 msgstr "Options Multi Site"
 
-# @ default
+# @ dbem
 #: admin/em-options.php:156
 msgid "Enable global tables mode?"
 msgstr "Permettre le mode de tables global ?"
@@ -2256,9 +2248,9 @@ msgstr "Permettre le mode de tables global ?"
 # @ dbem
 #: admin/em-options.php:156
 msgid "Setting this to yes will make all events save in the main site event tables (EM must also be activated). This allows you to share events across different blogs, such as showing events in your network whilst allowing users to display and manage their events within their own blog. Bear in mind that activating this will mean old events created on the sub-blogs will not be accessible anymore, and if you switch back they will be but new events created during global events mode will only remain on the main site."
-msgstr "Régler ce paramètre à Oui fera que tous les évènements seront sauvegardés dans les tables d'évènements du site principal (EM doit également être activée). Ceci vous permet de partager des évènements à travers différents blogs, comme par exemple pour montrer les évènements de votre réseau tout en permettant aux utilisateurs d'afficher et de gérer leurs propres évènements au sein de leur blog. Gardez à l'esprit que l'activation de ceci signifie que les anciens évènements créés sur les sous-blogs ne seront plus accessibles, ils le seront à nouveau si vous faites machine arrière, tandis que de nouveaux évènements créés en mode global resteront sur le site principal."
+msgstr "Positionner ce paramètre à Oui fera que tous les évènements seront enregistrés dans les tables d'évènements du site principal (EM doit également être activée). Ceci vous permet de partager des évènements à travers différents blogs, comme par exemple pour montrer les évènements de votre réseau tout en permettant aux utilisateurs d'afficher et de gérer leurs propres évènements au sein de leur blog. Gardez à l'esprit que l'activation de ceci signifie que les anciens évènements créés sur les sous-blogs ne seront plus accessibles, ils le seront à nouveau si vous faites machine arrière, tandis que de nouveaux évènements créés en mode global resteront sur le site principal."
 
-# @ default
+# @ dbem
 #: admin/em-options.php:157
 msgid "Display global events on main blog?"
 msgstr "Afficher les évènements globaux sur le site principal ?"
@@ -2268,7 +2260,7 @@ msgstr "Afficher les évènements globaux sur le site principal ?"
 msgid "Displays events from all sites on the network by default. You can still restrict events by blog using shortcodes and template tags coupled with the <code>blog</code> attribute. Requires global tables to be turned on."
 msgstr "Affiche les évènements de tous les sites sur le réseau par défaut. Vous pourrez toujours limiter les évènements par blog en utilisant des numéros courts et les balises de modèle couplé avec l'attribut <code>blog</code>. Nécessite que les tables globales  soient activées."
 
-# @ default
+# @ dbem
 #: admin/em-options.php:158
 msgid "Link sub-site events directly to sub-site?"
 msgstr "Lier les évènements d'un sous-site directement au sous-site ?"
@@ -2283,7 +2275,7 @@ msgstr "Lors de l'affichage des évènements globaux sur le site principal, vous
 msgid "General options"
 msgstr "Options Générales"
 
-# @ default
+# @ dbem
 #: admin/em-options.php:172
 msgid "Use dropdown for locations?"
 msgstr "Utiliser une liste déroulante pour les emplacements ?"
@@ -2293,7 +2285,7 @@ msgstr "Utiliser une liste déroulante pour les emplacements ?"
 msgid "Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events"
 msgstr "Sélectionnez Oui pour sélectionner l'emplacement depuis une liste déroulante ; la sélection sera plus rapide, mais vous ne pourrez ajouter des emplacements directement."
 
-# @ default
+# @ dbem
 #: admin/em-options.php:173
 msgid "Use recurrence?"
 msgstr "Utiliser la récurrence ?"
@@ -2303,7 +2295,7 @@ msgstr "Utiliser la récurrence ?"
 msgid "Select yes to enable the recurrence features feature"
 msgstr "Sélectionnez Oui pour activer la fonctionnalité Périodicité et permettre de définir des évènements périodiques."
 
-# @ default
+# @ dbem
 #: admin/em-options.php:174
 msgid "Enable bookings?"
 msgstr "Permettre les réservations ?"
@@ -2313,7 +2305,7 @@ msgstr "Permettre les réservations ?"
 msgid "Select yes to allow bookings and tickets for events."
 msgstr "Sélectionnez Oui pour permettre les réservations et les billets pour des évènements."
 
-# @ default
+# @ dbem
 #: admin/em-options.php:175
 msgid "Use categories?"
 msgstr "Utiliser les catégories ?"
@@ -2323,7 +2315,7 @@ msgstr "Utiliser les catégories ?"
 msgid "Select yes to enable the category features"
 msgstr "Sélectionnez Oui pour activer la fonctionnalité Catégories."
 
-# @ default
+# @ dbem
 #: admin/em-options.php:176
 msgid "Use event attributes?"
 msgstr "Utiliser les Attributs d'évènements ?"
@@ -2338,7 +2330,7 @@ msgstr "Sélectionnez Oui pour activer la fonctionnalité Attributs."
 msgid "no default category"
 msgstr "Pas de catégorie par défaut"
 
-# @ default
+# @ dbem
 #: admin/em-options.php:185
 msgid "Default Category"
 msgstr "Catégorie par défaut"
@@ -2359,7 +2351,7 @@ msgstr "<br />(Non applicable à la propriété d'évènement telle qu'implémen
 msgid "no default location"
 msgstr "pas d'emplacement par défaut"
 
-# @ default
+# @ dbem
 #: admin/em-options.php:194
 msgid "Default Location"
 msgstr "Emplacement par défaut"
@@ -2369,7 +2361,7 @@ msgstr "Emplacement par défaut"
 msgid "This option allows you to select the default location when adding an event."
 msgstr "Cette option vous permet de sélectionner l'emplacement par défaut lors de l'ajout d'un évènement."
 
-# @ default
+# @ dbem
 #: admin/em-options.php:197
 msgid "Default Location Country"
 msgstr "Pays de l'emplacement par défaut"
@@ -2394,7 +2386,7 @@ msgstr "Attributs d’Évènement"
 msgid "You can also add event attributes here, one per line in this format <code>#_ATT{key}</code>. They will not appear on event pages unless you insert them into another template below, but you may want to store extra information about an event for other uses. <a href='%s'>More information on placeholders.</a>"
 msgstr "Vous pouvez également ajouter des attributs d'évènement ici, un par ligne dans ce format <code>#_ATT{key}</code> . Ils n'apparaîtront pas sur les pages d'évènement, sauf si vous les insérer dans un autre modèle ci-dessous, mais vous pourrez stocker des informations supplémentaires sur un évènement pour d'autres usages. <a href='%s'>Plus d'informations sur les marqueurs.</a>"
 
-# @ default
+# @ dbem
 #: admin/em-options.php:201
 msgid "Show some love?"
 msgstr "Afficher un peu d'amour ?"
@@ -2405,13 +2397,12 @@ msgid "Hundreds of free hours have gone into making this free plugin, show your 
 msgstr "Des centaines d'heures sont passées dans cette extension gratuite pour WordPress, montrez votre soutien et ajoutez un petit lien vers le site de l'extension au bas de vos pages évènement."
 
 # @ dbem
-# @ default
 #: admin/em-options.php:210
 #: admin/em-options.php:224
 msgid "Events page"
 msgstr "Page Évènements"
 
-# @ default
+# @ dbem
 #: admin/em-options.php:219
 msgid "[No Events Page]"
 msgstr "[Page Sans Evènement]"
@@ -2912,7 +2903,7 @@ msgid "Enable Google Maps integration?"
 msgstr "Activer l'intégration Google Maps ?"
 
 # @ default
-# @ bp-em
+# @ dbem
 #: admin/em-options.php:408
 #: buddypress/bp-em-notifications.php:45
 #: em-functions.php:436
@@ -2920,7 +2911,7 @@ msgid "Yes"
 msgstr "Oui"
 
 # @ default
-# @ bp-em
+# @ dbem
 #: admin/em-options.php:409
 #: buddypress/bp-em-notifications.php:46
 #: em-functions.php:437
@@ -3343,7 +3334,7 @@ msgstr "La taille maximale autorisée pour les images téléchargées, en octets
 msgid "User Capabilities"
 msgstr "Rôles Utilisateurs"
 
-# @ default
+# @ dbem
 #: admin/em-options.php:533
 msgid "Warning: Changing these values may result in exposing previously hidden information to all users."
 msgstr "Attention : toute modification de ces valeurs risque de rendre publiques des données qui étaient jusqu'à présent privées."
@@ -3504,6 +3495,7 @@ msgstr "Events Manager"
 msgid "Loading Map...."
 msgstr "Chargement de la Carte ...."
 
+# @ dbem
 #: templates/templates/events-search.php:22
 msgid "between"
 msgstr "entre les"
@@ -3597,6 +3589,7 @@ msgstr "Cet évènement est récurrent depuis le premier jour et jusqu'au dernie
 msgid "For a recurring event, a one day event will be created on each recurring date within this date range."
 msgstr "Pour un évènement périodique, une occurrence sera créée à chaque date dans la plage de périodicité définie."
 
+# @ dbem
 # @ default
 #: templates/templates/event-form.php:130
 #: templates/forms/event-editor.php:120
@@ -3604,6 +3597,7 @@ msgstr "Pour un évènement périodique, une occurrence sera créée à chaque d
 msgid "Monday"
 msgstr "Lundi"
 
+# @ dbem
 # @ default
 #: templates/templates/event-form.php:130
 #: templates/forms/event-editor.php:120
@@ -3611,6 +3605,7 @@ msgstr "Lundi"
 msgid "Tuesday"
 msgstr "Mardi"
 
+# @ dbem
 # @ default
 #: templates/templates/event-form.php:130
 #: templates/forms/event-editor.php:120
@@ -3618,6 +3613,7 @@ msgstr "Mardi"
 msgid "Wednesday"
 msgstr "Mercredi"
 
+# @ dbem
 # @ default
 #: templates/templates/event-form.php:130
 #: templates/forms/event-editor.php:120
@@ -3625,6 +3621,7 @@ msgstr "Mercredi"
 msgid "Thursday"
 msgstr "Jeudi"
 
+# @ dbem
 # @ default
 #: templates/templates/event-form.php:130
 #: templates/forms/event-editor.php:120
@@ -3632,6 +3629,7 @@ msgstr "Jeudi"
 msgid "Friday"
 msgstr "Vendredi"
 
+# @ dbem
 # @ default
 #: templates/templates/event-form.php:130
 #: templates/forms/event-editor.php:120
@@ -3639,6 +3637,7 @@ msgstr "Vendredi"
 msgid "Saturday"
 msgstr "Samedi"
 
+# @ dbem
 # @ default
 #: templates/templates/event-form.php:130
 #: templates/forms/event-editor.php:120
@@ -3829,22 +3828,22 @@ msgstr "Vous devez vous connecter avant d'effectuer une réservation."
 msgid "Log in if you already have an account with us."
 msgstr "Connectez-vous si vous avez déjà un compte chez nous."
 
-# @ login-with-ajax
+# @ dbem
 #: templates/placeholders/bookingform.php:132
 msgid "Username"
 msgstr "Nom d'Utilisateur :"
 
-# @ login-with-ajax
+# @ dbem
 #: templates/placeholders/bookingform.php:136
 msgid "Password"
 msgstr "Mot de passe"
 
-# @ default
+# @ dbem
 #: templates/placeholders/bookingform.php:140
 msgid "Log In"
 msgstr "S'Identifier"
 
-# @ login-with-ajax
+# @ dbem
 #: templates/placeholders/bookingform.php:141
 msgid "Remember Me"
 msgstr "Se Souvenir De Moi"
@@ -3854,12 +3853,12 @@ msgstr "Se Souvenir De Moi"
 msgid "Sign Up"
 msgstr "Inscrivez Vous"
 
-# @ default
+# @ dbem
 #: templates/placeholders/bookingform.php:160
 msgid "Password Lost and Found"
 msgstr "Mot de Passe Oublié"
 
-# @ default
+# @ dbem
 #: templates/placeholders/bookingform.php:160
 msgid "Lost your password?"
 msgstr "Mot de Passe Oublié ?"
@@ -3940,27 +3939,27 @@ msgstr "Nombre de billets maximum requis par réservation"
 msgid "Add Ticket"
 msgstr "Ajouter un Billet"
 
-# @ bp-em
+# @ dbem
 #: buddypress/bp-em-admin.php:33
 msgid "Events Admin"
 msgstr "Gestion des Evènements"
 
-# @ bp-em
+# @ dbem
 #: buddypress/bp-em-admin.php:36
 msgid "Settings Updated."
 msgstr "Paramètres mis à jour."
 
-# @ bp-em
+# @ dbem
 #: buddypress/bp-em-admin.php:42
 msgid "Option One"
 msgstr "Option Un"
 
-# @ bp-em
+# @ dbem
 #: buddypress/bp-em-admin.php:47
 msgid "Option Two"
 msgstr "Option Deux"
 
-# @ bp-em
+# @ dbem
 #: buddypress/bp-em-admin.php:54
 #: buddypress/screens/settings.php:46
 msgid "Save Settings"
@@ -3982,7 +3981,6 @@ msgid "%s will not be attending %s anymore."
 msgstr "%s n'assistera plus à l'évènement %s."
 
 # @ dbem
-# @ bp-em
 #: buddypress/screens/attending.php:23
 #: buddypress/screens/profile.php:51
 #: buddypress/bp-em-core.php:76
@@ -4034,22 +4032,22 @@ msgstr "Ajouter un Emplacement"
 msgid "My Event Bookings"
 msgstr "Mes Réservations"
 
-# @ bp-em
+# @ dbem
 #: buddypress/screens/settings.php:26
 msgid "Events Settings Header"
 msgstr "En-tête des Paramètres des Evènements"
 
-# @ bp-em
+# @ dbem
 #: buddypress/screens/settings.php:30
 msgid "Events Settings"
 msgstr "Paramètres des Evènements"
 
-# @ bp-em
+# @ dbem
 #: buddypress/screens/settings.php:38
 msgid "Changes Saved."
-msgstr "Changements Sauvegardés."
+msgstr "Changements Enregistrés."
 
-# @ bp-em
+# @ dbem
 #: buddypress/screens/settings.php:44
 msgid "Do you love clicking checkboxes?"
 msgstr "Aimez-vous cliquer les cases à cocher ?"
@@ -4064,17 +4062,16 @@ msgstr "Mon Profil"
 msgid "Events (%s)"
 msgstr "Évènements (%s)"
 
-# @ bp-em
+# @ dbem
 #: buddypress/bp-em-notifications.php:50
 msgid "Action One"
 msgstr "Action Un"
 
-# @ bp-em
+# @ dbem
 #: buddypress/bp-em-notifications.php:56
 msgid "Action Two"
 msgstr "Action Deux"
 
-# @ bp-em
 # @ dbem
 #: buddypress/bp-em-notifications.php:87
 #: buddypress/bp-em-notifications.php:89
@@ -4131,7 +4128,7 @@ msgstr "Afficher une liste d'emplacements sur le gestionnaire d'évènements."
 msgid "No locations"
 msgstr "Aucun Emplacement"
 
-# @ default
+# @ dbem
 #: widgets/em-locations.php:67
 #: widgets/em-events.php:76
 #: widgets/em-calendar.php:58
@@ -4321,6 +4318,7 @@ msgstr "Billet créé"
 msgid "There was a problem saving the ticket."
 msgstr "Un problème s'est produit lors de la sauvegarde du billet."
 
+# @ dbem
 # @ default
 #: classes/em-ticket.php:159
 #: classes/em-ticket-booking.php:102
@@ -4441,7 +4439,7 @@ msgstr "ATTENTION : Ceci est un évènement appartenant au groupe \"%s\". Les au
 # @ dbem
 #: classes/em-event.php:339
 msgid "There was a problem saving the location so event was not saved."
-msgstr "Un problème s'est produit lors de la sauvegarde de l'emplacement, l'évènement n'a pas été sauvegardé non plus."
+msgstr "Un problème s'est produit lors de l'enregistrement de l'emplacement, l'évènement n'a pas été enregistré non plus."
 
 # @ dbem
 #: classes/em-event.php:380
@@ -4505,7 +4503,7 @@ msgstr "Réservation ne peut être %s."
 msgid "%s successfully duplicated."
 msgstr "%s dupliquée."
 
-# @ default
+# @ dbem
 #: classes/em-event.php:557
 msgid "You are not allowed to manage this %s."
 msgstr "Vous n'êtes pas autorisé à gérer cet %s."
@@ -4531,7 +4529,7 @@ msgstr "Un évènement ne peut pas commencer après sa fin !"
 msgid "Dates must have correct formatting. Please use the date picker provided."
 msgstr "Les dates doivent être au format correct, veuillez utiliser le sélecteur de dates."
 
-# @ default
+# @ dbem
 #: classes/em-event.php:876
 #: classes/em-event.php:885
 msgid "Profile"
@@ -4943,19 +4941,13 @@ msgstr "Annuler votre réservation"
 msgid "You are in Events Manager debug mode. To turn debug mode off, go to the <a href=\"%s\">settings</a> page."
 msgstr "Events Manager fonctionne en mode déboguage. Pour arrêter ce mode, rendez-vous à la page des <a href=\"%s\">Paramètres</a>."
 
-# @ dbem
 #: em-functions.php:9
-#, fuzzy
 msgid ""
 "<p>Hey, <strong>%s</strong>, welcome to <strong>Events Manager</strong>! We hope you like it around here.</p> \r\n"
-"		<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\r\n"
-"		<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>\r\n"
-"		<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>"
+"\t\t<p>Now it's time to insert events lists through  <a href='%s' title='Widgets page'>widgets</a>, <a href='%s' title='Template tags documentation'>template tags</a> or <a href='%s' title='Shortcodes documentation'>shortcodes</a>.</p>\r\n"
+"\t\t<p>By the way, have you taken a look at the <a href='%s' title='Change settings'>Settings page</a>? That's where you customize the way events and locations are displayed.</p>\r\n"
+"\t\t<p>What? Tired of seeing this advice? I hear you, <a href='%s' title='Don't show this advice again'>click here</a> and you won't see this again!</p>"
 msgstr ""
-"<p>Salut, <strong>%s</strong>, bienvenue dans <strong>Events Manager</strong>! Nous espérons que vous l'apprécierez.</p> \n"
-"<p>Commencez par insérer des listes d'évènements via les <a href='%s' title='page des Widgets'>widgets</a>, les <a href='%s' title='documentation sur les marqueurs de modèles'>marqueurs de modèles</a> ou les <a href='%s' title='documentation sur les minicodes'>minicodes</a>.</p>\n"
-"<p>A propos, avez-vous jeté un oeil sur la <a href='%s' title='paramètres'>page des paramètres</a> ? C'est là que vous modifierez la façon d'afficher les évènements et les emplacements.</p>\n"
-"<p>de quoi ? Marre de lire ce message ? OK, <a href='%s' title='Ne plus afficher ce message'>cliquez ici</a> et vous ne le reverrez plus jamais !</p>"
 
 # @ dbem
 #: em-functions.php:142
@@ -5002,12 +4994,12 @@ msgstr "Évènements pour les douze prochains mois"
 msgid "Trying to perform an illegal action."
 msgstr "Tente d'effectuer une action illégale."
 
-# @ default
+# @ dbem
 #: em-functions.php:252
 msgid "<strong>ERROR</strong>: Please enter a username."
 msgstr "<strong>ERREUR :</strong> Veuillez entrer un nom d'utilisateur"
 
-# @ default
+# @ dbem
 #: em-functions.php:254
 msgid "<strong>ERROR</strong>: This username is invalid because it uses illegal characters. Please enter a valid username."
 msgstr "<strong>ERREUR :</strong> Ce nom d'utilisateur utilise des caractères interdits. Veuillez entrer un nom d'utilisateur valide."
@@ -5017,12 +5009,12 @@ msgstr "<strong>ERREUR :</strong> Ce nom d'utilisateur utilise des caractères i
 msgid "<strong>ERROR</strong>: This username is already registered, please choose another one."
 msgstr "<strong>ERREUR :</strong> Ce nom d'utilisateur est déjà utilisé, veuillez en choisir un autre ou vous identifier."
 
-# @ default
+# @ dbem
 #: em-functions.php:262
 msgid "<strong>ERROR</strong>: Please type your e-mail address."
 msgstr "<strong>ERREUR :</strong> Veuillez entrer votre adresse e-mail."
 
-# @ default
+# @ dbem
 #: em-functions.php:264
 msgid "<strong>ERROR</strong>: The email address isn&#8217;t correct."
 msgstr "<strong>ERREUR :</strong> Cette adresse e-mail est incorrecte."
@@ -5032,32 +5024,32 @@ msgstr "<strong>ERREUR :</strong> Cette adresse e-mail est incorrecte."
 msgid "<strong>ERROR</strong>: This email is already registered, please choose another one."
 msgstr "<strong>ERREUR :</strong> Cette adresse e-mail est déjà utilisée, veuillez en choisir une autre ou vous identifier."
 
-# @ default
+# @ dbem
 #: em-functions.php:285
 msgid "<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a href=\"mailto:%s\">webmaster</a> !"
 msgstr "<strong>ERREUR :</strong> Impossible de vous enregistrer ! Veuillez contacter le <a href=\"mailto:%s\">webmaster</a> !"
 
-# @ default
+# @ dbem
 #: em-functions.php:320
 msgid "New user registration on your blog %s:"
 msgstr "Nouvelle inscription sur votre blog %s :"
 
-# @ default
+# @ dbem
 #: em-functions.php:321
 msgid "Username: %s"
 msgstr "Nom d'utilisateur : %s"
 
-# @ default
+# @ dbem
 #: em-functions.php:322
 msgid "E-mail: %s"
 msgstr "E-mail:%s"
 
-# @ default
+# @ dbem
 #: em-functions.php:323
 msgid "[%s] New User Registration"
 msgstr "[%s] Nouvelle inscription"
 
-# @ default
+# @ dbem
 #: em-functions.php:334
 msgid "[%s] Your username and password"
 msgstr "[%s] Vos Idenficiant & Mot de Passe"
@@ -5067,13 +5059,13 @@ msgstr "[%s] Vos Idenficiant & Mot de Passe"
 #. #-#-#-#-#  plugin.pot (Events Manager 4.0.83)  #-#-#-#-#
 #. Author URI of the plugin/theme
 msgid "http://wp-events-plugin.com"
-msgstr "http://wp-events-plugin.com"
+msgstr ""
 
 #. Description of the plugin/theme
 msgid "Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!"
-msgstr "Enregistrement des événements et de gestion des réservations pour Wordpress. Les événements récurrents, les lieux, Google Maps, flux RSS, iCal, enregistrement de la réservation et plus encore!"
+msgstr ""
 
 #. Author of the plugin/theme
 msgid "Marcus Sykes"
-msgstr "Marcus Sykes"
+msgstr ""
 
