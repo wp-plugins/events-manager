@@ -273,7 +273,7 @@ function em_init_actions() {
 				//Does this user need to be registered first?
 				$registration = true;
 				//TODO do some ticket validation before registering the user
-				if ( $EM_Event->get_bookings()->get_available_spaces() < $EM_Booking->get_spaces(true) ) {
+				if ( $EM_Event->get_bookings()->get_available_spaces() >= $EM_Booking->get_spaces(true) ) {
 					if( !is_user_logged_in() && get_option('dbem_bookings_anonymous') ){
 						//find random username - less options for user, less things go wrong
 						$username_root = explode('@', $_REQUEST['user_email']);
