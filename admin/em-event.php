@@ -72,7 +72,7 @@ function em_admin_event_page() {
 				<div id="side-info-column" class='inner-sidebar'>
 					<div id='side-sortables'>
 						<?php do_action('em_admin_event_form_side_header'); ?>       
-						<?php if(get_option('dbem_recurrence_enabled') && ($EM_Event->is_recurrence() || $EM_Event->is_recurring() || $EM_Event->id == '')) : ?>
+						<?php if(get_option('dbem_recurrence_enabled')) : ?>
 							<!-- START recurrence postbox -->
 							<div class="postbox ">
 								<div class="handlediv" title="Fare clic per cambiare."><br />
@@ -81,8 +81,18 @@ function em_admin_event_page() {
 									<?php _e ( "Recurrence", 'dbem' ); ?>
 									</span></h3>
 									<div class="inside">
+									
+									<?php if( $EM_Event->is_recurrence() ) : ?>
+										<p>
+											<?php echo $EM_Event->get_recurrence_description(); ?>
+											<br />
+											<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $EM_Event->recurrence_id; ?>">
+											<?php _e ( 'Reschedule', 'dbem' ); ?>
+											</a>
+											<input type="hidden" name="recurrence_id" value="<?php echo $EM_Event->recurrence_id; ?>" />
+										</p>
 									<?php //TODO add js warning if rescheduling, since all bookings are deleted ?>
-									<?php if ( !$EM_Event->id || $EM_Event->is_recurring() ) : ?>
+									<?php else : ?>
 										<p>
 											<input id="event-recurrence" type="checkbox" name="repeated_event" value="1" <?php echo ( $EM_Event->is_recurring() ) ? 'checked="checked"':'' ; ?> />
 											<?php _e ( 'Repeated event', 'dbem' ); ?>
@@ -137,17 +147,6 @@ function em_admin_event_page() {
 										<p id="recurrence-tip">
 											<?php _e ( 'Check if your event happens more than once according to a regular pattern', 'dbem' )?>
 										</p>
-									<?php elseif( $EM_Event->is_recurrence() ) : ?>
-											<p>
-												<?php echo $EM_Event->get_recurrence_description(); ?>
-												<br />
-												<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $EM_Event->recurrence_id; ?>">
-												<?php _e ( 'Reschedule', 'dbem' ); ?>
-												</a>
-												<input type="hidden" name="recurrence_id" value="<?php echo $EM_Event->recurrence_id; ?>" />
-											</p>
-									<?php else : ?>
-										<p><?php _e ( 'This is\'t a recurrent event', 'dbem' ) ?></p>
 									<?php endif; ?>
 								</div>
 							</div> 

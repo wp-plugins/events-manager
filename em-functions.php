@@ -18,6 +18,7 @@ function em_hello_to_new_user() {
 	}
 }
 
+if(!function_exists('em_paginate')){ //overridable e.g. in you mu-plugins folder.
 /**
  * Takes a few params and determins a pagination link structure
  * @param string $link
@@ -58,8 +59,9 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
 		    $string .= ($page < $maxPages) ? ' <a class="next page-numbers" href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' ' ;
 		    $string .= ($i-1 < $maxPages) ? ' <a class="next page-numbers" href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : ' ';
 		//Return the string
-		    return $string;
+		    return apply_filters('em_paginate', $string);
 	}
+}
 }
 
 /**
