@@ -45,7 +45,7 @@ function bp_em_events() {
 				echo EM_Events::output($events, $args);
 			}else{
 				?>
-				<p><?php _e('No Events', 'dbem'); ?></p>
+				<p><?php _e('No Events', 'dbem'); ?>. <a href="<?php echo $bp->events->link . 'my-events/edit/'; ?>"><?php _e('Add Event','dbem'); ?></a></p>
 				<?php
 			}
 		}
