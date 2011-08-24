@@ -303,7 +303,7 @@ jQuery(document).ready( function($){
 	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
 		var script = document.createElement("script");
 		script.type = "text/javascript";
-		script.src = "http://maps.google.com/maps/api/js?v=3.2&sensor=false&callback=em_maps";
+		script.src = "http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps";
 		document.body.appendChild(script);
 	}else{
 		em_location_input_ajax();
@@ -475,6 +475,8 @@ function em_maps() {
 		});
 		var infowindow = new google.maps.InfoWindow({ content: document.getElementById('em-location-map-info-'+map_id).firstElementChild });
 		infowindow.open(maps[map_id],marker);
+		maps[map_id].panBy(40,-70);
+		
 		//JS Hook for handling map after instantiation
 		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
 		jQuery(document).trigger('em_maps_location_hook', [maps[map_id], infowindow, marker]);
