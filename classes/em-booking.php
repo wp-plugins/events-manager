@@ -76,8 +76,6 @@ class EM_Booking extends EM_Object{
 				global $wpdb;			
 				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data'";
 				$booking = $wpdb->get_row($sql, ARRAY_A);
-				//booking meta
-				$booking['booking_meta'] = (!empty($booking['booking_meta'])) ? unserialize($booking['booking_meta']):array();
 				//Custom Fields
 				$custom = $wpdb->get_row("SELECT meta_key, meta_value FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data' AND meta_key='booking_custom'");
 			  	//Booking notes
@@ -86,6 +84,8 @@ class EM_Booking extends EM_Object{
 			  		$this->notes[] = unserialize($note['meta_value']);
 			  	}
 			}
+			//booking meta
+			$booking['booking_meta'] = (!empty($booking['booking_meta'])) ? unserialize($booking['booking_meta']):array();
 			//Save into the object
 			$this->to_object($booking);
 			$this->get_person();
