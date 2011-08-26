@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: attendance, attendee, buddypress, calendar, registration, event, event calendar, event management, event registration, events, events calendar, gigs, payment, payments, paypal, registration, sports, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 4.14
+Stable tag: 4.15
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -88,6 +88,16 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+
+= 4.15 =
+* booking approval issue fixed
+* group Event activities now included group wall
+* fixed recurrence bug, where rescheduled past events aren't deleted
+* dbem_phone fix
+* initial password will now allow users to log in (bug in 4.14 only)
+* fixed google map balloon centering and IE8 incompatability
+* added the UK nations
+* changed usernames shown in booking areas to full name (if available)
 
 = 4.14 =
 * Admin-editable bookings/tickets
