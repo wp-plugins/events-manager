@@ -1065,7 +1065,7 @@ class EM_Event extends EM_Object{
 		//So we don't do something we'll regret later, we could just supply the get directly into the delete, but this is safer
 		$result = false;
 		if( $this->can_manage('delete_events', 'delete_others_events') ){
-			$EM_Events = EM_Events::get( array('recurrence_id'=>$this->id) );
+			$EM_Events = EM_Events::get( array('recurrence_id'=>$this->id, 'scope'=>'all') );
 			$event_ids = array();
 			foreach($EM_Events as $EM_Event){
 				if($EM_Event->recurrence_id == $this->id){

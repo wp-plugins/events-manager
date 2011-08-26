@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.14
+Version: 4.15
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -353,7 +353,7 @@ class EM_MS_Globals {
 	function get_globals(){ 
 		return apply_filters('em_ms_globals', array(
 			//multisite settings
-			'dbem_ms_global_table', 'dbem_ms_global_events', 'dbem_ms_global_events_links',
+			'dbem_ms_global_table', 'dbem_ms_global_events', 'dbem_ms_global_events_links', 'dbem_ms_global_locations',
 			//mail
 			'dbem_rsvp_mail_port', 'dbem_mail_sender_address', 'dbem_smtp_password', 'dbem_smtp_username','dbem_smtp_host', 'dbem_mail_sender_name','dbem_smtp_host','dbem_rsvp_mail_send_method','dbem_rsvp_mail_SMTPAuth',
 			//images	

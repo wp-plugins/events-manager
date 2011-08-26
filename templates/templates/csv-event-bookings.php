@@ -25,7 +25,7 @@ foreach( $EM_Event->get_bookings()->bookings as $EM_Booking ) {
 		$EM_Ticket = $EM_Ticket_Booking->get_ticket();
 		$row = array(
 			$EM_Booking->id,
-			$EM_Booking->person->display_name,
+			$EM_Booking->person->get_name(),
 			$EM_Booking->person->user_email,
 			$EM_Booking->person->phone,
 			date('Y-m-d h:i', $EM_Booking->timestamp),

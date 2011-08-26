@@ -75,7 +75,7 @@ function em_admin_event_page() {
 						<?php if(get_option('dbem_recurrence_enabled')) : ?>
 							<!-- START recurrence postbox -->
 							<div class="postbox ">
-								<div class="handlediv" title="Fare clic per cambiare."><br />
+								<div class="handlediv"><br />
 								</div>
 								<h3 class='hndle'><span>
 									<?php _e ( "Recurrence", 'dbem' ); ?>
@@ -155,7 +155,7 @@ function em_admin_event_page() {
 						   
 						<?php if ( current_user_can('edit_others_events') ): ?>
 						<div class="postbox ">
-							<div class="handlediv" title="Fare clic per cambiare."><br />
+							<div class="handlediv"><br />
 							</div>
 							<h3 class='hndle'><span><?php _e ( 'Event Owner/Contact Person', 'dbem' ); ?></span></h3>
 							<div class="inside">
@@ -186,7 +186,7 @@ function em_admin_event_page() {
 							<?php if( count($user_groups) > 0 ): ?>
 							<!-- START RSVP -->
 							<div class="postbox " id='group-data'>
-								<div class="handlediv" title="Fare clic per cambiare."><br />
+								<div class="handlediv"><br />
 								</div>
 								<h3 class='hndle'><span><?php _e('Group Ownership','dbem'); ?></span></h3>
 								<div class="inside">
@@ -212,7 +212,7 @@ function em_admin_event_page() {
 						<?php if(get_option('dbem_rsvp_enabled')) : ?>
 							<!-- START RSVP -->
 							<div class="postbox " id='rsvp-data'>
-								<div class="handlediv" title="Fare clic per cambiare."><br />
+								<div class="handlediv"><br />
 								</div>
 								<h3 class='hndle'><span><?php _e('Bookings Stats','dbem'); ?></span></h3>
 								<div class="inside">
@@ -258,7 +258,7 @@ function em_admin_event_page() {
 						<?php if(get_option('dbem_categories_enabled')) :?>
 							<!-- START Categories -->
 							<div class="postbox ">
-								<div class="handlediv" title="Fare clic per cambiare."><br />
+								<div class="handlediv"><br />
 								</div>
 								<h3 class='hndle'><span>
 									<?php _e ( 'Category', 'dbem' ); ?>

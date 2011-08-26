@@ -36,7 +36,7 @@ function em_printable_booking_report() {
 				<?php foreach($EM_Event->get_bookings()->bookings as $EM_Booking) {       ?>
 				<tr>
 					
-					<td><?php echo $EM_Booking->person->display_name ?></td> 
+					<td><?php echo $EM_Booking->person->get_name() ?></td> 
 					<td><?php echo $EM_Booking->person->user_email ?></td>
 					<td><?php echo $EM_Booking->person->phone ?></td>
 					<td class='spaces-number'><?php echo $EM_Booking->get_spaces() ?></td>
