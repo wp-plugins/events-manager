@@ -90,6 +90,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 == Changelog ==
 
 = 4.15 =
+* single events can now be converted to recurring
 * booking approval issue fixed
 * group Event activities now included group wall
 * fixed recurrence bug, where rescheduled past events aren't deleted
