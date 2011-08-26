@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: attendance, attendee, buddypress, calendar, registration, event, event calendar, event management, event registration, events, events calendar, gigs, payment, payments, paypal, registration, sports, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 4.13
+Stable tag: 4.15
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -30,7 +30,7 @@ Main Features
  * Personal Events
  * Activity Stream
  * more on the way
-* Guest event submissions (in beta)
+* Guest/Member event submissions (beta)
 * SEO Permalinks
 * Assign event locations and view events by location
 * Event categories
@@ -88,6 +88,29 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+
+= 4.15 =
+* booking approval issue fixed
+* group Event activities now included group wall
+* fixed recurrence bug, where rescheduled past events aren't deleted
+* dbem_phone fix
+* initial password will now allow users to log in (bug in 4.14 only)
+* fixed google map balloon centering and IE8 incompatability
+* added the UK nations
+* changed usernames shown in booking areas to full name (if available)
+
+= 4.14 =
+* Admin-editable bookings/tickets
+* BP menu items do not show if a user doesn't have the relevant capabilities
+* Member/Guest submit forms improved (still in beta due to pending template changes, but functionality is there)
+* Updated the help pages with new placeholders
+* Fixed a register-before-booking bug
+* CSV event bookings export now an overridable template
+* Cleaned up some ical formatting problems
+* Countries list updated
+* Fixed datepicker js issue in tickete
+* Calendar headings have mb_ support for multi-byte characters.
+* Various smaller bugfixes and warning removals
 
 = 4.13 =
 * events now allow 10 digit booking prices, if you have an event that costs more than this, call me :)
