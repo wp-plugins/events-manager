@@ -124,7 +124,7 @@ class EM_Location extends EM_Object {
 			if( $this->can_manage('edit_locations','edit_others_locations') ){
 				//owner person can be anyone the admin wants, but the creator if not.
 				if( current_user_can('edit_others_events') ){
-					$this->owner = ( $this->owner > 0 ) ? $this->owner:0;
+					$this->owner = ( $this->owner > 0 ) ? $this->owner:get_current_user_id();
 				}else{
 					//force user id - user is either editing a location or making a new one, as can_manage checks ownership too. 
 					$this->owner = get_current_user_id();
