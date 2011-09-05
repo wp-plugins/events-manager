@@ -294,7 +294,7 @@ function em_register_new_user( $user_data ) {
 
 	update_user_option( $user_id, 'default_password_nag', true, true ); //Set up the Password change nag.
 
-	em_new_user_notification( $user_id, $user_pass );
+	em_new_user_notification( $user_id, $user_data['user_pass'] );
 
 	return apply_filters('em_register_new_user',$user_id);
 }
