@@ -512,6 +512,7 @@ class EM_Booking extends EM_Object{
 				'#_RESPPHONE' => '#_BOOKINGPHONE',//Depreciated
 				'#_COMMENT' => '#_BOOKINGCOMMENT',//Depreciated
 				'#_RESERVEDSPACES' => '#_BOOKEDSPACES',//Depreciated
+				'#_BOOKINGID' =>  $this->id,
 				'#_BOOKINGNAME' =>  $this->person->get_name(),
 				'#_BOOKINGEMAIL' => $this->person->user_email,
 				'#_BOOKINGPHONE' => $this->person->phone,
