@@ -726,10 +726,11 @@ class EM_Event extends EM_Object{
 		}
 	 	$event_string = $format;
 		//Now let's check out the placeholders.
-	 	preg_match_all("/#@?_?[A-Za-z0-9]+/", $format, $placeholders);
-		foreach($placeholders[0] as $result) {
+	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+		foreach($placeholders[1] as $key => $result) {
 			$match = true;
 			$replace = '';
+			$full_result = $placeholders[0][$key];
 			switch( $result ){
 				//Event Details
 				case '#_EVENTID':
@@ -750,7 +751,20 @@ class EM_Event extends EM_Object{
 				case '#_EVENTIMAGEURL':
 				case '#_EVENTIMAGE':
 	        		if($this->image_url != ''){
-						$replace = ($result == '#_EVENTIMAGEURL') ? $this->image_url : "<img src='".$this->image_url."' alt='".$this->name."'/>";
+						if($result == '#_EVENTIMAGEURL'){
+		        			$replace =  $this->image_url;
+						}else{
+							if( empty($placeholders[3][$key]) ){
+								$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+							}else{
+								$image_size = explode(',', $placeholders[3][$key]);
+								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
+									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".$this->name."'/>";
+								}else{
+									$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+								}
+							}
+						}
 	        		}
 					break;
 				//Times
@@ -898,14 +912,14 @@ class EM_Event extends EM_Object{
 					$replace = ob_get_clean();
 					break;
 				default:
-					$replace = $result;
+					$replace = $full_result;
 					break;
 			}
-			$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
-			$event_string = str_replace($result, $replace , $event_string );
+			$replace = apply_filters('em_event_output_placeholder', $replace, $this, $full_result, $target );
+			$event_string = str_replace($full_result, $replace , $event_string );
 		}
 		//Time placeholders
-		foreach($placeholders[0] as $result) {
+		foreach($placeholders[1] as $result) {
 			// matches all PHP START date and time placeholders
 			if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
 				$replace = date_i18n(ltrim($result, "#"), $this->start);

@@ -249,10 +249,11 @@ class EM_Location extends EM_Object {
 			}
 		}
 		$location_string = $format;
-		preg_match_all("/#_[A-Za-z]+/", $format, $placeholders);
-		foreach($placeholders[0] as $result) {
+	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+		foreach($placeholders[1] as $key => $result) {
 			$match = true;
 			$replace = '';
+			$full_result = $placeholders[0][$key];
 			switch( $result ){
 				case '#_LOCATIONID':
 					$replace = $this->id;
@@ -311,9 +312,23 @@ class EM_Location extends EM_Object {
 						$replace = $matches[0];
 					}
 					break;
+				case '#_LOCATIONIMAGEURL':
 				case '#_LOCATIONIMAGE':
 	        		if($this->image_url != ''){
-						$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+	        			if($result == '#_LOCATIONIMAGEURL'){
+		        			$replace =  $this->image_url;
+						}else{
+							if( empty($placeholders[3][$key]) ){
+								$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+							}else{
+								$image_size = explode(',', $placeholders[3][$key]);
+								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
+									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".$this->name."'/>";
+								}else{
+									$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+								}
+							}
+						}
 	        		}
 					break;
 				case '#_LOCATIONURL':
@@ -346,12 +361,12 @@ class EM_Location extends EM_Object {
 					break;
 			}
 			if($match){ //if true, we've got a placeholder that needs replacing
-				$replace = apply_filters('em_location_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
-				$location_string = str_replace($result, $replace , $location_string );
+				$replace = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+				$location_string = str_replace($full_result, $replace , $location_string );
 			}else{
-				$custom_replace = apply_filters('em_location_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+				$custom_replace = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
 				if($custom_replace != $replace){
-					$location_string = str_replace($result, $custom_replace , $location_string );
+					$location_string = str_replace($full_result, $custom_replace , $location_string );
 				}
 			}
 		}

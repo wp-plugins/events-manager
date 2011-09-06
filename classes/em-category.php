@@ -158,10 +158,11 @@ class EM_Category extends EM_Object {
 			}
 		}
 		$category_string = $format;		 
-		preg_match_all("/#_[A-Za-z]+/", $format, $placeholders);
-		foreach($placeholders[0] as $result) {
+	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+		foreach($placeholders[1] as $key => $result) {
 			$match = true;
 			$replace = '';
+			$full_result = $placeholders[0][$key];
 			switch( $result ){
 				case '#_CATEGORYNAME':
 					$replace = $this->name;
@@ -176,7 +177,20 @@ class EM_Category extends EM_Object {
 				case '#_CATEGORYIMAGE':
 				case '#_CATEGORYIMAGEURL':
 					if( $this->image_url != ''){
-						$replace = ($result == '#_CATEGORYIMAGEURL') ? $this->image_url : "<img src='".$this->image_url."' alt='".$this->name."'/>";
+						if($result == '#_CATEGORYIMAGEURL'){
+		        			$replace =  $this->image_url;
+						}else{
+							if( empty($placeholders[3][$key]) ){
+								$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+							}else{
+								$image_size = explode(',', $placeholders[3][$key]);
+								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
+									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".$this->name."'/>";
+								}else{
+									$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+								}
+							}
+						}
 					}
 					break;
 				case '#_CATEGORYLINK':
@@ -201,11 +215,11 @@ class EM_Category extends EM_Object {
 					}
 					break;
 				default:
-					$replace = $result;
+					$replace = $full_result;
 					break;
 			}
-			$replace = apply_filters('em_category_output_placeholder', $replace, $this, $result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
-			$category_string = str_replace($result, $replace , $category_string );
+			$replace = apply_filters('em_category_output_placeholder', $replace, $this, $full_result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
+			$category_string = str_replace($full_result, $replace , $category_string );
 		}
 		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
 		$category_string = str_replace('#_CATEGORY', apply_filters($name_filter, $this->name) , $category_string ); //Depreciated

@@ -483,4 +483,8 @@ if( !function_exists('get_current_blog_id') ){
 	 */
 	function get_current_blog_id(){ return 1; } //for < 3.1 
 }
+
+function em_get_thumbnail_url($image_url, $width, $height){
+	return plugins_url('includes/thumbnails/timthumb.php', __FILE__).'?src='.$image_url.'&amp;h='. $height .'&amp;w='. $width;
+}
 ?>
