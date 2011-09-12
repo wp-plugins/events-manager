@@ -61,7 +61,9 @@ function em_docs_init(){
 							'#_NOTES' => array( 'desc' => __('Shows the description of the event.', 'dbem') ),
 							'#_EXCERPT' => array( 'desc' => __('If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show (currently, no read more link is added).', 'dbem') ),
 							'#_EVENTID' => array( 'desc' => __('Shows the event corresponding ID number in the database table.', 'dbem') ),
-							'#_EVENTIMAGE' => array( 'desc' => __('Shows the event image, if available.', 'dbem') )
+							'#_EVENTIMAGE' => array( 'desc' => __('Shows the event image, if available.', 'dbem') ),
+							'#_EVENTIMAGE{x,y}' => array( 'desc' => __('Shows the event image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_EVENTIMAGE{100,100}</code>', 'dbem') ),
+							'#_EVENTIMAGEURL' => array( 'desc' => __('Shows the event image url, if available.', 'dbem') )
 						)
 					),			
 					'Time' => array(
@@ -131,15 +133,25 @@ function em_docs_init(){
 							'#_CATEGORYNAME' => array( 'desc' => __('Shows the category name of the event.', 'dbem') ),
 							'#_CATEGORYID' => array( 'desc' => __('Shows the category ID of the event.', 'dbem') ),
 							'#_CATEGORYIMAGE' => array( 'desc' => __('Shows the event image, if available.', 'dbem') ),
-							'#_CATEGORYIMAGEURL' => array( 'desc' => __('Shows the event image url, if available.', 'dbem') ),
+							'#_CATEGORYIMAGE{x,y}' => array( 'desc' => __('Shows the category image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_CATEGORYIMAGE{100,100}</code>', 'dbem') ),
+							'#_CATEGORYIMAGEURL' => array( 'desc' => __('Shows the category image url, if available.', 'dbem') ),
 							'#_CATEGORYNOTES' => array( 'desc' => __('Shows the location description.', 'dbem') )
 						)
-					)					
+					),			
+					'Related Events' => array(
+						'desc' => __('You can show lists of other events belonging to this category. The formatting of the list is the same as a normal events list.', 'dbem'),
+						'placeholders' => array(
+							'#_CATEGORYPASTEVENTS' => array( 'desc' => __('Will show a list of all past events at this category.', 'dbem') ),
+							'#_CATEGORYNEXTEVENTS' => array( 'desc' => __('Will show a list of all future events at this category.', 'dbem') ),
+							'#_CATEGORYALLEVENTS' => array( 'desc' => __('Will show a list of all events at this category.', 'dbem') )
+						)
+					)				
 				),
 				'locations' => array(
 					'Location Details' => array(
 						'desc' => '',
 						'placeholders' => array(
+							'#_LOCATIONID' => array( 'desc' => __('Displays the location ID number.', 'dbem') ),
 							'#_LOCATIONNAME' => array( 'desc' => __('Displays the location name.', 'dbem') ),
 							'#_LOCATIONADDRESS' => array( 'desc' => __('Displays the address.', 'dbem') ),
 							'#_LOCATIONTOWN' => array( 'desc' => __('Displays the town.', 'dbem') ),
@@ -151,7 +163,8 @@ function em_docs_init(){
 							'#_LOCATIONNOTES' => array( 'desc' => __('Shows the location description.', 'dbem') ),
 							'#_LOCATIONEXCERPT' => array( 'desc' => __('If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your location description, only the content before this tag will show (currently, no read more link is added).', 'dbem') ),
 							'#_LOCATIONIMAGE' => array( 'desc' => __('Shows the location image.', 'dbem') ),
-							'#_LOCATIONID' => array( 'desc' => __('Displays the location ID number.', 'dbem') )
+							'#_LOCATIONIMAGE{x,y}' => array( 'desc' => __('Shows the location image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_LOCATIONIMAGE{100,100}</code>', 'dbem') ),
+							'#_LOCATIONIMAGEURL' => array( 'desc' => __('Shows the cattegory image url, if available.', 'dbem') )
 						)
 					),
 					'Links' => array(

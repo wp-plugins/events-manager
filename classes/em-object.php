@@ -504,7 +504,7 @@ class EM_Object {
 						$array[$key] = (int) $string;
 					}elseif( self::array_is_numeric($string) ){
 						$array[$key] = $string;
-					}elseif( preg_match('/^([0-9],?)+$/', $string) ){
+					}elseif( !is_array($string) && preg_match('/^([0-9],?)+$/', $string) ){
 						$array[$key] = explode(',', $string);
 					}else{
 						//No format we accept

@@ -8,22 +8,37 @@ function em_admin_help_page(){
 	<div class="wrap">
 		<div id="icon-events" class="icon32"><br /></div>
 		<h2><?php _e('Getting Help for Events Manager','dbem'); ?></h2>
-		<p>
-			For further information on using this plugin, please view the <a href="http://wp-events-plugin.com/documentation/">documentation pages</a>. If you can't find what you're looking for in the documentation, you may find help on our <a href="http://wp-events-plugin.com/forums/">support forums</a>. 
-		</p>
 		<div class="em-docs">
+			<h2>Where To Get Help</h3>
+			<p>
+				This page is only a small portion of the event documentation which is here for quick reference. If you're just starting out, we recommend you visit the following places for further support:
+			</p>
+			<ol>
+				<li>New users are strongly encouraged to have a look at our <a href="http://wp-events-plugin.com/documentation/getting-started/">getting started page</a>.</li>
+				<li>Browse the other documentation pages and <a href="http://wp-events-plugin.com/tutorials/">tutorials</a>.</li>
+				<li>View the <a href="http://wp-events-plugin.com/documentation/faq/">FAQ</a> for general questions and <a href="http://wp-events-plugin.com/documentation/troubleshooting/">Troubleshooting</a> for common issues. These are regularly updated with recent issues.</li>
+				<li>Rather than trying to contact us directly, we request you use the <a href="http://wordpress.org/tags/events-manager?forum_id=10">support forums</a> as others may be experiencing the same issues as you. For faster support via private member forums and extra features please consider <a href="http://wp-events-plugin.com/events-manager-pro/">upgrading to pro</a>.</li>
+			</ol>
+			<p>
+				If you can't find what you're looking for in the documentation, you may find help on our <a href="http://wp-events-plugin.com/forums/">support forums</a>. 
+			</p>
 			<h2><?php _e('Placeholders for customizing event pages','dbem'); ?></h2>
 			<p><?php echo sprintf( __("In the <a href='%s'>settings page</a>, you'll find various textboxes where you can edit how event information looks, such as for event and location lists. Using the placeholders below, you can choose what information should be displayed.",'dbem'), 'admin.php?page=events-manager-options'); ?></p>
-			<h3><a name="event-placeholders"><?php _e('Event Related Placeholders','dbem'); ?></a></h3>
+			<a name="event-placeholders"></a>
+			<h3 style="margin-top:20px;"><?php _e('Event Related Placeholders','dbem'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'events') ); ?>
-			<h3><a name="category-placeholders"><?php _e('Category Related Placeholders','dbem'); ?></a></h3>
+			<a name="category-placeholders"></a>
+			<h3><?php _e('Category Related Placeholders','dbem'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'categories') ); ?>
-			<h3><a name="location-placeholders"><?php _e('Location Related Placeholders','dbem'); ?></a></h3>
+			<a name="location-placeholders"></a>
+			<h3><?php _e('Location Related Placeholders','dbem'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'locations') ); ?>
-			<h3><a name="booking-placeholders"><?php _e('Booking Related Placeholders','dbem'); ?></a></h3>
+			<a name="booking-placeholders"></a>
+			<h3><?php _e('Booking Related Placeholders','dbem'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'bookings') ); ?>
 		</div>
 		<?php
+		
 		//Is this a previously imported installation? 
 		$old_table_name = $wpdb->prefix.'dbem_events';
 		if( $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") == $old_table_name ){

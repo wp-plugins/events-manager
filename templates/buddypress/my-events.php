@@ -34,7 +34,7 @@
 	<div class="wrap">
 		<?php echo $EM_Notices; ?>
 		<form id="posts-filter" action="<?php echo $url; ?>" method="get">
- 	 		<a href="<?php echo $url?>edit/" class="button add-new-h2"><?php _e('Add New','dbem'); ?></a>
+ 	 		<?php if(current_user_can('edit_events')): ?><a href="<?php echo $url?>edit/" class="button add-new-h2"><?php _e('Add New','dbem'); ?></a><?php endif; ?>
 			<div class="subsubsub">
 				<a href='<?php echo $url; ?>' <?php echo ( !isset($_GET['status']) ) ? 'class="current"':''; ?>><?php _e ( 'Upcoming', 'dbem' ); ?> <span class="count">(<?php echo $future_count; ?>)</span></a> &nbsp;|&nbsp; 
 				<?php if( !current_user_can('publish_events') ): ?>
