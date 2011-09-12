@@ -365,7 +365,7 @@ function em_add_options() {
 <h3>Upcoming Events</h3>
 <p>#_NEXTEVENTS</p>',
 		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
-		'dbem_location_event_list_item_format' => "<li>#_NAME - #j #M #Y - #H:#i</li>",
+		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
 		//Category Formatting
 		'dbem_category_page_title_format' => '#_CATEGORYNAME',
 		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<div><h3>Upcoming Events</h3>#_CATEGORYEVENTSNEXT',
@@ -374,6 +374,8 @@ function em_add_options() {
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
 		'dbem_categories_default_orderby' => 'name',
 		'dbem_categories_default_order' =>  'ASC',
+		'dbem_category_no_events_message' => __('<li>No events in this category</li>', 'dbem'),
+		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
 		//RSS Stuff
 		'dbem_rss_limit' => 10,
 		'dbem_rss_scope' => 'future',
@@ -382,12 +384,8 @@ function em_add_options() {
 		'dbem_rss_description_format' => "#j #M #y - #H:#i <br/>#_LOCATION <br/>#_LOCATIONADDRESS <br/>#_LOCATIONTOWN",
 		'dbem_rss_title_format' => "#_NAME",
 		//iCal Stuff
-		'dbem_ical_limit' => 10,
-		'dbem_ical_scope' => 'future',
-		'dbem_ical_main_title' => get_bloginfo('title')." - ".__('Events', 'dbem'),
-		'dbem_ical_main_description' => get_bloginfo('description'),
+		'dbem_ical_limit' => 0,
 		'dbem_ical_description_format' => "#_NAME - #_LOCATIONNAME - #j #M #y #H:#i",
-		'dbem_ical_title_format' => "#_NAME",
 		//Google Maps
 		'dbem_gmap_is_active'=> 1,
 		'dbem_location_baloon_format' =>  "<strong>#_LOCATIONNAME</strong><br/>#_LOCATIONADDRESS - #_LOCATIONTOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>",
@@ -466,6 +464,11 @@ function em_add_options() {
 		add_option($key, $value);
 	}
 	if( !get_option('dbem_version') ){ add_option('dbem_credits',1); }
+	if( get_option('dbem_version') < 4.16 ){
+		update_option('dbem_ical_limit',0); //fix, would rather do this than change the option name.
+		update_option('dbem_category_no_events_message',get_option('dbem_location_no_events_message'));
+		update_option('dbem_category_event_list_item_format',get_option('dbem_location_event_list_item_format'));
+	}
 }    
 
 function em_set_mass_caps( $roles, $caps ){

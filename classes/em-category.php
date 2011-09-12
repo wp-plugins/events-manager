@@ -208,10 +208,10 @@ class EM_Category extends EM_Object {
 					$events = EM_Events::get( array('category'=>$this->id, 'scope'=>$scope) );
 					if ( count($events) > 0 ){
 						foreach($events as $EM_Event){
-							$replace .= $EM_Event->output(get_option('dbem_location_event_list_item_format'));
+							$replace .= $EM_Event->output(get_option('dbem_category_event_list_item_format'));
 						}
 					} else {
-						$replace = get_option('dbem_location_no_events_message');
+						$replace = get_option('dbem_category_no_events_message');
 					}
 					break;
 				default:

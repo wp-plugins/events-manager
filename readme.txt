@@ -89,6 +89,15 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 
 == Changelog ==
 
+= 4.16 =
+* image thumbnails added
+* phone and further email booking problems fixed
+* added ical feed settings
+* added category events list formatting options (previously taken from location settings)
+* split up booking form template file into template parts
+* single ticket events with only one space (due to limits or availability) won't show selection box
+* added some widget filters for search arguments
+
 = 4.15 =
 * single events can now be converted to recurring
 * booking approval issue fixed

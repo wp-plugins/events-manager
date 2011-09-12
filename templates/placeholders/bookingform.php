@@ -1,11 +1,6 @@
 <?php  
 /* @var $EM_Event EM_Event */   
 global $EM_Notices;
-$booked_places_options = array();
-for ( $i = 1; $i <= 10; $i++ ) {
-	$booking_spaces = (!empty($_POST['booking_spaces']) && $_POST['booking_spaces'] == $i) ? 'selected="selected"':'';
-	array_push($booked_places_options, "<option value='$i' $booking_spaces>$i</option>");
-}
 $EM_Tickets = $EM_Event->get_bookings()->get_tickets();					
 ?>
 <div id="em-booking">
@@ -34,90 +29,26 @@ $EM_Tickets = $EM_Event->get_bookings()->get_tickets();
 				?>
 				<?php if( is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is_user_logged_in()) ): ?>
 					
-					<?php if( count($EM_Tickets->tickets) > 1 || get_option('dbem_bookings_tickets_single_form') ): ?>
-						<table class="em-tickets" cellspacing="0" cellpadding="0">
-							<tr>
-								<th class="em-bookings-ticket-table-type"><?php _e('Ticket Type','dbem') ?></th>
-								<?php if( !$EM_Event->is_free() ): ?>
-								<th class="em-bookings-ticket-table-price"><?php _e('Price','dbem') ?></th>
-								<?php endif; ?>
-								<th class="em-bookings-ticket-table-spaces"><?php _e('Spaces','dbem') ?></th>
-							</tr>
-							<?php foreach( $EM_Tickets->tickets as $EM_Ticket ): ?>
-								<?php if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') ): ?>
-								<tr class="em-ticket" id="em-ticket-<?php echo $EM_Ticket->id; ?>">
-									<td class="em-bookings-ticket-table-type"><?php echo $EM_Ticket->output_property('name'); ?><?php if(!empty($EM_Ticket->description)) :?><br><span class="ticket-desc"><?php echo $EM_Ticket->description; ?></span><?php endif; ?></td>
-									<?php if( !$EM_Event->is_free() ): ?>
-									<td class="em-bookings-ticket-table-price"><?php echo $EM_Ticket->get_price(true); ?></td>
-									<?php endif; ?>
-									<td class="em-bookings-ticket-table-spaces">
-										<?php 
-											$spaces_options = $EM_Ticket->get_spaces_options();
-											if( $spaces_options ){
-												echo $spaces_options;
-											}else{
-												echo "<strong>".__('N/A','dbem')."</strong>";
-											}
-										?>
-									</td>
-								</tr>
-								<?php do_action('em_booking_form_tickets_loop', $EM_Ticket); ?>
-								<?php endif; ?>
-							<?php endforeach; ?>
-						</table>		
-					<?php endif; ?>
+					<?php 
+						if( count($EM_Tickets->tickets) > 1 || get_option('dbem_bookings_tickets_single_form') ){ //show if more than 1 ticket, or if in forced ticket list view mode
+							em_locate_template('forms/bookingform/tickets-list.php',true, array('EM_Event'=>$EM_Event));
+						} 
+					?>
 					<?php do_action('em_booking_form_after_tickets'); ?>
 					<div class='em-booking-form-details'>
-						<?php $EM_Ticket = $EM_Tickets->get_first(); ?>
-						
-						<?php if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') ): ?>
-							<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo $EM_Ticket->description; ?></p><?php endif; ?>
-							<?php if( !$EM_Event->is_free() ): ?>
-								<p>
-									<label><?php _e('Price','dbem') ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong>
-								</p>
-							<?php endif; ?>						
-							<p>
-								<label for='em_tickets'><?php _e('Spaces', 'dbem') ?></label>
-								<?php 
-									$spaces_options = $EM_Ticket->get_spaces_options(false);
-									if( $spaces_options ){
-										echo $spaces_options;
-									}else{
-										echo "<strong>".__('N/A','dbem')."</strong>";
-									}
-								?>
-							</p>	
-						<?php endif; ?>
-						
-						<?php if( get_option('em_booking_form_custom') ) : ?>
-							<?php do_action('em_booking_form_custom'); ?>
-						<?php else: ?>
-							<?php //Here we have extra information required for the booking. ?>
-							<?php do_action('em_booking_form_before_user_details'); ?>
-							<?php if( !is_user_logged_in() && apply_filters('em_booking_form_show_register_form',true) ): ?>
-								<?php //User can book an event without registering, a username will be created for them based on their email and a random password will be created. ?>
-								<input type="hidden" name="register_user" value="1" />
-								<p>
-									<label for='user_name'><?php _e('Name','dbem') ?></label>
-									<input type="text" name="user_name" id="user_name" class="input" />
-								</p>
-								<p>
-									<label for='dbem_phone'><?php _e('Phone','dbem') ?></label>
-									<input type="text" name="dbem_phone" id="dbem_phone" class="input" />
-								</p>
-								<p>
-									<label for='user_email'><?php _e('E-mail','dbem') ?></label> 
-									<input type="text" name="user_email" id="user_email" class="input"  />
-								</p>
-								<?php do_action('register_form'); ?>					
-							<?php endif; ?>		
-							<p>
-								<label for='booking_comment'><?php _e('Comment', 'dbem') ?></label>
-								<textarea name='booking_comment'><?php echo !empty($_POST['booking_comment']) ? $_POST['booking_comment']:'' ?></textarea>
-							</p>
-							<?php do_action('em_booking_form_after_user_details'); ?>	
-						<?php endif; ?>				
+						<?php 
+							$EM_Ticket = $EM_Tickets->get_first();
+							if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') ){
+								em_locate_template('forms/bookingform/ticket-single.php',true, array('EM_Event'=>$EM_Event, 'EM_Ticket'=>$EM_Ticket));
+							} 
+						?>						
+						<?php 
+							if( get_option('em_booking_form_custom') ){ 
+								do_action('em_booking_form_custom'); 
+							}else{
+								em_locate_template('forms/bookingform/booking-fields.php',true, array('EM_Event'=>$EM_Event, 'EM_Ticket'=>$EM_Ticket));
+							}
+						?>
 						<div class="em-booking-buttons">
 							<?php echo apply_filters('em_booking_form_buttons', '<input type="submit" class="em-booking-submit" id="em-booking-submit" value="'.__('Send your booking', 'dbem').'" />', $EM_Event); ?>
 						 	<input type='hidden' name='action' value='booking_add'/>
@@ -129,43 +60,11 @@ $EM_Tickets = $EM_Event->get_bookings()->get_tickets();
 					<p class="em-booking-form-details"><?php _e('You must log in before you make a booking.','dbem'); ?></p>
 				<?php endif; ?>
 			</form>	
-			<?php if( !is_user_logged_in() && get_option('dbem_bookings_login_form') ): ?>
-				<div class="em-booking-login">
-	        		<form class="em-booking-login-form" action="<?php echo site_url('wp-login.php', 'login_post'); ?>" method="post">
-			            <p><?php _e('Log in if you already have an account with us.','dbem'); ?>
-			            <p>
-			            	<label><?php _e( 'Username','dbem' ) ?></label>
-	                        <input type="text" name="log" class="input" value="" />
-						</p>
-						<p>
-							<label><?php _e( 'Password','dbem' ) ?></label>
-			                <input type="password" name="pwd" class="input" value="" />
-			            </p>
-			            <?php do_action('login_form'); ?>
-	                    <input type="submit" name="wp-submit" id="em_wp-submit" value="<?php _e('Log In', 'dbem'); ?>" tabindex="100" />
-	                    <input name="rememberme" type="checkbox" id="em_rememberme" value="forever" /> <label><?php _e( 'Remember Me','dbem' ) ?></label>
-                        <input type="hidden" name="redirect_to" value="http://<?php echo $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI'] ?>#em-booking" />
-	                    <br />
-	                    <?php
-                            //Signup Links
-                            if ( get_option('users_can_register') ) {
-                                echo "<br />";  
-                                if ( function_exists('bp_get_signup_page') ) { //Buddypress
-                                	$register_link = bp_get_signup_page();
-                                }elseif ( file_exists( ABSPATH."/wp-signup.php" ) ) { //MU + WP3
-                                    $register_link = site_url('wp-signup.php', 'login');
-                                } else {
-                                    $register_link = site_url('wp-login.php?action=register', 'login');
-                                }
-                                ?>
-                                <a href="<?php echo $register_link ?>"><?php _e('Sign Up','dbem') ?></a>&nbsp;&nbsp;|&nbsp;&nbsp; 
-                                <?php
-                            }
-                        ?>	                    
-	                    <a href="<?php echo site_url('wp-login.php?action=lostpassword', 'login') ?>" title="<?php _e('Password Lost and Found', 'dbem') ?>"><?php _e('Lost your password?', 'dbem') ?></a>                        
-	               </form>
-				</div>
-			<?php endif; ?>
+			<?php 
+			if( !is_user_logged_in() && get_option('dbem_bookings_login_form') ){
+				em_locate_template('forms/bookingform/login.php',true, array('EM_Event'=>$EM_Event));
+			}
+			?>
 			<br class="clear" style="clear:left;" />
 		<?php elseif( count($EM_Tickets->tickets) == 0 ): ?>
 			<div><?php _e('No more tickets available at this time.','dbem'); ?></div>
