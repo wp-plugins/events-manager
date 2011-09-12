@@ -1,12 +1,12 @@
 <?php  
 /* @var $EM_Event EM_Event */   
 global $EM_Notices;
-	$booked_places_options = array();
-	for ( $i = 1; $i <= 10; $i++ ) {
-		$booking_spaces = (!empty($_POST['booking_spaces']) && $_POST['booking_spaces'] == $i) ? 'selected="selected"':'';
-		array_push($booked_places_options, "<option value='$i' $booking_spaces>$i</option>");
-	}
-	$EM_Tickets = $EM_Event->get_bookings()->get_tickets();					
+$booked_places_options = array();
+for ( $i = 1; $i <= 10; $i++ ) {
+	$booking_spaces = (!empty($_POST['booking_spaces']) && $_POST['booking_spaces'] == $i) ? 'selected="selected"':'';
+	array_push($booked_places_options, "<option value='$i' $booking_spaces>$i</option>");
+}
+$EM_Tickets = $EM_Event->get_bookings()->get_tickets();					
 ?>
 <div id="em-booking">
 	<a name="em-booking"></a>

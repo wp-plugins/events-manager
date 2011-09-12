@@ -2,7 +2,6 @@
 
 if( !class_exists('EM_Permalinks') ){
 	class EM_Permalinks {
-		
 		static $em_queryvars = array(
 			'event_id', 'event_slug',
 			'location_id', 'location_slug',
@@ -27,6 +26,9 @@ if( !class_exists('EM_Permalinks') ){
 			add_filter('em_event_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
 			add_filter('em_location_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
 			add_filter('em_category_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
+			if( !defined(EM_EVENT_SLUG) ){
+				define('EM_EVENT_SLUG','event');
+			}
 		}
 		
 		function flush(){
@@ -50,7 +52,7 @@ if( !class_exists('EM_Permalinks') ){
 							if( is_multisite() && get_site_option('dbem_ms_global_events') && get_site_option('dbem_ms_global_events_links') && !empty($object->blog_id) && is_main_site() && $object->blog_id != get_current_blog_id() ){
 								$EM_URI = get_blog_permalink($object->blog_id, get_blog_option($object->blog_id, 'dbem_events_page'));
 							}
-							$event_link = trailingslashit(trailingslashit($EM_URI).'event/'.$object->slug);
+							$event_link = trailingslashit(trailingslashit($EM_URI).EM_EVENT_SLUG.'/'.$object->slug);
 							if($result == '#_LINKEDNAME' || $result == '#_EVENTLINK'){
 								$replace = "<a href='{$event_link}' title='{$object->name}'>{$object->name}</a>";
 							}else{
@@ -101,7 +103,7 @@ if( !class_exists('EM_Permalinks') ){
 					} elseif ( !empty($_GET['event_id']) && is_numeric($_GET['event_id']) ) {
 						//single event page
 						$EM_Event = new EM_Event($_GET['event_id']);
-						wp_redirect( self::url('event', $EM_Event->slug), 301);
+						wp_redirect( self::url(EM_EVENT_SLUG, $EM_Event->slug), 301);
 						exit();
 					}			
 				}
@@ -124,12 +126,12 @@ if( !class_exists('EM_Permalinks') ){
 				$events_slug = preg_replace('/\/$/','',$events_slug);
 				$em_rules[$events_slug.'/('.self::$scopes.')$'] = 'index.php?pagename='.$events_slug.'&scope=$matches[1]'; //events with scope
 				$em_rules[$events_slug.'/(\d{4}-\d{2}-\d{2})$'] = 'index.php?pagename='.$events_slug.'&calendar_day=$matches[1]'; //event calendar date search
-				$em_rules[$events_slug.'/event/(\d*)$'] = 'index.php?pagename='.$events_slug.'&event_id=$matches[1]'; //single event page with id
+				$em_rules[$events_slug.'/'.EM_EVENT_SLUG.'/(\d*)$'] = 'index.php?pagename='.$events_slug.'&event_id=$matches[1]'; //single event page with id
 				$em_rules[$events_slug.'/my\-bookings$'] = 'index.php?pagename='.$events_slug.'&bookings_page=1'; //page for users to manage bookings
 				$em_rules[$events_slug.'/my\-bookings/(\d+)$'] = 'index.php?pagename='.$events_slug.'&booking_id=$matches[1]'; //page for users to manage bookings
 				$em_rules[$events_slug.'/bookings/(\d+)$'] = 'index.php?pagename='.$events_slug.'&event_id=$matches[1]&book=1'; //single event booking form with id
 				$em_rules[$events_slug.'/bookings/(.+)$'] = 'index.php?pagename='.$events_slug.'&event_slug=$matches[1]&book=1'; //single event booking form with slug
-				$em_rules[$events_slug.'/event/(.+)$'] = 'index.php?pagename='.$events_slug.'&event_slug=$matches[1]'; //single event page with slug
+				$em_rules[$events_slug.'/'.EM_EVENT_SLUG.'/(.+)$'] = 'index.php?pagename='.$events_slug.'&event_slug=$matches[1]'; //single event page with slug
 				$em_rules[$events_slug.'/locations$'] = 'index.php?pagename='.$events_slug.'&event_locations=1'; //category list with slug
 				$em_rules[$events_slug.'/location/(\d+)$'] = 'index.php?pagename='.$events_slug.'&location_id=$matches[1]'; //location page with id
 				$em_rules[$events_slug.'/location/(.+)$'] = 'index.php?pagename='.$events_slug.'&location_slug=$matches[1]'; //location page with slug
