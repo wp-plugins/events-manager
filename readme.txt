@@ -1,10 +1,10 @@
 === Events Manager ===  
 Contributors: nutsmuggler, netweblogic    
 Donate link: http://wp-events-plugin.com
-Tags: attendance, attendee, buddypress, calendar, registration, event, event calendar, event management, event registration, events, events calendar, gigs, payment, payments, paypal, registration, sports, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking
+Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports, 
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 4.15
+Stable tag: 4.16
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -97,6 +97,8 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * split up booking form template file into template parts
 * single ticket events with only one space (due to limits or availability) won't show selection box
 * added some widget filters for search arguments
+* booking notes bug in 4.15 fixed
+* event, location and category slugs can now be changed via the wp-config.php file
 
 = 4.15 =
 * single events can now be converted to recurring

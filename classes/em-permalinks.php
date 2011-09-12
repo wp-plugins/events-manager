@@ -26,9 +26,11 @@ if( !class_exists('EM_Permalinks') ){
 			add_filter('em_event_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
 			add_filter('em_location_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
 			add_filter('em_category_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
-			if( !defined(EM_EVENT_SLUG) ){
-				define('EM_EVENT_SLUG','event');
-			}
+			if( !defined(EM_EVENT_SLUG) ){ define('EM_EVENT_SLUG','event'); }
+			if( !defined(EM_LOCATION_SLUG) ){ define('EM_LOCATION_SLUG','location'); }
+			if( !defined(EM_LOCATIONS_SLUG) ){ define('EM_LOCATIONS_SLUG','locations'); }
+			if( !defined(EM_CATEGORY_SLUG) ){ define('EM_CATEGORY_SLUG','category'); }
+			if( !defined(EM_CATEGORIES_SLUG) ){ define('EM_CATEGORIES_SLUG','categories'); }
 		}
 		
 		function flush(){
@@ -64,14 +66,14 @@ if( !class_exists('EM_Permalinks') ){
 					case '#_LOCATIONLINK':
 					case '#_LOCATIONPAGEURL': //Depreciated
 						if( is_object($object) && get_class($object)=='EM_Location' ){
-							$link = trailingslashit(trailingslashit(EM_URI).'location/'.$object->slug);
+							$link = trailingslashit(trailingslashit(EM_URI).EM_LOCATION_SLUG.'/'.$object->slug);
 							$replace = ($result == '#_LOCATIONURL' || $result == '#_LOCATIONPAGEURL') ? $link : '<a href="'.$link.'">'.$object->name.'</a>';
 						}
 						break;
 					case '#_CATEGORYLINK':
 					case '#_CATEGORYURL':
 						if( is_object($object) && get_class($object)=='EM_Category' ){
-							$link = trailingslashit(trailingslashit(EM_URI).'category/'.$object->slug);
+							$link = trailingslashit(trailingslashit(EM_URI).EM_CATEGORY_SLUG.'/'.$object->slug);
 							$replace = ($result == '#_CATEGORYURL') ? $link : '<a href="'.$link.'">'.$object->name.'</a>';
 						}
 						break;
@@ -132,11 +134,11 @@ if( !class_exists('EM_Permalinks') ){
 				$em_rules[$events_slug.'/bookings/(\d+)$'] = 'index.php?pagename='.$events_slug.'&event_id=$matches[1]&book=1'; //single event booking form with id
 				$em_rules[$events_slug.'/bookings/(.+)$'] = 'index.php?pagename='.$events_slug.'&event_slug=$matches[1]&book=1'; //single event booking form with slug
 				$em_rules[$events_slug.'/'.EM_EVENT_SLUG.'/(.+)$'] = 'index.php?pagename='.$events_slug.'&event_slug=$matches[1]'; //single event page with slug
-				$em_rules[$events_slug.'/locations$'] = 'index.php?pagename='.$events_slug.'&event_locations=1'; //category list with slug
-				$em_rules[$events_slug.'/location/(\d+)$'] = 'index.php?pagename='.$events_slug.'&location_id=$matches[1]'; //location page with id
-				$em_rules[$events_slug.'/location/(.+)$'] = 'index.php?pagename='.$events_slug.'&location_slug=$matches[1]'; //location page with slug
-				$em_rules[$events_slug.'/categories$'] = 'index.php?pagename='.$events_slug.'&event_categories=1'; //category list with slug
-				$em_rules[$events_slug.'/category/(.+)$'] = 'index.php?pagename='.$events_slug.'&category_slug=$matches[1]'; //category page with slug
+				$em_rules[$events_slug.'/'.EM_LOCATIONS_SLUG.'$'] = 'index.php?pagename='.$events_slug.'&event_locations=1'; //category list with slug
+				$em_rules[$events_slug.'/'.EM_LOCATION_SLUG.'/(\d+)$'] = 'index.php?pagename='.$events_slug.'&location_id=$matches[1]'; //location page with id
+				$em_rules[$events_slug.'/'.EM_LOCATION_SLUG.'/(.+)$'] = 'index.php?pagename='.$events_slug.'&location_slug=$matches[1]'; //location page with slug
+				$em_rules[$events_slug.'/'.EM_CATEGORIES_SLUG.'$'] = 'index.php?pagename='.$events_slug.'&event_categories=1'; //category list with slug
+				$em_rules[$events_slug.'/'.EM_CATEGORY_SLUG.'/(.+)$'] = 'index.php?pagename='.$events_slug.'&category_slug=$matches[1]'; //category page with slug
 				$em_rules[$events_slug.'/rss$'] = 'index.php?pagename='.$events_slug.'&rss=1'; //rss page
 				$em_rules[$events_slug.'/ical$'] = 'index.php?pagename='.$events_slug.'&ical=1'; //ical page
 				$em_rules[$events_slug.'/payments/(.+)$'] = 'index.php?pagename='.$events_slug.'&payment_gateway=$matches[1]'; //single event booking form with slug

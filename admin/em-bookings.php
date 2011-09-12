@@ -309,7 +309,7 @@ function em_bookings_single(){
 						<div class="inside">
 							<p><?php _e('You can add private notes below for internal reference that only event managers will see.','dbem'); ?></p>
 							<?php foreach( $EM_Booking->notes as $note ): 
-								$user = get_userdata($note['author']);
+								$user = new EM_Person($note['author']);
 							?>
 							<div>
 								<?php echo date(get_option('date_format'), $note['timestamp']) .' - '. $user->get_name(); ?> <?php _e('wrote','dbem'); ?>: 
