@@ -36,18 +36,6 @@ function em_content($page_content) {
 			if ( !empty($_REQUEST['calendar_day']) ) {
 				//Events for a specific day
 				em_locate_template('templates/calendar-day.php',true, array('args'=>$args));
-			} elseif ( is_object($EM_Location) ) {
-				//Just a single location
-				em_locate_template('templates/location-single.php',true);
-			}elseif ( is_object($EM_Category) ) {
-				//Just a single category
-				em_locate_template('templates/category-single.php',true);
-			} elseif ( $wp_query->get('bookings_page') ) {
-				//Bookings Page
-				em_locate_template('templates/my-bookings.php',true);
-			} elseif ( is_object($EM_Event) ) {
-				// single event page
-				em_locate_template('templates/event-single.php',true, array('args'=>$args));	
 			}elseif ( !empty($_REQUEST['event_locations']) ){
 				$args['orderby'] = get_option('dbem_locations_default_orderby');
 				$args['order'] = get_option('dbem_locations_default_order');
@@ -56,7 +44,19 @@ function em_content($page_content) {
 				$args['orderby'] = get_option('dbem_categories_default_orderby');
 				$args['order'] = get_option('dbem_categories_default_order');
 				em_locate_template('templates/categories-list.php',true, array('args'=>$args));
-			} else {
+			}elseif ( is_object($EM_Location) ) {
+				//Just a single location
+				em_locate_template('templates/location-single.php',true);
+			}elseif ( is_object($EM_Category) ) {
+				//Just a single category
+				em_locate_template('templates/category-single.php',true);
+			}elseif ( $wp_query->get('bookings_page') ) {
+				//Bookings Page
+				em_locate_template('templates/my-bookings.php',true);
+			}elseif ( is_object($EM_Event) ) {
+				// single event page
+				em_locate_template('templates/event-single.php',true, array('args'=>$args));	
+			}else {
 				// Multiple events page
 				$args['orderby'] = get_option('dbem_events_default_orderby');
 				$args['order'] = get_option('dbem_events_default_order');
@@ -120,6 +120,10 @@ function em_content_page_title($content) {
 					$event = array_shift($events);
 					$content =  $event->output( get_option('dbem_event_page_title_format') );
 				}
+			}elseif ( !empty($_REQUEST['event_categories']) ){
+				$content =  get_option ( 'dbem_categories_page_title' );
+			}elseif ( !empty($_REQUEST['event_locations']) ){
+				$content =  get_option ( 'dbem_locations_page_title' );
 			}elseif ( is_object($EM_Location) ) {
 				$content = $EM_Location->output(get_option( 'dbem_location_page_title_format' ));
 			}elseif ( is_object($EM_Category) ) {
@@ -138,10 +142,6 @@ function em_content_page_title($content) {
 				}else{
 					$content = get_option('dbem_events_page_title');
 				}
-			} elseif ( !empty($_REQUEST['event_categories']) ){
-				$content =  get_option ( 'dbem_categories_page_title' );
-			}elseif ( !empty($_REQUEST['event_locations']) ){
-				$content =  get_option ( 'dbem_locations_page_title' );
 			}else{
 				// Multiple events page
 				$content =  get_option ( 'dbem_events_page_title' );
@@ -199,6 +199,10 @@ function em_get_page_type(){
 	if ( get_option('dbem_events_page') != 0 ) {	
 		if ( !empty( $_REQUEST['calendar_day'] ) ) {
 			return "calendar_day";
+		}elseif ( !empty($_REQUEST['event_categories']) ){
+			return "categories";
+		}elseif ( !empty($_REQUEST['event_locations']) ){
+			return "locations";
 		}elseif ( is_object($EM_Location) ) {
 			return "location";
 		}elseif ( is_object($EM_Category) ) {
@@ -211,10 +215,6 @@ function em_get_page_type(){
 		}elseif ( is_object($EM_Event) ) {
 			// single event page
 			return "event";
-		} elseif ( !empty($_REQUEST['event_categories']) ){
-			return "categories";
-		}elseif ( !empty($_REQUEST['event_locations']) ){
-			return "locations";
 		}else{
 			return "events";
 		}
