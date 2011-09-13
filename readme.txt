@@ -98,6 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * single ticket events with only one space (due to limits or availability) won't show selection box
 * added some widget filters for search arguments
 * booking notes bug in 4.15 fixed
+* calendar widget fix for eventful today links not showing
 * event, location and category slugs can now be changed via the wp-config.php file
 
 = 4.15 =
