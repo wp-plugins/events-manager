@@ -1063,9 +1063,9 @@ class EM_Event extends EM_Object{
 		 		$this->add_error('You have not defined a date range long enough to create a recurrence.','dbem');
 		 		$result = false;
 		 	}
-		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this);
+		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this, $event_ids);
 		}
-		return apply_filters('em_event_save_events', false, $this);;
+		return apply_filters('em_event_save_events', false, $this, $event_ids);
 	}
 	
 	/**
