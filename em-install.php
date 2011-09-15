@@ -424,6 +424,18 @@ function em_add_options() {
 		'dbem_bookings_approval_reserved' => 0, //overbooking before approval?
 		'dbem_bookings_login_form' => 1, //show login form on booking area
 		'dbem_bookings_approval_overbooking' => 0, //overbooking possible when approving?
+		'dbem_bookings_double'=>0,//double bookings or more, users can't double book by default
+			//messages
+			'dbem_booking_feedback_pending' =>__('Booking successful, pending confirmation (you will also receive an email once confirmed).', 'dbem'),
+			'dbem_booking_feedback' => __('Booking successful.', 'dbem'),
+			'dbem_booking_feedback_full' => __('Booking cannot be made, not enough spaces available!', 'dbem'),
+			'dbem_booking_feedback_log_in' => __('You must log in or register to make a booking.','dbem'),
+			'dbem_booking_feedback_nomail' => __('However, there were some problems whilst sending confirmation emails to you and/or the event contact person. You may want to contact them directly and letting them know of this error.', 'dbem'),
+			'dbem_booking_feedback_error' => __('Booking could not be created','dbem').':',
+			'dbem_booking_feedback_email_exists' => __('This email already exists in our system, please log in to register to proceed with your booking.','dbem'),
+			'dbem_booking_feedback_new_user' => __('A new user account has been created for you. Please check your email for access details.','dbem'),
+			'dbem_booking_feedback_reg_error' => __('There was a problem creating a user account, please contact a website administrator.','dbem'),
+			'dbem_booking_feedback_already_booked' => __('You already have booked a seat at this event.','dbem'),
 			//Emails
 			'dbem_default_contact_person' => 1, //admin
 			'dbem_bookings_notify_admin' => 0,
@@ -440,7 +452,7 @@ function em_add_options() {
 			'dbem_bookings_email_confirmed_body' => str_replace("<br/>", "\n\r", $respondent_email_body_localizable),
 			'dbem_bookings_email_cancelled_subject' => __('Booking Cancelled','dbem'),
 			'dbem_bookings_email_cancelled_body' => str_replace("<br/>", "\n\r", $respondent_email_cancelled_body_localizable),
-			//Bookings Form - beta
+			//Bookings Form - beta - not working at all yet
 			'dbem_bookings_page' => '<p>Date/Time - #j #M #Y #_12HSTARTTIME #@_{ \u\n\t\i\l j M Y}<br />Where - #_LOCATIONLINK</p>#_EXCERPT #_BOOKINGFORM<p>'.__('Powered by','dbem').'<a href="http://wp-events-plugin.com">events manager</a></p>',
 			'dbem_bookings_page_title' => __('Bookings - #_NAME','dbem'),
 			//Ticket Specific Options

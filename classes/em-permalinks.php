@@ -26,11 +26,11 @@ if( !class_exists('EM_Permalinks') ){
 			add_filter('em_event_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
 			add_filter('em_location_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
 			add_filter('em_category_output_placeholder',array('EM_Permalinks','rewrite_urls'),1,3);
-			if( !defined(EM_EVENT_SLUG) ){ define('EM_EVENT_SLUG','event'); }
-			if( !defined(EM_LOCATION_SLUG) ){ define('EM_LOCATION_SLUG','location'); }
-			if( !defined(EM_LOCATIONS_SLUG) ){ define('EM_LOCATIONS_SLUG','locations'); }
-			if( !defined(EM_CATEGORY_SLUG) ){ define('EM_CATEGORY_SLUG','category'); }
-			if( !defined(EM_CATEGORIES_SLUG) ){ define('EM_CATEGORIES_SLUG','categories'); }
+			if( !defined('EM_EVENT_SLUG') ){ define('EM_EVENT_SLUG','event'); }
+			if( !defined('EM_LOCATION_SLUG') ){ define('EM_LOCATION_SLUG','location'); }
+			if( !defined('EM_LOCATIONS_SLUG') ){ define('EM_LOCATIONS_SLUG','locations'); }
+			if( !defined('EM_CATEGORY_SLUG') ){ define('EM_CATEGORY_SLUG','category'); }
+			if( !defined('EM_CATEGORIES_SLUG') ){ define('EM_CATEGORIES_SLUG','categories'); }
 		}
 		
 		function flush(){
