@@ -238,7 +238,7 @@ class EM_Booking extends EM_Object{
 		);
 		//give some errors in step 1
 		if( $this->spaces == 0 ){
-			$this->add_error(__('You must request at least one space to book an event.','dbem'));
+			$this->add_error(get_option('dbem_booking_feedback_min_space'));
 		}
 		//step 2, tickets bookings info
 		if( count($this->get_tickets_bookings()) > 0 ){
