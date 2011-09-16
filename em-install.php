@@ -48,6 +48,38 @@ function em_install() {
 	}
 }
 
+/**
+ * Magic function that takes a table name and cleans all non-unique keys not present in the $clean_keys array. if no array is supplied, all but the primary key is removed.
+ * @param string $table_name
+ * @param array $clean_keys
+ */
+function em_sort_out_table_nu_keys($table_name, $clean_keys = array()){
+	global $wpdb;
+	//sort out the keys
+	$new_keys = $clean_keys;
+	$table_key_changes = array();
+	$table_keys = $wpdb->get_results("SHOW KEYS FROM $table_name WHERE Key_name != 'PRIMARY'", ARRAY_A);
+	foreach($table_keys as $table_key_row){
+		if( !in_array($table_key_row['Key_name'], $clean_keys) ){
+			$table_key_changes[] = "ALTER TABLE $table_name DROP INDEX ".$table_key_row['Key_name'];
+		}elseif( in_array($table_key_row['Key_name'], $clean_keys) ){
+			foreach($clean_keys as $key => $clean_key){
+				if($table_key_row['Key_name'] == $clean_key){
+					unset($new_keys[$key]);
+				}
+			}
+		}
+	}
+	//delete duplicates
+	foreach($table_key_changes as $sql){
+		$wpdb->query($sql);
+	}
+	//add new keys
+	foreach($new_keys as $key){
+		$wpdb->query("ALTER TABLE $table_name ADD INDEX ($key)");
+	}
+}
+
 function em_create_events_table() {
 	global  $wpdb, $user_level, $user_ID;
 	get_currentuserinfo();
@@ -80,11 +112,7 @@ function em_create_events_table() {
 		recurrence_byweekno int(4) NULL DEFAULT NULL,	
 		blog_id bigint(20) unsigned NULL DEFAULT NULL,
 		group_id bigint(20) unsigned NULL DEFAULT NULL,
-		PRIMARY KEY  (event_id),
-		KEY (event_status),
-		KEY (blog_id),
-		KEY (event_slug),
-		KEY (group_id)
+		PRIMARY KEY  (event_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	$old_table_name = EM_OLD_EVENTS_TABLE; 
@@ -106,6 +134,7 @@ function em_create_events_table() {
 		}
 		dbDelta($sql);
 	}
+	em_sort_out_table_nu_keys($table_name, array('event_status','blog_id','event_slug','group_id'));
 }
 
 function em_create_events_meta_table(){
@@ -119,8 +148,6 @@ function em_create_events_meta_table(){
 		meta_key varchar(255) DEFAULT NULL,
 		meta_value longtext,
 		meta_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		KEY object_id (object_id),
-		KEY meta_key (meta_key),
 		PRIMARY KEY  (meta_id)
 		) DEFAULT CHARSET=utf8 ";
 		
@@ -128,6 +155,7 @@ function em_create_events_meta_table(){
 	
 	$old_table_name = EM_OLD_LOCATIONS_TABLE;     
 	dbDelta($sql);	
+	em_sort_out_table_nu_keys($table_name, array('object_id','meta_key'));
 }
 
 function em_create_locations_table() {
@@ -150,11 +178,7 @@ function em_create_locations_table() {
 		location_latitude float DEFAULT NULL,
 		location_longitude float DEFAULT NULL,
 		location_description text DEFAULT NULL,
-		PRIMARY KEY  (location_id),
-		KEY (location_state),
-		KEY (location_region),
-		KEY (location_country),
-		KEY (location_slug)
+		PRIMARY KEY  (location_id)
 		) DEFAULT CHARSET=utf8 ;";
 		
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -172,6 +196,7 @@ function em_create_locations_table() {
 		}
 		dbDelta($sql);
 	}
+	em_sort_out_table_nu_keys($table_name, array('location_state','location_region','location_country','location_slug'));
 }
 
 function em_create_bookings_table() {
@@ -197,6 +222,7 @@ function em_create_bookings_table() {
 		$wpdb->query("ALTER TABLE $table_name CHANGE  `booking_seats`  `booking_spaces` INT( 5 ) NULL DEFAULT NULL");
 	}
 	dbDelta($sql);
+	em_sort_out_table_nu_keys($table_name, array('event_id'));
 } 
 
 //Add the categories table
@@ -212,8 +238,7 @@ function em_create_categories_table() {
 		category_owner bigint(20) unsigned DEFAULT 0 NOT NULL,
 		category_name tinytext NOT NULL,
 		category_description text DEFAULT NULL,
-		PRIMARY KEY  (category_id),
-		KEY (category_slug)
+		PRIMARY KEY  (category_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
@@ -225,6 +250,7 @@ function em_create_categories_table() {
 	}else{
 		dbDelta($sql);
 	}
+	em_sort_out_table_nu_keys($table_name, array('category_slug'));
 }
 
 
@@ -246,12 +272,12 @@ function em_create_tickets_table() {
 		ticket_min INT( 10 ) NULL ,
 		ticket_max INT( 10 ) NULL ,
 		ticket_spaces INT NULL ,
-		PRIMARY KEY  (ticket_id),
-		KEY (event_id)
+		PRIMARY KEY  (ticket_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
+	em_sort_out_table_nu_keys($table_name, array('event_id'));
 }
 
 //Add the categories table
@@ -266,13 +292,12 @@ function em_create_tickets_bookings_table() {
 		  ticket_id bigint(20) unsigned NOT NULL,
 		  ticket_booking_spaces int(6) NOT NULL,
 		  ticket_booking_price decimal(10,2) NOT NULL,
-		  PRIMARY KEY  (ticket_booking_id),
-		  KEY (booking_id),
-		  KEY (ticket_id)
+		  PRIMARY KEY  (ticket_booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
+	em_sort_out_table_nu_keys($table_name, array('booking_id','ticket_id'));
 }
 
 function em_add_options() {
