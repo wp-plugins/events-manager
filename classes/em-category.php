@@ -181,13 +181,13 @@ class EM_Category extends EM_Object {
 		        			$replace =  $this->image_url;
 						}else{
 							if( empty($placeholders[3][$key]) ){
-								$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+								$replace = "<img src='".esc_url($this->image_url)."' alt='".esc_attr($this->name)."'/>";
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
 								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
-									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".$this->name."'/>";
+									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".esc_attr($this->name)."'/>";
 								}else{
-									$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+									$replace = "<img src='".esc_url($this->image_url)."' alt='".esc_attr($this->name)."'/>";
 								}
 							}
 						}
@@ -196,14 +196,22 @@ class EM_Category extends EM_Object {
 				case '#_CATEGORYLINK':
 				case '#_CATEGORYURL':
 					$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
-					$link = EM_URI.$joiner."category_id=".$this->id;
-					$replace = ($result == '#_CATEGORYURL') ? $link : '<a href="'.$link.'">'.$this->name.'</a>';
+					$link = esc_url(EM_URI.$joiner."category_id=".$this->id);
+					$replace = ($result == '#_CATEGORYURL') ? $link : '<a href="'.$link.'">'.esc_html($this->name).'</a>';
 					break;
-				case '#_CATEGORYEVENTSPAST':
-				case '#_CATEGORYEVENTSNEXT':
-				case '#_CATEGORYEVENTSALL':
-					if ($result == '#_CATEGORYEVENTSPAST'){ $scope = 'past'; }
-					elseif ( $result == '#_CATEGORYEVENTSNEXT' ){ $scope = 'future'; }
+				case '#_CATEGORYEVENTSPAST': //depreciated, erroneous documentation, left for compatability
+				case '#_CATEGORYEVENTSNEXT': //depreciated, erroneous documentation, left for compatability
+				case '#_CATEGORYEVENTSALL': //depreciated, erroneous documentation, left for compatability
+				case '#_CATEGORYPASTEVENTS':
+				case '#_CATEGORYNEXTEVENTS':
+				case '#_CATEGORYALLEVENTS':
+					//convert depreciated placeholders for compatability
+					$result = ($result == '#_CATEGORYEVENTSPAST') ? '#_CATEGORYPASTEVENTS':$result; 
+					$result = ($result == '#_CATEGORYEVENTSNEXT') ? '#_CATEGORYNEXTEVENTS':$result;
+					$result = ($result == '#_CATEGORYEVENTSALL') ? '#_CATEGORYALLEVENTS':$result;
+					//forget it ever happened? :/
+					if ($result == '#_CATEGORYPASTEVENTS'){ $scope = 'past'; }
+					elseif ( $result == '#_CATEGORYNEXTEVENTS' ){ $scope = 'future'; }
 					else{ $scope = 'all'; }
 					$events = EM_Events::get( array('category'=>$this->id, 'scope'=>$scope) );
 					if ( count($events) > 0 ){

@@ -755,13 +755,13 @@ class EM_Event extends EM_Object{
 		        			$replace =  $this->image_url;
 						}else{
 							if( empty($placeholders[3][$key]) ){
-								$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+								$replace = "<img src='".$this->image_url."' alt='".esc_attr($this->name)."'/>";
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
 								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
-									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".$this->name."'/>";
+									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".esc_attr($this->name)."'/>";
 								}else{
-									$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+									$replace = "<img src='".$this->image_url."' alt='".esc_attr($this->name)."'/>";
 								}
 							}
 						}
@@ -789,9 +789,9 @@ class EM_Event extends EM_Object{
 						$EM_URI = get_blog_permalink($this->blog_id, get_blog_option($this->blog_id, 'dbem_events_page'));
 					}
 					$joiner = (stristr($EM_URI, "?")) ? "&amp;" : "?";
-					$event_link = $EM_URI.$joiner."event_id=".$this->id;
+					$event_link = esc_url($EM_URI.$joiner."event_id=".$this->id);
 					if($result == '#_LINKEDNAME' || $result == '#_EVENTLINK'){
-						$replace = "<a href='{$event_link}' title='{$this->name}'>{$this->name}</a>";
+						$replace = '<a href="'.$event_link.'" title="'.esc_attr($this->name).'">'.esc_attr($this->name).'</a>';
 					}else{
 						$replace = $event_link;	
 					}
@@ -802,10 +802,10 @@ class EM_Event extends EM_Object{
 						if( is_multisite() && get_site_option('dbem_ms_global_events') && get_site_option('dbem_ms_global_events_links') && !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
 							$replace = get_site_url($this->blog_id, "/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}");
 						}else{
-							$replace = get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}";
+							$replace = esc_url(get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}");
 						}
 						if( $result == '#_EDITEVENTLINK'){
-							$replace = "<a href='{$replace}'>".__('Edit', 'dbem').' '.__('Event', 'dbem')."</a>";
+							$replace = '<a href="'.$replace.'">'.esc_html(__('Edit', 'dbem').' '.__('Event', 'dbem')).'</a>';
 						}
 					}	 
 					break;
@@ -855,9 +855,9 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_BOOKINGSURL':
 				case '#_BOOKINGSLINK':
-					$bookings_link = get_bloginfo ( 'wpurl' )."/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=".$this->id;
+					$bookings_link = esc_url(get_bloginfo ( 'wpurl' )."/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=".$this->id);
 					if($result == '#_BOOKINGSLINK'){
-						$replace = "<a href='{$bookings_link}' title='{$this->name}'>{$this->name}</a>";
+						$replace = '<a href="'.$bookings_link.'" title="'.esc_attr($bookings_link).'">'.esc_html($this->name).'</a>';
 					}else{
 						$replace = $bookings_link;	
 					}
@@ -888,7 +888,7 @@ class EM_Event extends EM_Object{
 					if( function_exists('bp_core_get_user_domain') ){
 						$replace = bp_core_get_user_domain($this->contact->ID);
 						if( $result == '#_CONTACTPROFILELINK' ){
-							$replace = '<a href="'.$replace.'">'.__('Profile', 'dbem').'</a>';
+							$replace = '<a href="'.esc_url($replace).'">'.__('Profile', 'dbem').'</a>';
 						}
 					}
 					break;
@@ -897,7 +897,7 @@ class EM_Event extends EM_Object{
 					if( function_exists('bp_core_get_user_domain') ){
 						$replace = bp_core_get_user_domain($this->contact->ID);
 						if( $result == '#_CONTACTPROFILELINK' ){
-							$replace = '<a href="'.$replace.'">'.__('Profile', 'dbem').'</a>';
+							$replace = '<a href="'.esc_url($replace).'">'.__('Profile', 'dbem').'</a>';
 						}
 					}
 					break;
@@ -1088,7 +1088,7 @@ class EM_Event extends EM_Object{
 			}
 			$result = EM_Events::delete( $event_ids );
 		}
-		return apply_filters('delete_events', $result, $this);
+		return apply_filters('delete_events', $result, $this, $event_ids);
 	}
 	
 	/**

@@ -483,6 +483,8 @@ function em_admin_event_page() {
 								<?php endif; ?>
 								<br /><br />
 								<label for='event_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='event-image' name='event_image' id='event_image' type='file' size='40' />
+								<br />
+								<label for='event_image_delete'><?php _e('Delete Image?', 'dbem') ?></label> <input id='event-image-delete' name='event_image_delete' id='event_image_delete' type='checkbox' value='1' />
 						</div>
 					</div>
 					
@@ -631,7 +633,6 @@ function em_admin_event_page() {
 														<td>
 															<?php if( count($attributes['values'][$name]) > 0 ): ?>
 															<select name="em_attributes[<?php echo $name ?>]">
-																<option><?php echo __('No Value','dbem'); ?></option>
 																<?php foreach($attributes['values'][$name] as $attribute_val): ?>
 																	<?php if( array_key_exists($name, $EM_Event->attributes) && $EM_Event->attributes[$name]==$attribute_val ): ?>
 																		<option selected="selected"><?php echo $attribute_val; ?></option>

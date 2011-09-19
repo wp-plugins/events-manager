@@ -393,7 +393,7 @@ function em_add_options() {
 		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
 		//Category Formatting
 		'dbem_category_page_title_format' => '#_CATEGORYNAME',
-		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<div><h3>Upcoming Events</h3>#_CATEGORYEVENTSNEXT',
+		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<div><h3>Upcoming Events</h3>#_CATEGORYNEXTEVENTS',
 		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
 		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),

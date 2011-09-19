@@ -259,7 +259,6 @@
 							<label for="em_attributes[<?php echo $name ?>]"><?php echo $name ?></label>
 							<?php if( count($attributes['values'][$name]) > 0 ): ?>
 							<select name="em_attributes[<?php echo $name ?>]">
-								<option><?php echo __('No Value','dbem'); ?></option>
 								<?php foreach($attributes['values'][$name] as $attribute_val): ?>
 									<?php if( array_key_exists($name, $EM_Event->attributes) && $EM_Event->attributes[$name]==$attribute_val ): ?>
 										<option selected="selected"><?php echo $attribute_val; ?></option>

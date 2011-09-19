@@ -15,7 +15,17 @@ function em_docs_init(){
 					'search' => array( 'default'=> __('Do a search for this string within event name, details and location address.', 'dbem') ),	
 					'limit' => array( 'default'=> __('See the events lists limit option on the settings page.', 'dbem') ),					
 					'orderby' => array( 'desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name").', 'dbem'), 'default'=> __('See the event lists ordering option on the settings page.', 'dbem'), 'args'=>'name, start_date, start_time, end_date, end_time'),
-					'order' => array( 'default'=> __('See the event lists ordering option on the settings page.', 'dbem') )
+					'order' => array( 'default'=> __('See the event lists ordering option on the settings page.', 'dbem') ),
+					'bookings' => array( 'default'=> __('Include only events with bookings enabled.', 'dbem') ),
+					'status' => array( 'default' => __('Limit search to events with a spefic status (1 is active, 0 is pending approval)', 'dbem')),
+					'blog' => array( 'default' => __('Limit search to events created in a specific blog (MultiSite only)', 'dbem')),
+					'town' => array( 'desc'=> __('Search for events in this town (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'state' => array( 'desc'=> __('Search for events in this state (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'region' => array( 'desc'=> __('Search for events in this region (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'country' => array( 'desc'=> __('Search for events in this country (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'postcode' => array( 'desc'=> __('Search for events in this postcode (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'format_header' => array( 'default' => __('When displaying event lists, you can supply specific HTML to replace the default header from the settings page.', 'dbem')),
+					'format_footer' => array( 'default' => __('When displaying event lists, you can supply specific HTML to replace the default footer from the settings page.', 'dbem')),
 				),
 				'locations' => array(
 					'eventful' => array( 'desc'=> __('If set to 1 will only show locations that have at least one event occurring during the scope.', 'dbem'), 'default' => 0),
@@ -50,7 +60,8 @@ function em_docs_init(){
 					'month' => array( 'desc'=> __('If set to a month (1 to 12) only events that start or end during this month/year will be retured. Must be used in conjunction with year and does not work as intended if used with scope.', 'dbem'), 'default'=>''),
 					'year' => array( 'desc'=> __('If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Does not work as intended if used with scope.', 'dbem'), 'default'=>''),
 					'array' => array( 'desc'=> __('If you supply this as an argument, the returned data will be in an array, no objects (only useful wen using PHP, not shortcodes)', 'dbem'), 'default'=>0),
-					'pagination' => array('desc'=> __('When using a function or shortcode that outputs items (e.g. [events_list] for events, [locations_list] for locations), if the number of items supercede the limit of items to show, setting this to 1 will show page links under the list.', 'dbem'), 'default'=>0)
+					'pagination' => array('desc'=> __('When using a function or shortcode that outputs items (e.g. [events_list] for events, [locations_list] for locations), if the number of items supercede the limit of items to show, setting this to 1 will show page links under the list.', 'dbem'), 'default'=>0),
+					'owner' => array('desc'=> __('Limits returned results to a specific owner, identified by their usaer id (e.g. list events or locations owned by user)', 'dbem'), 'default'=>0)
 				)
 			),
 			'placeholders' => array(

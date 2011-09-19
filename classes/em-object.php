@@ -38,7 +38,8 @@ class EM_Object {
 			'pagination'=>false,
 			'array'=>false,
 			'owner'=>false,
-			'rsvp'=>false,
+			'rsvp'=>false, //depreciated for bookings
+			'bookings'=>false,
 			'search'=>false
 		);
 		//Return default if nothing passed
@@ -143,7 +144,8 @@ class EM_Object {
 		$recurrence = $args['recurrence'];
 		$category = $args['category'];
 		$location = $args['location'];
-		$rsvp = $args['rsvp'];
+		$bookings = $args['rsvp'];
+		$bookings = !empty($args['bookings']) ? 1:$bookings;
 		$owner = $args['owner'];
 		$event = $args['event'];
 		$month = $args['month'];
@@ -304,8 +306,8 @@ class EM_Object {
 		}
 	
 		//If we want rsvped items, we usually check the event
-		if( $rsvp == 1 ){
-			$conditions['rsvp'] = 'event_rsvp=1';
+		if( $bookings == 1 ){
+			$conditions['bookings'] = 'event_rsvp=1';
 		}
 		//Default ownership belongs to an event, child objects can just overwrite this if needed.
 		if( is_numeric($owner) ){
@@ -707,6 +709,7 @@ class EM_Object {
 				foreach($this->mime_types as $mime_type) { 
 					if (file_exists($file_name.".".$mime_type)){
 				  		$result = unlink($file_name.".".$mime_type);
+				  		$this->image_url = '';
 					}
 				}
 			}
@@ -738,6 +741,8 @@ class EM_Object {
 						$object->feedback_message .= '<p>'.implode('<br />',$object->errors).'</p>';
 					}
 				}
+			}elseif( !empty($_REQUEST[$type.'_image_delete']) ){
+				$object->image_delete();
 			}
 		}
 		return apply_filters('em_object_image_upload', $result, $object);

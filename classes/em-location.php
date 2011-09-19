@@ -300,7 +300,7 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONMAP':
 					ob_start();
 					$template = em_locate_template('placeholders/locationmap.php', true, array('EM_Location'=>$this));
-					$replace = ob_get_clean();					
+					$replace = ob_get_clean();			
 					break;
 				case '#_DESCRIPTION':  //Depreciated
 				case '#_EXCERPT': //Depreciated
@@ -319,13 +319,13 @@ class EM_Location extends EM_Object {
 		        			$replace =  $this->image_url;
 						}else{
 							if( empty($placeholders[3][$key]) ){
-								$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+								$replace = "<img src='".esc_url($this->image_url)."' alt='".esc_attr($this->name)."'/>";
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
 								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
-									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".$this->name."'/>";
+									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".esc_attr($this->name)."'/>";
 								}else{
-									$replace = "<img src='".$this->image_url."' alt='".$this->name."'/>";
+									$replace = "<img src='".esc_url($this->image_url)."' alt='".esc_attr($this->name)."'/>";
 								}
 							}
 						}
@@ -335,8 +335,8 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONLINK':
 				case '#_LOCATIONPAGEURL': //Depreciated
 					$joiner = (stristr(EM_URI, "?")) ? "&amp;" : "?";
-					$link = EM_URI.$joiner."location_id=".$this->id;
-					$replace = ($result == '#_LOCATIONURL' || $result == '#_LOCATIONPAGEURL') ? $link : '<a href="'.$link.'">'.$this->name.'</a>';
+					$link = esc_url(EM_URI.$joiner."location_id=".$this->id);
+					$replace = ($result == '#_LOCATIONURL' || $result == '#_LOCATIONPAGEURL') ? $link : '<a href="'.$link.'" title="'.esc_attr($this->name).'">'.esc_html($this->name).'</a>';
 					break;
 				case '#_PASTEVENTS': //Depreciated
 				case '#_LOCATIONPASTEVENTS':
@@ -344,8 +344,13 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONNEXTEVENTS':
 				case '#_ALLEVENTS': //Depreciated
 				case '#_LOCATIONALLEVENTS':
-					if ($result == '#_PASTEVENTS' || $result == '#_LOCATIONPASTEVENTS'){ $scope = 'past'; }
-					elseif ( $result == '#_NEXTEVENTS' || $result == '#_LOCATIONNEXTEVENTS' ){ $scope = 'future'; }
+					//convert depreciated placeholders for compatability
+					$result = ($result == '#_PASTEVENTS') ? '#_LOCATIONPASTEVENTS':$result; 
+					$result = ($result == '#_NEXTEVENTS') ? '#_LOCATIONNEXTEVENTS':$result;
+					$result = ($result == '#_ALLEVENTS') ? '#_LOCATIONALLEVENTS':$result;
+					//forget it ever happened? :/
+					if ( $result == '#_LOCATIONPASTEVENTS'){ $scope = 'past'; }
+					elseif ( $result == '#_LOCATIONNEXTEVENTS' ){ $scope = 'future'; }
 					else{ $scope = 'all'; }
 					$events = EM_Events::get( array('location'=>$this->id, 'scope'=>$scope) );
 					if ( count($events) > 0 ){

@@ -152,7 +152,25 @@ function em_content_page_title($content) {
 	return $content;
 }
 //add_filter ( 'single_post_title', 'em_content_page_title',1,1 ); //Filter for the wp_title of page, can directly reference page title function
-add_filter ( 'wp_title', 'em_content_page_title',10,1 );
+
+function em_content_wp_title($title, $sep, $seplocation){
+	// Determines position of the separator and direction of the breadcrumb
+	$title = em_content_page_title($title);
+	$prefix = '';
+	if ( !empty($title) )
+		$prefix = " $sep ";
+	$t_sep = '%WP_TITILE_SEP%'; // Temporary separator, for accurate flipping, if necessary
+	if ( 'right' == $seplocation ) { // sep on right, so reverse the order
+		$title_array = explode( $t_sep, $title );
+		$title_array = array_reverse( $title_array );
+		$title = implode( " $sep ", $title_array ) . $prefix;
+	} else {
+		$title_array = explode( $t_sep, $title );
+		$title = $prefix . implode( " $sep ", $title_array );
+	}
+	return $title;
+}
+add_filter ( 'wp_title', 'em_content_wp_title',10,3 );
 
 /**
  * Makes sure we're in "THE Loop", which is determinied by a flag set when the_post() (start) is first called, and when have_posts() (end) returns false.
