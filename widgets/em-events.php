@@ -35,7 +35,7 @@ class EM_Widget extends WP_Widget {
 	    echo $args['after_title'];
 		$instance['owner'] = false;
 		 
-		$events = EM_Events::get($instance);
+		$events = EM_Events::get(apply_filters('em_widget_events_get_args',$instance));
 		echo "<ul>";
 		$li_wrap = !preg_match('/^<li>/i', trim($instance['format']));
 		if ( count($events) > 0 ){

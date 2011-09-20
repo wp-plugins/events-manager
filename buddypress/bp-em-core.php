@@ -55,7 +55,7 @@ function bp_em_setup_nav() {
 		'name' => __( 'Events', 'dbem' ),
 		'slug' => $bp->events->slug,
 		'position' => 80,
-		'screen_function' => bp_is_my_profile() ? 'bp_em_my_events':'bp_em_events',
+		'screen_function' => (bp_is_my_profile() && current_user_can('edit_events')) ? 'bp_em_my_events':'bp_em_events',
 		'default_subnav_slug' => bp_is_my_profile() ? 'my-events':''
 	) );
 
@@ -82,35 +82,41 @@ function bp_em_setup_nav() {
 		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
 	) );
 
-	bp_core_new_subnav_item( array(
-		'name' => __( 'My Events', 'dbem' ),
-		'slug' => 'my-events',
-		'parent_slug' => $bp->events->slug,
-		'parent_url' => $em_link,
-		'screen_function' => 'bp_em_my_events',
-		'position' => 30,
-		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
-	) );
+	if( current_user_can('edit_events') ){
+		bp_core_new_subnav_item( array(
+			'name' => __( 'My Events', 'dbem' ),
+			'slug' => 'my-events',
+			'parent_slug' => $bp->events->slug,
+			'parent_url' => $em_link,
+			'screen_function' => 'bp_em_my_events',
+			'position' => 30,
+			'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+		) );
+	}
 	
-	bp_core_new_subnav_item( array(
-		'name' => __( 'My Locations', 'dbem' ),
-		'slug' => 'my-locations',
-		'parent_slug' => $bp->events->slug,
-		'parent_url' => $em_link,
-		'screen_function' => 'bp_em_my_locations',
-		'position' => 40,
-		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
-	) );
+	if( current_user_can('edit_locations') ){
+		bp_core_new_subnav_item( array(
+			'name' => __( 'My Locations', 'dbem' ),
+			'slug' => 'my-locations',
+			'parent_slug' => $bp->events->slug,
+			'parent_url' => $em_link,
+			'screen_function' => 'bp_em_my_locations',
+			'position' => 40,
+			'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+		) );
+	}
 	
-	bp_core_new_subnav_item( array(
-		'name' => __( 'My Event Bookings', 'dbem' ),
-		'slug' => 'my-bookings',
-		'parent_slug' => $bp->events->slug,
-		'parent_url' => $em_link,
-		'screen_function' => 'bp_em_my_bookings',
-		'position' => 50,
-		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
-	) );
+	if(current_user_can('manage_bookings')){
+		bp_core_new_subnav_item( array(
+			'name' => __( 'My Event Bookings', 'dbem' ),
+			'slug' => 'my-bookings',
+			'parent_slug' => $bp->events->slug,
+			'parent_url' => $em_link,
+			'screen_function' => 'bp_em_my_bookings',
+			'position' => 50,
+			'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+		) );
+	}
 
 	/* Add a nav item for this component under the settings nav item. */
 	bp_core_new_subnav_item( array(

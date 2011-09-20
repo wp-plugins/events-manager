@@ -8,7 +8,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"PO-Revision-Date: 2011-07-12 22:09+0100\n"
+"PO-Revision-Date: 2011-08-20 09:50+0100\n"
 "Last-Translator: Helmut Ritter <helmut36@gmx.at>\n"
 "Language-Team: \n"
 
@@ -34,7 +34,7 @@ msgstr "Veranstaltung"
 
 #: events-manager.php:208
 msgid "You do not have permission to publish %s"
-msgstr "Sie haben keine Berechtigung zur Veröffentlichung %s"
+msgstr "Sie haben keine Berechtigung %s zu veröffentlichen"
 
 #: events-manager.php:208
 #: events-manager.php:210
@@ -339,7 +339,7 @@ msgstr "Zeigt die Veranstaltung entsprechende ID-Nummer im der Datenbank-Tabelle
 #: admin/em-docs.php:64
 #: admin/em-docs.php:133
 msgid "Shows the event image, if available."
-msgstr "Zeigt das Bild der Veranstaltung, falls vorhanden."
+msgstr "Zeigt das Bild der Veranstaltung, falls vorhanden"
 
 #: admin/em-docs.php:70
 msgid "Displays the start time in a 24 hours format (e.g. 16:30)."
@@ -416,7 +416,7 @@ msgstr "Diese Platzhalter werden nur angezeigt, wenn Reservierung/Anmeldung für
 
 #: admin/em-docs.php:103
 msgid "Adds a booking forms for this event."
-msgstr "Fügt ein Anmeldeformulare für diese Veranstaltung."
+msgstr "Fügt ein Formular für die Reservierung ein."
 
 #: admin/em-docs.php:104
 msgid "Shows available spaces for the event."
@@ -621,12 +621,12 @@ msgstr "Platzhalter für die Anpassung von Veranstaltungsseiten"
 
 #: admin/em-help.php:16
 msgid "In the <a href='%s'>settings page</a>, you'll find various textboxes where you can edit how event information looks, such as for event and location lists. Using the placeholders below, you can choose what information should be displayed."
-msgstr "Auf der <a href='%s'>Einstellungsseite</a>,finden sie verschiedene Textfelder, wo sie bearbeiten können, wie die Veranstaltung, der Veranstaltungsort, die Liste der Veranstaltungen, oder die Liste der Veranstaltungsorte angezeigt werden sollen. Mit den foglenden Platzhaltern können Sie wählen, welche Informationen angezeigt werden sollen."
+msgstr "Auf der <a href='%s'>Einstellungsseite</a>,finden sie verschiedene Textfelder, in denen sie eintragen können, wie die Veranstaltung, der Veranstaltungsort, die Liste der Veranstaltungen, oder die Liste der Veranstaltungsorte angezeigt werden sollen. Mit den folgenden Platzhaltern können Sie wählen, welche Informationen angezeigt werden sollen."
 
 #: admin/em-help.php:17
 #: admin/em-options.php:58
 msgid "Event Related Placeholders"
-msgstr "Platzhalter zum Veranstaltungsort"
+msgstr "Platzhalter zur Veranstaltung"
 
 #: admin/em-help.php:19
 #: admin/em-options.php:61
@@ -1825,16 +1825,16 @@ msgstr "Änderungen gespeichert."
 
 #: admin/em-options.php:62
 msgid "This accepts %s and %s placeholders."
-msgstr "Diese übernimmt %s und %s Platzhalter."
+msgstr "%s und %s können verwendet werden."
 
 #: admin/em-options.php:63
 #: admin/em-options.php:64
 msgid "This accepts %s placeholders."
-msgstr "Diese übernimmt %s Platzhalter."
+msgstr " %s sind erlaubt."
 
 #: admin/em-options.php:65
 msgid "This accepts %s, %s and %s placeholders."
-msgstr "Diese übernimmt %s, %s und %s Platzhalter."
+msgstr "%s, %s und %s sind erlaubt."
 
 #: admin/em-options.php:67
 #: admin/em-options.php:626
@@ -1917,7 +1917,7 @@ msgstr "Soll für Veranstaltungsorte eine Dropdownliste verwendet werden?"
 
 #: admin/em-options.php:172
 msgid "Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events"
-msgstr "Wählen Sie Ja um Veranstaltungsorte aus einer Dropdown-Liste auszuwählen. Die Wahl vom Veranstaltungsort wird schneller sein, aber du verlierst die Möglichkeit, direkt in der Veranstaltung einen neuen Veranstaltungsort anzulegen."
+msgstr "Wählen Sie Ja um Veranstaltungsorte aus einer Dropdown-Liste auszuwählen. Die Auswahl vom Veranstaltungsort wird schneller sein, aber sie verlieren damit  die Möglichkeit, direkt in der Veranstaltung einen neuen Veranstaltungsort anzulegen."
 
 #: admin/em-options.php:173
 msgid "Use recurrence?"
@@ -1941,7 +1941,7 @@ msgstr "Verwenden Sie Kategorien?"
 
 #: admin/em-options.php:175
 msgid "Select yes to enable the category features"
-msgstr "Wählen Sie Ja, um die Funktionen für Kategorien zu aktiviern."
+msgstr "Wählen Sie Ja, um die Veranstaltungen in Kategorien zu verwalten."
 
 #: admin/em-options.php:176
 msgid "Use event attributes?"
@@ -1961,7 +1961,7 @@ msgstr "Standard Kategorie"
 
 #: admin/em-options.php:185
 msgid "This option allows you to select the default category when adding an event."
-msgstr "Diese Option erlaubt es, eine Standard-Kategorie zu wählen, wenn eine Veranstaltung hinzugefügt wird."
+msgstr "Wenn sie eine Standard-Kategorie wählen, wird diese automatisch eingetragen, wenn eine Veranstaltung hinzugefügt wird."
 
 #: admin/em-options.php:185
 #: admin/em-options.php:194
@@ -1970,19 +1970,19 @@ msgstr "(entfällt momentan bei Veranstaltung von Eigentümern, coming soon!)"
 
 #: admin/em-options.php:189
 msgid "no default location"
-msgstr "kein Standard-Veranstaltungsort"
+msgstr "kein Standard Veranstaltungsort"
 
 #: admin/em-options.php:194
 msgid "Default Location"
-msgstr "Standard-Veranstaltungsort"
+msgstr "Standard Veranstaltungsort"
 
 #: admin/em-options.php:194
 msgid "This option allows you to select the default location when adding an event."
-msgstr "Diese Option ermöglicht es Ihnen, den Standard-Veranstaltungsort auswählen, wenn eine Veranstaltung hinzugefügt wird."
+msgstr "Diese Option ermöglicht es Ihnen, einen Veranstaltungsort auswählen, der bei neuen Veranstaltung eingetragen wird."
 
 #: admin/em-options.php:197
 msgid "Default Location Country"
-msgstr "Standardspeicherort Land"
+msgstr "Standard Land"
 
 #: admin/em-options.php:197
 msgid "no default country"
@@ -1990,7 +1990,7 @@ msgstr "kein Standard-Land"
 
 #: admin/em-options.php:197
 msgid "If you select a default country, that will be pre-selected when creating a new location."
-msgstr "Wenn Sie eine Standard-Landes wählen, wird die vorgewählt werden beim Erstellen einer neuen Position."
+msgstr "Wenn Sie hier ein Landes wählen, wird diese beim Erstellen von einem neuen Veranstaltungsort vorgeschlagen."
 
 #: admin/em-options.php:199
 msgid "Event Attributes"
@@ -1998,7 +1998,7 @@ msgstr "Veranstaltungsattribute"
 
 #: admin/em-options.php:199
 msgid "You can also add event attributes here, one per line in this format <code>#_ATT{key}</code>. They will not appear on event pages unless you insert them into another template below, but you may want to store extra information about an event for other uses. <a href='%s'>More information on placeholders.</a>"
-msgstr "Sie können auch Ereignisattribute hier, eine pro Zeile im folgenden Format <code>#_ATT{key}</code>. Sie werden nicht über Seiten zur Veranstaltung angezeigt, wenn Sie sie einfügen in eine andere Vorlage unten, aber Sie können zusätzliche Informationen über ein Ereignis für andere Zwecke zu speichern.<a href='%s'>Weitere Informationen zu Platzhaltern.</a>"
+msgstr "Sie können hier Veranstaltungsattribute (ein Attribut pro Zeile) im folgenden Format <code>#_ATT{key}</code> eingeben. Die Attribute werden auf der Veranstaltungsseite erst angezeigt, wenn sie die Formatierung entsprechend angepasst haben. Zusätzliche Informationen über Extrainformationen zu Veranstaltungen erhalten sie hier: <a href='%s'>Weitere Informationen zu Platzhaltern.</a>"
 
 #: admin/em-options.php:201
 msgid "Show some love?"
@@ -2019,7 +2019,7 @@ msgstr "[Keine Veranstaltungsseite]"
 
 #: admin/em-options.php:224
 msgid "This option allows you to select which page to use as an events page"
-msgstr "Mit dieser Option können Sie wählen, welche Seite als Veranstaltungsseite verwendet werden soll"
+msgstr "Mit dieser Option können Sie wählen, welche Seite als Veranstaltungsseite verwendet werden soll."
 
 #: admin/em-options.php:227
 msgid "Show events page in lists?"
@@ -2035,7 +2035,7 @@ msgstr "Kalender auf der Veranstaltungsseite anzeigen?"
 
 #: admin/em-options.php:228
 msgid "This options allows to display the calendar in the events page, instead of the default list. It is recommended not to display both the calendar widget and a calendar page."
-msgstr "Diese Option ermöglicht es, den Kalender im die Liste der Veranstaltungen, anstelle der Standard-Liste anzuzeigen. Es wird empfohlen, nicht an den Kalender Widget und einen Kalender anzuzeigen."
+msgstr "Diese Option ermöglicht es ihnen, auf der Veranslatungsseite anstatt der Liste einen Kalender anzuzeigen. Es wird empfohlen, nicht gleichzeitig das Kalender Widget und einen Kalender anzuzeigen."
 
 #: admin/em-options.php:228
 msgid "If you would like to show events that span over more than one day, see the Calendar section on this page."
@@ -2043,11 +2043,11 @@ msgstr "Wenn Sie möchten, dass Ereignisse, die über mehr als einen Tag span ze
 
 #: admin/em-options.php:229
 msgid "Disable title rewriting?"
-msgstr "Deaktivieren Titel umzuschreiben?"
+msgstr "Titel rewriting deaktivieren?"
 
 #: admin/em-options.php:229
 msgid "Some wordpress themes don't follow best practices when generating navigation menus, and so the automatic title rewriting feature may cause problems, if your menus aren't working correctly on the event pages, try setting this to 'Yes', and provide an appropriate HTML title format below."
-msgstr "Einige wordpress Themen nicht folgen Best Practices bei der Erzeugung von Navigationsmenüs und so die automatische Titel-Rewriting-Funktion kann zu Problemen führen, wenn die Menüs nicht richtig funktioniert auf den Seiten zur Veranstaltung, versuchen Sie diese Einstellung auf 'Ja', und bieten einen geeigneten HTML-Titelformatieren unten."
+msgstr "Einige wordpress Themen halten sich nicht an die Vorgaben für die Generierung von Navigationsmenüs und dem autoamtischen rewrite der Titel. Wenn das rewriting zu Problemen führt, oder ihre Menüs auf der Veranstaltungsseite nicht ichtig funktionieren, versuchen Sie diese Einstellung auf 'Ja' zu setzen und geben sie eine passende HTML-Formatierung für den Seitentitel ein."
 
 #: admin/em-options.php:230
 msgid "Event Manager titles"
@@ -2055,7 +2055,7 @@ msgstr "Event Manager-Titel"
 
 #: admin/em-options.php:230
 msgid "This only setting only matters if you selected 'Yes' to above. You will notice the events page titles aren't being rewritten, and you have a new title underneath the default page name. This is where you control the HTML of this title. Make sure you keep the #_PAGETITLE placeholder here, as that's what is rewritten by events manager. To control what's rewritten in this title, see settings further down for page titles."
-msgstr "Das einzige Einstellung kommt nur darauf an, wenn Sie \"Ja\" ausgewählt, um oben. Sie werden feststellen, die Ereignisse Seitentitel nicht umgeschrieben, und Sie haben einen neuen Titel unter den Standard-Seitennamen. Hier können Sie die HTML dieses Titels zu kontrollieren. Achten Sie darauf, halten Sie die #_PAGETITLE Platzhalter hier, wie das ist, was ist von den Ereignissen Manager neu geschrieben. Um zu steuern, was in diesem Titel geschrieben, siehe Einstellungen weiter unten für Seitentitel."
+msgstr "Diese EInstellung ist nur dann wichtig, wenn sie oben auf 'ja' ausgewählt haben. Sie werden bemerken, dass der Seitentitel auf der Veranstaltungsseite nicht verändert wird und dass sie einen neuen Titel direkt unter dem Seitennamen haben. Hier können sie diesen Titel einstellen. Achten Sie darauf, dass sie den Platzhalter #_PAGETITLE Platzhalter richtig verwenden, damit Events-Manage den Titel (siehe weiter unten) richtig einsetzen kann."
 
 #: admin/em-options.php:231
 msgid "Event List Limits"
@@ -2067,7 +2067,7 @@ msgstr "Gibt an, wie viele Ereignisse auf einer Liste standardmäßig angezeigt 
 
 #: admin/em-options.php:232
 msgid "Are current events past events?"
-msgstr "Sind die gegenwärtigen Ereignisse vergangener Ereignisse?"
+msgstr "Sind die gegenwärtigen Veranstaltungen vergangener Veranstaltungen?"
 
 #: admin/em-options.php:232
 msgid "By default, events that are have an end date later than today will be included in searches, set this to yes to consider events that started 'yesterday' as past."
@@ -2075,15 +2075,15 @@ msgstr "Standardmäßig Ereignisse, die haben ein Enddatum sind spätestens heut
 
 #: admin/em-options.php:233
 msgid "Show events search?"
-msgstr "Zeige Termine suchen?"
+msgstr "Suche für Veranstaltunen anzeigen?"
 
 #: admin/em-options.php:233
 msgid "If set to yes, a search form will appear just above your list of events."
-msgstr "Wenn auf yes gesetzt, wird ein Suchformular knapp oberhalb der Liste der Veranstaltungen erscheinen."
+msgstr "Ja bedeutet, dass oberhalb der Liste der Veranstaltugnen ein Suchformular angezeigt wird."
 
 #: admin/em-options.php:236
 msgid "Default event list ordering"
-msgstr "standardmäßig Veranstaltung Liste bestellen"
+msgstr "Sortierung der Veranstaltungsliste"
 
 #: admin/em-options.php:241
 msgid "Order by start date, start time, then event name"
@@ -2121,15 +2121,15 @@ msgstr "Alle Absteigend"
 
 #: admin/em-options.php:275
 msgid "When Events Manager displays lists of events the default behaviour is ordering by start date in ascending order. To change this, modify the values above."
-msgstr "Als Event-Manager listet der Ereignisse zeigt die Standard-Verhalten wird durch Startdatum Bestellung im aufsteigender Reihenfolge. Um dies zu ändern, ändern Sie die Werte über."
+msgstr "Normalerweise sortiert Event-Manager die Liste der Veranstaltungen nach dem Startdatum in auftreigender Reihenfolge. Wählen sie eine passende Einstellung um die Sortierung zu ändern."
 
 #: admin/em-options.php:279
 msgid "Event list scope"
-msgstr "Veranstaltungsliste Umfang"
+msgstr "Bereich der Veranstaltungsliste"
 
 #: admin/em-options.php:289
 msgid "Only show events starting within a certain time limit on the events page. Default is future events with no end time limit."
-msgstr "Nur Events ab innerhalb einer bestimmten Frist auf der Veranstaltungsseite. Standard ist auf zukünftige Ereignisse und kein Ende Frist."
+msgstr "Nur Veranstaltungen ab, oder innerhalb vom eingestellten Bereich, werden angezeigt. Normalerweise werden nur zukünftige Veranstaltungen angezeigt."
 
 #: admin/em-options.php:300
 msgid "Events format"
@@ -2147,97 +2147,97 @@ msgstr "Veranstaltungen Seitentitel"
 
 #: admin/em-options.php:305
 msgid "The title on the multiple events page."
-msgstr "Der Titel auf der mehrere Ereignisse zu sehen."
+msgstr "Der Titel der Seite, wenn mehrere Veranstaltungen angezeigt werden."
 
 #: admin/em-options.php:306
 msgid "Default event list format header"
-msgstr "standardmäßig Veranstaltung Liste Format-Header"
+msgstr "Formatierung Kopf der Veranstaltungsliste"
 
 #: admin/em-options.php:306
 msgid "This content will appear just above your code for the default event list format. Default is blank"
-msgstr "Diese Inhalte werden direkt über den Code für die Standard-Veranstaltung Liste Format angezeigt. Der Standardwert ist leer"
+msgstr "Dieser Code wird vor der Liste der Veranstaltungen eingefügt. Der Standardwert ist leer"
 
 #: admin/em-options.php:307
 msgid "Default event list format"
-msgstr "standardmäßig Veranstaltung Liste formatieren"
+msgstr "Formatierung für eine Veranstaltung in der Liste"
 
 #: admin/em-options.php:307
 msgid "The format of any events in a list."
-msgstr "Das Format der Veranstaltungen in einer Liste."
+msgstr "Der code für die Formatierung einer Veranstaltung in einer Liste."
 
 #: admin/em-options.php:308
 msgid "Default event list format footer"
-msgstr "Veranstaltunsliste Fußzeile"
+msgstr "Formatierung der Fußzeile für die Veranstaltungsliste"
 
 #: admin/em-options.php:308
 msgid "This content will appear just below your code for the default event list format. Default is blank"
-msgstr "Diese Inhalte werden direkt unterhalb der Code für die Standard-Veranstaltung Liste Format angezeigt. Der Standardwert ist leer"
+msgstr "Dieser Code wird direkt nach der Liste der Veranstaltungen eingesetzt. Der Standardwert ist leer"
 
 #: admin/em-options.php:309
 msgid "No events message"
-msgstr "Keine Termine Nachricht"
+msgstr "Text für Keine Veranstaltungen"
 
 #: admin/em-options.php:309
 msgid "The message displayed when no events are available."
-msgstr "Die Meldung erscheint, wenn keine Veranstaltungen zur Verfügung stehen."
+msgstr "Dieser Text wird angezeigt, wenn keine Veranstaltungen angezeigt werden können."
 
 #: admin/em-options.php:310
 msgid "List events by date title"
-msgstr "Liste Veranstaltungen nach Datum Titel"
+msgstr "Titel der Liste für einen Tag."
 
 #: admin/em-options.php:310
 msgid "If viewing a page for events on a specific date, this is the title that would show up. To insert date values, use <a href=\"http://www.php.net/manual/en/function.date.php\">PHP time format characters</a>  with a <code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/>"
-msgstr "Wenn eine Seite anzeigen für Veranstaltungen an einem bestimmten Datum, das ist der Titel, der angezeigt würde. So fügen Sie Datumswerte verwenden <a href=\"http://www.php.net/manual/en/function.date.php\">PHP Zeitformat Zeichen</a>  mit einem <code>#</code> Zeichen vor ihnen, i.e. <code>#m</code>, <code>#M</code>, <code>#j</code>, etc.<br/>"
+msgstr "Wenn nur Veranstaltungen für ein bestimmtes Datum angezeigt werden, kann hier der Titel eingegeben werden. u das Datu einzufügen, verwenden sie <a href=\"http://www.php.net/manual/en/function.date.php\">PHP Zeitformat Zeichen</a>  mit einem <code>#</code> Zeichen davor, z.B. <code>#m</code>, <code>#M</code>, <code>#j</code>, usw.<br/>"
 
 #: admin/em-options.php:312
 #: admin/em-options.php:350
 #: admin/em-options.php:375
 msgid "Single %s Page"
-msgstr "einzigen %s Seite"
+msgstr "Einzelne %s - Seite"
 
 #: admin/em-options.php:314
 msgid "Single event page title format"
-msgstr "einzigen-Event-Seite Titel formatieren"
+msgstr "Titel für einen einzelne Veranstaltung"
 
 #: admin/em-options.php:314
 msgid "The format of a single event page title."
-msgstr "Das Format eines einzelnen Ereignisses Seitentitel."
+msgstr "Formatierung vom Seitentitel für eine Veranstaltungsseite."
 
 #: admin/em-options.php:315
 msgid "Default single event format"
-msgstr "standardmäßig einzigen Veranstaltungsformat"
+msgstr "Formatierung für eine einzelne Veranstaltung"
 
 #: admin/em-options.php:315
 msgid "The format of a single event page."
-msgstr "Das Format eines einzelnen Ereignisses zu sehen."
+msgstr "Code um eine einzelne Veranstaltung zu formatieren."
 
 #: admin/em-options.php:323
 msgid "Calendar format"
-msgstr "Kalenderformatieren"
+msgstr "Kalenderformat"
 
 #: admin/em-options.php:327
 msgid "Small calendar title"
-msgstr "Kleine Kalender Titel"
+msgstr "Titel für den kleinen Kalender"
 
 #: admin/em-options.php:327
 msgid "The format of the title, corresponding to the text that appears when hovering on an eventful calendar day."
-msgstr "Das Format der Titel, entsprechend dem Text, wenn man den Mauszeiger auf ein ereignisreiches Kalendertag erscheint."
+msgstr "Das Format für den Titel der Veranstaltung. Wird angezeigt, wenn mit  der Maus über den entsprechenden Kalendertag gefahren wird.."
 
 #: admin/em-options.php:328
 msgid "Small calendar title separator"
-msgstr "Kleine Kalender title-Separator"
+msgstr "Separator für mehrere Titel im kleinen Kalender"
 
 #: admin/em-options.php:328
 msgid "The separator appearing on the above title when more than one events are taking place on the same day."
-msgstr "Der Separator, die auf dem obigen Titel, wenn mehrere Veranstaltungen statt am selben Tag."
+msgstr "Der Separator, mit dem die obigen Titel getrennt werden, wenn mehrere Veranstaltungen am selben Tag stattfinden."
 
 #: admin/em-options.php:329
 msgid "Full calendar events format"
-msgstr "Vollständige Kalenderereignisse formatieren"
+msgstr "Formatierung der Veranstaltung für den großen Kalender."
 
 #: admin/em-options.php:329
 msgid "The format of each event when displayed in the full calendar. Remember to include <code>li</code> tags before and after the event."
-msgstr "Das Format der einzelnen Ereignis, wenn im den vollen Kalender angezeigt. Denken Sie daran, <code>li</code> Tags vor und nach der Veranstaltung gehören."
+msgstr "Formatierung für eine Veranstaltung im großen Kalender. Denken Sie daran, <code>li</code> Tags vor und nach der Veranstaltung anzugeben."
 
 #: admin/em-options.php:330
 msgid "Show long events on calendar pages?"
@@ -2245,7 +2245,7 @@ msgstr "Zeige lang Veranstaltungen auf dem Kalender-Seiten?"
 
 #: admin/em-options.php:330
 msgid "If you are showing a calendar on the events page (see Events format section on this page), you have the option of showing events that span over days on each day it occurs."
-msgstr "Wenn Sie zeigt einen Kalender auf der Veranstaltungen Seite (siehe Veranstaltungen formatieren Abschnitt auf dieser Seite), haben Sie die Möglichkeit zu zeigen Ereignisse, die über mehrere Tage an jedem Tag tritt span."
+msgstr "Wenn auf der Veranstaltungsseite ein Kalender angezeigt wird(siehe im Abschnitt Veranstaltungen formatieren auf dieser Seite), haben Sie die Möglichkeit Veranstaltungen, die mehrere Tage dauern bei jeddem Tag der Veranstaltung anzuzeigen."
 
 #: admin/em-options.php:331
 msgid "Show list on day with single event?"
@@ -2253,7 +2253,7 @@ msgstr "Liste Anzeigen am Tag mit Einzel-Event?"
 
 #: admin/em-options.php:331
 msgid "By default, if a calendar day only has one event, it display a single event when clicking on the link of that calendar date. If you select Yes here, you will get always see a list of events."
-msgstr "Standardmäßig, wenn ein Kalendertag nur ein Ereignis, zeigt es ein einmaliges Ereignis, wenn Sie auf den Link des Kalenderdatum. Wenn Sie hier Ja wählen, erhalten Sie immer eine Liste von Veranstaltungen."
+msgstr "Normalerweise wird ein Link auf die Veranstaltung angezeigt, wenn ein Tag nur eine einzige Veranstaltung hat. Wenn sie hier Ja wählen, erhalten sie immer eine Liste mit den Veranstaltungen."
 
 #: admin/em-options.php:339
 msgid "Locations format"
@@ -2262,58 +2262,58 @@ msgstr "Veranstaltungsorte formatieren"
 #: admin/em-options.php:344
 #: admin/em-options.php:369
 msgid "%s page title"
-msgstr "%s Seitentitel"
+msgstr "Seitentitel für %s"
 
 #: admin/em-options.php:344
 #: admin/em-options.php:369
 msgid "The title on the multiple %s page."
-msgstr "Der Titel auf der mehrere %s Seite."
+msgstr "Der Titel auf der Seite mit der Liste der %s."
 
 #: admin/em-options.php:345
 #: admin/em-options.php:370
 msgid "%s list header format"
-msgstr "%s: Formatierung der Kopfzeile"
+msgstr "Kopfzeile für die Liste der %s"
 
 #: admin/em-options.php:345
 #: admin/em-options.php:370
 msgid "This content will appear just above your code for the %s list format below. Default is blank"
-msgstr "Diese Inhalte werden direkt über den Code für das erscheinen %s Listenformat unten. Der Standardwert ist leer"
+msgstr "Diese Formatierung wird vor der Liste der Veranstaltungsorte eingefügt. Der Standardwert ist leer"
 
 #: admin/em-options.php:346
 #: admin/em-options.php:371
 msgid "%s list item format"
-msgstr "%s Listenelement-Format"
+msgstr "Formatierung für einen der %s in der Liste"
 
 #: admin/em-options.php:346
 #: admin/em-options.php:371
 msgid "The format of a single %s in a list."
-msgstr "Das Format eines einzigen %s im einer Liste."
+msgstr "Das Format für einen der vorhandenen %s in einer Liste."
 
 #: admin/em-options.php:347
 #: admin/em-options.php:372
 msgid "%s list footer format"
-msgstr "%s Liste footerformatieren"
+msgstr "Fußzeile für die Liste der %s"
 
 #: admin/em-options.php:347
 #: admin/em-options.php:372
 msgid "This content will appear just below your code for the %s list format above. Default is blank"
-msgstr "Diese Inhalte werden direkt unterhalb der Code für das erscheinen %s Liste formatieren vor. Der Standardwert ist leer"
+msgstr "Diese Formatierung wird direkt nach der Liste der Veranstaltungsorte eingefügt. Der Standardwert ist leer"
 
 #: admin/em-options.php:348
 #: admin/em-options.php:356
 #: admin/em-options.php:373
 msgid "No %s message"
-msgstr "nicht %s Nachricht"
+msgstr "Keine %s"
 
 #: admin/em-options.php:348
 #: admin/em-options.php:373
 msgid "The message displayed when no %s are available."
-msgstr "Die Meldung angezeigt, wenn kein %s stehen zur Verfügung."
+msgstr "Die Meldung angezeigt, wenn keine %s angezeigt werden."
 
 #: admin/em-options.php:352
 #: admin/em-options.php:377
 msgid "Single %s title format"
-msgstr "einzigen %s titleformatieren"
+msgstr "Seitentitel für einen einzelnen %s"
 
 #: admin/em-options.php:352
 #: admin/em-options.php:353
@@ -2321,44 +2321,44 @@ msgstr "einzigen %s titleformatieren"
 #: classes/em-location.php:144
 #: classes/em-location.php:152
 msgid "location"
-msgstr "Lage"
+msgstr "Veranstaltungsort"
 
 #: admin/em-options.php:352
 msgid "The format of a single location page title."
-msgstr "Das Format einer einzigen Standort Seitentitel."
+msgstr "Seitentitel für einen einzelnen Veranstaltungsort"
 
 #: admin/em-options.php:353
 #: admin/em-options.php:378
 msgid "Single %s page format"
-msgstr "einzigen %s Seiten-Format"
+msgstr "Formatierung für einen %s auf der Seite"
 
 #: admin/em-options.php:353
 msgid "The format of a single location page."
-msgstr "Das Format einer einzigen Ort zu sehen."
+msgstr "Das Format für einen einzelnen Veranstaltungsort auf der Seite."
 
 #: admin/em-options.php:354
 msgid "Default location balloon format"
-msgstr "Standard-Speicherort Ballonformatieren"
+msgstr "Standard Ballonformatieren für Veranstaltungsort"
 
 #: admin/em-options.php:354
 msgid "The format of of the text appearing in the baloon describing the location a single location map."
-msgstr "Das Format der Text im Ballon Beschreibung der Lage einer einzigen Lageplan."
+msgstr "Das Format für die Beschreibung vom Veranstaltungsort, der im Ballon auf der Karte angezeigt wird."
 
 #: admin/em-options.php:355
 msgid "Default %s list format"
-msgstr "standardmäßig %s Listenformat"
+msgstr "Standardmäßiges Listenformat für %s "
 
 #: admin/em-options.php:355
 msgid "The format of the events the list inserted in the location page through the <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> element."
-msgstr "Das Format der Ereignisse in der Liste im der Lage Seite durch die eingefügten <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> und <code>#_ALLEVENTS</code> Element."
+msgstr "Formatierung der Veranstalungen in einer Liste auf der Seite vom Veranstaltungsort. Ersetzt <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> und <code>#_ALLEVENTS</code> auf der Seite der Veranstalung."
 
 #: admin/em-options.php:356
 msgid "The message to be displayed in the list generated by <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> and <code>#_ALLEVENTS</code> when no events are available."
-msgstr "Die Botschaft an die im der Liste erzeugte angezeigt werden <code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> und <code>#_ALLEVENTS</code> wenn keine Veranstaltungen verfügbar."
+msgstr "Die Meldung, die anstatt<code>#_NEXTEVENTS</code>, <code>#_PASTEVENTS</code> und <code>#_ALLEVENTS</code> angezeigt wird, wenn keine Veranstaltungen verfügbar sind."
 
 #: admin/em-options.php:364
 msgid "Categories format"
-msgstr "Kategorienformatieren"
+msgstr "Kategorien"
 
 #: admin/em-options.php:377
 #: admin/em-options.php:378
@@ -2368,15 +2368,15 @@ msgstr "Kategorie"
 
 #: admin/em-options.php:377
 msgid "The format of a single category page title."
-msgstr "Das Format einer einzigen Kategorie Seitentitel."
+msgstr "Das Format vom Seitenttitel einer einzigen Kategorie."
 
 #: admin/em-options.php:378
 msgid "The format of a single category page."
-msgstr "Das Format einer einzelnen Kategorie-Seite."
+msgstr "Die Formatierung für eine einzelne Kategorie auf der Seite."
 
 #: admin/em-options.php:386
 msgid "RSS feed format"
-msgstr "RSS-Feed-Format"
+msgstr "RSS-Feed"
 
 #: admin/em-options.php:390
 msgid "RSS main title"
@@ -2384,31 +2384,31 @@ msgstr "RSS Haupttitel"
 
 #: admin/em-options.php:390
 msgid "The main title of your RSS events feed."
-msgstr "Die wichtigsten Titel Ihres RSS-Feeds Veranstaltungen."
+msgstr "Die Haupttitel für den RSS-Feed der Veranstaltungen."
 
 #: admin/em-options.php:391
 msgid "RSS main description"
-msgstr "RSS wichtigsten Beschreibung"
+msgstr "RSS Beschreibung für den Veranstaltungs-RSS"
 
 #: admin/em-options.php:391
 msgid "The main description of your RSS events feed."
-msgstr "Die wichtigsten Beschreibung Ihres RSS-Feeds Veranstaltungen."
+msgstr "Die Beschreibung für den Haupt-RSS-Feed der Veranstaltungen."
 
 #: admin/em-options.php:392
 msgid "RSS title format"
-msgstr "RSS titleformatieren"
+msgstr "RSS Titel Formatierung"
 
 #: admin/em-options.php:392
 msgid "The format of the title of each item in the events RSS feed."
-msgstr "Das Format der Titel der einzelnen Elemente im den Ereignissen RSS-Feed."
+msgstr "Das Format für den Titel der einzelnen Elemente im Veranstaltungs-RSS-Feed."
 
 #: admin/em-options.php:393
 msgid "RSS description format"
-msgstr "RSS Beschreibung formatieren"
+msgstr "Formatierung der Beschreibung im RSS-Feed. "
 
 #: admin/em-options.php:393
 msgid "The format of the description of each item in the events RSS feed."
-msgstr "Das Format der Beschreibung der einzelnen Elemente im den Ereignissen RSS-Feed."
+msgstr "Formatierung für die Beschreibung der Veranstaltung im Veranstaltuns-RSS-Feed."
 
 #: admin/em-options.php:401
 msgid "Maps and geotagging"
@@ -2416,7 +2416,7 @@ msgstr "Karten und Geotagging"
 
 #: admin/em-options.php:406
 msgid "Enable Google Maps integration?"
-msgstr "Aktivieren Sie Google Maps integration?"
+msgstr "Google Maps aktivieren?"
 
 #: admin/em-options.php:408
 #: buddypress/bp-em-notifications.php:45
@@ -2428,23 +2428,23 @@ msgstr "Ja"
 #: buddypress/bp-em-notifications.php:46
 #: em-functions.php:437
 msgid "No"
-msgstr "Nicht"
+msgstr "Nein"
 
 #: admin/em-options.php:410
 msgid "Check this option to enable Goggle Map integration."
-msgstr "Aktivieren Sie diese Option, um Goggle Map Integration zu ermöglichen."
+msgstr "Aktivieren Sie diese Option, um Goggle Maps zu ermöglichen."
 
 #: admin/em-options.php:414
 msgid "Map text format"
-msgstr "Map-Text-Format"
+msgstr "Veranstaltungsinfo auf der Karte"
 
 #: admin/em-options.php:414
 msgid "The text format inside the map balloons."
-msgstr "Die Text-Format in die Karte Ballons."
+msgstr "Das Format des Textes, der auf der Karte im Ballon angezeigt wird."
 
 #: admin/em-options.php:422
 msgid "Booking and Ticketing Options"
-msgstr "Buchung und Ticketing-Optionen"
+msgstr "Reservierungs- und Ticketing-Optionen"
 
 #: admin/em-options.php:426
 msgid "Approval Required?"
@@ -2452,7 +2452,7 @@ msgstr "Genehmigung erforderlich?"
 
 #: admin/em-options.php:426
 msgid "Bookings will not be confirmed until the event administrator approves it."
-msgstr "Die Buchung wird erst bestätigt, wenn das Ereignis Administrator genehmigt es."
+msgstr "Eine Reservierung wird erst bestätigt, wenn ein Administrator diese genehmigt."
 
 #: admin/em-options.php:427
 msgid "Currency"
@@ -2460,240 +2460,240 @@ msgstr "Währung"
 
 #: admin/em-options.php:427
 msgid "Choose your currency for displaying event pricing."
-msgstr "Wählen Sie Ihre Währung für die Anzeige bei Preisgestaltung."
+msgstr "Wählen sie die Währung für die Anzeige der  Preisgestaltung."
 
 #: admin/em-options.php:428
 msgid "Single ticket mode?"
-msgstr "Einzelkarte-Modus?"
+msgstr "Einzelkartenmodus?"
 
 #: admin/em-options.php:428
 msgid "In single ticket mode, users can only create one ticket per booking (and will not see options to add more tickets)."
-msgstr "In Einzelticket-Modus kann der Benutzer nur schaffen ein Ticket pro Buchung (und nicht sehen, um mehr Karten hinzufügen)."
+msgstr "In Einzelkartenmodus kann der Benutzer pro Reservierung immer nur ein Ticket reservieren.  (Die Option für mehrere Karten wird nicht angezeigt)."
 
 #: admin/em-options.php:429
 msgid "Show ticket table in single ticket mode?"
-msgstr "Zeige Ticket-Tabelle im Einzelkarte-Modus?"
+msgstr "Zeige Ticket-Tabelle im Einzelkartenmodus?"
 
 #: admin/em-options.php:429
 msgid "If you prefer a ticket table like with multiple tickets, even for single ticket events, enable this."
-msgstr "Wenn Sie ein Ticket Tisch wie mit mehreren Karten, auch für einfache Fahrt Veranstaltungen bevorzugen, aktivieren Sie diese."
+msgstr "Wenn sie die Liste der Tickets auch für Verasntaltungen mit nur einer Ticket-Art anzeigen möchten, können sie diese Option aktivieren."
 
 #: admin/em-options.php:430
 msgid "Show unavailable tickets?"
-msgstr "Zeige verfügbar Tickets?"
+msgstr "Nicht verfügbar Tickets anzeigen?"
 
 #: admin/em-options.php:430
 msgid "You can choose whether or not to show unavailable tickets to visitors."
-msgstr "Sie können wählen, ob sie verfügbar Tickets für die Besucher zu zeigen."
+msgstr "Sie können wählen, ob sie nicht verfügbar Tickets für die Besucher anzeigen wollen, oder nicht."
 
 #: admin/em-options.php:431
 msgid "Reserved unconfirmed spaces?"
-msgstr "Reserviert unbestätigten Räume?"
+msgstr "Unbestätigte Plätze reservieren?"
 
 #: admin/em-options.php:431
 msgid "By default, event spaces become unavailable once there are enough CONFIRMED bookings. To reserve spaces even if unnapproved, choose yes."
-msgstr "Standardmäßig werden bei Räumen nicht verfügbar, wenn es genügend bestätigte Buchungen sind. Um zu reservieren Räume, auch wenn unnapproved, wählen Sie Ja."
+msgstr "Standardmäßig werden Tickets nicht mehr verfügbar, wenn es genügend bestätigte Reservierungen gibt. Um auch Plätze zu reservieren, die noch nicht bestätigt sind, wählen sie Ja."
 
 #: admin/em-options.php:432
 msgid "Show multiple tickets if logged out?"
-msgstr "Zeigen mehrere Tickets, wenn abgemeldet?"
+msgstr "Tickets anzeigen, wenn abgemeldet?"
 
 #: admin/em-options.php:432
 msgid "If logged out, a user will be asked to register in order to book. However, we can show available tickets if you have more than one ticket."
-msgstr "Wenn abgemeldet, wird ein Benutzer aufgefordert, um Buch zu registrieren. Wir können jedoch zeigen die verfügbaren Tickets, wenn Sie mehr als ein Ticket haben."
+msgstr "Wenn abgemeldet, wird der Benutzer aufgefordert, sich anzumelden. Wir können die verfügbaren Tickets anzeigen, wenn sie mehr als ein Ticket haben."
 
 #: admin/em-options.php:433
 msgid "Allow overbooking when approving?"
-msgstr "Lassen Überbuchung bei der Genehmigung?"
+msgstr "Über-Reservierung bei Genehmigung zulassen?"
 
 #: admin/em-options.php:433
 msgid "If you get a lot of pending bookings and you decide to allow more bookings than spaces allow, setting this to yes will allow you to override the event space limit when manually approving."
-msgstr "Wenn Sie eine Menge von offenen Buchungen und erhalten Sie sich entschließen, mehr Buchungen als Räume zu erlauben, wird diese Einstellung auf yes können Sie die Veranstaltungsfläche Grenze überschreiben, wenn Sie manuell die Genehmigung."
+msgstr "Stellen sie diese Option auf Ja, wenn sie viele Reservierungen erhalten und sie sich entschließen, mehr Reservierungen als Plätze zu erlauben. Sie können dann über eine manuelle Genehigung die verfügbaren Plätze überschreiten."
 
 #: admin/em-options.php:434
 msgid "Allow guest bookings?"
-msgstr "Lassen Gast Buchungen?"
+msgstr "Reservierungen von Gästen zulassen?"
 
 #: admin/em-options.php:434
 msgid "If enabled, guest visitors can supply an email address and a user account will automatically be created for them along with their booking. They will be also be able to log back in with that newly created account."
-msgstr "Wenn diese Option aktiviert, können die Gäste Besucher liefern eine E-Mail-Adresse und einen Benutzer-Account wird automatisch für sie zusammen mit ihrer Buchung erstellt werden. Sie werden auch in der Lage sein, um sich wieder mit, dass neu erstellte Konto."
+msgstr "Wenn diese Option aktiviert ist, können Gäste eine E-Mail-Adresse hinterlegen.  Für die Reservierung wird dann automatisch ein Benutzerkonto angelegt. Die Gäste können sich dann mit dem Benutzernamen wieder anmelden."
 
 #: admin/em-options.php:435
 msgid "Display login form?"
-msgstr "Anzeige Login-Formular?"
+msgstr "Login-Formular anzeigen?"
 
 #: admin/em-options.php:435
 msgid "Choose whether or not to display a login form in the booking form area to remind your members to log in before booking."
-msgstr "Wählen Sie, ob Sie ein Login-Formular im dem Buchungsformular Bereich Display an Ihre Mitglieder daran zu erinnern, im vor der Buchung anmelden."
+msgstr "Wählen Sie, ob Sie ein Login-Formular deben de Reservierungsformular angezeigt werden soll. Das Formular soll Mitglieder daran erinnern, sich anzumelden, bevor sie Reservierungen eintragen."
 
 #: admin/em-options.php:444
 msgid "Booking Email Templates"
-msgstr "Buchung Email-Vorlagen"
+msgstr "Email-Vorlagen für die Reservierung"
 
 #: admin/em-options.php:448
 msgid "Default contact person"
-msgstr "standardmäßig Ansprechpartner"
+msgstr "Standardmäßiger Ansprechpartner"
 
 #: admin/em-options.php:448
 msgid "Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event"
-msgstr "Wählen Sie den Standard Ansprechpartner. Dieser Benutzer wird verwendet, wenn ein Ansprechpartner ist nicht explizit für eine Veranstaltung angegeben werden"
+msgstr "Wählen Sie den Standard Ansprechpartner. Dieser Benutzer wird verwendet, wenn bei der Veranstatlung nicht explizit ein Ansprechpartner angegeben wird."
 
 #: admin/em-options.php:449
 msgid "Email events admin?"
-msgstr "E-Mail Veranstaltungen admin?"
+msgstr "E-Mails an Administrator der Veranstaltung?"
 
 #: admin/em-options.php:449
 msgid "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email)."
-msgstr "Wenn Sie möchten, dass jede Veranstaltung Buchungsbestätigung per E-Mail an einen Administrator zu schreiben ihre E-Mail hier (leer lassen, um nicht senden Sie eine E-Mail)."
+msgstr "Wenn Sie möchten, dass jede Reservierungsbestätigung per E-Mail an einen Administrator geschickt werden soll, geben sie hier die E-Mail ein (leer lassen, um keine Emails zu verschicken)."
 
 #: admin/em-options.php:450
 msgid "Email contact person?"
-msgstr "E-Mail Ansprechpartner?"
+msgstr "E-Mail an Ansprechpartner?"
 
 #: admin/em-options.php:450
 msgid "Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)"
-msgstr "Aktivieren Sie diese Option, wenn Sie die Veranstaltung kontaktieren, um eine E-Mail, wenn jemand Bücher Orten empfangen möchten. Eine E-Mail wird gesendet, wenn eine Buchung zuerst wird (unabhängig davon, ob bestätigt oder in Vorbereitung)"
+msgstr "Aktivieren sie diese Option, wenn sie wollen, dass die Kontaktperson von der Veranstaltung bei jeder Reservierung eine Email erhalten soll. Die Email wird bei der Reservierung geschickt."
 
 #: admin/em-options.php:451
 msgid "Disable new registration email?"
-msgstr "Deaktivieren Sie neue Registrierung per E-Mail?"
+msgstr "Email bei der Registrierung deaktivieren?"
 
 #: admin/em-options.php:451
 msgid "Check this option if you want to prevent the wordpress registration email from going out when a user anonymously books an event."
-msgstr "Aktivieren Sie diese Option, wenn Sie die wordpress-Registrierung per E-Mail vom Ausgehen, wenn ein Benutzer Bücher anonym ein Ereignis verhindern wollen."
+msgstr "Aktivieren Sie diese Option, wenn Sie die Email bei der Registrierung verhindern wollen."
 
 #: admin/em-options.php:453
 msgid "Contact person booking confirmed"
-msgstr "Ansprechpartner Buchung bestätigt"
+msgstr "Ansprechpartner bestätigt die Reservierung"
 
 #: admin/em-options.php:454
 msgid "An email will be sent to the event contact when a booking is first made."
-msgstr "Eine E-Mail wird auf der Veranstaltung wenden Sie gesendet werden, wenn eine Buchung zuerst erfolgt."
+msgstr "Immer, wenn eine Reservierung gemacht wird, wird eine Email an die Kontaktperson geschickt."
 
 #: admin/em-options.php:456
 msgid "Contact person email subject"
-msgstr "Ansprechpartner E-Mail unter"
+msgstr "Titel der E-Mail an den Ansprechpartner bei der Reservierung"
 
 #: admin/em-options.php:457
 msgid "Contact person email"
-msgstr "Ansprechpartner E-Mail"
+msgstr "Inhalt der E-Mail an den Ansprechpartner"
 
 #: admin/em-options.php:459
 msgid "Contact person booking cancelled"
-msgstr "Ansprechpartner Buchung storniert"
+msgstr "Ansprechpartner storniert die Reservierung"
 
 #: admin/em-options.php:460
 msgid "An email will be sent to the event contact if someone cancels their booking."
-msgstr "Eine E-Mail wird auf der Veranstaltung Kontakt gesendet werden, wenn jemand bricht ihre Buchung."
+msgstr "Wenn jemand die Reservierung storniert, wird eine E-Mail an die Kontaktperson geschickt."
 
 #: admin/em-options.php:462
 msgid "Contact person cancellation subject"
-msgstr "Ansprechpartner Stornierung Thema"
+msgstr "Titel der E-Mail an den Ansprechpartner bei Stornierung"
 
 #: admin/em-options.php:463
 msgid "Contact person cancellation email"
-msgstr "Ansprechpartner Stornierung per E-Mail"
+msgstr "Inhalt der E-Mail an den Ansprechpartner bei Stornierung"
 
 #: admin/em-options.php:465
 msgid "Confirmed booking email"
-msgstr "Bestätigte Buchung per E-Mail"
+msgstr "Reservierung wird bestätigt"
 
 #: admin/em-options.php:466
 msgid "This is sent when a person's booking is confirmed. This will be sent automatically if approvals are required and the booking is approved. If approvals are disabled, this is sent out when a user first submits their booking."
-msgstr "Dies wird gesendet, wenn eine Person Buchung bestätigt ist. Dadurch wird automatisch gesendet werden, wenn Genehmigungen erforderlich sind und die Buchung wird genehmigt. Wenn Genehmigungen deaktiviert sind, wird dies, wenn ein Benutzer zum ersten Mal legt die Buchung geschickt."
+msgstr "Eine E-Mail wird an den Benutzer geschickt, wenn die Reservierung bestätigt wird. Wenn eine Genehmigung erforderlich ist, passiert dies bei der Genehmigung durch den Administrator. Wenn die Genehmigung deaktiviert ist, wird die E-Mail an den Benutzer geschickt, wenn dieser die Reservierung zum ersten mal eingibt."
 
 #: admin/em-options.php:468
 msgid "Booking confirmed email subject"
-msgstr "Buchung bestätigte E-Mail unter"
+msgstr "Titel der E-Mail für die Reservierungsbestätigung"
 
 #: admin/em-options.php:469
 msgid "Booking confirmed email"
-msgstr "Buchung bestätigte E-Mail"
+msgstr "Inhalt der E-Mail bei Reservierungsbestätigung"
 
 #: admin/em-options.php:471
 msgid "Pending booking email"
-msgstr "Bis Buchung per E-Mail"
+msgstr "Neue zu bearbeitende Reservierung"
 
 #: admin/em-options.php:472
 msgid "This will be sent to the person when they first submit their booking. Not relevant if bookings don't require approval."
-msgstr "Dies wird an die Person gesendet werden, wenn sie sich unterwerfen zuerst ihre Buchung. Nicht relevant, wenn Buchungen bedürfen keiner Zustimmung."
+msgstr "Diese E-Mail wird geschickt, wenn eine neue Reservierung eingegeben wurde. Ist nicht relevant, wenn die Genehmigung deaktiviert wrude."
 
 #: admin/em-options.php:474
 msgid "Booking pending email subject"
-msgstr "Buchung ausstehende E-Mail unter"
+msgstr "Titel der E-Mail für neue Reservierung"
 
 #: admin/em-options.php:475
 msgid "Booking pending email"
-msgstr "Buchung ausstehende E-Mail"
+msgstr "Inhalt der E-Mail bei neuer Reservierung"
 
 #: admin/em-options.php:477
 msgid "Rejected booking email"
-msgstr "Abgelehnt Buchung per E-Mail"
+msgstr "E-Mail bei Abgelehnter Reservierung"
 
 #: admin/em-options.php:478
 msgid "This will be sent automatically when a booking is rejected. Not relevant if bookings don't require approval."
-msgstr "Dadurch wird automatisch gesendet werden, wenn eine Buchung wird abgelehnt. Nicht relevant, wenn Buchungen bedürfen keiner Zustimmung."
+msgstr "Es wird eine E-Mail an den Benutzer geschickt, wenn die Reservierung abgelehnt wird. Ist nicht relevant, wenn die Genehmigung deaktiviert wurde."
 
 #: admin/em-options.php:480
 msgid "Booking rejected email subject"
-msgstr "Buchung abgelehnt E-Mail unter"
+msgstr "Titel der E-Mail wenn die Reservierung abgelehnt wurde."
 
 #: admin/em-options.php:480
 msgid "The subject of the email sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don't require approval."
-msgstr "Das Thema der E-Mail an die Person, die eine Buchung, die warten auf Genehmigung des Administrators ist. Nicht relevant, wenn Buchungen bedürfen keiner Zustimmung."
+msgstr "Der Titel er E-Mail, die zu der Person geschickt wird, die die Reservierung gemacht hat, wenn die Reservierung nicht bestätigt werden kann. Ist nicht relevant, wenn die Bestätigung deaktiviert wurde."
 
 #: admin/em-options.php:481
 msgid "Booking rejected email"
-msgstr "Buchung abgelehnt E-Mail"
+msgstr "Inhalt der E-Mail, wenn die Reservierung abgelehnt wurde"
 
 #: admin/em-options.php:481
 msgid "The body of the email which will be sent to the person if the booking is rejected. Not relevant if bookings don't require approval."
-msgstr "Der Körper der E-Mail, die an die Person gesendet wird, wenn die Buchung wird abgelehnt. Nicht relevant, wenn Buchungen bedürfen keiner Zustimmung."
+msgstr "Inhalt der E-Mail an die Person, die die Reservierung gemacht hat,wenn die Reservierung abgelehnt wurde. Ist nicht relevant,wenn die Genehigung deaktiviert wurde."
 
 #: admin/em-options.php:484
 #: em-bookings.php:74
 msgid "Booking cancelled"
-msgstr "Buchung storniert"
+msgstr "E-Mail bei Stornierung der Reservierung"
 
 #: admin/em-options.php:485
 msgid "This will be sent when a user cancels their booking."
-msgstr "Dies wird gesendet, wenn ein Benutzer bricht ihre Buchung."
+msgstr "Diese E-Mail wird geschickt, wenn der Benutzer seine Reservierung storniert."
 
 #: admin/em-options.php:487
 msgid "Booking cancelled email subject"
-msgstr "Buchung storniert E-Mail unter"
+msgstr "Titel der E-Mail bei Stornierung"
 
 #: admin/em-options.php:488
 msgid "Booking cancelled email"
-msgstr "Buchung storniert E-Mail"
+msgstr "Inhalt der E-Mail bei Stornierung"
 
 #: admin/em-options.php:496
 msgid "Email Settings"
-msgstr "E-Mail-Einstellungen"
+msgstr "E-Mail Einstellungen"
 
 #: admin/em-options.php:500
 msgid "Notification sender name"
-msgstr "Benachrichtigung Name des Absenders"
+msgstr "Name des Absenders von Benachrichtigungen"
 
 #: admin/em-options.php:500
 msgid "Insert the display name of the notification sender."
-msgstr "Legen Sie die Anzeige des Namens des Absenders der Mitteilung."
+msgstr "Geben sie den Namen für den Absender bei Benachrichtigungen an."
 
 #: admin/em-options.php:501
 msgid "Notification sender address"
-msgstr "enachrichtigung Absenderadresse"
+msgstr "Absender E-Mail Adresse"
 
 #: admin/em-options.php:501
 msgid "Insert the address of the notification sender."
-msgstr "Legen Sie die Adresse des Absenders für Benachrichtigungen."
+msgstr "Geben sie eine existiernede E-Mail Adresse als Absender für die Benachrichtigungen an."
 
 #: admin/em-options.php:502
 msgid "The port through which you e-mail notifications will be sent. Make sure the firewall doesn't block this port"
-msgstr "Der Port, über den Sie E-Mail-Benachrichtigungen verschickt werden. Sicherstellen, dass die Firewall nicht blockiert diesen Port"
+msgstr "Der Port, über den Sie E-Mail-Benachrichtigungen verschickt werden. Stellen sie sicher, dass die Firewall den Port nicht blockiert."
 
 #: admin/em-options.php:503
 msgid "Mail sending method"
-msgstr "Mail Sendemethode"
+msgstr "E-Mail Sendemethode"
 
 #: admin/em-options.php:503
 msgid "PHP mail function"
@@ -2701,7 +2701,7 @@ msgstr "PHP Mail-Funktion"
 
 #: admin/em-options.php:503
 msgid "Select the method to send email notification."
-msgstr "Wählen Sie die Methode E-Mail-Benachrichtigung zu senden."
+msgstr "Wählen sie eine Methode, wie die Benachrichtigungen geschickt werden sollen."
 
 #: admin/em-options.php:504
 msgid "Use SMTP authentication?"
@@ -2709,11 +2709,11 @@ msgstr "SMTP-Authentifizierung verwenden?"
 
 #: admin/em-options.php:504
 msgid "SMTP authentication is often needed. If you use GMail, make sure to set this parameter to Yes"
-msgstr "SMTP-Authentifizierung wird häufig benötigt werden. Wenn Sie Google Mail verwenden, stellen Sie sicher, dass dieser Parameter auf Ja gesetzt"
+msgstr "SMTP-Authentifizierung falls erforderlich. Wenn Sie Google Mail verwenden, müssen sie diesen Parameter auf Ja setzen."
 
 #: admin/em-options.php:505
 msgid "The SMTP host. Usually it corresponds to 'localhost'. If you use GMail, set this value to 'ssl://smtp.gmail.com:465'."
-msgstr "Der SMTP-Host. Normalerweise ist es entspricht 'localhost'. Wenn Sie Google Mail verwenden, setzen Sie diesen Wert auf 'ssl://smtp.gmail.com:465'."
+msgstr "Der SMTP-Host. Normalerweise ist es 'localhost'. Wenn Sie Google Mail verwenden, setzen Sie diesen Wert auf 'ssl://smtp.gmail.com:465'."
 
 #: admin/em-options.php:506
 msgid "SMTP username"
@@ -2721,7 +2721,7 @@ msgstr "SMTP Benutzername"
 
 #: admin/em-options.php:506
 msgid "Insert the username to be used to access your SMTP server."
-msgstr "Legen Sie den Benutzernamen verwendet, um Ihre SMTP-Server zugreifen zu können."
+msgstr "Geben sie den Benutzernamen an, der verwendet werden soll um auf ihre SMTP-Server zuzugreifen."
 
 #: admin/em-options.php:507
 msgid "SMTP password"
@@ -2729,7 +2729,7 @@ msgstr "SMTP Kennwort"
 
 #: admin/em-options.php:507
 msgid "Insert the password to be used to access your SMTP server"
-msgstr "Geben Sie das Passwort verwendet werden, um den SMTP-Server zugreifen zu können"
+msgstr "Geben sie den Kennwort an, das verwendet werden soll um auf ihre SMTP-Server zuzugreifen."
 
 #: admin/em-options.php:515
 msgid "Images size"
@@ -2741,7 +2741,7 @@ msgstr "Maximale Breite (px)"
 
 #: admin/em-options.php:519
 msgid "The maximum allowed width for images uploades"
-msgstr "Die maximal zulässige Breite für Bilder uploades"
+msgstr "Die maximal zulässige Breite in Pixel für Bilder die hochgeladen werden können."
 
 #: admin/em-options.php:520
 msgid "Maximum height (px)"
@@ -2749,7 +2749,7 @@ msgstr "Maximale Höhe (px)"
 
 #: admin/em-options.php:520
 msgid "The maximum allowed height for images uploaded, in pixels"
-msgstr "Die maximal zulässige Höhe für Bilder hochgeladen, im Pixel"
+msgstr "Die maximal zulässige Höhe in Pixel für Bilder, die hochgeladen werden können."
 
 #: admin/em-options.php:521
 msgid "Maximum size (bytes)"
@@ -2757,91 +2757,91 @@ msgstr "Maximale Größe (in Bytes)"
 
 #: admin/em-options.php:521
 msgid "The maximum allowed size for images uploaded, in bytes"
-msgstr "Die maximal zulässige Größe für Bilder hochgeladen, im Bytes"
+msgstr "Die maximal zulässige Größe für Bilder die hochgeladen werden können, im Bytes."
 
 #: admin/em-options.php:529
 msgid "User Capabilities"
-msgstr "Benutzer-Funktionen"
+msgstr "Berechtigungen"
 
 #: admin/em-options.php:533
 msgid "Warning: Changing these values may result in exposing previously hidden information to all users."
-msgstr "Warnung: Die Änderung dieser Werte kann bei der Aufdeckung bisher verborgene Informationen für alle Benutzer führen."
+msgstr "Warnung: Die Änderung dieser Werte kann dazu führen, dass Benutzer Informationen sehen, die nicht für sie bestimmt sind."
 
 #: admin/em-options.php:540
 msgid "You can now give fine grained control with regards to what your users can do with events. Each user role can have perform different sets of actions."
-msgstr "Sie können nun geben feinkörnige Kontrolle in Bezug auf das, was Ihre Benutzer können mit Ereignissen zu tun. Jeder Benutzer Rolle können führen verschiedene Arten von Maßnahmen."
+msgstr "Sie können genau einstellen, welche Benutzergruppe welche Funktionen ausüben kann. "
 
 #: admin/em-options.php:548
 msgid "Users can publish events and skip any admin approval."
-msgstr "Benutzer können veröffentlichen Veranstaltungen und überspringen alle Admin-Zulassung."
+msgstr "Benutzer können Veranstaltungen ohne jegliche Admin-Genehmigung veröffentlichen."
 
 #: admin/em-options.php:549
 msgid "User can edit the global categories."
-msgstr "Benutzer können den globalen Kategorien."
+msgstr "Benutzer können globale Kategorien bearbeiten."
 
 #: admin/em-options.php:550
 msgid "User can delete other users events."
-msgstr "Benutzer löschen können anderen Benutzern Veranstaltungen."
+msgstr "Benutzerkönnen Veranstaltungen von anderen Benutzern löschen."
 
 #: admin/em-options.php:551
 msgid "User can delete other users locations."
-msgstr "Benutzer löschen können anderen Benutzern Standorten."
+msgstr "Benutzer können Veranstaltungsorte anderer Benutzer löschen."
 
 #: admin/em-options.php:552
 msgid "User can edit other users locations."
-msgstr "Benutzer bearbeiten kann anderen Usern Standorten."
+msgstr "Benutzer können Veranstaltungsorte anderer Bentzer bearbeiten."
 
 #: admin/em-options.php:553
 msgid "User can manage other users individual bookings and event booking settings."
-msgstr "Benutzer können auch andere Benutzer die einzelnen Buchungen und Event-Buchung ändern."
+msgstr "Benutzer können individuelle Reservierungen und Reservierungseinstellungen von anderen Benutzern ändern."
 
 #: admin/em-options.php:554
 msgid "User can edit other users events."
-msgstr "Benutzer bearbeiten kann anderen Usern Veranstaltungen."
+msgstr "Benutzer können Veranstaltungen der anderen Benutzer bearbeiten."
 
 #: admin/em-options.php:555
 msgid "User can delete their own locations."
-msgstr "Benutzer löschen können ihre eigenen Standorten."
+msgstr "Benutzer können ihre eigenen Standorte löschen."
 
 #: admin/em-options.php:556
 msgid "User can delete their events."
-msgstr "Benutzer löschen können ihre Veranstaltungen."
+msgstr "Benutzer können ihre Veranstaltungen löschen."
 
 #: admin/em-options.php:557
 msgid "User can edit their locations."
-msgstr "Benutzer bearbeiten kann ihren Standorten."
+msgstr "Benutzer können ihre Veranstaltungsorte bearbeiten."
 
 #: admin/em-options.php:558
 msgid "User can use and manage bookings with their events."
-msgstr "Der Benutzer kann bedienen und zu verwalten Buchungen mit ihren Veranstaltungen."
+msgstr "Benutzer können Reservierungen ihrere Veranstaltungen verwalten."
 
 #: admin/em-options.php:559
 msgid "User can view other users locations, to make locations shared by all users allow all event user roles to view all locations."
-msgstr "Der Benutzer kann von anderen Benutzern Standorte, um Standorte von allen Benutzern gemeinsam können alle Event-Benutzerrollen auf alle Standorte zu sehen."
+msgstr "Benutzer können die Veranstaltungsorte der anderen Benutzer verwenden. Um gemeinsame Veranstaltungsorte zu realisieren, müssen sie allen Benutzern erlauben, alle Veranstaltungsorte zu bearbeiten."
 
 #: admin/em-options.php:560
 msgid "User can create recurrent events."
-msgstr "Benutzer können wiederkehrende Ereignisse."
+msgstr "Benutzer können wiederkehrende Veranstaltungen erstellen."
 
 #: admin/em-options.php:561
 msgid "User can create and edit their events."
-msgstr "Benutzer erstellen und bearbeiten können ihre Veranstaltungen."
+msgstr "Benutzer können Veranstaltungen erstellen und bearbeiten."
 
 #: admin/em-options.php:593
 msgid "Anonymous Event Submission"
-msgstr "Anonyme VeranstaltungEinreichung"
+msgstr "Einreichung Anonymer Veranstaltungen"
 
 #: admin/em-options.php:597
 msgid "You can allow users to publicly submit events on your blog by using the [event_form] shortcode, and enabling anonymous submissions below."
-msgstr "Sie können Benutzern erlauben, öffentlich unterbreiten Ereignisse in Ihrem Blog, indem Sie die [event_form] Shortcode und Aktivieren der anonymen Einreichungen unten."
+msgstr "Sie können Benutzern erlauben, in ihrem Blog Veranstaltungen vorzuschlagen, wenn sie den [event_form]-Shortcode und das anonyme einsenden von Veranstaltungen erlauben."
 
 #: admin/em-options.php:600
 msgid "Allow anonymous event submissions?"
-msgstr "Gestattet anonymen Einsendungen Veranstaltung?"
+msgstr "Anonymes Einsenden von Veranstaltungen erlauben?"
 
 #: admin/em-options.php:600
 msgid "Would you like to allow users to submit bookings anonymously? If so, you can use the new [event_form] shortcode or <code>em_event_form()</code> template tag with this enabled."
-msgstr "Möchten Sie, dass Benutzer Buchungen anonym einreichen? Wenn ja, können Sie mit dem neuen [event_form] Shortcode oder <code> em_event_form () </code> Template-Tag mit dieser aktiviert ist."
+msgstr "Möchten Sie, dass Benutzer Veranstaltungen anonym einreichen können? Wenn ja, verwenden sie den [event_form]-Shortcode oder den <code> em_event_form () </code> Template-Tag und aktivieren sie diese Option."
 
 #: admin/em-options.php:601
 msgid "Guest Default User"
@@ -2849,7 +2849,7 @@ msgstr "Gast Default User"
 
 #: admin/em-options.php:601
 msgid "Events require a user to own them. In order to allow events to be submitted anonymously you need to assign that event a specific user. We recommend you create a \"Anonymous\" subscriber with a very good password and use that."
-msgstr "Veranstaltungen benötigen einen Benutzer zu eigen. Damit Ereignisse anonym eingereicht werden, müssen Sie ordnen diesem Fall einen bestimmten Benutzer. Wir empfehlen Ihnen, a \"Anonymous\" Teilnehmer mit einem sehr guten Passwort und verwenden Sie diese."
+msgstr "Veranstaltungen benötigen einen Benutzer als Eigentümer. Damit Veranstaltungen anonym eingereicht werden können, müssen Sie hier einen Benutzer bestimmen. Wir empfehlen Ihnen, für diesen  \"anonymen\" Benutzer ein  sehr gutes Passwort zu verwenden."
 
 #: admin/em-options.php:602
 msgid "Success Message"
@@ -2857,11 +2857,11 @@ msgstr "Erfolgsmeldung"
 
 #: admin/em-options.php:602
 msgid "Anonymous submitters cannot see or modify their event once submitted. You can customize the success message they see here."
-msgstr "Anonyme Einreicher kann nicht sehen oder ändern ihre Veranstaltung einmal eingereicht. Sie können den Erfolg Botschaft, die sie hier sehen."
+msgstr "Anonyme Benutzer können ihre eingereichten Veranstaltungen nicht mehr bearbeiten, wenn sie diese eingereicht haben. Sie können die Erfolgsmeldung hier entsprechend gestalten."
 
 #: admin/em-people.php:27
 msgid "Bookings data"
-msgstr "Buchungen Daten"
+msgstr "Reservierungsinformationen"
 
 #: admin/em-people.php:31
 #: templates/placeholders/bookingform.php:106
@@ -3870,7 +3870,7 @@ msgstr "%s konnte nicht gelöscht werden"
 
 #: classes/em-booking.php:416
 msgid "Not approved, spaces full."
-msgstr "Nicht bestätigt, Alle Plätze sind ausgebucht."
+msgstr "Nicht bestätigt, alle Plätze sind ausgebucht."
 
 #: classes/em-booking.php:424
 msgid "Booking %s."
@@ -3891,11 +3891,11 @@ msgstr "Notiz zur Reservierung erfolgreich hinzugefügt."
 
 #: classes/em-booking.php:538
 msgid "Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning)."
-msgstr "Bestätigung per E-Mail konnte nicht an den Ansprechpartner der Veranstaltung gesendet werden. Registrant sollten ihre E-Mail bekommen haben (nur admin sehen diese Warnung)."
+msgstr "Bestätigung per E-Mail konnte nicht an den Ansprechpartner der Veranstaltung gesendet werden. Der Registrant sollte seine E-Mail bekommen haben (nur admin sehen diese Warnung)."
 
 #: classes/em-booking.php:545
 msgid "Confirmation email could not be sent to admin. Registrant should have gotten their email (only admin see this warning)."
-msgstr "Bestätigung per E-Mail konnte nicht an admin gesendet werden. Registrant sollten ihre E-Mail bekommen haben (nur admin sehen diese Warnung)."
+msgstr "Bestätigung per E-Mail konnte nicht an admin gesendet werden. Registrant sollten seine E-Mail bekommen haben (nur admin sehen diese Warnung)."
 
 #: classes/em-object.php:731
 msgid "However, the image could not be saved."
@@ -3911,7 +3911,7 @@ msgstr "Aus irgend einem Grund konnte das Bild nicht gespeichert werden:"
 
 #: classes/em-object.php:754
 msgid "The image file is too big! Maximum size:"
-msgstr "Die Image-Datei ist zu groß! Maximale Größe:"
+msgstr "Die Bilddatei ist zu groß! Maximale Größe:"
 
 #: classes/em-object.php:759
 msgid "The image is too big! Maximum size allowed:"
@@ -3923,7 +3923,7 @@ msgstr "Das Bild hat ein falsches Format!"
 
 #: classes/em-people.php:81
 msgid "User deleted by administrators"
-msgstr "Benutzer von Administratoren gelöscht"
+msgstr "Benutzer wurde von einem Administrator gelöscht"
 
 #: em-install.php:225
 msgid "Uncategorized"
@@ -3966,7 +3966,7 @@ msgstr "Hallo #_BOOKINGNAME, <br/>Die Reservierung für #_BOOKINGSPACES Platz/Pl
 #: em-install.php:349
 #: em-install.php:375
 msgid "No %s"
-msgstr "Nicht %s"
+msgstr "Keine  %s"
 
 #: em-install.php:368
 #: em-debug.php:18
@@ -3988,7 +3988,7 @@ msgstr "Reservierung in Bearbeitung"
 
 #: em-install.php:440
 msgid "Booking Rejected"
-msgstr "Reservierung storniert"
+msgstr "Reservierung abgelehnt"
 
 #: em-install.php:442
 msgid "Booking Confirmed"
@@ -4012,7 +4012,7 @@ msgstr "Keine Ticket-ID vorhanden"
 
 #: em-actions.php:93
 msgid "You are now viewing the duplicated %s."
-msgstr "Du betrachtest jetzt die duplizierten %s."
+msgstr "Sie sehen jetzt die duplizierten %s."
 
 #: em-actions.php:170
 #: em-actions.php:240
@@ -4050,7 +4050,7 @@ msgstr "Reservierung %s"
 #: em-actions.php:366
 #: em-bookings.php:77
 msgid "You must log in to cancel your booking."
-msgstr "Sie müssen angemeldet sein, um Ihre Reservierung zu stornieren."
+msgstr "Sie müssen angemeldet sein, um ihre Reservierung zu stornieren."
 
 #: em-bookings.php:97
 msgid "Book now!"
@@ -4058,7 +4058,7 @@ msgstr "Reservieren Sie jetzt!"
 
 #: em-bookings.php:171
 msgid "You must <a href=\"%s\">register</a> or <a href=\"%s\">log in</a> in order to create and manage your bookings."
-msgstr "Sie müssen sich <a href=\"%s\">registrieren</a> oder <a href=\"%s\">anmelden</a> ihre Reservierungen zu verwalten."
+msgstr "Sie müssen sich <a href=\"%s\">registrieren</a> oder <a href=\"%s\">anmelden</a> um ihre Reservierungen zu verwalten."
 
 #: em-bookings.php:219
 #: em-bookings.php:233

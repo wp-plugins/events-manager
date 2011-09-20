@@ -48,6 +48,38 @@ function em_install() {
 	}
 }
 
+/**
+ * Magic function that takes a table name and cleans all non-unique keys not present in the $clean_keys array. if no array is supplied, all but the primary key is removed.
+ * @param string $table_name
+ * @param array $clean_keys
+ */
+function em_sort_out_table_nu_keys($table_name, $clean_keys = array()){
+	global $wpdb;
+	//sort out the keys
+	$new_keys = $clean_keys;
+	$table_key_changes = array();
+	$table_keys = $wpdb->get_results("SHOW KEYS FROM $table_name WHERE Key_name != 'PRIMARY'", ARRAY_A);
+	foreach($table_keys as $table_key_row){
+		if( !in_array($table_key_row['Key_name'], $clean_keys) ){
+			$table_key_changes[] = "ALTER TABLE $table_name DROP INDEX ".$table_key_row['Key_name'];
+		}elseif( in_array($table_key_row['Key_name'], $clean_keys) ){
+			foreach($clean_keys as $key => $clean_key){
+				if($table_key_row['Key_name'] == $clean_key){
+					unset($new_keys[$key]);
+				}
+			}
+		}
+	}
+	//delete duplicates
+	foreach($table_key_changes as $sql){
+		$wpdb->query($sql);
+	}
+	//add new keys
+	foreach($new_keys as $key){
+		$wpdb->query("ALTER TABLE $table_name ADD INDEX ($key)");
+	}
+}
+
 function em_create_events_table() {
 	global  $wpdb, $user_level, $user_ID;
 	get_currentuserinfo();
@@ -80,11 +112,7 @@ function em_create_events_table() {
 		recurrence_byweekno int(4) NULL DEFAULT NULL,	
 		blog_id bigint(20) unsigned NULL DEFAULT NULL,
 		group_id bigint(20) unsigned NULL DEFAULT NULL,
-		PRIMARY KEY  (event_id),
-		KEY (event_status),
-		KEY (blog_id),
-		KEY (event_slug),
-		KEY (group_id)
+		PRIMARY KEY  (event_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	$old_table_name = EM_OLD_EVENTS_TABLE; 
@@ -106,6 +134,7 @@ function em_create_events_table() {
 		}
 		dbDelta($sql);
 	}
+	em_sort_out_table_nu_keys($table_name, array('event_status','blog_id','event_slug','group_id'));
 }
 
 function em_create_events_meta_table(){
@@ -119,8 +148,6 @@ function em_create_events_meta_table(){
 		meta_key varchar(255) DEFAULT NULL,
 		meta_value longtext,
 		meta_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-		KEY object_id (object_id),
-		KEY meta_key (meta_key),
 		PRIMARY KEY  (meta_id)
 		) DEFAULT CHARSET=utf8 ";
 		
@@ -128,6 +155,7 @@ function em_create_events_meta_table(){
 	
 	$old_table_name = EM_OLD_LOCATIONS_TABLE;     
 	dbDelta($sql);	
+	em_sort_out_table_nu_keys($table_name, array('object_id','meta_key'));
 }
 
 function em_create_locations_table() {
@@ -150,11 +178,7 @@ function em_create_locations_table() {
 		location_latitude float DEFAULT NULL,
 		location_longitude float DEFAULT NULL,
 		location_description text DEFAULT NULL,
-		PRIMARY KEY  (location_id),
-		KEY (location_state),
-		KEY (location_region),
-		KEY (location_country),
-		KEY (location_slug)
+		PRIMARY KEY  (location_id)
 		) DEFAULT CHARSET=utf8 ;";
 		
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
@@ -172,6 +196,7 @@ function em_create_locations_table() {
 		}
 		dbDelta($sql);
 	}
+	em_sort_out_table_nu_keys($table_name, array('location_state','location_region','location_country','location_slug'));
 }
 
 function em_create_bookings_table() {
@@ -197,6 +222,7 @@ function em_create_bookings_table() {
 		$wpdb->query("ALTER TABLE $table_name CHANGE  `booking_seats`  `booking_spaces` INT( 5 ) NULL DEFAULT NULL");
 	}
 	dbDelta($sql);
+	em_sort_out_table_nu_keys($table_name, array('event_id'));
 } 
 
 //Add the categories table
@@ -212,8 +238,7 @@ function em_create_categories_table() {
 		category_owner bigint(20) unsigned DEFAULT 0 NOT NULL,
 		category_name tinytext NOT NULL,
 		category_description text DEFAULT NULL,
-		PRIMARY KEY  (category_id),
-		KEY (category_slug)
+		PRIMARY KEY  (category_id)
 		) DEFAULT CHARSET=utf8 ;";
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	
@@ -225,6 +250,7 @@ function em_create_categories_table() {
 	}else{
 		dbDelta($sql);
 	}
+	em_sort_out_table_nu_keys($table_name, array('category_slug'));
 }
 
 
@@ -246,12 +272,12 @@ function em_create_tickets_table() {
 		ticket_min INT( 10 ) NULL ,
 		ticket_max INT( 10 ) NULL ,
 		ticket_spaces INT NULL ,
-		PRIMARY KEY  (ticket_id),
-		KEY (event_id)
+		PRIMARY KEY  (ticket_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
+	em_sort_out_table_nu_keys($table_name, array('event_id'));
 }
 
 //Add the categories table
@@ -266,13 +292,12 @@ function em_create_tickets_bookings_table() {
 		  ticket_id bigint(20) unsigned NOT NULL,
 		  ticket_booking_spaces int(6) NOT NULL,
 		  ticket_booking_price decimal(10,2) NOT NULL,
-		  PRIMARY KEY  (ticket_booking_id),
-		  KEY (booking_id),
-		  KEY (ticket_id)
+		  PRIMARY KEY  (ticket_booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 	
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 	dbDelta($sql);
+	em_sort_out_table_nu_keys($table_name, array('booking_id','ticket_id'));
 }
 
 function em_add_options() {
@@ -365,15 +390,17 @@ function em_add_options() {
 <h3>Upcoming Events</h3>
 <p>#_NEXTEVENTS</p>',
 		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
-		'dbem_location_event_list_item_format' => "<li>#_NAME - #j #M #Y - #H:#i</li>",
+		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
 		//Category Formatting
 		'dbem_category_page_title_format' => '#_CATEGORYNAME',
-		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<div><h3>Upcoming Events</h3>#_CATEGORYEVENTSNEXT',
+		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<div><h3>Upcoming Events</h3>#_CATEGORYNEXTEVENTS',
 		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
 		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
 		'dbem_categories_default_orderby' => 'name',
 		'dbem_categories_default_order' =>  'ASC',
+		'dbem_category_no_events_message' => __('<li>No events in this category</li>', 'dbem'),
+		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
 		//RSS Stuff
 		'dbem_rss_limit' => 10,
 		'dbem_rss_scope' => 'future',
@@ -382,12 +409,8 @@ function em_add_options() {
 		'dbem_rss_description_format' => "#j #M #y - #H:#i <br/>#_LOCATION <br/>#_LOCATIONADDRESS <br/>#_LOCATIONTOWN",
 		'dbem_rss_title_format' => "#_NAME",
 		//iCal Stuff
-		'dbem_ical_limit' => 10,
-		'dbem_ical_scope' => 'future',
-		'dbem_ical_main_title' => get_bloginfo('title')." - ".__('Events', 'dbem'),
-		'dbem_ical_main_description' => get_bloginfo('description'),
+		'dbem_ical_limit' => 0,
 		'dbem_ical_description_format' => "#_NAME - #_LOCATIONNAME - #j #M #y #H:#i",
-		'dbem_ical_title_format' => "#_NAME",
 		//Google Maps
 		'dbem_gmap_is_active'=> 1,
 		'dbem_location_baloon_format' =>  "<strong>#_LOCATIONNAME</strong><br/>#_LOCATIONADDRESS - #_LOCATIONTOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>",
@@ -426,6 +449,19 @@ function em_add_options() {
 		'dbem_bookings_approval_reserved' => 0, //overbooking before approval?
 		'dbem_bookings_login_form' => 1, //show login form on booking area
 		'dbem_bookings_approval_overbooking' => 0, //overbooking possible when approving?
+		'dbem_bookings_double'=>0,//double bookings or more, users can't double book by default
+			//messages
+			'dbem_booking_feedback_pending' =>__('Booking successful, pending confirmation (you will also receive an email once confirmed).', 'dbem'),
+			'dbem_booking_feedback' => __('Booking successful.', 'dbem'),
+			'dbem_booking_feedback_full' => __('Booking cannot be made, not enough spaces available!', 'dbem'),
+			'dbem_booking_feedback_log_in' => __('You must log in or register to make a booking.','dbem'),
+			'dbem_booking_feedback_nomail' => __('However, there were some problems whilst sending confirmation emails to you and/or the event contact person. You may want to contact them directly and letting them know of this error.', 'dbem'),
+			'dbem_booking_feedback_error' => __('Booking could not be created','dbem').':',
+			'dbem_booking_feedback_email_exists' => __('This email already exists in our system, please log in to register to proceed with your booking.','dbem'),
+			'dbem_booking_feedback_new_user' => __('A new user account has been created for you. Please check your email for access details.','dbem'),
+			'dbem_booking_feedback_reg_error' => __('There was a problem creating a user account, please contact a website administrator.','dbem'),
+			'dbem_booking_feedback_already_booked' => __('You already have booked a seat at this event.','dbem'),
+			'dbem_booking_feedback_min_space' => __('You must request at least one space to book an event.','dbem'),
 			//Emails
 			'dbem_default_contact_person' => 1, //admin
 			'dbem_bookings_notify_admin' => 0,
@@ -442,7 +478,7 @@ function em_add_options() {
 			'dbem_bookings_email_confirmed_body' => str_replace("<br/>", "\n\r", $respondent_email_body_localizable),
 			'dbem_bookings_email_cancelled_subject' => __('Booking Cancelled','dbem'),
 			'dbem_bookings_email_cancelled_body' => str_replace("<br/>", "\n\r", $respondent_email_cancelled_body_localizable),
-			//Bookings Form - beta
+			//Bookings Form - beta - not working at all yet
 			'dbem_bookings_page' => '<p>Date/Time - #j #M #Y #_12HSTARTTIME #@_{ \u\n\t\i\l j M Y}<br />Where - #_LOCATIONLINK</p>#_EXCERPT #_BOOKINGFORM<p>'.__('Powered by','dbem').'<a href="http://wp-events-plugin.com">events manager</a></p>',
 			'dbem_bookings_page_title' => __('Bookings - #_NAME','dbem'),
 			//Ticket Specific Options
@@ -466,6 +502,11 @@ function em_add_options() {
 		add_option($key, $value);
 	}
 	if( !get_option('dbem_version') ){ add_option('dbem_credits',1); }
+	if( get_option('dbem_version') < 4.16 ){
+		update_option('dbem_ical_limit',0); //fix, would rather do this than change the option name.
+		update_option('dbem_category_no_events_message',get_option('dbem_location_no_events_message'));
+		update_option('dbem_category_event_list_item_format',get_option('dbem_location_event_list_item_format'));
+	}
 }    
 
 function em_set_mass_caps( $roles, $caps ){

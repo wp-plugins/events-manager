@@ -2,13 +2,13 @@
 <?php
 	global $wpdb, $current_user, $EM_Notices, $EM_Person;
 	if( is_user_logged_in() ):
-		$EM_Person = new EM_Person( wp_get_current_user() );
-		$bookings = $EM_Person->get_bookings();
-		$bookings_count = count($bookings);
+		$EM_Person = new EM_Person( get_current_user_id() );
+		$EM_Bookings = $EM_Person->get_bookings();
+		$bookings_count = count($EM_Bookings->bookings);
 		if($bookings_count > 0){
 			//Get events here in one query to speed things up
 			$event_ids = array();
-			foreach($bookings as $EM_Booking){
+			foreach($EM_Bookings as $EM_Booking){
 				$event_ids[] = $EM_Booking->event_id;
 			}
 			$EM_Events = EM_Events::get($event_ids);
@@ -55,7 +55,7 @@
 						$rowno = 0;
 						$event_count = 0;
 						$nonce = wp_create_nonce('booking_cancel');
-						foreach ($bookings as $EM_Booking) {
+						foreach ($EM_Bookings as $EM_Booking) {
 							$EM_Event = $EM_Booking->get_event();						
 							if( ($rowno < $limit || empty($limit)) && ($event_count >= $offset || $offset === 0) ) {
 								$rowno++;
@@ -69,8 +69,11 @@
 									</td>
 									<td>
 										<?php
-										$cancel_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'booking_cancel', 'booking_id'=>$EM_Booking->id, '_wpnonce'=>$nonce));
-										$cancel_link = '<a class="em-bookings-cancel" href="'.$cancel_url.'" onclick="if( !confirm(\''. __('Are you sure you want to cancel your booking?','dbem') .'\') ){ return false; }">'.__('Cancel','dbem').'</a>';
+										$cancel_link = '';
+										if($EM_Booking->status == 2){
+											$cancel_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'booking_cancel', 'booking_id'=>$EM_Booking->id, '_wpnonce'=>$nonce));
+											$cancel_link = '<a class="em-bookings-cancel" href="'.$cancel_url.'" onclick="if( !confirm(\''. __('Are you sure you want to cancel your booking?','dbem') .'\') ){ return false; }">'.__('Cancel','dbem').'</a>';
+										}
 										echo apply_filters('em_my_bookings_booking_actions', $cancel_link, $EM_Booking);
 										?>
 									</td>
@@ -87,7 +90,7 @@
 				<?php else: ?>
 					<?php _e('You do not have any bookings.', 'dbem'); ?>
 				<?php endif; ?>
-			<?php if( !empty($bookings_nav) && $bookings >= $limit ) : ?>
+			<?php if( !empty($bookings_nav) && $EM_Bookings >= $limit ) : ?>
 			<div class='tablenav'>
 				<?php echo $bookings_nav; ?>
 				<div class="clear"></div>
@@ -97,4 +100,4 @@
 <?php else: ?>
 	<p><?php echo sprintf(__('Please <a href="%s">Log In</a> to view your bookings.','dbem'),site_url('wp-login.php', 'login'))?></p>
 <?php endif; ?>
-<?php do_action('em_template_my_bookings_footer', $bookings); ?>
+<?php do_action('em_template_my_bookings_footer', $EM_Bookings); ?>

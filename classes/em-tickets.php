@@ -32,7 +32,7 @@ class EM_Tickets extends EM_Object implements Iterator{
 		global $wpdb;
 		if( is_object($object) && get_class($object) == "EM_Event" ){ //Creates a blank tickets object if needed
 			$this->event = $object;
-			$sql = "SELECT * FROM ". EM_TICKETS_TABLE ." WHERE event_id ='{$this->event->id}'";
+			$sql = "SELECT * FROM ". EM_TICKETS_TABLE ." WHERE event_id ='{$this->event->id}' ORDER BY ticket_price DESC, ticket_name ASC";
 			$tickets = $wpdb->get_results($sql, ARRAY_A);
 			foreach ($tickets as $ticket){
 				$EM_Ticket = new EM_Ticket($ticket);
@@ -188,8 +188,8 @@ class EM_Tickets extends EM_Object implements Iterator{
 	 */
 	function build_sql_conditions( $args = array() ){
 		$conditions = apply_filters( 'em_tickets_build_sql_conditions', parent::build_sql_conditions($args), $args );
-		if( is_numeric($args['status']) ){
-			$conditions['status'] = 'ticket_status='.$args['status'];
+		if( is_numeric($args['ticket_status']) ){
+			$conditions['ticket_status'] = 'ticket_status='.$args['status'];
 		}
 		return apply_filters('em_tickets_build_sql_conditions', $conditions, $args);
 	}
@@ -209,7 +209,7 @@ class EM_Tickets extends EM_Object implements Iterator{
 	 */
 	function get_default_search( $array = array() ){
 		$defaults = array(
-			'status' => false,
+			'ticket_status' => false,
 			'person' => true //to add later, search by person's tickets...
 		);	
 		if( is_admin() ){
