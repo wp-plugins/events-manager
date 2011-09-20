@@ -28,7 +28,6 @@ $EM_Tickets = $EM_Event->get_bookings()->get_tickets();
 					 */
 				?>
 				<?php if( is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is_user_logged_in()) ): ?>
-					
 					<?php 
 						if( count($EM_Tickets->tickets) > 1 || get_option('dbem_bookings_tickets_single_form') ){ //show if more than 1 ticket, or if in forced ticket list view mode
 							em_locate_template('forms/bookingform/tickets-list.php',true, array('EM_Event'=>$EM_Event));
