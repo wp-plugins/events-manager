@@ -1,7 +1,8 @@
 <?php  
 /* @var $EM_Event EM_Event */   
 global $EM_Notices;
-$EM_Tickets = $EM_Event->get_bookings()->get_tickets();					
+$EM_Tickets = $EM_Event->get_bookings()->get_tickets();
+$EM_Ticket = $EM_Tickets->get_first();
 ?>
 <div id="em-booking">
 	<a name="em-booking"></a>
@@ -12,10 +13,10 @@ $EM_Tickets = $EM_Event->get_bookings()->get_tickets();
 		<p><?php _e('Online bookings are not available for this event.','dbem'); ?></p>
 	<?php elseif( $EM_Event->start < current_time('timestamp') ): ?>
 		<p><?php _e('Bookings are closed for this event.','dbem'); ?></p>
-	<?php elseif( $EM_Event->get_bookings()->get_available_spaces() == 0 ): ?>
+	<?php elseif( $EM_Event->get_bookings()->get_available_spaces() == 0 || (count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') && $EM_Ticket->get_available_spaces() == 0) ): ?>
 		<p><?php _e('This event is fully booked.','dbem'); ?></p>
 	<?php else: ?>
-		<?php echo $EM_Notices; ?>		
+		<?php echo $EM_Notices; ?>
 		<?php if( count($EM_Tickets->tickets) > 0) : ?>
 			<?php //Tickets exist, so we show a booking form. ?>
 			<form id='em-booking-form' name='booking-form' method='post' action=''>
@@ -38,7 +39,6 @@ $EM_Tickets = $EM_Event->get_bookings()->get_tickets();
 					<?php do_action('em_booking_form_after_tickets'); ?>
 					<div class='em-booking-form-details'>
 						<?php 
-							$EM_Ticket = $EM_Tickets->get_first();
 							if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') ){
 								em_locate_template('forms/bookingform/ticket-single.php',true, array('EM_Event'=>$EM_Event, 'EM_Ticket'=>$EM_Ticket));
 							} 
