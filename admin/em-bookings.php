@@ -28,11 +28,15 @@ add_action('admin_init','em_admin_actions_bookings',100);
  * Decide what content to show in the bookings section. 
  */
 function em_bookings_page(){
+	global $action;
+	wp_reset_vars( array('action') );
 	//First any actions take priority
 	if( !empty($_REQUEST['booking_id']) ){
 		em_bookings_single();
 	}elseif( !empty($_REQUEST['person_id']) ){
 		em_bookings_person();
+	}elseif( !empty($action) ){
+		do_action('em_bookings_'.$action);
 	}elseif( !empty($_REQUEST['event_id']) ){
 		em_bookings_event();
 	}elseif( !empty($_REQUEST['ticket_id']) ){

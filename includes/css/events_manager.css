@@ -138,7 +138,7 @@ table.em-calendar td {
 table.dbem-calendar.table tr.days-names {
 	font-weight: bold;
 } 
-table.em-calendar td.eventless-pre, .dbem-calendar td.eventless-post {
+table.em-calendar td.eventless-pre, .em-calendar td.eventless-post {
 	color: #ccc;
 }
 table.em-calendar td.eventful-pre a, table.em-calendar td.eventful-post a{

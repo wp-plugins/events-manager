@@ -74,7 +74,8 @@ function em_docs_init(){
 							'#_EVENTID' => array( 'desc' => __('Shows the event corresponding ID number in the database table.', 'dbem') ),
 							'#_EVENTIMAGE' => array( 'desc' => __('Shows the event image, if available.', 'dbem') ),
 							'#_EVENTIMAGE{x,y}' => array( 'desc' => __('Shows the event image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_EVENTIMAGE{100,100}</code>', 'dbem') ),
-							'#_EVENTIMAGEURL' => array( 'desc' => __('Shows the event image url, if available.', 'dbem') )
+							'#_EVENTIMAGEURL' => array( 'desc' => __('Shows the event image url, if available.', 'dbem') ),
+							'#_CATEGORIES' => array( 'desc' => __('Shows a list of category links this event belongs to.', 'dbem') ),
 						)
 					),			
 					'Time' => array(
