@@ -70,7 +70,7 @@
 									<td>
 										<?php
 										$cancel_link = '';
-										if($EM_Booking->status == 2){
+										if($EM_Booking->status != 3){
 											$cancel_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'booking_cancel', 'booking_id'=>$EM_Booking->id, '_wpnonce'=>$nonce));
 											$cancel_link = '<a class="em-bookings-cancel" href="'.$cancel_url.'" onclick="if( !confirm(\''. __('Are you sure you want to cancel your booking?','dbem') .'\') ){ return false; }">'.__('Cancel','dbem').'</a>';
 										}

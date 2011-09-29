@@ -1,8 +1,9 @@
 <?php 
 /* @var $EM_Ticket EM_Ticket */
 /* @var $EM_Event EM_Event */
+global $allowedposttags;
 ?>
-<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo $EM_Ticket->description; ?></p><?php endif; ?>
+<?php if(!empty($EM_Ticket->description)) :?><p class="ticket-desc"><?php echo wp_kses($EM_Ticket->description,$allowedposttags); ?></p><?php endif; ?>
 <?php if( !$EM_Event->is_free() ): ?>
 	<p>
 		<label><?php _e('Price','dbem') ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong>

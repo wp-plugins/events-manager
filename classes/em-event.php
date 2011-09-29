@@ -855,11 +855,13 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_BOOKINGSURL':
 				case '#_BOOKINGSLINK':
-					$bookings_link = esc_url(get_bloginfo ( 'wpurl' )."/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=".$this->id);
-					if($result == '#_BOOKINGSLINK'){
-						$replace = '<a href="'.$bookings_link.'" title="'.esc_attr($bookings_link).'">'.esc_html($this->name).'</a>';
-					}else{
-						$replace = $bookings_link;	
+					if( $this->can_manage('edit_events','edit_others_events') ){
+						$bookings_link = esc_url(get_bloginfo ( 'wpurl' )."/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=".$this->id);
+						if($result == '#_BOOKINGSLINK'){
+							$replace = '<a href="'.$bookings_link.'" title="'.esc_attr($bookings_link).'">'.esc_html($this->name).'</a>';
+						}else{
+							$replace = $bookings_link;	
+						}
 					}
 					break;
 				//Contact Person
@@ -998,6 +1000,7 @@ class EM_Event extends EM_Object{
 			//Make template event (and we just change dates)
 			$event = $this->to_array();
 			unset($event['event_id']); //remove id and we have a event template to feed to wpdb insert
+			$event['event_date_created'] = current_time('mysql'); //since the recurrences are recreated
 			unset($event['event_date_modified']);		
 			$event['event_attributes'] = serialize($event['event_attributes']);
 			foreach($event as $key => $value ){ //remove recurrence information

@@ -155,14 +155,13 @@ function bp_em_setup_nav() {
 			'name' => sprintf(__( 'Events (%s)', 'dbem' ), $count),
 			'slug' => 'events', 
 			'parent_url' => $group_link, 
-			'parent_slug' => $bp->groups->slug, 
+			'parent_slug' => $bp->groups->current_group->slug, 
 			'screen_function' => 'bp_em_group_events', 
 			'position' => 50, 
 			'user_has_access' => $user_access, 
 			'item_css_id' => 'forums' 
 		));
 	}
-	
 }
 
 /***

@@ -169,7 +169,12 @@ class EM_Object {
 				$date_month_start = $month[0];
 				$date_month_end = $month[1];
 			}else{
-				$date_month_start = $date_month_end = $month;
+				if( !empty($month) ){
+					$date_month_start = $date_month_end = $month;					
+				}else{
+					$date_month_start = 1;
+					$date_month_end = 12;				
+				}
 			}
 			//Sort out year range, if supplied an array of array(year,year), it'll check between these two years
 			if( self::array_is_numeric($year) ){

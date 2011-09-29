@@ -393,7 +393,7 @@ function em_add_options() {
 		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
 		//Category Formatting
 		'dbem_category_page_title_format' => '#_CATEGORYNAME',
-		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<div><h3>Upcoming Events</h3>#_CATEGORYNEXTEVENTS',
+		'dbem_category_page_format' => '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<h3>Upcoming Events</h3>#_CATEGORYNEXTEVENTS',
 		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
 		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
@@ -506,6 +506,11 @@ function em_add_options() {
 		update_option('dbem_ical_limit',0); //fix, would rather do this than change the option name.
 		update_option('dbem_category_no_events_message',get_option('dbem_location_no_events_message'));
 		update_option('dbem_category_event_list_item_format',get_option('dbem_location_event_list_item_format'));
+	}
+	if( get_option('dbem_version') < 4.18 ){
+		if( get_option('dbem_category_page_format') == '<p>#_CATEGORYNAME</p>#_CATEGORYNOTES<div><h3>Upcoming Events</h3>#_CATEGORYNEXTEVENTS' ){
+			update_option('dbem_category_page_format',$dbem_options['dbem_category_page_format']);
+		}
 	}
 }    
 

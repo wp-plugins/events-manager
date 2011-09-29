@@ -1,5 +1,6 @@
 <?php 
 /* @var $EM_Event EM_Event */
+global $allowedposttags;
 $EM_Tickets = $EM_Event->get_bookings()->get_tickets(); //already instantiated, so should be a quick retrieval.  
 ?>
 <table class="em-tickets" cellspacing="0" cellpadding="0">
@@ -13,7 +14,7 @@ $EM_Tickets = $EM_Event->get_bookings()->get_tickets(); //already instantiated, 
 	<?php foreach( $EM_Tickets->tickets as $EM_Ticket ): ?>
 		<?php if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') ): ?>
 		<tr class="em-ticket" id="em-ticket-<?php echo $EM_Ticket->id; ?>">
-			<td class="em-bookings-ticket-table-type"><?php echo $EM_Ticket->output_property('name'); ?><?php if(!empty($EM_Ticket->description)) :?><br><span class="ticket-desc"><?php echo $EM_Ticket->description; ?></span><?php endif; ?></td>
+			<td class="em-bookings-ticket-table-type"><?php echo wp_kses_data($EM_Ticket->name); ?><?php if(!empty($EM_Ticket->description)) :?><br><span class="ticket-desc"><?php echo wp_kses($EM_Ticket->description,$allowedposttags); ?></span><?php endif; ?></td>
 			<?php if( !$EM_Event->is_free() ): ?>
 			<td class="em-bookings-ticket-table-price"><?php echo $EM_Ticket->get_price(true); ?></td>
 			<?php endif; ?>
