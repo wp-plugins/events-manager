@@ -855,7 +855,7 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_BOOKINGSURL':
 				case '#_BOOKINGSLINK':
-					if( $this->can_manage('edit_events','edit_others_events') ){
+					if( $this->can_manage('manage_bookings','manage_others_bookings') ){
 						$bookings_link = esc_url(get_bloginfo ( 'wpurl' )."/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=".$this->id);
 						if($result == '#_BOOKINGSLINK'){
 							$replace = '<a href="'.$bookings_link.'" title="'.esc_attr($bookings_link).'">'.esc_html($this->name).'</a>';
