@@ -50,7 +50,7 @@ function em_locations( $args = array() ){ echo em_get_locations($args); }
  * @return string
  */
 function em_get_calendar( $args = array() ){
-	if (strpos ( $args, "=" )) {
+	if ( !is_array($args) && strpos ( $args, "=" )) {
 		// allows the use of arguments without breaking the legacy code
 		$defaults = EM_Calendar::get_default_search();		
 		$args = wp_parse_args ( $args, $defaults );

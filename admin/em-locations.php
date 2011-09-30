@@ -294,6 +294,8 @@ function em_admin_location($message = "") {
 									<?php endif; ?>
 									<br /><br />
 									<label for='location_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='location-image' name='location_image' id='location_image' type='file' size='40' />
+									<br />
+									<label for='location_image_delete'><?php _e('Delete Image?', 'dbem') ?></label> <input id='location-image-delete' name='location_image_delete' id='location_image_delete' type='checkbox' value='1' />
 							</div>
 						</div>
 						<?php do_action('em_admin_location_form_footer'); ?>

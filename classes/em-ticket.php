@@ -124,12 +124,13 @@ class EM_Ticket extends EM_Object{
 	 */
 	function get_post(){
 		//We are getting the values via POST or GET
+		global $allowedposttags;
 		do_action('em_location_get_post_pre', $this);
 		$location = array();
 		$location['ticket_id'] = ( !empty($_POST['ticket_id']) ) ? $_POST['ticket_id']:'';
 		$location['event_id'] = ( !empty($_POST['event_id']) ) ? $_POST['event_id']:'';
-		$location['ticket_name'] = ( !empty($_POST['ticket_name']) ) ? stripslashes($_POST['ticket_name']):'';
-		$location['ticket_description'] = ( !empty($_POST['ticket_description']) ) ? stripslashes($_POST['ticket_description']):'';
+		$location['ticket_name'] = ( !empty($_POST['ticket_name']) ) ? wp_kses_data(stripslashes($_POST['ticket_name'])):'';
+		$location['ticket_description'] = ( !empty($_POST['ticket_description']) ) ? wp_kses(stripslashes($_POST['ticket_description'], $allowedposttags)):'';
 		$location['ticket_price'] = ( !empty($_POST['ticket_price']) ) ? $_POST['ticket_price']:'';
 		$location['ticket_start'] = ( !empty($_POST['ticket_start']) ) ? $_POST['ticket_start']:'';
 		$location['ticket_end'] = ( !empty($_POST['ticket_end']) ) ? $_POST['ticket_end']:'';

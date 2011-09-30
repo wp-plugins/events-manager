@@ -69,12 +69,12 @@ class EM_Bookings extends EM_Object implements Iterator{
 				$this->bookings[] = $EM_Booking;
 				$email = $EM_Booking->email();
 				if( get_option('dbem_bookings_approval') == 1 && $EM_Booking->status == 0){
-					$this->feedback_message = __('Booking successful, pending confirmation (you will also receive an email once confirmed).', 'dbem');
+					$this->feedback_message = get_option('dbem_booking_feedback_pending');
 				}else{
-					$this->feedback_message = __('Booking successful.', 'dbem');
+					$this->feedback_message = get_option('dbem_booking_feedback');
 				}
 				if(!$email){
-					$this->feedback_message .= ' '.__('However, there were some problems whilst sending confirmation emails to you and/or the event contact person. You may want to contact them directly and letting them know of this error.', 'dbem');
+					$this->feedback_message .= ' '.get_option('dbem_booking_feedback_nomail');
 					if( current_user_can('activate_plugins') ){
 						if( count($EM_Booking->get_errors()) > 0 ){
 							$this->feedback_message .= '<br/><strong>Errors:</strong> (only admins see this message)<br/><ul><li>'. implode('</li><li>', $EM_Booking->get_errors()).'</li></ul>';
@@ -86,12 +86,12 @@ class EM_Bookings extends EM_Object implements Iterator{
 				return true;
 			}else{
 				//Failure
-				$this->errors[] = "<strong>".__('Booking could not be created','dbem').":</strong><br />". implode('<br />', $EM_Booking->errors);
+				$this->errors[] = "<strong>".get_option('dbem_booking_feedback_error')."</strong><br />". implode('<br />', $EM_Booking->errors);
 			}
 		} else {
-			 $this->add_error(__('Booking cannot be made, not enough spaces available!', 'dbem'));
+			 $this->add_error(get_option('dbem_booking_feedback_full'));
 		} 
-		return false;
+		return apply_filters('em_bookings_add', false, $EM_Booking);
 	}
 	
 	/**
