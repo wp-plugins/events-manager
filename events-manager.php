@@ -103,7 +103,7 @@ add_action( 'bp_init', 'bp_em_init' );
 
 // Setting constants
 define('EM_VERSION', 4.174); //self expanatory
-define('EM_PRO_MIN_VERSION', 1.331); //self expanatory
+define('EM_PRO_MIN_VERSION', 1.344); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 if( get_site_option('dbem_ms_global_table') && is_multisite() ){
 	//If in ms recurrence mode, we are getting the default wp-content/uploads folder
@@ -194,7 +194,8 @@ function em_js_localize_vars(){
 		'ajaxurl' => admin_url('admin-ajax.php'),
 		'locationajaxurl' => admin_url('admin-ajax.php?action=locations_search'),
 		'firstDay' => get_option('start_of_week'),
-		'locale' => $locale_code
+		'locale' => $locale_code,
+		'bookingInProgress' => __('Please wait while the booking is being submitted.','dbem')
 	));
 }
 

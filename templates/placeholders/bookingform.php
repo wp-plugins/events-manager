@@ -72,54 +72,24 @@ $EM_Ticket = $EM_Tickets->get_first();
 		<?php endif; ?>  
 	<?php endif; ?>
 </div>
-<?php ob_start(); ?>
-<script type="text/javascript">
-	jQuery(document).ready( function($){
-		var em_booking_doing_ajax = false;
-		$('#em-booking-form').submit( function(e){
-			e.preventDefault();
-			$.ajax({
-				url: EM.ajaxurl,
-				dataType: 'jsonp',
-				data:$('#em-booking-form').serializeArray(),
-				type:'post',
-				beforeSend: function(formData, jqForm, options) {
-					if(em_booking_doing_ajax){
-						alert('<?php _e('Please wait while the booking is being submitted.','dbem'); ?>');
-						return false;
-					}
-					em_booking_doing_ajax = true;
-					$('.em-booking-message').remove();
-					$('#em-booking').append('<div id="em-loading"></div>');
-				},
-				success : function(response, statusText, xhr, $form) {
-					$('#em-loading').remove();
-					if(response.result){
-						$('#em-booking-form').fadeOut( 'fast', function(){
-							$('<div class="em-booking-message-success em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
-							$(this).remove();
-							$('.em-booking-login').remove();
-						} );
-					}else{
-						if( response.errors != '' ){
-							if( $.isArray() ){
-								var error_msg;
-								response.errors.each(function(i, el){ 
-									error_msg = error_msg + el;
-								});
-								$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');
-							}else{
-								$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');							
-							}
-						}else{
-							$('<div class="em-booking-message-error em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
-						}					
-					}
-					em_booking_doing_ajax = false;
-				}
-			});	
-			return false;
-		});							
-	});
-</script>
-<?php echo apply_filters( 'em_booking_form_js', ob_get_clean(), $EM_Event ); ?>
+<?php 
+if( !defined('EM_BOOKING_JS_LOADED') ){
+	//this kicks off the Javascript required by booking forms. This is fired once for all booking forms on a page load and appears at the bottom of the page
+	//your theme must call the wp_footer() function for this to work (as required by many other plugins too) 
+	function em_booking_js_footer(){
+		?>		
+		<script type="text/javascript">
+			jQuery(document).ready( function($){	
+				<?php
+					//we call the segmented JS files and include them here
+					include(WP_PLUGIN_DIR.'/events-manager/includes/js/bookingsform.js'); 
+					do_action('em_gateway_js'); 
+				?>							
+			});
+		</script>
+		<?php
+	}
+	add_action('wp_footer','em_booking_js_footer');
+	define('EM_BOOKING_JS_LOADED',true);
+}
+?>
