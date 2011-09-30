@@ -482,6 +482,7 @@ function em_add_options() {
 			'dbem_bookings_page' => '<p>Date/Time - #j #M #Y #_12HSTARTTIME #@_{ \u\n\t\i\l j M Y}<br />Where - #_LOCATIONLINK</p>#_EXCERPT #_BOOKINGFORM<p>'.__('Powered by','dbem').'<a href="http://wp-events-plugin.com">events manager</a></p>',
 			'dbem_bookings_page_title' => __('Bookings - #_NAME','dbem'),
 			//Ticket Specific Options
+			'dbem_bookings_tickets_orderby' => 'ticket_price DESC, ticket_name ASC',
 			'dbem_bookings_tickets_priority' => 0,
 			'dbem_bookings_tickets_show_unavailable' => 0,
 			'dbem_bookings_tickets_show_loggedout' => 1,
