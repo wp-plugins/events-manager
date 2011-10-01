@@ -106,6 +106,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed double seperator in title
 * scope now being correctly saved in event widgets
 * removed unnecesary filtering in email content, causing html entities in plaintext
+* updated pot and German/Sweedish translations
 
 = 4.171 =
 * tagged 4.17 in the repo as 4.171 due to premature release
