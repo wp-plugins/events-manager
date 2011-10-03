@@ -21,7 +21,7 @@
 		<div class='em-location-map-coords' id='em-location-map-coords-<?php echo $rand ?>' style="display:none; visibility:hidden;">
 			<span class="lat"><?php echo $EM_Location->latitude; ?></span>
 			<span class="lng"><?php echo $EM_Location->longitude; ?></span>
-		</div>			
+		</div>
 		<?php
 	}elseif( is_object($EM_Location) && $EM_Location->latitude == 0 && $EM_Location->longitude == 0 ){
 		echo '<i>'. __('Map Unavailable', 'dbem') .'</i>';

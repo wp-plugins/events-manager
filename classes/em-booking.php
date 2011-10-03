@@ -351,6 +351,8 @@ class EM_Booking extends EM_Object{
 			$this->person = $EM_Person;
 		}elseif( is_numeric($this->person_id) ){
 			$this->person = new EM_Person($this->person_id);
+		}else{
+			$this->person = new EM_Person(0);
 		}
 		return apply_filters('em_booking_get_person', $this->person, $this);
 	}
