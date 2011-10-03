@@ -46,7 +46,7 @@ $('#em-booking-form').submit( function(e){
 			$('#em-loading').remove();
 			$('.em-booking-message').remove();
 			$(document).trigger('em_booking_gateway_add', [response]);
-			if(response.result && $.isObject(Recaptcha)){
+			if(response.result && typeof Recaptcha != 'undefined'){
 				Recaptcha.reload();
 			}
 			em_booking_doing_ajax = false;
