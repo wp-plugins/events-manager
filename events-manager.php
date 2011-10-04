@@ -178,7 +178,7 @@ function em_enqueue_public() {
 	//Scripts
 	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position')); //jQuery will load as dependency
 	//Styles
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
+	//wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
 	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
 	em_js_localize_vars();
 }
@@ -195,7 +195,8 @@ function em_js_localize_vars(){
 		'locationajaxurl' => admin_url('admin-ajax.php?action=locations_search'),
 		'firstDay' => get_option('start_of_week'),
 		'locale' => $locale_code,
-		'bookingInProgress' => __('Please wait while the booking is being submitted.','dbem')
+		'bookingInProgress' => __('Please wait while the booking is being submitted.','dbem'),
+		'ui_css' => WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css'
 	));
 }
 

@@ -79,7 +79,7 @@
 								<a class="row-title" href="<?php echo $url; ?>edit/?event_id=<?php echo $event->id ?>"><?php echo ($event->name); ?></a>
 							</strong>
 							<?php 
-							if( get_option('dbem_rsvp_enabled') == 1 && $event->rsvp == 1 ){
+							if( $event->can_manage('manage_bookings','manage_others_bookings') && get_option('dbem_rsvp_enabled') == 1 && $event->rsvp == 1 ){
 								?>
 								<br/>
 								<a href="<?php echo $url ?>bookings/?event_id=<?php echo $event->id ?>"><?php echo __("Bookings",'dbem'); ?></a> &ndash;
@@ -118,7 +118,7 @@
 						</td>
 						<td>
 							<?php 
-							if ( $event->is_recurrence() && $event->can_manage('edit_events') ) {
+							if ( $event->is_recurrence() && $event->can_manage('edit_events','edit_others_events') ) {
 								$recurrence_delete_confirm = __('WARNING! You will delete ALL recurrences of this event, including booking history associated with any event in this recurrence. To keep booking information, go to the relevant single event and save it to detach it from this recurrence series.','dbem');
 								?>
 								<strong>

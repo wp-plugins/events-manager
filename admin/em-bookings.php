@@ -297,7 +297,7 @@ function em_bookings_single(){
 									<?php if( !get_option('em_booking_form_custom') ): ?>
 									<tr><td><strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td><td><?php echo $EM_Booking->comment; ?></td></tr>
 									<?php foreach( $EM_Booking->get_custom() as $custom_option ){
-										?><tr><td><strong><?php echo $custom_option['name'] ?></strong></td><td><?php echo $custom_option['value'] ?></td></tr><?php
+										?><tr><td><strong><?php echo $custom_option['name'] ?></strong></td><td><?php echo esc_html($custom_option['value']); ?></td></tr><?php
 									} ?>
 									<?php else: do_action('em_bookings_single_custom',$EM_Booking); ?>
 									<?php endif; ?>

@@ -221,11 +221,11 @@ class EM_Booking extends EM_Object{
 					}
 				}
 			}
-			$this->comment = (!empty($_REQUEST['booking_comment'])) ? $_REQUEST['booking_comment']:'';
+			$this->comment = (!empty($_REQUEST['booking_comment'])) ? wp_kses_data(stripslashes($_REQUEST['booking_comment'])):'';
 			$this->get_spaces(true);
 			$this->get_price(true);
 			$this->get_person();
-		}	
+		}
 		return apply_filters('em_booking_get_post',$this->validate(),$this);
 	}
 	
