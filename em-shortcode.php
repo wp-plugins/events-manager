@@ -152,6 +152,8 @@ add_shortcode ( 'events_rss_url', 'em_get_rss_url_shortcode');
  * @return string
  */
 function em_get_event_form_shortcode( $args = array() ){
-	return em_get_event_form( $args );
+	ob_start();
+	em_get_event_form( $args );
+	return ob_get_clean();
 }
 add_shortcode ( 'event_form', 'em_get_event_form_shortcode');

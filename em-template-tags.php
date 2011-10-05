@@ -107,6 +107,17 @@ function em_get_event_form( $args = array() ){
 	}else{
 		em_locate_template('forms/event-editor.php',true);
 	}
+	?>
+	<script type='text/javascript' src='<?php echo WP_PLUGIN_URL; ?>/events-manager/includes/js/timeentry/jquery.timeentry.js'></script>
+	<script type="text/javascript">
+	//<![CDATA[
+	jQuery(document).ready( function($) {
+		$("#start-time").timeEntry({spinnerImage: '', show24Hours: false });
+		$("#end-time").timeEntry({spinnerImage: '', show24Hours: false});
+	});
+	//]]>
+	</script>
+	<?php
 }
 /**
  * Echo the em_get_event_form template tag
