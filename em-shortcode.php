@@ -14,14 +14,14 @@ add_shortcode('events_calendar', 'em_get_calendar_shortcode');
 
 /**
  * Generates a map of locations that match given query attributes. Accepts any location query attributes. 
- * @param unknown_type $atts
+ * @param array $args
  * @return string
  */
-function em_get_locations_map_shortcode($atts){
-	$clean_atts['width'] = ( !empty($atts['width']) ) ? $atts['width']:450;
-	$clean_atts['height'] = ( !empty($atts['height']) ) ? $atts['height']:300;
+function em_get_locations_map_shortcode($args){
+	$args['width'] = ( !empty($args['width']) ) ? $args['width']:450;
+	$args['height'] = ( !empty($args['height']) ) ? $args['height']:300;
 	ob_start();
-	em_locate_template('templates/map-global.php',true, array('args'=>$clean_atts)); 
+	em_locate_template('templates/map-global.php',true, array('args'=>$args)); 
 	return ob_get_clean();
 }
 add_shortcode('locations_map', 'em_get_locations_map_shortcode');
@@ -152,6 +152,8 @@ add_shortcode ( 'events_rss_url', 'em_get_rss_url_shortcode');
  * @return string
  */
 function em_get_event_form_shortcode( $args = array() ){
-	return em_get_event_form( $args );
+	ob_start();
+	em_get_event_form( $args );
+	return ob_get_clean();
 }
 add_shortcode ( 'event_form', 'em_get_event_form_shortcode');

@@ -169,7 +169,7 @@ function em_admin_events_page() {
 									?>
 									<div class="row-actions">
 										<span class="trash"><a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;action=event_delete&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>" class="em-event-delete"><?php _e('Delete','dbem'); ?></a></span>
-										<?php if( !$event->status && current_user_can('publish_others_events') ): ?>
+										<?php if( !$event->status && current_user_can('publish_events') ): ?>
 										| <a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager&amp;action=event_approve&amp;event_id=<?php echo $event->id ?>&amp;scope=<?php echo $scope ?>&amp;pno=<?php echo $page ?>" class="em-event-approve" style="color:green"><?php _e('Approve','dbem'); ?></a>
 										<?php endif; ?>
 									</div>
