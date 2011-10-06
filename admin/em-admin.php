@@ -127,14 +127,14 @@ function em_admin_paginate($total, $limit, $page=1, $vars=false){
 		'current' => $page,
 		'add_args' => $vars
 	));
-	$return .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'dbem') . '</span>%s',
+	$return .= sprintf( '<span class="displaying-num">' . __( 'Displaying %s&#8211;%s of %s', 'dbem') . ' </span>%s',
 						number_format_i18n( ( $page - 1 ) * $limit + 1 ),
 						number_format_i18n( min( $page * $limit, $total ) ),
 						number_format_i18n( $total ),
 						$events_nav
 						);
 	$return .= '</div>';
-	return $return;
+	return apply_filters('em_admin_paginate',$return,$total,$limit,$page,$vars);
 }
 
 /**

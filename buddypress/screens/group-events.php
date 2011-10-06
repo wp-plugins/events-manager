@@ -6,6 +6,9 @@ function bp_em_group_events() {
 	global $bp;
 	do_action( 'bp_em_group_events' );
 	
+	//plug into EM admin code (at least for now)
+	include_once(EM_DIR.'/admin/em-admin.php');
+	
 	add_action( 'bp_template_title', 'bp_em_group_events_title' );
 	add_action( 'bp_template_content', 'bp_em_group_events_content' );
 	

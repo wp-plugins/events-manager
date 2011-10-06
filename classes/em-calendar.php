@@ -274,7 +274,11 @@ class EM_Calendar extends EM_Object {
 	}
 	 
 	function translate_and_trim($string, $length = 1) {
-		return substr(__($string), 0, $length);
+		if(function_exists('mb_substr')){ //fix for diacritic calendar names
+			return mb_substr(__($string), 0, $length);
+		}else{ 
+    		return substr(__($string), 0, $length); 
+    	}
 	}  
 	
 	/**
