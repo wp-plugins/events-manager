@@ -300,7 +300,7 @@ class EM_Events extends EM_Object implements Iterator {
 		$defaults = array(
 			'orderby' => get_option('dbem_events_default_orderby'),
 			'order' => get_option('dbem_events_default_order'),
-			'rsvp' => false, //if set to true, only events with bookings enabled are returned
+			'bookings' => false, //if set to true, only events with bookings enabled are returned
 			'status' => 1, //approved events only
 			'format_header' => '', //events can have custom html above the list
 			'format_footer' => '', //events can have custom html below the list

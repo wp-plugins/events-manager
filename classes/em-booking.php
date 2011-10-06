@@ -76,8 +76,6 @@ class EM_Booking extends EM_Object{
 				global $wpdb;			
 				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data'";
 				$booking = $wpdb->get_row($sql, ARRAY_A);
-				//booking meta
-				$booking['booking_meta'] = (!empty($booking['booking_meta'])) ? unserialize($booking['booking_meta']):array();
 				//Custom Fields
 				$custom = $wpdb->get_row("SELECT meta_key, meta_value FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data' AND meta_key='booking_custom'");
 			  	//Booking notes
@@ -86,6 +84,8 @@ class EM_Booking extends EM_Object{
 			  		$this->notes[] = unserialize($note['meta_value']);
 			  	}
 			}
+			//booking meta
+			$booking['booking_meta'] = (!empty($booking['booking_meta'])) ? unserialize($booking['booking_meta']):array();
 			//Save into the object
 			$this->to_object($booking);
 			$this->get_person();
@@ -221,11 +221,11 @@ class EM_Booking extends EM_Object{
 					}
 				}
 			}
-			$this->comment = (!empty($_REQUEST['booking_comment'])) ? $_REQUEST['booking_comment']:'';
+			$this->comment = (!empty($_REQUEST['booking_comment'])) ? wp_kses_data(stripslashes($_REQUEST['booking_comment'])):'';
 			$this->get_spaces(true);
 			$this->get_price(true);
 			$this->get_person();
-		}	
+		}
 		return apply_filters('em_booking_get_post',$this->validate(),$this);
 	}
 	
@@ -238,7 +238,7 @@ class EM_Booking extends EM_Object{
 		);
 		//give some errors in step 1
 		if( $this->spaces == 0 ){
-			$this->add_error(__('You must request at least one space to book an event.','dbem'));
+			$this->add_error(get_option('dbem_booking_feedback_min_space'));
 		}
 		//step 2, tickets bookings info
 		if( count($this->get_tickets_bookings()) > 0 ){
@@ -351,6 +351,8 @@ class EM_Booking extends EM_Object{
 			$this->person = $EM_Person;
 		}elseif( is_numeric($this->person_id) ){
 			$this->person = new EM_Person($this->person_id);
+		}else{
+			$this->person = new EM_Person(0);
 		}
 		return apply_filters('em_booking_get_person', $this->person, $this);
 	}
@@ -512,7 +514,8 @@ class EM_Booking extends EM_Object{
 				'#_RESPPHONE' => '#_BOOKINGPHONE',//Depreciated
 				'#_COMMENT' => '#_BOOKINGCOMMENT',//Depreciated
 				'#_RESERVEDSPACES' => '#_BOOKEDSPACES',//Depreciated
-				'#_BOOKINGNAME' =>  $this->person->display_name,
+				'#_BOOKINGID' =>  $this->id,
+				'#_BOOKINGNAME' =>  $this->person->get_name(),
 				'#_BOOKINGEMAIL' => $this->person->user_email,
 				'#_BOOKINGPHONE' => $this->person->phone,
 				'#_BOOKINGSPACES' => $this->get_spaces(),
