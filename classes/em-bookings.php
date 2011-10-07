@@ -326,7 +326,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 				$pending += $booking->get_spaces();
 			}
 		}
-		return $pending;
+		return apply_filters('em_bookings_get_pending_spaces', $pending, $this);
 	}
 	
 	/**

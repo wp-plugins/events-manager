@@ -280,6 +280,16 @@ class EM_Events extends EM_Object implements Iterator {
 				$conditions['blog'] = "(`blog_id`={$args['blog']})";
 			}
 		}
+		if($args['bookings'] == 'user' && is_user_logged_in()){
+			//get bookings of user
+			$EM_Person = new EM_Person(get_current_user_id());
+			$booking_ids = $EM_Person->get_bookings(true);
+			if( count($booking_ids) > 0 ){
+				$conditions['bookings'] = "(event_id IN (SELECT event_id FROM ".EM_BOOKINGS_TABLE." WHERE booking_id IN (".implode(',',$booking_ids).")))";
+			}else{
+				$conditions['bookings'] = "(event_id = 0)";
+			}
+		}
 		return apply_filters( 'em_events_build_sql_conditions', $conditions, $args );
 	}
 	

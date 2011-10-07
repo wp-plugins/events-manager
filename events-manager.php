@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.211
+Version: 4.212
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -102,7 +102,7 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.18); //self expanatory
+define('EM_VERSION', 4.212); //self expanatory
 define('EM_PRO_MIN_VERSION', 1.344); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 if( get_site_option('dbem_ms_global_table') && is_multisite() ){
@@ -301,13 +301,12 @@ function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//Count pending bookings
 		$bookings_num = '';
-		$bookings_pending_count = 0;
+		$bookings_pending_count = apply_filters('em_bookings_pending_count',0);
 		if( get_option('dbem_bookings_approval') == 1){ 
-			$bookings_pending_count = apply_filters('em_bookings_pending_count',count(EM_Bookings::get(array('status'=>'0'))->bookings));
-			//TODO Add flexible permissions
-			if($bookings_pending_count > 0){
-				$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
-			}
+			$bookings_pending_count += count(EM_Bookings::get(array('status'=>'0'))->bookings);
+		}
+		if($bookings_pending_count > 0){
+			$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
 		}
 		//Count pending events
 		$events_num = '';
@@ -316,7 +315,7 @@ function em_create_events_submenu () {
 		if($events_pending_count > 0){
 			$events_num = '<span class="update-plugins count-'.$events_pending_count.'"><span class="plugin-count">'.$events_pending_count.'</span></span>';
 		}
-		$both_pending_count = $events_pending_count + $bookings_pending_count;
+		$both_pending_count = apply_filters('em_items_pending_count', $events_pending_count + $bookings_pending_count);
 		$both_num = ($both_pending_count > 0) ? '<span class="update-plugins count-'.$both_pending_count.'"><span class="plugin-count">'.$both_pending_count.'</span></span>':'';
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,'edit_events','events-manager','em_admin_events_page', plugins_url().'/events-manager/includes/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu:

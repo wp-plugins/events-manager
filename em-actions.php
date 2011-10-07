@@ -358,7 +358,7 @@ function em_init_actions() {
 	  	}elseif ( $_REQUEST['action'] == 'booking_cancel') {
 	  		//Cancel Booking
 			em_verify_nonce('booking_cancel');
-	  		if( $EM_Booking->can_manage() || $EM_Booking->person->ID == get_current_user_id() ){
+	  		if( $EM_Booking->can_manage() || ($EM_Booking->person->ID == get_current_user_id() && get_option('dbem_bookings_user_cancellation')) ){
 				if( $EM_Booking->cancel() ){
 					$result = true;
 					if( !defined('DOING_AJAX') ){

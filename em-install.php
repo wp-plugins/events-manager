@@ -450,6 +450,7 @@ function em_add_options() {
 		'dbem_bookings_login_form' => 1, //show login form on booking area
 		'dbem_bookings_approval_overbooking' => 0, //overbooking possible when approving?
 		'dbem_bookings_double'=>0,//double bookings or more, users can't double book by default
+		'dbem_bookings_user_cancellation' => 1, //can users cancel their booking?
 			//messages
 			'dbem_booking_feedback_pending' =>__('Booking successful, pending confirmation (you will also receive an email once confirmed).', 'dbem'),
 			'dbem_booking_feedback' => __('Booking successful.', 'dbem'),

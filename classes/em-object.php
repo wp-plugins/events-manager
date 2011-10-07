@@ -145,7 +145,7 @@ class EM_Object {
 		$category = $args['category'];
 		$location = $args['location'];
 		$bookings = $args['rsvp'];
-		$bookings = !empty($args['bookings']) ? 1:$bookings;
+		$bookings = !empty($args['bookings']) ? $args['bookings']:$bookings;
 		$owner = $args['owner'];
 		$event = $args['event'];
 		$month = $args['month'];

@@ -362,7 +362,8 @@ class EM_Booking extends EM_Object{
 	 * @return string
 	 */
 	function get_status(){
-		return $this->status_array[$this->status];
+		$status = ($this->status == 0 && !get_option('dbem_bookings_approval') ) ? 1:$this->status;
+		return $this->status_array[$status];
 	}
 	
 	/**

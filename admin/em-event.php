@@ -512,7 +512,7 @@ function em_admin_event_page() {
 									}else{
 										?>		
 										<p><strong><?php _e('Tickets','dbem'); ?></strong></p>
-										<p><em><?php _e('You have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?></em></p>					
+										<p><em><?php _e('You can have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?> <?php _e('Basic HTML is allowed in ticket labels and descriptions.','dbem'); ?></em></p>					
 										<table class="form-table">
 											<thead>
 												<tr valign="top">

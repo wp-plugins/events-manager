@@ -16,9 +16,10 @@ function em_docs_init(){
 					'limit' => array( 'default'=> __('See the events lists limit option on the settings page.', 'dbem') ),					
 					'orderby' => array( 'desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name").', 'dbem'), 'default'=> __('See the event lists ordering option on the settings page.', 'dbem'), 'args'=>'name, start_date, start_time, end_date, end_time'),
 					'order' => array( 'default'=> __('See the event lists ordering option on the settings page.', 'dbem') ),
-					'bookings' => array( 'default'=> __('Include only events with bookings enabled.', 'dbem') ),
+					'bookings' => array( 'default'=> __('Include only events with bookings enabled. Use \'user\' to show events a logged in user has booked.', 'dbem') ),
 					'status' => array( 'default' => __('Limit search to events with a spefic status (1 is active, 0 is pending approval)', 'dbem')),
 					'blog' => array( 'default' => __('Limit search to events created in a specific blog (MultiSite only)', 'dbem')),
+					'group' => array( 'default' => __('Limit search to events belonging to a specific group id (BuddyPress only). Using \'my\' will show events belonging to groups the logged in user is a member of.', 'dbem')),
 					'town' => array( 'desc'=> __('Search for events in this town (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
 					'state' => array( 'desc'=> __('Search for events in this state (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
 					'region' => array( 'desc'=> __('Search for events in this region (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
@@ -47,7 +48,7 @@ function em_docs_init(){
 				//The object is commonly shared by all, so entries above overwrite entries here
 				'general' => array(
 					'limit' => array( 'desc'=> __('Limits the amount of values returned to this number.', 'dbem'), 'default'=>'0 (no limit)'),
-					'scope' => array( 'desc'=> __('Choose the time frame of events to show. Accepted values are "future", "past" or "all" events. Additionally you can supply dates (in format of YYYY-MM-DD), either single for events on a specific date or two dates seperated by a comma (e.g. 2010-12-25,2010-12-31) for events ocurring between these dates.', 'dbem'), 'default'=>'future'),
+					'scope' => array( 'desc'=> __('Choose the time frame of events to show. Accepted values are "future", "past", "today", "tomorrow", "month", "next-month", "1-months", "2-months", "3-months", "6-months", "12-months" or "all" events. Additionally you can supply dates (in format of YYYY-MM-DD), either single for events on a specific date or two dates seperated by a comma (e.g. 2010-12-25,2010-12-31) for events ocurring between these dates.', 'dbem'), 'default'=>'future'),
 					'order' => array( 'desc'=> __('Indicates the order of the events. Choose between ASC (ascending) and DESC (descending).', 'dbem'), 'default'=>'ASC'),
 					'orderby' => array( 'desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name"). See specific instances (e.g. events, locations, etc.) for field names.', 'dbem'), 'default'=>0),
 					'format' => array( 'desc'=> __('If you are displaying some information with the shortcode or function (e.g. listing events), you can supply the html and placeholders here.', 'dbem'), 'default'=> __('The relevant default format will be taken from the settings page.', 'dbem')), 
