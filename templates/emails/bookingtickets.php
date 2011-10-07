@@ -1,7 +1,12 @@
-<?php foreach($EM_Booking->get_tickets() as $EM_Ticket): ?>
-<?php echo $EM_Ticket->name; ?>
+<?php foreach($EM_Booking->get_tickets_bookings() as $EM_Ticket_Booking): ?>
+<?php
+/* @var $EM_Ticket_Booking EM_Ticket_Booking */
+echo $EM_Ticket_Booking->get_ticket()->name; 
+?>
 
-Quantity: <?php echo $EM_Ticket->spaces; ?>
+Quantity: <?php echo $EM_Ticket_Booking->spaces; ?>
 
-Price: <?php echo em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(true),2); ?>
+Price: <?php echo em_get_currency_symbol(true)." ". number_format($EM_Ticket_Booking->get_price(),2); ?>
+
+
 <?php endforeach; ?>

@@ -15,7 +15,18 @@ function em_docs_init(){
 					'search' => array( 'default'=> __('Do a search for this string within event name, details and location address.', 'dbem') ),	
 					'limit' => array( 'default'=> __('See the events lists limit option on the settings page.', 'dbem') ),					
 					'orderby' => array( 'desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name").', 'dbem'), 'default'=> __('See the event lists ordering option on the settings page.', 'dbem'), 'args'=>'name, start_date, start_time, end_date, end_time'),
-					'order' => array( 'default'=> __('See the event lists ordering option on the settings page.', 'dbem') )
+					'order' => array( 'default'=> __('See the event lists ordering option on the settings page.', 'dbem') ),
+					'bookings' => array( 'default'=> __('Include only events with bookings enabled. Use \'user\' to show events a logged in user has booked.', 'dbem') ),
+					'status' => array( 'default' => __('Limit search to events with a spefic status (1 is active, 0 is pending approval)', 'dbem')),
+					'blog' => array( 'default' => __('Limit search to events created in a specific blog (MultiSite only)', 'dbem')),
+					'group' => array( 'default' => __('Limit search to events belonging to a specific group id (BuddyPress only). Using \'my\' will show events belonging to groups the logged in user is a member of.', 'dbem')),
+					'town' => array( 'desc'=> __('Search for events in this town (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'state' => array( 'desc'=> __('Search for events in this state (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'region' => array( 'desc'=> __('Search for events in this region (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'country' => array( 'desc'=> __('Search for events in this country (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'postcode' => array( 'desc'=> __('Search for events in this postcode (no partial matches, case sensitive).', 'dbem'), 'default' => __('none','dbem')),
+					'format_header' => array( 'default' => __('When displaying event lists, you can supply specific HTML to replace the default header from the settings page.', 'dbem')),
+					'format_footer' => array( 'default' => __('When displaying event lists, you can supply specific HTML to replace the default footer from the settings page.', 'dbem')),
 				),
 				'locations' => array(
 					'eventful' => array( 'desc'=> __('If set to 1 will only show locations that have at least one event occurring during the scope.', 'dbem'), 'default' => 0),
@@ -37,7 +48,7 @@ function em_docs_init(){
 				//The object is commonly shared by all, so entries above overwrite entries here
 				'general' => array(
 					'limit' => array( 'desc'=> __('Limits the amount of values returned to this number.', 'dbem'), 'default'=>'0 (no limit)'),
-					'scope' => array( 'desc'=> __('Choose the time frame of events to show. Accepted values are "future", "past" or "all" events. Additionally you can supply dates (in format of YYYY-MM-DD), either single for events on a specific date or two dates seperated by a comma (e.g. 2010-12-25,2010-12-31) for events ocurring between these dates.', 'dbem'), 'default'=>'future'),
+					'scope' => array( 'desc'=> __('Choose the time frame of events to show. Accepted values are "future", "past", "today", "tomorrow", "month", "next-month", "1-months", "2-months", "3-months", "6-months", "12-months" or "all" events. Additionally you can supply dates (in format of YYYY-MM-DD), either single for events on a specific date or two dates seperated by a comma (e.g. 2010-12-25,2010-12-31) for events ocurring between these dates.', 'dbem'), 'default'=>'future'),
 					'order' => array( 'desc'=> __('Indicates the order of the events. Choose between ASC (ascending) and DESC (descending).', 'dbem'), 'default'=>'ASC'),
 					'orderby' => array( 'desc'=> __('Choose what fields to order your results by. You can supply a single field or multiple comma-seperated fields (e.g. "start_date,name"). See specific instances (e.g. events, locations, etc.) for field names.', 'dbem'), 'default'=>0),
 					'format' => array( 'desc'=> __('If you are displaying some information with the shortcode or function (e.g. listing events), you can supply the html and placeholders here.', 'dbem'), 'default'=> __('The relevant default format will be taken from the settings page.', 'dbem')), 
@@ -50,7 +61,8 @@ function em_docs_init(){
 					'month' => array( 'desc'=> __('If set to a month (1 to 12) only events that start or end during this month/year will be retured. Must be used in conjunction with year and does not work as intended if used with scope.', 'dbem'), 'default'=>''),
 					'year' => array( 'desc'=> __('If set to a year (e.g. 2010) only events that start or end during this year/month will be returned. Does not work as intended if used with scope.', 'dbem'), 'default'=>''),
 					'array' => array( 'desc'=> __('If you supply this as an argument, the returned data will be in an array, no objects (only useful wen using PHP, not shortcodes)', 'dbem'), 'default'=>0),
-					'pagination' => array('desc'=> __('When using a function or shortcode that outputs items (e.g. [events_list] for events, [locations_list] for locations), if the number of items supercede the limit of items to show, setting this to 1 will show page links under the list.', 'dbem'), 'default'=>0)
+					'pagination' => array('desc'=> __('When using a function or shortcode that outputs items (e.g. [events_list] for events, [locations_list] for locations), if the number of items supercede the limit of items to show, setting this to 1 will show page links under the list.', 'dbem'), 'default'=>0),
+					'owner' => array('desc'=> __('Limits returned results to a specific owner, identified by their usaer id (e.g. list events or locations owned by user)', 'dbem'), 'default'=>0)
 				)
 			),
 			'placeholders' => array(
@@ -61,7 +73,10 @@ function em_docs_init(){
 							'#_NOTES' => array( 'desc' => __('Shows the description of the event.', 'dbem') ),
 							'#_EXCERPT' => array( 'desc' => __('If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show (currently, no read more link is added).', 'dbem') ),
 							'#_EVENTID' => array( 'desc' => __('Shows the event corresponding ID number in the database table.', 'dbem') ),
-							'#_EVENTIMAGE' => array( 'desc' => __('Shows the event image, if available.', 'dbem') )
+							'#_EVENTIMAGE' => array( 'desc' => __('Shows the event image, if available.', 'dbem') ),
+							'#_EVENTIMAGE{x,y}' => array( 'desc' => __('Shows the event image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_EVENTIMAGE{100,100}</code>', 'dbem') ),
+							'#_EVENTIMAGEURL' => array( 'desc' => __('Shows the event image url, if available.', 'dbem') ),
+							'#_CATEGORIES' => array( 'desc' => __('Shows a list of category links this event belongs to.', 'dbem') ),
 						)
 					),			
 					'Time' => array(
@@ -131,15 +146,25 @@ function em_docs_init(){
 							'#_CATEGORYNAME' => array( 'desc' => __('Shows the category name of the event.', 'dbem') ),
 							'#_CATEGORYID' => array( 'desc' => __('Shows the category ID of the event.', 'dbem') ),
 							'#_CATEGORYIMAGE' => array( 'desc' => __('Shows the event image, if available.', 'dbem') ),
-							'#_CATEGORYIMAGEURL' => array( 'desc' => __('Shows the event image url, if available.', 'dbem') ),
+							'#_CATEGORYIMAGE{x,y}' => array( 'desc' => __('Shows the category image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_CATEGORYIMAGE{100,100}</code>', 'dbem') ),
+							'#_CATEGORYIMAGEURL' => array( 'desc' => __('Shows the category image url, if available.', 'dbem') ),
 							'#_CATEGORYNOTES' => array( 'desc' => __('Shows the location description.', 'dbem') )
 						)
-					)					
+					),			
+					'Related Events' => array(
+						'desc' => __('You can show lists of other events belonging to this category. The formatting of the list is the same as a normal events list.', 'dbem'),
+						'placeholders' => array(
+							'#_CATEGORYPASTEVENTS' => array( 'desc' => __('Will show a list of all past events at this category.', 'dbem') ),
+							'#_CATEGORYNEXTEVENTS' => array( 'desc' => __('Will show a list of all future events at this category.', 'dbem') ),
+							'#_CATEGORYALLEVENTS' => array( 'desc' => __('Will show a list of all events at this category.', 'dbem') )
+						)
+					)				
 				),
 				'locations' => array(
 					'Location Details' => array(
 						'desc' => '',
 						'placeholders' => array(
+							'#_LOCATIONID' => array( 'desc' => __('Displays the location ID number.', 'dbem') ),
 							'#_LOCATIONNAME' => array( 'desc' => __('Displays the location name.', 'dbem') ),
 							'#_LOCATIONADDRESS' => array( 'desc' => __('Displays the address.', 'dbem') ),
 							'#_LOCATIONTOWN' => array( 'desc' => __('Displays the town.', 'dbem') ),
@@ -151,7 +176,8 @@ function em_docs_init(){
 							'#_LOCATIONNOTES' => array( 'desc' => __('Shows the location description.', 'dbem') ),
 							'#_LOCATIONEXCERPT' => array( 'desc' => __('If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your location description, only the content before this tag will show (currently, no read more link is added).', 'dbem') ),
 							'#_LOCATIONIMAGE' => array( 'desc' => __('Shows the location image.', 'dbem') ),
-							'#_LOCATIONID' => array( 'desc' => __('Displays the location ID number.', 'dbem') )
+							'#_LOCATIONIMAGE{x,y}' => array( 'desc' => __('Shows the location image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_LOCATIONIMAGE{100,100}</code>', 'dbem') ),
+							'#_LOCATIONIMAGEURL' => array( 'desc' => __('Shows the cattegory image url, if available.', 'dbem') )
 						)
 					),
 					'Links' => array(

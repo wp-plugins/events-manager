@@ -726,10 +726,11 @@ class EM_Event extends EM_Object{
 		}
 	 	$event_string = $format;
 		//Now let's check out the placeholders.
-	 	preg_match_all("/#@?_?[A-Za-z0-9]+/", $format, $placeholders);
-		foreach($placeholders[0] as $result) {
+	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+		foreach($placeholders[1] as $key => $result) {
 			$match = true;
 			$replace = '';
+			$full_result = $placeholders[0][$key];
 			switch( $result ){
 				//Event Details
 				case '#_EVENTID':
@@ -750,7 +751,20 @@ class EM_Event extends EM_Object{
 				case '#_EVENTIMAGEURL':
 				case '#_EVENTIMAGE':
 	        		if($this->image_url != ''){
-						$replace = ($result == '#_EVENTIMAGEURL') ? $this->image_url : "<img src='".$this->image_url."' alt='".$this->name."'/>";
+						if($result == '#_EVENTIMAGEURL'){
+		        			$replace =  $this->image_url;
+						}else{
+							if( empty($placeholders[3][$key]) ){
+								$replace = "<img src='".$this->image_url."' alt='".esc_attr($this->name)."'/>";
+							}else{
+								$image_size = explode(',', $placeholders[3][$key]);
+								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
+									$replace = "<img src='".em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1])."' alt='".esc_attr($this->name)."'/>";
+								}else{
+									$replace = "<img src='".$this->image_url."' alt='".esc_attr($this->name)."'/>";
+								}
+							}
+						}
 	        		}
 					break;
 				//Times
@@ -775,9 +789,9 @@ class EM_Event extends EM_Object{
 						$EM_URI = get_blog_permalink($this->blog_id, get_blog_option($this->blog_id, 'dbem_events_page'));
 					}
 					$joiner = (stristr($EM_URI, "?")) ? "&amp;" : "?";
-					$event_link = $EM_URI.$joiner."event_id=".$this->id;
+					$event_link = esc_url($EM_URI.$joiner."event_id=".$this->id);
 					if($result == '#_LINKEDNAME' || $result == '#_EVENTLINK'){
-						$replace = "<a href='{$event_link}' title='{$this->name}'>{$this->name}</a>";
+						$replace = '<a href="'.$event_link.'" title="'.esc_attr($this->name).'">'.esc_attr($this->name).'</a>';
 					}else{
 						$replace = $event_link;	
 					}
@@ -788,10 +802,10 @@ class EM_Event extends EM_Object{
 						if( is_multisite() && get_site_option('dbem_ms_global_events') && get_site_option('dbem_ms_global_events_links') && !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
 							$replace = get_site_url($this->blog_id, "/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}");
 						}else{
-							$replace = get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}";
+							$replace = esc_url(get_bloginfo('wpurl')."/wp-admin/admin.php?page=events-manager-event&amp;event_id={$this->id}");
 						}
 						if( $result == '#_EDITEVENTLINK'){
-							$replace = "<a href='{$replace}'>".__('Edit', 'dbem').' '.__('Event', 'dbem')."</a>";
+							$replace = '<a href="'.$replace.'">'.esc_html(__('Edit', 'dbem').' '.__('Event', 'dbem')).'</a>';
 						}
 					}	 
 					break;
@@ -802,6 +816,25 @@ class EM_Event extends EM_Object{
 					if( get_option('dbem_rsvp_enabled')){
 						ob_start();
 						$template = em_locate_template('placeholders/bookingform.php', true, array('EM_Event'=>$this));
+						if( !defined('EM_BOOKING_JS_LOADED') ){
+							//this kicks off the Javascript required by booking forms. This is fired once for all booking forms on a page load and appears at the bottom of the page
+							//your theme must call the wp_footer() function for this to work (as required by many other plugins too) 
+							function em_booking_js_footer(){
+								?>		
+								<script type="text/javascript">
+									jQuery(document).ready( function($){	
+										<?php
+											//we call the segmented JS files and include them here
+											include(WP_PLUGIN_DIR.'/events-manager/includes/js/bookingsform.js'); 
+											do_action('em_gateway_js'); 
+										?>							
+									});
+								</script>
+								<?php
+							}
+							add_action('wp_footer','em_booking_js_footer');
+							define('EM_BOOKING_JS_LOADED',true);
+						}
 						$replace = ob_get_clean();
 					}
 					break;
@@ -841,11 +874,13 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_BOOKINGSURL':
 				case '#_BOOKINGSLINK':
-					$bookings_link = get_bloginfo ( 'wpurl' )."/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=".$this->id;
-					if($result == '#_BOOKINGSLINK'){
-						$replace = "<a href='{$bookings_link}' title='{$this->name}'>{$this->name}</a>";
-					}else{
-						$replace = $bookings_link;	
+					if( $this->can_manage('manage_bookings','manage_others_bookings') ){
+						$bookings_link = esc_url(get_bloginfo ( 'wpurl' )."/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=".$this->id);
+						if($result == '#_BOOKINGSLINK'){
+							$replace = '<a href="'.$bookings_link.'" title="'.esc_attr($bookings_link).'">'.esc_html($this->name).'</a>';
+						}else{
+							$replace = $bookings_link;	
+						}
 					}
 					break;
 				//Contact Person
@@ -874,7 +909,7 @@ class EM_Event extends EM_Object{
 					if( function_exists('bp_core_get_user_domain') ){
 						$replace = bp_core_get_user_domain($this->contact->ID);
 						if( $result == '#_CONTACTPROFILELINK' ){
-							$replace = '<a href="'.$replace.'">'.__('Profile', 'dbem').'</a>';
+							$replace = '<a href="'.esc_url($replace).'">'.__('Profile', 'dbem').'</a>';
 						}
 					}
 					break;
@@ -883,7 +918,7 @@ class EM_Event extends EM_Object{
 					if( function_exists('bp_core_get_user_domain') ){
 						$replace = bp_core_get_user_domain($this->contact->ID);
 						if( $result == '#_CONTACTPROFILELINK' ){
-							$replace = '<a href="'.$replace.'">'.__('Profile', 'dbem').'</a>';
+							$replace = '<a href="'.esc_url($replace).'">'.__('Profile', 'dbem').'</a>';
 						}
 					}
 					break;
@@ -898,14 +933,14 @@ class EM_Event extends EM_Object{
 					$replace = ob_get_clean();
 					break;
 				default:
-					$replace = $result;
+					$replace = $full_result;
 					break;
 			}
-			$replace = apply_filters('em_event_output_placeholder', $replace, $this, $result, $target);
-			$event_string = str_replace($result, $replace , $event_string );
+			$replace = apply_filters('em_event_output_placeholder', $replace, $this, $full_result, $target );
+			$event_string = str_replace($full_result, $replace , $event_string );
 		}
 		//Time placeholders
-		foreach($placeholders[0] as $result) {
+		foreach($placeholders[1] as $result) {
 			// matches all PHP START date and time placeholders
 			if (preg_match('/^#[dDjlNSwzWFmMntLoYyaABgGhHisueIOPTZcrU]$/', $result)) {
 				$replace = date_i18n(ltrim($result, "#"), $this->start);
@@ -984,6 +1019,7 @@ class EM_Event extends EM_Object{
 			//Make template event (and we just change dates)
 			$event = $this->to_array();
 			unset($event['event_id']); //remove id and we have a event template to feed to wpdb insert
+			$event['event_date_created'] = current_time('mysql'); //since the recurrences are recreated
 			unset($event['event_date_modified']);		
 			$event['event_attributes'] = serialize($event['event_attributes']);
 			foreach($event as $key => $value ){ //remove recurrence information
@@ -1049,9 +1085,9 @@ class EM_Event extends EM_Object{
 		 		$this->add_error('You have not defined a date range long enough to create a recurrence.','dbem');
 		 		$result = false;
 		 	}
-		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this);
+		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this, $event_ids);
 		}
-		return apply_filters('em_event_save_events', false, $this);;
+		return apply_filters('em_event_save_events', false, $this, $event_ids);
 	}
 	
 	/**
@@ -1065,7 +1101,7 @@ class EM_Event extends EM_Object{
 		//So we don't do something we'll regret later, we could just supply the get directly into the delete, but this is safer
 		$result = false;
 		if( $this->can_manage('delete_events', 'delete_others_events') ){
-			$EM_Events = EM_Events::get( array('recurrence_id'=>$this->id) );
+			$EM_Events = EM_Events::get( array('recurrence_id'=>$this->id, 'scope'=>'all') );
 			$event_ids = array();
 			foreach($EM_Events as $EM_Event){
 				if($EM_Event->recurrence_id == $this->id){
@@ -1074,7 +1110,7 @@ class EM_Event extends EM_Object{
 			}
 			$result = EM_Events::delete( $event_ids );
 		}
-		return apply_filters('delete_events', $result, $this);
+		return apply_filters('delete_events', $result, $this, $event_ids);
 	}
 	
 	/**

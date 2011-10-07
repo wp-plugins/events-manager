@@ -27,15 +27,22 @@ class EM_Person extends WP_User{
 		do_action('em_person',$this, $person_id, $username);
 	}
 	
-	function get_bookings(){
+	function get_bookings($ids_only = false){
 		global $wpdb;
 		$EM_Booking = new EM_Booking(); //empty booking for fields
 		$results = $wpdb->get_results("SELECT b.".implode(', b.', array_keys($EM_Booking->fields))." FROM ".EM_BOOKINGS_TABLE." b, ".EM_EVENTS_TABLE." e WHERE e.event_id=b.event_id AND person_id={$this->id} ORDER BY event_start_date DESC",ARRAY_A);
 		$bookings = array();
-		foreach($results as $booking_data){
-			$bookings[] = new EM_Booking($booking_data);
+		if($ids_only){
+			foreach($results as $booking_data){
+				$bookings[] = $booking_data['booking_id'];
+			}
+			return $bookings;
+		}else{
+			foreach($results as $booking_data){
+				$bookings[] = new EM_Booking($booking_data);
+			}
+			return new EM_Bookings($bookings);
 		}
-		return new EM_Bookings($bookings);
 	}
 
 	/**
@@ -57,7 +64,7 @@ class EM_Person extends WP_User{
 			<tr>
 				<td><?php echo get_avatar($this->ID); ?></td>
 				<td style="padding-left:10px; vertical-align: top;">
-					<strong><?php _e('Name','dbem'); ?></strong> : <?php echo $this->display_name; ?><br /><br />
+					<strong><?php _e('Name','dbem'); ?></strong> : <a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;person_id=<?php echo $this->ID; ?>"><?php echo $this->get_name() ?></a><br /><br />
 					<strong><?php _e('Email','dbem'); ?></strong> : <?php echo $this->user_email; ?><br /><br />
 					<strong><?php _e('Phone','dbem'); ?></strong> : <?php echo $this->phone; ?>
 				</td>
@@ -65,6 +72,12 @@ class EM_Person extends WP_User{
 		</table>
 		<?php
 		return ob_get_clean();
+	}
+	
+	function get_name(){
+		$full_name = $this->first_name . " " . $this->last_name;
+		$full_name = trim($full_name);
+		return !empty($full_name) ? $full_name : $this->display_name;
 	}
 }
 ?>
