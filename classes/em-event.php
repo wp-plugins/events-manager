@@ -699,7 +699,7 @@ class EM_Event extends EM_Object{
 	 */	
 	function output($format, $target="html") {
 	 	//First let's do some conditional placeholder removals
-		preg_match_all('/\{([a-zA-Z0-9_]+)\}([^{]+)\{\/[a-zA-Z0-9_]+\}/', $format, $conditionals);
+		preg_match_all('/\{([a-zA-Z0-9_]+)\}((\r|\n|.)*?)\{\/\1\}/', $format, $conditionals);
 		if( count($conditionals[0]) > 0 ){
 			//Check if the language we want exists, if not we take the first language there
 			foreach($conditionals[1] as $key => $condition){
