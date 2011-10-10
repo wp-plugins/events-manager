@@ -172,7 +172,7 @@ function em_content_wp_title($title, $sep, $seplocation){
 	}
 	return $title;
 }
-add_filter ( 'wp_title', 'em_content_wp_title',10,3 );
+add_filter ( 'wp_title', 'em_content_wp_title',100,3 ); //override other plugin SEO due to way EM works.
 
 /**
  * Makes sure we're in "THE Loop", which is determinied by a flag set when the_post() (start) is first called, and when have_posts() (end) returns false.
