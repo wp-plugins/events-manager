@@ -19,7 +19,7 @@ X-WR-CALNAME:{$blog_desc}";
 			
 				$description = $EM_Event->output($description_format,'ical');
 				$description = str_replace("\\","\\\\",ent2ncr(convert_chars(strip_tags($description))));
-				$description = str_replace('"','DQUOTE',$description);
+				//$description = str_replace('"','DQUOTE',$description);
 				$description = str_replace(';','\;',$description);
 				$description = str_replace(',','\,',$description);
 				
@@ -29,7 +29,7 @@ X-WR-CALNAME:{$blog_desc}";
 				
 				$location		= $EM_Event->output('#_LOCATION');
 				$location		= str_replace(',','\,',ent2ncr(convert_chars(strip_tags($location))));
-				$location = str_replace('"','DQUOTE',$location);
+				//$location = str_replace('"','DQUOTE',$location);
 				$location = str_replace(';','\;',$location);
 				$location = str_replace(',','\,',$location);
 				
