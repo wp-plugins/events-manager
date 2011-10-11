@@ -466,6 +466,16 @@ function em_admin_options_page() {
 					em_options_input_text ( __( 'Error mailing user', 'dbem' ), 'dbem_booking_feedback_nomail', __( 'If a booking is made and an email cannot be sent, this is added to the success message.', 'dbem' ) );
 					em_options_input_text ( __( 'Already booked', 'dbem' ), 'dbem_booking_feedback_already_booked', __( 'If the user made a previous booking and cannot double-book.', 'dbem' ) );
 					em_options_input_text ( __( 'No spaces booked', 'dbem' ), 'dbem_booking_feedback_min_space', __( 'If the user tries to make a booking without requesting any spaces.', 'dbem' ) );
+					?>
+					<tr><td colspan='2'><h4><?php _e('No-User Booking Mode','dbem') ?> (Beta)</h4></td></tr>
+					<tr><td colspan='2'>
+						<p><?php _e('By default, when a booking is made by a user, this booking is tied to a user account, if the user is not registered nor logged in and guest bookings are enabled, an account will be created for them.','dbem'); ?></p>
+						<p><?php _e('The option below allows you to disable user accounts and assign all bookings to a parent user, yet you will still see the supplied booking personal information for each booking. When this mode is enabled, extra booking information about the person is stored alongside the booking record rather than as a wordpress user.','dbem'); ?></p>
+						<p><?php _e('<strong>Warning : </strong> Various features afforded to users with an account will not be available, e.g. viewing bookings. Once you enable this and select a user, modifying these values will prevent older non-user bookings from displaying the correct information.','dbem'); ?></p>
+					</td></tr>
+					<?php
+					em_options_radio_binary ( __( 'Enable No-User Booking Mode?', 'dbem' ), 'dbem_bookings_registration_disable', __( 'This disables user registrations for bookings.', 'dbem' ) );
+					em_options_select ( __( 'Assign bookings to', 'dbem' ), 'dbem_bookings_registration_user', em_get_wp_users(), __( 'Choose a parent user to assign bookings to. People making their booking will be unaware of this and will never have access to those user details.', 'dbem' ) );
 					echo $save_button; 
 					?>
 				</table>
@@ -518,6 +528,20 @@ function em_admin_options_page() {
 					<?php
 					em_options_input_text ( __( 'Booking cancelled email subject', 'dbem' ), 'dbem_bookings_email_cancelled_subject', '' );
 					em_options_textarea ( __( 'Booking cancelled email', 'dbem' ), 'dbem_bookings_email_cancelled_body', '' );
+					?>
+				</table>
+			</div> <!-- . inside -->
+			</div> <!-- .postbox -->
+			
+			<div  class="postbox " >
+			<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Event Email Templates', 'dbem' ); ?> </span></h3>
+			<div class="inside">
+				<table class='form-table'>
+					<tr><td colspan='2'><strong><?php _e('Event Approved','dbem') ?></strong></td></tr>
+					<tr><td colspan='2'><?php echo __('An email will be sent to the event owner when their event is approved. Users requiring event approval do not have the <code>publish_events</code> capability.','dbem').$bookings_placeholder_tip ?></td></tr>
+					<?php
+					em_options_input_text ( __( 'Event approved subject', 'dbem' ), 'dbem_event_approved_email_subject', '' );
+					em_options_textarea ( __( 'Event approved email', 'dbem' ), 'dbem_event_approved_email_body', '' );
 					?>
 				</table>
 			</div> <!-- . inside -->

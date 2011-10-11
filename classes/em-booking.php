@@ -346,13 +346,38 @@ class EM_Booking extends EM_Object{
 	function get_person(){
 		global $EM_Person;
 		if( is_object($this->person) && get_class($this->person)=='EM_Person' && ($this->person->ID == $this->person_id || empty($this->person_id) ) ){
-			return apply_filters('em_booking_get_person', $this->person, $this);
+			//This person is already included, so don't do anything
 		}elseif( is_object($EM_Person) && ($EM_Person->ID === $this->person_id || $this->id == '') ){
 			$this->person = $EM_Person;
 		}elseif( is_numeric($this->person_id) ){
 			$this->person = new EM_Person($this->person_id);
 		}else{
 			$this->person = new EM_Person(0);
+		}
+		//if this user is the parent user of disabled registrations, replace user details here:
+		if( get_option('dbem_bookings_registration_disable') && $this->person->ID == get_option('dbem_bookings_registration_user') ){
+			//override any registration data into the person objet
+			if( !empty($this->meta['registration']) ){
+				foreach($this->meta['registration'] as $key => $value){
+					$this->person->$key = $value;
+				}
+			}
+			$this->person->user_email = ( !empty($this->meta['registration']['user_email']) ) ? $this->meta['registration']['user_email']:$this->person->user_email;
+			if( !empty($this->meta['registration']['user_name']) ){
+				$name_string = explode(' ',$this->meta['registration']['user_name']); 
+				$this->meta['registration']['first_name'] = array_shift($name_string);
+				$this->meta['registration']['last_name'] = implode(' ', $name_string);
+			}
+			$this->person->user_firstname = ( !empty($this->meta['registration']['first_name']) ) ? $this->meta['registration']['first_name']:__('Guest User','dbem');
+			$this->person->first_name = $this->person->user_firstname;
+			$this->person->user_lastname = ( !empty($this->meta['registration']['last_name']) ) ? $this->meta['registration']['last_name']:'';
+			$this->person->last_name = $this->person->user_lastname;
+			$this->person->phone = ( !empty($this->meta['registration']['dbem_phone']) ) ? $this->meta['registration']['dbem_phone']:__('Not Supplied','dbem');
+			//build display name
+			$full_name = $this->user_firstname  . " " . $this->user_lastname ;
+			$full_name = trim($full_name);
+			$display_name = ( empty($full_name) ) ? __('Guest User','dbem'):$full_name;
+			$this->person->display_name = $display_name;
 		}
 		return apply_filters('em_booking_get_person', $this->person, $this);
 	}

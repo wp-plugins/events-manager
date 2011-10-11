@@ -153,7 +153,7 @@ function em_content_page_title($content) {
 }
 //add_filter ( 'single_post_title', 'em_content_page_title',1,1 ); //Filter for the wp_title of page, can directly reference page title function
 
-function em_content_wp_title($title, $sep, $seplocation){
+function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	$events_page_id = get_option ( 'dbem_events_page' );
 	if ( get_the_ID() != $events_page_id || $events_page_id == 0 ) { return $title; }
 	// Determines position of the separator and direction of the breadcrumb

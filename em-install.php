@@ -307,6 +307,7 @@ function em_add_options() {
 	$respondent_email_pending_body_localizable = __("Dear #_BOOKINGNAME, <br/>You have requested #_BOOKINGSPACES space/spaces for #_NAME.<br/>Your booking is currently pending approval by our administrators. Once approved you will receive an automatic confirmation.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$respondent_email_rejected_body_localizable = __("Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_NAME on #F #j, #Y has been rejected.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$respondent_email_cancelled_body_localizable = __("Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_NAME on #F #j, #Y has been cancelled.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
+	$event_approved_email_body = __("Dear #_CONTACTNAME, <br/>Your event #_NAME on #F #j, #Y has been approved.<br/>You can view your event here: #_EVENTURL",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	
 	$dbem_options = array(
 		//defaults
@@ -321,6 +322,9 @@ function em_add_options() {
 		'dbem_events_anonymous_submissions' => 0,
 		'dbem_events_anonymous_user' => 0,
 		'dbem_events_anonymous_result_success' => 'You have successfully submitted your event, which will be published pending approval.',
+		//Event Emails
+		'dbem_event_approved_email_subject' => __("Event Approved",'dbem'). " - #_NAME" ,
+		'dbem_event_approved_email_body' => str_replace("<br/>", "\n\r", $event_approved_email_body),		
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_events_page_scope' => 'future',
@@ -444,6 +448,8 @@ function em_add_options() {
 		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
 		//Bookings
 		'dbem_bookings_form_max' => 20,
+		'dbem_bookings_registration_disable' => 0,
+		'dbem_bookings_registration_user' => '',
 		'dbem_bookings_anonymous' => 1, 
 		'dbem_bookings_approval' => 1, //approval is on by default
 		'dbem_bookings_approval_reserved' => 0, //overbooking before approval?

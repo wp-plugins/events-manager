@@ -275,7 +275,7 @@ function em_init_actions() {
 					$registration = true;
 					//TODO do some ticket validation before registering the user
 					if ( $EM_Event->get_bookings()->get_available_spaces() >= $EM_Booking->get_spaces(true) ) {
-						if( !is_user_logged_in() && get_option('dbem_bookings_anonymous') ){
+						if( !is_user_logged_in() && get_option('dbem_bookings_anonymous') && !get_option('dbem_bookings_registration_disable') ){
 							//find random username - less options for user, less things go wrong
 							$username_root = explode('@', $_REQUEST['user_email']);
 							$username_rand = $username_root[0].rand(1,1000);
@@ -304,6 +304,43 @@ function em_init_actions() {
 									$EM_Notices->add_error( get_option('dbem_booking_feedback_reg_error') );
 								}
 							}
+						}elseif( !is_user_logged_in() && get_option('dbem_bookings_registration_disable') ){
+							//Validate name, phone and email
+							$user_data = array();
+							// Check the e-mail address
+							if ( $_REQUEST['user_email'] == '' ) {
+								$registration = false;
+								$EM_Notices->add_error(__( '<strong>ERROR</strong>: Please type your e-mail address.', 'dbem') );
+							} elseif ( !is_email( $_REQUEST['user_email'] ) ) {
+								$registration = false;
+								$EM_Notices->add_error( __( '<strong>ERROR</strong>: The email address isn&#8217;t correct.', 'dbem') );
+							}elseif(email_exists( $_REQUEST['user_email'] )){
+								$registration = false;
+								$EM_Notices->add_error( get_option('dbem_booking_feedback_email_exists') );
+							}else{
+								$user_data['user_email'] = $_REQUEST['user_email'];
+							}
+							//Check the user name
+							if( !empty($_REQUEST['user_name']) ){
+								$name_string = explode(' ',wp_kses($_REQUEST['user_name'], array())); 
+								$user_data['first_name'] = array_shift($name_string);
+								$user_data['last_name'] = implode(' ', $name_string);
+							}
+							//Check the first/last name
+							if( !empty($_REQUEST['first_name']) ){
+								$user_data['first_name'] = wp_kses($_REQUEST['first_name'], array());
+							}
+							if( !empty($_REQUEST['last_name']) ){
+								$user_data['last_name'] = wp_kses($_REQUEST['last_name'], array());
+							}
+							//Check the phone
+							if( !empty($_REQUEST['dbem_phone']) ){
+								$user_data['dbem_phone'] = wp_kses($_REQUEST['dbem_phone'], array());
+							}
+							//Add booking meta
+							$EM_Booking->meta['registration'] = $user_data;	
+							//Save default person to booking
+							$EM_Booking->person_id = get_option('dbem_bookings_registration_user');				
 						}elseif( !is_user_logged_in() ){
 							$registration = false;
 							$EM_Notices->add_error( get_option('dbem_booking_feedback_log_in') );
@@ -315,8 +352,6 @@ function em_init_actions() {
 						$feedback = $EM_Event->get_bookings()->feedback_message;	
 					}else{
 						$result = false;
-						ob_start();
-						$EM_Booking->feedback_message = ob_get_clean();
 						$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );			
 						$feedback = $EM_Event->get_bookings()->feedback_message;				
 					}

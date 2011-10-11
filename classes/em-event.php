@@ -185,11 +185,11 @@ class EM_Event extends EM_Object{
 			
 			//Add Owner as Contact Person
 			if($this->owner && $this->owner > 0){
-				$this->contact = get_userdata($this->owner);
+				$this->contact = new EM_Person($this->owner);
 			}
 			if( !is_object($this->contact) ){
 				$this->owner = get_option('dbem_default_contact_person');
-				$this->contact = get_userdata($this->owner);
+				$this->contact = new EM_Person($this->owner);
 			}
 			if( is_object($this->contact) ){
 	      		$this->contact->phone = get_metadata('user', $this->contact->ID, 'dbem_phone', true);
@@ -515,7 +515,19 @@ class EM_Event extends EM_Object{
 	 * @return bool
 	 */
 	function approve(){
-		return $this->set_status(1);
+		$approval = $this->set_status(1);
+		if($approval){
+			//email
+			if( $this->owner == "" ) return $approval;	
+			$subject = $this->output(get_option('dbem_event_approved_email_subject'), 'email'); 
+			$body = $this->output(get_option('dbem_event_approved_email_body'), 'email');
+						
+			//Send to the person booking
+			if( !$this->email_send( $subject, $body, $this->contact->user_email) ){
+				return $approval;
+			}
+		}
+		return $approval;
 	}
 	
 	/**
