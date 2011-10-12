@@ -47,15 +47,29 @@ add_action( 'wp', 'bp_em_setup_globals', 2 );
  * rendered in the template.
  */
 function bp_em_setup_nav() {
-	global $bp;
+	global $bp, $blog_id;
 	$count = 0; 
+	//check multisite or normal mode for correct permission checking
+	if(is_multisite() && $blog_id != BP_ROOT_BLOG){
+		//FIXME MS mode doesn't seem to recognize cross subsite caps, using the proper functions, for now we use switch_blog.
+		$current_blog = $blog_id;
+		switch_to_blog(BP_ROOT_BLOG);
+		$can_manage_events = current_user_can_for_blog(BP_ROOT_BLOG, 'edit_events');
+		$can_manage_locations = current_user_can_for_blog(BP_ROOT_BLOG, 'edit_locations');
+		$can_manage_bookings = current_user_can_for_blog(BP_ROOT_BLOG, 'manage_bookings');
+		switch_to_blog($current_blog);
+	}else{
+		$can_manage_events = current_user_can('edit_events');
+		$can_manage_locations = current_user_can('edit_locations');
+		$can_manage_bookings = current_user_can('manage_bookings');
+	}
 	if( empty($bp->events) ) bp_em_setup_globals();
 	/* Add 'Events' to the main user profile navigation */
 	bp_core_new_nav_item( array(
 		'name' => __( 'Events', 'dbem' ),
 		'slug' => $bp->events->slug,
 		'position' => 80,
-		'screen_function' => (bp_is_my_profile() && current_user_can('edit_events')) ? 'bp_em_my_events':'bp_em_events',
+		'screen_function' => (bp_is_my_profile() && $can_manage_events) ? 'bp_em_my_events':'bp_em_events',
 		'default_subnav_slug' => bp_is_my_profile() ? 'my-events':''
 	) );
 
@@ -82,7 +96,7 @@ function bp_em_setup_nav() {
 		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
 	) );
 
-	if( current_user_can('edit_events') ){
+	if( $can_manage_events ){
 		bp_core_new_subnav_item( array(
 			'name' => __( 'My Events', 'dbem' ),
 			'slug' => 'my-events',
@@ -94,7 +108,7 @@ function bp_em_setup_nav() {
 		) );
 	}
 	
-	if( current_user_can('edit_locations') ){
+	if( $can_manage_locations ){
 		bp_core_new_subnav_item( array(
 			'name' => __( 'My Locations', 'dbem' ),
 			'slug' => 'my-locations',
@@ -106,7 +120,7 @@ function bp_em_setup_nav() {
 		) );
 	}
 	
-	if(current_user_can('manage_bookings')){
+	if( $can_manage_bookings ){
 		bp_core_new_subnav_item( array(
 			'name' => __( 'My Event Bookings', 'dbem' ),
 			'slug' => 'my-bookings',

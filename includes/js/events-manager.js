@@ -489,7 +489,7 @@ function em_maps() {
 		
 		//JS Hook for handling map after instantiation
 		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
-		jQuery(document).trigger('em_maps_location_hook', [maps[map_id], infowindow, marker]);
+		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker]);
 	});
 	jQuery('.em-locations-map').each( function(index){
 		var el = jQuery(this);
@@ -532,7 +532,7 @@ function em_maps() {
 				  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
 				  maps[map_id].fitBounds(bounds);
 				//Call a hook if exists
-				jQuery(document).trigger('em_maps_locations_hook', [maps[map_id]]);
+				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id]]);
 			}else{
 				el.children().first().html('No locations found');
 			}

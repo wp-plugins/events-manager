@@ -207,7 +207,8 @@
 						?>
 					</select>
 					<?php endif; ?>
-					<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),$bp->events->link . 'my-locations/add/'); ?></p>
+					<?php $location_link = ( is_object($bp) ) ? $bp->events->link . 'my-locations/add/' : get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-locations&amp;action=add';	?>
+					<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php if(current_user_can('edit_locations')){ echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),$location_link); } ?></p>
 				
 					<?php if ( get_option ( 'dbem_gmap_is_active' ) ) : ?>
 					<div id='em-map-404' style='width: 400px; vertical-align:middle; text-align: center;'>

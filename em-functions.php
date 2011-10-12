@@ -33,15 +33,20 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
 		$url_parts = explode('?', $link);
 		$base_link = $url_parts[0];
     	//Get querystring for first page without page
-    	$base_querystring = preg_replace('/(&(amp;)?|\?)(page|pno)=%(25)?PAGE%(25)?/','',$url_parts[1]);
+    	$query_arr = array();
+    	parse_str($url_parts[1], $query_arr);
+    	unset($query_arr['page']); unset($query_arr['pno']);
+    	$base_querystring = build_query($query_arr);
+    	if( !empty($base_querystring) ) $base_querystring = '?'.$base_querystring;
+    	//calculate
 		$maxPages = ceil($total/$limit); //Total number of pages
 		$startPage = ($page <= $pagesToShow) ? 1 : $pagesToShow * (floor($page/$pagesToShow)) ; //Which page to start the pagination links from (in case we're on say page 12 and $pagesToShow is 10 pages)
 		$placeholder = urlencode('%PAGE%');
-		$link = str_replace('%PAGE%', urlencode('%PAGE%'), $link); //To avoid url encoded/non encoded placeholders
+		$link = str_replace('%PAGE%', $placeholder, $link); //To avoid url encoded/non encoded placeholders
 	    //Add the back and first buttons
 		    $string = ($page>1 && $startPage != 1) ? '<a class="prev page-numbers" href="'.str_replace($placeholder,1,$link).'">&lt;&lt;</a> ' : '';
 		    if($page == 2){
-		    	$string .= ' <a class="prev page-numbers" href="'.$base_link.'?'.$base_querystring.'">&lt;</a> ';
+		    	$string .= ' <a class="prev page-numbers" href="'.$base_link.$base_querystring.'">&lt;</a> ';
 		    }elseif($page > 2){
 		    	$string .= ' <a class="prev page-numbers" href="'.str_replace($placeholder,$page-1,$link).'">&lt;</a> ';
 		    }
@@ -50,7 +55,7 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
 	            if($i == $page){
 	                $string .= ' <strong><span class="page-numbers current">'.$i.'</span></strong>';
 	            }elseif($i=='1'){
-	                $string .= ' <a class="page-numbers" href="'.$base_link.'?'.$base_querystring.'">'.$i.'</a> ';                
+	                $string .= ' <a class="page-numbers" href="'.$base_link.$base_querystring.'">'.$i.'</a> ';                
 	            }else{
 	                $string .= ' <a class="page-numbers" href="'.str_replace($placeholder,$i,$link).'">'.$i.'</a> ';                
 	            }

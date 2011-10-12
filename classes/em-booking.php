@@ -223,7 +223,7 @@ class EM_Booking extends EM_Object{
 			}
 			$this->comment = (!empty($_REQUEST['booking_comment'])) ? wp_kses_data(stripslashes($_REQUEST['booking_comment'])):'';
 			$this->get_spaces(true);
-			$this->get_price(true);
+			$this->get_price(true, false, false);
 			$this->get_person();
 		}
 		return apply_filters('em_booking_get_post',$this->validate(),$this);
@@ -273,11 +273,13 @@ class EM_Booking extends EM_Object{
 	/**
 	 * Gets the total price for this whole booking. Seting $force_reset to true will recheck spaces, even if previously done so.
 	 * @param boolean $force_refresh
+	 * @param boolean $format
+	 * @param boolean $add_tax
 	 * @return float
 	 */
-	function get_price( $force_refresh=false, $format=false ){
-		if($force_refresh || $this->price == 0){
-			$this->price = $this->get_tickets_bookings()->get_price($force_refresh);
+	function get_price( $force_refresh=false, $format=false, $add_tax='x' ){
+		if($force_refresh || $this->price == 0 || $add_tax !== 'x' || get_option('dbem_bookings_tax_auto_add')){
+			$this->price = $this->get_tickets_bookings()->get_price($force_refresh, false, $add_tax);
 		}
 		if($format){
 			return apply_filters('em_booking_get_price', em_get_currency_symbol().number_format($this->price,2),$this);
@@ -547,8 +549,15 @@ class EM_Booking extends EM_Object{
 				'#_BOOKINGSPACES' => $this->get_spaces(),
 				'#_BOOKINGLISTURL' => em_get_my_bookings_url(),
 				'#_BOOKINGCOMMENT' => $this->comment,
+				'#_BOOKINGPRICEWITHTAX' => em_get_currency_symbol(true)." ". number_format($this->get_price(false,false,true),2),
+				'#_BOOKINGPRICEWITHOUTTAX' => em_get_currency_symbol(true)." ". number_format($this->get_price(false,false,false),2),
+				'#_BOOKINGPRICETAX' => em_get_currency_symbol(true)." ". number_format($this->get_price(false,false,false)*(get_option('dbem_bookings_tax')/100),2),
+				'#_BOOKINGPRICE' => em_get_currency_symbol(true)." ". number_format($this->get_price(),2),
 				'#_BOOKINGTICKETNAME' => $EM_Ticket->name,
 				'#_BOOKINGTICKETDESCRIPTION' => $EM_Ticket->description,
+				'#_BOOKINGTICKETPRICEWITHTAX' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,true),2),
+				'#_BOOKINGTICKETPRICEWITHOUTTAX' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,false),2),
+				'#_BOOKINGTICKETTAX' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,false)*(get_option('dbem_bookings_tax')/100),2),
 				'#_BOOKINGTICKETPRICE' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(),2),
 				'#_BOOKINGTICKETS' => $tickets
 			),$this);	 

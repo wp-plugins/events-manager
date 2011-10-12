@@ -102,8 +102,8 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.2121); //self expanatory
-define('EM_PRO_MIN_VERSION', 1.353); //self expanatory
+define('EM_VERSION', 4.2122); //self expanatory
+define('EM_PRO_MIN_VERSION', 1.354); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 if( get_site_option('dbem_ms_global_table') && is_multisite() ){
 	//If in ms recurrence mode, we are getting the default wp-content/uploads folder

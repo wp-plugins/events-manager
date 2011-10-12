@@ -221,4 +221,88 @@ function em_is_event_rsvpable() {
 }
 function dbem_is_event_rsvpable(){ em_is_event_rsvpable(); } //Depreciated
 
+/**
+ * Generate a grouped list of events by year, month, week or day.
+ * @since 4.213
+ * @param array $args
+ * @param string $format
+ * @return string
+ */
+function em_get_events_list_grouped($args, $format=''){
+	//Reset some args to include pagination for if pagination is requested.
+	$args['limit'] = (!empty($args['limit']) && is_numeric($args['limit']) )? $args['limit'] : false;
+	$args['page'] = (!empty($args['page']) && is_numeric($args['page']) )? $args['page'] : 1;
+	$args['page'] = (!empty($_REQUEST['page']) && is_numeric($_REQUEST['page']) )? $_REQUEST['page'] : $args['page'];
+	$args['offset'] = ($args['page']-1) * $args['limit'];
+	$args['orderby'] = 'event_start_date,event_start_time,event_name'; // must override this to display events in right cronology.
+	if( !empty($format) ){ $args['format'] = html_entity_decode($format); } //accept formats
+	//Reset some vars for counting events and displaying set arrays of events
+	$atts = (array) $args;
+	$atts['pagination'] = false;
+	$atts['limit'] = false;
+	$atts['page'] = false;
+	$atts['offset'] = false;
+	//decide what form of dates to show
+	$EM_Events = EM_Events::get($args);
+	$events_count = EM_Events::get($atts,true);
+	ob_start();
+	switch ( $args['mode'] ){
+		case 'yearly':
+			//go through the events and put them into a monthly array
+			$events_dates = array();
+			foreach($EM_Events as $EM_Event){
+				$events_dates[date_i18n('Y',$EM_Event->start)][] = $EM_Event;
+			}
+			foreach ($events_dates as $year => $events){
+				echo '<h2>'.$year.'</h2>';
+				echo EM_Events::output($events, $atts);
+			}
+			break;
+		case 'monthly':
+			//go through the events and put them into a monthly array
+			$events_dates = array();
+			foreach($EM_Events as $EM_Event){
+				$events_dates[date_i18n('M Y',$EM_Event->start)][] = $EM_Event;
+			}
+			foreach ($events_dates as $month => $events){
+				echo '<h2>'.$month.'</h2>';
+				echo EM_Events::output($events, $atts);
+			}
+			break;
+		case 'weekly':
+			$events_dates = array();
+			foreach($EM_Events as $EM_Event){
+	   			$start_of_week = get_option('start_of_week');
+				$day_of_week = date('w',$EM_Event->start);
+				$day_of_week = date('w',$EM_Event->start);
+				$offset = $day_of_week - $start_of_week;
+				if($offset<0){ $offset += 7; }
+				$offset = $offset * 60*60*24; //days in seconds
+				$start_day = strtotime($EM_Event->start_date);
+				$events_dates[$start_day - $offset][] = $EM_Event;
+			}
+			foreach ($events_dates as $event_day_ts => $events){
+				echo '<h2>'.date_i18n(get_option('date_format'),$event_day_ts).' - '.date_i18n(get_option('date_format'),$event_day_ts+(60*60*24*6)).'</h2>';
+				echo EM_Events::output($events, $atts);
+			}
+			break;
+		default: //daily
+			//go through the events and put them into a daily array
+			$events_dates = array();
+			foreach($EM_Events as $EM_Event){
+				$events_dates[strtotime($EM_Event->start_date)][] = $EM_Event;
+			}
+			foreach ($events_dates as $event_day_ts => $events){
+				echo '<h2>'.date_i18n(get_option('date_format'),$event_day_ts).'</h2>';
+				echo EM_Events::output($events, $atts);
+			}
+			break;
+	}
+	if( !empty($args['limit']) && $events_count > $args['limit'] && (!empty($args['pagination']) || !isset($args['pagination'])) ){
+		//Show the pagination links (unless there's less than $limit events)
+		$page_link_template = add_query_arg(array('page'=>'%PAGE%'));
+		echo em_paginate( $page_link_template, $events_count, $args['limit'], $args['page']);
+	}
+	return ob_get_clean();
+}
 ?>

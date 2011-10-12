@@ -126,10 +126,13 @@ class EM_Ticket_Booking extends EM_Object{
 	 * @param boolean $force_refresh
 	 * @return float
 	 */
-	function get_price( $force_refresh=false ){
-		if( $force_refresh || $this->price == 0 ){
-			//get the ticket, clculate price on spaces
-			$this->price = $this->get_ticket()->get_price() * $this->spaces;
+	function get_price( $force_refresh=false, $format = false, $add_tax = 'x' ){
+		if( $force_refresh || $this->price == 0 || $add_tax !== 'x' || get_option('dbem_bookings_tax_auto_add') ){
+			//get the ticket, calculate price on spaces
+			$this->price = $this->get_ticket()->get_price(false, $add_tax) * $this->spaces;
+		}
+		if($format){
+			return apply_filters('em_booking_get_prices', em_get_currency_symbol().number_format($this->price,2),$this);
 		}
 		return apply_filters('em_booking_get_prices',$this->price,$this);
 	}

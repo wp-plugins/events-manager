@@ -157,3 +157,15 @@ function em_get_event_form_shortcode( $args = array() ){
 	return ob_get_clean();
 }
 add_shortcode ( 'event_form', 'em_get_event_form_shortcode');
+
+/**
+ * Creates a grouped list of events by year, month, week or day
+ * @since 4.213
+ * @param array $args
+ * @param string $format
+ * @return string
+ */
+function em_get_events_list_grouped_shortcode($args = array(), $format = ''){
+	return em_get_events_list_grouped($args,$format);
+}
+add_shortcode ( 'events_list_grouped', 'em_get_events_list_grouped_shortcode' );

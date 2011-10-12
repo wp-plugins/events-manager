@@ -259,7 +259,7 @@ function em_bookings_single(){
 											<td>
 												<input name="em_tickets[<?php echo $EM_Ticket_Booking->get_ticket()->id; ?>][spaces]" class="em-ticket-select" value="<?php echo $EM_Ticket_Booking->get_spaces(); ?>" />
 											</td>
-											<td><?php echo $EM_Ticket_Booking->get_price(); ?></td>
+											<td><?php echo $EM_Ticket_Booking->get_price(true,true); ?></td>
 										</tr>
 										<?php $shown_tickets[] = $EM_Ticket_Booking->ticket_id; ?>
 										<?php endforeach; ?>
@@ -271,7 +271,7 @@ function em_bookings_single(){
 													<td>
 														<input name="em_tickets[<?php echo $EM_Ticket->id; ?>][spaces]" class="em-ticket-select" value="0" />
 													</td>
-													<td>0.00</td>
+													<td><?php echo em_get_currency_symbol() ?>0.00</td>
 												</tr>
 												<?php endif; ?>
 											<?php endforeach; ?>
@@ -281,8 +281,20 @@ function em_bookings_single(){
 										<tr>
 											<th><?php _e('Totals','dbem'); ?></th>
 											<th><?php echo $EM_Booking->get_spaces(); ?></th>
-											<th><?php echo $EM_Booking->get_price(); ?></th>
+											<th><?php echo $EM_Booking->get_price(true, true); ?></th>
 										</tr>
+										<?php if( !get_option('dbem_bookings_tax_auto_add') && is_numeric(get_option('dbem_bookings_tax')) && get_option('dbem_bookings_tax') > 0  ): ?>
+										<tr>
+											<th><?php _e('Tax','dbem'); ?></th>
+											<th><?php echo get_option('dbem_bookings_tax') ?>%</th>
+											<th><?php echo em_get_currency_symbol().number_format($EM_Booking->get_price() * (get_option('dbem_bookings_tax')/100),2); ?></th>
+										</tr>
+										<tr>
+											<th><?php _e('Total (inc. tax)','dbem'); ?></th>
+											<th>&nbsp;</th>
+											<th><?php echo em_get_currency_symbol().number_format($EM_Booking->get_price()* (1 + get_option('dbem_bookings_tax')/100),2); ?></th>
+										</tr>
+										<?php endif; ?>
 									</tfoot>
 								</table>
 								<p>
