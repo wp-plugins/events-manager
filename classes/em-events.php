@@ -280,7 +280,7 @@ class EM_Events extends EM_Object implements Iterator {
 				$conditions['blog'] = "(`blog_id`={$args['blog']})";
 			}
 		}
-		if($args['bookings'] == 'user' && is_user_logged_in()){
+		if( $args['bookings'] === 'user' && is_user_logged_in()){
 			//get bookings of user
 			$EM_Person = new EM_Person(get_current_user_id());
 			$booking_ids = $EM_Person->get_bookings(true);
