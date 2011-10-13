@@ -195,6 +195,8 @@ function em_categories_edit_layout($message = "") {
 										<?php endif; ?>
 										<br /><br />
 										<label for='category_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='locacategoryge' name='category_image' id='category_image' type='file' size='40' />
+										<br />
+										<label for='category_image_delete'><?php _e('Delete Image?', 'dbem') ?></label> <input id='category-image-delete' name='category_image_delete' id='category_image_delete' type='checkbox' value='1' />
 								</div>
 							</div>
 						</div>

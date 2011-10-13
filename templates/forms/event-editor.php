@@ -54,7 +54,7 @@
 			
 			<?php do_action('em_front_event_form_header'); ?>
 			
-			<h4><?php _e ( 'Event Name', 'dbem' ); ?></h4>
+			<h4 class="event-form-name"><?php _e ( 'Event Name', 'dbem' ); ?></h4>
 			<div class="inside event-form-name">
 				<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->name,ENT_QUOTES); ?>" />
 				<br />
@@ -90,7 +90,7 @@
 				<?php endif; ?>
 			</div>
 						
-			<h4 id='event-date-title'><?php _e ( 'When', 'dbem' ); ?></h4>
+			<h4 class="event-form-when"><?php _e ( 'When', 'dbem' ); ?></h4>
 			<div class="inside event-form-when">
 				<div>
 					<?php _e ( 'Starts on ', 'dbem' ); ?>					
@@ -183,7 +183,7 @@
 			<?php endif; ?>
 			
 			
-			<h4><?php _e ( 'Where', 'dbem' ); ?></h4>
+			<h4 class="event-form-where"><?php _e ( 'Where', 'dbem' ); ?></h4>
 			<div class="inside event-form-where">
 				<div id="em-location-data" style="padding-right:20px; vertical-align:top;">
 					<?php
@@ -207,7 +207,8 @@
 						?>
 					</select>
 					<?php endif; ?>
-					<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),$bp->events->link . 'my-locations/add/'); ?></p>
+					<?php $location_link = ( is_object($bp) ) ? $bp->events->link . 'my-locations/add/' : get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-locations&amp;action=add';	?>
+					<p><?php _e ( 'Choose from one of your locations', 'dbem' )?> <?php if(current_user_can('edit_locations')){ echo sprintf(__('or <a href="%s">add a new location</a>','dbem'),$location_link); } ?></p>
 				
 					<?php if ( get_option ( 'dbem_gmap_is_active' ) ) : ?>
 					<div id='em-map-404' style='width: 400px; vertical-align:middle; text-align: center;'>
@@ -218,8 +219,8 @@
 				</div>
 			</div>
 			
-			<h4><?php _e ( 'Details', 'dbem' ); ?></h4>
-			<div class="event-details event-form-details">
+			<h4 class="event-form-details"><?php _e ( 'Details', 'dbem' ); ?></h4>
+			<div class="inside event-form-details">
 				<div>
 					<textarea name="content" rows="10" style="width:100%"><?php echo $EM_Event->notes ?></textarea>
 					<br />
@@ -259,7 +260,6 @@
 							<label for="em_attributes[<?php echo $name ?>]"><?php echo $name ?></label>
 							<?php if( count($attributes['values'][$name]) > 0 ): ?>
 							<select name="em_attributes[<?php echo $name ?>]">
-								<option><?php echo __('No Value','dbem'); ?></option>
 								<?php foreach($attributes['values'][$name] as $attribute_val): ?>
 									<?php if( array_key_exists($name, $EM_Event->attributes) && $EM_Event->attributes[$name]==$attribute_val ): ?>
 										<option selected="selected"><?php echo $attribute_val; ?></option>
@@ -305,7 +305,7 @@
 							}else{
 								?>		
 								<p><strong><?php _e('Tickets','dbem'); ?></strong></p>
-								<p><em><?php _e('You have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?></em></p>					
+								<p><em><?php _e('You can have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?> <?php _e('Basic HTML is allowed in ticket labels and descriptions.','dbem'); ?></em></p>					
 								<table class="form-table">
 									<thead>
 										<tr valign="top">
@@ -328,12 +328,13 @@
 									</tfoot>
 									<tbody id="em-tickets-body">
 										<?php
+											global $allowedposttags;
 											$col_count = 1;
 											foreach( $EM_Tickets->tickets as $EM_Ticket){
 												?>
 												<tr valign="top" id="em-tickets-row-<?php echo $col_count ?>" class="em-tickets-row">
-													<td class="ticket-status"><span class="<?php echo ($EM_Ticket->is_available()) ? 'ticket_on':'ticket_off'; ?>"></span></td>													
-													<td class="ticket-name"><span class="ticket_name"><?php echo $EM_Ticket->name ?></span><br /><span class="ticket_description"></span></td>
+													<td class="ticket-status"><span class="<?php echo ($EM_Ticket->is_available()) ? 'ticket_on':'ticket_off'; ?>"></span></td>								
+													<td class="ticket-name"><span class="ticket_name"><?php echo wp_kses_data($EM_Ticket->name); ?></span><br /><span class="ticket_description"><?php echo wp_kses($EM_Ticket->description,$allowedposttags); ?></span></td>
 													<td class="ticket-price">
 														<span class="ticket_price"><?php echo ($EM_Ticket->price) ? $EM_Ticket->price : __('Free','dbem'); ?></span>
 													</td>
@@ -371,8 +372,8 @@
 														| <a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=events-manager-bookings&ticket_id=<?php echo $EM_Ticket->id ?>"><?php _e('View Bookings','dbem'); ?></a>
 														<?php endif; ?>
 														<input type="hidden" class="ticket_id" name="em_tickets[<?php echo $col_count; ?>][ticket_id]" value="<?php echo $EM_Ticket->id ?>" />
-														<input type="hidden" class="ticket_name" name="em_tickets[<?php echo $col_count; ?>][ticket_name]" value="<?php echo $EM_Ticket->name ?>" />
-														<input type="hidden" name="em_tickets[<?php echo $col_count; ?>][ticket_description]" value="<?php echo $EM_Ticket->description ?>" />
+														<input type="hidden" class="ticket_name" name="em_tickets[<?php echo $count; ?>][ticket_name]" value="<?php echo esc_attr(stripslashes($EM_Ticket->name)) ?>" />
+														<input type="hidden" class="ticket_description" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo esc_attr(stripslashes($EM_Ticket->description)) ?>" />
 														<input type="hidden" class="ticket_price" name="em_tickets[<?php echo $col_count; ?>][ticket_price]" value="<?php echo $EM_Ticket->price ?>" />
 														<input type="hidden" class="ticket_spaces" name="em_tickets[<?php echo $col_count; ?>][ticket_spaces]" value="<?php echo $EM_Ticket->spaces ?>" />
 														<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $col_count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
