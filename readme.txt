@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports, 
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 4.212
+Stable tag: 4.213
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -88,6 +88,18 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+
+= 4.213 =
+* more calendar css cleanup
+* timepicker now working for public event forms
+* user cancellation of bookings now an option in settings
+* tax percentage option
+* fixed compatability with yoast seo plugin (EM overwrites the title)
+* custom attributes breaking when nested in conditional tags fixed
+* BP child themes should work properly now without the plugins.php file
+* ical DQUOTES problem removed
+* events now receive approval confirmation by email
+* optional user registration
 
 = 4.212 =
 * removed JS entirely from booking form template, still included in footer (overriden templates should remove JS to avoid errors)

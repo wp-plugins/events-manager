@@ -314,8 +314,7 @@ class EM_Event extends EM_Object{
 			$this->location->description = ''; //otherwise we get the same event details in the location  
 		}
 		if( !empty($_REQUEST['event_rsvp']) && $_REQUEST['event_rsvp'] && !$this->get_bookings()->get_tickets()->get_post() ){
-			$EM_Tickets = $this->get_bookings()->get_tickets();
-			array_merge($this->errors, $this->get_bookings()->get_tickets()->errors);
+			$this->add_errors($this->get_bookings()->get_tickets());
 		}
 		return apply_filters('em_event_get_post', $this->validate(), $this);
 	}

@@ -155,6 +155,9 @@ class EM_Ticket extends EM_Object{
 				$missing_fields[] = $field;
 			}
 		}
+		if( !is_numeric($this->price) ){
+			$this->add_error(__('Please enter a valid ticket price e.g. 10.50 (no currency signs)','dbem'));
+		}
 		if ( count($missing_fields) > 0){
 			// TODO Create friendly equivelant names for missing fields notice in validation 
 			$this->errors[] = __ ( 'Missing fields: ' ) . implode ( ", ", $missing_fields ) . ". ";

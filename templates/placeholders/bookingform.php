@@ -13,7 +13,7 @@ $EM_Ticket = $EM_Tickets->get_first();
 		<p><?php _e('Online bookings are not available for this event.','dbem'); ?></p>
 	<?php elseif( $EM_Event->start < current_time('timestamp') ): ?>
 		<p><?php _e('Bookings are closed for this event.','dbem'); ?></p>
-	<?php elseif( $EM_Event->get_bookings()->get_available_spaces() == 0 || (count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') && $EM_Ticket->get_available_spaces() == 0) ): ?>
+	<?php elseif( $EM_Event->get_bookings()->get_available_spaces() <= 0 || (count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') && $EM_Ticket->get_available_spaces() <= 0) ): ?>
 		<p><?php _e('This event is fully booked.','dbem'); ?></p>
 	<?php else: ?>
 		<?php echo $EM_Notices; ?>

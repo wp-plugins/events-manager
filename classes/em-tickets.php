@@ -140,7 +140,9 @@ class EM_Tickets extends EM_Object implements Iterator{
 	function validate(){
 		$errors = array();
 		foreach($this->tickets as $EM_Ticket){
-			$errors[] = $EM_Ticket->validate();
+			if( !$EM_Ticket->validate() ){
+				$this->add_error($EM_Ticket->get_errors());
+			} 
 		}
 		return apply_filters('em_tickets_validate', !in_array(false, $errors), $this);
 	}
