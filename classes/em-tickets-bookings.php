@@ -202,11 +202,11 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	 * @param boolean $force_refresh
 	 * @return float
 	 */
-	function get_price( $force_refresh=false, $format = false ){
+	function get_price( $force_refresh=false, $format = false, $add_tax = 'x' ){
 		$price = 0;
-		if($force_refresh || $this->price == 0){
+		if($force_refresh || $this->price == 0 || $add_tax !== 'x' || get_option('dbem_bookings_tax_auto_add')){
 			foreach($this->tickets_bookings as $EM_Ticket_Booking){
-				$price += $EM_Ticket_Booking->get_price();
+				$price += $EM_Ticket_Booking->get_price($force_refresh, false, $add_tax);
 			}
 			$this->price = $price;
 		}

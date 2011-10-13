@@ -28,27 +28,5 @@ function bp_em_events() {
 	}
 
 	function bp_em_events_content() {
-		global $bp, $EM_Notices;
-		echo $EM_Notices;
-		?>
-		<h4><?php _e('My Events', 'dbem'); ?></h4>
-		<?php
-		$events = EM_Events::get(array('owner'=>$bp->displayed_user->id));
-		if( count($events) > 0 ){
-			$args = array(
-				'format_header' => get_option('dbem_bp_events_list_format_header'),
-				'format' => get_option('dbem_bp_events_list_format'),
-				'format_footer' => get_option('dbem_bp_events_list_format_footer'),
-				'owner' => $bp->displayed_user->id
-			);
-			echo EM_Events::output($events, $args);
-		}else{
-			?>
-			<p><?php _e('No Events', 'dbem'); ?></p>
-			<?php
-		}
-		?>
-		<h4><?php _e("Events I'm Attending", 'dbem'); ?></h4>
-		<?php
-		bp_em_attending_content();
+		em_locate_template('buddypress/profile.php',true);
 	}

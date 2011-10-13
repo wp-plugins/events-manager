@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.14
+Version: 4.213
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -102,8 +102,8 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.124); //self expanatory
-define('EM_PRO_MIN_VERSION', 1.3); //self expanatory
+define('EM_VERSION', 4.213); //self expanatory
+define('EM_PRO_MIN_VERSION', 1.354); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 if( get_site_option('dbem_ms_global_table') && is_multisite() ){
 	//If in ms recurrence mode, we are getting the default wp-content/uploads folder
@@ -178,7 +178,7 @@ function em_enqueue_public() {
 	//Scripts
 	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position')); //jQuery will load as dependency
 	//Styles
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
+	//wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
 	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
 	em_js_localize_vars();
 }
@@ -194,7 +194,9 @@ function em_js_localize_vars(){
 		'ajaxurl' => admin_url('admin-ajax.php'),
 		'locationajaxurl' => admin_url('admin-ajax.php?action=locations_search'),
 		'firstDay' => get_option('start_of_week'),
-		'locale' => $locale_code
+		'locale' => $locale_code,
+		'bookingInProgress' => __('Please wait while the booking is being submitted.','dbem'),
+		'ui_css' => WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css'
 	));
 }
 
@@ -299,13 +301,12 @@ function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//Count pending bookings
 		$bookings_num = '';
-		$bookings_pending_count = 0;
+		$bookings_pending_count = apply_filters('em_bookings_pending_count',0);
 		if( get_option('dbem_bookings_approval') == 1){ 
-			$bookings_pending_count = apply_filters('em_bookings_pending_count',count(EM_Bookings::get(array('status'=>'0'))->bookings));
-			//TODO Add flexible permissions
-			if($bookings_pending_count > 0){
-				$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
-			}
+			$bookings_pending_count += count(EM_Bookings::get(array('status'=>'0'))->bookings);
+		}
+		if($bookings_pending_count > 0){
+			$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
 		}
 		//Count pending events
 		$events_num = '';
@@ -314,7 +315,7 @@ function em_create_events_submenu () {
 		if($events_pending_count > 0){
 			$events_num = '<span class="update-plugins count-'.$events_pending_count.'"><span class="plugin-count">'.$events_pending_count.'</span></span>';
 		}
-		$both_pending_count = $events_pending_count + $bookings_pending_count;
+		$both_pending_count = apply_filters('em_items_pending_count', $events_pending_count + $bookings_pending_count);
 		$both_num = ($both_pending_count > 0) ? '<span class="update-plugins count-'.$both_pending_count.'"><span class="plugin-count">'.$both_pending_count.'</span></span>':'';
 	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,'edit_events','events-manager','em_admin_events_page', plugins_url().'/events-manager/includes/images/calendar-16.png');
 	   	// Add a submenu to the custom top-level menu:
@@ -353,7 +354,7 @@ class EM_MS_Globals {
 	function get_globals(){ 
 		return apply_filters('em_ms_globals', array(
 			//multisite settings
-			'dbem_ms_global_table', 'dbem_ms_global_events', 'dbem_ms_global_events_links',
+			'dbem_ms_global_table', 'dbem_ms_global_events', 'dbem_ms_global_events_links', 'dbem_ms_global_locations',
 			//mail
 			'dbem_rsvp_mail_port', 'dbem_mail_sender_address', 'dbem_smtp_password', 'dbem_smtp_username','dbem_smtp_host', 'dbem_mail_sender_name','dbem_smtp_host','dbem_rsvp_mail_send_method','dbem_rsvp_mail_SMTPAuth',
 			//images	
