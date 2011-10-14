@@ -143,10 +143,10 @@ function em_admin_paginate($total, $limit, $page=1, $vars=false){
 function em_admin_load_scripts(){
 	//Load the UI items, currently date picker and autocomplete plus dependencies
 	//wp_enqueue_script('em-ui-js', WP_PLUGIN_URL.'/events-manager/includes/js/jquery-ui-1.8.5.custom.min.js', array('jquery', 'jquery-ui-core'));
-	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position'));
+	wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',dirname(__FILE__)), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position'));
 	
 	//Time Entry
-	wp_enqueue_script('em-timeentry', WP_PLUGIN_URL.'/events-manager/includes/js/timeentry/jquery.timeentry.js', array('jquery'));
+	wp_enqueue_script('em-timeentry', plugins_url('includes/js/timeentry/jquery.timeentry.js',dirname(__FILE__)), array('jquery'));
 	
 	if( is_admin() ){
 		//TinyMCE Editor
@@ -170,8 +170,8 @@ function em_admin_load_scripts(){
  */
 function em_admin_load_styles() {
 	add_thickbox();
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
-	wp_enqueue_style('events-manager-admin', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager_admin.css');
+	wp_enqueue_style('em-ui-css', plugins_url('includes/css/jquery-ui-1.8.13.custom.css',dirname(__FILE__)));
+	wp_enqueue_style('events-manager-admin', plugins_url('includes/css/events_manager_admin.css',dirname(__FILE__)));
 }
 
 /**

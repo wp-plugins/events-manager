@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.300
+Version: 4.301
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -176,10 +176,10 @@ add_filter('dbem_notes_map', 'js_escape');
  */
 function em_enqueue_public() {
 	//Scripts
-	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position')); //jQuery will load as dependency
+	wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position')); //jQuery will load as dependency
 	//Styles
 	//wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
-	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
+	wp_enqueue_style('events-manager', plugins_url('includes/css/events_manager.css',__FILE__)); //main css
 	em_js_localize_vars();
 }
 if(!is_admin()){ add_action ( 'init', 'em_enqueue_public' ); }
@@ -196,7 +196,7 @@ function em_js_localize_vars(){
 		'firstDay' => get_option('start_of_week'),
 		'locale' => $locale_code,
 		'bookingInProgress' => __('Please wait while the booking is being submitted.','dbem'),
-		'ui_css' => WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css'
+		'ui_css' => plugins_url('includes/css/jquery-ui-1.8.13.custom.css', __FILE__)
 	));
 }
 
