@@ -11,7 +11,6 @@
 			foreach($EM_Bookings as $EM_Booking){
 				$event_ids[] = $EM_Booking->event_id;
 			}
-			$EM_Events = EM_Events::get($event_ids);
 		}
 		$limit = ( !empty($_GET['limit']) ) ? $_GET['limit'] : 20;//Default limit
 		$page = ( !empty($_GET['pno']) ) ? $_GET['pno']:1;

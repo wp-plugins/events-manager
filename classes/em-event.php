@@ -314,7 +314,7 @@ class EM_Event extends EM_Object{
 			$this->location->description = ''; //otherwise we get the same event details in the location  
 		}
 		if( !empty($_REQUEST['event_rsvp']) && $_REQUEST['event_rsvp'] && !$this->get_bookings()->get_tickets()->get_post() ){
-			$this->add_errors($this->get_bookings()->get_tickets());
+			$this->add_error($this->get_bookings()->get_tickets()->get_errors());
 		}
 		return apply_filters('em_event_get_post', $this->validate(), $this);
 	}
@@ -708,9 +708,43 @@ class EM_Event extends EM_Object{
 	 * @param string $target
 	 * @return string
 	 */	
-	function output($format, $target="html") {
+	function output($format, $target="html") {	
+	 	$event_string = $format;
+		//Time place holder that doesn't show if empty.
+		//TODO add filter here too
+		preg_match_all('/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/', $format, $results);
+		foreach($results[0] as $result) {
+			if(substr($result, 0, 3 ) == "#@_"){
+				$date = 'end_date';
+				$offset = 4;
+			}else{
+				$date = 'start_date';
+				$offset = 3;
+			}
+			if( $date == 'end_date' && $this->end_date == $this->start_date ){
+				$replace = __( apply_filters('em_event_output_placeholder', '', $this, $result, $target) );
+			}else{
+				$replace = __( apply_filters('em_event_output_placeholder', mysql2date(substr($result, $offset, (strlen($result)-($offset+1)) ), $this->$date), $this, $result, $target) );
+			}
+			$event_string = str_replace($result,$replace,$event_string );
+		}
+		//This is for the custom attributes
+		preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $format, $results);
+		foreach($results[0] as $resultKey => $result) {
+			//Strip string of placeholder and just leave the reference
+			$attRef = substr( substr($result, 0, strpos($result, '}')), 6 );
+			$attString = '';
+			if( is_array($this->attributes) && array_key_exists($attRef, $this->attributes) ){
+				$attString = $this->attributes[$attRef];
+			}elseif( !empty($results[3][$resultKey]) ){
+				//Check to see if we have a second set of braces;
+				$attString = $results[3][$resultKey];
+			}
+			$attString = apply_filters('em_event_output_placeholder', $attString, $this, $result, $target);
+			$event_string = str_replace($result, $attString ,$event_string );
+		}
 	 	//First let's do some conditional placeholder removals
-		preg_match_all('/\{([a-zA-Z0-9_]+)\}((\r|\n|.)*?)\{\/\1\}/', $format, $conditionals);
+		preg_match_all('/\{([a-zA-Z0-9_]+)\}([^{]+)\{\/\1\}/', $event_string, $conditionals);
 		if( count($conditionals[0]) > 0 ){
 			//Check if the language we want exists, if not we take the first language there
 			foreach($conditionals[1] as $key => $condition){
@@ -732,10 +766,9 @@ class EM_Event extends EM_Object{
 					}
 					str_replace($conditionals[0][$key], $replacement, $format);
 				}
-				$format = str_replace($conditionals[0][$key], apply_filters('em_event_output_condition', $replacement, $condition, $conditionals[0][$key], $this), $format);
+				$event_string = str_replace($conditionals[0][$key], apply_filters('em_event_output_condition', $replacement, $condition, $conditionals[0][$key], $this), $event_string);
 			}
 		}
-	 	$event_string = $format;
 		//Now let's check out the placeholders.
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
 		foreach($placeholders[1] as $key => $result) {
@@ -965,40 +998,6 @@ class EM_Event extends EM_Object{
 				$event_string = str_replace($result, $replace, $event_string ); 
 		 	}
 		}
-		//Time place holder that doesn't show if empty.
-		//TODO add filter here too
-		preg_match_all('/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/', $format, $results);
-		foreach($results[0] as $result) {
-			if(substr($result, 0, 3 ) == "#@_"){
-				$date = 'end_date';
-				$offset = 4;
-			}else{
-				$date = 'start_date';
-				$offset = 3;
-			}
-			if( $date == 'end_date' && $this->end_date == $this->start_date ){
-				$replace = __( apply_filters('em_event_output_placeholder', '', $this, $result, $target) );
-			}else{
-				$replace = __( apply_filters('em_event_output_placeholder', mysql2date(substr($result, $offset, (strlen($result)-($offset+1)) ), $this->$date), $this, $result, $target) );
-			}
-			$event_string = str_replace($result,$replace,$event_string );
-		}
-		//This is for the custom attributes
-		preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $format, $results);
-		foreach($results[0] as $resultKey => $result) {
-			//Strip string of placeholder and just leave the reference
-			$attRef = substr( substr($result, 0, strpos($result, '}')), 6 );
-			$attString = '';
-			if( is_array($this->attributes) && array_key_exists($attRef, $this->attributes) ){
-				$attString = $this->attributes[$attRef];
-			}elseif( !empty($results[3][$resultKey]) ){
-				//Check to see if we have a second set of braces;
-				$attString = $results[3][$resultKey];
-			}
-			$attString = apply_filters('em_event_output_placeholder', $attString, $this, $result, $target);
-			$event_string = str_replace($result, $attString ,$event_string );
-		}
-		
 		//Now do dependent objects
 		$event_string = $this->location->output($event_string, $target);
 		
