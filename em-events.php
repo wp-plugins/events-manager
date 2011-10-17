@@ -215,8 +215,8 @@ function em_filter_get_pages($data) {
 add_filter ( 'get_pages', 'em_filter_get_pages' );
 
 function em_get_page_type(){
-	global $EM_Location, $EM_Category, $EM_Event, $wp_query;	
-	if ( get_option('dbem_events_page') != 0 ) {	
+	global $EM_Location, $EM_Category, $EM_Event, $wp_query, $post;	
+	if ( get_option('dbem_events_page') == $post->ID ) {	
 		if ( !empty( $_REQUEST['calendar_day'] ) ) {
 			return "calendar_day";
 		}elseif ( !empty($_REQUEST['event_categories']) ){
@@ -238,6 +238,8 @@ function em_get_page_type(){
 		}else{
 			return "events";
 		}
+	}else{
+		return false;
 	}
 }
 ?>
