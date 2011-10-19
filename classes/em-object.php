@@ -386,13 +386,6 @@ class EM_Object {
 		}elseif( array_key_exists($admin_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$admin_capability];
 		}
-		//Figure out if this is multisite in global mode and require an extra bit of validation
-		if( !empty($this->id) && is_multisite() && get_site_option('dbem_ms_global_table') ){
-			if( get_class($this) == "EM_Event" ){
-				//Other user-owned events can be modified by admins if it's on the same blog, otherwise it must be an admin on the main site.
-				$can_manage = $this->blog_id == get_current_blog_id() || is_main_site() || (defined('BP_ROOT_BLOG') && get_current_blog_id() == BP_ROOT_BLOG);
-			}
-		}
 		
 		if( !$can_manage && !empty($error_msg) ){
 			$this->add_error($error_msg);
