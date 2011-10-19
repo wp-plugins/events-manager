@@ -76,7 +76,13 @@
 						*/ ?>
 						<td>
 							<strong>
-								<a class="row-title" href="<?php echo $url; ?>edit/?event_id=<?php echo $event->id ?>"><?php echo ($event->name); ?></a>
+								<?php 
+								if( $event->can_manage('edit_events','edit_others_events') ){ 
+									echo $event->output('<a href="#_EDITEVENTURL">#_NAME</a>');
+								}else{
+									echo $event->output('#_EVENTLINK');
+								}
+								?>
 							</strong>
 							<?php 
 							if( $event->can_manage('manage_bookings','manage_others_bookings') && get_option('dbem_rsvp_enabled') == 1 && $event->rsvp == 1 ){
