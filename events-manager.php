@@ -317,7 +317,7 @@ function em_create_events_submenu () {
 		}
 		$both_pending_count = apply_filters('em_items_pending_count', $events_pending_count + $bookings_pending_count);
 		$both_num = ($both_pending_count > 0) ? '<span class="update-plugins count-'.$both_pending_count.'"><span class="plugin-count">'.$both_pending_count.'</span></span>':'';
-	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,'edit_events','events-manager','em_admin_events_page', plugins_url().'/events-manager/includes/images/calendar-16.png');
+	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,'edit_events','events-manager','em_admin_events_page', plugins_url('includes/images/calendar-16.png', __FILE__));
 	   	// Add a submenu to the custom top-level menu:
 	   		$plugin_pages = array(); 
 			$plugin_pages[] = add_submenu_page('events-manager', __('Edit', 'dbem'),__('Edit', 'dbem').$events_num,'edit_events','events-manager','em_admin_events_page');
