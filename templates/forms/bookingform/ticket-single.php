@@ -9,6 +9,7 @@ global $allowedposttags;
 		<label><?php _e('Price','dbem') ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong>
 	</p>
 <?php endif; ?>
+<?php do_action('em_booking_form_ticket_field', $EM_Ticket); ?>
 <?php if( $EM_Ticket->get_available_spaces() > 1 && ($EM_Ticket->max > 1 || empty($EM_Ticket->max)) ): ?>				
 	<p>
 		<label for='em_tickets'><?php _e('Spaces', 'dbem') ?></label>

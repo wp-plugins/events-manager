@@ -18,6 +18,7 @@ $EM_Tickets = $EM_Event->get_bookings()->get_tickets(); //already instantiated, 
 			<?php if( !$EM_Event->is_free() ): ?>
 			<td class="em-bookings-ticket-table-price"><?php echo $EM_Ticket->get_price(true); ?></td>
 			<?php endif; ?>
+			<?php do_action('em_booking_form_tickets_col', $EM_Ticket); ?>
 			<td class="em-bookings-ticket-table-spaces">
 				<?php 
 					$spaces_options = $EM_Ticket->get_spaces_options();

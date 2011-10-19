@@ -32,4 +32,5 @@ $col_count = empty($col_count) ? 1:$col_count;
 		<label><?php _e('Description','dbem') ?></label>
 		<textarea name="em_tickets[<?php echo $col_count; ?>][ticket_description]"><?php echo esc_html(stripslashes($EM_Ticket->description)) ?></textarea>
 	</div>
+	<?php do_action('em_ticket_edit_form_fields', $col_count); ?>
 </div>	

@@ -571,6 +571,7 @@ function em_admin_event_page() {
 															<td class="ticket-booked-spaces">
 																<span class="ticket_booked_spaces"><?php echo $EM_Ticket->get_booked_spaces(); ?></span>
 															</td>
+															<?php do_action('em_event_edit_ticket_td', $EM_Ticket); ?>
 															<td class="ticket-actions">
 																<a href="#" class="ticket-actions-edit"><?php _e('Edit','dbem'); ?></a> 
 																<?php if( count($EM_Ticket->get_bookings()->bookings) == 0 ): ?>
@@ -587,6 +588,7 @@ function em_admin_event_page() {
 																<input type="hidden" class="ticket_end" name="em_tickets[<?php echo $count; ?>][ticket_end]" value="<?php echo ( !empty($EM_Ticket->end) ) ? date("Y-m-d H:i", $EM_Ticket->end_timestamp):''; ?>" />
 																<input type="hidden" class="ticket_min" name="em_tickets[<?php echo $count; ?>][ticket_min]" value="<?php echo $EM_Ticket->min ?>" />
 																<input type="hidden" class="ticket_max" name="em_tickets[<?php echo $count; ?>][ticket_max]" value="<?php echo $EM_Ticket->max ?>" />
+																<?php do_action('em_event_edit_ticket_hidden', $EM_Ticket); ?>
 															</td>
 														</tr>
 														<?php

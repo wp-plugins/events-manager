@@ -159,6 +159,7 @@ function em_bookings_ticket(){
 				<tr><td><?php echo __('Max','dbem'); ?></td><td></td><td><?php echo ($EM_Ticket->max) ? $EM_Ticket->max : '-'; ?></td></tr>
 				<tr><td><?php echo __('Start','dbem'); ?></td><td></td><td><?php echo ($EM_Ticket->start) ? $EM_Ticket->start : '-'; ?></td></tr>
 				<tr><td><?php echo __('End','dbem'); ?></td><td></td><td><?php echo ($EM_Ticket->end) ? $EM_Ticket->end : '-'; ?></td></tr>
+				<?php do_action('em_booking_admin_ticket_row', $EM_Ticket); ?>
 			</table>
 		</div>
   		<?php if( get_option('dbem_bookings_approval')): ?>
