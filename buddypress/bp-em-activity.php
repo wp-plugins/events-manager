@@ -69,6 +69,18 @@ function bp_em_record_activity_event_save( $result, $EM_Event ){
 			'type' => 'new_event',
 			'item_id' => $EM_Event->id,
 		));
+		//group activity
+		if( !empty($EM_Event->group_id) ){
+			//tis a group event
+			$group = new BP_Groups_Group($EM_Event->group_id);
+			bp_em_record_activity( array(
+				'user_id' => $user->ID,
+				'action' => sprintf(__('%s added the event %s of the %s group.','dbem'), "<a href='".get_bloginfo('wpurl').'/'.BP_MEMBERS_SLUG.'/'.$user->user_login."/'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK'), '<a href="'.bp_get_group_permalink($group).'">'.bp_get_group_name($group).'</a>' ),
+				'component' => 'groups',
+				'type' => 'new_event',
+				'item_id' => $EM_Event->group_id,
+			));
+		}
 	}
 	return $result;
 }
@@ -90,15 +102,38 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 		}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && ($status > 1 || empty($status) || (!get_option('dbem_bookings_approval') && $status != 1)) ){
 			$action = sprintf(__('%s will not be attending %s anymore.','dbem'), $user_link, $event_link );
 		}
+		$EM_Event = $EM_Booking->get_event();
+		if( !empty($EM_Event->group_id) ){
+			$group = new BP_Groups_Group($EM_Event->group_id);
+			$group_link = '<a href="'.bp_get_group_permalink($group).'">'.bp_get_group_name($group).'</a>';
+			if( $status == 1 || (!get_option('dbem_bookings_approval') && $status < 2) ){
+				$action = sprintf(__('%s is attending %s of the group %s.','dbem'), $user_link, $event_link, $group_link );
+			}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && ($status > 1 || empty($status) || (!get_option('dbem_bookings_approval') && $status != 1)) ){
+				$action = sprintf(__('%s will not be attending %s of group %s anymore.','dbem'), $user_link, $event_link, $group_link );
+			}
+		}
 		if( !empty($action) ){
 			bp_em_record_activity( array(
 				'user_id' => $EM_Booking->person->ID,
 				'action' => $action,
-				'primary_link' => $EM_Booking->get_event()->output('#_EVENTURL'),
+				'primary_link' => $EM_Event->output('#_EVENTURL'),
 				'type' => 'new_booking',
 				'item_id' => $EM_Event->id,
 				'secondary_item_id' => $EM_Booking->id
 			));
+			//group activity
+			if( !empty($EM_Event->group_id) ){
+				//tis a group event
+				bp_em_record_activity( array(
+					'component' => 'groups',
+					'item_id' => $EM_Event->group_id,
+					'user_id' => $EM_Booking->person->ID,
+					'action' => $action,
+					'primary_link' => $EM_Event->output('#_EVENTURL'),
+					'type' => 'new_booking',
+					'secondary_item_id' => $EM_Booking->id
+				));
+			}
 		}
 	}
 	return $result;

@@ -72,17 +72,27 @@ function em_admin_event_page() {
 				<div id="side-info-column" class='inner-sidebar'>
 					<div id='side-sortables'>
 						<?php do_action('em_admin_event_form_side_header'); ?>       
-						<?php if(get_option('dbem_recurrence_enabled') && ($EM_Event->is_recurrence() || $EM_Event->is_recurring() || $EM_Event->id == '')) : ?>
+						<?php if(get_option('dbem_recurrence_enabled')) : ?>
 							<!-- START recurrence postbox -->
 							<div class="postbox ">
-								<div class="handlediv" title="Fare clic per cambiare."><br />
+								<div class="handlediv"><br />
 								</div>
 								<h3 class='hndle'><span>
 									<?php _e ( "Recurrence", 'dbem' ); ?>
 									</span></h3>
 									<div class="inside">
+									
+									<?php if( $EM_Event->is_recurrence() ) : ?>
+										<p>
+											<?php echo $EM_Event->get_recurrence_description(); ?>
+											<br />
+											<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $EM_Event->recurrence_id; ?>">
+											<?php _e ( 'Reschedule', 'dbem' ); ?>
+											</a>
+											<input type="hidden" name="recurrence_id" value="<?php echo $EM_Event->recurrence_id; ?>" />
+										</p>
 									<?php //TODO add js warning if rescheduling, since all bookings are deleted ?>
-									<?php if ( !$EM_Event->id || $EM_Event->is_recurring() ) : ?>
+									<?php else : ?>
 										<p>
 											<input id="event-recurrence" type="checkbox" name="repeated_event" value="1" <?php echo ( $EM_Event->is_recurring() ) ? 'checked="checked"':'' ; ?> />
 											<?php _e ( 'Repeated event', 'dbem' ); ?>
@@ -137,17 +147,6 @@ function em_admin_event_page() {
 										<p id="recurrence-tip">
 											<?php _e ( 'Check if your event happens more than once according to a regular pattern', 'dbem' )?>
 										</p>
-									<?php elseif( $EM_Event->is_recurrence() ) : ?>
-											<p>
-												<?php echo $EM_Event->get_recurrence_description(); ?>
-												<br />
-												<a href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-event&amp;event_id=<?php echo $EM_Event->recurrence_id; ?>">
-												<?php _e ( 'Reschedule', 'dbem' ); ?>
-												</a>
-												<input type="hidden" name="recurrence_id" value="<?php echo $EM_Event->recurrence_id; ?>" />
-											</p>
-									<?php else : ?>
-										<p><?php _e ( 'This is\'t a recurrent event', 'dbem' ) ?></p>
 									<?php endif; ?>
 								</div>
 							</div> 
@@ -156,7 +155,7 @@ function em_admin_event_page() {
 						   
 						<?php if ( current_user_can('edit_others_events') ): ?>
 						<div class="postbox ">
-							<div class="handlediv" title="Fare clic per cambiare."><br />
+							<div class="handlediv"><br />
 							</div>
 							<h3 class='hndle'><span><?php _e ( 'Event Owner/Contact Person', 'dbem' ); ?></span></h3>
 							<div class="inside">
@@ -187,7 +186,7 @@ function em_admin_event_page() {
 							<?php if( count($user_groups) > 0 ): ?>
 							<!-- START RSVP -->
 							<div class="postbox " id='group-data'>
-								<div class="handlediv" title="Fare clic per cambiare."><br />
+								<div class="handlediv"><br />
 								</div>
 								<h3 class='hndle'><span><?php _e('Group Ownership','dbem'); ?></span></h3>
 								<div class="inside">
@@ -213,7 +212,7 @@ function em_admin_event_page() {
 						<?php if(get_option('dbem_rsvp_enabled')) : ?>
 							<!-- START RSVP -->
 							<div class="postbox " id='rsvp-data'>
-								<div class="handlediv" title="Fare clic per cambiare."><br />
+								<div class="handlediv"><br />
 								</div>
 								<h3 class='hndle'><span><?php _e('Bookings Stats','dbem'); ?></span></h3>
 								<div class="inside">
@@ -259,7 +258,7 @@ function em_admin_event_page() {
 						<?php if(get_option('dbem_categories_enabled')) :?>
 							<!-- START Categories -->
 							<div class="postbox ">
-								<div class="handlediv" title="Fare clic per cambiare."><br />
+								<div class="handlediv"><br />
 								</div>
 								<h3 class='hndle'><span>
 									<?php _e ( 'Category', 'dbem' ); ?>
@@ -484,6 +483,8 @@ function em_admin_event_page() {
 								<?php endif; ?>
 								<br /><br />
 								<label for='event_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='event-image' name='event_image' id='event_image' type='file' size='40' />
+								<br />
+								<label for='event_image_delete'><?php _e('Delete Image?', 'dbem') ?></label> <input id='event-image-delete' name='event_image_delete' id='event_image_delete' type='checkbox' value='1' />
 						</div>
 					</div>
 					
@@ -511,7 +512,7 @@ function em_admin_event_page() {
 									}else{
 										?>		
 										<p><strong><?php _e('Tickets','dbem'); ?></strong></p>
-										<p><em><?php _e('You have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?></em></p>					
+										<p><em><?php _e('You can have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?> <?php _e('Basic HTML is allowed in ticket labels and descriptions.','dbem'); ?></em></p>					
 										<table class="form-table">
 											<thead>
 												<tr valign="top">
@@ -534,12 +535,13 @@ function em_admin_event_page() {
 											</tfoot>
 											<tbody id="em-tickets-body">
 												<?php
+													global $allowedposttags;
 													$count = 1;
 													foreach( $EM_Tickets->tickets as $EM_Ticket){
 														?>
 														<tr valign="top" id="em-tickets-row-<?php echo $count ?>" class="em-tickets-row">
 															<td class="ticket-status"><span class="<?php echo ($EM_Ticket->is_available()) ? 'ticket_on':'ticket_off'; ?>"></span></td>													
-															<td class="ticket-name"><span class="ticket_name"><?php echo $EM_Ticket->name ?></span><br /><span class="ticket_description"><?php echo $EM_Ticket->description; ?></span></td>
+															<td class="ticket-name"><span class="ticket_name"><?php echo wp_kses_data($EM_Ticket->name); ?></span><br /><span class="ticket_description"><?php echo wp_kses($EM_Ticket->description,$allowedposttags); ?></span></td>
 															<td class="ticket-price">
 																<span class="ticket_price"><?php echo ($EM_Ticket->price) ? $EM_Ticket->price : __('Free','dbem'); ?></span>
 															</td>
@@ -569,6 +571,7 @@ function em_admin_event_page() {
 															<td class="ticket-booked-spaces">
 																<span class="ticket_booked_spaces"><?php echo $EM_Ticket->get_booked_spaces(); ?></span>
 															</td>
+															<?php do_action('em_event_edit_ticket_td', $EM_Ticket); ?>
 															<td class="ticket-actions">
 																<a href="#" class="ticket-actions-edit"><?php _e('Edit','dbem'); ?></a> 
 																<?php if( count($EM_Ticket->get_bookings()->bookings) == 0 ): ?>
@@ -577,14 +580,15 @@ function em_admin_event_page() {
 																| <a href="<?php bloginfo('wpurl'); ?>/wp-admin/admin.php?page=events-manager-bookings&ticket_id=<?php echo $EM_Ticket->id ?>"><?php _e('View Bookings','dbem'); ?></a>
 																<?php endif; ?>
 																<input type="hidden" class="ticket_id" name="em_tickets[<?php echo $count; ?>][ticket_id]" value="<?php echo $EM_Ticket->id ?>" />
-																<input type="hidden" class="ticket_name" name="em_tickets[<?php echo $count; ?>][ticket_name]" value="<?php echo $EM_Ticket->name ?>" />
-																<input type="hidden" class="ticket_description" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo $EM_Ticket->description ?>" />
+																<input type="hidden" class="ticket_name" name="em_tickets[<?php echo $count; ?>][ticket_name]" value="<?php echo esc_attr(stripslashes($EM_Ticket->name)) ?>" />
+																<input type="hidden" class="ticket_description" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo esc_attr(stripslashes($EM_Ticket->description)) ?>" />
 																<input type="hidden" class="ticket_price" name="em_tickets[<?php echo $count; ?>][ticket_price]" value="<?php echo $EM_Ticket->price ?>" />
 																<input type="hidden" class="ticket_spaces" name="em_tickets[<?php echo $count; ?>][ticket_spaces]" value="<?php echo $EM_Ticket->spaces ?>" />
 																<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
 																<input type="hidden" class="ticket_end" name="em_tickets[<?php echo $count; ?>][ticket_end]" value="<?php echo ( !empty($EM_Ticket->end) ) ? date("Y-m-d H:i", $EM_Ticket->end_timestamp):''; ?>" />
 																<input type="hidden" class="ticket_min" name="em_tickets[<?php echo $count; ?>][ticket_min]" value="<?php echo $EM_Ticket->min ?>" />
 																<input type="hidden" class="ticket_max" name="em_tickets[<?php echo $count; ?>][ticket_max]" value="<?php echo $EM_Ticket->max ?>" />
+																<?php do_action('em_event_edit_ticket_hidden', $EM_Ticket); ?>
 															</td>
 														</tr>
 														<?php
@@ -632,7 +636,6 @@ function em_admin_event_page() {
 														<td>
 															<?php if( count($attributes['values'][$name]) > 0 ): ?>
 															<select name="em_attributes[<?php echo $name ?>]">
-																<option><?php echo __('No Value','dbem'); ?></option>
 																<?php foreach($attributes['values'][$name] as $attribute_val): ?>
 																	<?php if( array_key_exists($name, $EM_Event->attributes) && $EM_Event->attributes[$name]==$attribute_val ): ?>
 																		<option selected="selected"><?php echo $attribute_val; ?></option>

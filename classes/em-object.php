@@ -38,7 +38,8 @@ class EM_Object {
 			'pagination'=>false,
 			'array'=>false,
 			'owner'=>false,
-			'rsvp'=>false,
+			'rsvp'=>false, //depreciated for bookings
+			'bookings'=>false,
 			'search'=>false
 		);
 		//Return default if nothing passed
@@ -143,7 +144,8 @@ class EM_Object {
 		$recurrence = $args['recurrence'];
 		$category = $args['category'];
 		$location = $args['location'];
-		$rsvp = $args['rsvp'];
+		$bookings = $args['rsvp'];
+		$bookings = !empty($args['bookings']) ? $args['bookings']:$bookings;
 		$owner = $args['owner'];
 		$event = $args['event'];
 		$month = $args['month'];
@@ -167,7 +169,12 @@ class EM_Object {
 				$date_month_start = $month[0];
 				$date_month_end = $month[1];
 			}else{
-				$date_month_start = $date_month_end = $month;
+				if( !empty($month) ){
+					$date_month_start = $date_month_end = $month;					
+				}else{
+					$date_month_start = 1;
+					$date_month_end = 12;				
+				}
 			}
 			//Sort out year range, if supplied an array of array(year,year), it'll check between these two years
 			if( self::array_is_numeric($year) ){
@@ -304,8 +311,8 @@ class EM_Object {
 		}
 	
 		//If we want rsvped items, we usually check the event
-		if( $rsvp == 1 ){
-			$conditions['rsvp'] = 'event_rsvp=1';
+		if( $bookings == 1 ){
+			$conditions['bookings'] = 'event_rsvp=1';
 		}
 		//Default ownership belongs to an event, child objects can just overwrite this if needed.
 		if( is_numeric($owner) ){
@@ -378,13 +385,6 @@ class EM_Object {
 			$can_manage = true;
 		}elseif( array_key_exists($admin_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$admin_capability];
-		}
-		//Figure out if this is multisite in global mode and require an extra bit of validation
-		if( !empty($this->id) && is_multisite() && get_site_option('dbem_ms_global_table') ){
-			if( get_class($this) == "EM_Event" ){
-				//Other user-owned events can be modified by admins if it's on the same blog, otherwise it must be an admin on the main site.
-				$can_manage = $this->blog_id == get_current_blog_id() || is_main_site() || (defined('BP_ROOT_BLOG') && get_current_blog_id() == BP_ROOT_BLOG);
-			}
 		}
 		
 		if( !$can_manage && !empty($error_msg) ){
@@ -504,7 +504,7 @@ class EM_Object {
 						$array[$key] = (int) $string;
 					}elseif( self::array_is_numeric($string) ){
 						$array[$key] = $string;
-					}elseif( preg_match('/^([0-9],?)+$/', $string) ){
+					}elseif( !is_array($string) && preg_match('/^([0-9],?)+$/', $string) ){
 						$array[$key] = explode(',', $string);
 					}else{
 						//No format we accept
@@ -568,13 +568,13 @@ class EM_Object {
 	/**
 	 * Adds an error to the object
 	 */
-	function add_error($error){
-		if(is_array($this->errors)){
+	function add_error($errors){
+		if(!is_array($errors)){ $errors = array($errors); } //make errors var an array if it isn't already
+		if(!is_array($this->errors)){ $this->errors = array(); } //create empty array if this isn't an array
+		foreach($errors as $error){			
 			if( !in_array($error, $this->errors) ){
 				$this->errors[] = $error;
 			}
-		}else{
-			$this->errors = array($error);
 		}
 	}
 	
@@ -707,6 +707,7 @@ class EM_Object {
 				foreach($this->mime_types as $mime_type) { 
 					if (file_exists($file_name.".".$mime_type)){
 				  		$result = unlink($file_name.".".$mime_type);
+				  		$this->image_url = '';
 					}
 				}
 			}
@@ -738,6 +739,8 @@ class EM_Object {
 						$object->feedback_message .= '<p>'.implode('<br />',$object->errors).'</p>';
 					}
 				}
+			}elseif( !empty($_REQUEST[$type.'_image_delete']) ){
+				$object->image_delete();
 			}
 		}
 		return apply_filters('em_object_image_upload', $result, $object);
