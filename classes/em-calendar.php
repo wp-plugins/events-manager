@@ -309,7 +309,12 @@ class EM_Calendar extends EM_Object {
 			'full' => 0, //Will display a full calendar with event names
 			'long_events' => 0, //Events that last longer than a day
 			'scope' => 'future',
-			'owner' => false
+			'status' => 1, //approved events only
+			'town' => false,
+			'state' => false,
+			'country' => false,
+			'region' => false,
+			'blog' => get_current_blog_id(),
 		);
 		$atts = parent::get_default_search($defaults, $array);
 		$atts['full'] = ($atts['full']==true) ? 1:0;
