@@ -160,8 +160,8 @@ function em_admin_event_page() {
 							<h3 class='hndle'><span><?php _e ( 'Event Owner/Contact Person', 'dbem' ); ?></span></h3>
 							<div class="inside">
 								<?php
-									$event_owner = (empty($EM_Event->id)) ? $EM_Event->owner:get_current_user_id();
-									$user_args = array ('name' => 'event_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $EM_Event->owner  );
+									$event_owner = (!empty($EM_Event->id)) ? $EM_Event->owner:get_current_user_id();
+									$user_args = array ('name' => 'event_owner', 'show_option_none' => __ ( "Select...", 'dbem' ), 'selected' => $event_owner  );
 									if( is_super_admin() || is_main_site() ){ $user_args['blog_id'] = false; }
 									wp_dropdown_users ( apply_filters('em_event_owner_dropdown_users',$user_args) );
 								?>

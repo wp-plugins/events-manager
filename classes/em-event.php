@@ -562,6 +562,14 @@ class EM_Event extends EM_Object{
 			unset($eventArray['event_id']);
 			$EM_Event = new EM_Event( $eventArray );
 			if( $EM_Event->save() ){
+				//duplicate tickets
+				$EM_Tickets = $this->get_bookings()->get_tickets();
+				foreach($EM_Tickets->tickets as $EM_Ticket){
+					$EM_Ticket->id = '';
+					$EM_Ticket->event_id = $EM_Event->id;
+					$EM_Ticket->save();
+				}
+				$EM_Event->get_bookings(true);
 				$EM_Event->feedback_message = sprintf(__("%s successfully duplicated.", 'dbem'), __('Event','dbem'));
 				return apply_filters('em_event_duplicate', $EM_Event, $this);
 			}
