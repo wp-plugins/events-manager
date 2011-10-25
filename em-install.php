@@ -423,6 +423,7 @@ function em_add_options() {
 		'dbem_email_disable_registration' => 0,
 		'dbem_rsvp_mail_port' => 465,
 		'dbem_smtp_host' => 'localhost',
+		'dbem_smtp_html' => 0,
 		'dbem_mail_sender_name' => '',
 		'dbem_rsvp_mail_send_method' => 'mail',
 		'dbem_rsvp_mail_SMTPAuth' => 1,

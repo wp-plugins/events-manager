@@ -43,7 +43,7 @@
  * original author: Chris Ryan
  */
 
-class SMTP {
+class EM_SMTP {
   /**
    *  SMTP server port
    *  @var int
