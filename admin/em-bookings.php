@@ -28,8 +28,11 @@ add_action('admin_init','em_admin_actions_bookings',100);
  * Decide what content to show in the bookings section. 
  */
 function em_bookings_page(){
+	global $action;
 	//First any actions take priority
-	if( !empty($_REQUEST['booking_id']) ){
+	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,7) != 'booking' ){ //actions not starting with booking_
+		do_action('em_bookings_'.$action);
+	}elseif( !empty($_REQUEST['booking_id']) ){
 		em_bookings_single();
 	}elseif( !empty($_REQUEST['person_id']) ){
 		em_bookings_person();
@@ -156,6 +159,7 @@ function em_bookings_ticket(){
 				<tr><td><?php echo __('Max','dbem'); ?></td><td></td><td><?php echo ($EM_Ticket->max) ? $EM_Ticket->max : '-'; ?></td></tr>
 				<tr><td><?php echo __('Start','dbem'); ?></td><td></td><td><?php echo ($EM_Ticket->start) ? $EM_Ticket->start : '-'; ?></td></tr>
 				<tr><td><?php echo __('End','dbem'); ?></td><td></td><td><?php echo ($EM_Ticket->end) ? $EM_Ticket->end : '-'; ?></td></tr>
+				<?php do_action('em_booking_admin_ticket_row', $EM_Ticket); ?>
 			</table>
 		</div>
   		<?php if( get_option('dbem_bookings_approval')): ?>
@@ -208,7 +212,7 @@ function em_bookings_single(){
 							$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
 							?>
 							<table>
-								<tr><td><strong><?php _e('Name','dbem'); ?></strong></td><td><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->id ?>"><?php echo ($EM_Event->display_name); ?></a></td></tr>
+								<tr><td><strong><?php _e('Name','dbem'); ?></strong></td><td><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->id ?>"><?php echo ($EM_Event->name); ?></a></td></tr>
 								<tr>
 									<td><strong><?php _e('Date/Time','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td>
 									<td>
@@ -256,7 +260,7 @@ function em_bookings_single(){
 											<td>
 												<input name="em_tickets[<?php echo $EM_Ticket_Booking->get_ticket()->id; ?>][spaces]" class="em-ticket-select" value="<?php echo $EM_Ticket_Booking->get_spaces(); ?>" />
 											</td>
-											<td><?php echo $EM_Ticket_Booking->get_price(); ?></td>
+											<td><?php echo $EM_Ticket_Booking->get_price(true,true); ?></td>
 										</tr>
 										<?php $shown_tickets[] = $EM_Ticket_Booking->ticket_id; ?>
 										<?php endforeach; ?>
@@ -268,7 +272,7 @@ function em_bookings_single(){
 													<td>
 														<input name="em_tickets[<?php echo $EM_Ticket->id; ?>][spaces]" class="em-ticket-select" value="0" />
 													</td>
-													<td>0.00</td>
+													<td><?php echo em_get_currency_symbol() ?>0.00</td>
 												</tr>
 												<?php endif; ?>
 											<?php endforeach; ?>
@@ -278,8 +282,20 @@ function em_bookings_single(){
 										<tr>
 											<th><?php _e('Totals','dbem'); ?></th>
 											<th><?php echo $EM_Booking->get_spaces(); ?></th>
-											<th><?php echo $EM_Booking->get_price(); ?></th>
+											<th><?php echo $EM_Booking->get_price(true, true); ?></th>
 										</tr>
+										<?php if( !get_option('dbem_bookings_tax_auto_add') && is_numeric(get_option('dbem_bookings_tax')) && get_option('dbem_bookings_tax') > 0  ): ?>
+										<tr>
+											<th><?php _e('Tax','dbem'); ?></th>
+											<th><?php echo get_option('dbem_bookings_tax') ?>%</th>
+											<th><?php echo em_get_currency_symbol().number_format($EM_Booking->get_price() * (get_option('dbem_bookings_tax')/100),2); ?></th>
+										</tr>
+										<tr>
+											<th><?php _e('Total (inc. tax)','dbem'); ?></th>
+											<th>&nbsp;</th>
+											<th><?php echo em_get_currency_symbol().number_format($EM_Booking->get_price()* (1 + get_option('dbem_bookings_tax')/100),2); ?></th>
+										</tr>
+										<?php endif; ?>
 									</tfoot>
 								</table>
 								<p>
@@ -294,7 +310,7 @@ function em_bookings_single(){
 									<?php if( !get_option('em_booking_form_custom') ): ?>
 									<tr><td><strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td><td><?php echo $EM_Booking->comment; ?></td></tr>
 									<?php foreach( $EM_Booking->get_custom() as $custom_option ){
-										?><tr><td><strong><?php echo $custom_option['name'] ?></strong></td><td><?php echo $custom_option['value'] ?></td></tr><?php
+										?><tr><td><strong><?php echo $custom_option['name'] ?></strong></td><td><?php echo esc_html($custom_option['value']); ?></td></tr><?php
 									} ?>
 									<?php else: do_action('em_bookings_single_custom',$EM_Booking); ?>
 									<?php endif; ?>
@@ -309,10 +325,10 @@ function em_bookings_single(){
 						<div class="inside">
 							<p><?php _e('You can add private notes below for internal reference that only event managers will see.','dbem'); ?></p>
 							<?php foreach( $EM_Booking->notes as $note ): 
-								$user = get_userdata($note['author']);
+								$user = new EM_Person($note['author']);
 							?>
 							<div>
-								<?php echo date(get_option('date_format'), $note['timestamp']) .' - '. $user->display_name; ?> <?php _e('wrote','dbem'); ?>: 
+								<?php echo date(get_option('date_format'), $note['timestamp']) .' - '. $user->get_name(); ?> <?php _e('wrote','dbem'); ?>: 
 								<p style="background:#efefef; padding:5px;"><?php echo nl2br($note['note']); ?></p> 
 							</div>
 							<?php endforeach; ?>

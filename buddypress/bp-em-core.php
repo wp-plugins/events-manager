@@ -47,15 +47,29 @@ add_action( 'wp', 'bp_em_setup_globals', 2 );
  * rendered in the template.
  */
 function bp_em_setup_nav() {
-	global $bp;
+	global $bp, $blog_id;
 	$count = 0; 
+	//check multisite or normal mode for correct permission checking
+	if(is_multisite() && $blog_id != BP_ROOT_BLOG){
+		//FIXME MS mode doesn't seem to recognize cross subsite caps, using the proper functions, for now we use switch_blog.
+		$current_blog = $blog_id;
+		switch_to_blog(BP_ROOT_BLOG);
+		$can_manage_events = current_user_can_for_blog(BP_ROOT_BLOG, 'edit_events');
+		$can_manage_locations = current_user_can_for_blog(BP_ROOT_BLOG, 'edit_locations');
+		$can_manage_bookings = current_user_can_for_blog(BP_ROOT_BLOG, 'manage_bookings');
+		switch_to_blog($current_blog);
+	}else{
+		$can_manage_events = current_user_can('edit_events');
+		$can_manage_locations = current_user_can('edit_locations');
+		$can_manage_bookings = current_user_can('manage_bookings');
+	}
 	if( empty($bp->events) ) bp_em_setup_globals();
 	/* Add 'Events' to the main user profile navigation */
 	bp_core_new_nav_item( array(
 		'name' => __( 'Events', 'dbem' ),
 		'slug' => $bp->events->slug,
 		'position' => 80,
-		'screen_function' => bp_is_my_profile() ? 'bp_em_my_events':'bp_em_events',
+		'screen_function' => (bp_is_my_profile() && $can_manage_events) ? 'bp_em_my_events':'bp_em_events',
 		'default_subnav_slug' => bp_is_my_profile() ? 'my-events':''
 	) );
 
@@ -82,35 +96,41 @@ function bp_em_setup_nav() {
 		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
 	) );
 
-	bp_core_new_subnav_item( array(
-		'name' => __( 'My Events', 'dbem' ),
-		'slug' => 'my-events',
-		'parent_slug' => $bp->events->slug,
-		'parent_url' => $em_link,
-		'screen_function' => 'bp_em_my_events',
-		'position' => 30,
-		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
-	) );
+	if( $can_manage_events ){
+		bp_core_new_subnav_item( array(
+			'name' => __( 'My Events', 'dbem' ),
+			'slug' => 'my-events',
+			'parent_slug' => $bp->events->slug,
+			'parent_url' => $em_link,
+			'screen_function' => 'bp_em_my_events',
+			'position' => 30,
+			'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+		) );
+	}
 	
-	bp_core_new_subnav_item( array(
-		'name' => __( 'My Locations', 'dbem' ),
-		'slug' => 'my-locations',
-		'parent_slug' => $bp->events->slug,
-		'parent_url' => $em_link,
-		'screen_function' => 'bp_em_my_locations',
-		'position' => 40,
-		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
-	) );
+	if( $can_manage_locations ){
+		bp_core_new_subnav_item( array(
+			'name' => __( 'My Locations', 'dbem' ),
+			'slug' => 'my-locations',
+			'parent_slug' => $bp->events->slug,
+			'parent_url' => $em_link,
+			'screen_function' => 'bp_em_my_locations',
+			'position' => 40,
+			'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+		) );
+	}
 	
-	bp_core_new_subnav_item( array(
-		'name' => __( 'My Event Bookings', 'dbem' ),
-		'slug' => 'my-bookings',
-		'parent_slug' => $bp->events->slug,
-		'parent_url' => $em_link,
-		'screen_function' => 'bp_em_my_bookings',
-		'position' => 50,
-		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
-	) );
+	if( $can_manage_bookings ){
+		bp_core_new_subnav_item( array(
+			'name' => __( 'My Event Bookings', 'dbem' ),
+			'slug' => 'my-bookings',
+			'parent_slug' => $bp->events->slug,
+			'parent_url' => $em_link,
+			'screen_function' => 'bp_em_my_bookings',
+			'position' => 50,
+			'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
+		) );
+	}
 
 	/* Add a nav item for this component under the settings nav item. */
 	bp_core_new_subnav_item( array(
@@ -124,6 +144,7 @@ function bp_em_setup_nav() {
 	) );
 	
 	/* Add a nav item for this component under the settings nav item. */
+	/*
 	bp_core_new_subnav_item( array(
 		'name' => __( 'Events', 'dbem' ),
 		'slug' => 'events-settings',
@@ -133,6 +154,7 @@ function bp_em_setup_nav() {
 		'position' => 40,
 		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
 	) );
+	*/
 	
 
 	/* Create two sub nav items for this component */
@@ -149,14 +171,13 @@ function bp_em_setup_nav() {
 			'name' => sprintf(__( 'Events (%s)', 'dbem' ), $count),
 			'slug' => 'events', 
 			'parent_url' => $group_link, 
-			'parent_slug' => $bp->groups->slug, 
+			'parent_slug' => $bp->groups->current_group->slug, 
 			'screen_function' => 'bp_em_group_events', 
 			'position' => 50, 
 			'user_has_access' => $user_access, 
 			'item_css_id' => 'forums' 
 		));
 	}
-	
 }
 
 /***
@@ -194,42 +215,6 @@ function em_bp_rewrite_links($replace, $object, $result){
 	return $replace;
 }
 add_filter('em_event_output_placeholder','em_bp_rewrite_links',10,3);
-			
-/**
- * bp_em_load_template_filter()
- *
- * You can define a custom load template filter for your component. This will allow
- * you to store and load template files from your plugin directory.
- *
- * This will also allow users to override these templates in their active theme and
- * replace the ones that are stored in the plugin directory.
- *
- * If you're not interested in using template files, then you don't need this function.
- *
- * This will become clearer in the function bp_em_screen_one() when you want to load
- * a template file.
- */
-function bp_em_load_template_filter( $found_template, $templates ) {
-	global $bp;
-
-	/**
-	 * Only filter the template location when we're on the em component pages.
-	 */
-	if ( $bp->current_component != $bp->events->slug )
-		return $found_template;
-
-	foreach ( (array) $templates as $template ) {
-		if ( file_exists( STYLESHEETPATH . '/' . $template ) )
-			$filtered_templates[] = STYLESHEETPATH . '/' . $template;
-		else
-			$filtered_templates[] = dirname( __FILE__ ) . '/templates/' . $template;
-	}
-
-	$found_template = $filtered_templates[0];
-
-	return apply_filters( 'bp_em_load_template_filter', $found_template );
-}
-add_filter( 'bp_located_template', 'bp_em_load_template_filter', 10, 2 );
 
 /**
  * Remove a screen notification for a user.

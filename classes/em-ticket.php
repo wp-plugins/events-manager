@@ -124,12 +124,13 @@ class EM_Ticket extends EM_Object{
 	 */
 	function get_post(){
 		//We are getting the values via POST or GET
+		global $allowedposttags;
 		do_action('em_location_get_post_pre', $this);
 		$location = array();
 		$location['ticket_id'] = ( !empty($_POST['ticket_id']) ) ? $_POST['ticket_id']:'';
 		$location['event_id'] = ( !empty($_POST['event_id']) ) ? $_POST['event_id']:'';
-		$location['ticket_name'] = ( !empty($_POST['ticket_name']) ) ? stripslashes($_POST['ticket_name']):'';
-		$location['ticket_description'] = ( !empty($_POST['ticket_description']) ) ? stripslashes($_POST['ticket_description']):'';
+		$location['ticket_name'] = ( !empty($_POST['ticket_name']) ) ? wp_kses_data(stripslashes($_POST['ticket_name'])):'';
+		$location['ticket_description'] = ( !empty($_POST['ticket_description']) ) ? wp_kses(stripslashes($_POST['ticket_description'], $allowedposttags)):'';
 		$location['ticket_price'] = ( !empty($_POST['ticket_price']) ) ? $_POST['ticket_price']:'';
 		$location['ticket_start'] = ( !empty($_POST['ticket_start']) ) ? $_POST['ticket_start']:'';
 		$location['ticket_end'] = ( !empty($_POST['ticket_end']) ) ? $_POST['ticket_end']:'';
@@ -153,6 +154,9 @@ class EM_Ticket extends EM_Object{
 			if ( $this->$true_field == "") {
 				$missing_fields[] = $field;
 			}
+		}
+		if( !empty($this->price) && !is_numeric($this->price) ){
+			$this->add_error(__('Please enter a valid ticket price e.g. 10.50 (no currency signs)','dbem'));
 		}
 		if ( count($missing_fields) > 0){
 			// TODO Create friendly equivelant names for missing fields notice in validation 
@@ -181,11 +185,18 @@ class EM_Ticket extends EM_Object{
 	 * Gets the total price for this ticket.
 	 * @return float
 	 */
-	function get_price($format = false){
-		if($format){
-			return apply_filters('em_ticket_get_price', em_get_currency_symbol().number_format($this->price,2),$this);
+	function get_price($format = false, $add_tax = 'x' ){
+		$price = $this->price;
+		if( is_numeric(get_option('dbem_bookings_tax')) && get_option('dbem_bookings_tax') > 0 ){
+			//tax could be added here
+			if( $add_tax === true || ($add_tax !== false && get_option('dbem_bookings_tax_auto_add')) ){
+				$price = $price * (1 + get_option('dbem_bookings_tax')/100);				
+			}
 		}
-		return apply_filters('em_ticket_get_price',$this->price,$this);
+		if($format){
+			return apply_filters('em_ticket_get_price', em_get_currency_symbol().number_format($price,2),$this);
+		}
+		return apply_filters('em_ticket_get_price',number_format($price,2),$this);
 	}
 	
 	/**
@@ -301,7 +312,7 @@ class EM_Ticket extends EM_Object{
 				<?php if(empty($shown_default) && $default_value > 0 ): ?><option selected="selected"><?php echo $default_value; ?></option><?php endif; ?>
 			</select>
 			<?php 
-			return ob_get_clean();
+			return apply_filters('em_ticket_get_spaces_options', ob_get_clean(), $zero_value, $default_value, $this);
 		}else{
 			return false;
 		}

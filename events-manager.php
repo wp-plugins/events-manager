@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.14
+Version: 4.304
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -41,8 +41,8 @@ function dbem_debug_mode(){
 }
 add_action('plugins_loaded', 'dbem_debug_mode');
 
-// INCLUDES 
-include_once('classes/em-object.php'); //Base object, any files below may depend on this 
+// INCLUDES
+include_once('classes/em-object.php'); //Base object, any files below may depend on this
 //Template Tags & Template Logic
 include_once("em-actions.php");
 include_once("em-events.php");
@@ -102,8 +102,8 @@ add_action( 'bp_init', 'bp_em_init' );
 
 
 // Setting constants
-define('EM_VERSION', 4.124); //self expanatory
-define('EM_PRO_MIN_VERSION', 1.3); //self expanatory
+define('EM_VERSION', 4.213); //self expanatory
+define('EM_PRO_MIN_VERSION', 1.354); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 if( get_site_option('dbem_ms_global_table') && is_multisite() ){
 	//If in ms recurrence mode, we are getting the default wp-content/uploads folder
@@ -112,7 +112,7 @@ if( get_site_option('dbem_ms_global_table') && is_multisite() ){
 		'baseurl' => WP_CONTENT_URL.'/uploads/'
 	);
 }else{
-	$upload_dir = wp_upload_dir();	
+	$upload_dir = wp_upload_dir();
 }
 if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
 	define("EM_IMAGE_UPLOAD_DIR", $upload_dir['basedir']."/locations-pics/");
@@ -136,8 +136,8 @@ if( get_site_option('dbem_ms_global_table') ){
 	define('EM_TICKETS_TABLE', $prefix.'em_tickets'); //TABLE NAME
 	define('EM_TICKETS_BOOKINGS_TABLE', $prefix.'em_tickets_bookings'); //TABLE NAME
 	define('EM_META_TABLE',$prefix.'em_meta'); //TABLE NAME
-	define('EM_RECURRENCE_TABLE',$prefix.'dbem_recurrence'); //TABLE NAME   
-	define('EM_LOCATIONS_TABLE',$prefix.'em_locations'); //TABLE NAME  
+	define('EM_RECURRENCE_TABLE',$prefix.'dbem_recurrence'); //TABLE NAME
+	define('EM_LOCATIONS_TABLE',$prefix.'em_locations'); //TABLE NAME
 	define('EM_BOOKINGS_TABLE',$prefix.'em_bookings'); //TABLE NAME
 	define('EM_PEOPLE_TABLE',$prefix.'em_people'); //TABLE NAME
 	define('EM_MIN_CAPABILITY', $prefix.'edit_events');	// Minimum user level to add events
@@ -147,14 +147,14 @@ if( get_site_option('dbem_ms_global_table') ){
 // Localised date formats as in the jquery UI datepicker plugin but for php date
 $localised_date_formats = array("am" => "d.m.Y","ar" => "d/m/Y", "bg" => "d.m.Y", "ca" => "m/d/Y", "cs" => "d.m.Y", "da" => "d-m-Y", "de" =>"d.m.Y", "es" => "d/m/Y", "en" => "m/d/Y", "fi" => "d.m.Y", "fr" => "d/m/Y", "he" => "d/m/Y", "hu" => "Y-m-d", "hy" => "d.m.Y", "id" => "d/m/Y", "is" => "d/m/Y", "it" => "d/m/Y", "ja" => "Y/m/d", "ko" => "Y-m-d", "lt" => "Y-m-d", "lv" => "d-m-Y", "nl" => "d.m.Y", "no" => "Y-m-d", "pl" => "Y-m-d", "pt" => "d/m/Y", "ro" => "m/d/Y", "ru" => "d.m.Y", "sk" => "d.m.Y", "sv" => "Y-m-d", "th" => "d/m/Y", "tr" => "d.m.Y", "ua" => "d.m.Y", "uk" => "d.m.Y", "us" => "m/d/Y", "CN" => "Y-m-d", "TW" => "Y/m/d");
 //TODO reorganize how defaults are created, e.g. is it necessary to create false entries? They are false by default... less code, but maybe not verbose enough...
-       
+
 
 // FILTERS
 // filters for general events field (corresponding to those of  "the _title")
 add_filter('dbem_general', 'wptexturize');
 add_filter('dbem_general', 'convert_chars');
 add_filter('dbem_general', 'trim');
-// filters for the notes field  (corresponding to those of  "the _content")   
+// filters for the notes field  (corresponding to those of  "the _content")
 add_filter('dbem_notes', 'wptexturize');
 add_filter('dbem_notes', 'convert_smilies');
 add_filter('dbem_notes', 'convert_chars');
@@ -165,21 +165,21 @@ add_filter('dbem_general_rss', 'strip_tags');
 add_filter('dbem_general_rss', 'ent2ncr', 8);
 add_filter('dbem_general_rss', 'esc_html');
 // RSS content filter
-add_filter('dbem_notes_rss', 'convert_chars', 8);    
+add_filter('dbem_notes_rss', 'convert_chars', 8);
 add_filter('dbem_notes_rss', 'ent2ncr', 8);
 // Notes map filters
 add_filter('dbem_notes_map', 'convert_chars', 8);
 add_filter('dbem_notes_map', 'js_escape');
 
 /**
- * Enqueing public scripts and styles 
+ * Enqueing public scripts and styles
  */
 function em_enqueue_public() {
 	//Scripts
-	wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position')); //jQuery will load as dependency
+	wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position')); //jQuery will load as dependency
 	//Styles
-	wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
-	wp_enqueue_style('events-manager', WP_PLUGIN_URL.'/events-manager/includes/css/events_manager.css'); //main css
+	//wp_enqueue_style('em-ui-css', WP_PLUGIN_URL.'/events-manager/includes/css/jquery-ui-1.8.13.custom.css');
+	wp_enqueue_style('events-manager', plugins_url('includes/css/events_manager.css',__FILE__)); //main css
 	em_js_localize_vars();
 }
 if(!is_admin()){ add_action ( 'init', 'em_enqueue_public' ); }
@@ -194,12 +194,22 @@ function em_js_localize_vars(){
 		'ajaxurl' => admin_url('admin-ajax.php'),
 		'locationajaxurl' => admin_url('admin-ajax.php?action=locations_search'),
 		'firstDay' => get_option('start_of_week'),
-		'locale' => $locale_code
+		'locale' => $locale_code,
+		'bookingInProgress' => __('Please wait while the booking is being submitted.','dbem'),
+		'ui_css' => plugins_url('includes/css/jquery-ui-1.8.13.custom.css', __FILE__)
 	));
 }
 
 /**
- * Perform plugins_loaded actions 
+ * Add an extra update message to the update plugin notification. Thanks BP!
+ */
+function em_core_update_message() {
+	echo '<p style="color: red; margin: 3px 0 0 0; border-top: 1px solid #ddd; padding-top: 3px">IMPORTANT: <a href="http://wp-events-plugin.com/updating-to-v5/">Read this before attempting to update Events Manager</a></p>';
+}
+add_action( 'in_plugin_update_message-events-manager/events-manager.php', 'em_core_update_message' );
+
+/**
+ * Perform plugins_loaded actions
  */
 function em_plugins_loaded(){
 	//Capabilities
@@ -220,7 +230,7 @@ function em_plugins_loaded(){
 		'edit_recurrences' => sprintf(__('You do not have permission to edit %s','dbem'),__('recurrences','dbem')),
 		'edit_events' => sprintf(__('You do not have permission to edit %s','dbem'),__('events','dbem'))
 	));
-	// LOCALIZATION  
+	// LOCALIZATION
 	load_plugin_textdomain('dbem', false, dirname( plugin_basename( __FILE__ ) ).'/includes/langs');
 }
 add_filter('plugins_loaded','em_plugins_loaded');
@@ -231,7 +241,7 @@ add_filter('plugins_loaded','em_plugins_loaded');
 function em_init(){
 	//Hard Links
 	global $EM_Mailer, $wpdb, $wp_rewrite;
-	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM 
+	define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM
 	if( $wp_rewrite->using_permalinks() ){
 		define('EM_RSS_URI', trailingslashit(EM_URI)."rss/"); //RSS PAGE URI
 	}else{
@@ -294,18 +304,17 @@ add_action('template_redirect', 'em_load_event', 1);
 if(is_admin()){ add_action('init', 'em_load_event', 2); }
 
 
-// Create the Manage Events and the Options submenus  
+// Create the Manage Events and the Options submenus
 function em_create_events_submenu () {
 	if(function_exists('add_submenu_page')) {
 		//Count pending bookings
 		$bookings_num = '';
-		$bookings_pending_count = 0;
-		if( get_option('dbem_bookings_approval') == 1){ 
-			$bookings_pending_count = apply_filters('em_bookings_pending_count',count(EM_Bookings::get(array('status'=>'0'))->bookings));
-			//TODO Add flexible permissions
-			if($bookings_pending_count > 0){
-				$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
-			}
+		$bookings_pending_count = apply_filters('em_bookings_pending_count',0);
+		if( get_option('dbem_bookings_approval') == 1){
+			$bookings_pending_count += count(EM_Bookings::get(array('status'=>'0'))->bookings);
+		}
+		if($bookings_pending_count > 0){
+			$bookings_num = '<span class="update-plugins count-'.$bookings_pending_count.'"><span class="plugin-count">'.$bookings_pending_count.'</span></span>';
 		}
 		//Count pending events
 		$events_num = '';
@@ -314,11 +323,11 @@ function em_create_events_submenu () {
 		if($events_pending_count > 0){
 			$events_num = '<span class="update-plugins count-'.$events_pending_count.'"><span class="plugin-count">'.$events_pending_count.'</span></span>';
 		}
-		$both_pending_count = $events_pending_count + $bookings_pending_count;
+		$both_pending_count = apply_filters('em_items_pending_count', $events_pending_count + $bookings_pending_count);
 		$both_num = ($both_pending_count > 0) ? '<span class="update-plugins count-'.$both_pending_count.'"><span class="plugin-count">'.$both_pending_count.'</span></span>':'';
-	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,'edit_events','events-manager','em_admin_events_page', plugins_url().'/events-manager/includes/images/calendar-16.png');
+	  	add_object_page(__('Events', 'dbem'),__('Events', 'dbem').$both_num,'edit_events','events-manager','em_admin_events_page', plugins_url('includes/images/calendar-16.png', __FILE__));
 	   	// Add a submenu to the custom top-level menu:
-	   		$plugin_pages = array(); 
+	   		$plugin_pages = array();
 			$plugin_pages[] = add_submenu_page('events-manager', __('Edit', 'dbem'),__('Edit', 'dbem').$events_num,'edit_events','events-manager','em_admin_events_page');
 			$plugin_pages[] = add_submenu_page('events-manager', __('Add new', 'dbem'), __('Add new','dbem'), 'edit_events', 'events-manager-event', "em_admin_event_page");
 			$plugin_pages[] = add_submenu_page('events-manager', __('Locations', 'dbem'), __('Locations', 'dbem'), 'edit_locations', 'events-manager-locations', "em_admin_locations_page");
@@ -339,25 +348,25 @@ add_action('admin_menu','em_create_events_submenu');
 /**
  * Catches various option names and returns a network-wide option value instead of the individual blog option. Uses the magc __call function to catch unprecedented names.
  * @author marcus
- *	
+ *
  */
 class EM_MS_Globals {
-	function __construct(){ add_action( 'init', array(&$this, 'add_filters'), 1); }	
+	function __construct(){ add_action( 'init', array(&$this, 'add_filters'), 1); }
 	function add_filters(){
 		foreach( $this->get_globals() as $global_option_name ){
 			add_filter('pre_option_'.$global_option_name, array(&$this, 'pre_option_'.$global_option_name), 1,1);
 			add_filter('pre_update_option_'.$global_option_name, array(&$this, 'pre_update_option_'.$global_option_name), 1,2);
 			add_action('add_option_'.$global_option_name, array(&$this, 'add_option_'.$global_option_name), 1,1);
 		}
-	}	
-	function get_globals(){ 
+	}
+	function get_globals(){
 		return apply_filters('em_ms_globals', array(
 			//multisite settings
-			'dbem_ms_global_table', 'dbem_ms_global_events', 'dbem_ms_global_events_links',
+			'dbem_ms_global_table', 'dbem_ms_global_events', 'dbem_ms_global_events_links', 'dbem_ms_global_locations',
 			//mail
 			'dbem_rsvp_mail_port', 'dbem_mail_sender_address', 'dbem_smtp_password', 'dbem_smtp_username','dbem_smtp_host', 'dbem_mail_sender_name','dbem_smtp_host','dbem_rsvp_mail_send_method','dbem_rsvp_mail_SMTPAuth',
-			//images	
-			'dbem_image_max_width','dbem_image_max_height','dbem_image_max_size'	
+			//images
+			'dbem_image_max_width','dbem_image_max_height','dbem_image_max_size'
 		));
 	}
 	function __call($filter_name, $value){
@@ -365,12 +374,12 @@ class EM_MS_Globals {
 			$return = get_site_option(str_replace('pre_option_','',$filter_name));
 			return $return;
 		}elseif( strstr($filter_name, 'pre_update_option_') !== false ){
-			if( is_super_admin() ){	
-				update_site_option(str_replace('pre_update_option_','',$filter_name), $value[0]);	
+			if( is_super_admin() ){
+				update_site_option(str_replace('pre_update_option_','',$filter_name), $value[0]);
 			}
 			return $value[1];
 		}elseif( strstr($filter_name, 'add_option_') !== false ){
-			if( is_super_admin() ){	
+			if( is_super_admin() ){
 				update_site_option(str_replace('add_option_','',$filter_name),$value[0]);
 			}
 			delete_option(str_replace('pre_option_','',$filter_name));
@@ -385,7 +394,7 @@ if( defined('MULTISITE') && MULTISITE ){
 }
 
 /**
- * Works much like <a href="http://codex.wordpress.org/Function_Reference/locate_template" target="_blank">locate_template</a>, except it takes a string instead of an array of templates, we only need to load one.  
+ * Works much like <a href="http://codex.wordpress.org/Function_Reference/locate_template" target="_blank">locate_template</a>, except it takes a string instead of an array of templates, we only need to load one.
  * @param string $template_name
  * @param boolean $load
  * @uses locate_template()
@@ -408,17 +417,17 @@ function em_locate_template( $template_name, $load=false, $args = array() ) {
 
 /**
  * Quick class to dynamically catch wp_options that are EM formats and need replacing with template files.
- * Since the options filter doesn't have a catchall filter, we send all filters to the __call function and figure out the option that way.   
+ * Since the options filter doesn't have a catchall filter, we send all filters to the __call function and figure out the option that way.
  */
 class EM_Formats {
-	function __construct(){ add_action( 'template_redirect', array(&$this, 'add_filters')); }	
+	function __construct(){ add_action( 'template_redirect', array(&$this, 'add_filters')); }
 	function add_filters(){
 		//you can hook into this filter and activate the format options you want to override by supplying the wp option names in an array, just like in the database.
 		$formats = apply_filters('em_formats_filter', array());
 		foreach( $formats as $format_name ){
 			add_filter('option_'.$format_name, array(&$this, $format_name), 1,1);
 		}
-	}	
+	}
 	function __call( $name, $value ){
 		$format = em_locate_template( 'formats/'.substr($name, 5).'.php' );
 		if( $format ){
@@ -447,9 +456,20 @@ function em_rss() {
 add_action ( 'template_redirect', 'em_rss' );
 
 /**
+ * Monitors event saves and changes the rss pubdate so it's current
+ * @param unknown_type $result
+ * @return unknown
+ */
+function em_rss_pubdate_change($result){
+	if($result) update_option('em_rss_pubdate', date('D, d M Y H:i:s T'));
+	return $result;
+}
+add_filter('em_event_save', 'em_rss_pubdate_change', 10,1);
+
+/**
  * Add a link to the favourites menu
  * @param array $actions
- * @return multitype:string 
+ * @return multitype:string
  */
 function em_favorite_menu($actions) {
 	// add quick link to our favorite plugin

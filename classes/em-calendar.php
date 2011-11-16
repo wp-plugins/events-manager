@@ -274,7 +274,11 @@ class EM_Calendar extends EM_Object {
 	}
 	 
 	function translate_and_trim($string, $length = 1) {
-		return substr(__($string), 0, $length);
+		if(function_exists('mb_substr')){ //fix for diacritic calendar names
+			return mb_substr(__($string), 0, $length);
+		}else{ 
+    		return substr(__($string), 0, $length); 
+    	}
 	}  
 	
 	/**
@@ -305,7 +309,12 @@ class EM_Calendar extends EM_Object {
 			'full' => 0, //Will display a full calendar with event names
 			'long_events' => 0, //Events that last longer than a day
 			'scope' => 'future',
-			'owner' => false
+			'status' => 1, //approved events only
+			'town' => false,
+			'state' => false,
+			'country' => false,
+			'region' => false,
+			'blog' => get_current_blog_id(),
 		);
 		$atts = parent::get_default_search($defaults, $array);
 		$atts['full'] = ($atts['full']==true) ? 1:0;

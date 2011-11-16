@@ -76,8 +76,6 @@ class EM_Booking extends EM_Object{
 				global $wpdb;			
 				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data'";
 				$booking = $wpdb->get_row($sql, ARRAY_A);
-				//booking meta
-				$booking['booking_meta'] = (!empty($booking['booking_meta'])) ? unserialize($booking['booking_meta']):array();
 				//Custom Fields
 				$custom = $wpdb->get_row("SELECT meta_key, meta_value FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data' AND meta_key='booking_custom'");
 			  	//Booking notes
@@ -86,6 +84,8 @@ class EM_Booking extends EM_Object{
 			  		$this->notes[] = unserialize($note['meta_value']);
 			  	}
 			}
+			//booking meta
+			$booking['booking_meta'] = (!empty($booking['booking_meta'])) ? unserialize($booking['booking_meta']):array();
 			//Save into the object
 			$this->to_object($booking);
 			$this->get_person();
@@ -221,11 +221,11 @@ class EM_Booking extends EM_Object{
 					}
 				}
 			}
-			$this->comment = (!empty($_REQUEST['booking_comment'])) ? $_REQUEST['booking_comment']:'';
+			$this->comment = (!empty($_REQUEST['booking_comment'])) ? wp_kses_data(stripslashes($_REQUEST['booking_comment'])):'';
 			$this->get_spaces(true);
-			$this->get_price(true);
+			$this->get_price(true, false, false);
 			$this->get_person();
-		}	
+		}
 		return apply_filters('em_booking_get_post',$this->validate(),$this);
 	}
 	
@@ -238,7 +238,7 @@ class EM_Booking extends EM_Object{
 		);
 		//give some errors in step 1
 		if( $this->spaces == 0 ){
-			$this->add_error(__('You must request at least one space to book an event.','dbem'));
+			$this->add_error(get_option('dbem_booking_feedback_min_space'));
 		}
 		//step 2, tickets bookings info
 		if( count($this->get_tickets_bookings()) > 0 ){
@@ -273,11 +273,13 @@ class EM_Booking extends EM_Object{
 	/**
 	 * Gets the total price for this whole booking. Seting $force_reset to true will recheck spaces, even if previously done so.
 	 * @param boolean $force_refresh
+	 * @param boolean $format
+	 * @param boolean $add_tax
 	 * @return float
 	 */
-	function get_price( $force_refresh=false, $format=false ){
-		if($force_refresh || $this->price == 0){
-			$this->price = $this->get_tickets_bookings()->get_price($force_refresh);
+	function get_price( $force_refresh=false, $format=false, $add_tax='x' ){
+		if($force_refresh || $this->price == 0 || $add_tax !== 'x' || get_option('dbem_bookings_tax_auto_add')){
+			$this->price = $this->get_tickets_bookings()->get_price($force_refresh, false, $add_tax);
 		}
 		if($format){
 			return apply_filters('em_booking_get_price', em_get_currency_symbol().number_format($this->price,2),$this);
@@ -346,11 +348,38 @@ class EM_Booking extends EM_Object{
 	function get_person(){
 		global $EM_Person;
 		if( is_object($this->person) && get_class($this->person)=='EM_Person' && ($this->person->ID == $this->person_id || empty($this->person_id) ) ){
-			return apply_filters('em_booking_get_person', $this->person, $this);
+			//This person is already included, so don't do anything
 		}elseif( is_object($EM_Person) && ($EM_Person->ID === $this->person_id || $this->id == '') ){
 			$this->person = $EM_Person;
 		}elseif( is_numeric($this->person_id) ){
 			$this->person = new EM_Person($this->person_id);
+		}else{
+			$this->person = new EM_Person(0);
+		}
+		//if this user is the parent user of disabled registrations, replace user details here:
+		if( get_option('dbem_bookings_registration_disable') && $this->person->ID == get_option('dbem_bookings_registration_user') ){
+			//override any registration data into the person objet
+			if( !empty($this->meta['registration']) ){
+				foreach($this->meta['registration'] as $key => $value){
+					$this->person->$key = $value;
+				}
+			}
+			$this->person->user_email = ( !empty($this->meta['registration']['user_email']) ) ? $this->meta['registration']['user_email']:$this->person->user_email;
+			if( !empty($this->meta['registration']['user_name']) ){
+				$name_string = explode(' ',$this->meta['registration']['user_name']); 
+				$this->meta['registration']['first_name'] = array_shift($name_string);
+				$this->meta['registration']['last_name'] = implode(' ', $name_string);
+			}
+			$this->person->user_firstname = ( !empty($this->meta['registration']['first_name']) ) ? $this->meta['registration']['first_name']:__('Guest User','dbem');
+			$this->person->first_name = $this->person->user_firstname;
+			$this->person->user_lastname = ( !empty($this->meta['registration']['last_name']) ) ? $this->meta['registration']['last_name']:'';
+			$this->person->last_name = $this->person->user_lastname;
+			$this->person->phone = ( !empty($this->meta['registration']['dbem_phone']) ) ? $this->meta['registration']['dbem_phone']:__('Not Supplied','dbem');
+			//build display name
+			$full_name = $this->user_firstname  . " " . $this->user_lastname ;
+			$full_name = trim($full_name);
+			$display_name = ( empty($full_name) ) ? __('Guest User','dbem'):$full_name;
+			$this->person->display_name = $display_name;
 		}
 		return apply_filters('em_booking_get_person', $this->person, $this);
 	}
@@ -360,7 +389,8 @@ class EM_Booking extends EM_Object{
 	 * @return string
 	 */
 	function get_status(){
-		return $this->status_array[$this->status];
+		$status = ($this->status == 0 && !get_option('dbem_bookings_approval') ) ? 1:$this->status;
+		return $this->status_array[$status];
 	}
 	
 	/**
@@ -422,7 +452,11 @@ class EM_Booking extends EM_Object{
 		$action_string = strtolower($this->status_array[$status]); 
 		//if we're approving we can't approve a booking if spaces are full, so check before it's approved.
 		if($status == 1){
-			if( $this->get_event()->get_bookings()->get_available_spaces() < $this->get_spaces() && !get_option('dbem_bookings_approval_overbooking') ){
+			$available_spaces = $this->get_event()->get_bookings()->get_available_spaces();
+			if( get_option('dbem_bookings_approval_reserved') == 1 ){
+				$available_spaces =+ $this->get_spaces(); //account for the fact that approving a reserved space will break if event is full. 
+			}
+			if( $available_spaces < $this->get_spaces() && !get_option('dbem_bookings_approval_overbooking') ){
 				$this->feedback_message = sprintf(__('Not approved, spaces full.','dbem'), $action_string);
 				return apply_filters('em_booking_set_status', false, $this);
 			}
@@ -512,14 +546,22 @@ class EM_Booking extends EM_Object{
 				'#_RESPPHONE' => '#_BOOKINGPHONE',//Depreciated
 				'#_COMMENT' => '#_BOOKINGCOMMENT',//Depreciated
 				'#_RESERVEDSPACES' => '#_BOOKEDSPACES',//Depreciated
-				'#_BOOKINGNAME' =>  $this->person->display_name,
+				'#_BOOKINGID' =>  $this->id,
+				'#_BOOKINGNAME' =>  $this->person->get_name(),
 				'#_BOOKINGEMAIL' => $this->person->user_email,
 				'#_BOOKINGPHONE' => $this->person->phone,
 				'#_BOOKINGSPACES' => $this->get_spaces(),
 				'#_BOOKINGLISTURL' => em_get_my_bookings_url(),
 				'#_BOOKINGCOMMENT' => $this->comment,
+				'#_BOOKINGPRICEWITHTAX' => em_get_currency_symbol(true)." ". number_format($this->get_price(false,false,true),2),
+				'#_BOOKINGPRICEWITHOUTTAX' => em_get_currency_symbol(true)." ". number_format($this->get_price(false,false,false),2),
+				'#_BOOKINGPRICETAX' => em_get_currency_symbol(true)." ". number_format($this->get_price(false,false,false)*(get_option('dbem_bookings_tax')/100),2),
+				'#_BOOKINGPRICE' => em_get_currency_symbol(true)." ". number_format($this->get_price(),2),
 				'#_BOOKINGTICKETNAME' => $EM_Ticket->name,
 				'#_BOOKINGTICKETDESCRIPTION' => $EM_Ticket->description,
+				'#_BOOKINGTICKETPRICEWITHTAX' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,true),2),
+				'#_BOOKINGTICKETPRICEWITHOUTTAX' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,false),2),
+				'#_BOOKINGTICKETTAX' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,false)*(get_option('dbem_bookings_tax')/100),2),
 				'#_BOOKINGTICKETPRICE' => em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(),2),
 				'#_BOOKINGTICKETS' => $tickets
 			),$this);	 

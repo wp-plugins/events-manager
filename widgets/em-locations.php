@@ -29,7 +29,7 @@ class EM_Locations_Widget extends WP_Widget {
 	    echo $args['after_title'];
 	    
 		$instance['owner'] = false;
-		$locations = EM_Locations::get($instance);
+		$locations = EM_Locations::get(apply_filters('em_widget_locations_get_args',$instance));
 		echo "<ul>";
 		$li_wrap = !preg_match('/^<li>/i', trim($instance['format']));
 		if ( count($locations) > 0 ){
