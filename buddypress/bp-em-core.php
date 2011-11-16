@@ -144,6 +144,7 @@ function bp_em_setup_nav() {
 	) );
 	
 	/* Add a nav item for this component under the settings nav item. */
+	/*
 	bp_core_new_subnav_item( array(
 		'name' => __( 'Events', 'dbem' ),
 		'slug' => 'events-settings',
@@ -153,6 +154,7 @@ function bp_em_setup_nav() {
 		'position' => 40,
 		'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
 	) );
+	*/
 	
 
 	/* Create two sub nav items for this component */

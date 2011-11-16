@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 4.303
+Version: 4.304
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for Wordpress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -199,6 +199,14 @@ function em_js_localize_vars(){
 		'ui_css' => plugins_url('includes/css/jquery-ui-1.8.13.custom.css', __FILE__)
 	));
 }
+
+/**
+ * Add an extra update message to the update plugin notification. Thanks BP!
+ */
+function em_core_update_message() {
+	echo '<p style="color: red; margin: 3px 0 0 0; border-top: 1px solid #ddd; padding-top: 3px">IMPORTANT: <a href="http://wp-events-plugin.com/updating-to-v5/">Read this before attempting to update Events Manager</a></p>';
+}
+add_action( 'in_plugin_update_message-events-manager/events-manager.php', 'em_core_update_message' );
 
 /**
  * Perform plugins_loaded actions
@@ -446,6 +454,17 @@ function em_rss() {
 	}
 }
 add_action ( 'template_redirect', 'em_rss' );
+
+/**
+ * Monitors event saves and changes the rss pubdate so it's current
+ * @param unknown_type $result
+ * @return unknown
+ */
+function em_rss_pubdate_change($result){
+	if($result) update_option('em_rss_pubdate', date('D, d M Y H:i:s T'));
+	return $result;
+}
+add_filter('em_event_save', 'em_rss_pubdate_change', 10,1);
 
 /**
  * Add a link to the favourites menu

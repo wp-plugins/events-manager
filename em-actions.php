@@ -466,7 +466,7 @@ function em_init_actions() {
 			die();
 		}
 	}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'booking_add' && !is_user_logged_in() && !get_option('dbem_bookings_anonymous')){
-		$EM_Notices->add_error(__('You must log in before you make a booking.','dbem'));
+		$EM_Notices->add_error( get_option('dbem_booking_feedback_log_in') );
 		if( !$result && defined('DOING_AJAX') ){
 			$return = array('result'=>false, 'message'=>$EM_Booking->feedback_message, 'errors'=>$EM_Notices->get_errors());
 			echo EM_Object::json_encode($return);

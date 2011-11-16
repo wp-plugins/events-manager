@@ -93,36 +93,38 @@ add_filter('em_event_save','bp_em_record_activity_event_save', 10, 2);
  */
 function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 	if( $result ){
+		$rejected_statuses = array(0,2,3); //these statuses apply to rejected/cancelled bookings
 		$user = $EM_Booking->person;
 		$user_link = "<a href='".get_bloginfo('wpurl').'/'.BP_MEMBERS_SLUG.'/'.$user->user_login."/'>".$user->display_name."</a>";
 		$event_link = $EM_Booking->get_event()->output('#_EVENTLINK');
 		$status = $EM_Booking->status;
-		if( $status == 1 || (!get_option('dbem_bookings_approval') && $status < 2) ){
-			$action = sprintf(__('%s is attending %s.','dbem'), $user_link, $event_link );
-		}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && ($status > 1 || empty($status) || (!get_option('dbem_bookings_approval') && $status != 1)) ){
-			$action = sprintf(__('%s will not be attending %s anymore.','dbem'), $user_link, $event_link );
-		}
 		$EM_Event = $EM_Booking->get_event();
-		if( !empty($EM_Event->group_id) ){
+		if( empty($EM_Event->group_id) ){
+			if( $status == 1 || (!get_option('dbem_bookings_approval') && $status < 2) ){
+				$action = sprintf(__('%s is attending %s.','dbem'), $user_link, $event_link );
+			}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && in_array($status, $rejected_statuses) ){
+				$action = sprintf(__('%s will not be attending %s anymore.','dbem'), $user_link, $event_link );
+			}
+		}else{
 			$group = new BP_Groups_Group($EM_Event->group_id);
 			$group_link = '<a href="'.bp_get_group_permalink($group).'">'.bp_get_group_name($group).'</a>';
 			if( $status == 1 || (!get_option('dbem_bookings_approval') && $status < 2) ){
 				$action = sprintf(__('%s is attending %s of the group %s.','dbem'), $user_link, $event_link, $group_link );
-			}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && ($status > 1 || empty($status) || (!get_option('dbem_bookings_approval') && $status != 1)) ){
+			}elseif( ($EM_Booking->previous_status == 1 || (!get_option('dbem_bookings_approval') && $EM_Booking->previous_status < 2)) && in_array($status, $rejected_statuses) ){
 				$action = sprintf(__('%s will not be attending %s of group %s anymore.','dbem'), $user_link, $event_link, $group_link );
 			}
 		}
 		if( !empty($action) ){
-			bp_em_record_activity( array(
-				'user_id' => $EM_Booking->person->ID,
-				'action' => $action,
-				'primary_link' => $EM_Event->output('#_EVENTURL'),
-				'type' => 'new_booking',
-				'item_id' => $EM_Event->id,
-				'secondary_item_id' => $EM_Booking->id
-			));
-			//group activity
-			if( !empty($EM_Event->group_id) ){
+			if( empty($EM_Event->group_id) ){
+				bp_em_record_activity( array(
+					'user_id' => $EM_Booking->person->ID,
+					'action' => $action,
+					'primary_link' => $EM_Event->output('#_EVENTURL'),
+					'type' => 'new_booking',
+					'item_id' => $EM_Event->id,
+					'secondary_item_id' => $EM_Booking->id
+				));
+			}else{
 				//tis a group event
 				bp_em_record_activity( array(
 					'component' => 'groups',

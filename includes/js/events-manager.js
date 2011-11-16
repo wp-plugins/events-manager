@@ -229,12 +229,17 @@ jQuery(document).ready( function($){
 				load_ui_css = true;
 				datepicker_vals.altField = el.find('.start').first();
 				start.first().datepicker(datepicker_vals);
+				start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', datepicker_vals.altField.val()) );
+				el.find(".start-loc").val(start_date_formatted);
 			}
 			end = el.find('.end-loc');
 			if(end.length > 0){
 				load_ui_css = true;
 				datepicker_vals.altField = el.find('.end').first();
 				end.first().datepicker(datepicker_vals);
+				end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', datepicker_vals.altField.val()) );
+				console.log(end_date_formatted);
+				el.find(".end-loc").first().val(end_date_formatted);
 			}
 		});
 		if( load_ui_css || $("#em-date-start-loc, #em-date-end-loc").length > 0 ){

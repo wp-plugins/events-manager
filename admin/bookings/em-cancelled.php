@@ -106,7 +106,7 @@ function em_bookings_cancelled_table(){
 										<?php
 										$approve_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'booking_id'=>$EM_Booking->id));
 										$delete_url = em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'booking_id'=>$EM_Booking->id));
-										$edit_url = em_add_get_params($_SERVER['REQUEST_URI'], array('booking_id'=>$EM_Booking->id));
+										$edit_url = em_add_get_params($_SERVER['REQUEST_URI'], array('booking_id'=>$EM_Booking->id, 'em_ajax'=>null, 'em_obj'=>null));
 										?>
 										<a class="em-bookings-approve" href="<?php echo $approve_url ?>"><?php _e('Restore','dbem'); ?></a> |
 										<a class="em-bookings-edit" href="<?php echo $edit_url; ?>"><?php _e('Edit/View','dbem'); ?></a> |

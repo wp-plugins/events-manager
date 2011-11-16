@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 4.303
+Stable tag: 4.304
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -88,6 +88,16 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 4.304 =
+* added pubdate to rss feed
+* fixed datepickers in single ticket mode not showing saved dates
+* fixed bookings view/edit link on second pages of ajax navigator
+* added Aruba to countries list
+* corrected login error string not being overriden
+* removed bogus event settings page in BP (for now)
+* attendees list now ommitting unconfirmed bookings
+* booking addon pages should now override correctly
+* improved buddypress activity notification (supports pro stuses and only one activity if a group event)
 
 = 4.303 =
 * fixed PHPMailer conflict when in wp_mail mode

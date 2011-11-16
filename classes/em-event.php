@@ -1157,16 +1157,6 @@ class EM_Event extends EM_Object{
 	}
 	
 	/**
-	 * Can the user manage this? 
-	 */
-	function can_manage( $owner_capability = false, $admin_capability = false ){
-		if( $owner_capability == 'edit_events' && $this->id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
-			return apply_filters('em_event_can_manage',true, $this);
-		}
-		return apply_filters('em_event_can_manage', parent::can_manage($owner_capability, $admin_capability), $this);
-	}
-	
-	/**
 	 * Returns the days that match the recurrance array passed (unix timestamps)
 	 * @param array $recurrence
 	 * @return array
@@ -1331,7 +1321,17 @@ class EM_Event extends EM_Object{
 	/**********************************************************
 	 * UTILITIES
 	 ***********************************************************/
-
+	
+	/**
+	 * Can the user manage this? 
+	 */
+	function can_manage( $owner_capability = false, $admin_capability = false ){
+		if( $owner_capability == 'edit_events' && $this->id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
+			return apply_filters('em_event_can_manage',true, $this);
+		}
+		return apply_filters('em_event_can_manage', parent::can_manage($owner_capability, $admin_capability), $this);
+	}
+	
 	/**
 	 * Returns this object in the form of an array, useful for saving directly into the wp_dbem_events table.
 	 * @param boolean $for_database

@@ -312,7 +312,7 @@ class EM_Ticket extends EM_Object{
 				<?php if(empty($shown_default) && $default_value > 0 ): ?><option selected="selected"><?php echo $default_value; ?></option><?php endif; ?>
 			</select>
 			<?php 
-			return ob_get_clean();
+			return apply_filters('em_ticket_get_spaces_options', ob_get_clean(), $zero_value, $default_value, $this);
 		}else{
 			return false;
 		}
