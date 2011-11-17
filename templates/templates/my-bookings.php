@@ -29,7 +29,8 @@
 				<div class='tablenav'>
 					<?php 
 					if ( $bookings_count >= $limit ) {
-						$bookings_nav = em_admin_paginate( $bookings_count, $limit, $page, array('em_ajax'=>0, 'em_obj'=>'em_bookings_confirmed_table'));
+						$link = em_add_get_params($_SERVER['REQUEST_URI'], array('pno'=>'%PAGE%'));
+						$bookings_nav = em_paginate( $link, $bookings_count, $limit, $page);
 						echo $bookings_nav;
 					}
 					?>

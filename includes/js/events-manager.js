@@ -238,7 +238,6 @@ jQuery(document).ready( function($){
 				datepicker_vals.altField = el.find('.end').first();
 				end.first().datepicker(datepicker_vals);
 				end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', datepicker_vals.altField.val()) );
-				console.log(end_date_formatted);
 				el.find(".end-loc").first().val(end_date_formatted);
 			}
 		});

@@ -375,8 +375,6 @@ class EM_Location extends EM_Object {
 				}
 			}
 		}
-		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
-		$location_string = str_replace('#_LOCATION', apply_filters($name_filter, $this->name) , $location_string ); //Depreciated
 		return apply_filters('em_location_output', $location_string, $this, $format, $target);	
 	}
 	

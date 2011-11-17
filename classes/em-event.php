@@ -342,7 +342,7 @@ class EM_Event extends EM_Object{
 		$this->location_id = $this->location->id;
 		//owner person can be anyone the admin wants, but the creator if not.
 		if( current_user_can('edit_others_events') ){
-			$this->owner = ( $this->owner > 0 ) ? $this->owner:0;
+			$this->owner = ( $this->owner > 0 ) ? $this->owner:get_current_user_id();
 		}elseif( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') && get_option('dbem_events_anonymous_user') ){
 			$this->owner = get_option('dbem_events_anonymous_user'); //user is anonymous, so give the event
 		}else{
@@ -350,6 +350,7 @@ class EM_Event extends EM_Object{
 			$this->owner = get_current_user_id();
 		}
 		//Set status of this event, depending on user type
+		$this->previous_status = $this->status;
 		if( current_user_can('publish_events') ){
 			//top level can edit and publish any events
 			$this->status = 1;
@@ -1364,7 +1365,7 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 		$result = apply_filters('dbem_notes_excerpt', $result);
 	}elseif( $placeholder == '#_CONTACTEMAIL' && $target == 'html' ){
 		$result = em_ascii_encode($event->contact->user_email);
-	}elseif( $placeholder == "#_NOTES" || $placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT" ){
+	}elseif( $placeholder == "#_NOTES" || $placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT" || $placeholder == "#_LOCATIONNOTES" || $placeholder == "#_DESCRIPTION" ){
 		if($target == 'html'){
 			$result = apply_filters('dbem_notes', $result);
 		}elseif($target == 'map'){
@@ -1387,4 +1388,5 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 	return $result;
 }
 add_filter('em_event_output_placeholder','em_event_output_placeholder',1,4);
+add_filter('em_location_output_placeholder','em_event_output_placeholder',1,4);
 ?>

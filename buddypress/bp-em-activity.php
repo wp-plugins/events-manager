@@ -60,22 +60,24 @@ function bp_em_record_activity( $args = '' ) {
  * @return unknown
  */
 function bp_em_record_activity_event_save( $result, $EM_Event ){
-	if( $result && $EM_Event->status == 1 && ($EM_Event->previous_status == 0 || !empty($EM_Event->is_new)) ){
+	if( $result && $EM_Event->status == 1 && empty($EM_Event->previous_status) ){
 		$user = get_userdata($EM_Event->owner);
-		bp_em_record_activity( array(
-			'user_id' => $user->ID,
-			'action' => sprintf(__('%s added the event %s','dbem'), "<a href='".get_bloginfo('wpurl').'/'.BP_MEMBERS_SLUG.'/'.$user->user_login."/'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK') ),
-			'primary_link' => $EM_Event->output('#_EVENTURL'),
-			'type' => 'new_event',
-			'item_id' => $EM_Event->id,
-		));
-		//group activity
-		if( !empty($EM_Event->group_id) ){
+		$member_slug = function_exists( 'bp_get_members_root_slug' ) ? bp_get_members_root_slug() : BP_MEMBERS_SLUG;
+		$member_link = trailingslashit(bp_get_root_domain()) . $member_slug . '/' . $user->user_login;
+		if( empty($EM_Event->group_id) ){
+			bp_em_record_activity( array(
+				'user_id' => $user->ID,
+				'action' => sprintf(__('%s added the event %s','dbem'), "<a href='".$member_link."/'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK') ),
+				'primary_link' => $EM_Event->output('#_EVENTURL'),
+				'type' => 'new_event',
+				'item_id' => $EM_Event->id,
+			));
+		}else{
 			//tis a group event
 			$group = new BP_Groups_Group($EM_Event->group_id);
 			bp_em_record_activity( array(
 				'user_id' => $user->ID,
-				'action' => sprintf(__('%s added the event %s of the %s group.','dbem'), "<a href='".get_bloginfo('wpurl').'/'.BP_MEMBERS_SLUG.'/'.$user->user_login."/'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK'), '<a href="'.bp_get_group_permalink($group).'">'.bp_get_group_name($group).'</a>' ),
+				'action' => sprintf(__('%s added the event %s of the %s group.','dbem'), "<a href='".$member_link."/'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK'), '<a href="'.bp_get_group_permalink($group).'">'.bp_get_group_name($group).'</a>' ),
 				'component' => 'groups',
 				'type' => 'new_event',
 				'item_id' => $EM_Event->group_id,
@@ -95,7 +97,9 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 	if( $result ){
 		$rejected_statuses = array(0,2,3); //these statuses apply to rejected/cancelled bookings
 		$user = $EM_Booking->person;
-		$user_link = "<a href='".get_bloginfo('wpurl').'/'.BP_MEMBERS_SLUG.'/'.$user->user_login."/'>".$user->display_name."</a>";
+		$member_slug = function_exists( 'bp_get_members_root_slug' ) ? bp_get_members_root_slug() : BP_MEMBERS_SLUG;
+		$member_url = trailingslashit(bp_get_root_domain()) . $member_slug . '/' . $user->user_login;
+		$user_link = "<a href='".$member_url."/'>".$user->display_name."</a>";
 		$event_link = $EM_Booking->get_event()->output('#_EVENTLINK');
 		$status = $EM_Booking->status;
 		$EM_Event = $EM_Booking->get_event();
