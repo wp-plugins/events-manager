@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.1
 Tested up to: 3.2.1
-Stable tag: 4.304
+Stable tag: 4.305
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -17,6 +17,8 @@ For those upgrading from version 3 to 4, you must upgrade to version 3.0.98 manu
 Events Manager is a full-featured event registration management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
 
 For documentation, tutorials and support please visit the [plugin website](http://wp-events-plugin.com/).
+
+**NEW** We are now in beta stages of version 5, which will make events posts amongst many other improvements - see [our blog](http://wp-events-plugin.com/blog/2011/11/16/version-5-beta-1-is-finally-here/) for more info and download links.
 
 Main Features
 
@@ -88,6 +90,13 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 4.305 =
+* fixed my-bookings.php template for pagination errors
+* fixed duplicate tickets produced in buddypress editor
+* removed console.log from js
+* fixed owner=0 when admins create ownerless events
+* fixed bp activity posting of member links in 1.5
+
 = 4.304 =
 * added pubdate to rss feed
 * fixed datepickers in single ticket mode not showing saved dates
