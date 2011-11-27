@@ -43,7 +43,7 @@ class EM_Location_Post {
 	
 	function parse_query( ){
 		global $wp_query;
-		if( $wp_query->query_vars['post_type'] == EM_POST_TYPE_LOCATION ) {
+		if( $wp_query->query_vars['post_type'] == EM_POST_TYPE_LOCATION && empty($wp_query->query_vars['location']) ) {
 		  	if( get_option('dbem_locations_default_archive_orderby') == 'title'){
 		  		$wp_query->query_vars['orderby'] = 'title';
 		  	}else{

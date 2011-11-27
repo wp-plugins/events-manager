@@ -223,7 +223,15 @@ class EM_Categories extends EM_Object implements Iterator{
 	 * @uses EM_Object#get_default_search()
 	 */
 	function get_default_search( $array = array() ){
-		return apply_filters('em_categories_get_default_search', parent::get_default_search(array(),$array), $array, array());
+		$defaults = array(
+			//added from get_terms, so they don't get filtered out
+			'orderby' => 'name', 'order' => 'ASC',
+			'hide_empty' => true, 'exclude' => array(), 'exclude_tree' => array(), 'include' => array(),
+			'number' => '', 'fields' => 'all', 'slug' => '', 'parent' => '',
+			'hierarchical' => true, 'child_of' => 0, 'get' => '', 'name__like' => '',
+			'pad_counts' => false, 'offset' => '', 'search' => '', 'cache_domain' => 'core'		
+		);
+		return apply_filters('em_categories_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}	
 	
 	/**

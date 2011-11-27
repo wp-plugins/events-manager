@@ -119,7 +119,7 @@
 				</div>
 				<div>
 				<?php if(get_option('dbem_categories_enabled')) :?>
-					<?php $categories = EM_Categories::get(array('orderby'=>'category_name')); ?>
+					<?php $categories = EM_Categories::get(array('orderby'=>'name','hide_empty'=>0)); ?>
 					<?php if( count($categories) > 0 ): ?>
 						<!-- START Categories -->
 						<label for="event_categories[]"><?php _e ( 'Category:', 'dbem' ); ?></label>
