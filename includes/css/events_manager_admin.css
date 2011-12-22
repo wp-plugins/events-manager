@@ -60,6 +60,11 @@ table.events-table .category { color:#888; }
 #event-form #event-name, #location-form, #location-name { margin: 2px 0 7px; padding: 6px 5px; width: 98%; }
 	/*Locations*/
 	#em-location-data table { float:left; margin:0px 15px 0px 0px; }
+	/* Location form */
+		#em-location-data table.em-location-data td, #em-location-data table.em-location-data th { vertical-align:top; border:none; }
+		#em-location-data table.em-location-data { width:50%; float:left; border:none; }
+		#em-location-data .em-location-map-container, #em-location-data .em-location-map-404, #em-location-data .em-location-map-content { width: 400px; height: 300px; float:left; }
+		#em-location-data .em-location-map-404 { vertical-align:middle; text-align: center; }
 	/*Bookings */
 		#event-rsvp-box { margin:10px; }
 		/*Tickets*/

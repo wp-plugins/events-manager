@@ -20,7 +20,7 @@ class EM_Mailer {
 		//TODO add an EM_Error global object, for this sort of error reporting. (@marcus like StatusNotice)
 		global $smtpsettings, $phpmailer, $cformsSettings;
 	
-		if( preg_match('/^[_.0-9a-z-]+@([0-9a-z][0-9a-z-]+.)+[a-z]{2,3}$/i', $receiver) ){
+		if( is_email($receiver) ){
 			$this->load_phpmailer();
 			$mail = new EM_PHPMailer();
 			//$mail->SMTPDebug = true;
