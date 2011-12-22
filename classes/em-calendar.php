@@ -208,19 +208,17 @@ class EM_Calendar extends EM_Object {
 				$event = apply_filters('em_calendar_output_loop_start', $event);
 				if( $long_events ){
 					//If $long_events is set then show a date as eventful if there is an multi-day event which runs during that day
-					$event_start_date = mktime(0,0,0,$month_pre,1,$year_pre);
+					$event_start_date = strtotime($event->start_date);
 					$event_end_date = mktime(0,0,0,$month_post,date('t', $event_start_date),$year_post );
 					if( $event_end_date == '' ) $event_end_date = $event_start_date;
 					while( $event_start_date <= $event->end ){
 						//Ensure date is within event dates, if so add to eventful days array
-						if( $event_start_date > $event->start - (86400) ){ //subtract a day since start may be later in day
-							$event_eventful_date = date('Y-m-d', $event_start_date);
-							if( array_key_exists($event_eventful_date, $eventful_days) && is_array($eventful_days[$event_eventful_date]) ){
-								$eventful_days[$event_eventful_date][] = $event; 
-							} else {
-								$eventful_days[$event_eventful_date] = array($event);  
-							}	
-						}	
+						$event_eventful_date = date('Y-m-d', $event_start_date);
+						if( array_key_exists($event_eventful_date, $eventful_days) && is_array($eventful_days[$event_eventful_date]) ){
+							$eventful_days[$event_eventful_date][] = $event; 
+						} else {
+							$eventful_days[$event_eventful_date] = array($event);  
+						}
 						$event_start_date += (86400); //add a day		
 					}
 				}else{
