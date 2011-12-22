@@ -8,17 +8,13 @@ Stable tag: 4.305
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
-== Upgrade Notice ==
-
-For those upgrading from version 3 to 4, you must upgrade to version 3.0.98 manually and then to the latest version as usual. Please [see this screencast](http://wp-events-plugin.com/blog/2011/12/21/rc1-is-out-upgrade-now/) for a walkthrough.
-
 == Description ==
 
 Events Manager is a full-featured event registration management solution for Wordpress based on the principles of flexibility, reliability and powerful features!
 
 For documentation, tutorials and support please visit the [plugin website](http://wp-events-plugin.com/).
 
-**NEW** We are now in the final stages before releasing a stable version 5, which will make events custom post types amongst many other improvements - see [our blog](http://wp-events-plugin.com/blog/2011/11/16/version-5-beta-1-is-finally-here/) for more info and download links.
+**NEW** We are now in the final stages before releasing a stable version 5, which will make events custom post types amongst many other improvements - see [our blog](http://wp-events-plugin.com/blog/2011/12/21/rc1-is-out-upgrade-now/) for more info and download links.
 
 Main Features
 
@@ -72,9 +68,13 @@ Once installed, you can start adding events straight away, although you may want
 1. When upgrading, visit the plugins page in your admin area, scroll down to events manager and click upgrade.
 2. Wordpress will help you upgrade automatically.
 
-= Upgrading from 3.x to 4.x =
+= Upgrading from version 4 to 5 =
 
-Please view [this page](http://wp-events-plugin.com/news/events-manager-4-0-released/) for information on upgrading events manager.
+Please [read these instructions](http://wp-events-plugin.com/updating-to-v5/).
+
+== Upgrade Notice ==
+
+For those upgrading from version 4 to 5, please [read these instructions](http://wp-events-plugin.com/updating-to-v5/).
 
 == Frequently Asked Questions ==
 
