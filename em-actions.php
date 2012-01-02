@@ -11,7 +11,7 @@ function em_init_actions() {
 	if( !empty($_REQUEST['em_ajax']) || !empty($_REQUEST['em_ajax_action']) ){
 		if(isset($_REQUEST['em_ajax_action']) && $_REQUEST['em_ajax_action'] == 'get_location') {
 			if(isset($_REQUEST['id'])){
-				$EM_Location = new EM_Location($_REQUEST['id']);
+				$EM_Location = new EM_Location($_REQUEST['id'], 'location_id');
 				$location_array = $EM_Location->to_array();
 				$location_array['location_balloon'] = $EM_Location->output(get_option('dbem_location_baloon_format'));
 		     	echo EM_Object::json_encode($location_array);
@@ -59,45 +59,39 @@ function em_init_actions() {
 		}else{
 			$EM_Event = new EM_Event();
 		}
-		if( $_REQUEST['action'] == 'event_save' && (current_user_can('edit_events') || (!is_user_logged_in() && get_option('dbem_events_anonymous_submissions'))) ){
+		//Save Event, only via BP or via [event_form]
+		if( $_REQUEST['action'] == 'event_save' && $EM_Event->can_manage('edit_events','edit_others_events') ){
 			//Check Nonces
-			if( is_admin() ){
-				if( !wp_verify_nonce($_REQUEST['_wpnonce'] && 'event_save') ) check_admin_referer('trigger_error');				
-			}else{
-				if( !wp_verify_nonce($_REQUEST['_wpnonce'] && 'event_save') ) exit('Trying to perform an illegal action.');
-			}
+			if( !wp_verify_nonce($_REQUEST['_wpnonce'], 'wpnonce_event_save') ) exit('Trying to perform an illegal action.');
 			//Grab and validate submitted data
 			if ( $EM_Event->get_post() && $EM_Event->save() ) { //EM_Event gets the event if submitted via POST and validates it (safer than to depend on JS)
-				if( is_admin() ){
-					$EM_Notices->add_confirm($EM_Event->feedback_message);
-					$page = !empty($_REQUEST['pno']) ? $_REQUEST['pno']:'';
-					$scope = !empty($_REQUEST['scope']) ? $_REQUEST['scope']:'';
-					//wp_redirect( get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager&pno='.$page.'&scope='.$scope.'&message='.urlencode($EM_Event->feedback_message));
-				}else{
-					$EM_Notices->add_confirm($EM_Event->feedback_message, true);
-					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
-					wp_redirect( $redirect );
-				}
 				$events_result = true;
+				//Success notice
+				if( is_user_logged_in() ){
+					$EM_Notices->add_confirm( $EM_Event->output(get_option('dbem_events_form_result_success')), true);
+				}else{
+					$EM_Notices->add_confirm( $EM_Event->output(get_option('dbem_events_anonymous_result_success')), true);
+				}
+				$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
+				$redirect = em_add_get_params($redirect, array('success'=>1));
+				wp_redirect( $redirect );
+				exit();
 			}else{
 				$EM_Notices->add_error( $EM_Event->get_errors() );
 				$events_result = false;				
 			}
 		}
-		if ( $_REQUEST['action'] == 'event_duplicate' ) {
-			global $EZSQL_ERROR;
+		if ( $_REQUEST['action'] == 'event_duplicate' && wp_verify_nonce($_REQUEST['_wpnonce'],'event_duplicate_'.$EM_Event->event_id) ) {
 			$EM_Event = $EM_Event->duplicate();
 			if( $EM_Event === false ){
 				$EM_Notices->add_error($EM_Event->errors, true);
 			}else{
-				if( $EM_Event->id == $_REQUEST['event_id'] ){
-					$EM_Notices->add_confirm($EM_Event->feedback_message ." ". sprintf(__('You are now viewing the duplicated %s.', 'dbem'),__('event','dbem')), true);
-				}else{
-					$EM_Notices->add_confirm($EM_Event->feedback_message, true);
-				}
+				$EM_Notices->add_confirm($EM_Event->feedback_message, true);
 			}
+			wp_redirect( wp_get_referer() );
+			exit();
 		}
-		if ( $_REQUEST['action'] == 'event_delete' ) { 
+		if ( $_REQUEST['action'] == 'event_delete' && wp_verify_nonce($_REQUEST['_wpnonce'],'event_delete_'.$EM_Event->event_id) ) { 
 			//DELETE action
 			$selectedEvents = !empty($_REQUEST['events']) ? $_REQUEST['events']:'';
 			if(  EM_Object::array_is_numeric($selectedEvents) ){
@@ -107,20 +101,32 @@ function em_init_actions() {
 			}		
 			$plural = (count($selectedEvents) > 1) ? __('Events','dbem'):__('Event','dbem');
 			if($events_result){
-				$message = ( is_object($EM_Event) ) ? $EM_Event->feedback_message : sprintf(__('%s successfully deleted.','dbem'),$plural);
-				$EM_Notices->add_confirm( $message );
+				$message = ( !empty($EM_Event->feedback_message) ) ? $EM_Event->feedback_message : sprintf(__('%s successfully deleted.','dbem'),$plural);
+				$EM_Notices->add_confirm( $message, true );
 			}else{
-				$message = ( is_object($EM_Event) ) ? $EM_Event->errors : sprintf(__('%s could not be deleted.','dbem'),$plural);
-				$EM_Notices->add_confirm( $message );		
+				$message = ( !empty($EM_Event->errors) ) ? $EM_Event->errors : sprintf(__('%s could not be deleted.','dbem'),$plural);
+				$EM_Notices->add_error( $message, true );		
 			}
-		}elseif( $_REQUEST['action'] == 'event_approve' ){ 
-			//Approve Action
-			$events_result = $EM_Event->approve();
-			if($events_result){
-				$EM_Notices->add_confirm( $EM_Event->feedback_message );
+			wp_redirect( wp_get_referer() );
+			exit();
+		}elseif( $_REQUEST['action'] == 'event_detach' && wp_verify_nonce($_REQUEST['_wpnonce'],'event_detach_'.get_current_user_id().'_'.$EM_Event->event_id) ){ 
+			//Detach event and move on
+			if($EM_Event->detach()){
+				$EM_Notices->add_confirm( $EM_Event->feedback_message, true );
 			}else{
-				$EM_Notices->add_error( $EM_Event->errors );			
+				$EM_Notices->add_error( $EM_Event->errors, true );			
 			}
+			wp_redirect(wp_get_referer());
+			exit();
+		}elseif( $_REQUEST['action'] == 'event_attach' && !empty($_REQUEST['undo_id']) && wp_verify_nonce($_REQUEST['_wpnonce'],'event_attach_'.get_current_user_id().'_'.$EM_Event->event_id) ){ 
+			//Detach event and move on
+			if($EM_Event->attach($_REQUEST['undo_id'])){
+				$EM_Notices->add_confirm( $EM_Event->feedback_message, true );
+			}else{
+				$EM_Notices->add_error( $EM_Event->errors, true );
+			}
+			wp_redirect(wp_get_referer());
+			exit();
 		}
 		
 		//AJAX Exit
@@ -143,16 +149,20 @@ function em_init_actions() {
 			$EM_Location = new EM_Location();
 		}
 		if( $_REQUEST['action'] == 'location_save' && current_user_can('edit_locations') ){
+			if( get_site_option('dbem_ms_mainblog_locations') ) EM_Object::ms_global_switch(); //switch to main blog if locations are global
 			//Check Nonces
 			em_verify_nonce('location_save');
 			//Grab and validate submitted data
 			if ( $EM_Location->get_post() && $EM_Location->save() ) { //EM_location gets the location if submitted via POST and validates it (safer than to depend on JS)
-				$EM_Notices->add_confirm($EM_Location->feedback_message);
-				$result = true;
+				$EM_Notices->add_confirm($EM_Location->feedback_message, true);
+				$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
+				wp_redirect( $redirect );
+				exit();
 			}else{
 				$EM_Notices->add_error( $EM_Location->get_errors() );
-				$result = false;				
+				$result = false;		
 			}
+			if( get_site_option('dbem_ms_mainblog_locations') ) EM_Object::ms_global_switch_back();
 		}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "location_delete" ){
 			//delete location
 			//get object or objects			
@@ -203,58 +213,6 @@ function em_init_actions() {
 		}
 	}
 	
-	//Category Actions
-	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,8) == 'category' ){
-		global $EM_Category, $EM_Notices;
-		//Load the category object, with saved event if requested
-		if( !empty($_REQUEST['category_id']) ){
-			$EM_Category = new EM_Category($_REQUEST['category_id']);
-		}else{
-			$EM_Category = new EM_Category();
-		}
-		if( $_REQUEST['action'] == 'category_save' && current_user_can('edit_categories') ){
-			//Check Nonces
-			em_verify_nonce('category_save');
-			//Grab and validate submitted data
-			if ( $EM_Category->get_post() && $EM_Category->save() ) { //EM_Category gets the category if submitted via POST and validates it (safer than to depend on JS)
-				$EM_Notices->add_confirm($EM_Category->feedback_message);
-				$result = true;
-			}else{
-				$EM_Notices->add_error( $EM_Category->get_errors() );
-				$result = false;				
-			}
-		}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "category_delete" ){
-			//delete category
-			//get object or objects			
-			if( !empty($_REQUEST['categories']) || !empty($_REQUEST['category_id']) ){
-				$args = !empty($_REQUEST['categories']) ? $_REQUEST['categories']:$_REQUEST['category_id'];
-				$categories = EM_Categories::get($args);
-				foreach($categories as $category) {
-					if( !$category->delete() ){
-						$EM_Notices->add_error($category->get_errors());
-						$errors = true;
-					}			
-				}
-				if( empty($errors) ){
-					$result = true;
-					$category_term = ( count($categories) > 1 ) ?__('EM_Categories', 'dbem') : __('Category', 'dbem'); 
-					$EM_Notices->add_confirm( sprintf(__('%s successfully deleted', 'dbem'), $category_term) );
-				}else{
-					$result = false;
-				}
-			}
-		}
-		if( isset($result) && $result && !empty($_REQUEST['em_ajax']) ){
-			$return = array('result'=>true, 'message'=>$EM_Category->feedback_message);
-			echo EM_Object::json_encode($return);
-			die();
-		}elseif( isset($result) && !$result && !empty($_REQUEST['em_ajax']) ){
-			$return = array('result'=>false, 'message'=>$EM_Category->feedback_message, 'errors'=>$EM_Notices->get_errors());
-			echo EM_Object::json_encode($return);
-			die();
-		}
-	}
-	
 	//Booking Actions
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,7) == 'booking' && (is_user_logged_in() || ($_REQUEST['action'] == 'booking_add' && get_option('dbem_bookings_anonymous'))) ){
 		global $EM_Event, $EM_Booking, $EM_Person;
@@ -262,7 +220,6 @@ function em_init_actions() {
 		$EM_Booking = ( !empty($_REQUEST['booking_id']) ) ? new EM_Booking($_REQUEST['booking_id']) : new EM_Booking();
 		//Load the event object, with saved event if requested
 		$EM_Event = $EM_Booking->get_event();
-		
 		$allowed_actions = array('bookings_approve'=>'approve','bookings_reject'=>'reject','bookings_unapprove'=>'unapprove', 'bookings_delete'=>'delete');
 		$result = false;
 		if ( $_REQUEST['action'] == 'booking_add') {
@@ -338,7 +295,7 @@ function em_init_actions() {
 								$user_data['dbem_phone'] = wp_kses($_REQUEST['dbem_phone'], array());
 							}
 							//Add booking meta
-							$EM_Booking->meta['registration'] = $user_data;	
+							$EM_Booking->booking_meta['registration'] = $user_data;	
 							//Save default person to booking
 							$EM_Booking->person_id = get_option('dbem_bookings_registration_user');				
 						}elseif( !is_user_logged_in() ){
@@ -412,6 +369,7 @@ function em_init_actions() {
 			}else{
 				$EM_Notices->add_error( __('You must log in to cancel your booking.', 'dbem') );
 			}
+		//TODO user action shouldn't check permission, booking object should.
 	  	}elseif( array_key_exists($_REQUEST['action'], $allowed_actions) && $EM_Event->can_manage('manage_bookings','manage_others_bookings') ){
 	  		//Event Admin only actions
 			$action = $allowed_actions[$_REQUEST['action']];
@@ -476,7 +434,7 @@ function em_init_actions() {
 	
 	//AJAX call for searches
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,6) == 'search' ){
-		if( $_REQUEST['action'] == 'search_states' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_states') ){
+		if( $_REQUEST['action'] == 'search_states' ){
 			$results = array();
 			if( !empty($_REQUEST['country']) ){
 				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
@@ -500,7 +458,7 @@ function em_init_actions() {
 				exit();
 			}
 		}
-		if( $_REQUEST['action'] == 'search_regions' && wp_verify_nonce($_REQUEST['_wpnonce'], 'search_regions') ){
+		if( $_REQUEST['action'] == 'search_regions' ){
 			if( !empty($_REQUEST['country']) ){
 				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s", $_REQUEST['country']));
 			}else{
@@ -522,8 +480,9 @@ function em_init_actions() {
 				echo EM_Object::json_encode($results);
 				exit();
 			}
-		}elseif( $_REQUEST['action'] == 'search_events' && wp_verify_nonce($_POST['_wpnonce'], 'search_events') && get_option('dbem_events_page_search') ){
+		}elseif( $_REQUEST['action'] == 'search_events' && get_option('dbem_events_page_search') && defined('DOING_AJAX') ){
 			$args = EM_Events::get_post_search();
+			$args['owner'] = false;
 			ob_start();
 			em_locate_template('templates/events-list.php', true, array('args'=>$args)); //if successful, this template overrides the settings and defaults, including search
 			echo apply_filters('em_ajax_search_events', ob_get_clean(), $args);	
@@ -551,6 +510,6 @@ function em_init_actions() {
 		}
 	}	
 }  
-add_action('init','em_init_actions');
+add_action('init','em_init_actions',11);
 
 ?>

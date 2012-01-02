@@ -123,7 +123,7 @@
 								?>
 								<strong>
 								<?php echo $event->get_recurrence_description(); ?> <br />
-								<a href="<?php echo $url ?>edit/?event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+								<a href="<?php echo $url ?>edit/?event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Edit Recurring Events', 'dbem' ); ?></a>
 								<?php if( current_user_can('delete_events')) : ?>
 								<span class="trash"><a href="<?php echo $url ?>?action=event_delete&amp;event_id=<?php echo $event->id ?>" class="em-event-rec-delete" onclick ="if( !confirm('<?php echo $recurrence_delete_confirm; ?>') ){ return false; }"><?php _e('Delete','dbem'); ?></a></span>
 								<?php endif; ?>										

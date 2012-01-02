@@ -34,7 +34,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 		if($object){
 			if( is_object($object) && get_class($object) == "EM_Booking"){
 				$this->booking = $object;
-				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_BOOKINGS_TABLE ." b ON bt.booking_id=b.booking_id  WHERE b.booking_id ='{$this->booking->id}'";
+				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_BOOKINGS_TABLE ." b ON bt.booking_id=b.booking_id  WHERE b.booking_id ='{$this->booking->booking_id}'";
 			}elseif( is_object($object) && get_class($object) == "EM_Ticket"){
 				$this->ticket = $object;
 				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_TICKETS_TABLE ." t ON bt.ticket_id=t.ticket_id  WHERE t.ticket_id ='{$this->ticket->id}'";
@@ -122,9 +122,9 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	function get_booking(){
 		global $EM_Booking;
 		$booking_id = $this->get_booking_id();
-		if( is_object($this->booking) && get_class($this->booking)=='EM_Booking' && $this->booking->id == $booking_id ){
+		if( is_object($this->booking) && get_class($this->booking)=='EM_Booking' && $this->booking->booking_id == $booking_id ){
 			return $this->booking;
-		}elseif( is_object($EM_Booking) && $EM_Booking->id == $booking_id ){
+		}elseif( is_object($EM_Booking) && $EM_Booking->booking_id == $booking_id ){
 			$this->booking = $EM_Booking;
 		}else{
 			if(is_numeric($booking_id)){
@@ -158,7 +158,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 			$ticket_ids = array();
 			foreach( $this->tickets_bookings as $EM_Ticket_Booking ){
 				if( $EM_Ticket_Booking->can_manage() ){
-					$tickets_bookings_ids[] = $EM_Ticket_Booking->id;
+					$tickets_bookings_ids[] = $EM_Ticket_Booking->booking_id;
 				}else{
 					$this->errors[] = sprintf(__('You do not have the rights to manage this %s.','dbem'),__('Booking','dbem'));					
 				}

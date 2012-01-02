@@ -6,7 +6,7 @@
 	$limit = ( !empty($_REQUEST['limit']) ) ? $_REQUEST['limit'] : 20;//Default limit
 	$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 	$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
-	$EM_Events = EM_Events::get( array('group'=>$bp->groups->current_group->id,'scope'=>'future', 'limit' => 0, 'order' => $order) );
+	$EM_Events = EM_Events::get( array('group'=>'this','scope'=>'future', 'limit' => 0, 'order' => $order) );
 	$events_count = count ( $EM_Events );
 	$future_count = EM_Events::count( array('status'=>1, 'owner' =>get_current_user_id(), 'scope' => 'future'));
 	$pending_count = EM_Events::count( array('status'=>0, 'owner' =>get_current_user_id(), 'scope' => 'all') );
@@ -96,7 +96,7 @@
 							}
 							?>
 							<div class="row-actions">
-								<?php if( current_user_can('delete_events')) : ?>
+								<?php if( $event->can_manage('delete_events', 'delete_others_events')) : ?>
 								<span class="trash"><a href="<?php echo $url ?>?action=event_delete&amp;event_id=<?php echo $event->id ?>" class="em-event-delete"><?php _e('Delete','dbem'); ?></a></span>
 								<?php endif; ?>
 							</div>
@@ -129,7 +129,7 @@
 								?>
 								<strong>
 								<?php echo $event->get_recurrence_description(); ?> <br />
-								<a href="<?php echo $url ?>edit/?event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Reschedule', 'dbem' ); ?></a>
+								<a href="<?php echo $url ?>edit/?event_id=<?php echo $event->recurrence_id ?>"><?php _e ( 'Edit Recurring Events', 'dbem' ); ?></a>
 								<?php if( current_user_can('delete_events')) : ?>
 								<span class="trash"><a href="<?php echo $url ?>?action=event_delete&amp;event_id=<?php echo $event->id ?>" class="em-event-rec-delete" onclick ="if( !confirm('<?php echo $recurrence_delete_confirm; ?>') ){ return false; }"><?php _e('Delete','dbem'); ?></a></span>
 								<?php endif; ?>										

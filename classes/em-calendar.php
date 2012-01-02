@@ -223,13 +223,12 @@ class EM_Calendar extends EM_Object {
 					}
 				}else{
 					//Only show events on the day that they start
-					if( isset($eventful_days[$event->start_date]) && is_array($eventful_days[$event->start_date]) ){
-						$eventful_days[$event->start_date][] = $event; 
+					if( isset($eventful_days[$event->event_start_date]) && is_array($eventful_days[$event->event_start_date]) ){
+						$eventful_days[$event->event_start_date][] = $event; 
 					} else {
-						$eventful_days[$event->start_date] = array($event);  
+						$eventful_days[$event->event_start_date] = array($event);  
 					}
 				}
-				$event = apply_filters('em_calendar_output_loop_end', $event);
 			}
 		}
 		foreach($eventful_days as $day_key => $events) {
@@ -243,7 +242,15 @@ class EM_Calendar extends EM_Object {
 							
 				//Get the link to this calendar day
 				global $wp_rewrite;
-				$event_page_link = trailingslashit(get_permalink(get_option('dbem_events_page'))); //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+				if( get_option("dbem_events_page") > 0 ){
+					$event_page_link = get_permalink(get_option("dbem_events_page")); //PAGE URI OF EM
+				}else{
+					if( $wp_rewrite->using_permalinks() ){
+						$event_page_link = trailingslashit(home_url()).EM_POST_TYPE_EVENT_SLUG.'/'; //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+					}else{
+						$event_page_link = trailingslashit(home_url()).'?post_type='.EM_POST_TYPE_EVENT; //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+					}
+				}
 				if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){
 					$calendar_array['cells'][$day_key]['link'] = $event_page_link.$day_key."/";
 				}else{
@@ -258,7 +265,7 @@ class EM_Calendar extends EM_Object {
 	}
 	
 	function output($args = array()) {	
-		$calendar_array  = self::get($args);	
+		$calendar_array  = self::get($args);
 		$template = (!empty($args['full'])) ? 'templates/calendar-full.php':'templates/calendar-small.php';
 		ob_start();
 		em_locate_template($template, true, array('calendar'=>$calendar_array,'args'=>$args));
@@ -314,6 +321,15 @@ class EM_Calendar extends EM_Object {
 			'region' => false,
 			'blog' => get_current_blog_id(),
 		);
+		if(is_multisite()){
+			global $bp;
+			if( !is_main_site() && !array_key_exists('blog',$array) ){
+				//not the main blog, force single blog search
+				$array['blog'] = get_current_blog_id();
+			}elseif( empty($array['blog']) && get_site_option('dbem_ms_global_events') ) {
+				$array['blog'] = false;
+			}
+		}
 		$atts = parent::get_default_search($defaults, $array);
 		$atts['full'] = ($atts['full']==true) ? 1:0;
 		$atts['long_events'] = ($atts['long_events']==true) ? 1:0;

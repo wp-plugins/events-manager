@@ -15,7 +15,7 @@ echo "<?xml version='1.0' encoding='utf-8' ?>\n";
 		<description><?php echo htmlentities(get_option('dbem_rss_main_description')); ?></description>
 		<docs>http://blogs.law.harvard.edu/tech/rss</docs>
 		<pubDate><?php echo get_option('em_rss_pubdate', date('D, d M Y H:i:s T')); ?></pubDate>
-		<atom:link href="<?php echo esc_attr(EM_RSS_URI); ?>" rel="self" type="application/rss+xml" />		
+		<atom:link href="<?php echo esc_attr(EM_RSS_URI); ?>" rel="self" type="application/rss+xml" />
 		<?php
 		$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_rss_description_format' ) ) );
 		//$EM_Events = new EM_Events( array('limit'=>5, 'owner'=>false) );

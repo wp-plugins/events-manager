@@ -95,7 +95,7 @@ function em_bookings_event(){
   			<?php do_action('em_admin_event_booking_options_buttons'); ?>
   		</h2>
   		<?php echo $EM_Notices; ?>
-  		<div><a href='<?php echo get_bloginfo('wpurl') . "/wp-admin/admin.php?page=events-manager-bookings&action=bookings_export_csv&_wpnonce=".wp_create_nonce('bookings_export_csv')."&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a></div>  
+  		<div><a href='<?php echo EM_ADMIN_URL ."&amp;page=events-manager-bookings&action=bookings_export_csv&_wpnonce=".wp_create_nonce('bookings_export_csv')."&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a></div>  
 		<div>
 			<p><strong><?php _e('Event Name','dbem'); ?></strong> : <?php echo ($EM_Event->name); ?></p>
 			<p><strong><?php _e('Availability','dbem'); ?></strong> : <?php echo $EM_Event->get_bookings()->get_booked_spaces() . '/'. $EM_Event->get_spaces() ." ". __('Spaces confirmed','dbem'); ?></p>
@@ -107,7 +107,7 @@ function em_bookings_event(){
 			</p>
 			<p>
 				<strong><?php _e('Location','dbem'); ?></strong> :
-				<a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-locations&amp;location_id=<?php echo $EM_Event->location->id ?>"><?php echo ($EM_Event->location->name); ?></a> 
+				<a class="row-title" href="<?php echo admin_url(); ?>post.php?action=edit&amp;post=<?php echo $EM_Event->get_location()->post_id ?>"><?php echo ($EM_Event->get_location()->name); ?></a> 
 			</p>
 		</div>
   		<?php if( get_option('dbem_bookings_approval')): ?>
@@ -145,8 +145,8 @@ function em_bookings_ticket(){
 		</div>
   		<h2>
   			<?php echo sprintf(__('Ticket for %s', 'dbem'), "'{$EM_Event->name}'"); ?>
-  			<a href="admin.php?page=events-manager-event&event_id=<?php echo $EM_Event->id; ?>" class="button add-new-h2"><?php _e('View/Edit Event','dbem') ?></a>
-  			<a href="admin.php?page=events-manager-bookings&event_id=<?php echo $EM_Event->id; ?>" class="button add-new-h2"><?php _e('View Event Bookings','dbem') ?></a>
+  			<a href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-event&event_id=<?php echo $EM_Event->id; ?>" class="button add-new-h2"><?php _e('View/Edit Event','dbem') ?></a>
+  			<a href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&event_id=<?php echo $EM_Event->id; ?>" class="button add-new-h2"><?php _e('View Event Bookings','dbem') ?></a>
   		</h2> 
   		<?php echo $EM_Notices; ?>
 		<div>
@@ -212,7 +212,7 @@ function em_bookings_single(){
 							$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
 							?>
 							<table>
-								<tr><td><strong><?php _e('Name','dbem'); ?></strong></td><td><a class="row-title" href="<?php bloginfo ( 'wpurl' )?>/wp-admin/admin.php?page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->id ?>"><?php echo ($EM_Event->name); ?></a></td></tr>
+								<tr><td><strong><?php _e('Name','dbem'); ?></strong></td><td><a class="row-title" href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->id ?>"><?php echo ($EM_Event->name); ?></a></td></tr>
 								<tr>
 									<td><strong><?php _e('Date/Time','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td>
 									<td>
@@ -256,7 +256,7 @@ function em_bookings_single(){
 									<tbody>
 										<?php foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking): ?>
 										<tr>
-											<td class="ticket-type"><a class="row-title" href="<?php bloginfo ( 'wpurl' ); ?>/wp-admin/admin.php?page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket_Booking->get_ticket()->id ?>"><?php echo $EM_Ticket_Booking->get_ticket()->name ?></a></td>
+											<td class="ticket-type"><a class="row-title" href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket_Booking->get_ticket()->id ?>"><?php echo $EM_Ticket_Booking->get_ticket()->name ?></a></td>
 											<td>
 												<input name="em_tickets[<?php echo $EM_Ticket_Booking->get_ticket()->id; ?>][spaces]" class="em-ticket-select" value="<?php echo $EM_Ticket_Booking->get_spaces(); ?>" />
 											</td>
@@ -268,7 +268,7 @@ function em_bookings_single(){
 											<?php foreach($EM_Event->get_bookings()->get_tickets()->tickets as $EM_Ticket): ?>
 												<?php if( !in_array($EM_Ticket->id, $shown_tickets) ): ?>
 												<tr>
-													<td class="ticket-type"><a class="row-title" href="<?php bloginfo ( 'wpurl' ); ?>/wp-admin/admin.php?page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket->id ?>"><?php echo $EM_Ticket->name ?></a></td>
+													<td class="ticket-type"><a class="row-title" href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket->id ?>"><?php echo $EM_Ticket->name ?></a></td>
 													<td>
 														<input name="em_tickets[<?php echo $EM_Ticket->id; ?>][spaces]" class="em-ticket-select" value="0" />
 													</td>
@@ -301,14 +301,14 @@ function em_bookings_single(){
 								<p>
 									<input type="submit" class="em-booking-submit" id="em-booking-submit" value="<?php _e('Modify Booking', 'dbem'); ?>" />
 								 	<input type='hidden' name='action' value='booking_save'/>
-								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->id; ?>'/>
+								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->id; ?>'/>
 								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_save'); ?>'/>
 								 	<em><?php _e('<strong>Note:</strong> ticket availability not taken into account (i.e. you can overbook). Confirmation email is not resent automatically.','dbem'); ?></em>
 								</p>
 								<table cellspacing="0" cellpadding="0">
 									<?php if( !get_option('em_booking_form_custom') ): ?>
-									<tr><td><strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td><td><?php echo $EM_Booking->comment; ?></td></tr>
+									<tr><td><strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td><td><?php echo $EM_Booking->booking_comment; ?></td></tr>
 									<?php foreach( $EM_Booking->get_custom() as $custom_option ){
 										?><tr><td><strong><?php echo $custom_option['name'] ?></strong></td><td><?php echo esc_html($custom_option['value']); ?></td></tr><?php
 									} ?>
@@ -404,4 +404,19 @@ function em_bookings_person(){
 	<?php
 }
 
+function em_printable_booking_report() {
+	global $EM_Event;
+	//check that user can access this page
+	if( isset($_GET['page']) && $_GET['page']=='events-manager-bookings' && isset($_GET['action']) && $_GET['action'] == 'bookings_report' && is_object($EM_Event)){
+		if( is_object($EM_Event) && !$EM_Event->can_manage('edit_events','edit_others_events') ){
+			?>
+			<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
+			<?php
+			return false;
+		}
+		em_locate_template('templates/bookings-event-printable.php', true);
+		die();
+	}
+} 
+add_action('admin_init', 'em_printable_booking_report');
 ?>
