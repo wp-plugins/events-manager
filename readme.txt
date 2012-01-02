@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.1
 Tested up to: 3.3
-Stable tag: 5.0
+Stable tag: 5.0.1
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -12,7 +12,7 @@ Fully featured event registration management including recurring events, locatio
 
 Events Manager is a full-featured event registration plugin for WordPress based on the principles of flexibility, reliability and powerful features!
 
-Version 5 now makes events and locations WordPress Custom Post Types, allowing for more possibilities than ever before! 
+Version 5 now makes events and locations WordPress Custom Post Types, allowing for more possibilities than ever before!
 
 * [Demo](http://demo.wp-events-plugin.com/documentation/)
 * [Documentation](http://wp-events-plugin.com/documentation/)
@@ -48,12 +48,13 @@ Version 5 now makes events and locations WordPress Custom Post Types, allowing f
 * And much more!
 
 = Go Pro =
-We have also released an add-on for Events Manager which not only demonstrates the flexibility of Events Manager, but also adds some important features: 
+We have also released an add-on for Events Manager which not only demonstrates the flexibility of Events Manager, but also adds some important features:
+
 * PayPal and Offline Payments
 * Custom booking forms
 * Faster support via private forums
 
-Events Manager was rewritten in 3.0 from the ground up with flexibility in mind. Through use of object oriented programming and exposing hooks and filters throughout the site, you can modify Events Manager just like you would Wordpress!
+For more information or to go pro, [visit our plugin website](http://wp-events-plugin.com).
 
 == Installation ==
 
@@ -95,6 +96,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.0.1 =
+* js correction preventing maps loading
+
 = 5.0 =
 * Events and Locations are now custom post types
 * categories are now custom taxonomies
@@ -103,7 +107,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * BuddyPress module rewritten using 1.5 BP_Component api
 * list pages split up, assign a page for each list
 * extended page formatting options
-* new time picker and improved datepicker 
+* new time picker and improved datepicker
 * various bugs fixed
 * streamlined templates and consolidated varoius list templates
 * event and location editors revamped, consolidated and basic CSS added for front-end forms

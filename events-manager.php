@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.0
+Version: 5.0.1
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -239,7 +239,7 @@ class EM_Scripts_and_Styles {
 		//Set time
 		$show24Hours = ( !preg_match("/en|sk|zh|us|uk/", $locale_code ) );	// Setting 12 hours format for those countries using it
 		//Maps Source
-		$maps_src = is_ssl() ? 'https://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
+		$is_ss = is_ssl() ? 'https://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&callback=em_maps&sensor=false';
 		//Localize
 		$em_localized_js = array(
 			'ajaxurl' => admin_url('admin-ajax.php'),
@@ -249,7 +249,7 @@ class EM_Scripts_and_Styles {
 			'bookingInProgress' => __('Please wait while the booking is being submitted.','dbem'),
 			'ui_css' => plugins_url('includes/css/jquery-ui-1.8.13.custom.css', __FILE__),
 			'show24hours' => $show24Hours,
-			'maps_src' => $maps_src
+			'is_ssl' => is_ssl()
 		);
 		$em_localized_js['event_reschedule_warning'] = __('Are you sure you want to reschedule this recurring event? If you do this, you will lose all booking information and the old recurring events will be deleted.', 'dbem');
 		$em_localized_js['disable_bookings_warning'] = __('Are you sure you want to disable bookings? If you do this and save, you will lose all previous bookings. If you wish to prevent further bookings, reduce the number of spaces available to the amount of bookings you currently have', 'dbem');
