@@ -58,7 +58,7 @@ $EM_Ticket = $EM_Tickets->get_first();
 						</div>
 					</div>
 				<?php else: ?>
-					<p class="em-booking-form-details"><?php _e('You must log in before you make a booking.','dbem'); ?></p>
+					<p class="em-booking-form-details"><?php echo get_option('dbem_booking_feedback_log_in'); ?></p>
 				<?php endif; ?>
 			</form>	
 			<?php 
