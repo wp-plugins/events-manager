@@ -111,9 +111,6 @@
 								</td>
 								<td>
 									<?php echo $location_summary; ?>
-									<?php if( is_object($category) && !empty($category->name) ) : ?>
-									<br/><span class="category"><strong><?php _e( 'Category', 'dbem' ); ?>: </strong><?php echo $category->name ?></span>
-									<?php endif; ?>
 								</td>
 						
 								<td>

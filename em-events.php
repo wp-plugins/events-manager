@@ -183,7 +183,7 @@ function em_content_page_title($original_content) {
 //add_filter ( 'single_post_title', 'em_content_page_title',1,1 ); //Filter for the wp_title of page, can directly reference page title function
 
 function em_content_wp_title($title, $sep = '', $seplocation = ''){
-	global $EM_Location;
+	global $EM_Location, $post;
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$edit_events_page_id = get_option( 'dbem_edit_events_page' );

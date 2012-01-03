@@ -54,7 +54,7 @@ function bp_em_format_notifications( $action, $item_id, $secondary_item_id, $tot
  */
 function bp_em_remove_screen_notifications() {
 	global $bp;
-	bp_core_delete_notifications_for_user_by_type( $bp->loggedin_user->id, $bp->events->slug, 'attending' );
+	bp_core_delete_notifications_by_type( $bp->loggedin_user->id, $bp->events->slug, 'attending' );
 }
 add_action( 'bp_em_my_events', 'bp_em_remove_screen_notifications' );
 add_action( 'xprofile_screen_display_profile', 'bp_em_remove_screen_notifications' );

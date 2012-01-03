@@ -50,6 +50,7 @@ jQuery(document).ready( function($){
 	$('.em-events-search-form select[name=country]').change( function(){
 		$('.em-events-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
 		$('.em-events-search select[name=region]').html('<option value="">'+EM.txt_loading+'</option>');
+		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
 		var data = {
 			action : 'search_states',
 			country : $(this).val(),
@@ -58,10 +59,13 @@ jQuery(document).ready( function($){
 		$('.em-events-search select[name=state]').load( EM.ajaxurl, data );
 		data.action = 'search_regions';
 		$('.em-events-search select[name=region]').load( EM.ajaxurl, data );
+		data.action = 'search_towns';
+		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
 	});
 
 	$('.em-events-search-form select[name=region]').change( function(){
 		$('.em-events-search select[name=state]').html('<option>'+EM.txt_loading+'</option>');
+		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
 		var data = {
 			action : 'search_states',
 			region : $(this).val(),
@@ -69,6 +73,20 @@ jQuery(document).ready( function($){
 			return_html : true
 		};
 		$('.em-events-search select[name=state]').load( EM.ajaxurl, data );
+		data.action = 'search_towns';
+		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+	});
+
+	$('.em-events-search-form select[name=state]').change( function(){
+		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+		var data = {
+			action : 'search_towns',
+			state : $(this).val(),
+			region : $('.em-events-search-form select[name=region]').val(),
+			country : $('.em-events-search-form select[name=country]').val(),
+			return_html : true
+		};
+		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
 	});
 	
 	//in order for this to work, you need the above classes to be present in your theme

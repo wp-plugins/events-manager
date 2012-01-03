@@ -19,8 +19,16 @@ class EM_Mailer {
 	function send($subject="no title",$body="No message specified", $receiver='') {
 		//TODO add an EM_Error global object, for this sort of error reporting. (@marcus like StatusNotice)
 		global $smtpsettings, $phpmailer, $cformsSettings;
-	
-		if( is_email($receiver) ){
+		if( is_array($receiver) ){
+			$receiver_emails = array();
+			foreach($receiver as $receiver_email){
+				$receiver_emails[] = is_email($receiver_email);
+			}
+			$emails_ok = !in_array(false, $receiver_emails);
+		}else{
+			$emails_ok = is_email($receiver);
+		}
+		if( $emails_ok ){
 			$this->load_phpmailer();
 			$mail = new EM_PHPMailer();
 			//$mail->SMTPDebug = true;
@@ -41,7 +49,13 @@ class EM_Mailer {
 			$mail->FromName = get_option('dbem_mail_sender_name'); // This is the from name in the email, you can put anything you like here
 			$mail->Body = $body;
 			$mail->Subject = $subject;  
-			$mail->AddAddress($receiver);  
+			if(is_array($receiver)){
+				foreach($receiver as $receiver_email){
+					$mail->AddAddress($receiver_email);	
+				}
+			}else{
+				$mail->AddAddress($receiver);	
+			}
 		
 			//Protocols
 			if ( get_option('dbem_rsvp_mail_send_method') == 'wp_mail' ){

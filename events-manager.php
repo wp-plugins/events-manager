@@ -28,7 +28,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 // Setting constants
-define('EM_VERSION', 5.01); //self expanatory
+define('EM_VERSION', 5.0113); //self expanatory
 define('EM_PRO_MIN_VERSION', 1.354); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 //EM_MS_GLOBAL
@@ -59,6 +59,7 @@ include("em-posts.php"); //set up events as posts
 //Template Tags & Template Logic
 include("em-actions.php");
 include("em-events.php");
+include("em-emails.php");
 include("em-functions.php");
 include("em-ical.php");
 include("em-shortcode.php");
@@ -211,9 +212,9 @@ class EM_Scripts_and_Styles {
 				add_action('admin_print_scripts', array('EM_Scripts_and_Styles','admin_scripts'));
 			}
 		}else{
-			self::public_enqueue();
+			add_action('init', array('EM_Scripts_and_Styles','public_enqueue'));
 		}
-		self::localize_script();
+		add_action('init', array('EM_Scripts_and_Styles','localize_script'));
 	}
 
 	/**
@@ -260,7 +261,7 @@ class EM_Scripts_and_Styles {
 			$em_localized_js['event_post_type'] = EM_POST_TYPE_EVENT;
 			$em_localized_js['location_post_type'] = EM_POST_TYPE_LOCATION;
 		}else{
-			$em_localized_js['txt_search'] = __('Search','dbem');;
+			$em_localized_js['txt_search'] = get_option('dbem_search_form_text_label',__('Search','dbem'));
 			$em_localized_js['txt_searching'] = __('Searching...','dbem');
 			$em_localized_js['txt_loading'] = __('Loading...','dbem');
 		}

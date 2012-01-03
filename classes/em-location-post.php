@@ -46,7 +46,7 @@ class EM_Location_Post {
 	
 	function parse_query( ){
 		global $wp_query;
-		if( $wp_query->query_vars['post_type'] == EM_POST_TYPE_LOCATION ){
+		if( !empty($wp_query->query_vars['post_type']) && $wp_query->query_vars['post_type'] == EM_POST_TYPE_LOCATION ){
 			if( is_admin() ){
 				$wp_query->query_vars['orderby'] = (!empty($_REQUEST['orderby'])) ? $_REQUEST['orderby']:'title';
 				$wp_query->query_vars['order'] = (!empty($_REQUEST['order'])) ? $_REQUEST['order']:'ASC';

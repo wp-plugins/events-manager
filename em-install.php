@@ -290,6 +290,8 @@ function em_add_options() {
 	$respondent_email_rejected_body_localizable = __("Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_NAME on #F #j, #Y has been rejected.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$respondent_email_cancelled_body_localizable = __("Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_NAME on #F #j, #Y has been cancelled.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$event_approved_email_body = __("Dear #_CONTACTNAME, <br/>Your event #_NAME on #F #j, #Y has been approved.<br/>You can view your event here: #_EVENTURL",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
+	$event_submitted_email_body = __("A new event has been submitted by #_CONTACTNAME.<br/>Name : #_EVENTNAME <br/>Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Please visit #_EDITEVENTURL to review this event for approval.",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
+	$event_submitted_email_body = str_replace('#_EDITEVENTURL', admin_url().'post.php?action=edit&post=#_EVENTPOSTID', $event_submitted_email_body);
 
 	$dbem_options = array(
 		//time formats
@@ -305,6 +307,20 @@ function em_add_options() {
 		'dbem_events_default_order' => 'ASC',
 		'dbem_events_default_limit' => 10,
 		'dbem_list_events_page' => 1,
+		//Event Search Options
+		'dbem_search_form_text' => 1,
+		'dbem_search_form_text_label' => __('Search','dbem'),
+		'dbem_search_form_dates' => 1,
+		'dbem_search_form_categories' => 1,
+		'dbem_search_form_categories_label' => __('All Categories','dbem'),
+		'dbem_search_form_countries' => 1,
+		'dbem_search_form_countries_label' => __('All Countries','dbem'),
+		'dbem_search_form_regions' => 1,
+		'dbem_search_form_regions_label' => __('All Regions','dbem'),
+		'dbem_search_form_states' => 1,
+		'dbem_search_form_states_label' => __('All States','dbem'),
+		'dbem_search_form_towns' => 0,
+		'dbem_search_form_towns_label' => __('All Cities/Towns','dbem'),
 		//Event Form and Anon Submissions
 		'dbem_events_form_editor' => 1,
 		'dbem_events_form_reshow' => 1,
@@ -313,6 +329,9 @@ function em_add_options() {
 		'dbem_events_anonymous_user' => 0,
 		'dbem_events_anonymous_result_success' => __('You have successfully submitted your event, which will be published pending approval.','dbem'),
 		//Event Emails
+		'dbem_event_submitted_email_admin' => '',
+		'dbem_event_submitted_email_subject' => __('Submitted Event Awaiting Approval', 'dbem'),
+		'dbem_event_submitted_email_body' => str_replace("<br/>", "\n\r", $event_submitted_email_body),
 		'dbem_event_approved_email_subject' => __("Event Approved",'dbem'). " - #_NAME" ,
 		'dbem_event_approved_email_body' => str_replace("<br/>", "\n\r", $event_approved_email_body),
 		//Event Formatting
@@ -482,7 +501,7 @@ function em_add_options() {
 			'dbem_default_contact_person' => 1, //admin
 			'dbem_bookings_notify_admin' => 0,
 			'dbem_bookings_contact_email' => 1,
-			'dbem_bookings_contact_email_subject' => __("New booking",'dbem'),
+			'dbem_bookings_contact_email_subject' => __("New Booking",'dbem'),
 			'dbem_bookings_contact_email_body' => str_replace("<br/>", "\n\r", $contact_person_email_body_localizable),
 			'dbem_contactperson_email_cancelled_subject' => __("Booking Cancelled",'dbem'),
 			'dbem_contactperson_email_cancelled_body' => str_replace("<br/>", "\n\r", $contact_person_email_cancelled_body_localizable),

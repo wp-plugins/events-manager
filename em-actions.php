@@ -436,19 +436,22 @@ function em_init_actions() {
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,6) == 'search' ){
 		if( $_REQUEST['action'] == 'search_states' ){
 			$results = array();
+			$conds = array();
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s", $_REQUEST['country']));
+				$conds[] = $wpdb->prepare("(location_country = '%s' OR location_country IS NULL )", $_REQUEST['country']);
 			}elseif( !empty($_REQUEST['region']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state AS value, location_country AS country, CONCAT(location_state, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' AND location_region=%s", $_REQUEST['region']));
+				$conds[] = $wpdb->prepare("( location_region = '%s' OR location_region IS NULL )", $_REQUEST['region']);
 			}
+			$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
+			$results = $wpdb->get_col("SELECT DISTINCT location_state FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' $cond ORDER BY location_state");
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
 				ob_start();
 				?>
-				<option value=''><?php _e('All States','dbem'); ?></option>
-				<?php			
+				<option value=''><?php echo get_option('dbem_search_form_states_label') ?></option>
+				<?php
 				foreach( $results as $result ){
-					echo "<option>{$result->value}</option>";
+					echo "<option>{$result}</option>";
 				}
 				$return = ob_get_clean();
 				echo apply_filters('em_ajax_search_states', $return);
@@ -458,17 +461,46 @@ function em_init_actions() {
 				exit();
 			}
 		}
-		if( $_REQUEST['action'] == 'search_regions' ){
+		if( $_REQUEST['action'] == 'search_towns' ){
+			$results = array();
+			$conds = array();
 			if( !empty($_REQUEST['country']) ){
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s", $_REQUEST['country']));
-			}else{
-				$results = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region AS value, location_country AS country, CONCAT(location_region, ', ', location_country) AS label FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != ''", $_REQUEST['country']));
+				$conds[] = $wpdb->prepare("(location_country = '%s' OR location_country IS NULL )", $_REQUEST['country']);
+			}elseif( !empty($_REQUEST['region']) ){
+				$conds[] = $wpdb->prepare("( location_region = '%s' OR location_region IS NULL )", $_REQUEST['region']);
+			}elseif( !empty($_REQUEST['state']) ){
+				$conds[] = $wpdb->prepare("(location_state = '%s' OR location_state IS NULL )", $_REQUEST['state']);
 			}
+			$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
+			$results = $wpdb->get_col("SELECT DISTINCT location_town FROM " . EM_LOCATIONS_TABLE ." WHERE location_town IS NOT NULL AND location_town != '' $cond  ORDER BY location_town");
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
 				ob_start();
 				?>
-				<option value=''><?php _e('All Regions','dbem'); ?></option>
+				<option value=''><?php echo get_option('dbem_search_form_towns_label'); ?></option>
+				<?php			
+				foreach( $results as $result ){
+					echo "<option>$result</option>";
+				}
+				$return = ob_get_clean();
+				echo apply_filters('em_ajax_search_towns', $return);
+				exit();
+			}else{
+				echo EM_Object::json_encode($results);
+				exit();
+			}
+		}
+		if( $_REQUEST['action'] == 'search_regions' ){
+			if( !empty($_REQUEST['country']) ){
+				$conds[] = $wpdb->prepare("(location_country = '%s' OR location_country IS NULL )", $_REQUEST['country']);
+			}
+			$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
+			$results = $wpdb->get_results("SELECT DISTINCT location_region AS value FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != '' $cond  ORDER BY location_region");
+			if( $_REQUEST['return_html'] ) {
+				//quick shortcut for quick html form manipulation
+				ob_start();
+				?>
+				<option value=''><?php echo get_option('dbem_search_form_regions_label'); ?></option>
 				<?php	
 				foreach( $results as $result ){
 					echo "<option>{$result->value}</option>";

@@ -866,11 +866,35 @@ function em_admin_options_page() {
 				</div> <!-- .postbox -->
 
 				<div  class="postbox " >
-				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Date/Time formats', 'dbem' ); ?> </span></h3>
+				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Search Form Options', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 	            	<table class="form-table">
-	            		<p><?php echo sprintf(__('Date and Time formats follow the <a href="%s">WordPress time formatting conventions</a>', 'dbem'), 'http://codex.wordpress.org/Formatting_Date_and_Time'); ?></p>
-						<?php
+					    <?php 
+						em_options_radio_binary ( __( 'Show text search?', 'dbem' ), 'dbem_search_form_text', '' );
+						em_options_input_text ( __( 'Text search label', 'dbem' ), 'dbem_search_form_text_label', __('Appears within the input box.','dbem') );
+						em_options_radio_binary ( __( 'Show date range?', 'dbem' ), 'dbem_search_form_dates', '' );
+						em_options_radio_binary ( __( 'Show categories?', 'dbem' ), 'dbem_search_form_categories', '' );
+						em_options_input_text ( __( 'Categories label', 'dbem' ), 'dbem_search_form_categories_label', __('Appears as the first default search option.','dbem') );
+						em_options_radio_binary ( __( 'Show countries?', 'dbem' ), 'dbem_search_form_countries', '' );
+						em_options_input_text ( __( 'All countries text', 'dbem' ), 'dbem_search_form_countries_label', __('Appears as the first default search option.','dbem') );
+						em_options_radio_binary ( __( 'Show regions?', 'dbem' ), 'dbem_search_form_regions', '' );
+						em_options_input_text ( __( 'All regions text', 'dbem' ), 'dbem_search_form_regions_label', __('Appears as the first default search option.','dbem') );
+						em_options_radio_binary ( __( 'Show states?', 'dbem' ), 'dbem_search_form_states', '' );
+						em_options_input_text ( __( 'All states text', 'dbem' ), 'dbem_search_form_states_label', __('Appears as the first default search option.','dbem') );
+						em_options_radio_binary ( __( 'Show towns/cities?', 'dbem' ), 'dbem_search_form_towns', '' );
+						em_options_input_text ( __( 'All towns/cities text', 'dbem' ), 'dbem_search_form_towns_label', __('Appears as the first default search option.','dbem') );
+					    echo $save_button;
+						?>
+					</table>
+				</div> <!-- . inside -->
+				</div> <!-- .postbox -->
+
+				<div  class="postbox " >
+				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Date/Time formats', 'dbem' ); ?> </span></h3>
+				<div class="inside">
+					<p><?php echo sprintf(__('Date and Time formats follow the <a href="%s">WordPress time formatting conventions</a>', 'dbem'), 'http://codex.wordpress.org/Formatting_Date_and_Time'); ?></p>
+					<table class="form-table">
+	            		<?php
 						em_options_input_text ( __( 'Date Format', 'dbem' ), 'dbem_date_format', sprintf(__('For use with the %s placeholder'),'<code>#_EVENTDATES</code>') );
 						em_options_input_text ( __( 'Date Seperator', 'dbem' ), 'dbem_dates_seperator', sprintf(__( 'For when start/end %s are present, this will seperate the two (include spaces here if necessary).', 'dbem' ), __('dates','dbem')) );
 						em_options_input_text ( __( 'Time Format', 'dbem' ), 'dbem_time_format', sprintf(__('For use with the %s placeholder'),'<code>#_EVENTTIMES</code>') );
@@ -1173,7 +1197,6 @@ function em_admin_options_page() {
 						<?php
 						em_options_input_text ( __( 'Booking rejected email subject', 'dbem' ), 'dbem_bookings_email_rejected_subject', __( "The subject of the email sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don't require approval.", 'dbem' ).$bookings_placeholder_tip );
 						em_options_textarea ( __( 'Booking rejected email', 'dbem' ), 'dbem_bookings_email_rejected_body', __( 'The body of the email which will be sent to the person if the booking is rejected. Not relevant if bookings don\'t require approval.', 'dbem' ).$bookings_placeholder_tip );
-						echo $save_button;
 						?>
 						<tr><td colspan='2'><h4><?php _e('Booking cancelled','dbem') ?></h4></td></tr>
 						<tr><td colspan='2'><?php echo __('This will be sent when a user cancels their booking.','dbem').$bookings_placeholder_tip ?></td></tr>
@@ -1181,6 +1204,7 @@ function em_admin_options_page() {
 						em_options_input_text ( __( 'Booking cancelled email subject', 'dbem' ), 'dbem_bookings_email_cancelled_subject', '' );
 						em_options_textarea ( __( 'Booking cancelled email', 'dbem' ), 'dbem_bookings_email_cancelled_body', '' );
 						?>
+						<?php echo $save_button; ?>
 					</table>
 				</div> <!-- . inside -->
 				</div> <!-- .postbox -->
@@ -1190,12 +1214,20 @@ function em_admin_options_page() {
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Email Templates', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 					<table class='form-table'>
+						<tr><td colspan='2'><strong><?php _e('Event Submitted','dbem') ?></strong></td></tr>
+						<tr><td colspan='2'><?php echo __('An email will be sent to the an administrator of your choice when an event is submitted and pending approval.','dbem').$bookings_placeholder_tip ?></td></tr>
+						<?php
+						em_options_input_text ( __( 'Administrator Email', 'dbem' ), 'dbem_event_submitted_email_admin', __('If left blank, no email will be sent. Seperate emails with commas for more than one email.','dbem') );
+						em_options_input_text ( __( 'Event approved subject', 'dbem' ), 'dbem_event_submitted_email_subject', '' );
+						em_options_textarea ( __( 'Event approved email', 'dbem' ), 'dbem_event_submitted_email_body', '' );
+						?>
 						<tr><td colspan='2'><strong><?php _e('Event Approved','dbem') ?></strong></td></tr>
 						<tr><td colspan='2'><?php echo __('An email will be sent to the event owner when their event is approved. Users requiring event approval do not have the <code>publish_events</code> capability.','dbem').$bookings_placeholder_tip ?></td></tr>
 						<?php
 						em_options_input_text ( __( 'Event approved subject', 'dbem' ), 'dbem_event_approved_email_subject', '' );
 						em_options_textarea ( __( 'Event approved email', 'dbem' ), 'dbem_event_approved_email_body', '' );
 						?>
+						<?php echo $save_button; ?>
 					</table>
 				</div> <!-- . inside -->
 				</div> <!-- .postbox -->

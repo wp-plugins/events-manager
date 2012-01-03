@@ -67,6 +67,33 @@ class EM_Location extends EM_Object {
 	 */
 	var $previous_status = 0;
 	
+	/* Post Variables - copied out of post object for easy IDE reference */
+	var $ID;
+	var $post_author;
+	var $post_date;
+	var $post_date_gmt;
+	var $post_title;
+	var $post_excerpt;
+	var $post_status;
+	var $comment_status;
+	var $ping_status;
+	var $post_password;
+	var $post_name;
+	var $to_ping;
+	var $pinged;
+	var $post_modified;
+	var $post_modified_gmt;
+	var $post_content_filtered;
+	var $post_parent;
+	var $guid;
+	var $menu_order;
+	var $post_type;
+	var $post_mime_type;
+	var $comment_count;
+	var $ancestors;
+	var $filter;
+	
+	
 	/**
 	 * Gets data from POST (default), supplied array, or from the database if an ID is supplied
 	 * @param $location_data
@@ -80,6 +107,7 @@ class EM_Location extends EM_Object {
 		//Get the post_id/location_id
 		$is_post = !empty($id->ID) && $id->post_type == EM_POST_TYPE_LOCATION;
 		if( $is_post || absint($id) > 0 ){ //only load info if $id is a number
+			$location_post = false;
 			if($search_by == 'location_id' && !$is_post){
 				//search by location_id, get post_id and blog_id (if in ms mode) and load the post
 				$results = $wpdb->get_row($wpdb->prepare("SELECT post_id, blog_id FROM ".EM_LOCATIONS_TABLE." WHERE location_id=%d",$id), ARRAY_A);
@@ -145,7 +173,7 @@ class EM_Location extends EM_Object {
 			foreach( $location_post as $key => $value ){ //merge the post data into location object
 				$this->$key = $value;
 			}
-			$this->previous_status = $this->event_status; //so we know about updates
+			$this->previous_status = $this->location_status; //so we know about updates
 			$this->get_status();
 		}
 	}
@@ -429,7 +457,7 @@ class EM_Location extends EM_Object {
 	 * Can the user manage this location? 
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false, $user_to_check = false ){
-		if( $this->event_id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
+		if( $this->location_id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
 			$user_to_check = get_option('dbem_events_anonymous_user');
 		}
 		return apply_filters('em_location_can_manage', parent::can_manage($owner_capability, $admin_capability, $user_to_check), $this, $owner_capability, $admin_capability, $user_to_check);
@@ -496,6 +524,9 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONID':
 					$replace = $this->location_id;
 					break;
+				case '#_LOCATIONPOSTID':
+					$replace = $this->location_id;
+					break;
 				case '#_NAME': //Depreciated
 				case '#_LOCATIONNAME':
 					$replace = $this->location_name;
@@ -546,8 +577,12 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONEXCERPT':	
 					$replace = $this->post_content;
 					if($result == "#_EXCERPT" || $result == "#_LOCATIONEXCERPT"){
-						$matches = explode('<!--more', $this->post_content);
-						$replace = $matches[0];
+						if( !empty($this->post_excerpt) ){
+							$replace = $this->post_excerpt;
+						}else{
+							$matches = explode('<!--more', $this->post_content);
+							$replace = $matches[0];
+						}
 					}
 					break;
 				case '#_LOCATIONIMAGEURL':

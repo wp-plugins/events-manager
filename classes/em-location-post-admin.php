@@ -28,7 +28,7 @@ class EM_Location_Post_Admin{
 	function admin_notices(){
 		//When editing
 		global $post, $EM_Notices;
-		if( $post->post_type == EM_POST_TYPE_LOCATION){
+		if( !empty($post) && $post->post_type == EM_POST_TYPE_LOCATION){
 		}
 	}
 	

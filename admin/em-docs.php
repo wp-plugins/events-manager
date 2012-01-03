@@ -70,7 +70,8 @@ function em_docs_init($force_init = false){
 				'events' => array(
 					'Event Details' => array(
 						'placeholders' => array(
-							'#_EVENTID' => array( 'desc' => 'Shows the event corresponding ID number in the database table.' ),
+							'#_EVENTID' => array( 'desc' => 'Shows the event ID number in the wp_em_events table.' ),
+							'#_EVENTPOSTID' => array( 'desc' => 'Shows the event corresponding Post ID in the wp_posts table.' ),
 							'#_EVENTNAME' => array( 'desc' => 'Displays the name of the event.' ),
 							'#_EVENTNOTES' => array( 'desc' => 'Shows the description of the event.' ),
 							'#_EVENTEXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your event description, only the content before this tag will show (currently, no read more link is added).' ),
@@ -167,7 +168,8 @@ function em_docs_init($force_init = false){
 					'Location Details' => array(
 						'desc' => '',
 						'placeholders' => array(
-							'#_LOCATIONID' => array( 'desc' => 'Displays the location ID number.' ),
+							'#_LOCATIONID' => array( 'desc' => 'Shows the event ID number in the wp_em_locations table.' ),
+							'#_LOCATIONPOSTID' => array( 'desc' => 'Shows the location corresponding Post ID in the wp_posts table.' ),
 							'#_LOCATIONNAME' => array( 'desc' => 'Displays the location name.' ),
 							'#_LOCATIONADDRESS' => array( 'desc' => 'Displays the address.' ),
 							'#_LOCATIONTOWN' => array( 'desc' => 'Displays the town.' ),

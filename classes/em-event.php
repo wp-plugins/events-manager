@@ -172,6 +172,32 @@ class EM_Event extends EM_Object{
 	 */
 	var $previous_status = 0;
 	
+	/* Post Variables - copied out of post object for easy IDE reference */
+	var $ID;
+	var $post_author;
+	var $post_date;
+	var $post_date_gmt;
+	var $post_title;
+	var $post_excerpt;
+	var $post_status;
+	var $comment_status;
+	var $ping_status;
+	var $post_password;
+	var $post_name;
+	var $to_ping;
+	var $pinged;
+	var $post_modified;
+	var $post_modified_gmt;
+	var $post_content_filtered;
+	var $post_parent;
+	var $guid;
+	var $menu_order;
+	var $post_type;
+	var $post_mime_type;
+	var $comment_count;
+	var $ancestors;
+	var $filter;
+	
 	/**
 	 * Initialize an event. You can provide event data in an associative array (using database table field names), an id number, or false (default) to create empty event.
 	 * @param mixed $event_data
@@ -559,6 +585,7 @@ class EM_Event extends EM_Object{
 					$this->event_id = $wpdb->insert_id;
 					update_post_meta($this->post_id, '_event_id', $this->event_id);
 					$this->feedback_message = sprintf(__('Successfully saved %s','dbem'),__('Event','dbem'));
+					$just_added_event = true; //make an easy hook
 				}
 			}else{
 				$this->previous_status = $this->get_previous_status();
@@ -589,6 +616,9 @@ class EM_Event extends EM_Object{
 			 	if( !$this->save_events() ){ //only save if post is 'published'
 					$this->add_error(__ ( 'Something went wrong with the recurrence update...', 'dbem' ). __ ( 'There was a problem saving the recurring events.', 'dbem' ));
 			 	}
+			}
+			if( !empty($just_added_event) ){
+				do_action('em_event_added', $this);
 			}
 		}
 		return apply_filters('em_event_save_meta', count($this->errors) == 0, $this);
@@ -1035,6 +1065,9 @@ class EM_Event extends EM_Object{
 				case '#_EVENTID':
 					$replace = $this->id;
 					break;
+				case '#_EVENTPOSTID':
+					$replace = $this->post_id;
+					break;
 				case '#_NAME': //depreciated
 				case '#_EVENTNAME':
 					$replace = $this->event_name;
@@ -1045,8 +1078,12 @@ class EM_Event extends EM_Object{
 				case '#_EVENTEXCERPT':
 					$replace = $this->post_content;
 					if($result == "#_EXCERPT" || $result == "#_EVENTEXCERPT"){
-						$matches = explode('<!--more', $this->post_content);
-						$replace = $matches[0];
+						if( !empty($this->post_excerpt) ){
+							$replace = $this->post_excerpt;
+						}else{
+							$matches = explode('<!--more', $this->post_content);
+							$replace = $matches[0];
+						}
 					}
 					break;
 				case '#_EVENTIMAGEURL':
@@ -1275,7 +1312,7 @@ class EM_Event extends EM_Object{
 		//for backwards compat and easy use, take over the individual category placeholders with the frirst cat in th elist.
 		$EM_Categories = $this->get_categories();
 		if( count($EM_Categories->categories) > 0 ){
-			$EM_Category = $EM_Categories->categories[0];
+			$EM_Category = $EM_Categories->get_first();
 		}	
 		if( empty($EM_Category) ) $EM_Category = new EM_Category();
 		$event_string = $EM_Category->output($event_string, $target);
@@ -1288,7 +1325,7 @@ class EM_Event extends EM_Object{
 	 ***********************************************************/
 	
 	/**
-	 * Depreciated, returns false as EM_Event is now only a single event. Use EM_Event_Recurrence
+	 * Returns true if this is a recurring event.
 	 * @return boolean
 	 */
 	function is_recurring(){

@@ -250,7 +250,7 @@ function em_get_event_form( $args = array() ){
  * @param array $args
  */
 function em_events_admin($args = array()){
-	global $EM_Event;
+	global $EM_Event, $bp;
 	if( is_user_logged_in() && current_user_can('edit_events') ){
 		if( !empty($_GET['action']) && $_GET['action']=='edit' ){
 			if( empty($_REQUEST['redirect_to']) ){
@@ -258,7 +258,6 @@ function em_events_admin($args = array()){
 			}
 			em_event_form();
 		}else{
-			$url = $bp->events->link . 'my-events/'; //url to this page
 			$limit = ( !empty($_REQUEST['limit']) ) ? $_REQUEST['limit'] : 20;//Default limit
 			$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 			$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
@@ -288,9 +287,9 @@ function em_events_admin($args = array()){
 				'events_count'=>$events_count, 
 				'future_count'=>$future_count,
 				'pending_count'=>$pending_count,
-				'url' => $url,
 				'page' => $page,
-				'limit' => $limit
+				'limit' => $limit,
+				'offset' => $offset
 			));
 		}
 	}else{
@@ -379,7 +378,8 @@ function em_locations_admin($args = array()){
 				'locations_all_count'=>$locations_all_count,
 				'url' => $url,
 				'page' => $page,
-				'limit' => $limit
+				'limit' => $limit,
+				'offset' => $offset
 			));
 		}
 	}else{

@@ -89,7 +89,7 @@ class EM_Booking extends EM_Object{
 			//Save into the object
 			$this->to_object($booking);
 			$this->get_person();
-			$this->timestamp = strtotime($booking['booking_date']);
+			$this->timestamp = !empty($booking['booking_date']) ? strtotime($booking['booking_date']):false;
 			//Add custom booking data
 			if( !empty($custom['meta_key']) && $custom['meta_key'] == 'booking_custom' && is_serialized($custom['meta_value']) ){
 				$this->custom = unserialize($custom['meta_value']);
@@ -294,9 +294,9 @@ class EM_Booking extends EM_Object{
 	 */
 	function get_event(){
 		global $EM_Event;
-		if( is_object($this->event) && get_class($this->event)=='EM_Event' && $this->event->id == $this->event_id ){
+		if( is_object($this->event) && get_class($this->event)=='EM_Event' && $this->event->event_id == $this->event_id ){
 			return $this->event;
-		}elseif( is_object($EM_Event) && ( (is_object($this->event) && $this->event->id == $this->event_id) || empty($this->booking_id)) ){
+		}elseif( is_object($EM_Event) && ( (is_object($this->event) && $this->event->event_id == $this->event_id) || empty($this->booking_id)) ){
 			$this->event = $EM_Event;
 		}else{
 			$this->event = new EM_Event($this->event_id, 'event_id');

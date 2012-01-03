@@ -119,7 +119,7 @@ class EM_Categories extends EM_Object implements Iterator{
 			$results = get_terms( EM_TAXONOMY_CATEGORY, $term_args);		
 		
 			//If we want results directly in an array, why not have a shortcut here? We don't use this in code, so if you're using it and filter the em_categories_get hook, you may want to do this one too.
-			if( $args['array'] == true ){
+			if( !empty($args['array']) ){
 				return apply_filters('em_categories_get_array', $results, $args);
 			}
 			
@@ -206,6 +206,13 @@ class EM_Categories extends EM_Object implements Iterator{
 			}			
 		}
 		return apply_filters('em_categories_has', false, $search, $this);
+	}
+	
+	function get_first(){
+		foreach($this->categories as $EM_Category){
+			return $EM_Category;
+		}
+		return false;
 	}
 	
 	function get_ids(){

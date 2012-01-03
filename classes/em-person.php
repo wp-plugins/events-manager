@@ -29,6 +29,7 @@ class EM_Person extends WP_User{
 	
 	function get_bookings($ids_only = false){
 		global $wpdb;
+		$blog_condition = '';
 		if( is_multisite() ){
 			if( !is_main_site() ){
 				//not the main blog, force single blog search
@@ -38,7 +39,7 @@ class EM_Person extends WP_User{
 			}
 		}		
 		$EM_Booking = new EM_Booking(); //empty booking for fields
-		$results = $wpdb->get_results("SELECT b.".implode(', b.', array_keys($EM_Booking->fields))." FROM ".EM_BOOKINGS_TABLE." b, ".EM_EVENTS_TABLE." e WHERE e.event_id=b.event_id AND person_id={$this->id} {$blog_condition} ORDER BY event_start_date DESC",ARRAY_A);
+		$results = $wpdb->get_results("SELECT b.".implode(', b.', array_keys($EM_Booking->fields))." FROM ".EM_BOOKINGS_TABLE." b, ".EM_EVENTS_TABLE." e WHERE e.event_id=b.event_id AND person_id={$this->ID} {$blog_condition} ORDER BY event_start_date DESC",ARRAY_A);
 		$bookings = array();
 		if($ids_only){
 			foreach($results as $booking_data){

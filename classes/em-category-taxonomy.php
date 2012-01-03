@@ -21,7 +21,10 @@ class EM_Category_Taxonomy{
 				$wp_query->posts = array();
 				$wp_query->posts[0] = new stdClass();
 				$wp_query->posts[0]->post_title = $EM_Category->output(get_option('dbem_category_page_title_format'));
-				$wp_query->posts[0]->post_content = '';
+				$post_array = array('ID', 'post_author', 'post_date','post_date_gmt','post_content','post_excerpt','post_status','comment_status','ping_status','post_password','post_name','to_ping','pinged','post_modified','post_modified_gmt','post_content_filtered','post_parent','guid','menu_order','post_type','post_mime_type','comment_count','filter');
+				foreach($post_array as $post_array_item){
+					$wp_query->posts[0]->$post_array_item = '';
+				}
 				$wp_query->post = $wp_query->posts[0];
 				$wp_query->post_count = 1;
 				$wp_query->found_posts = 1;
