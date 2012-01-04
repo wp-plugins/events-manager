@@ -119,7 +119,7 @@ class EM_Booking extends EM_Object{
 		do_action('em_booking_save_pre',$this);
 		if( $this->validate() ){
 			if( $this->can_manage() ){
-				$this->person_id = $this->get_person()->ID;			
+				$this->person_id = (empty($this->person_id)) ? $this->get_person()->ID : $this->person_id;			
 				//Step 1. Save the booking
 				$data = $this->to_array();
 				$data['booking_meta'] = serialize($data['booking_meta']);
@@ -135,7 +135,7 @@ class EM_Booking extends EM_Object{
 				}else{
 					$update = false;
 					$result = $wpdb->insert($table, $data, $this->get_types($data));
-				    $this->id = $wpdb->insert_id;  
+				    $this->booking_id = $wpdb->insert_id;  
 					$this->feedback_message = __('Your booking has been recorded','dbem'); 
 				}
 				//Step 2. Insert ticket bookings for this booking id if no errors so far
@@ -513,15 +513,15 @@ class EM_Booking extends EM_Object{
 					break;
 				case '#_RESPNAME' : //Depreciated
 				case '#_BOOKINGNAME':
-					$replace = $this->person->get_name();
+					$replace = $this->get_person()->get_name();
 					break;
 				case '#_RESPEMAIL' : //Depreciated
 				case '#_BOOKINGEMAIL':
-					$replace = $this->person->user_email;
+					$replace = $this->get_person()->user_email;
 					break;
 				case '#_RESPPHONE' : //Depreciated
 				case '#_BOOKINGPHONE':
-					$replace = $this->person->phone;
+					$replace = $this->get_person()->phone;
 					break;
 				case '#_BOOKINGSPACES':
 					$replace = $this->get_spaces();
@@ -557,28 +557,22 @@ class EM_Booking extends EM_Object{
 				case '#_BOOKINGTICKETTAX':
 					$replace = em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,false)*(get_option('dbem_bookings_tax')/100),2);
 					break;
+				case '#_BOOKINGTICKETPRICE':
+					$replace = em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(),2);
+					break;
 				case '#_BOOKINGTICKETS':
 					ob_start();
 					em_locate_template('emails/bookingtickets.php', true, array('EM_Booking'=>$this));
 					$replace = ob_get_clean();
 					break;
-				case '#_BOOKINGTICKETPRICE':
-					$replace = em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(),2);
-					break;
 				default:
-					$no_match = true;
+					$replace = $full_result;
 					break;
 			}
-			if( empty($no_match) ){ //if true, we've got a placeholder that needs replacing
-				$replace = apply_filters('em_booking_output_placeholder', $replace, $this, $full_result, $target);
-				$output_string = str_replace($full_result, $replace , $output_string );
-			}else{
-				$custom_replace = apply_filters('em_booking_output_placeholder', $replace, $this, $full_result, $target);
-				if($custom_replace !== $replace){
-					$output_string = str_replace($full_result, $custom_replace , $output_string );
-				}
-			}
+			$replace = apply_filters('em_booking_output_placeholder', $replace, $this, $full_result, $target);
+			$output_string = str_replace($full_result, $replace , $output_string );
 		}
+		$output_string = $this->get_event()->output($output_string, $target);
 		return apply_filters('em_booking_output', $output_string, $this, $format, $target);	
 	}
 	
@@ -616,8 +610,8 @@ class EM_Booking extends EM_Object{
 				return true;
 			}
 			
-			$booker_subject = $EM_Event->output($this->output($booker_subject, 'email'), 'email');
-			$booker_body = $EM_Event->output($this->output($booker_body, 'email'), 'email');
+			$booker_subject = $this->output($booker_subject, 'email');
+			$booker_body = $this->output($booker_body, 'email');
 			if( get_option('dbem_smtp_html') ){
 				$booker_body = nl2br($booker_body);
 			}
@@ -629,8 +623,8 @@ class EM_Booking extends EM_Object{
 			//Send admin/contact emails
 			if( (get_option('dbem_bookings_approval') == 0 || in_array($this->booking_status, array(0,3,4,5)) || (in_array($this->previous_status, array(4)) && $this->booking_status == 1)) && (get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
 				//Only gets sent if this is a pending booking, unless approvals are disabled.
-				$contact_subject = $EM_Event->output($this->output($contact_subject, 'email'), 'email');
-				$contact_body = $EM_Event->output($this->output($contact_body, 'email'), 'email'); 
+				$contact_subject = $this->output($contact_subject, 'email');
+				$contact_body = $this->output($contact_body, 'email'); 
 				if( get_option('dbem_smtp_html') ){
 					$contact_body = nl2br($contact_body);
 				}
