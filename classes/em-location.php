@@ -517,7 +517,6 @@ class EM_Location extends EM_Object {
 		$location_string = $format;
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
 		foreach($placeholders[1] as $key => $result) {
-			$match = true;
 			$replace = '';
 			$full_result = $placeholders[0][$key];
 			switch( $result ){
@@ -640,18 +639,11 @@ class EM_Location extends EM_Object {
 					}
 					break;
 				default:
-					$match = false;
+					$match = $full_result;
 					break;
 			}
-			if($match){ //if true, we've got a placeholder that needs replacing
-				$replace = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
-				$location_string = str_replace($full_result, $replace , $location_string );
-			}else{
-				$custom_replace = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
-				if($custom_replace != $replace){
-					$location_string = str_replace($full_result, $custom_replace , $location_string );
-				}
-			}
+			$replace = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target);
+			$location_string = str_replace($full_result, $replace , $location_string );
 		}
 		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
 		$location_string = str_replace('#_LOCATION', apply_filters($name_filter, $this->location_name) , $location_string ); //Depreciated

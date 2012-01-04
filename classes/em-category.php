@@ -119,7 +119,6 @@ class EM_Category extends EM_Object {
 		$category_string = $format;		 
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
 		foreach($placeholders[1] as $key => $result) {
-			$match = true;
 			$replace = '';
 			$full_result = $placeholders[0][$key];
 			switch( $result ){
