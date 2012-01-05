@@ -907,7 +907,7 @@ class EM_Event extends EM_Object{
 				if( empty($link))
 					$link = get_admin_url($this->blog_id, "post.php?post={$this->post_id}&action=edit");
 			}else{
-				if( get_option('dbem_edit_events_page') ){
+				if( get_option('dbem_edit_events_page') && !is_admin() ){
 					$link = em_add_get_params(get_permalink(get_option('dbem_edit_events_page')), array('action'=>'edit','event_id'=>$this->event_id), false);
 				}
 				if( empty($link))
@@ -918,7 +918,7 @@ class EM_Event extends EM_Object{
 	}
 	
 	function get_bookings_url(){
-		if( get_option('dbem_edit_bookings_page') ){
+		if( get_option('dbem_edit_bookings_page') && !is_admin() ){
 			$my_bookings_page = get_permalink(get_option('dbem_edit_bookings_page'));
 			$bookings_link = em_add_get_params($my_bookings_page, array('event_id'=>$this->event_id), false);
 		}else{
@@ -1227,7 +1227,7 @@ class EM_Event extends EM_Object{
 					if( $this->can_manage('manage_bookings','manage_others_bookings') ){
 						$bookings_link = esc_url($this->get_bookings_url());
 						if($result == '#_BOOKINGSLINK'){
-							$replace = '<a href="'.$bookings_link.'" title="'.esc_attr($bookings_link).'">'.esc_html($this->event_name).'</a>';
+							$replace = '<a href="'.$bookings_link.'" title="'.esc_attr($this->event_name).'">'.esc_html($this->event_name).'</a>';
 						}else{
 							$replace = $bookings_link;	
 						}
@@ -1314,6 +1314,7 @@ class EM_Event extends EM_Object{
 		if( count($EM_Categories->categories) > 0 ){
 			$EM_Category = $EM_Categories->get_first();
 		}	
+		
 		if( empty($EM_Category) ) $EM_Category = new EM_Category();
 		$event_string = $EM_Category->output($event_string, $target);
 		

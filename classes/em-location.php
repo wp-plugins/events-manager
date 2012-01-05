@@ -639,7 +639,7 @@ class EM_Location extends EM_Object {
 					}
 					break;
 				default:
-					$match = $full_result;
+					$replace = $full_result;
 					break;
 			}
 			$replace = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target);

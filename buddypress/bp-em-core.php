@@ -189,27 +189,29 @@ function bp_em_load_core_component() {
 }
 add_action( 'bp_loaded', 'bp_em_load_core_component' );
 
-/*
- * Links and URL Rewriting
- */
-function em_bp_rewrite_edit_url($url, $EM_Event){
-	global $bp;
-	return $bp->events->link.'my-events/?action=edit&event_id='.$EM_Event->event_id;
+if( !is_admin() ){
+	/*
+	 * Links and URL Rewriting
+	 */
+	function em_bp_rewrite_edit_url($url, $EM_Event){
+		global $bp;
+		return $bp->events->link.'my-events/?action=edit&event_id='.$EM_Event->event_id;
+	}
+	add_filter('em_event_get_edit_url','em_bp_rewrite_edit_url',10,2);
+	
+	
+	function em_bp_rewrite_bookings_url($url, $EM_Event){
+		global $bp;
+		return $bp->events->link.'my-bookings/?event_id='.$EM_Event->event_id;
+	}
+	add_filter('em_event_get_bookings_url','em_bp_rewrite_bookings_url',10,2);
+	
+	function em_bp_rewrite_edit_location_url($url, $EM_Location){
+		global $bp;
+		return $bp->events->link.'my-locations/?location_id='.$EM_Location->location_id;
+	}
+	add_filter('em_location_get_edit_url','em_bp_rewrite_edit_location_url',10,2);
 }
-add_filter('em_event_get_edit_url','em_bp_rewrite_edit_url',10,2);
-
-
-function em_bp_rewrite_bookings_url($url, $EM_Event){
-	global $bp;
-	return $bp->events->link.'my-bookings/?event_id='.$EM_Event->event_id;
-}
-add_filter('em_event_get_bookings_url','em_bp_rewrite_bookings_url',10,2);
-
-function em_bp_rewrite_edit_location_url($url, $EM_Location){
-	global $bp;
-	return $bp->events->link.'my-locations/?location_id='.$EM_Location->location_id;
-}
-add_filter('em_location_get_edit_url','em_bp_rewrite_edit_location_url',10,2);
 
 /**
  * Delete events when you delete a user.
