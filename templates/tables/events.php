@@ -77,10 +77,10 @@
 								$class .= " pending";
 							}					
 							?>
-							<tr class="event <?php echo trim($class); ?>" <?php echo $style; ?> id="event_<?php echo $event->id ?>">
+							<tr class="event <?php echo trim($class); ?>" <?php echo $style; ?> id="event_<?php echo $event->event_id ?>">
 								<?php /*
 								<td>
-									<input type='checkbox' class='row-selector' value='<?php echo $event->id; ?>' name='events[]' />
+									<input type='checkbox' class='row-selector' value='<?php echo $event->event_id; ?>' name='events[]' />
 								</td>
 								*/ ?>
 								<td>

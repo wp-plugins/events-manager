@@ -18,9 +18,9 @@ global $EM_Event, $post;
 	 	    
 	 	 	<div id='major-publishing-actions'>  
 				<div id='publishing-action'> 
-					<a id='printable' href='<?php echo EM_ADMIN_URL ."&amp;page=events-manager-bookings&event_id=".$EM_Event->id ?>'><?php _e('manage bookings','dbem')?></a><br />
-					<a target='_blank' href='<?php echo EM_ADMIN_URL ."&amp;page=events-manager-bookings&action=bookings_report&event_id=".$EM_Event->id ?>'><?php _e('printable view','dbem')?></a>
-					<a href='<?php echo EM_ADMIN_URL ."&amp;page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->id ?>'><?php _e('export csv','dbem')?></a>
+					<a id='printable' href='<?php echo EM_ADMIN_URL ."&amp;page=events-manager-bookings&event_id=".$EM_Event->event_id ?>'><?php _e('manage bookings','dbem')?></a><br />
+					<a target='_blank' href='<?php echo EM_ADMIN_URL ."&amp;page=events-manager-bookings&action=bookings_report&event_id=".$EM_Event->event_id ?>'><?php _e('printable view','dbem')?></a>
+					<a href='<?php echo EM_ADMIN_URL ."&amp;page=events-manager-bookings&action=export_csv&event_id=".$EM_Event->event_id ?>'><?php _e('export csv','dbem')?></a>
 					<?php do_action('em_admin_event_booking_options'); ?>
 					<br class='clear'/>             
 		        </div>

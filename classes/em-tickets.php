@@ -88,7 +88,7 @@ class EM_Tickets extends EM_Object implements Iterator{
 		$result = false;
 		$ticket_ids = array();
 		foreach( $this->tickets as $EM_Ticket ){
-			$ticket_ids[] = $EM_Ticket->id;
+			$ticket_ids[] = $EM_Ticket->ticket_id;
 		}
 		//check that tickets don't have bookings
 		if(count($ticket_ids) > 0){

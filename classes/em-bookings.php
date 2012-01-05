@@ -117,7 +117,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get_event(){
 		global $EM_Event;
-		if( is_object($EM_Event) && $EM_Event->id == $this->event_id ){
+		if( is_object($EM_Event) && $EM_Event->event_id == $this->event_id ){
 			return $EM_Event;
 		}else{
 			if( is_numeric($this->event_id) && $this->event_id > 0 ){
@@ -181,7 +181,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function ticket_exists($ticket_id){
 		$EM_Tickets = $this->get_tickets();
 		foreach( $EM_Tickets->tickets as $EM_Ticket){
-			if($EM_Ticket->id == $ticket_id){
+			if($EM_Ticket->ticket_id == $ticket_id){
 				return apply_filters('em_bookings_ticket_exists',true, $EM_Ticket, $this);
 			}
 		}

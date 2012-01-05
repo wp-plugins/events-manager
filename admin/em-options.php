@@ -321,7 +321,7 @@ function em_admin_options_page() {
 							$location_options[0] = __('no default location','dbem');
 							$EM_Locations = EM_Locations::get();
 							foreach($EM_Locations as $EM_Location){
-						 		$location_options[$EM_Location->id] = $EM_Location->name;
+						 		$location_options[$EM_Location->location_id] = $EM_Location->location_name;
 						 	}
 							em_options_select ( __( 'Default Location', 'dbem' ), 'dbem_default_location', $location_options, __( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
 							

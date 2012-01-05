@@ -157,6 +157,7 @@ class EM_Booking extends EM_Object{
 				if ( count($this->errors) == 0  && $mail ) {
 					$this->email();
 				}
+				$this->compat_keys();
 				return apply_filters('em_booking_save', ( count($this->errors) == 0 ), $this);
 			}else{
 				$this->feedback_message = __('There was a problem saving the booking.', 'dbem');
@@ -212,7 +213,7 @@ class EM_Booking extends EM_Object{
 			foreach( $_REQUEST['em_tickets'] as $ticket_id => $values){
 				//make sure ticket exists
 				if( !empty($values['spaces']) || $override_availability ){
-					$args = array('ticket_id'=>$ticket_id, 'ticket_booking_spaces'=>$values['spaces'], 'booking_id'=>$this->id);
+					$args = array('ticket_id'=>$ticket_id, 'ticket_booking_spaces'=>$values['spaces'], 'booking_id'=>$this->booking_id);
 					if($this->get_event()->get_bookings()->ticket_exists($ticket_id)){
 							$EM_Ticket_Booking = new EM_Ticket_Booking($args);
 							$EM_Ticket_Booking->booking = $this;
@@ -226,6 +227,7 @@ class EM_Booking extends EM_Object{
 			$this->get_spaces(true);
 			$this->get_price(true, false, false);
 			$this->get_person();
+			$this->compat_keys();
 		}
 		return apply_filters('em_booking_get_post',$this->validate(),$this);
 	}

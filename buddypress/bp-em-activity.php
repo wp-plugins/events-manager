@@ -48,7 +48,7 @@ function bp_em_record_activity_event_save( $result, $EM_Event ){
 				'action' => sprintf(__('%s added the event %s','dbem'), "<a href='".$member_link."/'>".$user->display_name."</a>", $EM_Event->output('#_EVENTLINK') ),
 				'primary_link' => $EM_Event->output('#_EVENTURL'),
 				'type' => 'new_event',
-				'item_id' => $EM_Event->id,
+				'item_id' => $EM_Event->event_id,
 			));
 		}else{
 			//tis a group event
@@ -102,7 +102,7 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 				'action' => $action,
 				'primary_link' => $EM_Event->output('#_EVENTURL'),
 				'type' => 'new_booking',
-				'item_id' => $EM_Event->id,
+				'item_id' => $EM_Event->event_id,
 				'secondary_item_id' => $EM_Booking->booking_id
 			));
 			//group activity

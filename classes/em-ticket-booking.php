@@ -60,7 +60,7 @@ class EM_Ticket_Booking extends EM_Object{
 		//First the person
 		if($this->validate()){			
 			//Now we save the ticket
-			$this->booking_id = $this->get_booking()->id; //event wouldn't exist before save, so refresh id
+			$this->booking_id = $this->get_booking()->booking_id; //event wouldn't exist before save, so refresh id
 			$data = $this->to_array(true); //add the true to remove the nulls
 			if($this->ticket_booking_id != ''){
 				if($this->get_spaces() > 0){
@@ -85,6 +85,7 @@ class EM_Ticket_Booking extends EM_Object{
 				$this->feedback_message = __('There was a problem saving the ticket booking.', 'dbem');
 				$this->errors[] = __('There was a problem saving the ticket booking.', 'dbem');
 			}
+			$this->compat_keys();
 			return apply_filters('em_ticket_booking_save', ( count($this->errors) == 0 ), $this);
 		}else{
 			$this->feedback_message = __('There was a problem saving the ticket booking.', 'dbem');
@@ -163,9 +164,9 @@ class EM_Ticket_Booking extends EM_Object{
 	 */
 	function get_ticket(){
 		global $EM_Ticket;
-		if( is_object($this->ticket) && get_class($this->ticket)=='EM_Ticket' && $this->ticket->id == $this->ticket_id ){
+		if( is_object($this->ticket) && get_class($this->ticket)=='EM_Ticket' && $this->ticket->ticket_id == $this->ticket_id ){
 			return $this->ticket;
-		}elseif( is_object($EM_Ticket) && $EM_Ticket->id == $this->ticket_id ){
+		}elseif( is_object($EM_Ticket) && $EM_Ticket->ticket_id == $this->ticket_id ){
 			$this->ticket = $EM_Ticket;
 		}else{
 			$this->ticket = new EM_Ticket($this->ticket_id);

@@ -98,13 +98,14 @@ class EM_Ticket extends EM_Object{
 			}else{
 				//TODO better error handling
 				$result = $wpdb->insert($table, $data, $this->get_types($data));
-			    $this->ticket_id = $wpdb->insert_id;  
+			    $this->ticket_id = $wpdb->insert_id;
 				$this->feedback_message = __('Ticket created','dbem'); 
 			}
 			if( $result === false ){
 				$this->feedback_message = __('There was a problem saving the ticket.', 'dbem');
 				$this->errors[] = __('There was a problem saving the ticket.', 'dbem');
 			}
+			$this->compat_keys();
 			return apply_filters('em_ticket_save', ( count($this->errors) == 0 ), $this);
 		}else{
 			$this->feedback_message = __('There was a problem saving the ticket.', 'dbem');
@@ -134,6 +135,7 @@ class EM_Ticket extends EM_Object{
 		$this->ticket_min = ( !empty($_POST['ticket_min']) ) ? $_POST['ticket_min']:'';
 		$this->ticket_max = ( !empty($_POST['ticket_max']) ) ? $_POST['ticket_max']:'';
 		$this->ticket_spaces = ( !empty($_POST['ticket_spaces']) ) ? $_POST['ticket_spaces']:'';
+		$this->compat_keys();
 		do_action('em_ticket_get_post', $this);
 	}	
 	

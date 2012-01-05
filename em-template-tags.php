@@ -227,7 +227,7 @@ function em_event_form($args = array()){
 				$EM_Category = new EM_Category($default_cat);
 				$EM_Event->get_categories()->categories[] = $EM_Category;
 			}
-			if( is_numeric($default_loc) && $default_loc > 0 && ( empty($EM_Event->location->id) && empty($EM_Event->location->name) && empty($EM_Event->location->address) && empty($EM_Event->location->town) ) ){
+			if( is_numeric($default_loc) && $default_loc > 0 && ( empty($EM_Event->get_location()->location_id) && empty($EM_Event->get_location()->location_name) && empty($EM_Event->get_location()->location_address) && empty($EM_Event->get_location()->location_town) ) ){
 				$EM_Event->location_id = $default_loc;
 				$EM_Event->location = new EM_Location($default_loc);
 			}

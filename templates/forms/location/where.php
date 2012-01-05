@@ -19,19 +19,19 @@ global $EM_Location, $post;
 		<tr>
 			<th><?php _e ( 'State/County:', 'dbem' )?>&nbsp;</th>
 			<td>
-				<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Location->state, ENT_QUOTES); ?>" />
+				<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Location->location_state, ENT_QUOTES); ?>" />
 			</td>
 		</tr>
 		<tr>
 			<th><?php _e ( 'Postcode:', 'dbem' )?>&nbsp;</th>
 			<td>
-				<input id="location-postcode" type="text" name="location_postcode" value="<?php echo htmlspecialchars($EM_Location->postcode, ENT_QUOTES); ?>" />
+				<input id="location-postcode" type="text" name="location_postcode" value="<?php echo htmlspecialchars($EM_Location->location_postcode, ENT_QUOTES); ?>" />
 			</td>
 		</tr>
 		<tr>
 			<th><?php _e ( 'Region:', 'dbem' )?>&nbsp;</th>
 			<td>
-				<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Location->region, ENT_QUOTES); ?>" />
+				<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Location->location_region, ENT_QUOTES); ?>" />
 				<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
 			</td>
 		</tr>
@@ -40,7 +40,7 @@ global $EM_Location, $post;
 			<td>
 				<select id="location-country" name="location_country">
 					<?php foreach(em_get_countries(__('none selected','dbem')) as $country_key => $country_name): ?>
-					<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Location->country === $country_key || ($EM_Location->country == '' && $EM_Location->id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
+					<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Location->location_country === $country_key || ($EM_Location->location_country == '' && $EM_Location->location_id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
 					<?php endforeach; ?>
 				</select> <?php echo $required; ?>
 			</td>
@@ -56,7 +56,7 @@ global $EM_Location, $post;
 	<?php endif; ?>
 	<br style="clear:both; " />
 	<div id="location_coordinates" style='display: none;'>
-		<input id='location-latitude' name='location_latitude' type='text' value='<?php echo $EM_Location->latitude; ?>' size='15' />
-		<input id='location-longitude' name='location_longitude' type='text' value='<?php echo $EM_Location->longitude; ?>' size='15' />
+		<input id='location-latitude' name='location_latitude' type='text' value='<?php echo $EM_Location->location_latitude; ?>' size='15' />
+		<input id='location-longitude' name='location_longitude' type='text' value='<?php echo $EM_Location->location_longitude; ?>' size='15' />
 	</div>
 </div>

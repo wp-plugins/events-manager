@@ -51,10 +51,10 @@
 			<?php foreach ($locations as $EM_Location) : ?>	
 				<?php if( $i >= $offset && $i <= $offset+$limit ): ?>
 					<tr>
-						<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Location->id ?>' name='locations[]'/></td>
+						<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Location->location_id ?>' name='locations[]'/></td>
 						<td>
 							<?php if( $EM_Location->can_manage('edit_events','edit_others_events') ): ?>
-							<a href='<?php echo esc_url($EM_Location->get_edit_url()); ?>'><?php echo $EM_Location->name ?></a>
+							<a href='<?php echo esc_url($EM_Location->get_edit_url()); ?>'><?php echo $EM_Location->location_name ?></a>
 							<?php else: ?>
 							<strong><?php echo $EM_Location->location_name ?></strong> - 
 							<a href='<?php echo $EM_Location->output('#_LOCATIONURL'); ?>'><?php _e('View') ?></a>

@@ -213,6 +213,7 @@ class EM_Location extends EM_Object {
 			$this->blog_id = get_current_blog_id();
 		}
 		$result = $validate ? $this->validate_meta():true; //post returns null
+		$this->compat_keys();
 		return apply_filters('em_location_get_post_meta',$result,$this);
 	}
 	
@@ -346,6 +347,7 @@ class EM_Location extends EM_Object {
 		}else{
 			$this->add_error( sprintf(__('You do not have permission to create/edit %s.','dbem'), __('locations','dbem')) );
 		}
+		$this->compat_keys();
 		return apply_filters('em_location_save_meta', count($this->errors) == 0, $this);
 	}
 	

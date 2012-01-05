@@ -621,6 +621,7 @@ class EM_Event extends EM_Object{
 				do_action('em_event_added', $this);
 			}
 		}
+		$this->compat_keys();
 		return apply_filters('em_event_save_meta', count($this->errors) == 0, $this);
 	}
 	
@@ -709,8 +710,8 @@ class EM_Event extends EM_Object{
 		do_action('em_event_delete_bookings_pre', $this);
 		$result = false;
 		if( $this->can_manage('manage_bookings','manage_others_bookings') ){
-			$result_bt = $wpdb->query( $wpdb->prepare("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id IN (SELECT booking_id FROM ".EM_BOOKINGS_TABLE." WHERE event_id=%d)", $this->id) );
-			$result = $wpdb->query( $wpdb->prepare("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id=%d", $this->id) );
+			$result_bt = $wpdb->query( $wpdb->prepare("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id IN (SELECT booking_id FROM ".EM_BOOKINGS_TABLE." WHERE event_id=%d)", $this->event_id) );
+			$result = $wpdb->query( $wpdb->prepare("DELETE FROM ".EM_BOOKINGS_TABLE." WHERE event_id=%d", $this->event_id) );
 		}
 		return apply_filters('em_event_delete_bookings', $result !== false && $result_bt !== false, $this);
 	}
@@ -723,8 +724,8 @@ class EM_Event extends EM_Object{
 		do_action('em_event_delete_tickets_pre', $this);
 		$result = false;
 		if( $this->can_manage('manage_bookings','manage_others_bookings') ){
-			$result_bt = $wpdb->query( $wpdb->prepare("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_id IN (SELECT ticket_id FROM ".EM_TICKETS_TABLE." WHERE event_id=%d)", $this->id) );
-			$result = $wpdb->query( $wpdb->prepare("DELETE FROM ".EM_TICKETS_TABLE." WHERE event_id=%d", $this->id) );
+			$result_bt = $wpdb->query( $wpdb->prepare("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE ticket_id IN (SELECT ticket_id FROM ".EM_TICKETS_TABLE." WHERE event_id=%d)", $this->event_id) );
+			$result = $wpdb->query( $wpdb->prepare("DELETE FROM ".EM_TICKETS_TABLE." WHERE event_id=%d", $this->event_id) );
 		}
 		return apply_filters('em_event_delete_tickets', $result, $this);
 	}
@@ -1063,7 +1064,7 @@ class EM_Event extends EM_Object{
 			switch( $result ){
 				//Event Details
 				case '#_EVENTID':
-					$replace = $this->id;
+					$replace = $this->event_id;
 					break;
 				case '#_EVENTPOSTID':
 					$replace = $this->post_id;
@@ -1156,6 +1157,8 @@ class EM_Event extends EM_Object{
 						$link = esc_url($this->get_edit_url());
 						if( $result == '#_EDITEVENTLINK'){
 							$replace = '<a href="'.$link.'">'.esc_html(sprintf(__('Edit %s','dbem'),__('Event','dbem'))).'</a>';
+						}else{
+							$replace = $link;
 						}
 					}	 
 					break;
@@ -1337,7 +1340,7 @@ class EM_Event extends EM_Object{
 	 * @return boolean
 	 */
 	function is_recurrence(){
-		return ( $this->id > 0 && $this->recurrence_id > 0 && get_option('dbem_recurrence_enabled') );
+		return ( $this->event_id > 0 && $this->recurrence_id > 0 && get_option('dbem_recurrence_enabled') );
 	}
 	/**
 	 * Returns if this is an individual event and is not a recurrence
@@ -1741,7 +1744,7 @@ class EM_Event extends EM_Object{
 	 * Can the user manage this? 
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false, $user_to_check = false ){
-		if( $this->id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
+		if( $this->event_id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
 			$user_to_check = get_option('dbem_events_anonymous_user');
 		}
 		return apply_filters('em_event_can_manage', parent::can_manage($owner_capability, $admin_capability, $user_to_check), $this, $owner_capability, $admin_capability, $user_to_check);

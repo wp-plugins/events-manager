@@ -25,7 +25,7 @@ function em_install() {
 		em_add_options();
 
 		//New install, or Migrate?
-		if( $old_version < 5.006 && !empty($old_version) ){
+		if( $old_version < 5 && !empty($old_version) ){
 			set_time_limit(300);
 			em_migrate_v4();
 			update_site_option('dbem_ms_update_nag',1);
@@ -113,9 +113,7 @@ function em_create_events_table() {
 		PRIMARY KEY  (event_id)
 		) DEFAULT CHARSET=utf8 ;";
 
-	$old_table_name = EM_OLD_EVENTS_TABLE;
-
-	if($wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name && $wpdb->get_var("SHOW TABLES LIKE '$old_table_name'") != $old_table_name) {
+	if( $wpdb->get_var("SHOW TABLES LIKE '$table_name'") != $table_name ){
 		dbDelta($sql);
 		//Add default events
 		$in_one_week = date('Y-m-d', time() + 60*60*24*7);

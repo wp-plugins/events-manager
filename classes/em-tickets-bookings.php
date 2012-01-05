@@ -37,7 +37,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_BOOKINGS_TABLE ." b ON bt.booking_id=b.booking_id  WHERE b.booking_id ='{$this->booking->booking_id}'";
 			}elseif( is_object($object) && get_class($object) == "EM_Ticket"){
 				$this->ticket = $object;
-				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_TICKETS_TABLE ." t ON bt.ticket_id=t.ticket_id  WHERE t.ticket_id ='{$this->ticket->id}'";
+				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_TICKETS_TABLE ." t ON bt.ticket_id=t.ticket_id  WHERE t.ticket_id ='{$this->ticket->ticket_id}'";
 			}elseif( is_numeric($object) ){
 				$sql = "SELECT * FROM ". EM_TICKETS_BOOKINGS_TABLE ." bt LEFT JOIN ". EM_BOOKINGS_TABLE ." t ON bt.booking_id=t.booking_id  WHERE t.booking_id ='{$object}'";
 			}
@@ -138,8 +138,8 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	
 	function get_booking_id(){
 		if( count($this->tickets_bookings) > 0 ){
-			foreach($this->tickets_bookings as $EM_Booking_Ticket){ break; } //get first array item
-			return apply_filters('em_tickets_bookings_get_booking_id', $EM_Booking_Ticket->id, $this);
+			foreach($this->tickets_bookings as $EM_Ticket_Booking){ break; } //get first array item
+			return apply_filters('em_tickets_bookings_get_booking_id', $EM_Ticket_Booking->booking_id, $this);
 		}
 		return apply_filters('em_tickets_bookings_get_booking_id', false, $this);
 	}
@@ -151,7 +151,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	function delete(){
 		global $wpdb;
 		if( $this->get_booking()->can_manage() ){
-			$result = $wpdb->query("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id='{$this->get_booking()->id}'");
+			$result = $wpdb->query("DELETE FROM ".EM_TICKETS_BOOKINGS_TABLE." WHERE booking_id='{$this->get_booking()->booking_id}'");
 			//echo "<pre>";print_r($this->get_booking());echo "</pre>";
 		}else{
 			//FIXME ticket bookings
