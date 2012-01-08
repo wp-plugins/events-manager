@@ -13,7 +13,7 @@ $labels = apply_filters('em_csv_bookings_headers',array(
 	'Price',
 	'Comment'
 ));
-$file = sprintf(__('Booking details for "%s" as of %s','dbem'),$event_name, date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
+$file = sprintf(__('Booking details for "%s" as of %s','dbem'),$EM_Event->name, date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
 $file = '"'. implode('","', $labels). '"' .  "\n";
 
 //Rows
@@ -24,7 +24,7 @@ foreach( $EM_Event->get_bookings()->bookings as $EM_Booking ) {
 		/* @var $EM_Ticket_Booking EM_Ticket_Booking */
 		$EM_Ticket = $EM_Ticket_Booking->get_ticket();
 		$row = array(
-			$EM_Booking->id,
+			$EM_Booking->booking_id,
 			$EM_Booking->person->get_name(),
 			$EM_Booking->person->user_email,
 			$EM_Booking->person->phone,
@@ -33,7 +33,7 @@ foreach( $EM_Event->get_bookings()->bookings as $EM_Booking ) {
 			$EM_Ticket->name,
 			$EM_Ticket_Booking->get_spaces(),
 			$EM_Ticket_Booking->get_price(),
-			$EM_Booking->comment
+			$EM_Booking->booking_comment
 		);
 		//Display all values
 		foreach($row as $value){
