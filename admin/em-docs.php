@@ -142,7 +142,15 @@ function em_docs_init($force_init = false){
 							'#_CONTACTPROFILEURL' => array( 'desc' => 'Contact person\'s profile url. Only works with BuddyPress enabled.' ),
 							'#_CONTACTID' => array( 'desc' => 'Contact person\'s WordPress user ID.')
 						)
-					),			
+					),
+					'iCal/Calendar' => array(
+						'placeholders' => array(
+							'#_EVENTICALURL' => array( 'desc' => 'Displays the URL of the event ical feed (ics file format).' ),
+							'#_EVENTICALLINK' => array( 'desc' => 'Displays an html link to the event ical feed (ics file format).' ),
+							'#_EVENTGCALURL' => array( 'desc' => 'Displays URL which would take the user to Google Calendar and pre-fill their add new event form.' ),
+							'#_EVENTGCALLINK' => array( 'desc' => 'Displays a button which would take the user to Google Calendar and pre-fill their add new event form.' )
+						)
+					),
 				),
 				'categories' => array(
 					'Category Details' => array(

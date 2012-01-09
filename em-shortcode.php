@@ -12,6 +12,17 @@ function em_get_calendar_shortcode($atts) {
 }
 add_shortcode('events_calendar', 'em_get_calendar_shortcode');
 
+function em_get_gcal_shortcode($atts){
+	$img_url = is_ssl() ? 'https://www.google.com/calendar/images/ext/gc_button6.gif':'http://www.google.com/calendar/images/ext/gc_button6.gif';
+	$atts = shortcode_atts(array('img'=>$img_url, 'button'=>6), $atts);
+	if( $img_url == $atts['img'] && $atts['button'] != 6 ){
+		$img_url = str_replace('gc_button6.gif', 'gc_button'.$atts['button'].'.gif', $img_url);
+	}
+	$url = '<a href="http://www.google.com/calendar/render?cid='.urlencode(trailingslashit(get_home_url()).'events.ics').'" target="_blank"><img src="'.$img_url.'" alt="0" border="0"></a>';
+	return $url;
+}
+add_shortcode('events_gcal', 'em_get_gcal_shortcode');
+
 /**
  * Generates a map of locations that match given query attributes. Accepts any location query attributes. 
  * @param array $args

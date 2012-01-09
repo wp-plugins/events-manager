@@ -10,7 +10,7 @@ if( !class_exists('EM_Permalinks') ){
 			'category_id', 'category_slug',
 			'ticket_id',
 			'calendar_day',
-			'rss', 'page', 'bookings_page', 'payment_gateway','event_categories','event_locations'
+			'rss', 'ical', 'bookings_page', 'payment_gateway','event_categories','event_locations'
 		);
 		
 		function init(){
@@ -41,7 +41,7 @@ if( !class_exists('EM_Permalinks') ){
 		 */
 		function redirection(){
 			global $wpdb, $wp_rewrite, $post, $wp_query;
-			if( $wp_query->get('em_redirect') ){
+			if( is_object($wp_query) && $wp_query->get('em_redirect') ){
 				//is this a querystring url?
 				if( $wp_query->get('event_slug') ){
 					$event = $wpdb->get_row('SELECT event_id, post_id FROM '.EM_EVENTS_TABLE." WHERE event_slug='".$wp_query->get('event_slug')."' AND (blog_id=".get_current_blog_id()." OR blog_id IS NULL)", ARRAY_A);
@@ -111,6 +111,8 @@ if( !class_exists('EM_Permalinks') ){
 					$em_rules[$locations_slug.'/'.get_site_option('dbem_ms_locations_slug',EM_LOCATION_SLUG).'/(.+)$'] = 'index.php?pagename='.$locations_slug.'&location_slug=$matches[1]'; //single event booking form with slug
 				}					
 			}
+			//add ical endpoint
+			$em_rules[EM_POST_TYPE_EVENT_SLUG."/([^/]+)/ical/?$"] = 'index.php?event=$matches[1]&ical=1';
 			return $em_rules + $rules;
 		}
 		
@@ -156,12 +158,12 @@ if( !class_exists('EM_Permalinks') ){
 			global $wp_query, $wp_rewrite;
 			//check some homepage conditions
 			$events_page_id = get_option ( 'dbem_events_page' );
-			if( $wp_query->is_home && 'page' == get_option('show_on_front') && get_option('page_on_front') == $events_page_id ){
+			if( is_object($wp_query) && $wp_query->is_home && 'page' == get_option('show_on_front') && get_option('page_on_front') == $events_page_id ){
 				$wp_query->is_page = true;
 				$wp_query->is_home = false;
 				$wp_query->query_vars['page_id'] = $events_page_id;
 			}
-			if ( $wp_rewrite->using_permalinks() ) {
+			if ( is_object($wp_query) && is_object($wp_rewrite) && $wp_rewrite->using_permalinks() ) {
 				foreach(self::$em_queryvars as $em_queryvar){
 					if( $wp_query->get($em_queryvar) ) {
 						$_REQUEST[$em_queryvar] = $wp_query->get($em_queryvar);

@@ -575,7 +575,8 @@ class EM_Event extends EM_Object{
 			unset($event_array['event_id']);
 			if( $this->post_status == 'private' ) $event_array['event_private'] = 1;
 			$event_array['event_attributes'] = serialize($this->event_attributes); //might as well
-			if( empty($this->event_id) ){
+			$event_truly_exists = $wpdb->get_var('SELECT event_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}") == $this->event_id;
+			if( empty($this->event_id) || !$event_truly_exists ){
 				$this->previous_status = 0; //for sure this was previously status 0
 				$this->event_date_created = current_time('mysql');
 				if ( !$wpdb->insert(EM_EVENTS_TABLE, $event_array) ){
@@ -947,6 +948,15 @@ class EM_Event extends EM_Object{
 		return apply_filters('em_event_get_permalink', $event_link, $this);
 	}
 	
+	function get_ical_url(){
+		global $wp_rewrite;
+		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
+			return trailingslashit($this->get_permalink()).'ical/';
+		}else{
+			return em_add_get_params($this->get_permalink(), array('ical'=>1));
+		}
+	}
+	
 	function is_free(){
 		$free = true;
 		if( isset($this->free) ) return $this->free;
@@ -1271,6 +1281,7 @@ class EM_Event extends EM_Object{
 					$template = em_locate_template('placeholders/attendees.php', true, array('EM_Event'=>$this));
 					$replace = ob_get_clean();
 					break;
+				//Categories and Tags
 				case '#_CATEGORIES': //depreciated
 				case '#_EVENTCATEGORIES':
 					ob_start();
@@ -1281,6 +1292,40 @@ class EM_Event extends EM_Object{
 					ob_start();
 					$template = em_locate_template('placeholders/eventtags.php', true, array('EM_Event'=>$this));
 					$replace = ob_get_clean();
+					break;
+				//Ical Stuff
+				case '#_EVENTICALURL':
+				case '#_EVENTICALLINK':
+					$replace = $this->get_ical_url();
+					if( $result == '#_EVENTICALLINK' ){
+						$replace = '<a href="'.esc_url($replace).'">iCal</a>';
+					}
+					break;
+				case '#_EVENTGCALURL':
+				case '#_EVENTGCALLINK':
+					//get dates
+					if($this->event_all_day && $this->event_start_date == $this->event_end_date){
+						$dateStart	= date('Ymd',$this->start - (60*60*get_option('gmt_offset')));
+						$dateEnd	= date('Ymd',$this->start + 60*60*24 - (60*60*get_option('gmt_offset')));
+					}else{
+						$dateStart	= date('Ymd\THis\Z',$this->start - (60*60*get_option('gmt_offset')));
+						$dateEnd = date('Ymd\THis\Z',$this->end - (60*60*get_option('gmt_offset')));
+					}
+					//build url
+					$gcal_url = 'http://www.google.com/calendar/event?action=TEMPLATE&text=event_name&dates=start_date/end_date&details=post_content&location=location_name&trp=false&sprop=event_url&sprop=name:blog_name';
+					$gcal_url = str_replace('event_name', urlencode($this->event_name), $gcal_url);
+					$gcal_url = str_replace('start_date', urlencode($dateStart), $gcal_url);
+					$gcal_url = str_replace('end_date', urlencode($dateEnd), $gcal_url);
+					$gcal_url = str_replace('post_content', urlencode($this->post_content), $gcal_url);
+					$gcal_url = str_replace('location_name', urlencode($this->output('#_LOCATION')), $gcal_url);
+					$gcal_url = str_replace('event_url', urlencode($this->get_permalink()), $gcal_url);
+					$gcal_url = str_replace('blog_name', urlencode(get_bloginfo()), $gcal_url);
+					$replace = $gcal_url;
+					if( $result == '#_EVENTGCALLINK' ){
+						$img_url = 'www.google.com/calendar/images/ext/gc_button2.gif';
+						$img_url = is_ssl() ? 'https://'.$img_url:'http://'.$img_url;
+						$replace = '<a href="'.$replace.'" target="_blank"><img src="'.$img_url.'" alt="0" border="0"></a>';
+					}
 					break;
 				default:
 					$replace = $full_result;

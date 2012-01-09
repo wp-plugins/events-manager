@@ -202,13 +202,13 @@ if( !is_admin() ){
 	
 	function em_bp_rewrite_bookings_url($url, $EM_Event){
 		global $bp;
-		return $bp->events->link.'my-bookings/?event_id='.$EM_Event->event_id;
+		return $bp->events->link.'my-bookings/?action=edit&event_id='.$EM_Event->event_id;
 	}
 	add_filter('em_event_get_bookings_url','em_bp_rewrite_bookings_url',10,2);
 	
 	function em_bp_rewrite_edit_location_url($url, $EM_Location){
 		global $bp;
-		return $bp->events->link.'my-locations/?location_id='.$EM_Location->location_id;
+		return $bp->events->link.'my-locations/?action=edit&location_id='.$EM_Location->location_id;
 	}
 	add_filter('em_location_get_edit_url','em_bp_rewrite_edit_location_url',10,2);
 }
