@@ -13,9 +13,9 @@
 <table class="em-calendar fullcalendar">
 	<thead>
 		<tr>
-			<td><a class="em-calnav full-link" href="<?php echo $calendar['links']['previous_url']; ?>">&lt;&lt;</a></td>
+			<td><a class="em-calnav full-link em-calnav-prev" href="<?php echo $calendar['links']['previous_url']; ?>">&lt;&lt;</a></td>
 			<td class="month_name" colspan="5"><?php echo ucfirst(date_i18n('M Y', $calendar['month_start'])); ?></td>
-			<td><a class="em-calnav full-link" href="<?php echo $calendar['links']['next_url']; ?>">&gt;&gt;</a></td>
+			<td><a class="em-calnav full-link em-calnav-next" href="<?php echo $calendar['links']['next_url']; ?>">&gt;&gt;</a></td>
 		</tr>
 	</thead>
 	<tbody>
@@ -49,14 +49,3 @@
 		</tr>
 	</tbody>
 </table>
-<script type="text/javascript">
-	jQuery(document).ready( function($){
-		/* Calendar AJAX */
-		$('a.em-calnav, a.em-calnav').live('click', function(e){
-			e.preventDefault();
-			$(this).closest('.em-calendar-wrapper').prepend('<div class="loading" id="em-loading"></div>');
-			var url = em_ajaxify($(this).attr('href'));
-			$(this).closest('.em-calendar-wrapper').load(url);
-		} ); 
-	});
-</script>

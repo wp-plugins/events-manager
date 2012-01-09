@@ -53,7 +53,7 @@ $EM_Ticket = $EM_Tickets->get_first();
 						<div class="em-booking-buttons">
 							<?php echo apply_filters('em_booking_form_buttons', '<input type="submit" class="em-booking-submit" id="em-booking-submit" value="'.__('Send your booking', 'dbem').'" />', $EM_Event); ?>
 						 	<input type='hidden' name='action' value='booking_add'/>
-						 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->id; ?>'/>
+						 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
 						 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_add'); ?>'/>
 						</div>
 					</div>
