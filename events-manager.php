@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.0.3
+Version: 5.0.4
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 // Setting constants
-define('EM_VERSION', 5.0113); //self expanatory
-define('EM_PRO_MIN_VERSION', 1.4); //self expanatory
+define('EM_VERSION', 5.04); //self expanatory
+define('EM_PRO_MIN_VERSION', 1.45); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 //EM_MS_GLOBAL
 if( get_site_option('dbem_ms_global_table') && is_multisite() ){
@@ -202,13 +202,13 @@ class EM_Scripts_and_Styles {
 			add_action('admin_print_styles-post.php', array('EM_Scripts_and_Styles','admin_styles'));
 			add_action('admin_print_styles-post-new.php', array('EM_Scripts_and_Styles','admin_styles'));
 			add_action('admin_print_styles-edit.php', array('EM_Scripts_and_Styles','admin_styles'));
-			if( substr($_GET['page'],0,14) == 'events-manager' || $_GET['post_type'] == EM_POST_TYPE_EVENT ){
+			if( (!empty($_GET['page']) && substr($_GET['page'],0,14) == 'events-manager') || (!empty($_GET['post_type']) && $_GET['post_type'] == EM_POST_TYPE_EVENT) ){
 				add_action('admin_print_styles', array('EM_Scripts_and_Styles','admin_styles'));
 			}
 			add_action('admin_print_scripts-post.php', array('EM_Scripts_and_Styles','admin_scripts'));
 			add_action('admin_print_scripts-post-new.php', array('EM_Scripts_and_Styles','admin_scripts'));
 			add_action('admin_print_scripts-edit.php', array('EM_Scripts_and_Styles','admin_scripts'));
-			if( substr($_GET['page'],0,14) == 'events-manager' || $_GET['post_type'] == EM_POST_TYPE_EVENT ){
+			if( (!empty($_GET['page']) && substr($_GET['page'],0,14) == 'events-manager') || (!empty($_GET['post_type']) && $_GET['post_type'] == EM_POST_TYPE_EVENT) ){
 				add_action('admin_print_scripts', array('EM_Scripts_and_Styles','admin_scripts'));
 			}
 		}else{

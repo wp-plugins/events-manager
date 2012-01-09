@@ -718,7 +718,7 @@ function em_admin_options_page() {
 						</td>
 					</tr>
 					<?php
-					em_options_radio_binary ( __( 'Override with Formats?', 'dbem' ), 'dbem_cp_categories_formats', sprintf($format_override_tip,__('categories','dbem').' '. __('Setting this to yes will make categories display as a page rather than an archive.')));
+					em_options_radio_binary ( __( 'Override with Formats?', 'dbem' ), 'dbem_cp_categories_formats', sprintf($format_override_tip,__('categories','dbem'))." ".__('Setting this to yes will make categories display as a page rather than an archive.', 'dbem'));
 					?>
 					<tr valign="top">
 				   		<th scope="row"><?php _e('Default archive ordering','dbem'); ?></th>

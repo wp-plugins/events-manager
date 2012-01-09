@@ -45,7 +45,7 @@ function em_content($page_content) {
 					}else{
 						//Intercept search request, if defined
 						$args['scope'] = get_option('dbem_events_page_scope');
-						if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'search_events' && get_option('dbem_events_page_search') ){
+						if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'search_events' ){
 							$args = EM_Events::get_post_search($args + $_REQUEST);
 						}
 						em_locate_template('templates/events-list.php', true, array('args'=>$args));

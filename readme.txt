@@ -14,7 +14,7 @@ Events Manager is a full-featured event registration plugin for WordPress based 
 
 Version 5 now makes events and locations WordPress Custom Post Types, allowing for more possibilities than ever before!
 
-* [Demo](http://demo.wp-events-plugin.com/documentation/)
+* [Demo](http://demo.wp-events-plugin.com/)
 * [Documentation](http://wp-events-plugin.com/documentation/)
 * [Tutorials](http://wp-events-plugin.com/tutorials/)
 
@@ -40,6 +40,7 @@ Version 5 now makes events and locations WordPress Custom Post Types, allowing f
 * Widgets for Events, Locations and Calendars
 * Fine grained control of how every aspect of your events are shown on your site, easily modify templates from the settings pages and template files
 * iCal Feed
+* Add to Google Calendar buttons
 * RSS Feeds
 * SEO Permalinks
 * Plenty of template tags and shortcodes for use in your posts and pages
@@ -96,6 +97,19 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.0.4 =
+* added installation throttle, to prevent double event imports
+* pending events migrate as pending now
+* index auto-correction for non-indexed events/locations on save
+* wp_rewrite theme compat hack for some offending themes
+* guest submission now showing success message
+* added events_gcal shortcode for google calendar
+* fixed bad BP links in edit event/location tables
+* added single event ical endpoint
+* added import to google event placeholder
+* fixed em_content_pre problem
+* group event locations label showing
+* empty attributes are saved when previously filled
 
 = 5.0.3 =
 * searching from/to without one or another date works as intended

@@ -382,7 +382,7 @@ class EM_Event extends EM_Object{
 			$event_available_attributes = em_get_attributes();
 			if( !empty($_POST['em_attributes']) && is_array($_POST['em_attributes']) ){
 				foreach($_POST['em_attributes'] as $att_key => $att_value ){
-					if( (in_array($att_key, $event_available_attributes['names']) || array_key_exists($att_key, $this->event_attributes) ) && trim($att_value) != '' ){
+					if( (in_array($att_key, $event_available_attributes['names']) || array_key_exists($att_key, $this->event_attributes) ) ){
 						$att_vals = count($event_available_attributes['values'][$att_key]);
 						if( $att_vals == 0 || ($att_vals > 0 && in_array($att_value, $event_available_attributes['values'][$att_key])) ){
 							$this->event_attributes[$att_key] = stripslashes($att_value);

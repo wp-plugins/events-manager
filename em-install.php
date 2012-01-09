@@ -14,32 +14,48 @@ function em_install() {
 		return;
    	}
 	if( EM_VERSION > $old_version || $old_version == '' ){
-	 	// Creates the events table if necessary
-		em_create_events_table();
-		em_create_events_meta_table();
-		em_create_locations_table();
-	  	em_create_bookings_table();
-		em_create_tickets_table();
-		em_create_tickets_bookings_table();
-		em_set_capabilities();
-		em_add_options();
-
-		//New install, or Migrate?
-		if( $old_version < 5 && !empty($old_version) ){
-			set_time_limit(300);
-			em_migrate_v4();
-			update_site_option('dbem_ms_update_nag',1);
-		}elseif( empty($old_version) ){
-			em_create_events_page();
-			update_option('dbem_hello_to_user',1);
+		$retry_time = get_option('dbem_upgrade_throttle_time') ? time()-get_option('dbem_upgrade_throttle_time'):time()-3600;
+		if( get_option('dbem_upgrade_throttle') <= $retry_time || !get_option('dbem_upgrade_throttle') ){
+		 	// Creates the events table if necessary
+			update_option('dbem_upgrade_throttle_time', time()+3600);
+			em_create_events_table();
+			em_create_events_meta_table();
+			em_create_locations_table();
+		  	em_create_bookings_table();
+			em_create_tickets_table();
+			em_create_tickets_bookings_table();
+			em_set_capabilities();
+			em_add_options();
+	
+			//New install, or Migrate?
+			if( $old_version < 5 && !empty($old_version) ){
+				update_option('dbem_upgrade_throttle', time()+(300*60));
+				update_option('dbem_upgrade_throttle_time', 300*60); //extend length of migration throttle
+				set_time_limit(300);
+				em_migrate_v4();
+				update_site_option('dbem_ms_update_nag',1);
+			}elseif( empty($old_version) ){
+				em_create_events_page();
+				update_option('dbem_hello_to_user',1);
+			}
+			//Upate Version
+		  	update_option('dbem_version', EM_VERSION);
+			delete_option('dbem_upgrade_throttle');
+			delete_option('dbem_upgrade_throttle_time');
+			//last but not least, flush the toilet
+			global $wp_rewrite;
+			$wp_rewrite->flush_rules();
+			update_option('dbem_flush_needed',1);
+		}else{
+			function em_upgrading_in_progress_notification(){
+				global $EM_Booking;
+				?><div class="error"><p>Events Manager upgrade still in progress. Please be patient, this message should disappear once the upgrade is complete.</p></div><?php
+			}
+			add_action ( 'admin_notices', 'em_upgrading_in_progress_notification' );
+			add_action ( 'network_admin_notices', 'em_upgrading_in_progress_notification' );
+			return;
 		}
-		//Upate Version
-	  	update_option('dbem_version', EM_VERSION);
 	}
-	//last but not least, flush the toilet
-	global $wp_rewrite;
-	$wp_rewrite->flush_rules();
-	update_option('dbem_flush_needed',1);
 }
 
 /**
@@ -857,7 +873,7 @@ function em_migrate_events($events){
 		$post_array['post_type'] = $event['recurrence'] == 1 ? 'event-recurring' : EM_POST_TYPE_EVENT;
 		$post_array['post_title'] = $event['event_name'];
 		$post_array['post_content'] = $event['post_content'];
-		$post_array['post_status'] = 'publish';
+		$post_array['post_status'] = (!is_set($event['event_status']) || $event['event_status'])  ? 'publish':'pending';
 		$post_array['post_author'] = $event['event_owner'];
 		$post_array['post_slug'] = $event['event_slug'];
 		$event['start_ts'] = strtotime($event['event_start_date']);
