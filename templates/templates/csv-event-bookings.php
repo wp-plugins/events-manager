@@ -14,7 +14,7 @@ $labels = apply_filters('em_csv_bookings_headers',array(
 	'Comment'
 ));
 $file = sprintf(__('Booking details for "%s" as of %s','dbem'),$EM_Event->name, date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
-$file = '"'. implode('","', $labels). '"' .  "\n";
+$file .= '"'. implode('","', $labels). '"' .  "\n";
 
 //Rows
 foreach( $EM_Event->get_bookings()->bookings as $EM_Booking ) {
@@ -23,6 +23,7 @@ foreach( $EM_Event->get_bookings()->bookings as $EM_Booking ) {
 		/* @var $EM_Ticket EM_Ticket */
 		/* @var $EM_Ticket_Booking EM_Ticket_Booking */
 		$EM_Ticket = $EM_Ticket_Booking->get_ticket();
+		$row_output = '';
 		$row = array(
 			$EM_Booking->booking_id,
 			$EM_Booking->person->get_name(),
@@ -39,10 +40,10 @@ foreach( $EM_Event->get_bookings()->bookings as $EM_Booking ) {
 		foreach($row as $value){
 			$value = str_replace('"', '""', $value);
 			$value = str_replace("=", "", $value);
-			$file .= '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
+			$row_output .= '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
 		}
-		$file = apply_filters('em_csv_bookings_loop_after', $file, $EM_Ticket_Booking, $EM_Booking);
-		$file .= "\n";
+		$row_output = apply_filters('em_csv_bookings_loop_after', $row_output, $EM_Ticket_Booking, $EM_Booking);
+		$file .= $row_output."\n";
 	}
 }
 

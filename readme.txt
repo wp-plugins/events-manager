@@ -97,6 +97,11 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.0.41 =
+* fixed fatal error on install (bug since 5.0.4)
+* italian js translation added to prevent js error
+* CVS title bug fix
+
 = 5.0.4 =
 * added installation throttle, to prevent double event imports
 * pending events migrate as pending now

@@ -873,7 +873,7 @@ function em_migrate_events($events){
 		$post_array['post_type'] = $event['recurrence'] == 1 ? 'event-recurring' : EM_POST_TYPE_EVENT;
 		$post_array['post_title'] = $event['event_name'];
 		$post_array['post_content'] = $event['post_content'];
-		$post_array['post_status'] = (!is_set($event['event_status']) || $event['event_status'])  ? 'publish':'pending';
+		$post_array['post_status'] = (!isset($event['event_status']) || $event['event_status'])  ? 'publish':'pending';
 		$post_array['post_author'] = $event['event_owner'];
 		$post_array['post_slug'] = $event['event_slug'];
 		$event['start_ts'] = strtotime($event['event_start_date']);
