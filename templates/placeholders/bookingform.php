@@ -6,8 +6,11 @@ $EM_Ticket = $EM_Tickets->get_first();
 ?>
 <div id="em-booking">
 	<a name="em-booking"></a>
-	<?php // We are firstly checking if the user has already booked a ticket at this event, if so offer a link to view their bookings. ?>
-	<?php if( $EM_Booking = $EM_Event->get_bookings()->has_booking() && !get_option('dbem_bookings_double') ): ?>
+	<?php 
+		// We are firstly checking if the user has already booked a ticket at this event, if so offer a link to view their bookings.
+		$EM_Booking = $EM_Event->get_bookings()->has_booking();
+	?>
+	<?php if( is_object($EM_Booking) && !get_option('dbem_bookings_double') ): ?>
 		<p><?php echo apply_filters('em_my_bookings_booked_message', sprintf(__('You are currently attending this event. <a href="%s">Manage my bookings</a>','dbem'), em_get_my_bookings_url()), $EM_Booking); ?></p>
 	<?php elseif( !$EM_Event->rsvp ): ?>
 		<p><?php _e('Online bookings are not available for this event.','dbem'); ?></p>

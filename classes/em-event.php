@@ -1053,6 +1053,12 @@ class EM_Event extends EM_Object{
 				}elseif ($condition == 'all_day'){
 					//is it an all day event
 					$show_condition = !empty($this->event_all_day);
+				}elseif ($condition == 'logged_in'){
+					//user is logged in
+					$show_condition = is_user_logged_in();
+				}elseif ($condition == 'not_logged_in'){
+					//not logged in
+					$show_condition = !is_user_logged_in();
 				}
 				$show_condition = apply_filters('em_event_output_show_condition', $show_condition, $condition, $conditionals[0][$key], $this);
 				if($show_condition){

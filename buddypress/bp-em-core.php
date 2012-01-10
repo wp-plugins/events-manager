@@ -197,20 +197,26 @@ if( !is_admin() ){
 		global $bp;
 		return $bp->events->link.'my-events/?action=edit&event_id='.$EM_Event->event_id;
 	}
-	add_filter('em_event_get_edit_url','em_bp_rewrite_edit_url',10,2);
+	if( !get_option('dbem_edit_events_page') ){
+		add_filter('em_event_get_edit_url','em_bp_rewrite_edit_url',10,2);
+	}
 	
 	
 	function em_bp_rewrite_bookings_url($url, $EM_Event){
 		global $bp;
 		return $bp->events->link.'my-bookings/?action=edit&event_id='.$EM_Event->event_id;
 	}
-	add_filter('em_event_get_bookings_url','em_bp_rewrite_bookings_url',10,2);
+	if( !get_option('dbem_my_bookings_page') ){
+		add_filter('em_event_get_bookings_url','em_bp_rewrite_bookings_url',10,2);
+	}
 	
 	function em_bp_rewrite_edit_location_url($url, $EM_Location){
 		global $bp;
 		return $bp->events->link.'my-locations/?action=edit&location_id='.$EM_Location->location_id;
 	}
-	add_filter('em_location_get_edit_url','em_bp_rewrite_edit_location_url',10,2);
+	if( !get_option('dbem_edit_locations_page') ){
+		add_filter('em_location_get_edit_url','em_bp_rewrite_edit_location_url',10,2);
+	}
 }
 
 /**

@@ -179,7 +179,6 @@ function em_content_page_title($original_content) {
 	}
 	return $original_content;
 }
-//add_filter ( 'single_post_title', 'em_content_page_title',1,1 ); //Filter for the wp_title of page, can directly reference page title function
 
 function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	global $EM_Location, $post;
@@ -191,9 +190,6 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	if( get_the_ID() != $events_page_id && !in_array($post->ID, array($events_page_id, $locations_page_id, $edit_events_page_id, $edit_locations_page_id, $edit_bookings_page_id)) ){ return $title; }
 	// Determines position of the separator and direction of the breadcrumb
 	$title = em_content_page_title($title);
-	$prefix = '';
-	if ( !empty($title) )
-		$prefix = " $sep ";
 	$t_sep = '%WP_TITILE_SEP%'; // Temporary separator, for accurate flipping, if necessary
 	if ( 'right' == $seplocation ) { // sep on right, so reverse the order
 		$title_array = explode( $t_sep, $title );
