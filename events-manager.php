@@ -335,7 +335,7 @@ function em_init(){
 		define('EM_URI', get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM
 	}else{
 		if( $wp_rewrite->using_permalinks() ){
-			define('EM_URI', trailingslashit(home_url()).'/'.EM_POST_TYPE_SLUG.'/'); //PAGE URI OF EM
+			define('EM_URI', trailingslashit(home_url()).'/'.EM_POST_TYPE_EVENT_SLUG.'/'); //PAGE URI OF EM
 		}else{
 			define('EM_URI', trailingslashit(home_url()).'?post_type='.EM_POST_TYPE_EVENT); //PAGE URI OF EM
 		}

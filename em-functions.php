@@ -391,7 +391,7 @@ function em_option_items($array, $saved_value) {
 		$selected ='';
 		if ($key == $saved_value)
 			$selected = "selected='selected'";
-		$output .= "<option value='$key' $selected >$item</option>\n";
+		$output .= "<option value='".esc_attr($key)."' $selected >".esc_html($item)."</option>\n";
 	
 	} 
 	echo $output;
@@ -403,7 +403,7 @@ function em_checkbox_items($name, $array, $saved_values, $horizontal = true) {
 		$checked = "";
 		if (in_array($key, $saved_values))
 			$checked = "checked='checked'";  
-		$output .=  "<input type='checkbox' name='$name' value='$key' $checked /> $item ";
+		$output .=  "<input type='checkbox' name='".esc_attr($name)."' value='".esc_attr($key)."' $checked /> ".esc_html($item);
 		if(!$horizontal)	
 			$output .= "<br/>\n";
 	}
@@ -413,22 +413,22 @@ function em_checkbox_items($name, $array, $saved_values, $horizontal = true) {
 
 function em_options_input_text($title, $name, $description, $default='') {
 	?>
-	<tr valign="top" id='<?php echo $name;?>_row'>
-		<th scope="row"><?php echo $title; ?></th>
+	<tr valign="top" id='<?php echo esc_attr($name);?>_row'>
+		<th scope="row"><?php echo esc_html($title); ?></th>
 	    <td>
-			<input name="<?php echo $name ?>" type="text" id="<?php echo $title ?>" style="width: 95%" value="<?php echo htmlspecialchars(get_option($name, $default), ENT_QUOTES); ?>" size="45" /><br />
-			<em><?php echo $description; ?></em>
+			<input name="<?php echo esc_attr($name) ?>" type="text" id="<?php echo esc_attr($title) ?>" style="width: 95%" value="<?php echo esc_attr(get_option($name, $default), ENT_QUOTES); ?>" size="45" /><br />
+			<em><?php echo esc_html($description); ?></em>
 		</td>
 	</tr>
 	<?php
 }
 function em_options_input_password($title, $name, $description) {
 	?>
-	<tr valign="top" id='<?php echo $name;?>_row'>
-		<th scope="row"><?php echo $title; ?></th>
+	<tr valign="top" id='<?php echo esc_attr($name);?>_row'>
+		<th scope="row"><?php echo esc_html($title); ?></th>
 	    <td>
-			<input name="<?php echo $name ?>" type="password" id="<?php echo $title ?>" style="width: 95%" value="<?php echo get_option($name); ?>" size="45" /><br />
-			<em><?php echo $description; ?></em>
+			<input name="<?php echo esc_attr($name) ?>" type="password" id="<?php echo esc_attr($title) ?>" style="width: 95%" value="<?php echo esc_attr(get_option($name)); ?>" size="45" /><br />
+			<em><?php echo esc_html($description); ?></em>
 		</td>
 	</tr>
 	<?php
@@ -436,11 +436,11 @@ function em_options_input_password($title, $name, $description) {
 
 function em_options_textarea($title, $name, $description) {
 	?>
-	<tr valign="top" id='<?php echo $name;?>_row'>
-		<th scope="row"><?php echo $title; ?></th>
+	<tr valign="top" id='<?php echo esc_attr($name);?>_row'>
+		<th scope="row"><?php echo esc_html($title); ?></th>
 			<td>
-				<textarea name="<?php echo $name ?>" id="<?php echo $name ?>" rows="6" cols="60"><?php echo htmlspecialchars(get_option($name), ENT_QUOTES);?></textarea><br/>
-				<em><?php echo $description; ?></em>
+				<textarea name="<?php echo esc_attr($name) ?>" id="<?php echo esc_attr($name) ?>" rows="6" cols="60"><?php echo esc_attr(get_option($name), ENT_QUOTES);?></textarea><br/>
+				<em><?php echo esc_html($description); ?></em>
 			</td>
 		</tr>
 	<?php
@@ -449,9 +449,9 @@ function em_options_textarea($title, $name, $description) {
 function em_options_radio($name, $options, $title='') {
 		$option = get_option($name); 
 		?>		 
-	   	<tr valign="top" id='<?php echo $name;?>_row'>
+	   	<tr valign="top" id='<?php echo esc_attr($name);?>_row'>
 	   		<?php if( !empty($title) ): ?>
-	   		<th scope="row"><?php  echo $title; ?></th>
+	   		<th scope="row"><?php  echo esc_html($title); ?></th>
 	   		<td>
 	   		<?php else: ?>
 	   		<td colspan="2">
@@ -459,7 +459,7 @@ function em_options_radio($name, $options, $title='') {
 	   			<table>
 	   			<?php foreach($options as $value => $text): ?>
 	   				<tr>
-	   					<td><input id="<?php echo $name ?>_<?php echo $value; ?>" name="<?php echo $name ?>" type="radio" value="<?php echo $value; ?>" <?php if($option == $value) echo "checked='checked'"; ?> /></td>
+	   					<td><input id="<?php echo esc_attr($name) ?>_<?php echo esc_attr($value); ?>" name="<?php echo esc_attr($name) ?>" type="radio" value="<?php echo esc_attr($value); ?>" <?php if($option == $value) echo "checked='checked'"; ?> /></td>
 	   					<td><?php echo $text ?></td>
 	   				</tr>
 				<?php endforeach; ?>
@@ -478,11 +478,11 @@ function em_options_radio_binary($title, $name, $description, $option_names = ''
 	}
 	?>		 
    	<tr valign="top" id='<?php echo $name;?>_row'>
-   		<th scope="row"><?php echo $title; ?></th>
+   		<th scope="row"><?php echo esc_html($title); ?></th>
    		<td>  
-   			<?php echo $option_names[1]; ?> <input id="<?php echo $name ?>_yes" name="<?php echo $name ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
-			<?php echo $option_names[0]; ?> <input  id="<?php echo $name ?>_no" name="<?php echo $name ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
-			<br/><em><?php echo $description; ?></em>
+   			<?php echo $option_names[1]; ?> <input id="<?php echo esc_attr($name) ?>_yes" name="<?php echo esc_attr($name) ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
+			<?php echo $option_names[0]; ?> <input  id="<?php echo esc_attr($name) ?>_no" name="<?php echo esc_attr($name) ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
+			<br/><em><?php echo esc_html($description); ?></em>
 		</td>
    	</tr>
 	<?php	
@@ -494,17 +494,17 @@ function em_options_select($title, $name, $list, $description) {
 		$option_value = 0; //Special value
 	}
 	?>
-   	<tr valign="top" id='<?php echo $name;?>_row'>
-   		<th scope="row"><?php echo $title; ?></th>
+   	<tr valign="top" id='<?php echo esc_attr($name);?>_row'>
+   		<th scope="row"><?php echo esc_html($title); ?></th>
    		<td>   
-			<select name="<?php echo $name; ?>" > 
+			<select name="<?php echo esc_attr($name); ?>" > 
 				<?php foreach($list as $key => $value) : ?>   
- 				<option value='<?php echo $key ?>' <?php echo ("$key" == $option_value) ? "selected='selected' " : ''; ?>>
- 					<?php echo $value; ?>
+ 				<option value='<?php echo esc_attr($key) ?>' <?php echo ("$key" == $option_value) ? "selected='selected' " : ''; ?>>
+ 					<?php echo esc_html($value); ?>
  				</option>
 				<?php endforeach; ?>
 			</select> <br/>
-			<em><?php echo $description; ?></em>
+			<em><?php echo esc_html($description); ?></em>
 		</td>
    	</tr>
 	<?php	

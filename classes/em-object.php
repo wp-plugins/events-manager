@@ -825,38 +825,37 @@ class EM_Object {
 		$type = $this->get_image_type();
 		//Handle the attachment as a WP Post
 		$attachment = '';
-		if( $this->can_manage('upload_event_images','upload_event_images') ){
-			if ( !empty($_FILES[$type.'_image']['size']) && file_exists($_FILES[$type.'_image']['tmp_name']) && $this->image_validate() ) {
-				require_once(ABSPATH . "wp-admin" . '/includes/file.php');					
-				require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+		$user_to_check = ( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ) ? get_option('dbem_events_anonymous_user'):false;		
+		if ( !empty($_FILES[$type.'_image']['size']) && file_exists($_FILES[$type.'_image']['tmp_name']) && $this->image_validate() && $this->can_manage('upload_event_images','upload_event_images', $user_to_check) ) {
+			require_once(ABSPATH . "wp-admin" . '/includes/file.php');					
+			require_once(ABSPATH . "wp-admin" . '/includes/image.php');
+					
+			$attachment = wp_handle_upload($_FILES[$type.'_image'], array('test_form'=>false), current_time('mysql'));
 						
-				$attachment = wp_handle_upload($_FILES[$type.'_image'], array('test_form'=>false), current_time('mysql'));
-							
-				if ( isset($attachment['error']) ){
-					$this->add_error('Image Error: ' . $attachment['error'] );
-				}
-				
-				/* Attach file to ticket */
-				if ( count($this->errors) == 0 && $attachment ){
-					$attachment_data = array(
-						'post_mime_type' => $attachment['type'],
-						'post_title' => $this->post_title,
-						'post_content' => '',
-						'post_status' => 'inherit'
-					);
-					$attachment_id = wp_insert_attachment( $attachment_data, $attachment['file'], $this->post_id );
-					$attachment_metadata = wp_generate_attachment_metadata( $attachment_id, $attachment['file'] );
-					wp_update_attachment_metadata( $attachment_id,  $attachment_metadata );
-					//delete the old attachment
-					$this->image_delete();
-					update_post_meta($this->post_id, '_thumbnail_id', $attachment_id);
-					return apply_filters('em_object_image_upload', true, $this);
-				}else{
-					return apply_filters('em_object_image_upload', false, $this);
-				}
-			}elseif( !empty($_REQUEST[$type.'_image_delete']) ){
-				$this->image_delete();
+			if ( isset($attachment['error']) ){
+				$this->add_error('Image Error: ' . $attachment['error'] );
 			}
+			
+			/* Attach file to ticket */
+			if ( count($this->errors) == 0 && $attachment ){
+				$attachment_data = array(
+					'post_mime_type' => $attachment['type'],
+					'post_title' => $this->post_title,
+					'post_content' => '',
+					'post_status' => 'inherit'
+				);
+				$attachment_id = wp_insert_attachment( $attachment_data, $attachment['file'], $this->post_id );
+				$attachment_metadata = wp_generate_attachment_metadata( $attachment_id, $attachment['file'] );
+				wp_update_attachment_metadata( $attachment_id,  $attachment_metadata );
+				//delete the old attachment
+				$this->image_delete();
+				update_post_meta($this->post_id, '_thumbnail_id', $attachment_id);
+				return apply_filters('em_object_image_upload', true, $this);
+			}else{
+				return apply_filters('em_object_image_upload', false, $this);
+			}
+		}elseif( !empty($_REQUEST[$type.'_image_delete']) ){
+			$this->image_delete();
 		}
 		return apply_filters('em_object_image_upload', false, $this);
 	}
