@@ -10,12 +10,12 @@ define('EM_POST_TYPE_LOCATION_SLUG',get_option('dbem_cp_locations_slug', 'locati
 define('EM_TAXONOMY_CATEGORY_SLUG', get_site_option('dbem_taxonomy_category_slug', 'events/categories'));
 define('EM_TAXONOMY_TAG_SLUG', get_option('dbem_taxonomy_tag_slug', 'events/tags'));
 
+if( !get_option('disable_post_thumbnails') && function_exists('add_theme_support') ){
+	add_theme_support('post-thumbnails'); //need to add this for themes that don't have it.
+}
 add_action('init','wp_events_plugin_init',1);
 function wp_events_plugin_init(){	
 	define('EM_ADMIN_URL',admin_url().'edit.php?post_type='.EM_POST_TYPE_EVENT); //we assume the admin url is absolute with at least one querystring
-	if( !get_option('disable_post_thumbnails') ){
-		add_theme_support('post-thumbnails'); //need to add this for themes that don't have it.
-	}
 	if( get_option('dbem_tags_enabled', true) ){
 		register_taxonomy(EM_TAXONOMY_TAG,array(EM_POST_TYPE_EVENT,'event-recurring'),array( 
 			'hierarchical' => false, 

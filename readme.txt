@@ -104,6 +104,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * buddypress does not override pages defined in settings > pages > other pages
 * default events install properly now
 * title seperator problem fixed
+* fixed add theme support for thumbnail function not firing early enough
 
 = 5.0.41 =
 * fixed fatal error on install (bug since 5.0.4)
