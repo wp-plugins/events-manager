@@ -124,7 +124,7 @@ function em_bookings_events_table() {
 							<tr <?php echo "$class $style"; ?>>
 				
 								<td>
-									<input type='checkbox' class='row-selector' value='<?php echo $event->id; ?>' name='events[]' />
+									<input type='checkbox' class='row-selector' value='<?php echo $event->event_id; ?>' name='events[]' />
 								</td>
 								<td>
 									<strong>
