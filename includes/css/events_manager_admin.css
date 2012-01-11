@@ -60,6 +60,11 @@ table.events-table .category { color:#888; }
 #event-form #event-name, #location-form, #location-name { margin: 2px 0 7px; padding: 6px 5px; width: 98%; }
 	/*Locations*/
 	#em-location-data table { float:left; margin:0px 15px 0px 0px; }
+	/* Location form */
+		#em-location-data table.em-location-data td, #em-location-data table.em-location-data th { vertical-align:top; border:none; }
+		#em-location-data table.em-location-data { width:50%; float:left; border:none; }
+		#em-location-data .em-location-map-container, #em-location-data .em-location-map-404, #em-location-data .em-location-map-content { width: 400px; height: 300px; float:left; }
+		#em-location-data .em-location-map-404 { vertical-align:middle; text-align: center; }
 	/*Bookings */
 		#event-rsvp-box { margin:10px; }
 		/*Tickets*/
@@ -101,25 +106,7 @@ table.events-table .category { color:#888; }
 
 /* Options Page */
 #dbem_options_form td, #dbem_options_form th { vertical-align:top; }
-	/* Capabilities Sprites*/
-	.em-caps-table th { background:url(../images/event-caps.jpg) 0px 0px no-repeat; width:20px; height:180px; vertical-align:bottom !important; }	
-	.em-caps-table td { width:auto; height:auto; padding:3px; text-align:center; }
-	.em-caps-table td.odd, .em-caps-table th.odd { background-color:#efefef; }	
-	.em-caps-table td.cap { text-align:left; font-weight:bold; }	
-	.em-caps-table .publish_events { background-position:0px 0px; }
-	.em-caps-table .edit_categories { background-position:-40px 0px; }	
-	.em-caps-table .delete_others_events { background-position:-80px 0px; }	
-	.em-caps-table .delete_others_locations { background-position:-120px 0px; }
-	.em-caps-table .edit_others_locations { background-position:-160px 0px; }	
-	.em-caps-table .manage_others_bookings { background-position:-200px 0px; }	
-	.em-caps-table .edit_others_events { background-position:-240px 0px; }	
-	.em-caps-table .delete_locations { background-position:-280px 0px; }
-	.em-caps-table .delete_events { background-position:-320px 0px; }	
-	.em-caps-table .edit_locations { background-position:-360px 0px; }	
-	.em-caps-table .manage_bookings { background-position:-400px 0px; }	
-	.em-caps-table .read_others_locations { background-position:-440px 0px; }	
-	.em-caps-table .edit_recurrences { background-position:-480px 0px; }	
-	.em-caps-table .edit_events { background-position:-520px 0px; }
+table.em-caps-table th, table.em-caps-table td { width:auto !important; }
 
 /* Widget Tables CSS */
 .em_obj .table-wrap{
@@ -134,3 +121,11 @@ table.events-table .category { color:#888; }
 .em-docs dl dd { display:block; margin-left:170px; }		
 .em-docs-atts dl dt { min-width:110px !important; }
 .em-docs-atts dl dd { margin-left:120px !important; }
+
+/* Time Picker */
+#start-time.error, #end-time.error { border:#cc0000 1px solid; }
+div.time-picker {  position: absolute; height: 191px; width:4em; /* needed for IE */ overflow: auto; background: #fff; border: 1px solid #aaa; z-index: 99; margin: 0; }
+div.time-picker-12hours { width:6em; /* needed for IE */ }
+div.time-picker ul { list-style-type: none; margin: 0; padding: 0; }
+div.time-picker li { cursor: pointer; height: 10px; font: 12px/1 Helvetica, Arial, sans-serif; padding: 4px 3px; }
+div.time-picker li.selected { background: #0063CE; color: #fff; }

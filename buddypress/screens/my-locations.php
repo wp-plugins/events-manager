@@ -10,29 +10,14 @@ function bp_em_my_locations() {
 	
 	do_action( 'bp_em_my_locations' );
 	
-	//plug into EM admin code (at least for now)
-	include_once(EM_DIR.'/admin/em-admin.php');
-	em_admin_load_scripts();
-	add_action('wp_head','em_admin_general_script');
-	
 	$template_title = 'bp_em_my_locations_title';
 	$template_content = 'bp_em_my_locations_content';
 
-	if( count($bp->action_variables) > 0 ){
-		if( !empty($bp->action_variables[0]) ){
-			switch($bp->action_variables[0]){
-				case 'edit':
-					$template_title = 'bp_em_my_locations_editor_title';
-					$template_content = 'bp_em_my_locations_editor_content';
-					break;
-				default :
-					$template_title = 'bp_em_my_locations_title';
-					$template_content = 'bp_em_my_locations_content';
-					break;
-			}
-		}else{
-			$template_title = 'bp_em_my_locations_title';
-			$template_content = 'bp_em_my_locations_content';
+	if( !empty($_GET['action']) ){
+		switch($_GET['action']){
+			case 'edit':
+				$template_title = 'bp_em_my_locations_editor_title';
+				break;
 		}
 	}
 
@@ -45,6 +30,7 @@ function bp_em_my_locations() {
 
 function bp_em_my_locations_title() {
 	_e( 'My Locations', 'dbem' );
+	if(current_user_can('edit_locations')): ?> <a href="<?php echo add_query_arg(array('action'=>'edit')); ?>" class="button add-new-h2"><?php _e('Add New','dbem'); ?></a><?php endif;
 }
 
 /**
@@ -57,15 +43,10 @@ function bp_em_my_locations_content() {
 
 function bp_em_my_locations_editor_title() {
 	global $EM_Location;
-	if( is_object($EM_Location) ){
-		_e( 'Edit Location', 'dbem' );	
+	if( empty($EM_Location) || !is_object($EM_Location) ){
+		$title = __('Add Location', 'dbem');
 	}else{
-		_e( 'Add Location', 'dbem' );
+		$title = __('Edit Location', 'dbem');
 	}
 }
-
-function bp_em_my_locations_editor_content(){
-	em_locate_template('forms/location-editor.php', true);
-}
-
 ?>
