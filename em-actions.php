@@ -218,10 +218,15 @@ function em_init_actions() {
 		global $EM_Event, $EM_Booking, $EM_Person;
 		//Load the booking object, with saved booking if requested
 		$EM_Booking = ( !empty($_REQUEST['booking_id']) ) ? new EM_Booking($_REQUEST['booking_id']) : new EM_Booking();
-		//Load the event object, with saved event if requested
-		$EM_Event = $EM_Booking->get_event();
+		if( !empty($EM_Booking->event_id) ){
+			//Load the event object, with saved event if requested
+			$EM_Event = $EM_Booking->get_event();
+		}elseif( !empty($_REQUEST['event_id']) ){
+			$EM_Event = new EM_Event($_REQUEST['event_id']);
+		}
 		$allowed_actions = array('bookings_approve'=>'approve','bookings_reject'=>'reject','bookings_unapprove'=>'unapprove', 'bookings_delete'=>'delete');
 		$result = false;
+		$feedback = '';
 		if ( $_REQUEST['action'] == 'booking_add') {
 			//ADD/EDIT Booking
 			em_verify_nonce('booking_add');
@@ -400,13 +405,15 @@ function em_init_actions() {
 				die();
 			}
 		}elseif( $_REQUEST['action'] == 'booking_save' ){
-			em_verify_nonce('booking_save');
+			em_verify_nonce('booking_save_'.$EM_Booking->booking_id);
 			do_action('em_booking_save', $EM_Event, $EM_Booking);
 			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') ){
 				if ($EM_Booking->get_post(true) && $EM_Booking->save(false) ){
 					$result = true;
-					$EM_Notices->add_confirm( $EM_Booking->feedback_message );		
-					$feedback = $EM_Booking->feedback_message;	
+					$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
+					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
+					wp_redirect( $redirect );
+					exit();
 				}else{
 					$result = false;
 					$EM_Notices->add_error( $EM_Booking->get_errors() );			

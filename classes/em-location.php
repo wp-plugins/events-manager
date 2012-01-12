@@ -54,7 +54,7 @@ class EM_Location extends EM_Object {
 		'location_status' => array('name'=>'status','type'=>'%d', 'null'=>true)
 	);
 	var $post_fields = array('post_id','location_slug','location_name','post_content','location_owner');
-	var $attributes = array();
+	var $location_attributes = array();
 	var $image_url = '';
 	var $required_fields = array();
 	var $feedback_message = "";
@@ -160,7 +160,7 @@ class EM_Location extends EM_Object {
 						}
 					}
 					if(!$found && $location_meta_key[0] != '_'){
-						$this->attributes[$location_meta_key] = ( count($location_meta_val) > 1 ) ? $location_meta_val:$location_meta_val[0];					
+						$this->location_attributes[$location_meta_key] = ( count($location_meta_val) > 1 ) ? $location_meta_val:$location_meta_val[0];					
 					}
 				}	
 			}
@@ -211,6 +211,24 @@ class EM_Location extends EM_Object {
 		//Set Blog ID
 		if( is_multisite() && empty($this->blog_id) ){
 			$this->blog_id = get_current_blog_id();
+		}
+		//Sort out event attributes - note that custom post meta now also gets inserted here automatically (and is overwritten by these attributes)
+		if(get_option('dbem_location_attributes_enabled')){
+			global $allowedtags;
+			if( !is_array($this->location_attributes) ){ $this->location_attributes = array(); }
+			$location_available_attributes = em_get_attributes(true); //lattributes only
+			if( !empty($_POST['em_attributes']) && is_array($_POST['em_attributes']) ){
+				foreach($_POST['em_attributes'] as $att_key => $att_value ){
+					if( (in_array($att_key, $location_available_attributes['names']) || array_key_exists($att_key, $this->location_attributes) ) ){
+						$att_vals = count($location_available_attributes['values'][$att_key]);
+						if( $att_vals == 0 || ($att_vals > 0 && in_array($att_value, $location_available_attributes['values'][$att_key])) ){
+							$this->location_attributes[$att_key] = stripslashes($att_value);
+						}elseif($att_vals > 0){
+							$this->location_attributes[$att_key] = stripslashes(wp_kses($location_available_attributes['values'][$att_key][0], $allowedtags));
+						}
+					}
+				}
+			}
 		}
 		$result = $validate ? $this->validate_meta():true; //post returns null
 		$this->compat_keys();
@@ -320,13 +338,18 @@ class EM_Location extends EM_Object {
 					update_post_meta($this->post_id, '_'.$key, $this->$key);
 				}
 			}
+			//Update Post Attributes
+			foreach($this->location_attributes as $location_attribute_key => $location_attribute){
+				update_post_meta($this->post_id, $location_attribute_key, $location_attribute);
+			}
 			$this->get_status();
 			$this->location_status = (count($this->errors) == 0) ? $this->location_status:null; //set status at this point, it's either the current status, or if validation fails, null
 			//Save to em_locations table
 			$location_array = $this->to_array(true);
 			if( $this->post_status == 'private' ) $location_array['location_private'] = 1;
 			unset($location_array['location_id']);
-			if( empty($this->location_id) ){
+			$loc_truly_exists = $wpdb->get_var('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$this->location_id}") == $this->location_id;
+			if( empty($this->location_id) || !$loc_truly_exists ){
 				$this->previous_status = 0; //for sure this was previously status 0
 				if ( !$wpdb->insert(EM_LOCATIONS_TABLE, $location_array) ){
 					$this->add_error( sprintf(__('Something went wrong saving your %s to the index table. Please inform a site administrator about this.','dbem'),__('location','dbem')));
@@ -509,6 +532,7 @@ class EM_Location extends EM_Object {
 	}
 	
 	function output($format, $target="html") {
+		$location_string = $format;
 		preg_match_all('/\{([a-zA-Z0-9_]+)\}([^{]+)\{\/[a-zA-Z0-9_]+\}/', $format, $conditionals);
 		if( count($conditionals[0]) > 0 ){
 			//Check if the language we want exists, if not we take the first language there
@@ -516,7 +540,21 @@ class EM_Location extends EM_Object {
 				$format = str_replace($conditionals[0][$key], apply_filters('em_location_output_condition', '', $conditionals[0][$key], $condition, $this), $format);
 			}
 		}
-		$location_string = $format;
+		//This is for the custom attributes
+		preg_match_all('/#_LATT\{([^}]+)\}(\{([^}]+)\})?/', $format, $results);
+		foreach($results[0] as $resultKey => $result) {
+			//Strip string of placeholder and just leave the reference
+			$attRef = substr( substr($result, 0, strpos($result, '}')), 7 );
+			$attString = '';
+			if( is_array($this->location_attributes) && array_key_exists($attRef, $this->location_attributes) ){
+				$attString = $this->location_attributes[$attRef];
+			}elseif( !empty($results[3][$resultKey]) ){
+				//Check to see if we have a second set of braces;
+				$attString = $results[3][$resultKey];
+			}
+			$attString = apply_filters('em_location_output_placeholder', $attString, $this, $result, $target);
+			$location_string = str_replace($result, $attString ,$location_string );
+		}
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
 		foreach($placeholders[1] as $key => $result) {
 			$replace = '';

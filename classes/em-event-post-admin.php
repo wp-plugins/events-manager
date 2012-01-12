@@ -99,6 +99,9 @@ class EM_Event_Post_Admin{
 				//we're updating only the quick-edit style information, which is only post info saved into the index
 				$EM_Event = em_get_event($post_id, 'post_id'); //grab event, via post info
 				if( $EM_Event->validate() ){
+					//first things first, we must make sure we have an index, if not, reset it to a new one:
+					$event_truly_exists = $wpdb->get_var('SELECT event_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$EM_Event->event_id}") == $EM_Event->event_id;
+					if(empty($EM_Event->event_id) || !$event_truly_exists){ $EM_Event->save_meta(); }
 					//we can save the status now
 					$event_status = $EM_Event->get_status(true);
 					//if this is just published, we need to email the user about the publication, or send to pending mode again for review

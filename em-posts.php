@@ -227,15 +227,26 @@ function wp_events_plugin_init(){
 }
 
 //Post Customization
-if( !get_option('dbem_cp_events_custom_fields', false) ){
-	add_filter('em_cp_event_supports', 'supported_custom_fields',10,1);
-	add_filter('em_cp_location_supports', 'supported_custom_fields',10,1);
+function supported_event_custom_fields($supported){
+	$remove = array();
+	if( !get_option('dbem_cp_events_custom_fields') ) $remove[] = 'custom-fields';
+	if( !get_option('dbem_cp_events_comments') ) $remove[] = 'comments';
+	return  supported_custom_fields($supported, $remove);
 }
-function supported_custom_fields($supported){
+add_filter('em_cp_event_supports', 'supported_event_custom_fields',10,1);
+
+function supported_location_custom_fields($supported){
+	$remove = array();
+	if( !get_option('dbem_cp_locations_custom_fields') ) $remove[] = 'custom-fields';
+	if( !get_option('dbem_cp_locations_comments') ) $remove[] = 'comments';
+	return supported_custom_fields($supported, $remove);
+}
+add_filter('em_cp_location_supports', 'supported_location_custom_fields',10,1);
+
+function supported_custom_fields($supported, $remove = array()){
 	foreach($supported as $key => $support_field){
-		if($support_field == 'custom-fields'){
+		if( in_array($support_field, $remove) ){
 			unset($supported[$key]);
-			return $supported;
 		}
 	}
 	return $supported;

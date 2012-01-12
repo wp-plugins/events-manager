@@ -285,7 +285,7 @@ class EM_Booking extends EM_Object{
 			$this->booking_price = $this->get_tickets_bookings()->get_price($force_refresh, false, $add_tax);
 		}
 		if($format){
-			return apply_filters('em_booking_get_price', em_get_currency_symbol().number_format($this->booking_price,2),$this);
+			return apply_filters('em_booking_get_price', em_get_currency_formatted($this->booking_price),$this);
 		}
 		return apply_filters('em_booking_get_price',$this->booking_price,$this);
 	}
@@ -379,7 +379,7 @@ class EM_Booking extends EM_Object{
 			$this->person->last_name = $this->person->user_lastname;
 			$this->person->phone = ( !empty($this->booking_meta['registration']['dbem_phone']) ) ? $this->booking_meta['registration']['dbem_phone']:__('Not Supplied','dbem');
 			//build display name
-			$full_name = $this->user_firstname  . " " . $this->user_lastname ;
+			$full_name = $this->person->user_firstname  . " " . $this->person->user_lastname ;
 			$full_name = trim($full_name);
 			$display_name = ( empty($full_name) ) ? __('Guest User','dbem'):$full_name;
 			$this->person->display_name = $display_name;
@@ -587,6 +587,8 @@ class EM_Booking extends EM_Object{
 		global $EM_Mailer;
 		//FIXME ticket logic needed
 		$EM_Event = $this->get_event(); //We NEED event details here.
+		$EM_Event->get_bookings(true); //refresh all bookings
+		
 		//Make sure event matches booking, and that booking used to be approved.
 		if( !($this->booking_status == 0 && $this->previous_status > 0) || $this->previous_status == 4 ){
 			$contact_id = ( $EM_Event->owner != "") ? $EM_Event->owner : get_option('dbem_default_contact_person');

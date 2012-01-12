@@ -66,6 +66,10 @@ class EM_Location_Post_Admin{
 				//do a quick and dirty update
 				do_action('em_location_save_pre', $this);
 				$EM_Location = new EM_Location($post_id, 'post_id');
+				//check for existence of index
+				$loc_truly_exists = $wpdb->get_var('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$EM_Location->location_id}") == $EM_Location->location_id;
+				if(empty($EM_Location->location_id) || !$loc_truly_exists){ $EM_Location->save_meta(); }
+				//continue
 				$location_status = ($EM_Location->is_published()) ? 1:0;
 				$wpdb->query("UPDATE ".EM_LOCATIONS_TABLE." SET location_name='{$EM_Location->location_name}', location_slug='{$EM_Location->location_slug}', location_private='{$EM_Location->location_private}',location_status={$location_status} WHERE location_id='{$EM_Location->location_id}'");
 				apply_filters('em_location_save', true , $this);
@@ -108,6 +112,9 @@ class EM_Location_Post_Admin{
 	function meta_boxes(){
 		add_meta_box('em-location-where', __('Where','dbem'), array('EM_Location_Post_Admin','meta_box_where'),EM_POST_TYPE_LOCATION, 'normal','high');
 		//add_meta_box('em-location-metadump', __('EM_Location Meta Dump','dbem'), array('EM_Location_Post_Admin','meta_box_metadump'),EM_POST_TYPE_LOCATION, 'normal','high');
+		if( get_option('dbem_location_attributes_enabled') ){
+			add_meta_box('em-location-attributes', __('Attributes','dbem'), array('EM_Location_Post_Admin','meta_box_attributes'),EM_POST_TYPE_LOCATION, 'normal','default');
+		}
 	}
 	
 	function meta_box_metadump(){
@@ -118,6 +125,10 @@ class EM_Location_Post_Admin{
 	function meta_box_where(){
 		?><input type="hidden" name="_emnonce" value="<?php echo wp_create_nonce('edit_location'); ?>" /><?php
 		em_locate_template('forms/location/where.php',true);		
+	}
+	
+	function meta_box_attributes(){
+		em_locate_template('forms/location/attributes.php',true);
 	}
 }
 add_action('admin_init',array('EM_Location_Post_Admin','init'));

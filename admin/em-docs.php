@@ -196,6 +196,14 @@ function em_docs_init($force_init = false){
 							'#_LOCATIONFULLBR' => array( 'desc' => 'Shows a line-break (br tag) seperated location information, ommitting blanks (format of address, town, state, postcode, region' ),
 						)
 					),
+					'Custom Attributes' => array(
+						'desc' => 'Events Manager allows you to create dynamic attributes to your locations, which act as extra information fields for your locations (e.g. "Dress Code"). For more information see <a href="http://wp-events-plugin.com/documentation/categories-and-attributes/">our online documentation</a> for more info on attributes.',
+						'placeholders' => array( 
+							'#_LATT{key}' => array('desc'=> 'This key will appear as an option when adding attributes to your location.'),
+							'#_LATT{key}{alternative text}' => array('desc'=> 'This key will appear as an option when adding attributes to your location. The text in the second braces will appear if the attribute is not defined or left blank for that location.'),
+							'#_LATT{key}{option 1|option 2|option 3|etc.}' => array('desc'=> 'This key will appear as an option when adding attributes to your location. The second braces are optional and will use a select box with these values as input. If no valid value is defined, the first option is used.'),
+						)
+					),
 					'Links' => array(
 						'placeholders' => array(
 							'#_LOCATIONURL' => array( 'desc' => 'Simply prints the location URL. You can use this placeholder to build your own customised links.' ),

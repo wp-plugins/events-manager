@@ -134,7 +134,7 @@ class EM_Ticket_Booking extends EM_Object{
 			$this->ticket_booking_price = $this->get_ticket()->get_price(false, $add_tax) * $this->ticket_booking_spaces;
 		}
 		if($format){
-			return apply_filters('em_booking_get_prices', em_get_currency_symbol().number_format($this->ticket_booking_price,2),$this);
+			return apply_filters('em_booking_get_prices', em_get_currency_formatted($this->ticket_booking_price), $this);
 		}
 		return apply_filters('em_booking_get_prices',$this->ticket_booking_price,$this);
 	}

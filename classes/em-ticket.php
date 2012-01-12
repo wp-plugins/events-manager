@@ -191,7 +191,7 @@ class EM_Ticket extends EM_Object{
 			}
 		}
 		if($format){
-			return apply_filters('em_ticket_get_price', em_get_currency_symbol().number_format($price,2),$this);
+			return apply_filters('em_ticket_get_price', em_get_currency_formatted($price),$this);
 		}
 		return apply_filters('em_ticket_get_price',number_format($price,2),$this);
 	}

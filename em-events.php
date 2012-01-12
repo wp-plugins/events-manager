@@ -194,10 +194,10 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	if ( 'right' == $seplocation ) { // sep on right, so reverse the order
 		$title_array = explode( $t_sep, $title );
 		$title_array = array_reverse( $title_array );
-		$title = implode( " $sep ", $title_array ) . $prefix;
+		$title = implode( " $sep ", $title_array );
 	} else {
 		$title_array = explode( $t_sep, $title );
-		$title = $prefix . implode( " $sep ", $title_array );
+		$title = implode( " $sep ", $title_array );
 	}
 	return $title;
 }

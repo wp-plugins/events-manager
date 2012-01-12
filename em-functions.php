@@ -181,15 +181,26 @@ function em_get_currencies(){
 	return apply_filters('em_get_currencies',$currencies);
 }
 
-function em_get_currency_symbol($true_symbol = false){
-	if($true_symbol){
-		return em_get_currencies()->true_symbols[get_option('dbem_bookings_currency')];
-	}
-	return apply_filters('em_get_currency_symbol', em_get_currencies()->symbols[get_option('dbem_bookings_currency')]);
+function em_get_currency_formatted($price, $currency=false, $format=false){
+	$formatted_price = '';
+	if(!$format) $format = get_option('dbem_bookings_currency_format','@#');
+	if(!$currency) $currency = get_option('dbem_bookings_currency');
+	$formatted_price = str_replace('@', em_get_currency_symbol(true,$currency), $format);
+	$formatted_price = str_replace('#', number_format( $price, 2, get_option('dbem_bookings_currency_decimal_point','.'), get_option('dbem_bookings_currency_thousands_sep',',') ), $formatted_price);
+	return $formatted_price;
 }
 
-function em_get_currency_name(){
-	return apply_filters('em_get_currency_name', em_get_currencies()->names[get_option('dbem_bookings_currency')]);
+function em_get_currency_symbol($true_symbol = false, $currency = false){
+	if( !$currency ) $currency = get_option('dbem_bookings_currency');
+	if($true_symbol){
+		return em_get_currencies()->true_symbols[$currency];
+	}
+	return apply_filters('em_get_currency_symbol', em_get_currencies()->symbols[$currency]);
+}
+
+function em_get_currency_name($currency = false){
+	if( !$currency ) $currency = get_option('dbem_bookings_currency');
+	return apply_filters('em_get_currency_name', em_get_currencies()->names[$currency]);
 }
 
 function em_get_hour_format(){
@@ -239,7 +250,7 @@ function em_get_wp_users( $args = array(), $extra_users = array() ) {
  	return $extra_users + $indexed_users;
 }
 
-function em_get_attributes(){
+function em_get_attributes($lattributes = false){
 	//We also get a list of attribute names and create a ddm list (since placeholders are fixed)
 	$formats = 
 		get_option ( 'dbem_placeholders_custom' ).
@@ -255,7 +266,11 @@ function em_get_attributes(){
 		get_option ( 'dbem_single_event_format' ).
 		get_option ( 'dbem_single_location_format' );
 	//We now have one long string of formats, get all the attribute placeholders
-	preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $formats, $matches);
+	if( $lattributes ){
+		preg_match_all('/#_LATT\{([^}]+)\}(\{([^}]+)\})?/', $formats, $matches);
+	}else{
+		preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $formats, $matches);
+	}
 	//Now grab all the unique attributes we can use in our event.
 	$attributes = array('names'=>array(), 'values'=>array());
 	foreach($matches[1] as $key => $attribute) {
@@ -417,7 +432,7 @@ function em_options_input_text($title, $name, $description, $default='') {
 		<th scope="row"><?php echo esc_html($title); ?></th>
 	    <td>
 			<input name="<?php echo esc_attr($name) ?>" type="text" id="<?php echo esc_attr($title) ?>" style="width: 95%" value="<?php echo esc_attr(get_option($name, $default), ENT_QUOTES); ?>" size="45" /><br />
-			<em><?php echo esc_html($description); ?></em>
+			<em><?php echo $description; ?></em>
 		</td>
 	</tr>
 	<?php
@@ -428,7 +443,7 @@ function em_options_input_password($title, $name, $description) {
 		<th scope="row"><?php echo esc_html($title); ?></th>
 	    <td>
 			<input name="<?php echo esc_attr($name) ?>" type="password" id="<?php echo esc_attr($title) ?>" style="width: 95%" value="<?php echo esc_attr(get_option($name)); ?>" size="45" /><br />
-			<em><?php echo esc_html($description); ?></em>
+			<em><?php echo $description; ?></em>
 		</td>
 	</tr>
 	<?php
@@ -440,7 +455,7 @@ function em_options_textarea($title, $name, $description) {
 		<th scope="row"><?php echo esc_html($title); ?></th>
 			<td>
 				<textarea name="<?php echo esc_attr($name) ?>" id="<?php echo esc_attr($name) ?>" rows="6" cols="60"><?php echo esc_attr(get_option($name), ENT_QUOTES);?></textarea><br/>
-				<em><?php echo esc_html($description); ?></em>
+				<em><?php echo $description; ?></em>
 			</td>
 		</tr>
 	<?php
@@ -482,7 +497,7 @@ function em_options_radio_binary($title, $name, $description, $option_names = ''
    		<td>  
    			<?php echo $option_names[1]; ?> <input id="<?php echo esc_attr($name) ?>_yes" name="<?php echo esc_attr($name) ?>" type="radio" value="1" <?php if($list_events_page) echo "checked='checked'"; ?> />&nbsp;&nbsp;&nbsp;
 			<?php echo $option_names[0]; ?> <input  id="<?php echo esc_attr($name) ?>_no" name="<?php echo esc_attr($name) ?>" type="radio" value="0" <?php if(!$list_events_page) echo "checked='checked'"; ?> />
-			<br/><em><?php echo esc_html($description); ?></em>
+			<br/><em><?php echo $description; ?></em>
 		</td>
    	</tr>
 	<?php	
@@ -504,7 +519,7 @@ function em_options_select($title, $name, $list, $description) {
  				</option>
 				<?php endforeach; ?>
 			</select> <br/>
-			<em><?php echo esc_html($description); ?></em>
+			<em><?php echo $description; ?></em>
 		</td>
    	</tr>
 	<?php	

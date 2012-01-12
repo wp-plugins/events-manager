@@ -297,6 +297,9 @@ function em_create_tickets_bookings_table() {
 }
 
 function em_add_options() {
+	global $wp_locale;
+	$decimal_point = !empty($wp_locale->number_format['decimal_point']) ? $wp_locale->number_format['decimal_point']:'.';
+	$thousands_sep = !empty($wp_locale->number_format['thousands_sep']) ? $wp_locale->number_format['thousands_sep']:',';
 	$contact_person_email_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_NAME on #F #j, #Y. He wants to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$contact_person_email_cancelled_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) cancelled his booking at #_NAME on #F #j, #Y. He wanted to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
 	$respondent_email_body_localizable = __("Dear #_BOOKINGNAME, <br/>you have successfully reserved #_BOOKINGSPACES space/spaces for #_NAME.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').__('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
@@ -473,6 +476,10 @@ function em_add_options() {
 		'dbem_display_calendar_day_single_yes' => 1,
 		'dbem_small_calendar_event_title_format' => "#_NAME",
 		'dbem_small_calendar_event_title_separator' => ", ",
+		'dbem_display_calendar_order' => 'ASC',
+		'dbem_display_calendar_orderby' => 'event_name,event_start_time',
+		'dbem_display_calendar_events_limit' => get_option('dbem_full_calendar_events_limit',3),
+		'dbem_display_calendar_events_limit_msg' => __('more...','dbem'),
 		//General Settings
 		'dbem_require_location' => 0,
 		'dbem_locations_enabled' => 1,
@@ -483,6 +490,8 @@ function em_add_options() {
 		'dbem_categories_enabled'=> 1,
 		'dbem_tags_enabled' => 1,
 		'dbem_placeholders_custom' => '',
+		'dbem_location_attributes_enabled' => 1,
+		'dbem_location_placeholders_custom' => '',
 		//Title rewriting compatability
 		'dbem_disable_title_rewrites'=> false,
 		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
@@ -497,6 +506,10 @@ function em_add_options() {
 		'dbem_bookings_approval_overbooking' => 0, //overbooking possible when approving?
 		'dbem_bookings_double'=>0,//double bookings or more, users can't double book by default
 		'dbem_bookings_user_cancellation' => 1, //can users cancel their booking?
+		'dbem_bookings_currency' => 'USD',
+		'dbem_bookings_currency_decimal_point' => $decimal_point,
+		'dbem_bookings_currency_thousands_sep' => $thousands_sep,
+		'dbem_bookings_currency_format' => '@#',
 		'dbem_bookings_tax' => 0, //extra tax
 		'dbem_bookings_tax_auto_add' => 0, //adjust prices to show tax?
 			//messages
@@ -563,6 +576,7 @@ function em_add_options() {
 		'dbem_cp_events_archive_formats' => 1,
 		'dbem_cp_events_search_results' => 0,
 		'dbem_cp_events_custom_fields' => 0,
+		'dbem_cp_events_comments' => 1,
 		//location cp options
 		'dbem_cp_locations_template_page' => 0,
 		'dbem_cp_locations_formats' => 1,
@@ -571,6 +585,8 @@ function em_add_options() {
 		'dbem_locations_default_archive_order' => 'ASC',
 		'dbem_cp_locations_archive_formats' => 1,
 		'dbem_cp_locations_search_results' => 0,
+		'dbem_cp_locations_custom_fields' => 0,
+		'dbem_cp_locations_comments' => 1,
 		//category cp options
 		'dbem_cp_categories_formats' => 1,
 		'dbem_categories_default_archive_orderby' => 'event_start_date,event_start_time,event_name',
@@ -580,7 +596,7 @@ function em_add_options() {
 		'dbem_tags_default_archive_orderby' => 'event_start_date,event_start_time,event_name',
 		'dbem_tags_default_archive_order' => 'ASC',
 	);
-
+	
 	foreach($dbem_options as $key => $value){
 		add_option($key, $value);
 	}

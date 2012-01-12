@@ -9,12 +9,14 @@ function em_get_event($id = false, $search_by = 'event_id') {
 	global $EM_Event;
 	//check if it's not already global so we don't instantiate again
 	if( is_object($EM_Event) && get_class($EM_Event) == 'EM_Event' ){
-		if( $search_by == 'event_id' && $EM_Event->event_id == $id ){
+		if( is_object($id) && $EM_Event->post_id == $id->ID ){
 			return $EM_Event;
-		}elseif( $search_by == 'post_id' && $EM_Event->post_id == $id ){
-			return $EM_Event;
-		}elseif( is_object($id) && $EM_Event->post_id == $id->ID ){
-			return $EM_Event;
+		}elseif( !is_object($id) ){
+			if( $search_by == 'event_id' && $EM_Event->event_id == $id ){
+				return $EM_Event;
+			}elseif( $search_by == 'post_id' && $EM_Event->post_id == $id ){
+				return $EM_Event;
+			}
 		}
 	}
 	if( is_object($id) && get_class($id) == 'EM_Event' ){
@@ -989,7 +991,7 @@ class EM_Event extends EM_Object{
 	 	$event_string = $format;
 		//Time place holder that doesn't show if empty.
 		//TODO add filter here too
-		preg_match_all('/#@?_\{[A-Za-z0-9 -\/,\.\\\]+\}/', $format, $results);
+		preg_match_all('/#@?_\{[^}]+\}/', $format, $results);
 		foreach($results[0] as $result) {
 			if(substr($result, 0, 3 ) == "#@_"){
 				$date = 'end_date';

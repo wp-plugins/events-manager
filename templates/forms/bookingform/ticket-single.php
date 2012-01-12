@@ -14,7 +14,8 @@ global $allowedposttags;
 	<p>
 		<label for='em_tickets'><?php _e('Spaces', 'dbem') ?></label>
 		<?php 
-			$spaces_options = $EM_Ticket->get_spaces_options(false);
+			$default = !empty($_REQUEST['em_tickets'][$EM_Ticket->ticket_id]['spaces']) ? $_REQUEST['em_tickets'][$EM_Ticket->ticket_id]['spaces']:0;
+			$spaces_options = $EM_Ticket->get_spaces_options(false,$default);
 			if( $spaces_options ){
 				echo $spaces_options;
 			}else{

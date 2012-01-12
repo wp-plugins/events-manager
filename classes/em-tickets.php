@@ -63,6 +63,19 @@ class EM_Tickets extends EM_Object implements Iterator{
 			return new EM_Event($this->event_id);
 		}
 	}
+
+	/**
+	 * does this ticket exist?
+	 * @return bool 
+	 */
+	function has_ticket($ticket_id){
+		foreach( $this->tickets as $EM_Ticket){
+			if($EM_Ticket->ticket_id == $ticket_id){
+				return apply_filters('em_tickets_has_ticket',true, $EM_Ticket, $this);
+			}
+		}
+		return apply_filters('em_tickets_has_ticket',false, false,$this);
+	}
 	
 	/**
 	 * Get the first EM_Ticket object in this instance. Returns false if no tickets available.

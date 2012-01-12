@@ -30,7 +30,6 @@ function bp_em_my_locations() {
 
 function bp_em_my_locations_title() {
 	_e( 'My Locations', 'dbem' );
-	if(current_user_can('edit_locations')): ?> <a href="<?php echo add_query_arg(array('action'=>'edit')); ?>" class="button add-new-h2"><?php _e('Add New','dbem'); ?></a><?php endif;
 }
 
 /**

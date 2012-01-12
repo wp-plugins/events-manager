@@ -289,7 +289,8 @@ function em_events_admin($args = array()){
 				'pending_count'=>$pending_count,
 				'page' => $page,
 				'limit' => $limit,
-				'offset' => $offset
+				'offset' => $offset,
+				'show_add_new' => true
 			));
 		}
 	}else{
@@ -379,7 +380,8 @@ function em_locations_admin($args = array()){
 				'url' => $url,
 				'page' => $page,
 				'limit' => $limit,
-				'offset' => $offset
+				'offset' => $offset,
+				'show_add_new' => true
 			));
 		}
 	}else{

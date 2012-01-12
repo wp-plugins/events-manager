@@ -97,6 +97,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.0.5 =
+* pending space counting in emails corrected
+
 = 5.0.42 =
 * changed csv booking time to 24 hr format
 * fixed EM_URI error

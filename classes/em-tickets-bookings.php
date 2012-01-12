@@ -85,7 +85,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 			$ticket_booking_key = $this->has_ticket($EM_Ticket_Booking->ticket_id);
 			if( $ticket_booking_key !== false && is_object($this->tickets_bookings[$ticket_booking_key]) ){
 				//previously booked ticket, so let's just replace it
-				$this->tickets_bookings[$ticket_booking_key]->spaces = $EM_Ticket_Booking->get_spaces();
+				$this->tickets_bookings[$ticket_booking_key]->ticket_booking_spaces = $EM_Ticket_Booking->get_spaces();
 				$this->tickets_bookings[$ticket_booking_key]->get_price(true);
 				return apply_filters('em_tickets_bookings_add',true,$this);
 			}elseif( $EM_Ticket_Booking->get_spaces() > 0 ){
@@ -211,7 +211,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 			$this->price = $price;
 		}
 		if($format){
-			return apply_filters('em_tickets_bookings_get_prices', em_get_currency_symbol().number_format($this->price,2),$this);
+			return apply_filters('em_tickets_bookings_get_prices', em_get_currency_formatted($this->price) ,$this);
 		}
 		return apply_filters('em_tickets_bookings_get_prices',$this->price,$this);
 	}

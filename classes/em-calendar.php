@@ -235,8 +235,13 @@ class EM_Calendar extends EM_Object {
 			if( array_key_exists($day_key, $calendar_array['cells']) ){
 				//Get link title for this date
 				$events_titles = array();
-				foreach($events as $event) { 
-					$events_titles[] = $event->output($event_title_format);
+				foreach($events as $event) {
+					if( count($events_titles) < get_option('dbem_display_calendar_events_limit')){
+						$events_titles[] = $event->output($event_title_format);
+					}else{
+						$events_titles[] = get_option('dbem_display_calendar_events_limit_msg');
+						break;
+					}
 				}   
 				$calendar_array['cells'][$day_key]['link_title'] = implode( $event_title_separator_format, $events_titles);
 							
@@ -320,6 +325,8 @@ class EM_Calendar extends EM_Object {
 			'country' => false,
 			'region' => false,
 			'blog' => get_current_blog_id(),
+			'orderby' => get_option('dbem_display_calendar_orderby'),
+			'order' => get_option('dbem_display_calendar_order')
 		);
 		if(is_multisite()){
 			global $bp;
