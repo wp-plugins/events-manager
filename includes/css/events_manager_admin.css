@@ -48,9 +48,9 @@ p.warning {
 	float: left;
  
 }
-div#icon-events{
-	background:url('../images/calendar-32.png') no-repeat center;
-}
+div#icon-events{ background:url('../images/calendar-32.png') no-repeat center; }
+div#icon-bookings{ background:url('../images/bookings-32.png') no-repeat center; }
+
 /* Events List */
 table.events-table tr.pending { background:#FCFFA8 }
 table.events-table tr.past { background:#E4E4E4 }

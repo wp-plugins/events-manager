@@ -1,5 +1,6 @@
 <?php
 global $EM_Location, $post;
+$required = '*';
 ?>
 <p><?php _e("If you're using the Google Maps, the more detail you provide, the more accurate Google can be at finding your location. If your address isn't being found, please <a='http://maps.google.com'>try it on maps.google.com</a> by adding all the fields below seperated by commas.",'dbem')?></p>
 <div id="em-location-data">

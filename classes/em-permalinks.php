@@ -188,7 +188,7 @@ function em_get_my_bookings_url(){
 	if( is_object($bp) ){
 		//get member url
 		return $bp->events->link.'attending/';
-	}elseif( get_option('dbem_bookings_my_page') ){
+	}elseif( get_option('dbem_my_bookings_page') ){
 		return get_permalink(get_option('dbem_bookings_my_page'));
 	}else{
 		if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){

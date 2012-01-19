@@ -337,6 +337,7 @@ class EM_Bookings_Table{
 			</div>
 			<?php endif; ?>
 		</div>
+		<br class="clear" />
 		<?php
 	}
 	

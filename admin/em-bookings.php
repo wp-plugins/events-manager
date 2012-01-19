@@ -61,6 +61,9 @@ function em_bookings_dashboard(){
   		</h2>
   		<?php endif; ?>
   		<?php echo $EM_Notices; ?>
+		<?php if( is_admin() ): ?>
+		<div class="icon32" id="icon-bookings"><br></div>
+		<?php endif; ?>
 		<h2><?php _e('Recent Bookings','dbem'); ?></h2>	
   		<?php
 		$EM_Bookings_Table = new EM_Bookings_Table();
@@ -68,6 +71,9 @@ function em_bookings_dashboard(){
 		$EM_Bookings_Table->output();
   		?>
   		<br class="clear" />
+		<?php if( is_admin() ): ?>
+		<div class="icon32" id="events"><br></div>
+		<?php endif; ?>
 		<h2><?php _e('Events With Bookings Enabled','dbem'); ?></h2>		
 		<?php em_bookings_events_table(); ?>
 		<?php do_action('em_bookings_dashboard'); ?>
@@ -115,6 +121,7 @@ function em_bookings_event(){
 				<a class="row-title" href="<?php echo admin_url(); ?>post.php?action=edit&amp;post=<?php echo $EM_Event->get_location()->post_id ?>"><?php echo ($EM_Event->get_location()->location_name); ?></a> 
 			</p>
 		</div>
+		<div class="icon32" id="icon-bookings"><br></div>
 		<h2><?php _e('Bookings','dbem'); ?></h2>
 		<?php
 		$EM_Bookings_Table = new EM_Bookings_Table();
@@ -163,6 +170,7 @@ function em_bookings_ticket(){
 				<?php do_action('em_booking_admin_ticket_row', $EM_Ticket); ?>
 			</table>
 		</div>
+		<div class="icon32" id="icon-bookings"><br></div>
 		<h2><?php _e('Bookings','dbem'); ?></h2>
 		<?php
 		$EM_Bookings_Table = new EM_Bookings_Table();
@@ -188,9 +196,7 @@ function em_bookings_single(){
 	}
 	?>
 	<div class='wrap'>
-		<div id='icon-users' class='icon32'>
-			<br/>
-		</div>
+		<div class="icon32" id="icon-bookings"><br></div>
   		<h2>
   			<?php _e('Edit Booking', 'dbem'); ?>
   		</h2>
@@ -394,7 +400,8 @@ function em_bookings_person(){
 		</div>
 		<br style="clear:both;" />
 		<?php do_action('em_bookings_person_body_1'); ?>
-		<h3><?php _e('Past And Present Bookings','dbem'); ?></h3>
+		<div class="icon32" id="icon-bookings"><br></div>
+		<h2><?php _e('Past And Present Bookings','dbem'); ?></h2>
 		<?php
 		$EM_Bookings_Table = new EM_Bookings_Table();
 		$EM_Bookings_Table->status = 'all';
