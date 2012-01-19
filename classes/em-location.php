@@ -241,8 +241,9 @@ class EM_Location extends EM_Object {
 			$validate_post = false;
 			$this->add_error( __('Location name').__(" is required.", "dbem") );
 		}
+		$validate_image = $this->image_validate();
 		$validate_meta = $this->validate_meta();
-		return apply_filters('em_location_validate', $validate_post && $validate_meta, $this );		
+		return apply_filters('em_location_validate', $validate_post && $validate_image && $validate_meta, $this );		
 	}
 	
 	/**
@@ -671,9 +672,11 @@ class EM_Location extends EM_Object {
 					else{ $scope = 'all'; }
 					$events = EM_Events::get( array('location'=>$this->location_id, 'scope'=>$scope) );
 					if ( count($events) > 0 ){
+						$replace .= get_option('dbem_location_event_list_item_header_format');
 						foreach($events as $event){
 							$replace .= $event->output(get_option('dbem_location_event_list_item_format'));
 						}
+						$replace .= get_option('dbem_location_event_list_item_footer_format');
 					} else {
 						$replace = get_option('dbem_location_no_events_message');
 					}

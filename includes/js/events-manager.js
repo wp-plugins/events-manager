@@ -219,26 +219,120 @@ jQuery(document).ready( function($){
 			return false;
 		});
 	//Manageing Bookings
-		//Widgets and filter submissions
-		$('.em_bookings_events_table form, .em_bookings_pending_table form').live('submit', function(e){
-			var el = $(this);
-			var url = em_ajaxify( el.attr('action') );			
-			el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
-			$.get( url, el.serializeArray(), function(data){
-				el.parents('.wrap').first().replaceWith(data);
+		//New Bookings Table
+		//	Pagination link clicks
+			$('#em-bookings-table .tablenav-pages a').live('click', function(){
+				var el = $(this);
+				var form = el.parents('#em-bookings-table form.bookings-filter');
+				//get page no from url, change page, submit form
+				var match = el.attr('href').match(/#[0-9]+/);
+				if( match != null && match.length > 0){
+					var pno = match[0].replace('#','');
+					form.find('input[name=pno]').val(pno);
+				}else{
+					form.find('input[name=pno]').val(1);
+				}
+				form.trigger('submit');
+				return false;
 			});
-			return false;
-		});
-		//Pagination link clicks
-		$('.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a').live('click', function(){		
-			var el = $(this);
-			var url = em_ajaxify( el.attr('href') );	
-			el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
-			$.get( url, function(data){
-				el.parents('.wrap').first().replaceWith(data);
+			//Widgets and filter submissions
+			$('#em-bookings-table form.bookings-filter').live('submit', function(e){
+				var el = $(this);			
+				el.parents('#em-bookings-table').find('.table-wrap').first().append('<div id="em-loading" />');
+				$.post( EM.ajaxurl, el.serializeArray(), function(data){
+					el.parents('#em-bookings-table').first().replaceWith(data);
+					//Settings Overlay
+					if( $("#em-bookings-table-settings-trigger").length > 0 ){
+						$("#em-bookings-table-settings-trigger").overlay({
+							mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
+							closeOnClick: true
+						});
+					}
+					if( $("#em-bookings-table-export-trigger").length > 0 ){
+						$("#em-bookings-table-export-trigger").overlay({
+							mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
+							closeOnClick: true
+						});
+					}
+				});
+				return false;
 			});
-			return false;
-		});
+			//Settings Overlay
+			if( $("#em-bookings-table-settings-trigger").length > 0 ){
+				$("#em-bookings-table-settings-trigger").overlay({
+					mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
+					closeOnClick: true
+				});
+				$('#em-bookings-table-settings-form').live('submit', function(el){
+					el.preventDefault();
+					var arr = $('form#em-bookings-table-settings-form').serializeArray();
+					//we know we'll deal with cols, so wipe hidden value from main
+					$("#em-bookings-table form.bookings-filter [name=cols]").val('');
+					$.each(arr, function(i,item){
+						if( item.name.split('[').length == 1 ){
+							//copy it into the main form, overwrite those values
+							var match = $("#em-bookings-table form.bookings-filter [name="+item.name+"]");
+							if( match.length > 0 ){ match.val(item.value); }
+						}else{
+							item_name_split = item.name.split('[');
+							var item_name = item_name_split[0];
+							var match = $("#em-bookings-table form.bookings-filter [name="+item_name+"]");
+							if( match.length > 0 ){
+								if(match.val() != ''){
+									match.val(match.val()+','+item.value);
+								}else{
+									match.val(item.value);
+								}
+							}
+						}
+					});
+					//deal with actions col
+					if($("form#em-bookings-table-settings-form [name=show_actions]:checked").val()){
+						var match = $("#em-bookings-table form.bookings-filter [name=cols]");
+						if( match.length > 0 ){
+							if(match.val() != ''){
+								match.val(match.val()+',actions');
+							}else{
+								match.val(item.value);
+							}
+						}
+					}
+					//submit main form
+					$('#em-bookings-table-settings a.close').trigger('click');
+					$('#em-bookings-table-settings').trigger('submitted'); //hook into this with bind()
+					$('#em-bookings-table form.bookings-filter').trigger('submit');					
+					return false;
+				});
+			}
+			//Export Overlay
+			if( $("#em-bookings-table-export-trigger").length > 0 ){
+				$("#em-bookings-table-export-trigger").overlay({
+					mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
+					closeOnClick: true
+				});
+			}
+			
+		//Old Bookings Table
+			//Widgets and filter submissions
+			$('.em_bookings_events_table form, .em_bookings_pending_table form').live('submit', function(e){
+				var el = $(this);
+				var url = em_ajaxify( el.attr('action') );			
+				el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
+				$.get( url, el.serializeArray(), function(data){
+					el.parents('.wrap').first().replaceWith(data);
+				});
+				return false;
+			});
+			//Pagination link clicks
+			$('.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a').live('click', function(){		
+				var el = $(this);
+				var url = em_ajaxify( el.attr('href') );	
+				el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
+				$.get( url, function(data){
+					el.parents('.wrap').first().replaceWith(data);
+				});
+				return false;
+			});
 		//Approve/Reject Links
 		$('.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete').live('click', function(){
 			var el = $(this); 

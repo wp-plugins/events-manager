@@ -13,7 +13,7 @@ class EM_Booking extends EM_Object{
 		'booking_id' => array('name'=>'id','type'=>'%d'),
 		'event_id' => array('name'=>'event_id','type'=>'%d'),
 		'person_id' => array('name'=>'person_id','type'=>'%d'),
-		'booking_price' => array('name'=>'price','type'=>'%d'),
+		'booking_price' => array('name'=>'price','type'=>'%f'),
 		'booking_spaces' => array('name'=>'spaces','type'=>'%d'),
 		'booking_comment' => array('name'=>'comment','type'=>'%s'),
 		'booking_status' => array('name'=>'status','type'=>'%d'),

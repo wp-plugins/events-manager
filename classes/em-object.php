@@ -437,7 +437,7 @@ class EM_Object {
 		//if multisite and supoer admin, just return true
 		if( is_multisite() && is_super_admin() ){ return true; }
 		//do they own this?
-		$is_owner = ( !empty($this->owner) && ($this->owner == get_current_user_id() || empty($this->id) || (!empty($user) && $this->owner == $user->ID)) );
+		$is_owner = ( (!empty($this->owner) && ($this->owner == get_current_user_id()) || empty($this->id) || (!empty($user) && $this->owner == $user->ID)) );
 		//now check capability
 		$can_manage = false;
 		if( $is_owner && (current_user_can($owner_capability) || (!empty($user) && $user->has_cap($owner_capability))) ){
@@ -503,7 +503,7 @@ class EM_Object {
 	 */
 	function compat_keys(){
 		foreach($this->fields as $key => $fieldinfo){
-			$this->$fieldinfo['name'] = $this->$key;
+			if(!empty($this->$key)) $this->$fieldinfo['name'] = $this->$key;
 		}
 	}
 

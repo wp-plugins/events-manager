@@ -71,7 +71,7 @@ $localised_date_format = em_get_date_format();
 									<?php 
 									if( $EM_Ticket->get_spaces() ){
 										echo $EM_Ticket->get_spaces();
-										echo ($EM_Ticket->ticket_spaces_limit) ? '':'*';
+										echo (!empty($EM_Ticket->ticket_spaces_limit)) ? '':'*';
 									}else{
 										echo '-';
 									} 
@@ -94,7 +94,7 @@ $localised_date_format = em_get_date_format();
 								<input type="hidden" class="ticket_description" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo esc_attr(stripslashes($EM_Ticket->ticket_description)) ?>" />
 								<input type="hidden" class="ticket_price" name="em_tickets[<?php echo $count; ?>][ticket_price]" value="<?php echo $EM_Ticket->ticket_price ?>" />
 								<input type="hidden" class="ticket_spaces" name="em_tickets[<?php echo $count; ?>][ticket_spaces]" value="<?php echo $EM_Ticket->ticket_spaces ?>" />
-								<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->ticket_start) ) ? date("Y-m-d H:i", $EM_Ticket->ticket_start_timestamp):''; ?>" />
+								<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->ticket_start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
 								<input type="hidden" class="ticket_end" name="em_tickets[<?php echo $count; ?>][ticket_end]" value="<?php echo ( !empty($EM_Ticket->ticket_end) ) ? date("Y-m-d H:i", $EM_Ticket->end_timestamp):''; ?>" />
 								<input type="hidden" class="ticket_min" name="em_tickets[<?php echo $count; ?>][ticket_min]" value="<?php echo $EM_Ticket->ticket_min ?>" />
 								<input type="hidden" class="ticket_max" name="em_tickets[<?php echo $count; ?>][ticket_max]" value="<?php echo $EM_Ticket->ticket_max ?>" />

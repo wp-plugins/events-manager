@@ -10,7 +10,7 @@ if( !class_exists('EM_Permalinks') ){
 			'category_id', 'category_slug',
 			'ticket_id',
 			'calendar_day',
-			'rss', 'ical', 'bookings_page', 'payment_gateway','event_categories','event_locations'
+			'rss', 'ical', 'bookings_page','event_categories','event_locations'
 		);
 		
 		function init(){
@@ -21,7 +21,7 @@ if( !class_exists('EM_Permalinks') ){
 			add_filter('rewrite_rules_array',array('EM_Permalinks','rewrite_rules_array'));
 			add_filter('query_vars',array('EM_Permalinks','query_vars'));
 			add_action('parse_query',array('EM_Permalinks','init_objects'), 1);
-			add_action('parse_query',array('EM_Permalinks','redirection'), 10);
+			add_action('parse_query',array('EM_Permalinks','redirection'), 1);
 			if( !defined('EM_EVENT_SLUG') ){ define('EM_EVENT_SLUG','event'); }
 			if( !defined('EM_LOCATION_SLUG') ){ define('EM_LOCATION_SLUG','location'); }
 			if( !defined('EM_LOCATIONS_SLUG') ){ define('EM_LOCATIONS_SLUG','locations'); }
@@ -44,14 +44,14 @@ if( !class_exists('EM_Permalinks') ){
 			if( is_object($wp_query) && $wp_query->get('em_redirect') ){
 				//is this a querystring url?
 				if( $wp_query->get('event_slug') ){
-					$event = $wpdb->get_row('SELECT event_id, post_id FROM '.EM_EVENTS_TABLE." WHERE event_slug='".$wp_query->get('event_slug')."' AND (blog_id=".get_current_blog_id()." OR blog_id IS NULL)", ARRAY_A);
-					if( $event !== false ){
+					$event = $wpdb->get_row('SELECT event_id, post_id FROM '.EM_EVENTS_TABLE." WHERE event_slug='".$wp_query->get('event_slug')."' AND (blog_id=".get_current_blog_id()." OR blog_id IS NULL OR blog_id=0)", ARRAY_A);
+					if( !empty($event) ){
 						$EM_Event = em_get_event($event['event_id']);
 						$url = get_permalink($EM_Event->post_id);
 					}
 				}elseif( $wp_query->get('location_slug') ){
-					$location = $wpdb->get_row('SELECT location_id, post_id FROM '.EM_LOCATIONS_TABLE." WHERE location_slug='".$wp_query->get('location_slug')."' AND (blog_id=".get_current_blog_id()." OR blog_id IS NULL)", ARRAY_A);
-					if( $location !== false ){
+					$location = $wpdb->get_row('SELECT location_id, post_id FROM '.EM_LOCATIONS_TABLE." WHERE location_slug='".$wp_query->get('location_slug')."' AND (blog_id=".get_current_blog_id()." OR blog_id IS NULL OR blog_id=0)", ARRAY_A);
+					if( !empty($location) ){
 						$EM_Location = em_get_location($location['location_id']);
 						$url = get_permalink($EM_Location->post_id);
 					}
@@ -79,7 +79,6 @@ if( !class_exists('EM_Permalinks') ){
 				}
 				$em_rules[$events_slug.'rss$'] = 'index.php?pagename='.$events_slug.'&rss=1'; //rss page
 				$em_rules[$events_slug.'feed$'] = 'index.php?pagename='.$events_slug.'&rss=1'; //compatible rss page
-				$em_rules[$events_slug.'payments/(.+)$'] = 'index.php?pagename='.$events_slug.'&payment_gateway=$matches[1]'; //single event booking form with slug
 				if( EM_POST_TYPE_EVENT_SLUG.'/' == $events_slug ){ //won't apply on homepage
 					//make sure we hard-code rewrites for child pages of events
 					$child_posts = get_posts(array('post_type'=>'page', 'post_parent'=>$events_page->ID));
@@ -100,7 +99,6 @@ if( !class_exists('EM_Permalinks') ){
 				$em_rules[$events_slug.'/(\d{4}-\d{2}-\d{2})$'] = 'index.php?post_type='.EM_POST_TYPE_EVENT.'&calendar_day=$matches[1]'; //event calendar date search
 				$em_rules[$events_slug.'/my\-bookings$'] = 'index.php?post_type='.EM_POST_TYPE_EVENT.'&bookings_page=1'; //page for users to manage bookings
 				$em_rules[$events_slug.'/rss$'] = 'index.php?post_type='.EM_POST_TYPE_EVENT.'&rss=1'; //rss page
-				$em_rules[$events_slug.'/payments/(.+)$'] = 'index.php?post_type='.EM_POST_TYPE_EVENT.'&payment_gateway=$matches[1]'; //single event booking form with slug
 			}
 			//If in MS global mode and locations are linked on same site
 			if( EM_MS_GLOBAL && !get_site_option('dbem_ms_global_locations_links', true) ){

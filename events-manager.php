@@ -28,8 +28,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 
 
 // Setting constants
-define('EM_VERSION', 5.045); //self expanatory
-define('EM_PRO_MIN_VERSION', 1.45); //self expanatory
+define('EM_VERSION', 5.051); //self expanatory
+define('EM_PRO_MIN_VERSION', 1.5); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 //EM_MS_GLOBAL
 if( get_site_option('dbem_ms_global_table') && is_multisite() ){
@@ -73,6 +73,7 @@ include("widgets/em-calendar.php");
 //Classes
 include('classes/em-booking.php');
 include('classes/em-bookings.php');
+include("classes/em-bookings-table.php") ;
 include('classes/em-calendar.php');
 include('classes/em-category.php');
 include('classes/em-category-taxonomy.php');
@@ -167,30 +168,6 @@ if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
 $localised_date_formats = array("am" => "d.m.Y","ar" => "d/m/Y", "bg" => "d.m.Y", "ca" => "m/d/Y", "cs" => "d.m.Y", "da" => "d-m-Y", "de" =>"d.m.Y", "es" => "d/m/Y", "en" => "m/d/Y", "fi" => "d.m.Y", "fr" => "d/m/Y", "he" => "d/m/Y", "hu" => "Y-m-d", "hy" => "d.m.Y", "id" => "d/m/Y", "is" => "d/m/Y", "it" => "d/m/Y", "ja" => "Y/m/d", "ko" => "Y-m-d", "lt" => "Y-m-d", "lv" => "d-m-Y", "nl" => "d.m.Y", "no" => "Y-m-d", "pl" => "Y-m-d", "pt" => "d/m/Y", "ro" => "m/d/Y", "ru" => "d.m.Y", "sk" => "d.m.Y", "sv" => "Y-m-d", "th" => "d/m/Y", "tr" => "d.m.Y", "ua" => "d.m.Y", "uk" => "d.m.Y", "us" => "m/d/Y", "CN" => "Y-m-d", "TW" => "Y/m/d");
 //TODO reorganize how defaults are created, e.g. is it necessary to create false entries? They are false by default... less code, but maybe not verbose enough...
 
-
-// FILTERS
-// filters for general events field (corresponding to those of  "the _title")
-add_filter('dbem_general', 'wptexturize');
-add_filter('dbem_general', 'convert_chars');
-add_filter('dbem_general', 'trim');
-// filters for the notes field  (corresponding to those of  "the _content")
-add_filter('dbem_notes', 'wptexturize');
-add_filter('dbem_notes', 'convert_smilies');
-add_filter('dbem_notes', 'convert_chars');
-add_filter('dbem_notes', 'wpautop');
-add_filter('dbem_notes', 'prepend_attachment');
-// RSS general filters
-add_filter('dbem_general_rss', 'strip_tags');
-add_filter('dbem_general_rss', 'ent2ncr', 8);
-add_filter('dbem_general_rss', 'esc_html');
-// RSS content filter
-add_filter('dbem_notes_rss', 'convert_chars', 8);
-add_filter('dbem_notes_rss', 'ent2ncr', 8);
-// Notes map filters
-add_filter('dbem_notes_map', 'convert_chars', 8);
-add_filter('dbem_notes_map', 'js_escape');
-
-
 /**
  * @author marcus
  * Contains functions for loading styles on both admin and public sides.
@@ -234,8 +211,8 @@ class EM_Scripts_and_Styles {
 		global $em_localized_js;
 		//Localise vars regardless
 		$locale_code = substr ( get_locale(), 0, 2 );
-		if( WPLANG == 'en_GB'){
-			$locale_code = 'en-GB';
+		if (preg_match('/^en_(?:GB|IE|AU|NZ|ZA|TT|JM)$/', WPLANG)) {
+		    $locale_code = 'en-GB';
 		}
 		//Set time
 		$show24Hours = ( !preg_match("/en|sk|zh|us|uk/", $locale_code ) );	// Setting 12 hours format for those countries using it

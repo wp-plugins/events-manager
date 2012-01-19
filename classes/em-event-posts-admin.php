@@ -131,7 +131,7 @@ class EM_Event_Posts_Admin{
 				}
 				break;
 			case 'extra':
-				if( get_option('dbem_rsvp_enabled') == 1 && $EM_Event->rsvp == 1 && $EM_Event->can_manage('manage_bookings','manage_others_bookings')){
+				if( get_option('dbem_rsvp_enabled') == 1 && !empty($EM_Event->event_rsvp) && $EM_Event->can_manage('manage_bookings','manage_others_bookings')){
 					?>
 					<a href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->event_id ?>"><?php echo __("Bookings",'dbem'); ?></a> &ndash;
 					<?php _e("Booked",'dbem'); ?>: <?php echo $EM_Event->get_bookings()->get_booked_spaces()."/".$EM_Event->get_spaces(); ?>

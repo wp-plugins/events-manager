@@ -187,7 +187,7 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	$edit_events_page_id = get_option( 'dbem_edit_events_page' );
 	$edit_locations_page_id = get_option( 'dbem_edit_locations_page' );
 	$edit_bookings_page_id = get_option( 'dbem_edit_bookings_page' );
-	if( get_the_ID() != $events_page_id && !in_array($post->ID, array($events_page_id, $locations_page_id, $edit_events_page_id, $edit_locations_page_id, $edit_bookings_page_id)) ){ return $title; }
+	if( !empty($post->ID) && $post->ID != $events_page_id && !in_array($post->ID, array($events_page_id, $locations_page_id, $edit_events_page_id, $edit_locations_page_id, $edit_bookings_page_id)) ){ return $title; }
 	// Determines position of the separator and direction of the breadcrumb
 	$title = em_content_page_title($title);
 	$t_sep = '%WP_TITILE_SEP%'; // Temporary separator, for accurate flipping, if necessary

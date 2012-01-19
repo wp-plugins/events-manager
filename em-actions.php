@@ -446,7 +446,8 @@ function em_init_actions() {
 			$conds = array();
 			if( !empty($_REQUEST['country']) ){
 				$conds[] = $wpdb->prepare("(location_country = '%s' OR location_country IS NULL )", $_REQUEST['country']);
-			}elseif( !empty($_REQUEST['region']) ){
+			}
+			if( !empty($_REQUEST['region']) ){
 				$conds[] = $wpdb->prepare("( location_region = '%s' OR location_region IS NULL )", $_REQUEST['region']);
 			}
 			$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
@@ -473,9 +474,11 @@ function em_init_actions() {
 			$conds = array();
 			if( !empty($_REQUEST['country']) ){
 				$conds[] = $wpdb->prepare("(location_country = '%s' OR location_country IS NULL )", $_REQUEST['country']);
-			}elseif( !empty($_REQUEST['region']) ){
+			}
+			if( !empty($_REQUEST['region']) ){
 				$conds[] = $wpdb->prepare("( location_region = '%s' OR location_region IS NULL )", $_REQUEST['region']);
-			}elseif( !empty($_REQUEST['state']) ){
+			}
+			if( !empty($_REQUEST['state']) ){
 				$conds[] = $wpdb->prepare("(location_state = '%s' OR location_state IS NULL )", $_REQUEST['state']);
 			}
 			$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
@@ -547,8 +550,37 @@ function em_init_actions() {
 					break;
 			}
 		}
-	}	
+	}
+	//Export CSV - WIP
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_bookings_csv' && wp_verify_nonce($_REQUEST['_wpnonce'], 'export_bookings_csv')){
+		//generate bookings export according to search request
+		$EM_Bookings_Table = new EM_Bookings_Table();
+		header("Content-Type: application/octet-stream");
+		header("Content-Disposition: Attachment; filename=".sanitize_title(get_bloginfo())."-bookings-export.csv");
+		echo sprintf(__('Exported booking on %s','dbem'), date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
+		echo '"'. implode('","', $EM_Bookings_Table->get_headers()). '"' .  "\n";
+		//Rows
+		foreach( $EM_Bookings_Table->get_bookings() as $EM_Booking ) {
+			//Display all values
+			$row_output = '';
+			$row = $EM_Bookings_Table->get_rows_csv($EM_Booking);
+			foreach( $row as $value){
+				$value = str_replace('"', '""', $value);
+				$value = str_replace("=", "", $value);
+				$row_output .= '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
+			}
+			echo $row_output."\n";
+		}
+		exit();
+	}
 }  
 add_action('init','em_init_actions',11);
+
+function em_ajax_bookings_table(){
+	$EM_Bookings_Table = new EM_Bookings_Table();
+	$EM_Bookings_Table->output_content();
+	exit();
+}
+add_action('wp_ajax_em_bookings_table','em_ajax_bookings_table');
 
 ?>

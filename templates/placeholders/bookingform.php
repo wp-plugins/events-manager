@@ -27,18 +27,16 @@ $EM_Ticket = $EM_Tickets->get_first();
 				<?php 
 					/* Show Tickets
 					 * If there's more than one ticket, we show them in a list. 
-					 * If not, we'll only show one ddm for the number of seats and maybe a 
-					 * price indicator if this event entrance has a price. 
-					 * If for some reason you have more than one free ticket and no paid ones, 
-					 * the price collumn will be ommited.
+					 * If not, we'll only show one ddm for the number of seats and maybe a price indicator if this event entrance has a price. 
+					 * If for some reason you have more than one free ticket and no paid ones, the price collumn will be ommited.
 					 */
+					//we may show the tickets if user is logged out, so test this condition here and save result for later
+					$can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is_user_logged_in());
+					if( ($can_book || get_option('dbem_bookings_tickets_show_loggedout')) && (count($EM_Tickets->tickets) > 1 || get_option('dbem_bookings_tickets_single_form')) ){ //show if more than 1 ticket, or if in forced ticket list view mode
+						em_locate_template('forms/bookingform/tickets-list.php',true, array('EM_Event'=>$EM_Event));
+					}
 				?>
-				<?php if( is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is_user_logged_in()) ): ?>
-					<?php 
-						if( count($EM_Tickets->tickets) > 1 || get_option('dbem_bookings_tickets_single_form') ){ //show if more than 1 ticket, or if in forced ticket list view mode
-							em_locate_template('forms/bookingform/tickets-list.php',true, array('EM_Event'=>$EM_Event));
-						} 
-					?>
+				<?php if( $can_book ): ?>
 					<?php do_action('em_booking_form_after_tickets'); ?>
 					<div class='em-booking-form-details'>
 						<?php 

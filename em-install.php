@@ -423,7 +423,9 @@ function em_add_options() {
 <h3>Upcoming Events</h3>
 <p>#_NEXTEVENTS</p>',
 		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
+		'dbem_location_event_list_item_header_format' => "<ul>",
 		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
+		'dbem_location_event_list_item_footer_format' => "</ul>",
 		//Category page options
 		'dbem_list_categories_page' => 1,
 		'dbem_categories_default_limit' => 10,
@@ -436,12 +438,16 @@ function em_add_options() {
 		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
 		'dbem_category_no_events_message' => __('<li>No events in this category</li>', 'dbem'),
+		'dbem_category_event_list_item_header_format' => '<ul>',
 		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
+		'dbem_category_event_list_item_footer_format' => '</ul>',
 		//Tag Formatting
 		'dbem_tag_page_title_format' => '#_TAGNAME',
 		'dbem_tag_page_format' => '<h3>Upcoming Events</h3>#_TAGNEXTEVENTS',
 		'dbem_tag_no_events_message' => __('<li>No events in this tag</li>', 'dbem'),
+		'dbem_tag_event_list_item_header_format' => '<ul>',
 		'dbem_tag_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
+		'dbem_tag_event_list_item_footer_format' => '</ul>',
 		//RSS Stuff
 		'dbem_rss_limit' => 10,
 		'dbem_rss_scope' => 'future',

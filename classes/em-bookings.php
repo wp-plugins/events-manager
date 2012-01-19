@@ -438,7 +438,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 * @return array 
 	 * @static
 	 */
-	function get( $args = array() ){
+	function get( $args = array(), $count = false ){
 		global $wpdb,$current_user;
 		$bookings_table = EM_BOOKINGS_TABLE;
 		$events_table = EM_EVENTS_TABLE;
@@ -475,16 +475,22 @@ class EM_Bookings extends EM_Object implements Iterator{
 		$orderby = self::build_sql_orderby($args, $accepted_fields);
 		//Now, build orderby sql
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
+		//Selector
+		$selectors = ( $count ) ?  'COUNT(*)':'*';
 		
 		//Create the SQL statement and execute
 		$sql = "
-			SELECT * FROM $bookings_table 
+			SELECT $selectors FROM $bookings_table 
 			LEFT JOIN $events_table ON {$events_table}.event_id={$bookings_table}.event_id 
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
 			$orderby_sql
 			$limit $offset
 		";
+		//If we're only counting results, return the number of results
+		if( $count ){
+			return apply_filters('em_bookings_get_count', $wpdb->get_var($sql), $args);		
+		}
 		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?
@@ -500,6 +506,10 @@ class EM_Bookings extends EM_Object implements Iterator{
 		}
 		$EM_Bookings = new EM_Bookings($bookings);
 		return apply_filters('em_bookings_get', $EM_Bookings);
+	}
+	
+	function count( $args = array() ){
+		return self::get($args, true);
 	}
 	
 
@@ -528,6 +538,13 @@ class EM_Bookings extends EM_Object implements Iterator{
 		$conditions = apply_filters( 'em_bookings_build_sql_conditions', parent::build_sql_conditions($args), $args );
 		if( is_numeric($args['status']) ){
 			$conditions['status'] = 'booking_status='.$args['status'];
+		}elseif( is_array($args['status']) && count($args['status']) > 0 ){
+			$conditions['status'] = 'booking_status IN ('.implode(',',$args['status']).')';
+		}elseif( !is_array($args['status']) && preg_match('/^([0-9],?)+$/', $args['status']) ){
+			$conditions['status'] = 'booking_status IN ('.$args['status'].')';
+		}
+		if( is_numeric($args['person']) && current_user_can('manage_others_bookings') ){
+			$conditions['person'] = EM_BOOKINGS_TABLE.'.person_id='.$args['person'];
 		}
 		return apply_filters('em_bookings_build_sql_conditions', $conditions, $args);
 	}

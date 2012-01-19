@@ -62,11 +62,12 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
  * @uses paginate_links()
  * @uses add_query_arg()
  */
-function em_admin_paginate($total, $limit, $page=1, $vars=false){				
+function em_admin_paginate($total, $limit, $page=1, $vars=false, $base = false, $format = ''){				
 	$return = '<div class="tablenav-pages">';
+	$base = !empty($base) ? $base:add_query_arg( 'pno', '%#%' );
 	$events_nav = paginate_links( array(
-		'base' => add_query_arg( 'pno', '%#%' ),
-		'format' => '',
+		'base' => $base,
+		'format' => $format,
 		'total' => ceil($total / $limit),
 		'current' => $page,
 		'add_args' => $vars
@@ -107,9 +108,11 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 		//split further into associative array
 		$url_params = array();
 		foreach($url_params_dirty as $url_param){
-			if( !empty($url_param[1]) ){
+			if( !empty($url_param) ){
 				$url_param = explode('=', $url_param);
-				$url_params[$url_param[0]] = $url_param[1];
+				if(count($url_param) > 1){
+					$url_params[$url_param[0]] = $url_param[1];
+				}
 			}
 		}
 		//Merge it together

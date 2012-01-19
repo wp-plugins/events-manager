@@ -115,11 +115,13 @@ class EM_Tag extends EM_Object {
 					else{ $scope = 'all'; }					
 					$events = EM_Events::get( array('tag'=>$this->term_id, 'scope'=>$scope) );
 					if ( count($events) > 0 ){
+						$replace .= get_option('dbem_tag_event_list_item_header_format','<ul>');
 						foreach($events as $EM_Event){
 							$replace .= $EM_Event->output(get_option('dbem_tag_event_list_item_format'));
 						}
+						$replace .= get_option('dbem_tag_event_list_item_footer_format');
 					} else {
-						$replace = get_option('dbem_tag_no_events_message');
+						$replace = get_option('dbem_tag_no_events_message','</ul>');
 					}
 					break;
 				default:
