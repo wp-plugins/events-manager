@@ -264,7 +264,7 @@ function em_docs_init($force_init = false){
 							'#_BOOKINGLISTURL' => array( 'desc' => 'URL to page showing that users booked events.' )
 						)
 					),
-					'Gatewa-Specific Information' => array(
+					'Gateway-Specific Information' => array(
 						'desc' => '',
 						'placeholders' => array(
 							'#_BOOKINGTXNID' => array( 'desc' => '<em>Online Payments Only</em> - Prints the transaction ID of this booking if available.' )
