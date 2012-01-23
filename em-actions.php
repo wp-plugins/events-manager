@@ -308,14 +308,15 @@ function em_init_actions() {
 							$EM_Notices->add_error( get_option('dbem_booking_feedback_log_in') );
 						}
 					}
-					if( $registration && $EM_Event->get_bookings()->add($EM_Booking) ){
+					$EM_Bookings = $EM_Event->get_bookings();
+					if( $registration && $EM_Bookings->add($EM_Booking) ){
 						$result = true;
-						$EM_Notices->add_confirm( $EM_Event->get_bookings()->feedback_message );		
-						$feedback = $EM_Event->get_bookings()->feedback_message;	
+						$EM_Notices->add_confirm( $EM_Bookings->feedback_message );		
+						$feedback = $EM_Bookings->feedback_message;
 					}else{
 						$result = false;
-						$EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );			
-						$feedback = $EM_Event->get_bookings()->feedback_message;				
+						$EM_Notices->add_error( $EM_Bookings->get_errors() );			
+						$feedback = $EM_Bookings->feedback_message;				
 					}
 				}else{
 					$result = false;
