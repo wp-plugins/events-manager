@@ -236,7 +236,7 @@ class EM_Calendar extends EM_Object {
 				//Get link title for this date
 				$events_titles = array();
 				foreach($events as $event) {
-					if( count($events_titles) < get_option('dbem_display_calendar_events_limit')){
+					if( !get_option('dbem_display_calendar_events_limit') || count($events_titles) < get_option('dbem_display_calendar_events_limit') ){
 						$events_titles[] = $event->output($event_title_format);
 					}else{
 						$events_titles[] = get_option('dbem_display_calendar_events_limit_msg');
