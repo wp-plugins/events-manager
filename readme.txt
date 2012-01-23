@@ -103,6 +103,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * bookings feedback messages showing properly again
 * manage my bookings page link functioning correctly now
 * GBP pound sign fixed
+* fixed location atts setting box not being checked for placeholders
 
 = 5.0.50 =
 * bookings table now within a unified ajax table
