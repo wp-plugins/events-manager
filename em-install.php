@@ -502,13 +502,10 @@ function em_add_options() {
 		'dbem_disable_title_rewrites'=> false,
 		'dbem_title_html' => '<h2>#_PAGETITLE</h2>',
 		//Bookings
-		'dbem_bookings_form_max' => 20,
 		'dbem_bookings_registration_disable' => 0,
 		'dbem_bookings_registration_user' => '',
-		'dbem_bookings_anonymous' => 1,
 		'dbem_bookings_approval' => 1, //approval is on by default
 		'dbem_bookings_approval_reserved' => 0, //overbooking before approval?
-		'dbem_bookings_login_form' => 1, //show login form on booking area
 		'dbem_bookings_approval_overbooking' => 0, //overbooking possible when approving?
 		'dbem_bookings_double'=>0,//double bookings or more, users can't double book by default
 		'dbem_bookings_user_cancellation' => 1, //can users cancel their booking?
@@ -518,6 +515,17 @@ function em_add_options() {
 		'dbem_bookings_currency_format' => '@#',
 		'dbem_bookings_tax' => 0, //extra tax
 		'dbem_bookings_tax_auto_add' => 0, //adjust prices to show tax?
+			//Form Options
+			'dbem_bookings_submit_button' => __('Send your booking', 'dbem'),
+			'dbem_bookings_login_form' => 1, //show login form on booking area
+			'dbem_bookings_anonymous' => 1,
+			'dbem_bookings_form_max' => 20,
+			//Messages
+			'dbem_bookings_form_msg_disabled' => __('Online bookings are not available for this event.','dbem'),
+			'dbem_bookings_form_msg_closed' => __('Bookings are closed for this event.','dbem'),
+			'dbem_bookings_form_msg_full' => __('This event is fully booked.','dbem'),
+			'dbem_bookings_form_msg_attending'=>__('You are currently attending this event.','dbem'),
+			'dbem_bookings_form_msg_bookings_link'=>__('Manage my bookings','dbem'),
 			//messages
 			'dbem_booking_feedback_pending' =>__('Booking successful, pending confirmation (you will also receive an email once confirmed).', 'dbem'),
 			'dbem_booking_feedback' => __('Booking successful.', 'dbem'),
@@ -546,9 +554,6 @@ function em_add_options() {
 			'dbem_bookings_email_confirmed_body' => str_replace("<br/>", "\n\r", $respondent_email_body_localizable),
 			'dbem_bookings_email_cancelled_subject' => __('Booking Cancelled','dbem'),
 			'dbem_bookings_email_cancelled_body' => str_replace("<br/>", "\n\r", $respondent_email_cancelled_body_localizable),
-			//Bookings Form - beta - not working at all yet
-			'dbem_bookings_page' => '<p>Date/Time - #j #M #Y #_12HSTARTTIME #@_{ \u\n\t\i\l j M Y}<br />Where - #_LOCATIONLINK</p>#_EXCERPT #_BOOKINGFORM<p>'.__('Powered by','dbem').'<a href="http://wp-events-plugin.com">events manager</a></p>',
-			'dbem_bookings_page_title' => __('Bookings - #_NAME','dbem'),
 			//Ticket Specific Options
 			'dbem_bookings_tickets_orderby' => 'ticket_price DESC, ticket_name ASC',
 			'dbem_bookings_tickets_priority' => 0,

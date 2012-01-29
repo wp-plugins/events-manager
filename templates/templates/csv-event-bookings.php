@@ -13,8 +13,8 @@ $labels = apply_filters('em_csv_bookings_headers',array(
 	'Price',
 	'Comment'
 ));
-$file = sprintf(__('Booking details for "%s" as of %s','dbem'),$EM_Event->name, date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
-$file .= '"'. implode('","', $labels). '"' .  "\n";
+echo sprintf(__('Booking details for "%s" as of %s','dbem'),$EM_Event->name, date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
+echo '"'. implode('","', $labels). '"' .  "\n";
 
 //Rows
 foreach( $EM_Event->get_bookings()->bookings as $EM_Booking ) {
@@ -43,9 +43,6 @@ foreach( $EM_Event->get_bookings()->bookings as $EM_Booking ) {
 			$row_output .= '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
 		}
 		$row_output = apply_filters('em_csv_bookings_loop_after', $row_output, $EM_Ticket_Booking, $EM_Booking);
-		$file .= $row_output."\n";
+		echo $row_output."\n";
 	}
 }
-
-// $file holds the data
-echo $file;

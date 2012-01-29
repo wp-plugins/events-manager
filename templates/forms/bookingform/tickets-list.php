@@ -1,4 +1,10 @@
 <?php 
+/* 
+ * This file generates a list of tickets for events with more than one ticket, or if user settings are set to show single tickets in a table (default is no)
+ * If you would like to modify this file, copy it to wp-content/themes/yourtheme/plugins/events-manager/forms/bookingform
+ * and you will be able to override this file without it getting overwritten each time you update the plugin.
+ */
+
 /* @var $EM_Event EM_Event */
 global $allowedposttags;
 $EM_Tickets = $EM_Event->get_bookings()->get_tickets(); //already instantiated, so should be a quick retrieval.  

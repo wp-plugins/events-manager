@@ -67,15 +67,15 @@ add_action( 'xprofile_screen_display_profile', 'bp_em_remove_screen_notification
  */
 function bp_em_add_booking_notification($result, $EM_Booking){
 	global $bp;
-	if( get_option('dbem_bookings_approval') && $EM_Booking->status == 0 ){
+	if( get_option('dbem_bookings_approval') && $EM_Booking->get_status() == 0 ){
 		$action = 'pending_booking';
-	}elseif( $EM_Booking->status == 1 || (get_option('dbem_bookings_approval') && $EM_Booking->status == 0) ){
+	}elseif( $EM_Booking->get_status() == 1 || (get_option('dbem_bookings_approval') && $EM_Booking->get_status() == 0) ){
 		$action = 'confirmed_booking';
-	}elseif( $EM_Booking->status == 3 ){
+	}elseif( $EM_Booking->get_status() == 3 ){
 		$action = 'cancelled_booking';
 	}
 	if( !empty($action) ){
-		bp_core_add_notification( $EM_Booking->booking_id, $EM_Booking->get_event()->owner, 'events', $action );
+		bp_core_add_notification( $EM_Booking->booking_id, $EM_Booking->get_event()->get_contact()->ID, 'events', $action );
 	}
 	return $result;
 }

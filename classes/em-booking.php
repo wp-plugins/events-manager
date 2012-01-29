@@ -285,7 +285,8 @@ class EM_Booking extends EM_Object{
 			$this->booking_price = $this->get_tickets_bookings()->get_price($force_refresh, false, $add_tax);
 		}
 		if($format){
-			return apply_filters('em_booking_get_price', em_get_currency_formatted($this->booking_price),$this);
+			$price = apply_filters('em_booking_get_price', $this->booking_price, $this, $format);
+			return em_get_currency_formatted($price);
 		}
 		return apply_filters('em_booking_get_price',$this->booking_price,$this);
 	}

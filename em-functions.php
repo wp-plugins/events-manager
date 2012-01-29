@@ -233,9 +233,9 @@ function em_get_days_names(){
  */
 function em_verify_nonce($action, $nonce_name='_wpnonce'){
 	if( is_admin() ){
-		if( !wp_verify_nonce($_REQUEST[$nonce_name] && $action) ) check_admin_referer('trigger_error');
+		if( !wp_verify_nonce($_REQUEST[$nonce_name], $action) ) check_admin_referer('trigger_error');
 	}else{
-		if( !wp_verify_nonce($_REQUEST[$nonce_name] && $action) ) exit( __('Trying to perform an illegal action.','dbem') );
+		if( !wp_verify_nonce($_REQUEST[$nonce_name], $action) ) exit( __('Trying to perform an illegal action.','dbem') );
 	}
 }
 

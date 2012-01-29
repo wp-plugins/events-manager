@@ -82,7 +82,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 						}
 					}
 				}
-				return true;
+				return apply_filters('em_bookings_add', true, $EM_Booking);
 			}else{
 				//Failure
 				$this->errors[] = "<strong>".get_option('dbem_booking_feedback_error')."</strong><br />". implode('<br />', $EM_Booking->errors);
@@ -186,6 +186,15 @@ class EM_Bookings extends EM_Object implements Iterator{
 			}
 		}
 		return apply_filters('em_bookings_ticket_exists',false, false,$this);
+	}
+	
+	function is_open(){
+		//TODO extend booking options
+		$return = false;
+		if( $this->get_event()->start < current_time('timestamp') ){
+			$return = true;
+		}
+		return apply_filters('em_bookings_is_open', $return, $this);
 	}
 	
 	/**

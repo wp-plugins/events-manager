@@ -282,23 +282,25 @@ function em_bookings_single(){
 										<?php endif; ?>
 									</tbody>
 									<tfoot>
+										<?php do_action('em_bookings_admin_ticket_totals_header'); ?>
 										<tr>
-											<th><?php _e('Totals','dbem'); ?></th>
-											<th><?php echo $EM_Booking->get_spaces(); ?></th>
+											<th><?php _e('Total Price','dbem'); ?></th>
+											<th><?php echo sprintf(__('%d Spaces','dbem'), $EM_Booking->get_spaces()); ?></th>
 											<th><?php echo $EM_Booking->get_price(true, true); ?></th>
 										</tr>
 										<?php if( !get_option('dbem_bookings_tax_auto_add') && is_numeric(get_option('dbem_bookings_tax')) && get_option('dbem_bookings_tax') > 0  ): ?>
 										<tr>
 											<th><?php _e('Tax','dbem'); ?></th>
 											<th><?php echo get_option('dbem_bookings_tax') ?>%</th>
-											<th><?php echo em_get_currency_symbol().number_format($EM_Booking->get_price() * (get_option('dbem_bookings_tax')/100),2); ?></th>
+											<th><?php echo em_get_currency_formatted($EM_Booking->get_price() * (get_option('dbem_bookings_tax')/100),2); ?></th>
 										</tr>
 										<tr>
-											<th><?php _e('Total (inc. tax)','dbem'); ?></th>
+											<th><?php _e('Total Price (inc. tax)','dbem'); ?></th>
 											<th>&nbsp;</th>
-											<th><?php echo em_get_currency_symbol().number_format($EM_Booking->get_price()* (1 + get_option('dbem_bookings_tax')/100),2); ?></th>
+											<th><?php echo $EM_Booking->get_price(false, true, true); ?></th>
 										</tr>
 										<?php endif; ?>
+										<?php do_action('em_bookings_admin_ticket_totals_footer'); ?>
 									</tfoot>
 								</table>
 								<p>

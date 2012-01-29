@@ -845,7 +845,9 @@ function em_admin_options_page() {
 	            	</table>
 				</div> <!-- . inside --> 
 				</div> <!-- .postbox -->
-					  	
+				
+				<?php do_action('em_options_page_footer_pages'); ?>
+				
 			</div> <!-- .em-menu-pages -->
 			
 			<!-- FORMAT OPTIONS -->
@@ -1098,6 +1100,8 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox -->
 				
+				<?php do_action('em_options_page_footer_formats'); ?>
+				
 			</div> <!-- .em-menu-formats -->
 			
 			<?php if( get_option('dbem_rsvp_enabled') ): ?>
@@ -1109,6 +1113,7 @@ function em_admin_options_page() {
 				<div class="inside">
 					<table class='form-table'> 
 						<?php 
+						em_options_radio_binary ( __( 'Allow guest bookings?', 'dbem' ), 'dbem_bookings_anonymous', __( 'If enabled, guest visitors can supply an email address and a user account will automatically be created for them along with their booking. They will be also be able to log back in with that newly created account.', 'dbem' ) );
 						em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
 						em_options_radio_binary ( __( 'Reserved unconfirmed spaces?', 'dbem' ), 'dbem_bookings_approval_reserved', __( 'By default, event spaces become unavailable once there are enough CONFIRMED bookings. To reserve spaces even if unnapproved, choose yes.', 'dbem' ) );
 						em_options_radio_binary ( __( 'Can users cancel their booking?', 'dbem' ), 'dbem_bookings_user_cancellation', __( 'If enabled, users can cancel their bookings themselves from their bookings page.', 'dbem' ) );
@@ -1143,8 +1148,16 @@ function em_admin_options_page() {
 				<div class="inside">
 					<table class='form-table'>
 						<?php
-						em_options_radio_binary ( __( 'Allow guest bookings?', 'dbem' ), 'dbem_bookings_anonymous', __( 'If enabled, guest visitors can supply an email address and a user account will automatically be created for them along with their booking. They will be also be able to log back in with that newly created account.', 'dbem' ) );
 						em_options_radio_binary ( __( 'Display login form?', 'dbem' ), 'dbem_bookings_login_form', __( 'Choose whether or not to display a login form in the booking form area to remind your members to log in before booking.', 'dbem' ) );
+						em_options_input_text ( __( 'Submit button text', 'dbem' ), 'dbem_bookings_submit_button', sprintf(__( 'The text used by the submit button. To use an image instead, enter the full url starting with %s or %s.', 'dbem' ), '<code>http://</code>','<code>https://</code>') );
+						?>
+						<tr><td colspan='2'><h4><?php _e('Booking form texts/messages','dbem') ?></h4></td></tr>
+						<?php
+						em_options_input_text ( __( 'Bookings disabled', 'dbem' ), 'dbem_bookings_form_msg_disabled', __( 'An event with no bookings.', 'dbem' ) );
+						em_options_input_text ( __( 'Bookings closed', 'dbem' ), 'dbem_bookings_form_msg_closed', __( 'Bookings have closed (e.g. event has started).', 'dbem' ) );
+						em_options_input_text ( __( 'Fully booked', 'dbem' ), 'dbem_bookings_form_msg_full', __( 'Event is fully booked.', 'dbem' ) );
+						em_options_input_text ( __( 'Already attending', 'dbem' ), 'dbem_bookings_form_msg_attending', __( 'If already attending and double bookings are disabled, this message will be displayed, followed by a link to the users booking page.', 'dbem' ) );
+						em_options_input_text ( __( 'Manage bookings link text', 'dbem' ), 'dbem_bookings_form_msg_bookings_link', __( 'Link text used for link to user bookings.', 'dbem' ) );
 						?>
 						<tr><td colspan='2'><h4><?php _e('Booking form feedback messages','dbem') ?></h4></td></tr>
 						<tr><td colspan='2'><?php _e('When a booking is made by a user, a feedback message is shown depending on the result, which can be customized below.','dbem'); ?></td></tr>
@@ -1206,7 +1219,9 @@ function em_admin_options_page() {
 						?>
 					</table>
 				</div> <!-- . inside -->
-				</div> <!-- .postbox --> 
+				</div> <!-- .postbox -->
+				
+				<?php do_action('em_options_page_footer_bookings'); ?>
 				
 			</div> <!-- .em-menu-bookings -->
 			<?php endif; ?>
@@ -1290,6 +1305,8 @@ function em_admin_options_page() {
 					</table>
 				</div> <!-- . inside -->
 				</div> <!-- .postbox -->
+				
+				<?php do_action('em_options_page_footer_emails'); ?>
 				
 			</div><!-- .em-group-emails --> 
 			<?php /*

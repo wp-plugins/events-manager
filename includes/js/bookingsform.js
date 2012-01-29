@@ -1,33 +1,6 @@
-var em_booking_doing_ajax = false;		
-$('input#em-booking-submit').click(function(e){
-	$('.em-booking-message').remove();
-	var booking_gateway_handler = function(event, response){
-		if(response.result){
-			$('<div class="em-booking-message-success em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
-			$('#em-booking-form').remove();
-			$('.em-booking-login').remove();
-		}else{
-			if( response.errors != null ){
-				if( $.isArray(response.errors) && response.errors.length > 0 ){
-					var error_msg;
-					response.errors.each(function(i, el){ 
-						error_msg = error_msg + el;
-					});
-					$('<div class="em-booking-message-error em-booking-message">'+error_msg.errors+'</div>').insertBefore('#em-booking-form');
-				}else{
-					$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');							
-				}
-			}else{
-				$('<div class="em-booking-message-error em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
-			}
-		}
-		$('#em-booking-form input[name=gateway]').remove();
-		$(document).unbind('em_booking_gateway_add',booking_gateway_handler);	
-	};
-	$(document).bind('em_booking_gateway_add',booking_gateway_handler);
-});
 $('#em-booking-form').submit( function(e){
 	e.preventDefault();
+	var em_booking_doing_ajax = false;
 	$.ajax({
 		url: EM.ajaxurl,
 		data:$('#em-booking-form').serializeArray(),
@@ -45,11 +18,38 @@ $('#em-booking-form').submit( function(e){
 		success : function(response, statusText, xhr, $form) {
 			$('#em-loading').remove();
 			$('.em-booking-message').remove();
-			$(document).trigger('em_booking_gateway_add', [response]);
+			$('.em-booking-message').remove();
+			//show error or success message
+			if(response.result){
+				$('<div class="em-booking-message-success em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
+				$('#em-booking-form').hide();
+				$('.em-booking-login').hide();
+			}else{
+				if( response.errors != null ){
+					if( $.isArray(response.errors) && response.errors.length > 0 ){
+						var error_msg;
+						response.errors.each(function(i, el){ 
+							error_msg = error_msg + el;
+						});
+						$('<div class="em-booking-message-error em-booking-message">'+error_msg.errors+'</div>').insertBefore('#em-booking-form');
+					}else{
+						$('<div class="em-booking-message-error em-booking-message">'+response.errors+'</div>').insertBefore('#em-booking-form');							
+					}
+				}else{
+					$('<div class="em-booking-message-error em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
+				}
+			}
+			//run extra actions after showing the message here
+			if( response.gateway != null ){
+				$(document).trigger('em_booking_gateway_add_'+response.gateway, [response]);
+			}
 			if(response.result && typeof Recaptcha != 'undefined'){
 				Recaptcha.reload();
 			}
+		},
+		complete : function(){
 			em_booking_doing_ajax = false;
+			$('#em-loading').remove();
 		}
 	});
 	return false;	

@@ -70,11 +70,11 @@ class EM_Locations_Widget extends WP_Widget {
         ?>
 		<p>
 			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'dbem'); ?>: </label>
-			<input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo $instance['title']; ?>" />
+			<input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($instance['title']); ?>" />
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php _e('Show number of locations','dbem'); ?>: </label>
-			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" value="<?php echo $instance['limit']; ?>" />
+			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" value="<?php echo esc_attr($instance['limit']); ?>" />
 		</p>
 		<p>
 			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope of the locations','dbem'); ?>:</label><br/>

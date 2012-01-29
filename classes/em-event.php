@@ -591,6 +591,7 @@ class EM_Event extends EM_Object{
 					update_post_meta($this->post_id, '_event_id', $this->event_id);
 					$this->feedback_message = sprintf(__('Successfully saved %s','dbem'),__('Event','dbem'));
 					$just_added_event = true; //make an easy hook
+					do_action('em_event_save_new', $this);
 				}
 			}else{
 				$this->previous_status = $this->get_previous_status();

@@ -8,6 +8,7 @@ $localised_date_format = em_get_date_format();
 	<?php _e ( 'Enable registration for this event', 'dbem' )?>
 </div>
 <div id="event-tickets" style="<?php echo ($EM_Event->event_rsvp) ? '':'display:none;' ?>">
+	<?php do_action('em_events_admin_bookings_header', $EM_Event); ?>
 	<?php
 	//get tickets here and if there are none, create a blank ticket
 	$EM_Tickets = $EM_Event->get_tickets();
@@ -111,6 +112,7 @@ $localised_date_format = em_get_date_format();
 			</tbody>
 		</table>
 	<?php } ?>
+	<?php do_action('em_events_admin_bookings_footer', $EM_Event); ?>
 </div>
 <script type="text/javascript">
 	jQuery(document).ready( function($) {
