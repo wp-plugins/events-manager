@@ -50,7 +50,7 @@ class EM_Event extends EM_Object{
 	var $event_end_date;
 	var $post_content;
 	var $event_rsvp;
-	//var $spaces;
+	var $event_spaces;
 	var $location_id;
 	var $recurrence_id;
 	var $event_status;
@@ -87,7 +87,7 @@ class EM_Event extends EM_Object{
 		'event_end_date' => array( 'name'=>'end_date', 'type'=>'%s', 'null'=>true ),
 		'post_content' => array( 'name'=>'notes', 'type'=>'%s', 'null'=>true ),
 		'event_rsvp' => array( 'name'=>'rsvp', 'type'=>'%d', 'null'=>true ), //has a default, so can be null/excluded
-		//'event_spaces' => array( 'name'=>'spaces', 'type'=>'%d' ),
+		'event_spaces' => array( 'name'=>'spaces', 'type'=>'%d', 'null'=>true),
 		'location_id' => array( 'name'=>'location_id', 'type'=>'%d', 'null'=>true ),
 		'recurrence_id' => array( 'name'=>'recurrence_id', 'type'=>'%d', 'null'=>true ),
 		'event_status' => array( 'name'=>'status', 'type'=>'%d', 'null'=>true ),
@@ -375,6 +375,7 @@ class EM_Event extends EM_Object{
 		if( !empty($_REQUEST['event_rsvp']) && $_REQUEST['event_rsvp'] ){
 			$this->get_bookings()->get_tickets()->get_post();
 			$this->event_rsvp = 1;
+			$this->event_spaces = (!empty($_REQUEST['event_spaces'])) ? absint($_REQUEST['event_spaces']):0;
 		}else{
 			$this->event_rsvp = 0;
 		}

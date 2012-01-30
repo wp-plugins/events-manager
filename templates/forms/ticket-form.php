@@ -9,7 +9,7 @@ $col_count = empty($col_count) ? 1:$col_count;
 	<div><label><?php _e('Price','dbem') ?></label><input type="text" name="em_tickets[<?php echo $col_count; ?>][ticket_price]" value="<?php echo esc_attr($EM_Ticket->ticket_price) ?>" /></div>
 	<div>
 		<label><?php _e('Spaces','dbem') ?></label><input type="text" name="em_tickets[<?php echo $col_count; ?>][ticket_spaces]" value="<?php echo esc_attr($EM_Ticket->ticket_spaces) ?>" />
-		<a href="#" title="<?php _e('If blank, there\'s no space limit.','dbem'); ?>">?</a>
+		<a href="#" title="<?php __('Enter a maximum number of spaces (required).','dbem'); ?>">?</a>
 	</div>
 	<div class="date-limits">
 		<?php _e('Available from','dbem') ?> 

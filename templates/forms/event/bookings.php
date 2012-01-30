@@ -20,7 +20,7 @@ $localised_date_format = em_get_date_format();
 		$EM_Ticket = $EM_Tickets->get_first();							
 		include( em_locate_template('forms/ticket-form.php') );
 	}else{
-		?>		
+		?>
 		<p><strong><?php _e('Tickets','dbem'); ?></strong></p>
 		<p><em><?php _e('You can have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?> <?php _e('Basic HTML is allowed in ticket labels and descriptions.','dbem'); ?></em></p>					
 		<table class="form-table">
@@ -111,6 +111,11 @@ $localised_date_format = em_get_date_format();
 				?>
 			</tbody>
 		</table>
+		<p>
+			<label><strong><?php _e('Total Spaces','dbem'); ?></strong></label>
+			<input type="text" name="event_spaces" value="<?php echo $EM_Event->event_spaces; ?>" /><br />
+			<em><?php _e('Individual tickets with remaining spaces will not be available if total booking spaces reach this limit. Leave blank for no limit.','dbem'); ?></em>
+		</p>
 	<?php } ?>
 	<?php do_action('em_events_admin_bookings_footer', $EM_Event); ?>
 </div>
