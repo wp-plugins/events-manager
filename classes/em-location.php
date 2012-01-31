@@ -547,7 +547,7 @@ class EM_Location extends EM_Object {
 			//Strip string of placeholder and just leave the reference
 			$attRef = substr( substr($result, 0, strpos($result, '}')), 7 );
 			$attString = '';
-			if( is_array($this->location_attributes) && array_key_exists($attRef, $this->location_attributes) ){
+			if( is_array($this->location_attributes) && array_key_exists($attRef, $this->location_attributes) && !empty($this->location_attributes[$attRef]) ){
 				$attString = $this->location_attributes[$attRef];
 			}elseif( !empty($results[3][$resultKey]) ){
 				//Check to see if we have a second set of braces;

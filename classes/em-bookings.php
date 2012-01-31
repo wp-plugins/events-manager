@@ -303,7 +303,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get_available_spaces(){
 		$spaces = $this->get_spaces();
-		if($this->get_event()->event_spaces < $spaces) $spaces = $this->get_event()->event_spaces;
+		if(!empty($this->get_event()->event_spaces) && $this->get_event()->event_spaces < $spaces) $spaces = $this->get_event()->event_spaces;
 		$available_spaces = $spaces - $this->get_booked_spaces();
 		return apply_filters('em_booking_get_available_spaces', $available_spaces, $this);
 	}
