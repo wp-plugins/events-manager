@@ -420,33 +420,33 @@ class EM_Booking extends EM_Object{
 		return apply_filters('em_booking_delete',( $result !== false ), $this);
 	}
 	
-	function cancel(){
+	function cancel($email = true){
 		if( $this->person->ID == get_current_user_id() ){
 			$this->manage_override = true; //normally, users can't manage a bookiing, only event owners, so we allow them to mod their booking status in this case only.
 		}
-		return $this->set_status(3);
+		return $this->set_status(3, $email);
 	}
 	
 	/**
 	 * Approve a booking.
 	 * @return bool
 	 */
-	function approve(){
-		return $this->set_status(1);
+	function approve($email = true){
+		return $this->set_status(1, $email);
 	}	
 	/**
 	 * Reject a booking and save
 	 * @return bool
 	 */
-	function reject(){
-		return $this->set_status(2);
+	function reject($email = true){
+		return $this->set_status(2, $email);
 	}	
 	/**
 	 * Unpprove a booking.
 	 * @return bool
 	 */
-	function unapprove(){
-		return $this->set_status(0);
+	function unapprove($email = true){
+		return $this->set_status(0, $email);
 	}
 	
 	/**
@@ -454,7 +454,7 @@ class EM_Booking extends EM_Object{
 	 * @param int $status
 	 * @return boolean
 	 */
-	function set_status($status){
+	function set_status($status, $email = true){
 		global $wpdb;
 		$action_string = strtolower($this->status_array[$status]); 
 		//if we're approving we can't approve a booking if spaces are full, so check before it's approved.
@@ -469,14 +469,16 @@ class EM_Booking extends EM_Object{
 		$result = $wpdb->query($wpdb->prepare('UPDATE '.EM_BOOKINGS_TABLE.' SET booking_status=%d WHERE booking_id=%d', array($status, $this->booking_id)));
 		if($result !== false){
 			$this->feedback_message = sprintf(__('Booking %s.','dbem'), $action_string);
-			if( !($this->booking_status == 0 && $this->previous_status > 0) || $this->previous_status == 4 ){
-				if( $this->email() ){
-					$this->feedback_message .= " ".__('Mail Sent.','dbem');
-				}elseif( $this->previous_status == 0 ){
-					//extra errors may be logged by email() in EM_Object
-					$this->feedback_message .= ' <span style="color:red">'.__('ERROR : Mail Not Sent.','dbem').'</span>';
-					$this->add_error(__('ERROR : Mail Not Sent.','dbem'));
-					$result =  false;
+			if( $email ){
+				if(!($this->booking_status == 0 && $this->previous_status > 0) || $this->previous_status == 4 ){
+					if( $this->email() ){
+						$this->feedback_message .= " ".__('Mail Sent.','dbem');
+					}elseif( $this->previous_status == 0 ){
+						//extra errors may be logged by email() in EM_Object
+						$this->feedback_message .= ' <span style="color:red">'.__('ERROR : Mail Not Sent.','dbem').'</span>';
+						$this->add_error(__('ERROR : Mail Not Sent.','dbem'));
+						$result =  false;
+					}
 				}
 			}
 		}else{

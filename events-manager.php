@@ -221,6 +221,7 @@ class EM_Scripts_and_Styles {
 		//Localize
 		$em_localized_js = array(
 			'ajaxurl' => admin_url('admin-ajax.php'),
+			'bookingajaxurl' => admin_url('admin-ajax.php'),
 			'locationajaxurl' => admin_url('admin-ajax.php?action=locations_search'),
 			'firstDay' => get_option('start_of_week'),
 			'locale' => $locale_code,
@@ -242,7 +243,7 @@ class EM_Scripts_and_Styles {
 			$em_localized_js['txt_searching'] = __('Searching...','dbem');
 			$em_localized_js['txt_loading'] = __('Loading...','dbem');
 		}
-		wp_localize_script('events-manager','EM', $em_localized_js);
+		wp_localize_script('events-manager','EM', apply_filters('em_wp_localize_script', $em_localized_js));
 	}
 
 	function admin_styles(){

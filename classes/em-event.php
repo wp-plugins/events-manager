@@ -967,7 +967,6 @@ class EM_Event extends EM_Object{
 	
 	function is_free(){
 		$free = true;
-		if( isset($this->free) ) return $this->free;
 		foreach($this->get_tickets() as $EM_Ticket){
 			if( $EM_Ticket->price > 0 ){
 				$free = false;
@@ -1836,7 +1835,7 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 		$result = apply_filters('dbem_notes_excerpt', $result);
 	}elseif( $placeholder == '#_CONTACTEMAIL' && $target == 'html' ){
 		$result = em_ascii_encode($event->get_contact()->user_email);
-	}elseif( $placeholder == "#_EVENTNOTES" || $placeholder == "#_NOTES" || $placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT" ){
+	}elseif( in_array($placeholder, array('#_EVENTNOTES','#_NOTES','#_DESCRIPTION','#_LOCATIONNOTES')) ){
 		if($target == 'html'){
 			$result = apply_filters('dbem_notes', $result);
 		}elseif($target == 'map'){
@@ -1859,6 +1858,7 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 	return $result;
 }
 add_filter('em_event_output_placeholder','em_event_output_placeholder',1,4);
+add_filter('em_location_output_placeholder','em_event_output_placeholder',1,4);
 // FILTERS
 // filters for general events field (corresponding to those of  "the _title")
 add_filter('dbem_general', 'wptexturize');

@@ -2,7 +2,7 @@ $('#em-booking-form').submit( function(e){
 	e.preventDefault();
 	var em_booking_doing_ajax = false;
 	$.ajax({
-		url: EM.ajaxurl,
+		url: EM.bookingajaxurl,
 		data:$('#em-booking-form').serializeArray(),
 		dataType: 'jsonp',
 		type:'post',
