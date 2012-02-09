@@ -14,10 +14,8 @@ function em_install() {
 		return;
    	}
 	if( EM_VERSION > $old_version || $old_version == '' ){
-		$retry_time = get_option('dbem_upgrade_throttle_time') ? time()-get_option('dbem_upgrade_throttle_time'):time()-3600;
-		if( get_option('dbem_upgrade_throttle') <= $retry_time || !get_option('dbem_upgrade_throttle') ){
+		if( get_option('dbem_upgrade_throttle') <= time() || !get_option('dbem_upgrade_throttle') ){
 		 	// Creates the events table if necessary
-			update_option('dbem_upgrade_throttle_time', time()+3600);
 			em_create_events_table();
 			em_create_events_meta_table();
 			em_create_locations_table();
@@ -29,8 +27,7 @@ function em_install() {
 	
 			//New install, or Migrate?
 			if( $old_version < 5 && !empty($old_version) ){
-				update_option('dbem_upgrade_throttle', time()+(300*60));
-				update_option('dbem_upgrade_throttle_time', 300*60); //extend length of migration throttle
+				update_option('dbem_upgrade_throttle', time()+300);
 				set_time_limit(300);
 				em_migrate_v4();
 				update_site_option('dbem_ms_update_nag',1);

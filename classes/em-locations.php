@@ -218,8 +218,8 @@ class EM_Locations extends EM_Object implements Iterator {
 			$conditions['status'] = "(`location_status` IS NOT NULL)";
 		}
 		//private locations
-		if( !empty($args['private']) ){
-			$conditions['private'] = "(`location_private`=0)";			
+		if( empty($args['private']) ){
+			$conditions['private'] = "(`location_private`=0)";
 		}elseif( !empty($args['private_only']) ){
 			$conditions['private_only'] = "(`location_private`=1)";
 		}

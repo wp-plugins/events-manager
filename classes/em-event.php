@@ -968,7 +968,7 @@ class EM_Event extends EM_Object{
 	function is_free(){
 		$free = true;
 		foreach($this->get_tickets() as $EM_Ticket){
-			if( $EM_Ticket->price > 0 ){
+			if( $EM_Ticket->get_price() > 0 ){
 				$free = false;
 			}
 		}

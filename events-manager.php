@@ -527,10 +527,8 @@ function em_rss_pubdate_change($result){
 }
 add_filter('em_event_save', 'em_rss_pubdate_change', 10,1);
 
-/* Creating the wp_events table to store event data*/
 function em_activate() {
-	global $wp_rewrite;
-   	$wp_rewrite->flush_rules();
+	update_option('dbem_flush_needed',1);
 }
 register_activation_hook( __FILE__,'em_activate');
 
