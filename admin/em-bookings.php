@@ -125,7 +125,7 @@ function em_bookings_event(){
 		<h2><?php _e('Bookings','dbem'); ?></h2>
 		<?php
 		$EM_Bookings_Table = new EM_Bookings_Table();
-		$EM_Bookings_Table->status = get_option('dbem_bookings_approval') ? 'needs-attention':'confirmed';
+		$EM_Bookings_Table->status = 'all';
 		$EM_Bookings_Table->output();
   		?>
 		<?php do_action('em_bookings_event_footer', $EM_Event); ?>

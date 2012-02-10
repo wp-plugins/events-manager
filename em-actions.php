@@ -232,7 +232,7 @@ function em_init_actions() {
 			em_verify_nonce('booking_add');
 			if( !is_user_logged_in() || get_option('dbem_bookings_double') || !$EM_Event->get_bookings()->has_booking(get_current_user_id()) ){
 				$post_validation = $EM_Booking->get_post();
-				do_action('em_booking_add', $EM_Event, $EM_Booking);
+				do_action('em_booking_add', $EM_Event, $EM_Booking, $post_validation);
 				if( $post_validation ){
 					//Does this user need to be registered first?
 					$registration = true;
