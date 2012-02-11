@@ -9,7 +9,7 @@
 	<?php 
 	global $em_localized_js;
 	$s_default = get_option('dbem_search_form_text_label');	
-	$s = !empty($_REQUEST['search']) ? $_REQUEST['search']:$s_default;
+	$s = !empty($_REQUEST['em_search']) ? $_REQUEST['em_search']:$s_default;
 	if( empty($_REQUEST['country']) && empty($_REQUEST['page']) ){
 		$country = get_option('dbem_location_default_country');
 	}elseif( !empty($_REQUEST['country']) ){

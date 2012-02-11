@@ -235,7 +235,7 @@ class EM_Events extends EM_Object implements Iterator {
 	}
 	
 	function get_post_search($args = array()){
-		if( !empty($args['em_search']) && empty($args['search']) ) $args['search'] = $args['em_search'];
+		if( !empty($_REQUEST['em_search']) && empty($args['search']) ) $_REQUEST['search'] = $_REQUEST['em_search'];
 		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state','region','town'), $args);
 		foreach($_REQUEST as $post_key => $post_value){
 			if( in_array($post_key, $accepted_searches) && !empty($post_value) ){

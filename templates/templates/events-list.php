@@ -12,7 +12,7 @@ if( get_option('dbem_events_page_search') && !defined('DOING_AJAX') ){
 	em_locate_template('templates/events-search.php',true);
 }
 
-//TODO fine tune ajax searches - we have some pagination issues
+//TODO fine tune ajax searches - we have some pagination issues otherwise, due to search querystrings
 if( get_option('dbem_events_page_ajax', false) ) echo "<div class='em-events-search-ajax'>";
 $events_count = EM_Events::count( apply_filters('em_content_events_args', $args) );
 $args['limit'] = get_option('dbem_events_default_limit');
@@ -24,8 +24,8 @@ if( $events_count > 0 ){
 		echo EM_Events::output( $args );
 		//do some custom pagination (if needed/requested)
 		if( !empty($args['limit']) && $events_count > $args['limit'] ){
-			//Show the pagination links (unless there's less than $limit events)
-			$search_args = EM_Events::get_post_search() + array('page'=>'%PAGE%','action'=>'search_events');
+			//Show the pagination links (unless there's less than $limit events), note that we set em_search instead of search to prevent conflicts
+			$search_args = array_merge(EM_Events::get_post_search(), array('page'=>'%PAGE%','action'=>'search_events','search'=>null, 'em_search'=>$args['search'])); 
 			$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], $search_args, false); //don't html encode, so em_paginate does its thing
 			echo apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $events_count, $args['limit'], $args['page']), $page_link_template, $events_count, $args['limit'], $args['page']);
 		}
