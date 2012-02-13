@@ -131,8 +131,10 @@ class EM_Event_Post {
 	function parse_query( ){
 		global $wp_query;
 		//Search Query Filtering
-		if( !empty($wp_query->query_vars['s']) && !get_option('dbem_cp_events_search_results') ){
-			$wp_query->query_vars['post_type'] = array_diff( get_post_types(array('exclude_from_search' => false)), array(EM_POST_TYPE_EVENT));
+		if( !is_admin() ){
+			if( !empty($wp_query->query_vars['s']) && !get_option('dbem_cp_events_search_results') ){
+				$wp_query->query_vars['post_type'] = array_diff( get_post_types(array('exclude_from_search' => false)), array(EM_POST_TYPE_EVENT));
+			}
 		}
 		//Scoping
 		if( !empty($wp_query->query_vars['post_type']) && ($wp_query->query_vars['post_type'] == EM_POST_TYPE_EVENT || $wp_query->query_vars['post_type'] == 'event-recurring') && (empty($wp_query->query_vars['post_status']) || !in_array($wp_query->query_vars['post_status'],array('trash','pending','draft'))) ) {
@@ -236,12 +238,12 @@ class EM_Event_Post {
 		  	}else{
 			  	if( get_option('dbem_events_default_archive_orderby') == 'title'){
 			  		$wp_query->query_vars['orderby'] = 'title';
-					$wp_query->query_vars['order'] = get_option('dbem_events_default_archive_orderby','ASC');
+					$wp_query->query_vars['order'] = get_option('dbem_events_default_archive_order','ASC');
 			  	}else{
 				  	$wp_query->query_vars['orderby'] = 'meta_value_num';
 				  	$wp_query->query_vars['meta_key'] = '_start_ts';  		
 			  	}
-			  	$wp_query->query_vars['order'] = get_option('dbem_events_default_archive_orderby','ASC');
+			  	$wp_query->query_vars['order'] = get_option('dbem_events_default_archive_order','ASC');
 		  	}
 		}elseif( !empty($wp_query->query_vars['post_type']) && $wp_query->query_vars['post_type'] == EM_POST_TYPE_EVENT ){
 			$wp_query->query_vars['scope'] = 'all';

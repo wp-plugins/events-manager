@@ -617,36 +617,40 @@ class EM_Booking extends EM_Object{
 				return true;
 			}
 			
-			$booker_subject = $this->output($booker_subject, 'email');
-			$booker_body = $this->output($booker_body, 'email');
-			if( get_option('dbem_smtp_html') ){
-				$booker_body = nl2br($booker_body);
-			}
-			//Send to the person booking
-			if( !$this->email_send( $booker_subject,$booker_body, $this->get_person()->user_email) ){
-				return false;
+			if( !empty($booker_subject) ){
+				$booker_subject = $this->output($booker_subject, 'email');
+				$booker_body = $this->output($booker_body, 'email');
+				if( get_option('dbem_smtp_html') ){
+					$booker_body = nl2br($booker_body);
+				}
+				//Send to the person booking
+				if( !$this->email_send( $booker_subject,$booker_body, $this->get_person()->user_email) ){
+					return false;
+				}
 			}
 			
-			//Send admin/contact emails
-			if( (get_option('dbem_bookings_approval') == 0 || in_array($this->booking_status, array(0,3,4,5)) || (in_array($this->previous_status, array(4)) && $this->booking_status == 1)) && (get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
-				//Only gets sent if this is a pending booking, unless approvals are disabled.
-				$contact_subject = $this->output($contact_subject, 'email');
-				$contact_body = $this->output($contact_body, 'email'); 
-				if( get_option('dbem_smtp_html') ){
-					$contact_body = nl2br($contact_body);
-				}
-				
-				if( get_option('dbem_bookings_contact_email') == 1 ){
-					if( !$this->email_send( $contact_subject, $contact_body, $EM_Event->get_contact()->user_email) && current_user_can('activate_plugins')){
-						$this->errors[] = __('Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).','dbem');
-						return false;
+			if( !empty($contact_subject) ){
+				//Send admin/contact emails
+				if( (get_option('dbem_bookings_approval') == 0 || in_array($this->booking_status, array(0,3,4,5)) || (in_array($this->previous_status, array(4)) && $this->booking_status == 1)) && (get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
+					//Only gets sent if this is a pending booking, unless approvals are disabled.
+					$contact_subject = $this->output($contact_subject, 'email');
+					$contact_body = $this->output($contact_body, 'email'); 
+					if( get_option('dbem_smtp_html') ){
+						$contact_body = nl2br($contact_body);
 					}
-				}
-		
-				if( get_option('dbem_bookings_notify_admin') != '' && preg_match('/^[_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3}$/', get_option('dbem_bookings_notify_admin')) ){
-					if( !$this->email_send( $contact_subject, $contact_body, get_option('dbem_bookings_notify_admin')) ){
-						$this->errors[] = __('Confirmation email could not be sent to admin. Registrant should have gotten their email (only admin see this warning).','dbem');
-						return false;
+					
+					if( get_option('dbem_bookings_contact_email') == 1 ){
+						if( !$this->email_send( $contact_subject, $contact_body, $EM_Event->get_contact()->user_email) && current_user_can('activate_plugins')){
+							$this->errors[] = __('Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).','dbem');
+							return false;
+						}
+					}
+			
+					if( get_option('dbem_bookings_notify_admin') != '' && preg_match('/^[_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3}$/', get_option('dbem_bookings_notify_admin')) ){
+						if( !$this->email_send( $contact_subject, $contact_body, get_option('dbem_bookings_notify_admin')) ){
+							$this->errors[] = __('Confirmation email could not be sent to admin. Registrant should have gotten their email (only admin see this warning).','dbem');
+							return false;
+						}
 					}
 				}
 			}

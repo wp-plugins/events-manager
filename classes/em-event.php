@@ -569,8 +569,8 @@ class EM_Event extends EM_Object{
 					}
 				}
 			}
-			update_post_meta($this->post_id, '_start_ts', strtotime($this->event_start_date));
-			update_post_meta($this->post_id, '_end_ts', strtotime($this->event_end_date));
+			update_post_meta($this->post_id, '_start_ts', $this->start);
+			update_post_meta($this->post_id, '_end_ts', $this->end);
 			
 			$result = count($this->errors) == 0;
 			$this->get_status();
@@ -596,10 +596,15 @@ class EM_Event extends EM_Object{
 				}
 			}else{
 				$this->previous_status = $this->get_previous_status();
-				$this->event_date_modified = current_time('mysql');
+				$this->event_date_modified = $event_array['event_date_modified'] = current_time('mysql');
 				if ( $wpdb->update(EM_EVENTS_TABLE, $event_array, array('event_id'=>$this->event_id) ) === false ){
 					$this->add_error( sprintf(__('Something went wrong updating your %s to the index table. Please inform a site administrator about this.','dbem'),__('event','dbem')));			
 				}else{
+					//Also set the status here if status != previous status
+					if( $this->previous_status != $this->get_status()){
+						$status_value = $this->get_status(true);
+						$wpdb->query('UPDATE '.EM_EVENTS_TABLE." SET event_status=$status_value WHERE event_id=".$this->event_id);
+					}
 					$this->feedback_message = sprintf(__('Successfully saved %s','dbem'),__('Event','dbem'));
 				}		
 			}
@@ -1028,7 +1033,7 @@ class EM_Event extends EM_Object{
 			$event_string = str_replace($result, $attString ,$event_string );
 		}
 	 	//First let's do some conditional placeholder removals
-		preg_match_all('/\{([a-zA-Z0-9_]+)\}([^{]+)\{\/\1\}/', $event_string, $conditionals);
+		preg_match_all('/\{([a-zA-Z0-9_]+)\}(.+)\{\/\1\}/s', $event_string, $conditionals);
 		if( count($conditionals[0]) > 0 ){
 			//Check if the language we want exists, if not we take the first language there
 			foreach($conditionals[1] as $key => $condition){
@@ -1569,14 +1574,11 @@ class EM_Event extends EM_Object{
 				 	}
 			 	}
 			 	//copy the event tags and categories
-			 	$categories = get_the_terms( $this->post_id, EM_TAXONOMY_CATEGORY );
-		 		$cat_slugs = array();
-		 		if( is_array($categories) ){
-					foreach($categories as $category){
-						if( !empty($category->slug) ) $cat_slugs[] = $category->slug; //save of category will soft-fail if slug is empty
-					}
-		 		}
-				$cat_slugs_count = count($cat_slugs);
+			 	$categories = $this->get_categories()->categories;
+				foreach( $categories as $category){
+					if( !empty($category->slug) ) $cat_slugs[] = $category->slug; //save of category will soft-fail if slug is empty
+				}
+				$cat_slugs_count = count($categories);
 			 	$tags = get_the_terms( $this->post_id, EM_TAXONOMY_TAG);
 		 		$tax_slugs = array();
 		 		if( is_array($tags) ){
@@ -1584,15 +1586,32 @@ class EM_Event extends EM_Object{
 						if( !empty($tag->slug) ) $tax_slugs[] = $tag->slug; //save of category will soft-fail if slug is empty
 					}
 		 		}
-				$tax_slugs_count = count($tax_slugs);
+				$tax_slugs_count = count($categories);
 			 	foreach($post_ids as $post_id){
-					if( $cat_slugs_count > 0 ){
+					if( $cat_slugs_count > 0 && !EM_MS_GLOBAL ){
 						wp_set_object_terms($post_id, $cat_slugs, EM_TAXONOMY_CATEGORY);
 					}
 					if( $tax_slugs_count > 0 ){
 						wp_set_object_terms($post_id, $tax_slugs, EM_TAXONOMY_TAG);
 					}
 			 	}
+			 	//featured images
+			 	if( !empty($this->attributes['thumbnail_id']) ){
+			 		foreach($post_ids as $post_ids){
+			 			$image_insert[] = "({$this->post_id}, '_thumbnail_id', {$this->attributes['thumbnail_id']})";
+			 		}
+			 		if( count($image_insert) > 0 ){
+				 		$wpdb->query('INSERT INTO '.$wpdb->postmeta.' (post_id, meta_key, meta_value) VALUES '.implode(', ', $image_inserts));
+			 		}
+			 	}
+			 	//MS Global Categories
+				if( $cat_slugs_count > 0 && EM_MS_GLOBAL ){
+					foreach($categories as $EM_Category){
+						foreach($event_ids as $event_id){
+							$wpdb->insert(EM_META_TABLE, array('meta_value'=>$EM_Category->term_id,'object_id'=>$event_id,'meta_key'=>'event-category'));
+						}
+					}
+				}
 			 	//now, save booking info for each event
 			 	if( $this->event_rsvp ){
 			 		$meta_inserts = array();
@@ -1835,28 +1854,29 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 		$result = apply_filters('dbem_notes_excerpt', $result);
 	}elseif( $placeholder == '#_CONTACTEMAIL' && $target == 'html' ){
 		$result = em_ascii_encode($event->get_contact()->user_email);
-	}elseif( in_array($placeholder, array('#_EVENTNOTES','#_NOTES','#_DESCRIPTION','#_LOCATIONNOTES')) ){
-		if($target == 'html'){
-			$result = apply_filters('dbem_notes', $result);
+	}elseif( in_array($placeholder, array('#_EVENTNOTES','#_NOTES','#_DESCRIPTION','#_LOCATIONNOTES','#_CATEGORYNOTES')) ){
+		if($target == 'rss'){
+			$result = apply_filters('dbem_notes_rss', $result);
+			$result = apply_filters('the_content_rss', $result);
 		}elseif($target == 'map'){
 			$result = apply_filters('dbem_notes_map', $result);
 		}elseif($target == 'ical'){
 			$result = apply_filters('dbem_notes_ical', $result);
 		}else{
-			$result = apply_filters('dbem_notes_rss', $result);
-			$result = apply_filters('the_content_rss', $result);
+			$result = apply_filters('dbem_notes', $result);
 		}
 	}elseif( in_array($placeholder, array("#_NAME",'#_ADDRESS','#_LOCATION','#_TOWN')) ){
-		if ($target == "html"){    
-			$result = apply_filters('dbem_general', $result); 
+		if ($target == "rss"){    
+			$result = apply_filters('dbem_general_rss', $result);
 	  	}elseif ($target == "ical"){    
 			$result = apply_filters('dbem_general_ical', $result); 
 	  	}else{
-			$result = apply_filters('dbem_general_rss', $result);
+			$result = apply_filters('dbem_general', $result); 
 	  	}				
 	}
 	return $result;
 }
+add_filter('em_category_output_placeholder','em_event_output_placeholder',1,4);
 add_filter('em_event_output_placeholder','em_event_output_placeholder',1,4);
 add_filter('em_location_output_placeholder','em_event_output_placeholder',1,4);
 // FILTERS

@@ -63,7 +63,10 @@ function em_get_event_shortcode($atts, $format='') {
 	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
 	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
 	if( !empty($atts['event']) && is_numeric($atts['event']) ){
-		$EM_Event = new EM_Event($atts['event']);
+		$EM_Event = em_get_event($atts['event']);
+		return ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
+	}elseif( !empty($atts['post_id']) && is_numeric($atts['post_id']) ){
+		$EM_Event = em_get_event($atts['post_id'], 'post_id');
 		return ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
 	}
 }
@@ -94,7 +97,10 @@ function em_get_location_shortcode($atts, $format='') {
 	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
 	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
 	if( !empty($atts['location']) && is_numeric($atts['location']) ){
-		$EM_Location = new EM_Location($atts['location']);
+		$EM_Location = em_get_location($atts['location']);
+		return ( !empty($atts['format']) ) ? $EM_Location->output($atts['format']) : $EM_Location->output_single();
+	}elseif( !empty($atts['post_id']) && is_numeric($atts['post_id']) ){
+		$EM_Location = em_get_location($atts['post_id'],'post_id');
 		return ( !empty($atts['format']) ) ? $EM_Location->output($atts['format']) : $EM_Location->output_single();
 	}
 }

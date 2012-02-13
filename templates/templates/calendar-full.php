@@ -9,6 +9,9 @@
  * 
  * Note that leaving the class names for the previous/next links will keep the AJAX navigation working.
  */
+$cal_count = count($calendar['cells']); //to prevent an extra tr
+$col_count = $tot_count = 1; //this counts collumns in the $calendar_array['cells'] array
+$col_max = count($calendar['row_headers']); //each time this collumn number is reached, we create a new collumn, the number of cells should divide evenly by the number of row_headers
 ?>
 <table class="em-calendar fullcalendar">
 	<thead>
@@ -24,8 +27,6 @@
 		</tr>
 		<tr>
 			<?php
-			$col_count = 1; //this counts collumns in the $calendar_array['cells'] array
-			$col_max = count($calendar['row_headers']); //each time this collumn number is reached, we create a new collumn, the number of cells should divide evenly by the number of row_headers
 			foreach($calendar['cells'] as $date => $cell_data ){
 				$class = ( !empty($cell_data['events']) && count($cell_data['events']) > 0 ) ? 'eventful':'eventless';
 				if(!empty($cell_data['type'])){
@@ -61,7 +62,8 @@
 				<?php
 				//create a new row once we reach the end of a table collumn
 				$col_count= ($col_count == $col_max ) ? 1 : $col_count+1;
-				echo ($col_count == 1) ? '</tr><tr>':''; 
+				echo ($col_count == 1 && $tot_count < $cal_count) ? '</tr><tr>':'';
+				$tot_count ++; 
 			}
 			?>
 		</tr>

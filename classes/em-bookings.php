@@ -191,8 +191,11 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function is_open(){
 		//TODO extend booking options
 		$return = false;
-		if( $this->get_event()->start < current_time('timestamp') ){
+		if( $this->get_event()->start > current_time('timestamp') ){
 			$return = true;
+		}
+		if( count($this->get_available_tickets()->tickets) == 0){
+			$return = false;
 		}
 		return apply_filters('em_bookings_is_open', $return, $this);
 	}

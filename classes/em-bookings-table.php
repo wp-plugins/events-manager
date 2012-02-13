@@ -329,13 +329,13 @@ class EM_Bookings_Table{
 					<?php endif; ?>
 				</table>
 				</div>
+				<?php if( !empty($bookings_nav) && $this->bookings_count >= $this->limit ) : ?>
+				<div class='tablenav'>
+					<?php echo $bookings_nav; ?>
+					<div class="clear"></div>
+				</div>
+				<?php endif; ?>
 			</form>
-			<?php if( !empty($bookings_nav) && $this->bookings_count >= $this->limit ) : ?>
-			<div class='tablenav'>
-				<?php echo $bookings_nav; ?>
-				<div class="clear"></div>
-			</div>
-			<?php endif; ?>
 		</div>
 		<br class="clear" />
 		<?php

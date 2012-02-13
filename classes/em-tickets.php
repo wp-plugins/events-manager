@@ -126,7 +126,10 @@ class EM_Tickets extends EM_Object implements Iterator{
 		$this->tickets = array(); //clean current tickets out
 		if( !empty($_POST['em_tickets']) && is_array($_POST['em_tickets']) ){
 			//get all ticket data and create objects
+			global $allowedposttags;
 			foreach($_POST['em_tickets'] as $ticket_data){
+				$ticket_data['ticket_name'] = ( !empty($ticket_data['ticket_name']) ) ? wp_kses_data(stripslashes($ticket_data['ticket_name'])):'';
+				$ticket_data['ticket_description'] = ( !empty($ticket_data['ticket_description']) ) ? wp_kses(stripslashes($ticket_data['ticket_description']), $allowedposttags):'';
 				$EM_Ticket = new EM_Ticket($ticket_data);
 				$this->tickets[] = $EM_Ticket;
 			}

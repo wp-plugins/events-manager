@@ -194,6 +194,7 @@ function em_init_actions() {
 					location_address AS `address`, 
 					location_town AS `town`, 
 					location_state AS `state`,
+					location_region AS `region`,
 					location_postcode AS `postcode`,
 					location_country AS `country`
 				FROM ".EM_LOCATIONS_TABLE." 
@@ -370,6 +371,7 @@ function em_init_actions() {
 						exit();
 					}
 				}else{
+					$result = false;
 					$EM_Notices->add_error( $EM_Booking->get_errors() );
 					$feedback = $EM_Booking->feedback_message;
 				}

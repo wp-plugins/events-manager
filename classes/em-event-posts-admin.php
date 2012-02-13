@@ -118,17 +118,9 @@ class EM_Event_Posts_Admin{
 				}
 				break;
 			case 'date-time':
-				//get meta value to see if post has location, otherwise
-				$localised_start_date = date_i18n('D d M Y', $EM_Event->start);
-				$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
-				echo $localised_start_date;
-				echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'';
+				echo $EM_Event->output('#_EVENTDATES');
 				echo "<br />";
-				if(!$EM_Event->event_all_day){
-					echo substr ( $EM_Event->start_time, 0, 5 ) . " - " . substr ( $EM_Event->end_time, 0, 5 );
-				}else{
-					echo get_option('dbem_event_all_day_message');
-				}
+				echo $EM_Event->output('#_EVENTTIMES');
 				break;
 			case 'extra':
 				if( get_option('dbem_rsvp_enabled') == 1 && !empty($EM_Event->event_rsvp) && $EM_Event->can_manage('manage_bookings','manage_others_bookings')){

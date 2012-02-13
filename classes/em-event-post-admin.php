@@ -367,6 +367,9 @@ class EM_Event_Recurring_Post_Admin{
 		if( (empty($EM_Event->event_id) || !empty($EM_Event->group_id)) && function_exists('groups_get_user_groups') ){
 			add_meta_box('em-event-group', __('Group Ownership','dbem'), array('EM_Event_Post_Admin','meta_box_group'),'event-recurring', 'side','low');
 		}
+		if( EM_MS_GLOBAL && !is_main_site() && get_option('dbem_categories_enabled') ){
+			add_meta_box('em-event-categories', __('Site Categories','dbem'), array('EM_Event_Post_Admin','meta_box_ms_categories'),'event-recurring', 'side','low');
+		}
 	}
 	
 	function meta_box_recurrence(){

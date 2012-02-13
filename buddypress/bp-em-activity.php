@@ -27,7 +27,6 @@ function bp_em_record_activity( $args = '' ) {
 
 	$r = wp_parse_args( $args, $defaults );
 	extract( $r );
-
 	return bp_activity_add( array( 'id' => $id, 'user_id' => $user_id, 'action' => $action, 'content' => $content, 'primary_link' => $primary_link, 'component' => $component, 'type' => $type, 'item_id' => $item_id, 'secondary_item_id' => $secondary_item_id, 'recorded_time' => $recorded_time, 'hide_sitewide' => $hide_sitewide ) );
 }
 
@@ -122,5 +121,6 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 	}
 	return $result;
 }
+add_filter('em_booking_set_status','bp_em_record_activity_booking_save', 10, 2);
 add_filter('em_booking_save','bp_em_record_activity_booking_save', 10, 2);
 add_filter('em_booking_delete','bp_em_record_activity_booking_save', 10, 2);

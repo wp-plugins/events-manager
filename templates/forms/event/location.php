@@ -30,15 +30,12 @@ $required = "<i>*</i>";
 				<select name="location_id" id='location-select-id' size="1">  
 					<?php if(!get_option('dbem_require_location',true)): ?><option value="0"><?php _e('No Location'); ?></option><?php endif; ?>
 					<?php 
-					$locations = EM_Locations::get();
+					$locations = EM_Locations::get(array('blog'=>false));
 					$selected_location = !empty($EM_Event->location_id) ? $EM_Event->location_id:get_option('dbem_default_location');
 					foreach($locations as $EM_Location) {
-						$selected = "";  
-						if ($selected_location == $EM_Location->location_id){ 
-							$selected = "selected='selected' ";
-						}
+						$selected = ($selected_location == $EM_Location->location_id) ? "selected='selected' " : '';
 				   		?>          
-				    	<option value="<?php echo $EM_Location->location_id ?>" title="<?php echo "{$EM_Location->location_latitude},{$EM_Location->location_longitude}" ?>" <?php echo $selected ?>><?php echo $EM_Location->name; ?></option>
+				    	<option value="<?php echo $EM_Location->location_id ?>" title="<?php echo "{$EM_Location->location_latitude},{$EM_Location->location_longitude}" ?>" <?php echo $selected ?>><?php echo $EM_Location->location_name; ?></option>
 				    	<?php
 					}
 					?>
@@ -75,14 +72,12 @@ $required = "<i>*</i>";
 			<th><?php _e ( 'City/Town:', 'dbem' )?>&nbsp;</th>
 			<td>
 				<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Location->location_town, ENT_QUOTES); ?>" /><?php echo $required; ?>
-				<input id="location-town-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_town'); ?>" />
 			</td>
 		</tr>
 		<tr>
 			<th><?php _e ( 'State/County:', 'dbem' )?>&nbsp;</th>
 			<td>
 				<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Location->location_state, ENT_QUOTES); ?>" />
-				<input id="location-state-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_states'); ?>" />
 			</td>
 		</tr>
 		<tr>
@@ -95,7 +90,6 @@ $required = "<i>*</i>";
 			<th><?php _e ( 'Region:', 'dbem' )?>&nbsp;</th>
 			<td>
 				<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Location->location_region, ENT_QUOTES); ?>" />
-				<input id="location-region-wpnonce" type="hidden" value="<?php echo wp_create_nonce('search_regions'); ?>" />
 			</td>
 		</tr>
 		<tr>
