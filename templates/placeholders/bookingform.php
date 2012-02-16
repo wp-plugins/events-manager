@@ -1,8 +1,11 @@
 <?php  
 /* 
  * This is where the booking form is generated.
- * If you would like to modify this file, copy it to wp-content/themes/yourtheme/plugins/events-manager/placeholders
- * and you will be able to override this file without it getting overwritten each time you update the plugin.
+ * It's not recommended you edit this form directly if avoidable, as you can change booking form settings in various ways:
+ * - check your booking form options panel in the Booking Options tab in your settings.
+ * - use CSS or jQuery to change the look of your booking forms
+ * - edit the files in the forms/bookingform folder individually instead of this file, to make it more upgrade-safe
+ * - hook into WP action/filters below to modify/generate information 
  */
 
 /* @var $EM_Event EM_Event */   
@@ -56,7 +59,7 @@ $can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is
 						?>	
 						<?php 
 							do_action('em_booking_form_before_user_details');
-							if( get_option('em_booking_form_custom') ){ 
+							if( get_option('em_booking_form_custom') && has_action('em_booking_form_custom') ){ 
 								//Pro Custom Booking Form. You can create your own custom form by hooking into this action and setting the option above to true
 								do_action('em_booking_form_custom'); //do not delete
 							}else{

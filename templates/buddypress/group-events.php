@@ -1,4 +1,5 @@
 <?php
+/* WARNING! This file may change in the near future as we intend to add features to BuddyPress - 2012-02-14 */
 	global $bp, $EM_Notices;
 	echo $EM_Notices;
 	$url = $bp->events->link . 'my-events/'; //url to this page

@@ -44,6 +44,11 @@ class EM_Bookings_Table{
 			'awaiting-online' => array('label'=>__('Awaiting Online Payment','dbem'), 'search'=>4),
 			'awaiting-payment' => array('label'=>__('Awaiting Offline Payment','dbem'), 'search'=>5)
 		);
+		if( !get_option('dbem_bookings_approval') ){
+			unset($this->statuses['pending']);
+			$this->statuses['needs-attention']['search'] = array(5);
+			$this->statuses['confirmed']['search'] = array(0,1);
+		}
 		//Set basic vars
 		$this->order = ( !empty($_REQUEST ['order']) ) ? $_REQUEST ['order']:'ASC';
 		$this->orderby = ( !empty($_REQUEST ['order']) ) ? $_REQUEST ['order']:'booking_name';
@@ -424,13 +429,15 @@ class EM_Bookings_Table{
 		$booking_actions = array();
 		switch($EM_Booking->booking_status){
 			case 0:
-				$booking_actions = array(
-					'approve' => '<a class="em-bookings-approve" href="'.em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'booking_id'=>$EM_Booking->booking_id)).'">'.__('Approve','dbem').'</a>',
-					'reject' => '<a class="em-bookings-reject" href="'.em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'booking_id'=>$EM_Booking->booking_id)).'">'.__('Reject','dbem').'</a>',
-					'delete' => '<span class="trash"><a class="em-bookings-delete" href="'.em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'booking_id'=>$EM_Booking->booking_id)).'">'.__('Delete','dbem').'</a></span>',
-					'edit' => '<a class="em-bookings-edit" href="'.em_add_get_params($EM_Booking->get_event()->get_bookings_url(), array('booking_id'=>$EM_Booking->booking_id, 'em_ajax'=>null, 'em_obj'=>null)).'">'.__('Edit/View','dbem').'</a>',
-				);
-				break;
+				if( get_option('dbem_bookings_approval') ){
+					$booking_actions = array(
+						'approve' => '<a class="em-bookings-approve" href="'.em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_approve', 'booking_id'=>$EM_Booking->booking_id)).'">'.__('Approve','dbem').'</a>',
+						'reject' => '<a class="em-bookings-reject" href="'.em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_reject', 'booking_id'=>$EM_Booking->booking_id)).'">'.__('Reject','dbem').'</a>',
+						'delete' => '<span class="trash"><a class="em-bookings-delete" href="'.em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_delete', 'booking_id'=>$EM_Booking->booking_id)).'">'.__('Delete','dbem').'</a></span>',
+						'edit' => '<a class="em-bookings-edit" href="'.em_add_get_params($EM_Booking->get_event()->get_bookings_url(), array('booking_id'=>$EM_Booking->booking_id, 'em_ajax'=>null, 'em_obj'=>null)).'">'.__('Edit/View','dbem').'</a>',
+					);
+					break;
+				}//if approvals are off, treat as a 1
 			case 1:
 				$booking_actions = array(
 					'unapprove' => '<a class="em-bookings-unapprove" href="'.em_add_get_params($_SERVER['REQUEST_URI'], array('action'=>'bookings_unapprove', 'booking_id'=>$EM_Booking->booking_id)).'">'.__('Unpprove','dbem').'</a>',
@@ -470,6 +477,7 @@ class EM_Bookings_Table{
 				break;
 				
 		}
+		if( !get_option('dbem_bookings_approval') ) unset($booking_actions['unapprove']);
 		return apply_filters('em_bookings_table_cols_col_action', $booking_actions, $EM_Booking);
 	}
 }

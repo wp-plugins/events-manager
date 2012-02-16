@@ -592,18 +592,18 @@ class EM_Location extends EM_Object {
 					$replace = $this->get_country();
 					break;
 				case '#_LOCATIONFULLLINE':
-					$replace = $this->location_address.', ';
-					$replace = empty($this->location_town) ? '':', '.$this->location_town;
-					$replace = empty($this->location_state) ? '':', '.$this->location_state;
-					$replace = empty($this->location_postcode) ? '':', '.$this->location_postcode;
-					$replace = empty($this->location_region) ? '':', '.$this->location_region;
+					$replace = $this->location_address;
+					$replace .= empty($this->location_town) ? '':', '.$this->location_town;
+					$replace .= empty($this->location_state) ? '':', '.$this->location_state;
+					$replace .= empty($this->location_postcode) ? '':', '.$this->location_postcode;
+					$replace .= empty($this->location_region) ? '':', '.$this->location_region;
 					break;
 				case '#_LOCATIONFULLBR':
-					$replace = $this->location_address.'<br /> ';
-					$replace = empty($this->location_town) ? '':'<br /> '.$this->location_town;
-					$replace = empty($this->location_state) ? '':'<br /> '.$this->location_state;
-					$replace = empty($this->location_postcode) ? '':'<br /> '.$this->location_postcode;
-					$replace = empty($this->location_region) ? '':'<br /> '.$this->location_region;
+					$replace = $this->location_address;
+					$replace .= empty($this->location_town) ? '':'<br />'.$this->location_town;
+					$replace .= empty($this->location_state) ? '':'<br />'.$this->location_state;
+					$replace .= empty($this->location_postcode) ? '':'<br />'.$this->location_postcode;
+					$replace .= empty($this->location_region) ? '':'<br />'.$this->location_region;
 					break;
 				case '#_MAP': //Depreciated
 				case '#_LOCATIONMAP':
@@ -679,6 +679,13 @@ class EM_Location extends EM_Object {
 						$replace .= get_option('dbem_location_event_list_item_footer_format');
 					} else {
 						$replace = get_option('dbem_location_no_events_message');
+					}
+					break;
+				case '#_LOCATIONNEXTEVENT':
+					$events = EM_Events::get( array('location'=>$this->location_id, 'scope'=>'future', 'limit'=>1, 'orderby'=>'event_start_date,event_start_time') );
+					$replace = get_option('dbem_location_no_events_message');
+					foreach($events as $EM_Event){
+						$replace = $EM_Event->output('#_EVENTLINK');
 					}
 					break;
 				default:

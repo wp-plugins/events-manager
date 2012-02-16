@@ -1,6 +1,6 @@
-<?php 
+<?php
+/* WARNING! This file may change in the near future as we intend to add features to the event editor. If at all possible, try making customizations using CSS, jQuery, or using our hooks and filters. - 2012-02-14 */
 /* 
- * By modifying this in your theme folder within plugins/events-manager/templates/event-form.php, you can change the way the search form will look.
  * To ensure compatability, it is recommended you maintain class, id and form name attributes, unless you now what you're doing. 
  * You also must keep the _wpnonce hidden field in this form too.
  */

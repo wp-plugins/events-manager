@@ -1,4 +1,9 @@
 <?php
+/* WARNING! This file may change in the near future as we intend to add features to the location editor. If at all possible, try making customizations using CSS, jQuery, or using our hooks and filters. - 2012-02-14 */
+/* 
+ * To ensure compatability, it is recommended you maintain class, id and form name attributes, unless you now what you're doing. 
+ * You also must keep the _wpnonce hidden field in this form too.
+ */
 global $EM_Location, $EM_Notices;
 //check that user can access this page
 if( is_object($EM_Location) && !$EM_Location->can_manage('edit_locations','edit_others_locations') ){

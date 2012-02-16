@@ -127,7 +127,10 @@ function em_docs_init($force_init = false){
 							'#_SPACES' => array( 'desc' => 'Shows the total spaces for the event.' ),
 							'#_ATTENDEES' => array( 'desc' => 'Shows the list of user avatars attending events.' ),
 							'#_BOOKINGSURL' => array( 'desc' => 'Shows the url to the admin, front-end or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' ),
-							'#_BOOKINGSLINK' => array( 'desc' => 'Shows a link to the admin, front-end or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' )							
+							'#_BOOKINGSLINK' => array( 'desc' => 'Shows a link to the admin, front-end or buddypress (if activated) bookings management page for this event. Only shown if user is logged in and able to manage bookings.' ),
+							'#_EVENTPRICERANGE' => array( 'desc' => 'Shows a "maximum - minimum" price range, or a single price if there is no range. Price is formatted according to currency formatting in your settings page.' ),
+							'#_EVENTPRICEMIN' => array( 'desc' => 'Shows the lowest ticket price for this event.' ),
+							'#_EVENTPRICEMAX' => array( 'desc' => 'Shows the highest ticket price for this event.' ),								
 						)
 					),
 					'Contact Details' => array(
@@ -217,7 +220,8 @@ function em_docs_init($force_init = false){
 						'placeholders' => array(
 							'#_LOCATIONPASTEVENTS' => array( 'desc' => 'Will show a list of all past events at this location.' ),
 							'#_LOCATIONNEXTEVENTS' => array( 'desc' => 'Will show a list of all future events at this location.' ),
-							'#_LOCATIONALLEVENTS' => array( 'desc' => 'Will show a list of all events at this location.' )
+							'#_LOCATIONALLEVENTS' => array( 'desc' => 'Will show a list of all events at this location.' ),
+							'#_LOCATIONNEXTEVENT' => array( 'desc' => 'Will show a link to the next event at this location, or the no events message.' ),
 						)
 					),
 				),

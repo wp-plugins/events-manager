@@ -247,20 +247,26 @@ class EM_Calendar extends EM_Object {
 							
 				//Get the link to this calendar day
 				global $wp_rewrite;
-				if( get_option("dbem_events_page") > 0 ){
-					$event_page_link = trailingslashit(get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM
-				}else{
-					if( $wp_rewrite->using_permalinks() ){
-						$event_page_link = trailingslashit(home_url()).EM_POST_TYPE_EVENT_SLUG.'/'; //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+				if( count($events) > 1 || !get_option('dbem_calendar_direct_links') ){
+					if( get_option("dbem_events_page") > 0 ){
+						$event_page_link = trailingslashit(get_permalink(get_option("dbem_events_page"))); //PAGE URI OF EM
 					}else{
-						$event_page_link = trailingslashit(home_url()).'?post_type='.EM_POST_TYPE_EVENT; //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+						if( $wp_rewrite->using_permalinks() ){
+							$event_page_link = trailingslashit(home_url()).EM_POST_TYPE_EVENT_SLUG.'/'; //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+						}else{
+							$event_page_link = trailingslashit(home_url()).'?post_type='.EM_POST_TYPE_EVENT; //don't use EM_URI here, since ajax calls this before EM_URI is defined.
+						}
 					}
-				}
-				if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){
-					$calendar_array['cells'][$day_key]['link'] = $event_page_link.$day_key."/";
+					if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){
+						$calendar_array['cells'][$day_key]['link'] = $event_page_link.$day_key."/";
+					}else{
+						$joiner = (stristr($event_page_link, "?")) ? "&amp;" : "?";				
+						$calendar_array['cells'][$day_key]['link'] = $event_page_link.$joiner."calendar_day=".$day_key;
+					}
 				}else{
-					$joiner = (stristr($event_page_link, "?")) ? "&amp;" : "?";				
-					$calendar_array['cells'][$day_key]['link'] = $event_page_link.$joiner."calendar_day=".$day_key;
+					foreach($events as $EM_Event){
+						$calendar_array['cells'][$day_key]['link'] = $EM_Event->get_permalink();
+					}
 				}
 				//Add events to array
 				$calendar_array['cells'][$day_key]['events'] = $events;

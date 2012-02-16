@@ -1,10 +1,7 @@
 <?php
 /* 
  * This file generates the default booking form fields. Events Manager Pro does not use this file.
- * If you would like to modify this file, copy it to wp-content/themes/yourtheme/plugins/events-manager/forms/bookingform
- * and you will be able to override this file without it getting overwritten each time you update the plugin.
  */
-
 /* @var $EM_Event EM_Event */ 
 //Here we have extra information required for the booking. 
 ?>

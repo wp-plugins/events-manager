@@ -1238,6 +1238,43 @@ class EM_Event extends EM_Object{
 						$replace = ob_get_clean();
 					}
 					break;
+				case '#_EVENTPRICERANGE':
+					//get the range of prices
+					$min = $max = 0;
+					foreach( $this->get_tickets()->tickets as $EM_Ticket ){
+						if($EM_Ticket->get_price() > $max ){
+							$max = $EM_Ticket->get_price();
+						}
+						if($EM_Ticket->get_price() < $min ){
+							$min = $EM_Ticket->get_price();
+						}						
+					}
+					if( $min != $max ){
+						$replace = em_get_currency_formatted($min).' - '.em_get_currency_formatted($max);
+					}else{
+						$replace = em_get_currency_formatted($min);
+					}
+					break;
+				case '#_EVENTPRICEMIN':
+					//get the range of prices
+					$min = 0;
+					foreach( $this->get_tickets()->tickets as $EM_Ticket ){
+						if( $EM_Ticket->get_price() < $min ){
+							$min = $EM_Ticket->get_price();
+						}						
+					}
+					$replace = em_get_currency_formatted($min);
+					break;
+				case '#_EVENTPRICEMAX':
+					//get the range of prices
+					$max = 0;
+					foreach( $this->get_tickets()->tickets as $EM_Ticket ){
+						if( $EM_Ticket->get_price() > $max ){
+							$max = $EM_Ticket->get_price();
+						}						
+					}
+					$replace = em_get_currency_formatted($max);
+					break;
 				case '#_AVAILABLESEATS': //Depreciated
 				case '#_AVAILABLESPACES':
 					if ($this->event_rsvp && get_option('dbem_rsvp_enabled')) {

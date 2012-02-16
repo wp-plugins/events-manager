@@ -3,12 +3,25 @@
  * @param EM_Event $EM_Event
  */
 function bp_em_group_event_save($EM_Event){
-	if( is_object($EM_Event) && empty($EM_Event->group_id) && !empty($_REQUEST['group_id']) && is_numeric($_REQUEST['group_id']) && bp_is_active('groups') ){
-		//we have been requested an event creation tied to a group, so does this group exist, and does this person have admin rights to it?
-		if( groups_is_user_admin(get_current_user_id(), $_REQUEST['group_id']) ){
-			$EM_Event->group_id = $_REQUEST['group_id'];
-		}				
-	}	
+	if( is_object($EM_Event) ){
+		if( empty($EM_Event->group_id) && !empty($_REQUEST['group_id']) && is_numeric($_REQUEST['group_id']) && bp_is_active('groups') ){
+			//we have been requested an event creation tied to a group, so does this group exist, and does this person have admin rights to it?
+			if( groups_is_user_admin(get_current_user_id(), $_REQUEST['group_id']) ){
+				$EM_Event->group_id = $_REQUEST['group_id'];
+			}
+		}
+		if( !empty($EM_Event->group_id) ){	
+			//if group is private, make it private
+			$group = groups_get_group(array('group_id'=>$EM_Event->group_id));
+			$is_member = groups_is_user_member(get_current_user_id(), $EM_Event->group_id) || groups_is_user_admin(get_current_user_id(), $EM_Event->group_id) || groups_is_user_mod(get_current_user_id(), $EM_Event->group_id);
+			if( $group->status != 'public' && $EM_Event->post_status == "publish" && $is_member ){
+				//Make sure event status is private and set post status to private
+				global $wpdb;
+				$EM_Event->event_private = 1;
+				$wpdb->update($wpdb->posts, array('post_status'=>'private'), array('ID'=>$EM_Event->post_id));
+			}
+		}
+	}
 	return $EM_Event;
 }
 add_action('em_event_save_pre','bp_em_group_event_save',1,1);

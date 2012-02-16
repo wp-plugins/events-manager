@@ -10,9 +10,28 @@ define('EM_POST_TYPE_LOCATION_SLUG',get_option('dbem_cp_locations_slug', 'locati
 define('EM_TAXONOMY_CATEGORY_SLUG', get_site_option('dbem_taxonomy_category_slug', 'events/categories'));
 define('EM_TAXONOMY_TAG_SLUG', get_option('dbem_taxonomy_tag_slug', 'events/tags'));
 
-if( !get_option('disable_post_thumbnails') && function_exists('add_theme_support') ){
-	add_theme_support('post-thumbnails'); //need to add this for themes that don't have it.
+/*
+ * This checks that you have post thumbnails enabled, if not, it enables it. 
+ * You can always disable this by adding remove_action('after_setup_theme','wp_events_plugin_after_setup_theme'); in your functions.php theme file.
+ */
+add_action('after_setup_theme','wp_events_plugin_after_setup_theme');
+function wp_events_plugin_after_setup_theme(){
+	if( !get_option('disable_post_thumbnails') && function_exists('add_theme_support') ){
+		global $_wp_theme_features;
+		if( !empty($_wp_theme_features['post-thumbnails']) ){
+			//either leave as true, or add our cpts to this
+			if( is_array($_wp_theme_features['post-thumbnails']) ){
+				//add to featured image post types for specific themes
+				$_wp_theme_features['post-thumbnails'][] = EM_POST_TYPE_EVENT;
+				$_wp_theme_features['post-thumbnails'][] = EM_POST_TYPE_LOCATION;
+				add_theme_support('post-thumbnails', $_wp_theme_features['post-thumbnails']);
+			}
+		}else{
+			add_theme_support('post-thumbnails'); //need to add this for themes that don't have it. 
+		}
+	}
 }
+//This bit registers the CPTs
 add_action('init','wp_events_plugin_init',1);
 function wp_events_plugin_init(){	
 	define('EM_ADMIN_URL',admin_url().'edit.php?post_type='.EM_POST_TYPE_EVENT); //we assume the admin url is absolute with at least one querystring

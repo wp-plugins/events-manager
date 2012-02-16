@@ -631,7 +631,7 @@ class EM_Booking extends EM_Object{
 			
 			if( !empty($contact_subject) ){
 				//Send admin/contact emails
-				if( (get_option('dbem_bookings_approval') == 0 || in_array($this->booking_status, array(0,3,4,5)) || (in_array($this->previous_status, array(4)) && $this->booking_status == 1)) && (get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
+				if( ( (get_option('dbem_bookings_approval') && in_array($this->booking_status, array(0,3,4,5)) || in_array($this->booking_status, array(3,4,5))) || (in_array($this->previous_status, array(4)) && $this->booking_status == 1)) && (get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') != '') ){
 					//Only gets sent if this is a pending booking, unless approvals are disabled.
 					$contact_subject = $this->output($contact_subject, 'email');
 					$contact_body = $this->output($contact_body, 'email'); 

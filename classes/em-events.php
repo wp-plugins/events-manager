@@ -325,7 +325,7 @@ class EM_Events extends EM_Object implements Iterator {
 			'country' => false,
 			'region' => false,
 			'blog' => get_current_blog_id(),
-			'private' => !current_user_can('read_private_events'),
+			'private' => current_user_can('read_private_events'),
 			'private_only' => false,
 			'post_id' => false
 		);

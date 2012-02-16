@@ -164,6 +164,8 @@ jQuery(document).ready( function($){
 				});
 				slot.find('span.'+el.attr('name')).text(el.attr('value'));
 			});
+			//allow for others to hook into this
+			$(document).triggerHandler('em_maps_tickets_edit', [slot, rowNo, edit]);
 			//sort out dates and localization masking
 			var start_pub = $("#em-tickets-form input[name=ticket_start_pub]").val();
 			var end_pub = $("#em-tickets-form input[name=ticket_end_pub]").val();

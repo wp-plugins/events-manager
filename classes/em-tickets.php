@@ -194,42 +194,17 @@ class EM_Tickets extends EM_Object implements Iterator{
 			$this->spaces = $spaces;
 		}
 		return apply_filters('em_booking_get_spaces',$this->spaces,$this);
-	}	
-	
-	/* Overrides EM_Object method to apply a filter to result
-	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
-	 */
-	function build_sql_conditions( $args = array() ){
-		$conditions = apply_filters( 'em_tickets_build_sql_conditions', parent::build_sql_conditions($args), $args );
-		if( is_numeric($args['ticket_status']) ){
-			$conditions['ticket_status'] = 'ticket_status='.$args['status'];
-		}
-		return apply_filters('em_tickets_build_sql_conditions', $conditions, $args);
 	}
 	
-	/* Overrides EM_Object method to apply a filter to result
-	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
+	/**
+	 * Returns the collumns used in ticket public pricing tables/forms
+	 * @param unknown_type $EM_Event
 	 */
-	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
-		return apply_filters( 'em_tickets_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order')), $args, $accepted_fields, $default_order );
-	}
-	
-	/* 
-	 * Adds custom Events search defaults
-	 * @param array $array
-	 * @return array
-	 * @uses EM_Object#get_default_search()
-	 */
-	function get_default_search( $array = array() ){
-		$defaults = array(
-			'ticket_status' => false,
-			'person' => true //to add later, search by person's tickets...
-		);	
-		if( is_admin() ){
-			//figure out default owning permissions
-			$defaults['owner'] = !current_user_can('manage_others_bookings') ? get_current_user_id():false;
-		}
-		return apply_filters('em_tickets_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
+	function get_ticket_collumns($EM_Event = false){
+		if( !$EM_Event ) $EM_Event = $this->get_event();
+		$collumns = array( 'type' => __('Ticket Type','dbem'), 'price' => __('Price','dbem'), 'spaces' => __('Spaces','dbem'));
+		if( $EM_Event->is_free() ) unset($collumns['price']); //add event price
+		return apply_filters('em_booking_form_tickets_cols', $collumns, $EM_Event );
 	}
 	
 	//Iterator Implementation
