@@ -26,25 +26,25 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
 		$placeholder = urlencode('%PAGE%');
 		$link = str_replace('%PAGE%', $placeholder, $link); //To avoid url encoded/non encoded placeholders
 	    //Add the back and first buttons
-		    $string = ($page>1 && $startPage != 1) ? '<a class="prev page-numbers" href="'.str_replace($placeholder,1,$link).'">&lt;&lt;</a> ' : '';
+		    $string = ($page>1 && $startPage != 1) ? '<a class="prev page-numbers" href="'.str_replace($placeholder,1,$link).'" title="1">&lt;&lt;</a> ' : '';
 		    if($page == 2){
-		    	$string .= ' <a class="prev page-numbers" href="'.$base_link.$base_querystring.'">&lt;</a> ';
+		    	$string .= ' <a class="prev page-numbers" href="'.$base_link.$base_querystring.'" title="2">&lt;</a> ';
 		    }elseif($page > 2){
-		    	$string .= ' <a class="prev page-numbers" href="'.str_replace($placeholder,$page-1,$link).'">&lt;</a> ';
+		    	$string .= ' <a class="prev page-numbers" href="'.str_replace($placeholder,$page-1,$link).'" title="'.($page-1).'">&lt;</a> ';
 		    }
 		//Loop each page and create a link or just a bold number if its the current page
 		    for ($i = $startPage ; $i < $startPage+$pagesToShow && $i <= $maxPages ; $i++){
 	            if($i == $page){
 	                $string .= ' <strong><span class="page-numbers current">'.$i.'</span></strong>';
 	            }elseif($i=='1'){
-	                $string .= ' <a class="page-numbers" href="'.$base_link.$base_querystring.'">'.$i.'</a> ';
+	                $string .= ' <a class="page-numbers" href="'.$base_link.$base_querystring.'" title="'.$i.'">'.$i.'</a> ';
 	            }else{
-	                $string .= ' <a class="page-numbers" href="'.str_replace($placeholder,$i,$link).'">'.$i.'</a> ';
+	                $string .= ' <a class="page-numbers" href="'.str_replace($placeholder,$i,$link).'" title="'.$i.'">'.$i.'</a> ';
 	            }
 		    }
 		//Add the forward and last buttons
-		    $string .= ($page < $maxPages) ? ' <a class="next page-numbers" href="'.str_replace($placeholder,$page+1,$link).'">&gt;</a> ' :' ' ;
-		    $string .= ($i-1 < $maxPages) ? ' <a class="next page-numbers" href="'.str_replace($placeholder,$maxPages,$link).'">&gt;&gt;</a> ' : ' ';
+		    $string .= ($page < $maxPages) ? ' <a class="next page-numbers" href="'.str_replace($placeholder,$page+1,$link).'" title="'.($page+1).'">&gt;</a> ' :' ' ;
+		    $string .= ($i-1 < $maxPages) ? ' <a class="next page-numbers" href="'.str_replace($placeholder,$maxPages,$link).'" title="'.$maxPages.'">&gt;&gt;</a> ' : ' ';
 		//Return the string
 		    return apply_filters('em_paginate', $string);
 	}

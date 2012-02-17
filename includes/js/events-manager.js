@@ -89,8 +89,9 @@ jQuery(document).ready( function($){
 		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
 	});
 	
-	//in order for this to work, you need the above classes to be present in your theme
-	$('.em-events-search-form').submit(function(){
+	//in order for this to work, you need the above classes to be present in your templates
+	$('.em-events-search-form').live('submit',function(e){
+		e.preventDefault();
     	if( this.search && this.search.value== EM.txt_search ){ this.search.value = ''; }
     	if( this.em_search && this.em_search.value== EM.txt_search){ this.em_search.value = ''; }
     	if( $('#em-wrapper .em-events-search-ajax').length == 1 ){
@@ -105,8 +106,21 @@ jQuery(document).ready( function($){
 	    	});
 			return false;
     	} 
-	});	
-	
+	});
+	if( $('#em-wrapper .em-events-search-ajax').length > 0 ){
+		$('#em-wrapper .em-events-search-ajax a.page-numbers').live('click', function(e){
+			e.preventDefault();
+			var pageNo = $(this).attr('title');
+			if( $('.em-events-search-form input[name="page"]').length > 0 ){
+				$('.em-events-search-form input[name="page"]').val(pageNo);
+			}else{
+				$('.em-events-search-form').append('<input type="hidden" name="page" value="'+pageNo+'" />');
+			}
+			$('.em-events-search-form').trigger('submit');
+			return false;
+		});
+	}
+		
 	/*
 	 * ADMIN AREA AND PUBLIC FORMS (Still polishing this section up, note that form ids and classes may change accordingly)
 	 */
