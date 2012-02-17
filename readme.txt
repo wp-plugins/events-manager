@@ -97,6 +97,27 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1 =
+* revised booking form template files, simpler booking JS
+* added readme files on updating templates with docs and commented further on templates
+* improved booking button (allows cancellation)
+* added disable email if subject is blank
+* bookings can now have a overall spaces cap which override individual ticket spaces.
+* improved the booking form ajax table to allow more customizability.
+* calendars now will by default direct single event days directly to event page
+* added various price related and location placeholders
+* fixed post_id not being used in shortcode attributes
+* fixed italian datepicker problem
+* quick edit now reflects publish status
+* GBP sign format corrected (encoding issue)
+* fixed admin cross-post search function conflicts
+* fixed some public side search issues
+* fixed notes placeholders not formatting on some instances (e.g. categories)
+* bp activity feed now reports cancelled bookings again
+* location form now prefills region when loading prev. location
+* fixed event sorting order for same-day events on archives (requires resaving the events).
+* made times displayed on post tables use WP general time settings for consistency
+* fixed empty tr in calendars
 
 = 5.0.51 =
 * fixed limit issue for calendars when no limit is set

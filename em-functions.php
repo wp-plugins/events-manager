@@ -396,7 +396,7 @@ function em_new_user_notification($user_id, $plaintext_pass = '') {
 	$message = ob_get_clean();
 	$message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), $message);
 
-	return wp_mail($user_email, sprintf(__('[%s] Your username and password', 'dbem'), $blogname), $message);
+	return EM_Object::email_send(sprintf(__('[%s] Your username and password', 'dbem'), $blogname), $message, $user_email);
 }
 
 /*

@@ -13,7 +13,7 @@ if( get_option('dbem_events_page_search') && !defined('DOING_AJAX') ){
 }
 
 //TODO fine tune ajax searches - we have some pagination issues otherwise, due to search querystrings
-if( get_option('dbem_events_page_ajax', false) ) echo "<div class='em-events-search-ajax'>";
+if( get_option('dbem_events_page_ajax', (defined('EM_AJAX_SEARCH'))) ) echo "<div class='em-events-search-ajax'>";
 $events_count = EM_Events::count( apply_filters('em_content_events_args', $args) );
 $args['limit'] = get_option('dbem_events_default_limit');
 $args['page'] = (!empty($_REQUEST['page']) && is_numeric($_REQUEST['page']) )? $_REQUEST['page'] : 1;
@@ -35,4 +35,4 @@ if( $events_count > 0 ){
 }else{
 	echo get_option ( 'dbem_no_events_message' );
 }
-if( get_option('dbem_events_page_ajax', false) ) echo "</div>";
+if( get_option('dbem_events_page_ajax', (defined('EM_AJAX_SEARCH'))) ) echo "</div>";
