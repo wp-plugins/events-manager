@@ -91,10 +91,10 @@ jQuery(document).ready( function($){
 	
 	//in order for this to work, you need the above classes to be present in your templates
 	$('.em-events-search-form').live('submit',function(e){
-		e.preventDefault();
     	if( this.search && this.search.value== EM.txt_search ){ this.search.value = ''; }
     	if( this.em_search && this.em_search.value== EM.txt_search){ this.em_search.value = ''; }
     	if( $('#em-wrapper .em-events-search-ajax').length == 1 ){
+    		e.preventDefault();
 			$('.em-events-search-form :submit').val(EM.txt_searching);
 			$.ajax( EM.ajaxurl, {
 	    		dataType : 'html',
