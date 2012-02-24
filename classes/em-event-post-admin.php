@@ -302,7 +302,7 @@ class EM_Event_Recurring_Post_Admin{
 			$events_array = EM_Events::get( array('recurrence'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'all' ) );
 			foreach($events_array as $event){
 				/* @var $event EM_Event */
-				if($EM_Event->event_id == $event->recurrence_id ){ //double check the event is a recurrence of this event
+				if($EM_Event->event_id == $event->recurrence_id && !empty($event->recurrence_id) ){ //double check the event is a recurrence of this event
 					wp_delete_post($event->post_id, true);
 				}
 			}
