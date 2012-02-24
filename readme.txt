@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.1
 Tested up to: 3.3.1
-Stable tag: 5.1.1
+Stable tag: 5.1.2
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -51,8 +51,9 @@ Version 5 now makes events and locations WordPress Custom Post Types, allowing f
 = Go Pro =
 We have also released an add-on for Events Manager which not only demonstrates the flexibility of Events Manager, but also adds some important features:
 
-* PayPal and Offline Payments
+* PayPal, Authorize.net and Offline Payments
 * Custom booking forms
+* Coupon Codes
 * Faster support via private forums
 
 For more information or to go pro, [visit our plugin website](http://wp-events-plugin.com).
