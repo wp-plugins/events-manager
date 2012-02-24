@@ -97,6 +97,15 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1.2 =
+* fixed auto-delete bug where auto-draft recurring events deletes all events
+* fixed recurrence pattern bug
+* calendar ajax links are now SE and non JS friendly
+* rss link fixed in non-permalinks mode
+* added sorting options to my bookings page
+* updated de_DE, cs_CZ, dk_DK
+* fixed admin email not going out if booking approvals disabled
+
 = 5.1.1 =
 * fixed search JS bug, preventing searchings being made
 

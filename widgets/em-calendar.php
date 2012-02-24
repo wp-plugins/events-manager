@@ -36,9 +36,7 @@ class EM_Widget_Calendar extends WP_Widget {
 		}
 	    
 	    //Our Widget Content  
-		echo '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">';
 	    echo EM_Calendar::output(apply_filters('em_widget_calendar_get_args',$instance));
-		echo '</div>';
 	    
 	    echo $args['after_widget'];
     }

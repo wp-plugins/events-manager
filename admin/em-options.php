@@ -859,10 +859,47 @@ function em_admin_options_page() {
 					<?php
 					$other_pages_tip = 'Using the %s shortcode, you can allow users to manage %s outside the admin area.';
 					$events_page_options[0] = '['.__('None', 'dbem').']';
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Edit events','dbem')), 'dbem_edit_events_page', $events_page_options, '' );
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Edit locations','dbem')), 'dbem_edit_locations_page', $events_page_options, '' );
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Manage bookings','dbem')), 'dbem_edit_bookings_page', $events_page_options, '' );
+					?><tr><td colspan="2"><h4><?php echo _e('My Bookings','dbem'); ?></h4></td></tr><?php
 	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('My bookings','dbem')), 'dbem_my_bookings_page', $events_page_options, sprintf(__('Users can view their bookings for other events on this page.','dbem' ),'<code>[my_bookings]</code>',__('bookings','dbem')) );
+					?>	
+					<tr valign="top" id='dbem_bookings_default_orderby_row'>
+				   		<th scope="row"><?php _e('Default list ordering','dbem'); ?></th>
+				   		<td>   
+							<select name="dbem_bookings_default_orderby" >
+								<?php 
+									$orderby_options = apply_filters('em_settings_bookings_default_orderby_ddm', array(
+										'event_name' => sprintf(__('Order by %s','dbem'),__('Event Name','dbem')),
+										'event_start_date' => sprintf(__('Order by %s','dbem'),__('Start Date','dbem')),
+										'booking_date' => sprintf(__('Order by %s','dbem'),__('Booking Date','dbem'))
+									)); 
+								?>
+								<?php foreach($orderby_options as $key => $value) : ?>
+				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_bookings_default_orderby')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo $value; ?>
+				 				</option>
+								<?php endforeach; ?>
+							</select> 
+							<select name="dbem_bookings_default_order" >
+								<?php 
+								$ascending = __('Ascending','dbem');
+								$descending = __('Descending','dbem');
+								$order_options = apply_filters('em_settings_bookings_default_order_ddm', array(
+									'ASC' => __('Ascending','dbem'),
+									'DESC' => __('Descending','dbem')
+								));
+								?>
+								<?php foreach( $order_options as $key => $value) : ?>   
+				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_bookings_default_order')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo $value; ?>
+				 				</option>
+								<?php endforeach; ?>
+							</select>
+						</td>
+				   	</tr>
+					<tr><td colspan="2"><h4><?php echo _e('Front-end management pages','dbem'); ?></h4></td></tr><?php
+	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Edit events','dbem')), 'dbem_edit_events_page', $events_page_options, sprintf(__('Users can view, add and edit their %s on this page.','dbem'),__('events','dbem')) );
+	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Edit locations','dbem')), 'dbem_edit_locations_page', $events_page_options, sprintf(__('Users can view, add and edit their %s on this page.','dbem'),__('locations','dbem')) );
+	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Manage bookings','dbem')), 'dbem_edit_bookings_page', $events_page_options, sprintf(__('Users can manage their %s on this page.','dbem'),__('bookings','dbem')) );
 					echo $save_button;
 					?>
 	            	</table>

@@ -275,12 +275,23 @@ class EM_Calendar extends EM_Object {
 		return apply_filters('em_calendar_get',$calendar_array, $args);
 	}
 	
-	function output($args = array()) {	
+	function output($args = array(), $wrapper = true) {
+		//Let month and year REQUEST override for non-JS users
+		if( !empty($_REQUEST['month']) ){
+			$args['month'] = $_REQUEST['month'];
+		}
+		if( !empty($_REQUEST['year']) ){
+			$args['year'] = $_REQUEST['year'];
+		}
 		$calendar_array  = self::get($args);
 		$template = (!empty($args['full'])) ? 'templates/calendar-full.php':'templates/calendar-small.php';
 		ob_start();
 		em_locate_template($template, true, array('calendar'=>$calendar_array,'args'=>$args));
-		$calendar = '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.ob_get_clean().'</div>';
+		if($wrapper){
+			$calendar = '<div id="em-calendar-'.rand(100,200).'" class="em-calendar-wrapper">'.ob_get_clean().'</div>';
+		}else{
+			$calendar = ob_get_clean();
+		}
 		return apply_filters('em_calendar_output', $calendar, $args);
 	}
 
