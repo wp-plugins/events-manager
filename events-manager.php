@@ -321,7 +321,11 @@ function em_init(){
 	if( $wp_rewrite->using_permalinks() ){
 		define('EM_RSS_URI', trailingslashit(EM_URI)."rss/"); //RSS PAGE URI
 	}else{
-		define('EM_RSS_URI', EM_URI."&rss=1"); //RSS PAGE URI
+		if( get_option("dbem_events_page") > 0 ){
+			define('EM_RSS_URI', EM_URI."&rss=1"); //RSS PAGE URI
+		}else{
+			define('EM_RSS_URI', EM_URI."&feed=rss2"); //RSS PAGE URI
+		}
 	}
 	$EM_Mailer = new EM_Mailer();
 	//Upgrade/Install Routine

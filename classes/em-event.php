@@ -580,7 +580,11 @@ class EM_Event extends EM_Object{
 			unset($event_array['event_id']);
 			if( $this->post_status == 'private' ) $event_array['event_private'] = 1;
 			$event_array['event_attributes'] = serialize($this->event_attributes); //might as well
-			$event_truly_exists = $wpdb->get_var('SELECT event_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}") == $this->event_id;
+			if( !empty($this->event_id) ){
+				$event_truly_exists = $wpdb->get_var('SELECT event_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}") == $this->event_id;
+			}else{
+				$event_truly_exists = false;
+			}
 			if( empty($this->event_id) || !$event_truly_exists ){
 				$this->previous_status = 0; //for sure this was previously status 0
 				$this->event_date_created = current_time('mysql');
@@ -1777,7 +1781,7 @@ class EM_Event extends EM_Object{
 					$matching_month_days = array();
 					//Loop through days of this years month and save matching days to temp array
 					for($day = 1; $day <= $last_day_of_month; $day++){
-						if($current_week_day == $this->recurrence_byday){
+						if((int) $current_week_day == $this->recurrence_byday){
 							$matching_month_days[] = $day;
 						}
 						$current_week_day = ($current_week_day < 6) ? $current_week_day+1 : 0;							
