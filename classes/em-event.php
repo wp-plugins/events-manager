@@ -1087,6 +1087,12 @@ class EM_Event extends EM_Object{
 				}elseif ($condition == 'not_long'){
 					//is it an all day event
 					$show_condition = $this->event_start_date == $this->event_end_date;
+				}elseif ($condition == 'is_past'){
+					//if event is past
+					$show_condition = $this->start <= current_time('timestamp');
+				}elseif ($condition == 'is_future'){
+					//if event is upcoming
+					$show_condition = $this->start > current_time('timestamp');
 				}
 				$show_condition = apply_filters('em_event_output_show_condition', $show_condition, $condition, $conditionals[0][$key], $this);
 				if($show_condition){
