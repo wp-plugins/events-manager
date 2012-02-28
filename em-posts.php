@@ -33,7 +33,7 @@ function wp_events_plugin_after_setup_theme(){
 }
 //This bit registers the CPTs
 add_action('init','wp_events_plugin_init',1);
-function wp_events_plugin_init(){	
+function wp_events_plugin_init(){
 	define('EM_ADMIN_URL',admin_url().'edit.php?post_type='.EM_POST_TYPE_EVENT); //we assume the admin url is absolute with at least one querystring
 	if( get_option('dbem_tags_enabled', true) ){
 		register_taxonomy(EM_TAXONOMY_TAG,array(EM_POST_TYPE_EVENT,'event-recurring'),array( 
@@ -107,8 +107,8 @@ function wp_events_plugin_init(){
 				'assign_terms' => 'edit_events',
 			)
 		));
-	}	
-	register_post_type(EM_POST_TYPE_EVENT, array(	
+	}
+	$event_post_type = array(	
 		'public' => true,
 		'hierarchical' => false,
 		'show_ui' => true,
@@ -151,9 +151,9 @@ function wp_events_plugin_init(){
 			'parent' => __('Parent Event','dbem'),
 		),
 		'menu_icon' => plugins_url('includes/images/calendar-16.png', __FILE__)
-	));
+	);
 	if ( get_option('dbem_recurrence_enabled') ){
-		register_post_type('event-recurring', array(	
+		$event_recurring_post_type = array(	
 			'public' => apply_filters('em_cp_event_recurring_public', false),
 			'show_ui' => true,
 			'show_in_menu' => 'edit.php?post_type='.EM_POST_TYPE_EVENT,
@@ -195,10 +195,10 @@ function wp_events_plugin_init(){
 				'not_found_in_trash' => __('No Recurring Events Found in Trash','dbem'),
 				'parent' => __('Parent Recurring Event','dbem'),
 			)
-		));
+		);
 	}
 	if( get_option('dbem_locations_enabled', true) ){
-		register_post_type(EM_POST_TYPE_LOCATION, array(	
+		$location_post_type = array(	
 			'public' => true,
 			'hierarchical' => false,
 			'show_ui' => !(EM_MS_GLOBAL && !is_main_site() && get_site_option('dbem_ms_mainblog_locations')),
@@ -241,7 +241,26 @@ function wp_events_plugin_init(){
 				'not_found_in_trash' => __('No Locations Found in Trash','dbem'),
 				'parent' => __('Parent Location','dbem'),
 			)
-		));
+		);
+	}
+	if( strstr(EM_POST_TYPE_EVENT_SLUG, EM_POST_TYPE_LOCATION_SLUG) !== FALSE ){
+		//Now register posts, but check slugs in case of conflicts and reorder registrations
+		register_post_type(EM_POST_TYPE_EVENT, $event_post_type);
+		if ( get_option('dbem_recurrence_enabled') ){
+			register_post_type('event-recurring', $event_recurring_post_type);
+		}
+		if( get_option('dbem_locations_enabled', true) ){
+			register_post_type(EM_POST_TYPE_LOCATION, $location_post_type);
+		}
+	}else{
+		if( get_option('dbem_locations_enabled', true) ){
+			register_post_type(EM_POST_TYPE_LOCATION, $location_post_type);
+		}
+		register_post_type(EM_POST_TYPE_EVENT, $event_post_type);
+		//Now register posts, but check slugs in case of conflicts and reorder registrations
+		if ( get_option('dbem_recurrence_enabled') ){
+			register_post_type('event-recurring', $event_recurring_post_type);
+		}
 	}
 }
 

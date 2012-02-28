@@ -1037,74 +1037,76 @@ class EM_Event extends EM_Object{
 			$event_string = str_replace($result, $attString ,$event_string );
 		}
 	 	//First let's do some conditional placeholder removals
-		preg_match_all('/\{([a-zA-Z0-9_]+)\}(.+)\{\/\1\}/s', $event_string, $conditionals);
-		if( count($conditionals[0]) > 0 ){
-			//Check if the language we want exists, if not we take the first language there
-			foreach($conditionals[1] as $key => $condition){
-				$show_condition = false;
-				if ($condition == 'has_bookings') {
-					//check if there's a booking, if not, remove this section of code.
-					$show_condition = ($this->event_rsvp && get_option('dbem_rsvp_enabled'));
-				}elseif ($condition == 'no_bookings') {
-					//check if there's a booking, if not, remove this section of code.
-					$show_condition = (!$this->event_rsvp && get_option('dbem_rsvp_enabled'));
-				}elseif ($condition == 'no_location'){
-					//does this event have a valid location?
-					$show_condition = ( empty($this->location_id) || !$this->get_location()->location_status );
-				}elseif ($condition == 'has_location'){
-					//does this event have a valid location?
-					$show_condition = ( !empty($this->location_id) && $this->get_location()->location_status );
-				}elseif ($condition == 'has_image'){
-					//does this event have an image?
-					$show_condition = ( $this->get_image_url() != '' );
-				}elseif ($condition == 'no_image'){
-					//does this event have an image?
-					$show_condition = ( $this->get_image_url() == '' );
-				}elseif ($condition == 'has_time'){
-					//are the booking times different and not an all-day event
-					$show_condition = ( $this->start != $this->end && !$this->event_all_day );
-				}elseif ($condition == 'no_time'){
-					//are the booking times exactly the same and it's not an all-day event.
-					$show_condition = ( $this->event_start_time == $this->event_end_time && !$this->event_all_day );
-				}elseif ($condition == 'all_day'){
-					//is it an all day event
-					$show_condition = !empty($this->event_all_day);
-				}elseif ($condition == 'logged_in'){
-					//user is logged in
-					$show_condition = is_user_logged_in();
-				}elseif ($condition == 'not_logged_in'){
-					//not logged in
-					$show_condition = !is_user_logged_in();
-				}elseif ($condition == 'has_spaces'){
-					//is it an all day event
-					$show_condition = $this->rsvp && $this->get_bookings()->get_available_spaces() > 0;
-				}elseif ($condition == 'fully_booked'){
-					//is it an all day event
-					$show_condition = $this->rsvp && $this->get_bookings()->get_available_spaces() <= 0;
-				}elseif ($condition == 'is_long'){
-					//is it an all day event
-					$show_condition = $this->event_start_date != $this->event_end_date;
-				}elseif ($condition == 'not_long'){
-					//is it an all day event
-					$show_condition = $this->event_start_date == $this->event_end_date;
-				}elseif ($condition == 'is_past'){
-					//if event is past
-					$show_condition = $this->start <= current_time('timestamp');
-				}elseif ($condition == 'is_future'){
-					//if event is upcoming
-					$show_condition = $this->start > current_time('timestamp');
+	 	for ($i = 0 ; $i < get_option('dbem_conditional_recursions',1); $i++){ //you can add nested recursions by modifying this setting in your wp_options table
+			preg_match_all('/\{([a-zA-Z0-9_]+)\}(.+?)\{\/\1\}/s', $event_string, $conditionals);
+			if( count($conditionals[0]) > 0 ){
+				//Check if the language we want exists, if not we take the first language there
+				foreach($conditionals[1] as $key => $condition){
+					$show_condition = false;
+					if ($condition == 'has_bookings') {
+						//check if there's a booking, if not, remove this section of code.
+						$show_condition = ($this->event_rsvp && get_option('dbem_rsvp_enabled'));
+					}elseif ($condition == 'no_bookings') {
+						//check if there's a booking, if not, remove this section of code.
+						$show_condition = (!$this->event_rsvp && get_option('dbem_rsvp_enabled'));
+					}elseif ($condition == 'no_location'){
+						//does this event have a valid location?
+						$show_condition = ( empty($this->location_id) || !$this->get_location()->location_status );
+					}elseif ($condition == 'has_location'){
+						//does this event have a valid location?
+						$show_condition = ( !empty($this->location_id) && $this->get_location()->location_status );
+					}elseif ($condition == 'has_image'){
+						//does this event have an image?
+						$show_condition = ( $this->get_image_url() != '' );
+					}elseif ($condition == 'no_image'){
+						//does this event have an image?
+						$show_condition = ( $this->get_image_url() == '' );
+					}elseif ($condition == 'has_time'){
+						//are the booking times different and not an all-day event
+						$show_condition = ( $this->start != $this->end && !$this->event_all_day );
+					}elseif ($condition == 'no_time'){
+						//are the booking times exactly the same and it's not an all-day event.
+						$show_condition = ( $this->event_start_time == $this->event_end_time && !$this->event_all_day );
+					}elseif ($condition == 'all_day'){
+						//is it an all day event
+						$show_condition = !empty($this->event_all_day);
+					}elseif ($condition == 'logged_in'){
+						//user is logged in
+						$show_condition = is_user_logged_in();
+					}elseif ($condition == 'not_logged_in'){
+						//not logged in
+						$show_condition = !is_user_logged_in();
+					}elseif ($condition == 'has_spaces'){
+						//is it an all day event
+						$show_condition = $this->rsvp && $this->get_bookings()->get_available_spaces() > 0;
+					}elseif ($condition == 'fully_booked'){
+						//is it an all day event
+						$show_condition = $this->rsvp && $this->get_bookings()->get_available_spaces() <= 0;
+					}elseif ($condition == 'is_long'){
+						//is it an all day event
+						$show_condition = $this->event_start_date != $this->event_end_date;
+					}elseif ($condition == 'not_long'){
+						//is it an all day event
+						$show_condition = $this->event_start_date == $this->event_end_date;
+					}elseif ($condition == 'is_past'){
+						//if event is past
+						$show_condition = $this->start <= current_time('timestamp');
+					}elseif ($condition == 'is_future'){
+						//if event is upcoming
+						$show_condition = $this->start > current_time('timestamp');
+					}
+					$show_condition = apply_filters('em_event_output_show_condition', $show_condition, $condition, $conditionals[0][$key], $this);
+					if($show_condition){
+						//calculate lengths to delete placeholders
+						$placeholder_length = strlen($condition)+2;
+						$replacement = substr($conditionals[0][$key], $placeholder_length, strlen($conditionals[0][$key])-($placeholder_length *2 +1));
+					}else{
+						$replacement = '';
+					}
+					$event_string = str_replace($conditionals[0][$key], apply_filters('em_event_output_condition', $replacement, $condition, $conditionals[0][$key], $this), $event_string);
 				}
-				$show_condition = apply_filters('em_event_output_show_condition', $show_condition, $condition, $conditionals[0][$key], $this);
-				if($show_condition){
-					//calculate lengths to delete placeholders
-					$placeholder_length = strlen($condition)+2;
-					$replacement = substr($conditionals[0][$key], $placeholder_length, strlen($conditionals[0][$key])-($placeholder_length *2 +1));
-				}else{
-					$replacement = '';
-				}
-				$event_string = str_replace($conditionals[0][$key], apply_filters('em_event_output_condition', $replacement, $condition, $conditionals[0][$key], $this), $event_string);
 			}
-		}
+	 	}
 		//Now let's check out the placeholders.
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
 		foreach($placeholders[1] as $key => $result) {

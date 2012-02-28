@@ -2,9 +2,9 @@
 Contributors: nutsmuggler, netweblogic
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
-Requires at least: 3.1
+Requires at least: 3.2
 Tested up to: 3.3.1
-Stable tag: 5.1.2
+Stable tag: 5.1.3
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -31,7 +31,7 @@ Version 5 now makes events and locations WordPress Custom Post Types, allowing f
  * Personal Events
  * Activity Stream
  * more on the way
-* Guest/Member Event submissions (
+* Guest/Member Event submissions
 * Assign event locations and view events by location
 * Event categories
 * Easily create custom event attributes (e.g. dress code)
@@ -39,10 +39,10 @@ Version 5 now makes events and locations WordPress Custom Post Types, allowing f
 * Advanced permissions - restrict user management of events and locations.
 * Widgets for Events, Locations and Calendars
 * Fine grained control of how every aspect of your events are shown on your site, easily modify templates from the settings pages and template files
-* iCal Feed
+* iCal Feed (single and all events)
 * Add to Google Calendar buttons
 * RSS Feeds
-* SEO Permalinks
+* Compatible with SEO plugins
 * Plenty of template tags and shortcodes for use in your posts and pages
 * Actively maintained and supported
 * Lots of documentation and tutorials
@@ -98,6 +98,13 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1.3 =
+* added is_past and is_future conditionals
+* corrected conditional regex to allow multiple duplicate conditionals and nesting
+* fixed some wp_rewrite irregularities due to slug combinations/conflicts
+* fixed template format files not overriding
+
+
 = 5.1.2 =
 * fixed auto-delete bug where auto-draft recurring events deletes all events
 * fixed recurrence pattern bug

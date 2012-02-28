@@ -74,14 +74,14 @@ if( !class_exists('EM_Permalinks') ){
 				$events_slug = preg_replace('/\/$/', '', str_replace( trailingslashit(home_url()), '', get_permalink($events_page_id)) );
 				$events_slug = ( !empty($events_slug) ) ? trailingslashit($events_slug) : $events_slug;		
 				$em_rules[$events_slug.'(\d{4}-\d{2}-\d{2})$'] = 'index.php?pagename='.$events_slug.'&calendar_day=$matches[1]'; //event calendar date search
-				if( !get_option( 'dbem_my_bookings_page') || !is_object(get_post(get_option( 'dbem_my_bookings_page'))) ){
+				if( !get_option( 'dbem_my_bookings_page') || !is_object(get_post(get_option( 'dbem_my_bookings_page'))) ){ //only added if bookings page isn't assigned
 					$em_rules[$events_slug.'my\-bookings$'] = 'index.php?pagename='.$events_slug.'&bookings_page=1'; //page for users to manage bookings
 				}
 				$em_rules[$events_slug.'rss$'] = 'index.php?pagename='.$events_slug.'&rss=1'; //rss page
 				$em_rules[$events_slug.'feed$'] = 'index.php?pagename='.$events_slug.'&rss=1'; //compatible rss page
 				if( EM_POST_TYPE_EVENT_SLUG.'/' == $events_slug ){ //won't apply on homepage
 					//make sure we hard-code rewrites for child pages of events
-					$child_posts = get_posts(array('post_type'=>'page', 'post_parent'=>$events_page->ID));
+					$child_posts = get_posts(array('post_type'=>'page', 'post_parent'=>$events_page->ID, 'numberposts'=>0));
 					foreach($child_posts as $child_post){
 						$em_rules[$events_slug.$child_post->post_name.'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug
 					}		
@@ -97,8 +97,20 @@ if( !class_exists('EM_Permalinks') ){
 			}else{
 				$events_slug = EM_POST_TYPE_EVENT_SLUG;
 				$em_rules[$events_slug.'/(\d{4}-\d{2}-\d{2})$'] = 'index.php?post_type='.EM_POST_TYPE_EVENT.'&calendar_day=$matches[1]'; //event calendar date search
-				$em_rules[$events_slug.'/my\-bookings$'] = 'index.php?post_type='.EM_POST_TYPE_EVENT.'&bookings_page=1'; //page for users to manage bookings
-				$em_rules[$events_slug.'/rss$'] = 'index.php?post_type='.EM_POST_TYPE_EVENT.'&rss=1'; //rss page
+				if( !get_option( 'dbem_my_bookings_page') || !is_object(get_post(get_option( 'dbem_my_bookings_page'))) ){ //only added if bookings page isn't assigned
+					$em_rules[$events_slug.'/my\-bookings$'] = 'index.php?post_type='.EM_POST_TYPE_EVENT.'&bookings_page=1'; //page for users to manage bookings
+				}
+				//check for potentially conflicting posts with the same slug as events
+				$conflicting_posts = get_posts(array('name'=>EM_POST_TYPE_EVENT_SLUG, 'post_type'=>'any', 'numberposts'=>0));
+				if( count($conflicting_posts) > 0 ){ //won't apply on homepage
+					foreach($conflicting_posts as $conflicting_post){
+						//make sure we hard-code rewrites for child pages of events
+						$child_posts = get_posts(array('post_type'=>'any', 'post_parent'=>$conflicting_post->ID, 'numberposts'=>0));
+						foreach($child_posts as $child_post){
+							$em_rules[EM_POST_TYPE_EVENT_SLUG.'/'.$child_post->post_name.'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug
+						}
+					}
+				}
 			}
 			//If in MS global mode and locations are linked on same site
 			if( EM_MS_GLOBAL && !get_site_option('dbem_ms_global_locations_links', true) ){

@@ -54,7 +54,7 @@ $required = "<i>*</i>";
 			}
 		?>
 		<tr>
-			<th><?php _e ( 'Name:', 'dbem' )?></th>
+			<th><?php _e ( 'Location Name:', 'dbem' )?></th>
 			<td>
 				<input id='location-id' name='location_id' type='hidden' value='<?php echo $EM_Location->location_id; ?>' size='15' />
 				<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Location->location_name, ENT_QUOTES); ?>" /><?php echo $required; ?>													

@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.1.2
+Version: 5.1.3
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -490,7 +490,7 @@ class EM_Formats {
 		//you can hook into this filter and activate the format options you want to override by supplying the wp option names in an array, just like in the database.
 		$formats = apply_filters('em_formats_filter', array());
 		foreach( $formats as $format_name ){
-			add_filter('option_pre_'.$format_name, array(&$this, $format_name), 1,1);
+			add_filter('pre_option_'.$format_name, array(&$this, $format_name), 1,1);
 		}
 	}
 	function __call( $name, $value ){
