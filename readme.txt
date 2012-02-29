@@ -98,6 +98,12 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1.4 =
+* further fixes to post thumbnail compatability (hopefully fixed for good!)
+* added "Add New" location and recurring events to admin bar
+* blank pending status corrected in my bookings pages
+* fixed event categories when event is a subsite event shown on main site
+
 = 5.1.3 =
 * added is_past and is_future conditionals
 * corrected conditional regex to allow multiple duplicate conditionals and nesting

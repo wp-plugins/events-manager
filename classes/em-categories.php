@@ -28,7 +28,7 @@ class EM_Categories extends EM_Object implements Iterator{
 		if( is_object($data) && get_class($data) == "EM_Event" && !empty($data->post_id) ){ //Creates a blank categories object if needed
 			$this->event_id = $data->event_id;
 			$this->post_id = $data->post_id;
-			if( EM_MS_GLOBAL && !is_main_site() ){
+			if( EM_MS_GLOBAL && !is_main_site($data->blog_id) ){
 				$cat_ids = $wpdb->get_col('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$this->event_id}' AND meta_key='event-category'");
 				foreach($cat_ids as $cat_id){
 					$this->categories[$cat_id] = new EM_Category($cat_id);

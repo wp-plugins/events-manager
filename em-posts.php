@@ -14,17 +14,19 @@ define('EM_TAXONOMY_TAG_SLUG', get_option('dbem_taxonomy_tag_slug', 'events/tags
  * This checks that you have post thumbnails enabled, if not, it enables it. 
  * You can always disable this by adding remove_action('after_setup_theme','wp_events_plugin_after_setup_theme'); in your functions.php theme file.
  */
-add_action('after_setup_theme','wp_events_plugin_after_setup_theme');
+add_action('after_setup_theme','wp_events_plugin_after_setup_theme',100);
 function wp_events_plugin_after_setup_theme(){
 	if( !get_option('disable_post_thumbnails') && function_exists('add_theme_support') ){
 		global $_wp_theme_features;
 		if( !empty($_wp_theme_features['post-thumbnails']) ){
 			//either leave as true, or add our cpts to this
 			if( is_array($_wp_theme_features['post-thumbnails']) ){
+				$post_thumbnails = array_shift($_wp_theme_features['post-thumbnails']);
 				//add to featured image post types for specific themes
-				$_wp_theme_features['post-thumbnails'][] = EM_POST_TYPE_EVENT;
-				$_wp_theme_features['post-thumbnails'][] = EM_POST_TYPE_LOCATION;
-				add_theme_support('post-thumbnails', $_wp_theme_features['post-thumbnails']);
+				$post_thumbnails[] = EM_POST_TYPE_EVENT;
+				$post_thumbnails[] = 'event-recurring';
+				$post_thumbnails[] = EM_POST_TYPE_LOCATION;
+				add_theme_support('post-thumbnails', $post_thumbnails);
 			}
 		}else{
 			add_theme_support('post-thumbnails'); //need to add this for themes that don't have it. 
@@ -156,6 +158,7 @@ function wp_events_plugin_init(){
 		$event_recurring_post_type = array(	
 			'public' => apply_filters('em_cp_event_recurring_public', false),
 			'show_ui' => true,
+			'show_in_admin_bar' => true,
 			'show_in_menu' => 'edit.php?post_type='.EM_POST_TYPE_EVENT,
 			'show_in_nav_menus'=>false,
 			'publicly_queryable' => apply_filters('em_cp_event_recurring_publicly_queryable', false),
@@ -201,6 +204,7 @@ function wp_events_plugin_init(){
 		$location_post_type = array(	
 			'public' => true,
 			'hierarchical' => false,
+			'show_in_admin_bar' => true,
 			'show_ui' => !(EM_MS_GLOBAL && !is_main_site() && get_site_option('dbem_ms_mainblog_locations')),
 			'show_in_menu' => 'edit.php?post_type='.EM_POST_TYPE_EVENT,
 			'show_in_nav_menus'=>true,

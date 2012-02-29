@@ -65,7 +65,7 @@
 									<td><?php echo date_i18n( get_option('date_format'), $EM_Event->start ); ?></td>
 									<td><?php echo $EM_Booking->get_spaces() ?></td>
 									<td>
-										<?php echo apply_filters('em_my_bookings_booking_status', $EM_Booking->status_array[$EM_Booking->status], $EM_Booking); ?>
+										<?php echo $EM_Booking->get_status(); ?>
 									</td>
 									<td>
 										<?php

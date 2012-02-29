@@ -163,6 +163,10 @@ class EM_Events extends EM_Object implements Iterator {
 		$EM_Event_old = $EM_Event; //When looping, we can replace EM_Event global with the current event in the loop
 		//Can be either an array for the get search or an array of EM_Event objects
 		$func_args = func_get_args();
+		$page = 1; //default
+		if( !array_key_exists('page',$args) && !empty($_REQUEST['page']) && is_numeric($_REQUEST['page']) ){
+			$page = $args['page'] = $_REQUEST['page'];
+		}
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Event' ){
 			$func_args = func_get_args();
 			$events = $func_args[0];
@@ -170,14 +174,14 @@ class EM_Events extends EM_Object implements Iterator {
 			$args = apply_filters('em_events_output_args', self::get_default_search($args), $events);
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
-			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:$page;
 			$events_count = count($events);
 		}else{
 			//Firstly, let's check for a limit/offset here, because if there is we need to remove it and manually do this
 			$args = apply_filters('em_events_output_args', self::get_default_search($args) );
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
-			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:$page;
 			$args_count = $args;
 			$args_count['limit'] = false;
 			$args_count['offset'] = false;

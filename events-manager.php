@@ -531,11 +531,21 @@ function em_rss_pubdate_change($result){
 }
 add_filter('em_event_save', 'em_rss_pubdate_change', 10,1);
 
+function em_admin_bar_mod($wp_admin_bar){
+	$wp_admin_bar->add_menu( array(
+		'parent' => 'network-admin',
+		'id'     => 'network-admin-em',
+		'title'  => __( 'Events Manager','dbem' ),
+		'href'   => network_admin_url('admin.php?page=events-manager-options'),
+	) );
+}
+add_action( 'admin_bar_menu', 'em_admin_bar_mod', 21 );
+
+
 function em_activate() {
 	update_option('dbem_flush_needed',1);
 }
 register_activation_hook( __FILE__,'em_activate');
-
 
 /* Creating the wp_events table to store event data*/
 function em_deactivate() {
