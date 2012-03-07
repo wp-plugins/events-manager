@@ -103,6 +103,10 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added "Add New" location and recurring events to admin bar
 * blank pending status corrected in my bookings pages
 * fixed event categories when event is a subsite event shown on main site
+* added Sweedish datepicker translations
+* fixed pagination issue
+* updated danish languange files
+* small fix for duplicating plugins that keep the event id when saving dupe
 
 = 5.1.3 =
 * added is_past and is_future conditionals

@@ -349,7 +349,11 @@ class EM_Location extends EM_Object {
 			$location_array = $this->to_array(true);
 			if( $this->post_status == 'private' ) $location_array['location_private'] = 1;
 			unset($location_array['location_id']);
-			$loc_truly_exists = $wpdb->get_var('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$this->location_id}") == $this->location_id;
+			if( !empty($this->location_id) ){
+				$loc_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$this->location_id}") == $this->post_id;
+			}else{
+				$loc_truly_exists = false;
+			}
 			if( empty($this->location_id) || !$loc_truly_exists ){
 				$this->previous_status = 0; //for sure this was previously status 0
 				if ( !$wpdb->insert(EM_LOCATIONS_TABLE, $location_array) ){

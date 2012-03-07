@@ -546,11 +546,11 @@ class EM_Event extends EM_Object{
 				if( get_site_option('dbem_ms_mainblog_locations') ){ $this->ms_global_switch(); }
 				if( !$this->get_location()->save() ){ //soft fail
 					global $EM_Notices;
-					$this->get_location()->set_status(null);
 					if( !empty($this->get_location()->location_id) ){
 						$EM_Notices->add_error( __('There were some errors saving your location.','dbem').' '.sprintf(__('It will not be displayed on the website listings, to correct this you must <a href="%s">edit your location</a> directly.'),$this->get_location()->output('#_LOCATIONEDITURL')), true);
 					}else{
-						$EM_Notices->add_error( sprintf(__('There were some errors saving your location.'),$this->get_location()->output('#_LOCATIONEDITURL')), true);
+						$this->get_location()->set_status(null);
+						$EM_Notices->add_error( __('There were some errors saving your location.'), true);
 					}
 				}
 				if( get_site_option('dbem_ms_mainblog_locations') ){ $this->ms_global_switch_back(); }
@@ -581,7 +581,7 @@ class EM_Event extends EM_Object{
 			if( $this->post_status == 'private' ) $event_array['event_private'] = 1;
 			$event_array['event_attributes'] = serialize($this->event_attributes); //might as well
 			if( !empty($this->event_id) ){
-				$event_truly_exists = $wpdb->get_var('SELECT event_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}") == $this->event_id;
+				$event_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}") == $this->post_id;
 			}else{
 				$event_truly_exists = false;
 			}
