@@ -59,7 +59,7 @@ $can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is
 						?>	
 						<?php 
 							do_action('em_booking_form_before_user_details');
-							if( get_option('em_booking_form_custom') && has_action('em_booking_form_custom') ){ 
+							if( has_action('em_booking_form_custom') ){ 
 								//Pro Custom Booking Form. You can create your own custom form by hooking into this action and setting the option above to true
 								do_action('em_booking_form_custom'); //do not delete
 							}else{

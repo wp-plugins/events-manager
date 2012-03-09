@@ -246,7 +246,7 @@ function em_init_actions() {
 							while( username_exists($username_root[0].rand(1,1000)) ){
 								$username_rand = $username_root[0].rand(1,1000);
 							}
-							$_REQUEST['user_phone'] = (!empty($_REQUEST['user_phone'])) ? $_REQUEST['user_phone']:''; //fix to prevent warnings
+							$_REQUEST['dbem_phone'] = (!empty($_REQUEST['dbem_phone'])) ? $_REQUEST['dbem_phone']:''; //fix to prevent warnings
 							$_REQUEST['user_name'] = (!empty($_REQUEST['user_name'])) ? $_REQUEST['user_name']:''; //fix to prevent warnings
 							$user_data = array('user_login' => $username_rand, 'user_email'=> $_REQUEST['user_email'], 'user_name'=> $_REQUEST['user_name'], 'dbem_phone'=> $_REQUEST['dbem_phone']);
 							$id = em_register_new_user($user_data);
@@ -302,7 +302,7 @@ function em_init_actions() {
 								$user_data['dbem_phone'] = wp_kses($_REQUEST['dbem_phone'], array());
 							}
 							//Add booking meta
-							$EM_Booking->booking_meta['registration'] = $user_data;	
+							$EM_Booking->booking_meta['registration'] = array_merge($EM_Booking->booking_meta['registration'], $user_data);	//in case someone else added stuff
 							//Save default person to booking
 							$EM_Booking->person_id = get_option('dbem_bookings_registration_user');				
 						}elseif( !is_user_logged_in() ){

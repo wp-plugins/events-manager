@@ -410,8 +410,9 @@ function em_new_user_notification($user_id, $plaintext_pass = '') {
 	em_locate_template('emails/new-user.php', true);
 	$message = ob_get_clean();
 	$message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), $message);
-
-	return EM_Object::email_send(sprintf(__('[%s] Your username and password', 'dbem'), $blogname), $message, $user_email);
+	
+	global $EM_Mailer;
+	return $EM_Mailer->send(sprintf(__('[%s] Your username and password', 'dbem'), $blogname), $message, $user_email);
 }
 
 /*
