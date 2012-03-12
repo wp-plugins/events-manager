@@ -8,12 +8,12 @@ class EM_Bookings_Table{
 	 * * value - label for use in collumn headers 
 	 * @var array
 	 */
-	protected $cols = array('display_name','event_name','user_email','dbem_phone','booking_spaces','booking_status','actions');
+	public $cols = array('user_name','event_name','user_email','dbem_phone','booking_spaces','booking_status','actions');
 	/**
 	 * Index key used for looking up status information we're filtering in the booking table 
 	 * @var string
 	 */
-	protected $string = 'needs-attention';
+	public $string = 'needs-attention';
 	/**
 	 * Associative array of status information.
 	 * 
@@ -24,7 +24,7 @@ class EM_Bookings_Table{
 	 * 
 	 * @var array
 	 */
-	protected $statuses = array();
+	public $statuses = array();
 	/**
 	 * Maximum number of rows to show
 	 * @var int
@@ -39,14 +39,12 @@ class EM_Bookings_Table{
 			'confirmed' => array('label'=>__('Confirmed','dbem'), 'search'=>1),
 			'cancelled' => array('label'=>__('Cancelled','dbem'), 'search'=>2),
 			'rejected' => array('label'=>__('Rejected','dbem'), 'search'=>3),
-			'needs-attention' => array('label'=>__('Needs Attention','dbem'), 'search'=>array(0,5)),
-			'incomplete' => array('label'=>__('Incomplete Bookings','dbem'), 'search'=>array(0,4,5)),
-			'awaiting-online' => array('label'=>__('Awaiting Online Payment','dbem'), 'search'=>4),
-			'awaiting-payment' => array('label'=>__('Awaiting Offline Payment','dbem'), 'search'=>5)
+			'needs-attention' => array('label'=>__('Needs Attention','dbem'), 'search'=>array(0)),
+			'incomplete' => array('label'=>__('Incomplete Bookings','dbem'), 'search'=>array(0))
 		);
 		if( !get_option('dbem_bookings_approval') ){
 			unset($this->statuses['pending']);
-			$this->statuses['needs-attention']['search'] = array(5);
+			unset($this->statuses['incomplete']);
 			$this->statuses['confirmed']['search'] = array(0,1);
 		}
 		//Set basic vars
@@ -59,15 +57,16 @@ class EM_Bookings_Table{
 		$this->status = ( !empty($_REQUEST['status']) && array_key_exists($_REQUEST['status'], $this->statuses) ) ? $_REQUEST['status']:get_option('dbem_default_bookings_search','needs-attention');
 		//build template of possible collumns
 		$this->cols_template = apply_filters('em_bookings_table_cols_template', array(
-			'display_name'=>__('Booker','dbem'),
+			'user_name'=>__('Name','dbem'),
 			'event_name'=>__('Event','dbem'),
 			'user_email'=>__('E-mail','dbem'),
 			'dbem_phone'=>__('Phone Number','dbem'),
 			'booking_spaces'=>__('Spaces','dbem'),
 			'booking_status'=>__('Status','dbem'),
-			'booking_price'=>__('Price','dbem'),
-			'actions' => __('Actions','dbem')
-		));
+			'booking_date'=>__('Booking Date','dbem'),
+			'booking_price'=>__('Price','dbem')
+		), $this);
+		$this->cols_template['actions'] = __('Actions','dbem');
 		//calculate collumns if post requests		
 		if( !empty($_REQUEST ['cols']) && !is_array($_REQUEST ['cols']) ){
 			$this->cols = explode(',',$_REQUEST['cols']);
@@ -79,6 +78,7 @@ class EM_Bookings_Table{
 				unset($this->cols[$col_key]);
 			}
 		}
+		do_action('em_bookings_table', $this);
 	}
 
 	
@@ -364,11 +364,6 @@ class EM_Bookings_Table{
 				}
 				*/
 				$headers[$col] = $this->cols_template[$col];
-			}else{
-				$header = apply_filters('em_bookings_table_headers_'.$col, '', $this);
-				if( !empty($header) ){
-					$headers[$col] = $header;
-				}
 			}
 		}
 		return $headers;
@@ -387,7 +382,7 @@ class EM_Bookings_Table{
 				$cols[] = $EM_Booking->get_person()->user_email;
 			}elseif($col == 'dbem_phone'){
 				$cols[] = $EM_Booking->get_person()->phone;
-			}elseif($col == 'display_name'){
+			}elseif($col == 'user_name'){
 				if( $csv ){
 					$cols[] = $EM_Booking->get_person()->get_name();
 				}else{
@@ -403,15 +398,15 @@ class EM_Bookings_Table{
 				$cols[] = $EM_Booking->get_price(false,true);
 			}elseif($col == 'booking_status'){
 				$cols[] = $EM_Booking->get_status(true);
+			}elseif($col == 'booking_date'){
+				$cols[] = date_i18n(get_option('dbem_date_format').' '. get_option('dbem_time_format'), $EM_Booking->timestamp);
 			}elseif($col == 'actions'){
 				$cols[] = implode(' | ', $this->get_booking_actions($EM_Booking));
 			}elseif( in_array($col, array('booking_spaces')) ){
 				$cols[] = $EM_Booking->$col;
 			}else{
-				$col = apply_filters('em_bookings_table_rows_col_'.$col, '', $EM_Booking, $this, $csv);
-				if( !empty($col) ){
-					$cols[] = $col;
-				}
+				$val = apply_filters('em_bookings_table_rows_col_'.$col, '', $EM_Booking, $this, $csv);
+				$cols[] = apply_filters('em_bookings_table_rows_col', $val, $col, $EM_Booking, $this, $csv);
 			}	
 		}
 		return $cols;

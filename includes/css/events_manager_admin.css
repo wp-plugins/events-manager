@@ -111,6 +111,8 @@ table.events-table .category { color:#888; }
 		.em-bookings-table-overlay h4 { font-size:16px; margin:0px; padding:0px; }
 		.em-bookings-table-overlay form { overflow:auto; }
 		.em-bookings-table-overlay .close { background:url(../images/close.png) 0px 0px no-repeat  !important; position:absolute; right:-15px; top:-15px; cursor:pointer; height:35px; width:35px; border:none; padding:0px; margin:0px; }
+	/* Single Booking Edit View */
+		#em-bookings-admin-booking .em-booking-single-info { display:none; }		
 
 /* Google Map Object */
 #location-balloon-content h3 { background:none; text-shadow:none; }

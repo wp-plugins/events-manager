@@ -308,23 +308,6 @@ class EM_Booking extends EM_Object{
 	}
 	
 	/**
-	 * Outdated, use booking meta array. Get custom fields for this booking.
-	 * @return array
-	 */
-	function get_custom(){
-		global $wpdb;
-		if( count($this->custom) == 0 ){
-			$sql = "SELECT * FROM ". EM_META_TABLE ." WHERE object_id ='{$this->booking_id}' AND (meta_key='booking_custom' OR meta_key IS NULL)";
-			$booking = $wpdb->get_row($sql, ARRAY_A);
-			//Add custom booking data
-			if( !empty($booking['meta_key']) && $booking['meta_key'] == 'booking_custom' && is_serialized($booking['meta_value']) ){
-				$this->custom = unserialize($booking['meta_value']);
-			}			
-		}
-		return $this->custom;
-	}
-	
-	/**
 	 * Gets the ticket object this booking belongs to, saves a reference in ticket property
 	 * @return EM_Tickets
 	 */
@@ -586,7 +569,7 @@ class EM_Booking extends EM_Object{
 	 * @param EM_Event $event
 	 * @return boolean
 	 */
-	function email(){
+	function email( $email_admin = true ){
 		global $EM_Mailer;
 		//FIXME ticket logic needed
 		$EM_Event = $this->get_event(); //We NEED event details here.
@@ -629,7 +612,7 @@ class EM_Booking extends EM_Object{
 				}
 			}
 			
-			if( !empty($contact_subject) ){
+			if( !$this->can_manage() && !empty($contact_subject) ){ //no point sending contacts emails on changes to a booking status if admin makes it
 				//Send admin/contact emails
 				$is_pending_approval = (get_option('dbem_bookings_approval') && in_array($this->booking_status, array(0,3,4,5)) || in_array($this->booking_status, array(3,4,5)));
 				$is_auto_approved = !get_option('dbem_bookings_approval') && $this->booking_status == 1 && !$this->previous_status; 

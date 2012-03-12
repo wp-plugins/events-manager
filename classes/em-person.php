@@ -45,12 +45,12 @@ class EM_Person extends WP_User{
 			foreach($results as $booking_data){
 				$bookings[] = $booking_data['booking_id'];
 			}
-			return $bookings;
+			return apply_filters('em_person_get_bookings', $bookings, $this);
 		}else{
 			foreach($results as $booking_data){
 				$bookings[] = new EM_Booking($booking_data);
 			}
-			return new EM_Bookings($bookings);
+			return apply_filters('em_person_get_bookings', new EM_Bookings($bookings), $this);
 		}
 	}
 
@@ -63,7 +63,7 @@ class EM_Person extends WP_User{
 		foreach( $this->get_bookings()->get_bookings() as $EM_Booking ){
 			$events[$EM_Booking->event_id] = $EM_Booking->get_event();
 		}
-		return $events;
+		return apply_filters('em_person_get_events', $events);
 	}
 	
 	function display_summary(){
@@ -80,13 +80,14 @@ class EM_Person extends WP_User{
 			</tr>
 		</table>
 		<?php
-		return ob_get_clean();
+		return apply_filters('em_person_display_summary', ob_get_clean(), $this);
 	}
 	
 	function get_name(){
 		$full_name = $this->user_firstname  . " " . $this->user_lastname ;
 		$full_name = trim($full_name);
-		return !empty($full_name) ? $full_name : $this->display_name;
+		$name = !empty($full_name) ? $full_name : $this->display_name;
+		return apply_filters('em_person_get_name', $name, $this);
 	}
 }
 ?>

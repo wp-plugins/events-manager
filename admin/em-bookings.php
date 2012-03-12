@@ -195,7 +195,7 @@ function em_bookings_single(){
 		return false;
 	}
 	?>
-	<div class='wrap'>
+	<div class='wrap' id="em-bookings-admin-booking">
 		<div class="icon32" id="icon-bookings"><br></div>
   		<h2>
   			<?php _e('Edit Booking', 'dbem'); ?>
@@ -204,15 +204,15 @@ function em_bookings_single(){
   		<div id="poststuff" class="metabox-holder">
 	  		<div id="post-body">
 				<div id="post-body-content">
-					<div id="em-booking-details" class="stuffbox">
+					<div class="stuffbox">
 						<h3>
 							<?php _e ( 'Event Details', 'dbem' ); ?>
 						</h3>
 						<div class="inside">
 							<?php
 							$EM_Event = $EM_Booking->get_event();
-							$localised_start_date = date_i18n('D d M Y', $EM_Event->start);
-							$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
+							$localised_start_date = date_i18n(get_option('dbem_date_format'), $EM_Event->start);
+							$localised_end_date = date_i18n(get_option('dbem_date_format'), $EM_Event->end);
 							?>
 							<table>
 								<tr><td><strong><?php _e('Name','dbem'); ?></strong></td><td><a class="row-title" href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&amp;event_id=<?php echo $EM_Event->event_id ?>"><?php echo ($EM_Event->event_name); ?></a></td></tr>
@@ -225,28 +225,57 @@ function em_bookings_single(){
 									</td>
 								</tr>
 							</table>
+							<?php do_action('em_bookings_admin_booking_event', $EM_Event); ?>
 						</div>
 					</div> 		
-					<div id="em-booking-details" class="stuffbox">
+					<div class="stuffbox">
 						<h3>
 							<?php _e ( 'Personal Details', 'dbem' ); ?>
 						</h3>
 						<div class="inside">
 							<?php echo $EM_Booking->get_person()->display_summary(); ?>
+							<?php do_action('em_bookings_admin_booking_person'); ?>
 						</div>
 					</div> 	
-					<div id="em-booking-details" class="stuffbox">
+					<div class="stuffbox">
 						<h3>
 							<?php _e ( 'Booking Details', 'dbem' ); ?>
 						</h3>
 						<div class="inside">
 							<?php
 							$EM_Event = $EM_Booking->get_event();
-							$localised_start_date = date_i18n('D d M Y', $EM_Event->start);
-							$localised_end_date = date_i18n('D d M Y', $EM_Event->end);
+							$localised_start_date = date_i18n(get_option('date_format'), $EM_Event->start);
+							$localised_end_date = date_i18n(get_option('date_format'), $EM_Event->end);
 							$shown_tickets = array();
 							?>
-							<p><strong><?php _e('Status','dbem'); ?> : </strong><?php echo $EM_Booking->get_status(); ?></p>
+							<div>
+								<form action="" method="post" class="em-booking-single-status-info">
+									<strong><?php _e('Status','dbem'); ?> : </strong>
+									<?php echo $EM_Booking->get_status(); ?>
+									<input type="button" class="em-booking-submit-status-modify" id="em-booking-submit-status-modify" value="<?php _e('Change', 'dbem'); ?>" />
+									<input type="submit" class="em-booking-resend-email" id="em-booking-resend-email" value="<?php _e('Resend Email', 'dbem'); ?>" />
+								 	<input type='hidden' name='action' value='booking_resend_email'/>
+								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
+								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
+								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_resend_email_'.$EM_Booking->booking_id); ?>'/>
+								</form>
+								<form action="" method="post" class="em-booking-single-status-edit">
+									<strong><?php _e('Status','dbem'); ?> : </strong>
+									<select name="booking_status">
+										<?php foreach($EM_Booking->status_array as $status => $status_name): ?>
+										<option value="<?php echo esc_attr($status); ?>" <?php if($status == $EM_Booking->booking_status){ echo 'selected="selected"'; } ?>><?php echo esc_html($status_name); ?></option>
+										<?php endforeach; ?>
+									</select>
+									<input type="checkbox" checked="checked" name="send_email" value="1" />
+									<?php _e('Send Email','dbem'); ?>
+									<input type="submit" class="em-booking-submit-status" id="em-booking-submit-status" value="<?php _e('Submit Changes', 'dbem'); ?>" />
+									<input type="button" class="em-booking-submit-status-cancel" id="em-booking-submit-status-cancel" value="<?php _e('Cancel', 'dbem'); ?>" />
+								 	<input type='hidden' name='action' value='booking_set_status'/>
+								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
+								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
+								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_set_status_'.$EM_Booking->booking_id); ?>'/>
+								</form>
+							</div>
 							<form action="" method="post">
 								<table class="em-tickets-bookings-table" cellspacing="0" cellpadding="0">
 									<thead>
@@ -261,7 +290,8 @@ function em_bookings_single(){
 										<tr>
 											<td class="ticket-type"><a class="row-title" href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket_Booking->get_ticket()->ticket_id ?>"><?php echo $EM_Ticket_Booking->get_ticket()->ticket_name ?></a></td>
 											<td>
-												<input name="em_tickets[<?php echo $EM_Ticket_Booking->get_ticket()->ticket_id; ?>][spaces]" class="em-ticket-select" value="<?php echo $EM_Ticket_Booking->get_spaces(); ?>" />
+												<span class="em-booking-single-info"><?php echo $EM_Ticket_Booking->get_spaces(); ?></span>
+												<div class="em-booking-single-edit"><input name="em_tickets[<?php echo $EM_Ticket_Booking->get_ticket()->ticket_id; ?>][spaces]" class="em-ticket-select" value="<?php echo $EM_Ticket_Booking->get_spaces(); ?>" /></div>
 											</td>
 											<td><?php echo $EM_Ticket_Booking->get_price(true,true); ?></td>
 										</tr>
@@ -273,7 +303,8 @@ function em_bookings_single(){
 												<tr>
 													<td class="ticket-type"><a class="row-title" href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&amp;ticket_id=<?php echo $EM_Ticket->ticket_id ?>"><?php echo $EM_Ticket->ticket_name ?></a></td>
 													<td>
-														<input name="em_tickets[<?php echo $EM_Ticket->ticket_id; ?>][spaces]" class="em-ticket-select" value="0" />
+														<span class="em-booking-single-info">0</span>
+														<div class="em-booking-single-edit"><input name="em_tickets[<?php echo $EM_Ticket->ticket_id; ?>][spaces]" class="em-ticket-select" value="0" /></div>
 													</td>
 													<td><?php echo em_get_currency_symbol() ?>0.00</td>
 												</tr>
@@ -303,24 +334,59 @@ function em_bookings_single(){
 										<?php do_action('em_bookings_admin_ticket_totals_footer'); ?>
 									</tfoot>
 								</table>
-								<p>
-									<input type="submit" class="em-booking-submit" id="em-booking-submit" value="<?php _e('Modify Booking', 'dbem'); ?>" />
+								<table cellspacing="0" cellpadding="0">
+									<?php if( !has_action('em_bookings_single_custom') ): //default behaviour ?>
+									<tr>
+										<td>
+											<strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
+										</td>
+										<td>
+											<span class="em-booking-single-info"><?php echo $EM_Booking->booking_comment; ?></span>
+											<div class="em-booking-single-edit"><textarea name="booking_comment"><?php echo $EM_Booking->booking_comment; ?></textarea></div>
+										</td>
+									</tr>
+									<?php else: do_action('em_bookings_single_custom',$EM_Booking); //do your own thing, e.g. pro ?>
+									<?php endif; ?>
+								</table>
+								<p class="em-booking-single-info">
+									<input type="button" class="em-booking-submit-modify" id="em-booking-submit-modify" value="<?php _e('Modify Booking', 'dbem'); ?>" />
+								</p>
+								<p class="em-booking-single-edit">
+									<em><?php _e('<strong>Notes:</strong> Ticket availability not taken into account (i.e. you can overbook). Emails are not resent automatically.','dbem'); ?></em>
+									<br /><br />
+									<input type="submit" class="em-booking-submit" id="em-booking-submit" value="<?php _e('Submit Changes', 'dbem'); ?>" />
+									<input type="button" class="em-booking-submit-cancel" id="em-booking-submit-cancel" value="<?php _e('Cancel', 'dbem'); ?>" />
 								 	<input type='hidden' name='action' value='booking_save'/>
 								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
 								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_save_'.$EM_Booking->booking_id); ?>'/>
-								 	<em><?php _e('<strong>Note:</strong> ticket availability not taken into account (i.e. you can overbook). Confirmation email is not resent automatically.','dbem'); ?></em>
 								</p>
-								<table cellspacing="0" cellpadding="0">
-									<?php if( !get_option('em_booking_form_custom') ): ?>
-									<tr><td><strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong></td><td><?php echo $EM_Booking->booking_comment; ?></td></tr>
-									<?php foreach( $EM_Booking->get_custom() as $custom_option ){
-										?><tr><td><strong><?php echo $custom_option['name'] ?></strong></td><td><?php echo esc_html($custom_option['value']); ?></td></tr><?php
-									} ?>
-									<?php else: do_action('em_bookings_single_custom',$EM_Booking); ?>
-									<?php endif; ?>
-								</table>
 							</form>
+							<script type="text/javascript">
+								jQuery(document).ready( function($){
+									$('#em-booking-submit-modify').click(function(){
+										$('.em-booking-single-info').hide();
+										$('.em-booking-single-edit').show();
+									});
+									$('#em-booking-submit-cancel').click(function(){
+										$('.em-booking-single-info').show();
+										$('.em-booking-single-edit').hide();
+									});	
+									$('.em-booking-single-info').show();
+									$('.em-booking-single-edit').hide();
+
+									$('#em-booking-submit-status-modify').click(function(){
+										$('.em-booking-single-status-info').hide();
+										$('.em-booking-single-status-edit').show();
+									});
+									$('#em-booking-submit-status-cancel').click(function(){
+										$('.em-booking-single-status-info').show();
+										$('.em-booking-single-status-edit').hide();
+									});	
+									$('.em-booking-single-status-info').show();
+									$('.em-booking-single-status-edit').hide();
+								});
+							</script>
 						</div>
 					</div>
 					<div id="em-booking-notes" class="stuffbox">

@@ -413,7 +413,6 @@ function em_init_actions() {
 			do_action('em_booking_save', $EM_Event, $EM_Booking);
 			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') ){
 				if ($EM_Booking->get_post(true) && $EM_Booking->save(false) ){
-					$result = true;
 					$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
 					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
 					wp_redirect( $redirect );
@@ -421,6 +420,41 @@ function em_init_actions() {
 				}else{
 					$result = false;
 					$EM_Notices->add_error( $EM_Booking->get_errors() );			
+					$feedback = $EM_Booking->feedback_message;	
+				}	
+			}
+		}elseif( $_REQUEST['action'] == 'booking_set_status' ){
+			em_verify_nonce('booking_set_status_'.$EM_Booking->booking_id);
+			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') && $_REQUEST['booking_status'] != $EM_Booking->booking_status ){
+				if ( $EM_Booking->set_status($_REQUEST['booking_status'], false) ){
+					if( !empty($_REQUEST['send_email']) ){
+						if( $EM_Booking->email(false) ){
+							$EM_Booking->feedback_message .= " ".__('Mail Sent.','dbem');
+						}else{
+							$EM_Booking->feedback_message .= ' <span style="color:red">'.__('ERROR : Mail Not Sent.','dbem').'</span>';
+						}
+					}
+					$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
+					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
+					wp_redirect( $redirect );
+					exit();
+				}else{
+					$result = false;
+					$EM_Notices->add_error( $EM_Booking->get_errors() );
+					$feedback = $EM_Booking->feedback_message;	
+				}	
+			}
+		}elseif( $_REQUEST['action'] == 'booking_resend_email' ){
+			em_verify_nonce('booking_resend_email_'.$EM_Booking->booking_id);
+			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') ){
+				if( $EM_Booking->email(false) ){
+					$EM_Notices->add_confirm( __('Mail Sent.','dbem'), true );
+					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
+					wp_redirect( $redirect );
+					exit();
+				}else{
+					$result = false;
+					$EM_Notices->add_error( __('ERROR : Mail Not Sent.','dbem') );			
 					$feedback = $EM_Booking->feedback_message;	
 				}	
 			}
