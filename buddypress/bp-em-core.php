@@ -204,7 +204,7 @@ if( !is_admin() ){
 	
 	function em_bp_rewrite_bookings_url($url, $EM_Event){
 		global $bp;
-		return $bp->events->link.'my-bookings/?action=edit&event_id='.$EM_Event->event_id;
+		return $bp->events->link.'my-bookings/?event_id='.$EM_Event->event_id;
 	}
 	if( !get_option('dbem_my_bookings_page') ){
 		add_filter('em_event_get_bookings_url','em_bp_rewrite_bookings_url',10,2);

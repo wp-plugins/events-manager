@@ -6,7 +6,27 @@ class EM_Categories_Taxonomy{
 		add_action( 'edited_'.EM_TAXONOMY_CATEGORY, array('EM_Categories_Taxonomy','save'), 10, 2);
 		add_action( 'create_'.EM_TAXONOMY_CATEGORY, array('EM_Categories_Taxonomy','save'), 10, 2);
 		add_action( 'delete_'.EM_TAXONOMY_CATEGORY, array('EM_Categories_Taxonomy','delete'), 10, 2);
+		
+		add_filter('manage_edit-'.EM_TAXONOMY_CATEGORY.'_columns' , array('EM_Categories_Taxonomy','columns_add'));
+		add_filter('manage_'.EM_TAXONOMY_CATEGORY.'_custom_column' , array('EM_Categories_Taxonomy','columns_output'),10,3);
+		
 		self::admin_init();
+	}
+
+	
+	function columns_add($columns) {
+		//prepend ID after checkbox
+	    $columns['cat-id'] = __('ID','dbem');
+	    return $columns;
+	}
+	
+	function columns_output( $val, $column, $term_id ) {
+		switch ( $column ) {
+			case 'cat-id':
+				return $term_id;
+				break;
+		}
+		return $val;
 	}
 	
 	function admin_init(){

@@ -219,33 +219,26 @@ function em_admin_options_page() {
 				}else{
 					$('tbody.em-event-archive-sub-options').hide();
 				}
-			});
+			}).trigger('change');
 			$('select[name="dbem_events_page"]').change(function(){
 				if( $('select[name="dbem_events_page"]').val() == 0 ){
 					$('tbody.em-event-page-options').hide();
-					$('tbody.em-event-archive-options').show();
-					$('input:radio[name="dbem_cp_events_has_archive"]:checked').trigger('change');
 				}else{
 					$('tbody.em-event-page-options').show();
-					$('tbody.em-event-archive-options').hide();
 				}
 			}).trigger('change');
 			$('input[name="dbem_cp_locations_has_archive"]').change(function(){ //location archives
-				console.log('changed!');
 				if( $('input:radio[name="dbem_cp_locations_has_archive"]:checked').val() == 1 ){
 					$('tbody.em-location-archive-sub-options').show();
 				}else{
 					$('tbody.em-location-archive-sub-options').hide();
 				}
-			});
+			}).trigger('change');
 			$('select[name="dbem_locations_page"]').change(function(){
 				if( $('select[name="dbem_locations_page"]').val() == 0 ){
 					$('tbody.em-location-page-options').hide();
-					$('tbody.em-location-archive-options').show();
-					$('input:radio[name="dbem_cp_locations_has_archive"]:checked').trigger('change');
 				}else{
 					$('tbody.em-location-page-options').show();
-					$('tbody.em-location-archive-options').hide();
 				}
 			}).trigger('change');
 			//For rewrite titles
@@ -478,6 +471,13 @@ function em_admin_options_page() {
 						em_options_radio_binary ( __( 'Show events search?', 'dbem' ), 'dbem_events_page_search', __( "If set to yes, a search form will appear just above your list of events.", 'dbem' ) );
 						?>				
 					</tbody>
+					<tr>
+						<td colspan="2">
+							<h4><?php echo sprintf(__('WordPress %s Archives','dbem'), __('Event','dbem')); ?></h4>
+							<p><?php echo sprintf(__('%s custom post types can have archives, just like normal WordPress posts. If enabled, should you visit your base slug url %s and you will see an post-formatted archive of previous %s'), __('Event','dbem'), '<code>'.home_url().'/'.get_option('dbem_cp_events_slug',EM_POST_TYPE_EVENT_SLUG).'/</code>', __('events','dbem')); ?></p>
+							<p><?php echo sprintf(__('Note that assigning a %s page above will override this archive if the URLs collide (which is the default settings, and is recommended). You can have both at the same time, but you must ensure that your page and %s slugs are different.'), __('events','dbem'), __('event','dbem')); ?></p>
+						</td>
+					</tr>
 					<tbody class="em-event-archive-options">
 						<?php
 						em_options_radio_binary ( __( 'Enable Archives?', 'dbem' ), 'dbem_cp_events_has_archive', __( "Allow WordPress post-style archives.", 'dbem' ) );
@@ -629,6 +629,13 @@ function em_admin_options_page() {
 						em_options_radio_binary ( sprintf(__( 'Show %s page in lists?', 'dbem' ),__('locations','dbem')), 'dbem_list_locations_page', sprintf(__( 'Check this option if you want the %s page to appear together with other pages in pages lists.', 'dbem' ),__('locations','dbem')) );
 						?>				
 					</tbody>
+					<tr>
+						<td colspan="2">
+							<h4><?php echo sprintf(__('WordPress %s Archives','dbem'), __('Location','dbem')); ?></h4>
+							<p><?php echo sprintf(__('%s custom post types can have archives, just like normal WordPress posts. If enabled, should you visit your base slug url %s and you will see an post-formatted archive of previous %s'), __('Location','dbem'), '<code>'.home_url().'/'.get_option('dbem_cp_events_slug',EM_POST_TYPE_EVENT_SLUG).'/</code>', __('locations','dbem')); ?></p>
+							<p><?php echo sprintf(__('Note that assigning a %s page above will override this archive if the URLs collide (which is the default settings, and is recommended for maximum plugin compatability). You can have both at the same time, but you must ensure that your page and %s slugs are different.'), __('locations','dbem'), __('location','dbem')); ?></p>
+						</td>
+					</tr>
 					<tbody class="em-location-archive-options">
 						<?php
 						em_options_radio_binary ( __( 'Enable Archives?', 'dbem' ), 'dbem_cp_locations_has_archive', __( "Allow WordPress post-style archives.", 'dbem' ) );						
@@ -971,6 +978,7 @@ function em_admin_options_page() {
 						em_options_input_text ( __( 'Time Format', 'dbem' ), 'dbem_time_format', sprintf(__('For use with the %s placeholder'),'<code>#_EVENTTIMES</code>') );
 						em_options_input_text ( __( 'Time Seperator', 'dbem' ), 'dbem_times_seperator', sprintf(__( 'For when start/end %s are present, this will seperate the two (include spaces here if necessary).', 'dbem' ), __('times','dbem')) );
 						em_options_input_text ( __( 'All Day Message', 'dbem' ), 'dbem_event_all_day_message', sprintf(__( 'If an event lasts all day, this text will show if using the %s placeholder', 'dbem' ), '<code>#_EVENTTIMES</code>') );
+						em_options_radio_binary ( __( 'Use 24h Format?', 'dbem' ), 'dbem_time_24h', __( 'When creating events, would you like your times to be shown in 24 hour format?', 'dbem' ) );
 						echo $save_button;
 						?>
 					</table>

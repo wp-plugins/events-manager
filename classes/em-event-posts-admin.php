@@ -3,6 +3,14 @@ class EM_Event_Posts_Admin{
 	function init(){
 		global $pagenow;
 		if( $pagenow == 'edit.php' && !empty($_REQUEST['post_type']) && $_REQUEST['post_type'] == EM_POST_TYPE_EVENT ){ //only needed for events list
+			//hide some cols by default:
+			$screen = 'edit-'.EM_POST_TYPE_EVENT;
+			$hidden = get_user_option( 'manage' . $screen . 'columnshidden' );
+			if( !$hidden ){
+				$hidden = array('event-id');
+				update_user_option(get_current_user_id(), "manage{$screen}columnshidden", $hidden, true);
+			}
+			//deal with actions
 			$row_action_type = is_post_type_hierarchical( EM_POST_TYPE_EVENT ) ? 'page_row_actions' : 'post_row_actions';
 			add_filter($row_action_type, array('EM_Event_Posts_Admin','row_actions'),10,2);
 			add_action('admin_head', array('EM_Event_Posts_Admin','admin_head'));
@@ -88,12 +96,19 @@ class EM_Event_Posts_Admin{
 	}
 	
 	function columns_add($columns) {
+		if( array_key_exists('cb', $columns) ){
+			$cb = $columns['cb'];
+	    	unset($columns['cb']);
+	    	$id_array = array('cb'=>$cb, 'event-id' => sprintf(__('%s ID','dbem'),__('Event','dbem')));
+		}else{
+	    	$id_array = array('event-id' => sprintf(__('%s ID','dbem'),__('Event','dbem')));
+		}
 	    unset($columns['comments']);
 	    unset($columns['date']);
 	    unset($columns['author']);
-	    $columns = array_merge($columns, array(
-	    	'location' => __('Location'),
-	    	'date-time' => __('Date and Time'),
+	    $columns = array_merge($id_array, $columns, array(
+	    	'location' => __('Location','dbem'),
+	    	'date-time' => __('Date and Time','dbem'),
 	    	'author' => __('Owner','dbem'),
 	    	'extra' => ''
 	    ));
@@ -108,6 +123,9 @@ class EM_Event_Posts_Admin{
 		$EM_Event = em_get_event($post, 'post_id');
 		/* @var $post EM_Event */
 		switch ( $column ) {
+			case 'event-id':
+				echo $EM_Event->event_id;
+				break;
 			case 'location':
 				//get meta value to see if post has location, otherwise
 				$EM_Location = $EM_Event->get_location();
@@ -174,6 +192,14 @@ class EM_Event_Recurring_Posts_Admin{
 	function init(){
 		global $pagenow;
 		if( $pagenow == 'edit.php' && !empty($_REQUEST['post_type']) && $_REQUEST['post_type'] == 'event-recurring' ){
+			//hide some cols by default:
+			$screen = 'edit-'.EM_POST_TYPE_EVENT;
+			$hidden = get_user_option( 'manage' . $screen . 'columnshidden' );
+			if( !$hidden ){
+				$hidden = array('event-id');
+				update_user_option(get_current_user_id(), "manage{$screen}columnshidden", $hidden, true);
+			}
+			//notices			
 			add_action('admin_notices',array('EM_Event_Recurring_Posts_Admin','admin_notices'));
 			add_action('admin_head', array('EM_Event_Recurring_Posts_Admin','admin_head'));
 			//collumns
@@ -207,10 +233,17 @@ class EM_Event_Recurring_Posts_Admin{
 	}
 	
 	function columns_add($columns) {
+		if( array_key_exists('cb', $columns) ){
+			$cb = $columns['cb'];
+	    	unset($columns['cb']);
+	    	$id_array = array('cb'=>$cb, 'event-id' => sprintf(__('%s ID','dbem'),__('Event','dbem')));
+		}else{
+	    	$id_array = array('event-id' => sprintf(__('%s ID','dbem'),__('Event','dbem')));
+		}
 	    unset($columns['comments']);
 	    unset($columns['date']);
 	    unset($columns['author']);
-	    return array_merge($columns, array(
+	    return array_merge($id_array, $columns, array(
 	    	'location' => __('Location'),
 	    	'date-time' => __('Date and Time'),
 	    	'author' => __('Owner','dbem'),
@@ -224,6 +257,9 @@ class EM_Event_Recurring_Posts_Admin{
 			$post = $EM_Event = em_get_event($post);
 			/* @var $post EM_Event */
 			switch ( $column ) {
+				case 'event-id':
+					echo $EM_Event->event_id;
+					break;
 				case 'location':
 					//get meta value to see if post has location, otherwise
 					$EM_Location = $EM_Event->get_location();

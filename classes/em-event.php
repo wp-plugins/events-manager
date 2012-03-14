@@ -68,7 +68,7 @@ class EM_Event extends EM_Object{
 	var $recurrence_interval;
 	var $recurrence_freq;
 	var $recurrence_byday;
-	var $recurrence_days;
+	var $recurrence_days = 0;
 	var $recurrence_byweekno;
 	/**
 	 * Previously used to give this object shorter property names for db values (each key has a name) but this is now depreciated, use the db field names as properties. This propertey provides extra info about the db fields.
@@ -402,7 +402,7 @@ class EM_Event extends EM_Object{
 			$this->blog_id = get_current_blog_id();
 		}
 		//group id
-		$this->group_id = (!empty($_POST['group_id']) && is_numeric($_POST['group_id'])) ? $_POST['group_id']:$this->group_id;
+		$this->group_id = (!empty($_POST['group_id']) && is_numeric($_POST['group_id'])) ? $_POST['group_id']:0;
 		//Recurrence data
 		if( $this->is_recurring() ){
 			$this->recurrence = 1; //just in case
@@ -414,7 +414,7 @@ class EM_Event extends EM_Object{
 			}
 			$this->recurrence_interval = ( !empty($_REQUEST['recurrence_interval']) && is_numeric($_REQUEST['recurrence_interval']) ) ? $_REQUEST['recurrence_interval']:1;
 			$this->recurrence_byweekno = ( !empty($_REQUEST['recurrence_byweekno']) ) ? $_REQUEST['recurrence_byweekno']:'';
-			$this->recurrence_days = ( !empty($_REQUEST['recurrence_days']) && is_numeric($_REQUEST['recurrence_days']) ) ? $_REQUEST['recurrence_days']:1;
+			$this->recurrence_days = ( !empty($_REQUEST['recurrence_days']) && is_numeric($_REQUEST['recurrence_days']) ) ? (int) $_REQUEST['recurrence_days']:0;
 		}
 		//categories in MS GLobal
 		if(EM_MS_GLOBAL && !is_main_site()){
@@ -445,6 +445,8 @@ class EM_Event extends EM_Object{
 		if( preg_match('/\d{4}-\d{2}-\d{2}/', $this->event_start_date) && preg_match('/\d{4}-\d{2}-\d{2}/', $this->event_end_date) ){
 			if( strtotime($this->event_start_date . $this->event_start_time) > strtotime($this->event_end_date . $this->event_end_time) ){
 				$this->add_error(__('Events cannot start after they end.','dbem'));
+			}elseif( $this->is_recurring() && $this->recurrence_days == 0 && strtotime($this->event_start_date . $this->event_start_time) > strtotime($this->event_start_date . $this->event_end_time) ){
+				$this->add_error(__('Events cannot start after they end.','dbem').' '.__('For recurring events that end the following day, ensure you make your event last 1 or more days.'));
 			}
 		}else{
 			if( !empty($missing_fields['event_start_date']) ) { unset($missing_fields['event_start_date']); }
@@ -569,8 +571,8 @@ class EM_Event extends EM_Object{
 					}
 				}
 			}
-			update_post_meta($this->post_id, '_start_ts', $this->start);
-			update_post_meta($this->post_id, '_end_ts', $this->end);
+			update_post_meta($this->post_id, '_start_ts', str_pad($this->start, 10, 0, STR_PAD_LEFT));
+			update_post_meta($this->post_id, '_end_ts', str_pad($this->end, 10, 0, STR_PAD_LEFT));
 			
 			$result = count($this->errors) == 0;
 			$this->get_status();
@@ -1590,7 +1592,7 @@ class EM_Event extends EM_Object{
 					//adjust certain meta information
 					$event['event_start_date'] = $meta_fields['_event_start_date'] = date("Y-m-d", $day);
 					$meta_fields['_start_ts'] = $day;
-					if($this->recurrence_days > 1){
+					if($this->recurrence_days > 0){
 						$meta_fields['_end_ts'] = $day + ($this->recurrence_days * 60*60*24);
 						$event['event_end_date'] = $meta_fields['_event_end_date'] = date("Y-m-d", $meta_fields['_end_ts']);
 					}else{
@@ -1646,10 +1648,11 @@ class EM_Event extends EM_Object{
 			 	}
 			 	//featured images
 			 	if( !empty($this->attributes['thumbnail_id']) ){
+			 		$image_inserts = array();
 			 		foreach($post_ids as $post_ids){
-			 			$image_insert[] = "({$this->post_id}, '_thumbnail_id', {$this->attributes['thumbnail_id']})";
+			 			$image_inserts[] = "({$this->post_id}, '_thumbnail_id', {$this->attributes['thumbnail_id']})";
 			 		}
-			 		if( count($image_insert) > 0 ){
+			 		if( count($image_inserts) > 0 ){
 				 		$wpdb->query('INSERT INTO '.$wpdb->postmeta.' (post_id, meta_key, meta_value) VALUES '.implode(', ', $image_inserts));
 			 		}
 			 	}

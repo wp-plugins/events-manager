@@ -120,7 +120,7 @@ function wp_events_plugin_init(){
 		'exclude_from_search' => false,
 		'publicly_queryable' => true,
 		'rewrite' => array('slug' => EM_POST_TYPE_EVENT_SLUG,'with_front'=>false),
-		'has_archive' => get_option('dbem_cp_events_has_archive', false) == true && get_option('dbem_events_page') == 0,
+		'has_archive' => get_option('dbem_cp_events_has_archive', false) == true,
 		'supports' => apply_filters('em_cp_event_supports', array('custom-fields','title','editor','excerpt','comments','thumbnail','author')),
 		'capability_type' => 'event',
 		'capabilities' => array(

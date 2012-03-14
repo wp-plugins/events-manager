@@ -27,12 +27,30 @@ if( !class_exists('EM_Permalinks') ){
 			if( !defined('EM_LOCATIONS_SLUG') ){ define('EM_LOCATIONS_SLUG','locations'); }
 			if( !defined('EM_CATEGORY_SLUG') ){ define('EM_CATEGORY_SLUG','category'); }
 			if( !defined('EM_CATEGORIES_SLUG') ){ define('EM_CATEGORIES_SLUG','categories'); }
+			add_filter('post_type_archive_link',array('EM_Permalinks','post_type_archive_link'),10,2);
 		}
 		
 		function flush(){
 			global $wp_rewrite;
 			$wp_rewrite->flush_rules();
 			delete_option('dbem_flush_needed');
+		}
+		
+		function post_type_archive_link($link, $post_type){
+			if( $post_type == EM_POST_TYPE_EVENT ){
+				if( get_option('dbem_events_page') ){
+					$new_link = get_permalink(get_option('dbem_events_page'));
+				}
+			}
+			if( $post_type == EM_POST_TYPE_LOCATION ){
+				if( get_option('dbem_locations_page') ){
+					$new_link = get_permalink(get_option('dbem_locations_page'));
+				}
+			}
+			if( !empty($new_link) ){
+				$link = $new_link;
+			}
+			return $link;
 		}
 		
 		/**

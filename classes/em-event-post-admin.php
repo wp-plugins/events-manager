@@ -40,7 +40,7 @@ class EM_Event_Post_Admin{
 			} elseif ( $EM_Event->is_recurrence() ) {
 				$warning = "<p><strong>".__('WARNING: This is a recurrence in a set of recurring events.', 'dbem')."</strong></p>";
 				$warning .= "<p>". sprintf(__('If you update this event data and save, it could get overwritten if you edit the recurring event template. To make it an independent, <a href="%s">detach it</a>.', 'dbem' ), $EM_Event->get_detach_url())."</p>";
-				$warning .= "<p>".sprintf(__('To manage the whole set, <a href="%s">edit the recurring event template</a>.', 'dbem'),admin_url().'post.php?action=edit&amp;post='.$EM_Event->recurrence_id)."</p>";
+				$warning .= "<p>".sprintf(__('To manage the whole set, <a href="%s">edit the recurring event template</a>.', 'dbem'),admin_url('post.php?action=edit&amp;post='.$EM_Event->get_event_recurrence()->post_id))."</p>";
 				?><div class="updated"><?php echo $warning; ?></div><?php
 			}
 			if( !empty($EM_Event->group_id) && function_exists('groups_get_group') ){
@@ -193,9 +193,6 @@ class EM_Event_Post_Admin{
 		if( get_option('dbem_attributes_enabled', true) ){
 			add_meta_box('em-event-attributes', __('Attributes','dbem'), array('EM_Event_Post_Admin','meta_box_attributes'),EM_POST_TYPE_EVENT, 'normal','default');
 		}
-		if( (empty($EM_Event->event_id) || !empty($EM_Event->group_id)) && function_exists('groups_get_user_groups') ){
-			add_meta_box('em-event-group', __('Group Ownership','dbem'), array('EM_Event_Post_Admin','meta_box_group'),EM_POST_TYPE_EVENT, 'side','low');
-		}
 		if( EM_MS_GLOBAL && !is_main_site() && get_option('dbem_categories_enabled') ){
 			add_meta_box('em-event-categories', __('Site Categories','dbem'), array('EM_Event_Post_Admin','meta_box_ms_categories'),EM_POST_TYPE_EVENT, 'side','low');
 		}
@@ -227,10 +224,6 @@ class EM_Event_Post_Admin{
 	
 	function meta_box_attributes(){
 		em_locate_template('forms/event/attributes.php',true);
-	}
-	
-	function meta_box_group(){
-		em_locate_template('forms/event/group.php',true);
 	}
 	
 	function meta_box_location(){

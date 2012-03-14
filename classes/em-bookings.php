@@ -307,7 +307,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function get_available_spaces(){
 		$spaces = $this->get_spaces();
 		if(!empty($this->get_event()->event_spaces) && $this->get_event()->event_spaces < $spaces) $spaces = $this->get_event()->event_spaces;
-		$available_spaces = $spaces - $this->get_booked_spaces();
+		$available_spaces = $spaces - $this->get_booked_spaces() - $this->get_pending_spaces();
 		return apply_filters('em_booking_get_available_spaces', $available_spaces, $this);
 	}
 
@@ -326,7 +326,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 				$booked_spaces += $EM_Booking->get_spaces($force_refresh);
 			}
 		}
-		return $booked_spaces;
+		return apply_filters('em_bookings_get_booked_spaces', $booked_spaces, $this);
 	}
 	
 	/**
@@ -335,7 +335,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get_pending_spaces(){
 		if( get_option('dbem_bookings_approval') == 0 ){
-			return 0;
+			return apply_filters('em_bookings_get_pending_spaces', 0, $this);
 		}
 		$pending = 0;
 		foreach ( $this->bookings as $booking ){

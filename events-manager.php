@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.1.3.1
+Version: 5.1.3.2
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -209,15 +209,8 @@ class EM_Scripts_and_Styles {
 	 */
 	function localize_script(){
 		global $em_localized_js;
-		//Localise vars regardless
+		$show24Hours = get_option('dbem_time_24h');
 		$locale_code = substr ( get_locale(), 0, 2 );
-		if (preg_match('/^en_(?:GB|IE|AU|NZ|ZA|TT|JM)$/', WPLANG)) {
-		    $locale_code = 'en-GB';
-		}
-		//Set time
-		$show24Hours = ( !preg_match("/en|sk|zh|us|uk/", $locale_code ) );	// Setting 12 hours format for those countries using it
-		//Maps Source
-		$is_ss = is_ssl() ? 'https://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&callback=em_maps&sensor=false';
 		//Localize
 		$em_localized_js = array(
 			'ajaxurl' => admin_url('admin-ajax.php'),
@@ -230,11 +223,15 @@ class EM_Scripts_and_Styles {
 			'show24hours' => $show24Hours,
 			'is_ssl' => is_ssl()
 		);
-		$em_localized_js['event_reschedule_warning'] = __('Are you sure you want to reschedule this recurring event? If you do this, you will lose all booking information and the old recurring events will be deleted.', 'dbem');
-		$em_localized_js['disable_bookings_warning'] = __('Are you sure you want to disable bookings? If you do this and save, you will lose all previous bookings. If you wish to prevent further bookings, reduce the number of spaces available to the amount of bookings you currently have', 'dbem');
-		$em_localized_js['event_detach_warning'] = __('Are you sure you want to detach this event? By doing so, this event will be independent of the recurring set of events.', 'dbem');
-		$delete_text = ( !EMPTY_TRASH_DAYS ) ? __('This cannot be undone.','dbem'):__('All events will be moved to trash.','dbem');
-		$em_localized_js['delete_recurrence_warning'] = __('Are you sure you want to delete all recurrences of this event?', 'dbem').' '.$delete_text;
+		//logged in messages that visitors shouldn't need to see
+		if( is_user_logged_in() ){
+			$em_localized_js['event_reschedule_warning'] = __('Are you sure you want to reschedule this recurring event? If you do this, you will lose all booking information and the old recurring events will be deleted.', 'dbem');
+			$em_localized_js['disable_bookings_warning'] = __('Are you sure you want to disable bookings? If you do this and save, you will lose all previous bookings. If you wish to prevent further bookings, reduce the number of spaces available to the amount of bookings you currently have', 'dbem');
+			$em_localized_js['event_detach_warning'] = __('Are you sure you want to detach this event? By doing so, this event will be independent of the recurring set of events.', 'dbem');
+			$delete_text = ( !EMPTY_TRASH_DAYS ) ? __('This cannot be undone.','dbem'):__('All events will be moved to trash.','dbem');
+			$em_localized_js['delete_recurrence_warning'] = __('Are you sure you want to delete all recurrences of this event?', 'dbem').' '.$delete_text;
+		}
+		//load admin/public only vars
 		if( is_admin() ){
 			$em_localized_js['event_post_type'] = EM_POST_TYPE_EVENT;
 			$em_localized_js['location_post_type'] = EM_POST_TYPE_LOCATION;

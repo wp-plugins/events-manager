@@ -640,6 +640,16 @@ function em_add_options() {
 		if( defined('EM_LOCATIONS_SLUG') && EM_LOCATIONS_SLUG != 'locations' ) update_option('dbem_cp_locations_slug', EM_LOCATIONS_SLUG);
 		if( defined('EM_CATEGORIES_SLUG') && EM_CATEGORIES_SLUG != 'categories' ) update_option('dbem_taxonomy_category_slug', $events_page->post_name.'/'.EM_CATEGORIES_SLUG);
 	}
+	if( get_option('dbem_time_24h','not set') == 'not set'){
+		//Localise vars regardless
+		$locale_code = substr ( get_locale(), 0, 2 );
+		if (preg_match('/^en_(?:GB|IE|AU|NZ|ZA|TT|JM)$/', WPLANG)) {
+		    $locale_code = 'en-GB';
+		}
+		//Set time
+		$show24Hours = ( !preg_match("/en|sk|zh|us|uk/", $locale_code ) );	// Setting 12 hours format for those countries using it
+		update_option('dbem_time_24h', $show24Hours);
+	}
 }
 
 function em_set_mass_caps( $roles, $caps ){

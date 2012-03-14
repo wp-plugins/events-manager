@@ -386,13 +386,13 @@ class EM_Bookings_Table{
 				if( $csv ){
 					$cols[] = $EM_Booking->get_person()->get_name();
 				}else{
-					$cols[] = '<a href="'.EM_ADMIN_URL.'&amp;page=events-manager-bookings&amp;person_id='.$EM_Booking->person->ID.'">'. $EM_Booking->person->get_name() .'</a>';
+					$cols[] = '<a href="'.add_query_arg(array('person_id'=>$EM_Booking->person_id)).'">'. $EM_Booking->person->get_name() .'</a>';
 				}
 			}elseif($col == 'event_name'){
 				if( $csv ){
 					$cols[] = $EM_Booking->get_event()->event_name;
 				}else{
-					$cols[] = '<a href="'.EM_ADMIN_URL.'&amp;page=events-manager-bookings&amp;event_id='.$EM_Booking->event_id.'">'. $this->events[$EM_Booking->event_id]->name .'</a>';
+					$cols[] = '<a href="'.$EM_Booking->get_event()->get_bookings_url().'">'. $this->events[$EM_Booking->event_id]->name .'</a>';
 				}
 			}elseif($col == 'booking_price'){
 				$cols[] = $EM_Booking->get_price(false,true);

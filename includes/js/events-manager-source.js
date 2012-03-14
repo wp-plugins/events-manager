@@ -38,8 +38,8 @@ jQuery(document).ready( function($){
 	}
 	/* Calendar AJAX */
 	$('.em-calendar-wrapper a').unbind("click");
-	$('.em-calendar-wrapper a').die("click");
-	$('a.em-calnav, a.em-calnav').live('click', function(e){
+	$('.em-calendar-wrapper a').off("click");
+	$('.em-calendar-wrapper').on('click', 'a.em-calnav, a.em-calnav', function(e){
 		e.preventDefault();
 		$(this).closest('.em-calendar-wrapper').prepend('<div class="loading" id="em-loading"></div>');
 		var url = em_ajaxify($(this).attr('href'));
@@ -90,7 +90,7 @@ jQuery(document).ready( function($){
 	});
 	
 	//in order for this to work, you need the above classes to be present in your templates
-	$('.em-events-search-form').live('submit',function(e){
+	$('.em-events-search-form').on('submit',function(e){
     	if( this.search && this.search.value== EM.txt_search ){ this.search.value = ''; }
     	if( this.em_search && this.em_search.value== EM.txt_search){ this.em_search.value = ''; }
     	if( $('#em-wrapper .em-events-search-ajax').length == 1 ){
@@ -108,7 +108,7 @@ jQuery(document).ready( function($){
     	} 
 	});
 	if( $('#em-wrapper .em-events-search-ajax').length > 0 ){
-		$('#em-wrapper .em-events-search-ajax a.page-numbers').live('click', function(e){
+		$('#em-wrapper .em-events-search-ajax a.page-numbers').on('click', function(e){
 			e.preventDefault();
 			var pageNo = $(this).attr('title');
 			if( $('.em-events-search-form input[name="page"]').length > 0 ){
@@ -126,7 +126,7 @@ jQuery(document).ready( function($){
 	 */
 	//Events List
 		//Approve/Reject Links
-		$('.em-event-delete').live('click', function(){
+		$('.em-event-delete').on('click', function(){
 			if( !confirm("Are you sure you want to delete?") ){ return false; }
 			var url = em_ajaxify( el.attr('href'));		
 			var td = el.parents('td').first();
@@ -188,7 +188,7 @@ jQuery(document).ready( function($){
 			return false;
 		});
 		//Edit a Ticket
-		$('.ticket-actions-edit').live('click',function(e){
+		$('.ticket-actions-edit').on('click',function(e){
 			//first, populate form, then, trigger click
 			e.preventDefault();
 			$('#em-tickets-add').trigger('click');
@@ -213,7 +213,7 @@ jQuery(document).ready( function($){
 			return false;
 		});	
 		//Delete a ticket
-		$('.ticket-actions-delete').live('click',function(e){
+		$('.ticket-actions-delete').on('click',function(e){
 			e.preventDefault();
 			var el = $(this);
 			var rowId = $(this).parents('tr').first().attr('id');
@@ -237,7 +237,7 @@ jQuery(document).ready( function($){
 	//Manageing Bookings
 		//New Bookings Table
 		//	Pagination link clicks
-			$('#em-bookings-table .tablenav-pages a').live('click', function(){
+			$('#em-bookings-table .tablenav-pages a').on('click', function(){
 				var el = $(this);
 				var form = el.parents('#em-bookings-table form.bookings-filter');
 				//get page no from url, change page, submit form
@@ -252,7 +252,7 @@ jQuery(document).ready( function($){
 				return false;
 			});
 			//Widgets and filter submissions
-			$('#em-bookings-table form.bookings-filter').live('submit', function(e){
+			$('#em-bookings-table form.bookings-filter').on('submit', function(e){
 				var el = $(this);			
 				el.parents('#em-bookings-table').find('.table-wrap').first().append('<div id="em-loading" />');
 				$.post( EM.ajaxurl, el.serializeArray(), function(data){
@@ -279,7 +279,7 @@ jQuery(document).ready( function($){
 					mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
 					closeOnClick: true
 				});
-				$('#em-bookings-table-settings-form').live('submit', function(el){
+				$('#em-bookings-table-settings-form').on('submit', function(el){
 					el.preventDefault();
 					var arr = $('form#em-bookings-table-settings-form').serializeArray();
 					//we know we'll deal with cols, so wipe hidden value from main
@@ -330,7 +330,7 @@ jQuery(document).ready( function($){
 			
 		//Old Bookings Table
 			//Widgets and filter submissions
-			$('.em_bookings_events_table form, .em_bookings_pending_table form').live('submit', function(e){
+			$('.em_bookings_events_table form, .em_bookings_pending_table form').on('submit', function(e){
 				var el = $(this);
 				var url = em_ajaxify( el.attr('action') );			
 				el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
@@ -340,7 +340,7 @@ jQuery(document).ready( function($){
 				return false;
 			});
 			//Pagination link clicks
-			$('.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a').live('click', function(){		
+			$('.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a').on('click', function(){		
 				var el = $(this);
 				var url = em_ajaxify( el.attr('href') );	
 				el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
@@ -350,7 +350,7 @@ jQuery(document).ready( function($){
 				return false;
 			});
 		//Approve/Reject Links
-		$('.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete').live('click', function(){
+		$('.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete').on('click', function(){
 			var el = $(this); 
 			if( el.hasClass('em-bookings-delete') ){
 				if( !confirm("Are you sure you want to delete?") ){ return false; }

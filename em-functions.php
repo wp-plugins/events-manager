@@ -222,13 +222,7 @@ function em_get_currency_name($currency = false){
 }
 
 function em_get_hour_format(){
-	$locale_code = substr ( get_locale (), 0, 2 );
-	$hours_locale_regexp = "H:i";
-	// Setting 12 hours format for those countries using it
-	if (preg_match ( "/en|sk|zh|us|uk/", $locale_code )){
-		$hours_locale_regexp = "h:i A";
-	}
-	return $hours_locale_regexp;
+	return get_option('dbem_time_24h') ? "H:i":"h:i A";
 }
 
 function em_get_date_format(){

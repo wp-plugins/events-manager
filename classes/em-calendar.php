@@ -129,8 +129,8 @@ class EM_Calendar extends EM_Object {
 		//Get an array of arguments that don't include default valued args
 		$link_args = self::get_link_args($args);
 
-		$previous_url = "?ajaxCalendar=1&amp;month={$month_last}&amp;year={$year_last}&amp;{$link_args}";
-		$next_url = "?ajaxCalendar=1&amp;month={$month_next}&amp;year={$year_next}&amp;{$link_args}";
+		$previous_url = "?ajaxCalendar=1&amp;mo={$month_last}&amp;yr={$year_last}&amp;{$link_args}";
+		$next_url = "?ajaxCalendar=1&amp;mo={$month_next}&amp;yr={$year_next}&amp;{$link_args}";
 		
 	 	$weekdays = array('Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday');
 	   $n = 0 ;
@@ -277,11 +277,11 @@ class EM_Calendar extends EM_Object {
 	
 	function output($args = array(), $wrapper = true) {
 		//Let month and year REQUEST override for non-JS users
-		if( !empty($_REQUEST['month']) ){
-			$args['month'] = $_REQUEST['month'];
+		if( !empty($_REQUEST['mo']) || !empty($args['mo']) ){
+			$args['month'] = ($_REQUEST['mo']) ? $_REQUEST['mo']:$args['mo'];	
 		}
-		if( !empty($_REQUEST['year']) ){
-			$args['year'] = $_REQUEST['year'];
+		if( !empty($_REQUEST['yr']) || !empty($args['yr']) ){
+			$args['year'] = (!empty($_REQUEST['yr'])) ? $_REQUEST['yr']:$args['yr'];
 		}
 		$calendar_array  = self::get($args);
 		$template = (!empty($args['full'])) ? 'templates/calendar-full.php':'templates/calendar-small.php';
