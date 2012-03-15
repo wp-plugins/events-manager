@@ -544,10 +544,8 @@ jQuery(document).ready( function($){
 	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
 		var script = document.createElement("script");
 		script.type = "text/javascript";
-		script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
+		script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.8&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
 		document.body.appendChild(script);
-	}else{
-		em_location_input_ajax();
 	}
 	
 });
@@ -555,7 +553,37 @@ jQuery(document).ready( function($){
 //Location functions
 function em_location_input_ajax(){
 	//Location stuff - only needed if inputs for location exist
-	if( jQuery('select#location-select-id, input#location-address').length > 0 ){	
+	if( jQuery('select#location-select-id, input#location-address').length > 0 ){
+		
+		//load map info
+		var refresh_map_location = function(){
+			var location_latitude = jQuery('#location-latitude').val();
+			var location_longitude = jQuery('#location-longitude').val();
+			if( !(location_latitude == 0 && location_longitude == 0) ){
+				var position = new google.maps.LatLng(location_latitude, location_longitude); //the location coords
+				marker.setPosition(position);
+				var mapTitle = (jQuery('input#location-name').length > 0) ? jQuery('input#location-name').val():jQuery('input#title').val();
+				marker.setTitle( jQuery('input#location-name input#title, #location-select-id').first().val() );
+				jQuery('#em-map').show();
+				jQuery('#em-map-404').hide();
+				google.maps.event.trigger(map, 'resize');
+				map.setCenter(position);
+				map.panBy(40,-55);
+				infoWindow.setContent( 
+					'<div id="location-balloon-content"><strong>' + 
+					mapTitle + 
+					'</strong><br/>' + 
+					jQuery('#location-address').val() + 
+					'<br/>' + jQuery('#location-town').val()+ 
+					'</div>'
+				);
+				infoWindow.open(map, marker);
+			} else {
+    			jQuery('#em-map').hide();
+    			jQuery('#em-map-404').show();
+			}
+		}
+		
 		//Load map
 		if(jQuery('#em-map').length > 0){
 			var em_LatLng = new google.maps.LatLng(0, 0);
@@ -567,7 +595,8 @@ function em_location_input_ajax(){
 			});
 			var marker = new google.maps.Marker({
 			    position: em_LatLng,
-			    map: map
+			    map: map,
+			    draggable: true
 			});
 			var infoWindow = new google.maps.InfoWindow({
 			    content: ''
@@ -577,6 +606,14 @@ function em_location_input_ajax(){
 				document.getElementById('location-balloon-content').parentNode.style.overflow=''; 
 				document.getElementById('location-balloon-content').parentNode.parentNode.style.overflow=''; 
 			});
+			google.maps.event.addListener(marker, 'dragend', function() {
+				var position = marker.getPosition();
+				jQuery('#location-latitude').val(position.lat());
+				jQuery('#location-longitude').val(position.lng());
+				map.setCenter(position);
+				map.panBy(40,-55);
+			});
+		    refresh_map_location();
 		}
 		
 		//Add listeners for changes to address
@@ -618,34 +655,13 @@ function em_location_input_ajax(){
 			if( address != '' && jQuery('#em-map').length > 0 ){
 				geocoder.geocode( { 'address': address }, function(results, status) {
 				    if (status == google.maps.GeocoderStatus.OK) {
-						marker.setPosition(results[0].geometry.location);
-						var mapTitle = (jQuery('input#location-name').length > 0) ? jQuery('input#location-name').val():jQuery('input#title').val();
-						marker.setTitle( jQuery('input#location-name input#title, #location-select-id').first().val() );
 						jQuery('#location-latitude').val(results[0].geometry.location.lat());
 						jQuery('#location-longitude').val(results[0].geometry.location.lng());
-	        			jQuery('#em-map').show();
-	        			jQuery('#em-map-404').hide();
-	        			google.maps.event.trigger(map, 'resize');
-						map.setCenter(results[0].geometry.location);
-						map.panBy(40,-55);
-						infoWindow.setContent( 
-							'<div id="location-balloon-content"><strong>' + 
-							mapTitle + 
-							'</strong><br/>' + 
-							jQuery('#location-address').val() + 
-							'<br/>' + jQuery('#location-town').val()+ 
-							'</div>'
-						);
-						infoWindow.open(map, marker);
-					} else {
-	        			jQuery('#em-map').hide();
-	        			jQuery('#em-map-404').show();
 					}
+				    refresh_map_location();
 				});
 			}
 		});
-		
-		jQuery("input#location-town, select#location-select-id").triggerHandler('change');
 		
 		//Finally, add autocomplete here
 		//Autocomplete
@@ -686,12 +702,18 @@ function em_location_input_ajax(){
 				jQuery('#em-location-data option:selected').removeAttr('selected');
 				jQuery('input#location-id').val('');
 				jQuery('#em-location-reset').hide();
+				marker.setPosition(new google.maps.LatLng(0, 0));
+				infoWindow.close();
+				jQuery('#em-map').hide();
+				jQuery('#em-map-404').show();
+				marker.setDraggable(true);
 				return false;
 			});
 			if( jQuery('input#location-id').val() != '0' && jQuery('input#location-id').val() != '' ){
 				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
 				jQuery('#em-location-data input#location-name').css('background-color','#fff');
 				jQuery('#em-location-reset').show();
+				marker.setDraggable(false);
 			}
 		}
 	}
