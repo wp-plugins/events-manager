@@ -363,7 +363,7 @@ function em_init_actions() {
 					$result = true;
 					if( !defined('DOING_AJAX') ){
 						if( $EM_Booking->person->ID == get_current_user_id() ){
-							$EM_Notices->add_confirm(sprintf(__('Booking %s','dbem'), __('Cancelled','dbem')), true );	
+							$EM_Notices->add_confirm(get_option('dbem_booking_feedback_cancelled'), true );	
 						}else{
 							$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
 						}

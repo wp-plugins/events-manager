@@ -387,11 +387,15 @@ class EM_Event extends EM_Object{
 			if( !empty($_POST['em_attributes']) && is_array($_POST['em_attributes']) ){
 				foreach($_POST['em_attributes'] as $att_key => $att_value ){
 					if( (in_array($att_key, $event_available_attributes['names']) || array_key_exists($att_key, $this->event_attributes) ) ){
-						$att_vals = count($event_available_attributes['values'][$att_key]);
-						if( $att_vals == 0 || ($att_vals > 0 && in_array($att_value, $event_available_attributes['values'][$att_key])) ){
-							$this->event_attributes[$att_key] = stripslashes($att_value);
-						}elseif($att_vals > 0){
-							$this->event_attributes[$att_key] = stripslashes(wp_kses($event_available_attributes['values'][$att_key][0], $allowedtags));
+						if( !empty($att_value) ){
+							$att_vals = count($event_available_attributes['values'][$att_key]);
+							if( $att_vals == 0 || ($att_vals > 0 && in_array($att_value, $event_available_attributes['values'][$att_key])) ){
+								$this->event_attributes[$att_key] = stripslashes($att_value);
+							}elseif($att_vals > 0){
+								$this->event_attributes[$att_key] = stripslashes(wp_kses($event_available_attributes['values'][$att_key][0], $allowedtags));
+							}
+						}else{
+							$this->event_attributes[$att_key] = '';
 						}
 					}
 				}
@@ -567,7 +571,11 @@ class EM_Event extends EM_Object{
 				}elseif($key == 'event_attributes'){
 					//attributes get saved as individual keys
 					foreach($this->event_attributes as $event_attribute_key => $event_attribute){
-						update_post_meta($this->post_id, $event_attribute_key, $event_attribute);
+						if( !empty($event_attribute) ){
+							update_post_meta($this->post_id, $event_attribute_key, $event_attribute);
+						}else{
+							delete_post_meta($this->post_id, $event_attribute_key);
+						}
 					}
 				}
 			}

@@ -529,6 +529,8 @@ function em_add_options() {
 			'dbem_bookings_form_msg_attending'=>__('You are currently attending this event.','dbem'),
 			'dbem_bookings_form_msg_bookings_link'=>__('Manage my bookings','dbem'),
 			//messages
+			'dbem_booking_warning_cancel' => __('Are you sure you want to cancel your booking?','dbem'),
+			'dbem_booking_feedback_cancelled' =>sprintf(__('Booking %s','dbem'), __('Cancelled','dbem')),
 			'dbem_booking_feedback_pending' =>__('Booking successful, pending confirmation (you will also receive an email once confirmed).', 'dbem'),
 			'dbem_booking_feedback' => __('Booking successful.', 'dbem'),
 			'dbem_booking_feedback_full' => __('Booking cannot be made, not enough spaces available!', 'dbem'),

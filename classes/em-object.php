@@ -338,7 +338,7 @@ class EM_Object {
 			$term_ids = array();
 			foreach($category as $category_id){
 				$term = new EM_Category($category_id);
-				if( $term !== false && !is_wp_error($term) ){
+				if( !empty($term->term_taxonomy_id) ){
 					$term_ids[] = $term->term_taxonomy_id;
 				}
 			}
