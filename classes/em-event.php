@@ -1689,7 +1689,8 @@ class EM_Event extends EM_Object{
 			 				if( empty($v) && $k != 'ticket_name' ){ 
 			 					$ticket[$k] = 'NULL';
 			 				}else{
-			 					$ticket[$k] = "'$v'";
+			 					$data_type = !empty($EM_Ticket->fields[$k]['type']) ? $EM_Ticket->fields[$k]['type']:'%s';
+			 					$ticket[$k] = $wpdb->prepare($data_type,$v);
 			 				}
 			 			}
 			 			foreach($event_ids as $event_id){
