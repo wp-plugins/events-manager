@@ -692,14 +692,18 @@ class EM_Event extends EM_Object{
 	 * Delete whole event, including bookings, tickets, etc.
 	 * @return boolean
 	 */
-	function delete($force_delete = true){ //atm wp seems to force cp deletions anyway
+	function delete($force_delete = false){ //atm wp seems to force cp deletions anyway
 		global $wpdb;
 		if( $this->can_manage('delete_events', 'delete_others_events') ){
 			remove_action('before_delete_post',array('EM_Event_Post_Admin','before_delete_post'),10,1); //since we're deleting directly, remove post actions
 			do_action('em_event_delete_pre', $this);
-			$result = wp_delete_post($this->post_id,$force_delete);
 			if( $force_delete ){
+				$result = wp_delete_post($this->post_id,$force_delete);
 				$result_meta = $this->delete_meta();
+			}else{
+				$result = wp_trash_post($this->post_id);
+				$result_meta = true;
+				$this->set_status(null); //FIXME status isn't set on trash post, maybe bug/nuance in WP when not admin side?
 			}
 		}else{
 			$result = $result_meta = false;

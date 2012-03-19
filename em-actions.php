@@ -591,23 +591,48 @@ function em_init_actions() {
 	}
 	//Export CSV - WIP
 	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_bookings_csv' && wp_verify_nonce($_REQUEST['_wpnonce'], 'export_bookings_csv')){
+		//sort out cols
+		if( !empty($_REQUEST['cols']) && is_array($_REQUEST['cols']) ){
+			$cols = array();
+			foreach($_REQUEST['cols'] as $col => $active){
+				if( $active ){ $cols[] = $col; }
+			}
+			$_REQUEST['cols'] = $cols;
+		}
+		$_REQUEST['limit'] = 0;
+		
 		//generate bookings export according to search request
-		$EM_Bookings_Table = new EM_Bookings_Table();
+		$show_tickets = !empty($_REQUEST['show_tickets']);
+		$EM_Bookings_Table = new EM_Bookings_Table($show_tickets);
+		$EM_Bookings_Table->limit = 0;
 		header("Content-Type: application/octet-stream");
 		header("Content-Disposition: Attachment; filename=".sanitize_title(get_bloginfo())."-bookings-export.csv");
 		echo sprintf(__('Exported booking on %s','dbem'), date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
-		echo '"'. implode('","', $EM_Bookings_Table->get_headers()). '"' .  "\n";
+		echo '"'. implode('","', $EM_Bookings_Table->get_headers(true)). '"' .  "\n";
 		//Rows
 		foreach( $EM_Bookings_Table->get_bookings() as $EM_Booking ) {
 			//Display all values
-			$row_output = '';
-			$row = $EM_Bookings_Table->get_rows_csv($EM_Booking);
-			foreach( $row as $value){
-				$value = str_replace('"', '""', $value);
-				$value = str_replace("=", "", $value);
-				$row_output .= '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
+			/* @var $EM_Booking EM_Booking */
+			/* @var $EM_Ticket_Booking EM_Ticket_Booking */
+			if( $show_tickets ){
+				foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){
+					$row = $EM_Bookings_Table->get_row_csv($EM_Ticket_Booking);
+					foreach( $row as $value){
+						$value = str_replace('"', '""', $value);
+						$value = str_replace("=", "", $value);
+						echo '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
+					}
+					echo "\n";
+				}
+			}else{
+				$row = $EM_Bookings_Table->get_row_csv($EM_Booking);
+				foreach( $row as $value){
+					$value = str_replace('"', '""', $value);
+					$value = str_replace("=", "", $value);
+					echo '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
+				}
+				echo "\n";
 			}
-			echo $row_output."\n";
 		}
 		exit();
 	}

@@ -20,7 +20,7 @@ class EM_Location_Post {
 	 */
 	function single_template($template){
 		global $post;
-		if( $post->post_type == EM_POST_TYPE_LOCATION ){
+		if( !locate_template('single-'.EM_POST_TYPE_LOCATION.'.php') && $post->post_type == EM_POST_TYPE_LOCATION ){
 			$template = locate_template(array('page.php','index.php'),false);
 		}
 		return $template;

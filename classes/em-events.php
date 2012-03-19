@@ -267,7 +267,7 @@ class EM_Events extends EM_Object implements Iterator {
 			$null = ($args['status'] == 0) ? ' OR `event_status` = 0':'';
 			$conditions['status'] = "(`event_status`={$args['status']}{$null} )";
 		}elseif( empty($args['status']) || $args['status'] != 'all'){
-			$conditions['status'] = "(`event_status` IS NOT NULL )"; //by default, we don't show deleted items
+			$conditions['status'] = "(`event_status` IS NOT NULL )"; //by default, we don't ever show deleted items
 		}
 		//private events
 		if( empty($args['private']) ){

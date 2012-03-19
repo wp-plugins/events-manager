@@ -1,4 +1,5 @@
 jQuery(document).ready( function($){
+	var load_ui_css = false; //load jquery ui css?
 	/* Time Entry */
 	if( $("#start-time").length > 0 ){
 		$("#start-time, #end-time").timePicker({
@@ -235,9 +236,8 @@ jQuery(document).ready( function($){
 			return false;
 		});
 	//Manageing Bookings
-		//New Bookings Table
-		//	Pagination link clicks
-			$('#em-bookings-table .tablenav-pages a').on('click', function(){
+		//Pagination link clicks
+			$(document).on('click', '#em-bookings-table .tablenav-pages a', function(){
 				var el = $(this);
 				var form = el.parents('#em-bookings-table form.bookings-filter');
 				//get page no from url, change page, submit form
@@ -252,7 +252,7 @@ jQuery(document).ready( function($){
 				return false;
 			});
 			//Widgets and filter submissions
-			$('#em-bookings-table form.bookings-filter').on('submit', function(e){
+			$(document).on('submit', '#em-bookings-table form.bookings-filter', function(e){
 				var el = $(this);			
 				el.parents('#em-bookings-table').find('.table-wrap').first().append('<div id="em-loading" />');
 				$.post( EM.ajaxurl, el.serializeArray(), function(data){
@@ -263,6 +263,7 @@ jQuery(document).ready( function($){
 							mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
 							closeOnClick: true
 						});
+						setup_sortable();
 					}
 					if( $("#em-bookings-table-export-trigger").length > 0 ){
 						$("#em-bookings-table-export-trigger").overlay({
@@ -279,46 +280,48 @@ jQuery(document).ready( function($){
 					mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
 					closeOnClick: true
 				});
-				$('#em-bookings-table-settings-form').on('submit', function(el){
+				$(document).on('submit', '#em-bookings-table-settings-form', function(el){
 					el.preventDefault();
 					var arr = $('form#em-bookings-table-settings-form').serializeArray();
 					//we know we'll deal with cols, so wipe hidden value from main
 					$("#em-bookings-table form.bookings-filter [name=cols]").val('');
 					$.each(arr, function(i,item){
-						if( item.name.split('[').length == 1 ){
+						item_match = $('form#em-bookings-table-settings-form [name='+item.name+']');
+						if( item_match.length > 0 && item_match.hasClass('em-bookings-col-item') && item_match.val() == 1 ){
+							var match = $("#em-bookings-table form.bookings-filter [name=cols]");
+							if( match.length > 0 ){
+								if(match.val() != ''){
+									match.val(match.val()+','+item.name);
+								}else{
+									match.val(item.name);
+								}
+							}
+						}else{
 							//copy it into the main form, overwrite those values
 							var match = $("#em-bookings-table form.bookings-filter [name="+item.name+"]");
 							if( match.length > 0 ){ match.val(item.value); }
-						}else{
-							item_name_split = item.name.split('[');
-							var item_name = item_name_split[0];
-							var match = $("#em-bookings-table form.bookings-filter [name="+item_name+"]");
-							if( match.length > 0 ){
-								if(match.val() != ''){
-									match.val(match.val()+','+item.value);
-								}else{
-									match.val(item.value);
-								}
-							}
 						}
 					});
-					//deal with actions col
-					if($("form#em-bookings-table-settings-form [name=show_actions]:checked").val()){
-						var match = $("#em-bookings-table form.bookings-filter [name=cols]");
-						if( match.length > 0 ){
-							if(match.val() != ''){
-								match.val(match.val()+',actions');
-							}else{
-								match.val(item.value);
-							}
-						}
-					}
 					//submit main form
 					$('#em-bookings-table-settings a.close').trigger('click');
 					$('#em-bookings-table-settings').trigger('submitted'); //hook into this with bind()
 					$('#em-bookings-table form.bookings-filter').trigger('submit');					
 					return false;
 				});
+				var setup_sortable = function(){
+					$( ".em-bookings-cols-sortable" ).sortable({
+						connectWith: ".em-bookings-cols-sortable",
+						over: function(event, ui) {
+							if( ui.item.hasClass('ui-state-highlight') ){
+								ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);							
+							}else{
+								ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
+							}
+						}
+					}).disableSelection();
+					load_ui_css = true;
+				}
+				setup_sortable();
 			}
 			//Export Overlay
 			if( $("#em-bookings-table-export-trigger").length > 0 ){
@@ -327,6 +330,16 @@ jQuery(document).ready( function($){
 					closeOnClick: true
 				});
 			}
+			var export_overlay_show_tickets = function(){
+				if( $(this).is(':checked') ){
+					$('#em-bookings-table-export-form .em-bookings-col-item-ticket').show();
+					$('#em-bookings-table-export-form #em-bookings-export-cols-active .em-bookings-col-item-ticket input').val(1);
+				}else{
+					$('#em-bookings-table-export-form .em-bookings-col-item-ticket').hide().find('input').val(0);					
+				}
+			};
+			export_overlay_show_tickets();
+			$(document).on('click', '#em-bookings-table-export-form input[name=show_tickets]', export_overlay_show_tickets);
 			
 		//Old Bookings Table
 			//Widgets and filter submissions
@@ -427,7 +440,6 @@ jQuery(document).ready( function($){
 		$("#em-date-end-loc").datepicker(end_datepicker_vals);
 		
 		//localize start/end dates
-		var load_ui_css = false;
 		if( $('#em-date-start').val() != '' ){
 			load_ui_css = true;
 			if( EM.locale != 'en' && $.datepicker.regional[EM.locale] != null ){
@@ -467,13 +479,13 @@ jQuery(document).ready( function($){
 				el.find(".end-loc").first().val(end_date_formatted);
 			}
 		});
-		if( load_ui_css || $("#em-date-start-loc, #em-date-end-loc").length > 0 ){
-			$('ui-datepicker-div').css();
-			var script = document.createElement("link");
-			script.rel = "stylesheet";
-			script.href = EM.ui_css;
-			document.body.appendChild(script);
-		}
+	}
+	if( load_ui_css || $("#em-date-start-loc, #em-date-end-loc").length > 0 ){
+		$('ui-datepicker-div').css();
+		var script = document.createElement("link");
+		script.rel = "stylesheet";
+		script.href = EM.ui_css;
+		document.body.appendChild(script);
 	}
 	
 	//previously in em-admin.php

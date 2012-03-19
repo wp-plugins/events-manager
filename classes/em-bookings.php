@@ -34,7 +34,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 		if( is_object($data) && get_class($data) == "EM_Event" ){ //Creates a blank bookings object if needed
 			global $wpdb;
 			$this->event_id = $data->event_id;
-			$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." WHERE event_id ='{$this->event_id}'";
+			$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." WHERE event_id ='{$this->event_id}' ORDER BY booking_date";
 			$bookings = $wpdb->get_results($sql, ARRAY_A);
 			foreach ($bookings as $booking){
 				$this->bookings[] = new EM_Booking($booking);

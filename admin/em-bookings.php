@@ -103,10 +103,10 @@ function em_bookings_event(){
   		<h2>
   			<?php echo sprintf(__('Manage %s Bookings', 'dbem'), "'{$EM_Event->event_name}'"); ?>
   			<a href="<?php echo $EM_Event->output('#_EDITEVENTURL'); ?>" class="button add-new-h2"><?php _e('View/Edit Event','dbem') ?></a>
+  			<a href='<?php echo EM_ADMIN_URL ."&amp;page=events-manager-bookings&action=bookings_export_csv&_wpnonce=".wp_create_nonce('bookings_export_csv')."&event_id=".$EM_Event->event_id ?>' class="button add-new-h2"><?php _e('Export CSV','dbem')?></a>
   			<?php do_action('em_admin_event_booking_options_buttons'); ?>
   		</h2>
-  		<?php echo $EM_Notices; ?>
-  		<div><a href='<?php echo EM_ADMIN_URL ."&amp;page=events-manager-bookings&action=bookings_export_csv&_wpnonce=".wp_create_nonce('bookings_export_csv')."&event_id=".$EM_Event->event_id ?>'><?php _e('export csv','dbem')?></a></div>  
+  		<?php echo $EM_Notices; ?>  
 		<div>
 			<p><strong><?php _e('Event Name','dbem'); ?></strong> : <?php echo ($EM_Event->event_name); ?></p>
 			<p>
