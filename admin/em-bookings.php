@@ -240,7 +240,7 @@ function em_bookings_single(){
 						</h3>
 						<div class="inside">
 							<?php echo $EM_Booking->get_person()->display_summary(); ?>
-							<?php do_action('em_bookings_admin_booking_person'); ?>
+							<?php do_action('em_bookings_admin_booking_person', $EM_Booking); ?>
 						</div>
 					</div> 	
 					<div class="stuffbox">

@@ -43,7 +43,7 @@ $('#em-booking-form').submit( function(e){
 			if( response.gateway != null ){
 				$(document).trigger('em_booking_gateway_add_'+response.gateway, [response]);
 			}
-			if(response.result && typeof Recaptcha != 'undefined'){
+			if( !response.result && typeof Recaptcha != 'undefined'){
 				Recaptcha.reload();
 			}
 		},

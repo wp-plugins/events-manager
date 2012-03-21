@@ -353,7 +353,7 @@ class EM_Bookings_Table{
 				
 				<div class='tablenav'>
 					<div class="alignleft actions">
-						<a href="#" class="em-bookings-table-export" id="em-bookings-table-export-trigger" rel="#em-bookings-table-export" title="<?php _e(); ?>"></a>
+						<a href="#" class="em-bookings-table-export" id="em-bookings-table-export-trigger" rel="#em-bookings-table-export" title="<?php _e('Export these bookings.','dbem'); ?>"></a>
 						<a href="#" class="em-bookings-table-settings" id="em-bookings-table-settings-trigger" rel="#em-bookings-table-settings"></a>
 						<?php if( $EM_Event === false ): ?>
 						<select name="scope">

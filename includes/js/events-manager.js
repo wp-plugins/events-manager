@@ -1,4 +1,821 @@
-jQuery(document).ready(function(g){var e=false;if(g("#start-time").length>0){g("#start-time, #end-time").timePicker({show24Hours:EM.show24hours,step:15});var d=g.timePicker("#start-time").getTime();g("#start-time").change(function(){if(g("#end-time").val()){var s=(g.timePicker("#end-time").getTime()-d);var r=g.timePicker("#start-time").getTime();g.timePicker("#end-time").setTime(new Date(new Date(r.getTime()+s)));d=r}});g("#end-time").change(function(){if(g.timePicker("#start-time").getTime()>g.timePicker(this).getTime()){g(this).addClass("error")}else{g(this).removeClass("error")}});g("#em-time-all-day").change(function(){if(g("#em-time-all-day").is(":checked")){g("#start-time").css("background-color","#ccc");g.timePicker("#start-time").setTime(new Date(0,0,0,0,0,0));g("#end-time").css("background-color","#ccc");g.timePicker("#end-time").setTime(new Date(0,0,0,0,0,0))}else{g("#end-time").css("background-color","#fff");g("#start-time").css("background-color","#fff")}}).trigger("change")}g(".em-calendar-wrapper a").unbind("click");g(".em-calendar-wrapper a").off("click");g(".em-calendar-wrapper").on("click","a.em-calnav, a.em-calnav",function(s){s.preventDefault();g(this).closest(".em-calendar-wrapper").prepend('<div class="loading" id="em-loading"></div>');var r=a(g(this).attr("href"));g(this).closest(".em-calendar-wrapper").load(r,function(){g(this).trigger("em_calendar_load")})});g(".em-events-search-form select[name=country]").change(function(){g(".em-events-search select[name=state]").html('<option value="">'+EM.txt_loading+"</option>");g(".em-events-search select[name=region]").html('<option value="">'+EM.txt_loading+"</option>");g(".em-events-search select[name=town]").html('<option value="">'+EM.txt_loading+"</option>");var r={action:"search_states",country:g(this).val(),return_html:true};g(".em-events-search select[name=state]").load(EM.ajaxurl,r);r.action="search_regions";g(".em-events-search select[name=region]").load(EM.ajaxurl,r);r.action="search_towns";g(".em-events-search select[name=town]").load(EM.ajaxurl,r)});g(".em-events-search-form select[name=region]").change(function(){g(".em-events-search select[name=state]").html("<option>"+EM.txt_loading+"</option>");g(".em-events-search select[name=town]").html('<option value="">'+EM.txt_loading+"</option>");var r={action:"search_states",region:g(this).val(),country:g(".em-events-search-form select[name=country]").val(),return_html:true};g(".em-events-search select[name=state]").load(EM.ajaxurl,r);r.action="search_towns";g(".em-events-search select[name=town]").load(EM.ajaxurl,r)});g(".em-events-search-form select[name=state]").change(function(){g(".em-events-search select[name=town]").html('<option value="">'+EM.txt_loading+"</option>");var r={action:"search_towns",state:g(this).val(),region:g(".em-events-search-form select[name=region]").val(),country:g(".em-events-search-form select[name=country]").val(),return_html:true};g(".em-events-search select[name=town]").load(EM.ajaxurl,r)});g(".em-events-search-form").on("submit",function(r){if(this.search&&this.search.value==EM.txt_search){this.search.value=""}if(this.em_search&&this.em_search.value==EM.txt_search){this.em_search.value=""}if(g("#em-wrapper .em-events-search-ajax").length==1){r.preventDefault();g(".em-events-search-form :submit").val(EM.txt_searching);g.ajax(EM.ajaxurl,{dataType:"html",data:g(this).serialize(),success:function(s){g(".em-events-search-form :submit").val(EM.txt_search);g("#em-wrapper .em-events-search-ajax").replaceWith(s)}});return false}});if(g("#em-wrapper .em-events-search-ajax").length>0){g("#em-wrapper .em-events-search-ajax a.page-numbers").on("click",function(s){s.preventDefault();var r=g(this).attr("title");if(g('.em-events-search-form input[name="page"]').length>0){g('.em-events-search-form input[name="page"]').val(r)}else{g(".em-events-search-form").append('<input type="hidden" name="page" value="'+r+'" />')}g(".em-events-search-form").trigger("submit");return false})}g(".em-event-delete").on("click",function(){if(!confirm("Are you sure you want to delete?")){return false}var r=a(el.attr("href"));var s=el.parents("td").first();s.html("Loading...");s.load(r);return false});if(g("#em-tickets-add").length>0){var l=g("#em-tickets-add").overlay({mask:{color:"#ebecff",loadSpeed:200,opacity:0.9},closeOnClick:true,onLoad:function(){g("#ui-datepicker-div").appendTo("#em-tickets-form").hide()},onClose:function(){g("#ui-datepicker-div").appendTo("body").hide()}})}g("#em-tickets-form form").submit(function(w){w.preventDefault();g("#em-tickets-intro").remove();if(g("#em-tickets-form form input[name=prev_slot]").val()){var x=g("#"+g("#em-tickets-form form input[name=prev_slot]").val());var v=x.attr("id").replace("em-tickets-row-","");var t=true}else{var v=g("#em-tickets-body").children("tr").length+1;var x=g("#em-tickets-body tr").first().clone().attr("id","em-tickets-row-"+v).appendTo(g("#em-tickets-body"));var t=false;x.show()}var r={};g.each(g("#em-tickets-form form *[name]"),function(y,z){z=g(z);x.find("input."+z.attr("name")).attr({value:z.attr("value"),name:"em_tickets["+v+"]["+z.attr("name")+"]"});x.find("span."+z.attr("name")).text(z.attr("value"))});g(document).triggerHandler("em_maps_tickets_edit",[x,v,t]);var u=g("#em-tickets-form input[name=ticket_start_pub]").val();var s=g("#em-tickets-form input[name=ticket_end_pub]").val();g("#em-tickets-form *[name]").attr("value","");g("#em-tickets-form .close").trigger("click");return false});g(".ticket-actions-edit").on("click",function(s){s.preventDefault();g("#em-tickets-add").trigger("click");var r=g(this).parents("tr").first().attr("id");g("#em-tickets-form *[name]").attr("value","");g.each(g("#"+r+" *[name]"),function(u,v){var v=g(v);var t=v.attr("class");g("#em-tickets-form *[name="+t+"]").attr("value",v.attr("value"))});g("#em-tickets-form input[name=prev_slot]").attr("value",r);g("#em-tickets-form .start-loc").datepicker("refresh");g("#em-tickets-form .end-loc").datepicker("refresh");k=g("#em-tickets-form .start-loc").datepicker("option","dateFormat");if(g("#em-tickets-form .start").val()!=""||g("#em-tickets-form .end").val()!=""){o=g.datepicker.formatDate(k,g.datepicker.parseDate("yy-mm-dd",g("#em-tickets-form .start").val()));j=g.datepicker.formatDate(k,g.datepicker.parseDate("yy-mm-dd",g("#em-tickets-form .end").val()));g("#em-tickets-form .start-loc").val(o);g("#em-tickets-form .end-loc").val(j)}return false});g(".ticket-actions-delete").on("click",function(t){t.preventDefault();var r=g(this);var s=g(this).parents("tr").first().attr("id");if(g("#"+s+" input.ticket_id").attr("value")==""){g("#"+s).remove()}else{r.text("Deleting...");g.getJSON(g(this).attr("href"),{em_ajax_action:"delete_ticket",id:g("#"+s+" input.ticket_id").attr("value")},function(u){if(u.result){g("#"+s).remove()}else{r.text("Delete");alert(u.error)}})}return false});g(document).on("click","#em-bookings-table .tablenav-pages a",function(){var t=g(this);var u=t.parents("#em-bookings-table form.bookings-filter");var s=t.attr("href").match(/#[0-9]+/);if(s!=null&&s.length>0){var r=s[0].replace("#","");u.find("input[name=pno]").val(r)}else{u.find("input[name=pno]").val(1)}u.trigger("submit");return false});g(document).on("submit","#em-bookings-table form.bookings-filter",function(s){var r=g(this);r.parents("#em-bookings-table").find(".table-wrap").first().append('<div id="em-loading" />');g.post(EM.ajaxurl,r.serializeArray(),function(t){r.parents("#em-bookings-table").first().replaceWith(t);if(g("#em-bookings-table-settings-trigger").length>0){g("#em-bookings-table-settings-trigger").overlay({mask:{color:"#ebecff",loadSpeed:200,opacity:0.9},closeOnClick:true});c()}if(g("#em-bookings-table-export-trigger").length>0){g("#em-bookings-table-export-trigger").overlay({mask:{color:"#ebecff",loadSpeed:200,opacity:0.9},closeOnClick:true})}});return false});if(g("#em-bookings-table-settings-trigger").length>0){g("#em-bookings-table-settings-trigger").overlay({mask:{color:"#ebecff",loadSpeed:200,opacity:0.9},closeOnClick:true});g(document).on("submit","#em-bookings-table-settings-form",function(s){s.preventDefault();var r=g("form#em-bookings-table-settings-form").serializeArray();g("#em-bookings-table form.bookings-filter [name=cols]").val("");g.each(r,function(u,v){item_match=g("form#em-bookings-table-settings-form [name="+v.name+"]");if(item_match.length>0&&item_match.hasClass("em-bookings-col-item")&&item_match.val()==1){var t=g("#em-bookings-table form.bookings-filter [name=cols]");if(t.length>0){if(t.val()!=""){t.val(t.val()+","+v.name)}else{t.val(v.name)}}}else{var t=g("#em-bookings-table form.bookings-filter [name="+v.name+"]");if(t.length>0){t.val(v.value)}}});g("#em-bookings-table-settings a.close").trigger("click");g("#em-bookings-table-settings").trigger("submitted");g("#em-bookings-table form.bookings-filter").trigger("submit");return false});var c=function(){g(".em-bookings-cols-sortable").sortable({connectWith:".em-bookings-cols-sortable",over:function(r,s){if(s.item.hasClass("ui-state-highlight")){s.item.addClass("ui-state-default").removeClass("ui-state-highlight").children("input").val(0)}else{s.item.addClass("ui-state-highlight").removeClass("ui-state-default").children("input").val(1)}}}).disableSelection();e=true};c()}if(g("#em-bookings-table-export-trigger").length>0){g("#em-bookings-table-export-trigger").overlay({mask:{color:"#ebecff",loadSpeed:200,opacity:0.9},closeOnClick:true})}var i=function(){if(g(this).is(":checked")){g("#em-bookings-table-export-form .em-bookings-col-item-ticket").show();g("#em-bookings-table-export-form #em-bookings-export-cols-active .em-bookings-col-item-ticket input").val(1)}else{g("#em-bookings-table-export-form .em-bookings-col-item-ticket").hide().find("input").val(0)}};i();g(document).on("click","#em-bookings-table-export-form input[name=show_tickets]",i);g(".em_bookings_events_table form, .em_bookings_pending_table form").on("submit",function(t){var s=g(this);var r=a(s.attr("action"));s.parents(".wrap").find(".table-wrap").first().append('<div id="em-loading" />');g.get(r,s.serializeArray(),function(u){s.parents(".wrap").first().replaceWith(u)});return false});g(".em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a").on("click",function(){var s=g(this);var r=a(s.attr("href"));s.parents(".wrap").find(".table-wrap").first().append('<div id="em-loading" />');g.get(r,function(t){s.parents(".wrap").first().replaceWith(t)});return false});g(".em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete").on("click",function(){var s=g(this);if(s.hasClass("em-bookings-delete")){if(!confirm("Are you sure you want to delete?")){return false}}var r=a(s.attr("href"));var t=s.parents("td").first();t.html("Loading...");t.load(r);return false});if(g("#em-date-start").length>0){if(EM.locale!="en"){g.datepicker.regional.nl={closeText:"Sluiten",prevText:"←",nextText:"→",currentText:"Vandaag",monthNames:["januari","februari","maart","april","mei","juni","juli","augustus","september","oktober","november","december"],monthNamesShort:["jan","feb","maa","apr","mei","jun","jul","aug","sep","okt","nov","dec"],dayNames:["zondag","maandag","dinsdag","woensdag","donderdag","vrijdag","zaterdag"],dayNamesShort:["zon","maa","din","woe","don","vri","zat"],dayNamesMin:["zo","ma","di","wo","do","vr","za"],weekHeader:"Wk",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.af={closeText:"Selekteer",prevText:"Vorige",nextText:"Volgende",currentText:"Vandag",monthNames:["Januarie","Februarie","Maart","April","Mei","Junie","Julie","Augustus","September","Oktober","November","Desember"],monthNamesShort:["Jan","Feb","Mrt","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des"],dayNames:["Sondag","Maandag","Dinsdag","Woensdag","Donderdag","Vrydag","Saterdag"],dayNamesShort:["Son","Maa","Din","Woe","Don","Vry","Sat"],dayNamesMin:["So","Ma","Di","Wo","Do","Vr","Sa"],weekHeader:"Wk",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.ar={closeText:"إغلاق",prevText:"<السابق",nextText:"التالي>",currentText:"اليوم",monthNames:["كانون الثاني","شباط","آذار","نيسان","آذار","حزيران","تموز","آب","أيلول","تشرين الأول","تشرين الثاني","كانون الأول"],monthNamesShort:["1","2","3","4","5","6","7","8","9","10","11","12"],dayNames:["السبت","الأحد","الاثنين","الثلاثاء","الأربعاء","الخميس","الجمعة"],dayNamesShort:["سبت","أحد","اثنين","ثلاثاء","أربعاء","خميس","جمعة"],dayNamesMin:["سبت","أحد","اثنين","ثلاثاء","أربعاء","خميس","جمعة"],weekHeader:"أسبوع",dateFormat:"dd/mm/yy",firstDay:0,isRTL:true,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.az={closeText:"Bağla",prevText:"<Geri",nextText:"İrəli>",currentText:"Bugün",monthNames:["Yanvar","Fevral","Mart","Aprel","May","İyun","İyul","Avqust","Sentyabr","Oktyabr","Noyabr","Dekabr"],monthNamesShort:["Yan","Fev","Mar","Apr","May","İyun","İyul","Avq","Sen","Okt","Noy","Dek"],dayNames:["Bazar","Bazar ertəsi","Çərşənbə axşamı","Çərşənbə","Cümə axşamı","Cümə","Şənbə"],dayNamesShort:["B","Be","Ça","Ç","Ca","C","Ş"],dayNamesMin:["B","B","Ç","С","Ç","C","Ş"],weekHeader:"Hf",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.bg={closeText:"затвори",prevText:"<назад",nextText:"напред>",nextBigText:">>",currentText:"днес",monthNames:["Януари","Февруари","Март","Април","Май","Юни","Юли","Август","Септември","Октомври","Ноември","Декември"],monthNamesShort:["Яну","Фев","Мар","Апр","Май","Юни","Юли","Авг","Сеп","Окт","Нов","Дек"],dayNames:["Неделя","Понеделник","Вторник","Сряда","Четвъртък","Петък","Събота"],dayNamesShort:["Нед","Пон","Вто","Сря","Чет","Пет","Съб"],dayNamesMin:["Не","По","Вт","Ср","Че","Пе","Съ"],weekHeader:"Wk",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.bs={closeText:"Zatvori",prevText:"<",nextText:">",currentText:"Danas",monthNames:["Januar","Februar","Mart","April","Maj","Juni","Juli","August","Septembar","Oktobar","Novembar","Decembar"],monthNamesShort:["Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Okt","Nov","Dec"],dayNames:["Nedelja","Ponedeljak","Utorak","Srijeda","Četvrtak","Petak","Subota"],dayNamesShort:["Ned","Pon","Uto","Sri","Čet","Pet","Sub"],dayNamesMin:["Ne","Po","Ut","Sr","Če","Pe","Su"],weekHeader:"Wk",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.cs={closeText:"Zavřít",prevText:"<Dříve",nextText:"Později>",currentText:"Nyní",monthNames:["leden","únor","březen","duben","květen","červen","červenec","srpen","září","říjen","listopad","prosinec"],monthNamesShort:["led","úno","bře","dub","kvě","čer","čvc","srp","zář","říj","lis","pro"],dayNames:["neděle","pondělí","úterý","středa","čtvrtek","pátek","sobota"],dayNamesShort:["ne","po","út","st","čt","pá","so"],dayNamesMin:["ne","po","út","st","čt","pá","so"],weekHeader:"Týd",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.da={closeText:"Luk",prevText:"<Forrige",nextText:"Næste>",currentText:"Idag",monthNames:["Januar","Februar","Marts","April","Maj","Juni","Juli","August","September","Oktober","November","December"],monthNamesShort:["Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Okt","Nov","Dec"],dayNames:["Søndag","Mandag","Tirsdag","Onsdag","Torsdag","Fredag","Lørdag"],dayNamesShort:["Søn","Man","Tir","Ons","Tor","Fre","Lør"],dayNamesMin:["Sø","Ma","Ti","On","To","Fr","Lø"],weekHeader:"Uge",dateFormat:"dd-mm-yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.de={closeText:"schließen",prevText:"<zurück",nextText:"Vor>",currentText:"heute",monthNames:["Januar","Februar","März","April","Mai","Juni","Juli","August","September","Oktober","November","Dezember"],monthNamesShort:["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"],dayNames:["Sonntag","Montag","Dienstag","Mittwoch","Donnerstag","Freitag","Samstag"],dayNamesShort:["So","Mo","Di","Mi","Do","Fr","Sa"],dayNamesMin:["So","Mo","Di","Mi","Do","Fr","Sa"],weekHeader:"Wo",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.el={closeText:"Κλείσιμο",prevText:"Προηγούμενος",nextText:"Επόμενος",currentText:"Τρέχων Μήνας",monthNames:["Ιανουάριος","Φεβρουάριος","Μάρτιος","Απρίλιος","Μάιος","Ιούνιος","Ιούλιος","Αύγουστος","Σεπτέμβριος","Οκτώβριος","Νοέμβριος","Δεκέμβριος"],monthNamesShort:["Ιαν","Φεβ","Μαρ","Απρ","Μαι","Ιουν","Ιουλ","Αυγ","Σεπ","Οκτ","Νοε","Δεκ"],dayNames:["Κυριακή","Δευτέρα","Τρίτη","Τετάρτη","Πέμπτη","Παρασκευή","Σάββατο"],dayNamesShort:["Κυρ","Δευ","Τρι","Τετ","Πεμ","Παρ","Σαβ"],dayNamesMin:["Κυ","Δε","Τρ","Τε","Πε","Πα","Σα"],weekHeader:"Εβδ",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional["en-GB"]={closeText:"Done",prevText:"Prev",nextText:"Next",currentText:"Today",monthNames:["January","February","March","April","May","June","July","August","September","October","November","December"],monthNamesShort:["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],dayNames:["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],dayNamesShort:["Sun","Mon","Tue","Wed","Thu","Fri","Sat"],dayNamesMin:["Su","Mo","Tu","We","Th","Fr","Sa"],weekHeader:"Wk",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.eo={closeText:"Fermi",prevText:"<Anta",nextText:"Sekv>",currentText:"Nuna",monthNames:["Januaro","Februaro","Marto","Aprilo","Majo","Junio","Julio","Aŭgusto","Septembro","Oktobro","Novembro","Decembro"],monthNamesShort:["Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aŭg","Sep","Okt","Nov","Dec"],dayNames:["Dimanĉo","Lundo","Mardo","Merkredo","Ĵaŭdo","Vendredo","Sabato"],dayNamesShort:["Dim","Lun","Mar","Mer","Ĵaŭ","Ven","Sab"],dayNamesMin:["Di","Lu","Ma","Me","Ĵa","Ve","Sa"],weekHeader:"Sb",dateFormat:"dd/mm/yy",firstDay:0,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.et={closeText:"Sulge",prevText:"Eelnev",nextText:"Järgnev",currentText:"Täna",monthNames:["Jaanuar","Veebruar","Märts","Aprill","Mai","Juuni","Juuli","August","September","Oktoober","November","Detsember"],monthNamesShort:["Jaan","Veebr","Märts","Apr","Mai","Juuni","Juuli","Aug","Sept","Okt","Nov","Dets"],dayNames:["Pühapäev","Esmaspäev","Teisipäev","Kolmapäev","Neljapäev","Reede","Laupäev"],dayNamesShort:["Pühap","Esmasp","Teisip","Kolmap","Neljap","Reede","Laup"],dayNamesMin:["P","E","T","K","N","R","L"],weekHeader:"Sm",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.eu={closeText:"Egina",prevText:"<Aur",nextText:"Hur>",currentText:"Gaur",monthNames:["Urtarrila","Otsaila","Martxoa","Apirila","Maiatza","Ekaina","Uztaila","Abuztua","Iraila","Urria","Azaroa","Abendua"],monthNamesShort:["Urt","Ots","Mar","Api","Mai","Eka","Uzt","Abu","Ira","Urr","Aza","Abe"],dayNames:["Igandea","Astelehena","Asteartea","Asteazkena","Osteguna","Ostirala","Larunbata"],dayNamesShort:["Iga","Ast","Ast","Ast","Ost","Ost","Lar"],dayNamesMin:["Ig","As","As","As","Os","Os","La"],weekHeader:"Wk",dateFormat:"yy/mm/dd",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.fa={closeText:"بستن",prevText:"<قبلي",nextText:"بعدي>",currentText:"امروز",monthNames:["فروردين","ارديبهشت","خرداد","تير","مرداد","شهريور","مهر","آبان","آذر","دي","بهمن","اسفند"],monthNamesShort:["1","2","3","4","5","6","7","8","9","10","11","12"],dayNames:["يکشنبه","دوشنبه","سهشنبه","چهارشنبه","پنجشنبه","جمعه","شنبه"],dayNamesShort:["ي","د","س","چ","پ","ج","ش"],dayNamesMin:["ي","د","س","چ","پ","ج","ش"],weekHeader:"هف",dateFormat:"yy/mm/dd",firstDay:6,isRTL:true,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.fo={closeText:"Lat aftur",prevText:"<Fyrra",nextText:"Næsta>",currentText:"Í dag",monthNames:["Januar","Februar","Mars","Apríl","Mei","Juni","Juli","August","September","Oktober","November","Desember"],monthNamesShort:["Jan","Feb","Mar","Apr","Mei","Jun","Jul","Aug","Sep","Okt","Nov","Des"],dayNames:["Sunnudagur","Mánadagur","Týsdagur","Mikudagur","Hósdagur","Fríggjadagur","Leyardagur"],dayNamesShort:["Sun","Mán","Týs","Mik","Hós","Frí","Ley"],dayNamesMin:["Su","Má","Tý","Mi","Hó","Fr","Le"],weekHeader:"Vk",dateFormat:"dd-mm-yy",firstDay:0,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional["fr-CH"]={closeText:"Fermer",prevText:"<Préc",nextText:"Suiv>",currentText:"Courant",monthNames:["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],monthNamesShort:["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],dayNames:["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"],dayNamesShort:["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"],dayNamesMin:["Di","Lu","Ma","Me","Je","Ve","Sa"],weekHeader:"Sm",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.fr={closeText:"Fermer",prevText:"<Préc",nextText:"Suiv>",currentText:"Courant",monthNames:["Janvier","Février","Mars","Avril","Mai","Juin","Juillet","Août","Septembre","Octobre","Novembre","Décembre"],monthNamesShort:["Jan","Fév","Mar","Avr","Mai","Jun","Jul","Aoû","Sep","Oct","Nov","Déc"],dayNames:["Dimanche","Lundi","Mardi","Mercredi","Jeudi","Vendredi","Samedi"],dayNamesShort:["Dim","Lun","Mar","Mer","Jeu","Ven","Sam"],dayNamesMin:["Di","Lu","Ma","Me","Je","Ve","Sa"],weekHeader:"Sm",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.he={closeText:"סגור",prevText:"<הקודם",nextText:"הבא>",currentText:"היום",monthNames:["ינואר","פברואר","מרץ","אפריל","מאי","יוני","יולי","אוגוסט","ספטמבר","אוקטובר","נובמבר","דצמבר"],monthNamesShort:["1","2","3","4","5","6","7","8","9","10","11","12"],dayNames:["ראשון","שני","שלישי","רביעי","חמישי","שישי","שבת"],dayNamesShort:["א'","ב'","ג'","ד'","ה'","ו'","שבת"],dayNamesMin:["א'","ב'","ג'","ד'","ה'","ו'","שבת"],weekHeader:"Wk",dateFormat:"dd/mm/yy",firstDay:0,isRTL:true,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.hu={closeText:"Kész",prevText:"Előző",nextText:"Következő",currentText:"Ma",monthNames:["január","február","március","április","május","június","július","augusztus","szeptember","október","november","cecember"],monthNamesShort:["jan","febr","márc","ápr","máj","jún","júl","aug","szept","okt","nov","dec"],dayNames:["vasárnap","hétfő","kedd","szerda","csütörtök","péntek","szombat"],dayNamesShort:["va","hé","k","sze","csü","pé","szo"],dayNamesMin:["v","h","k","sze","cs","p","szo"],weekHeader:"Wk",dateFormat:"yy.mm.dd.",firstDay:1,isRTL:false,showMonthAfterYear:true,yearSuffix:""};g.datepicker.regional.hr={closeText:"Zatvori",prevText:"<",nextText:">",currentText:"Danas",monthNames:["Siječanj","Veljača","Ožujak","Travanj","Svibanj","Lipanj","Srpanj","Kolovoz","Rujan","Listopad","Studeni","Prosinac"],monthNamesShort:["Sij","Velj","Ožu","Tra","Svi","Lip","Srp","Kol","Ruj","Lis","Stu","Pro"],dayNames:["Nedjelja","Ponedjeljak","Utorak","Srijeda","Četvrtak","Petak","Subota"],dayNamesShort:["Ned","Pon","Uto","Sri","Čet","Pet","Sub"],dayNamesMin:["Ne","Po","Ut","Sr","Če","Pe","Su"],weekHeader:"Tje",dateFormat:"dd.mm.yy.",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.ja={closeText:"閉じる",prevText:"<前",nextText:"次>",currentText:"今日",monthNames:["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],monthNamesShort:["1月","2月","3月","4月","5月","6月","7月","8月","9月","10月","11月","12月"],dayNames:["日曜日","月曜日","火曜日","水曜日","木曜日","金曜日","土曜日"],dayNamesShort:["日","月","火","水","木","金","土"],dayNamesMin:["日","月","火","水","木","金","土"],weekHeader:"週",dateFormat:"yy/mm/dd",firstDay:0,isRTL:false,showMonthAfterYear:true,yearSuffix:"年"};g.datepicker.regional.ro={closeText:"Închide",prevText:"« Luna precedentă",nextText:"Luna următoare »",currentText:"Azi",monthNames:["Ianuarie","Februarie","Martie","Aprilie","Mai","Iunie","Iulie","August","Septembrie","Octombrie","Noiembrie","Decembrie"],monthNamesShort:["Ian","Feb","Mar","Apr","Mai","Iun","Iul","Aug","Sep","Oct","Nov","Dec"],dayNames:["Duminică","Luni","Marţi","Miercuri","Joi","Vineri","Sâmbătă"],dayNamesShort:["Dum","Lun","Mar","Mie","Joi","Vin","Sâm"],dayNamesMin:["Du","Lu","Ma","Mi","Jo","Vi","Sâ"],weekHeader:"Săpt",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.sk={closeText:"Zavrieť",prevText:"&#x3c;Predchádzajúci",nextText:"Nasledujúci&#x3e;",currentText:"Dnes",monthNames:["Január","Február","Marec","Apríl","Máj","Jún","Júl","August","September","Október","November","December"],monthNamesShort:["Jan","Feb","Mar","Apr","Máj","Jún","Júl","Aug","Sep","Okt","Nov","Dec"],dayNames:["Nedel'a","Pondelok","Utorok","Streda","Štvrtok","Piatok","Sobota"],dayNamesShort:["Ned","Pon","Uto","Str","Štv","Pia","Sob"],dayNamesMin:["Ne","Po","Ut","St","Št","Pia","So"],weekHeader:"Ty",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.sq={closeText:"mbylle",prevText:"<mbrapa",nextText:"Përpara>",currentText:"sot",monthNames:["Janar","Shkurt","Mars","Prill","Maj","Qershor","Korrik","Gusht","Shtator","Tetor","Nëntor","Dhjetor"],monthNamesShort:["Jan","Shk","Mar","Pri","Maj","Qer","Kor","Gus","Sht","Tet","Nën","Dhj"],dayNames:["E Diel","E Hënë","E Martë","E Mërkurë","E Enjte","E Premte","E Shtune"],dayNamesShort:["Di","Hë","Ma","Më","En","Pr","Sh"],dayNamesMin:["Di","Hë","Ma","Më","En","Pr","Sh"],weekHeader:"Ja",dateFormat:"dd.mm.yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional["sr-SR"]={closeText:"Zatvori",prevText:"<",nextText:">",currentText:"Danas",monthNames:["Januar","Februar","Mart","April","Maj","Jun","Jul","Avgust","Septembar","Oktobar","Novembar","Decembar"],monthNamesShort:["Jan","Feb","Mar","Apr","Maj","Jun","Jul","Avg","Sep","Okt","Nov","Dec"],dayNames:["Nedelja","Ponedeljak","Utorak","Sreda","Četvrtak","Petak","Subota"],dayNamesShort:["Ned","Pon","Uto","Sre","Čet","Pet","Sub"],dayNamesMin:["Ne","Po","Ut","Sr","Če","Pe","Su"],weekHeader:"Sed",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.sr={closeText:"Затвори",prevText:"<",nextText:">",currentText:"Данас",monthNames:["Јануар","Фебруар","Март","Април","Мај","Јун","Јул","Август","Септембар","Октобар","Новембар","Децембар"],monthNamesShort:["Јан","Феб","Мар","Апр","Мај","Јун","Јул","Авг","Сеп","Окт","Нов","Дец"],dayNames:["Недеља","Понедељак","Уторак","Среда","Четвртак","Петак","Субота"],dayNamesShort:["Нед","Пон","Уто","Сре","Чет","Пет","Суб"],dayNamesMin:["Не","По","Ут","Ср","Че","Пе","Су"],weekHeader:"Сед",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.sv={closeText:"Stäng",prevText:"«Förra",nextText:"Nästa»",currentText:"Idag",monthNames:["Januari","Februari","Mars","April","Maj","Juni","Juli","Augusti","September","Oktober","November","December"],monthNamesShort:["Jan","Feb","Mar","Apr","Maj","Jun","Jul","Aug","Sep","Okt","Nov","Dec"],dayNamesShort:["Sön","Mån","Tis","Ons","Tor","Fre","Lör"],dayNames:["Söndag","Måndag","Tisdag","Onsdag","Torsdag","Fredag","Lördag"],dayNamesMin:["Sö","Må","Ti","On","To","Fr","Lö"],weekHeader:"Ve",dateFormat:"yy-mm-dd",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.ta={closeText:"மூடு",prevText:"முன்னையது",nextText:"அடுத்தது",currentText:"இன்று",monthNames:["தை","மாசி","பங்குனி","சித்திரை","வைகாசி","ஆனி","ஆடி","ஆவணி","புரட்டாசி","ஐப்பசி","கார்த்திகை","மார்கழி"],monthNamesShort:["தை","மாசி","பங்","சித்","வைகா","ஆனி","ஆடி","ஆவ","புர","ஐப்","கார்","மார்"],dayNames:["ஞாயிற்றுக்கிழமை","திங்கட்கிழமை","செவ்வாய்க்கிழமை","புதன்கிழமை","வியாழக்கிழமை","வெள்ளிக்கிழமை","சனிக்கிழமை"],dayNamesShort:["ஞாயிறு","திங்கள்","செவ்வாய்","புதன்","வியாழன்","வெள்ளி","சனி"],dayNamesMin:["ஞா","தி","செ","பு","வி","வெ","ச"],weekHeader:"Не",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.th={closeText:"ปิด",prevText:"« ย้อน",nextText:"ถัดไป »",currentText:"วันนี้",monthNames:["มกราคม","กุมภาพันธ์","มีนาคม","เมษายน","พฤษภาคม","มิถุนายน","กรกฏาคม","สิงหาคม","กันยายน","ตุลาคม","พฤศจิกายน","ธันวาคม"],monthNamesShort:["ม.ค.","ก.พ.","มี.ค.","เม.ย.","พ.ค.","มิ.ย.","ก.ค.","ส.ค.","ก.ย.","ต.ค.","พ.ย.","ธ.ค."],dayNames:["อาทิตย์","จันทร์","อังคาร","พุธ","พฤหัสบดี","ศุกร์","เสาร์"],dayNamesShort:["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."],dayNamesMin:["อา.","จ.","อ.","พ.","พฤ.","ศ.","ส."],weekHeader:"Wk",dateFormat:"dd/mm/yy",firstDay:0,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.vi={closeText:"Đóng",prevText:"<Trước",nextText:"Tiếp>",currentText:"Hôm nay",monthNames:["Tháng Một","Tháng Hai","Tháng Ba","Tháng Tư","Tháng Năm","Tháng Sáu","Tháng Bảy","Tháng Tám","Tháng Chín","Tháng Mười","Tháng Mười Một","Tháng Mười Hai"],monthNamesShort:["Tháng 1","Tháng 2","Tháng 3","Tháng 4","Tháng 5","Tháng 6","Tháng 7","Tháng 8","Tháng 9","Tháng 10","Tháng 11","Tháng 12"],dayNames:["Chủ Nhật","Thứ Hai","Thứ Ba","Thứ Tư","Thứ Năm","Thứ Sáu","Thứ Bảy"],dayNamesShort:["CN","T2","T3","T4","T5","T6","T7"],dayNamesMin:["CN","T2","T3","T4","T5","T6","T7"],weekHeader:"Tu",dateFormat:"dd/mm/yy",firstDay:0,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional["zh-TW"]={closeText:"關閉",prevText:"<上月",nextText:"下月>",currentText:"今天",monthNames:["一月","二月","三月","四月","五月","六月","七月","八月","九月","十月","十一月","十二月"],monthNamesShort:["一","二","三","四","五","六","七","八","九","十","十一","十二"],dayNames:["星期日","星期一","星期二","星期三","星期四","星期五","星期六"],dayNamesShort:["周日","周一","周二","周三","周四","周五","周六"],dayNamesMin:["日","一","二","三","四","五","六"],weekHeader:"周",dateFormat:"yy/mm/dd",firstDay:1,isRTL:false,showMonthAfterYear:true,yearSuffix:"年"};g.datepicker.regional.es={closeText:"Cerrar",prevText:"<Ant",nextText:"Sig>",currentText:"Hoy",monthNames:["Enero","Febrero","Marzo","Abril","Mayo","Junio","Julio","Agosto","Septiembre","Octubre","Noviembre","Diciembre"],monthNamesShort:["Ene","Feb","Mar","Abr","May","Jun","Jul","Ago","Sep","Oct","Nov","Dic"],dayNames:["Domingo","Lunes","Martes","Miércoles","Jueves","Viernes","Sábado"],dayNamesShort:["Dom","Lun","Mar","Mié","Juv","Vie","Sáb"],dayNamesMin:["Do","Lu","Ma","Mi","Ju","Vi","Sá"],weekHeader:"Sm",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.regional.it={closeText:"Fatto",prevText:"Precedente",nextText:"Prossimo",currentText:"Oggi",monthNames:["Gennaio","Febbraio","Marzo","Aprile","Maggio","Giugno","Luglio","Agosto","Settembre","Ottobre","Novembre","Dicembre"],monthNamesShort:["Gen","Feb","Mar","Apr","Mag","Giu","Lug","Ago","Set","Ott","Nov","Dic"],dayNames:["Lunedì","Martedì","Mercoledì","Giovedì","Venerdì","Sabato","Domenica"],dayNamesShort:["Lun","Mar","Mer","Gio","Ven","Sab","Dom"],dayNamesMin:["Do","Lu","Ma","Me","Gi","Ve","Sa"],weekHeader:"Wk",dateFormat:"dd/mm/yy",firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:""};g.datepicker.setDefaults(g.datepicker.regional[EM.locale])}var b={altFormat:"yy-mm-dd",changeMonth:true,changeYear:true,firstDay:EM.firstDay};var p={altField:"#em-date-start",onSelect:function(r){if(g("#em-date-start").val()>g("#em-date-end").val()){g("#em-date-end-loc").datepicker("setDate",r)}g("#em-date-end-loc").datepicker("option","minDate",r)}};g.extend(p,b);g("#em-date-start-loc").datepicker(p);var f={altField:"#em-date-end"};if(g("#em-date-start").val()!=""){f.minDate=new Date(g("#em-date-start").val())}g.extend(f,b);g("#em-date-end-loc").datepicker(f);if(g("#em-date-start").val()!=""){e=true;if(EM.locale!="en"&&g.datepicker.regional[EM.locale]!=null){var k=g.datepicker.regional[EM.locale].dateFormat}else{var k=g("#em-date-start-loc").datepicker("option","dateFormat")}var o=g.datepicker.formatDate(k,g.datepicker.parseDate("yy-mm-dd",g("#em-date-start").val()));var j=g.datepicker.formatDate(k,g.datepicker.parseDate("yy-mm-dd",g("#em-date-end").val()));g("#em-date-start-loc").val(o);g("#em-date-end-loc").val(j)}g(".em-ticket-form, #em-tickets-form").each(function(r,s){s=g(s);start=s.find(".start-loc");e=true;if(EM.locale!="en"&&g.datepicker.regional[EM.locale]!=null){var t=g.datepicker.regional[EM.locale].dateFormat}else{var t=start.first().datepicker("option","dateFormat")}if(start.length>0){e=true;b.altField=s.find(".start").first();start.first().datepicker(b);o=g.datepicker.formatDate(t,g.datepicker.parseDate("yy-mm-dd",b.altField.val()));s.find(".start-loc").val(o)}end=s.find(".end-loc");if(end.length>0){e=true;b.altField=s.find(".end").first();end.first().datepicker(b);j=g.datepicker.formatDate(t,g.datepicker.parseDate("yy-mm-dd",b.altField.val()));s.find(".end-loc").first().val(j)}})}if(e||g("#em-date-start-loc, #em-date-end-loc").length>0){g("ui-datepicker-div").css();var m=document.createElement("link");m.rel="stylesheet";m.href=EM.ui_css;document.body.appendChild(m)}function h(){g(".interval-desc").hide();var r="-plural";if(g("input#recurrence-interval").val()==1||g("input#recurrence-interval").val()==""){r="-singular"}var s="span#interval-"+g("select#recurrence-frequency").val()+r;g(s).show()}function q(){g("p.alternate-selector").hide();g("p#"+g("select#recurrence-frequency").val()+"-selector").show()}function n(){if(g("input#event-recurrence").attr("checked")){g("#event_recurrence_pattern").fadeIn();g("#event-date-explanation").hide();g("#recurrence-dates-explanation").show();g("h3#recurrence-dates-title").show();g("h3#event-date-title").hide()}else{g("#event_recurrence_pattern").hide();g("#recurrence-dates-explanation").hide();g("#event-date-explanation").show();g("h3#recurrence-dates-title").hide();g("h3#event-date-title").show()}}g("#recurrence-dates-explanation").hide();g("#date-to-submit").hide();g("#end-date-to-submit").hide();g("#localised-date").show();g("#localised-end-date").show();g("input.select-all").change(function(){if(g(this).is(":checked")){g("input.row-selector").attr("checked",true)}else{g("input.row-selector").attr("checked",false)}});h();q();n();g("input#event-recurrence").change(n);g("input#recurrence-interval").keyup(h);g("select#recurrence-frequency").change(h);g("select#recurrence-frequency").change(q);var a=function(r){if(r.search("em_ajax=0")!=-1){r=r.replace("em_ajax=0","em_ajax=1")}else{if(r.search(/\?/)!=-1){r=r+"&em_ajax=1"}else{r=r+"?em_ajax=1"}}return r};if(g(".em-location-map").length>0||g(".em-locations-map").length>0||g("#em-map").length>0){var m=document.createElement("script");m.type="text/javascript";m.src=(EM.is_ssl)?"https://maps.google.com/maps/api/js?v=3.8&sensor=false&callback=em_maps":"http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps";document.body.appendChild(m)}});function em_location_input_ajax(){if(jQuery("select#location-select-id, input#location-address").length>0){var f=function(){var i=jQuery("#location-latitude").val();var k=jQuery("#location-longitude").val();if(!(i==0&&k==0)){var h=new google.maps.LatLng(i,k);a.setPosition(h);var j=(jQuery("input#location-name").length>0)?jQuery("input#location-name").val():jQuery("input#title").val();a.setTitle(jQuery("input#location-name input#title, #location-select-id").first().val());jQuery("#em-map").show();jQuery("#em-map-404").hide();google.maps.event.trigger(d,"resize");d.setCenter(h);d.panBy(40,-55);b.setContent('<div id="location-balloon-content"><strong>'+j+"</strong><br/>"+jQuery("#location-address").val()+"<br/>"+jQuery("#location-town").val()+"</div>");b.open(d,a)}else{jQuery("#em-map").hide();jQuery("#em-map-404").show()}};if(jQuery("#em-map").length>0){var e=new google.maps.LatLng(0,0);var d=new google.maps.Map(document.getElementById("em-map"),{zoom:14,center:e,mapTypeId:google.maps.MapTypeId.ROADMAP,mapTypeControl:false});var a=new google.maps.Marker({position:e,map:d,draggable:true});var b=new google.maps.InfoWindow({content:""});var c=new google.maps.Geocoder();google.maps.event.addListener(b,"domready",function(){document.getElementById("location-balloon-content").parentNode.style.overflow="";document.getElementById("location-balloon-content").parentNode.parentNode.style.overflow=""});google.maps.event.addListener(a,"dragend",function(){var h=a.getPosition();jQuery("#location-latitude").val(h.lat());jQuery("#location-longitude").val(h.lng());d.setCenter(h);d.panBy(40,-55)});f()}var g=function(h){if(jQuery("#em-map").length>0){jQuery.getJSON(document.URL,{em_ajax_action:"get_location",id:h},function(i){if(i.location_latitude!=0&&i.location_longitude!=0){loc_latlng=new google.maps.LatLng(i.location_latitude,i.location_longitude);a.setPosition(loc_latlng);a.setTitle(i.location_name);jQuery("#em-map").show();jQuery("#em-map-404").hide();d.setCenter(loc_latlng);d.panBy(40,-55);b.setContent('<div id="location-balloon-content">'+i.location_balloon+"</div>");b.open(d,a);google.maps.event.trigger(d,"resize")}else{jQuery("#em-map").hide();jQuery("#em-map-404").show()}})}};jQuery("#location-select-id").change(function(){g(jQuery(this).val())});jQuery("#location-town, #location-address, #location-state, #location-postcode, #location-country").change(function(){var i=[jQuery("#location-address").val(),jQuery("#location-town").val(),jQuery("#location-state").val(),jQuery("#location-postcode").val()];var h="";jQuery.each(i,function(j,k){if(k!=""){h=(h=="")?h+k:h+", "+k}});if(jQuery("#location-country option:selected").val()!=0){h=(h=="")?h+jQuery("#location-country option:selected").text():h+", "+jQuery("#location-country option:selected").text()}if(h!=""&&jQuery("#em-map").length>0){c.geocode({address:h},function(k,j){if(j==google.maps.GeocoderStatus.OK){jQuery("#location-latitude").val(k[0].geometry.location.lat());jQuery("#location-longitude").val(k[0].geometry.location.lng())}f()})}});if(jQuery("#em-location-data input#location-name, ").length>0){jQuery("#em-location-data input#location-name").autocomplete({source:EM.locationajaxurl,minLength:2,focus:function(h,i){jQuery("input#location-id").val(i.item.value);return false},select:function(h,i){jQuery("input#location-id").val(i.item.id);jQuery("input#location-name").val(i.item.value);jQuery("input#location-address").val(i.item.address);jQuery("input#location-town").val(i.item.town);jQuery("input#location-state").val(i.item.state);jQuery("input#location-region").val(i.item.region);jQuery("input#location-postcode").val(i.item.postcode);if(i.item.country==""){jQuery("select#location-country option:selected").removeAttr("selected")}else{jQuery('select#location-country option[value="'+i.item.country+'"]').attr("selected","selected")}g(i.item.id);jQuery("#em-location-data input, #em-location-data select").css("background-color","#ccc");jQuery("#em-location-data input#location-name").css("background-color","#fff");jQuery("#em-location-reset").show();return false}}).data("autocomplete")._renderItem=function(h,i){html_val="<a>"+i.label+'<br><span style="font-size:11px"><em>'+i.address+", "+i.town+"</em></span></a>";return jQuery("<li></li>").data("item.autocomplete",i).append(html_val).appendTo(h)};jQuery("#em-location-reset").click(function(){jQuery("#em-location-data input").css("background-color","#fff").val("");jQuery("#em-location-data select").css("background-color","#fff");jQuery("#em-location-data option:selected").removeAttr("selected");jQuery("input#location-id").val("");jQuery("#em-location-reset").hide();a.setPosition(new google.maps.LatLng(0,0));b.close();jQuery("#em-map").hide();jQuery("#em-map-404").show();a.setDraggable(true);return false});if(jQuery("input#location-id").val()!="0"&&jQuery("input#location-id").val()!=""){jQuery("#em-location-data input, #em-location-data select").css("background-color","#ccc");jQuery("#em-location-data input#location-name").css("background-color","#fff");jQuery("#em-location-reset").show();a.setDraggable(false)}}}}var maps={};function em_maps(){jQuery(".em-location-map").each(function(c){el=jQuery(this);var a=el.attr("id").replace("em-location-map-","");em_LatLng=new google.maps.LatLng(jQuery("#em-location-map-coords-"+a+" .lat").text(),jQuery("#em-location-map-coords-"+a+" .lng").text());maps[a]=new google.maps.Map(document.getElementById("em-location-map-"+a),{zoom:14,center:em_LatLng,mapTypeId:google.maps.MapTypeId.ROADMAP,mapTypeControl:false});var b=new google.maps.Marker({position:em_LatLng,map:maps[a]});var d=new google.maps.InfoWindow({content:jQuery("#em-location-map-info-"+a+" .em-map-balloon").get(0)});d.open(maps[a],b);maps[a].panBy(40,-70);jQuery(document).triggerHandler("em_maps_location_hook",[maps[a],d,b])});jQuery(".em-locations-map").each(function(b){var c=jQuery(this);var a=c.attr("id").replace("em-locations-map-","");var d=jQuery.parseJSON(jQuery("#em-locations-map-coords-"+a).text());jQuery.getJSON(document.URL,d,function(m){if(m.length>0){var k=new google.maps.LatLng(m[0].location_latitude,m[0].location_longitude);var s={mapTypeId:google.maps.MapTypeId.ROADMAP};maps[a]=new google.maps.Map(document.getElementById("em-locations-map-"+a),s);var r=[0,0];var j=[0,0];for(var n=0;n<m.length;n++){if(!(m[n].location_latitude==0&&m[n].location_longitude==0)){var p=parseFloat(m[n].location_latitude);var f=parseFloat(m[n].location_longitude);var q=new google.maps.LatLng(p,f);var l=new google.maps.Marker({position:q,map:maps[a]});l.setTitle(m[n].location_name);var o='<div class="em-map-balloon"><div id="em-map-balloon-'+a+'" class="em-map-balloon-content">'+m[n].location_balloon+"</div></div>";em_map_infobox(l,o,maps[a]);r[0]=(p<r[0]||n==0)?p:r[0];r[1]=(f<r[1]||n==0)?f:r[1];j[0]=(p>j[0]||n==0)?p:j[0];j[1]=(f>j[1]||n==0)?f:j[1]}}var h=new google.maps.LatLng(r[0],r[1]);var g=new google.maps.LatLng(j[0],j[1]);var e=new google.maps.LatLngBounds(h,g);maps[a].fitBounds(e);jQuery(document).triggerHandler("em_maps_locations_hook",[maps[a]])}else{c.children().first().html("No locations found")}})});em_location_input_ajax()}function em_map_infobox(a,b,d){var c=new google.maps.InfoWindow({content:b});google.maps.event.addListener(a,"click",function(){c.open(d,a)})};
+jQuery(document).ready( function($){
+	var load_ui_css = false; //load jquery ui css?
+	/* Time Entry */
+	if( $("#start-time").length > 0 ){
+		$("#start-time, #end-time").timePicker({
+			show24Hours: EM.show24hours,
+			step:15
+		});
+		// Store time used by duration.
+		var oldTime = $.timePicker("#start-time").getTime();
+		// Keep the duration between the two inputs.
+		$("#start-time").change(function() {
+		  if ($("#end-time").val()) { // Only update when second input has a value.
+		    // Calculate duration.
+		    var duration = ($.timePicker("#end-time").getTime() - oldTime);
+		    var time = $.timePicker("#start-time").getTime();
+		    // Calculate and update the time in the second input.
+		    $.timePicker("#end-time").setTime(new Date(new Date(time.getTime() + duration)));
+		    oldTime = time;
+		  }
+		});
+		// Validate.
+		$("#end-time").change(function() {
+		  if($.timePicker("#start-time").getTime() > $.timePicker(this).getTime()) { $(this).addClass("error"); }
+		  else { $(this).removeClass("error"); }
+		});
+		//Sort out all day checkbox
+		$('#em-time-all-day').change(function(){
+			if( $('#em-time-all-day').is(':checked') ){
+				$("#start-time").css('background-color','#ccc');
+				$.timePicker("#start-time").setTime(new Date(0,0,0,0,0,0));
+				$("#end-time").css('background-color','#ccc');
+				$.timePicker("#end-time").setTime(new Date(0,0,0,0,0,0));
+			}else{
+				$("#end-time").css('background-color','#fff');
+				$("#start-time").css('background-color','#fff');			
+			}
+		}).trigger('change');
+	}
+	/* Calendar AJAX */
+	$('.em-calendar-wrapper a').unbind("click");
+	$('.em-calendar-wrapper a').off("click");
+	$('.em-calendar-wrapper').on('click', 'a.em-calnav, a.em-calnav', function(e){
+		e.preventDefault();
+		$(this).closest('.em-calendar-wrapper').prepend('<div class="loading" id="em-loading"></div>');
+		var url = em_ajaxify($(this).attr('href'));
+		$(this).closest('.em-calendar-wrapper').load(url, function(){$(this).trigger('em_calendar_load');});
+	} );
+
+	//Events Search
+	$('.em-events-search-form select[name=country]').change( function(){
+		$('.em-events-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
+		$('.em-events-search select[name=region]').html('<option value="">'+EM.txt_loading+'</option>');
+		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+		var data = {
+			action : 'search_states',
+			country : $(this).val(),
+			return_html : true
+		};
+		$('.em-events-search select[name=state]').load( EM.ajaxurl, data );
+		data.action = 'search_regions';
+		$('.em-events-search select[name=region]').load( EM.ajaxurl, data );
+		data.action = 'search_towns';
+		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+	});
+
+	$('.em-events-search-form select[name=region]').change( function(){
+		$('.em-events-search select[name=state]').html('<option>'+EM.txt_loading+'</option>');
+		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+		var data = {
+			action : 'search_states',
+			region : $(this).val(),
+			country : $('.em-events-search-form select[name=country]').val(),
+			return_html : true
+		};
+		$('.em-events-search select[name=state]').load( EM.ajaxurl, data );
+		data.action = 'search_towns';
+		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+	});
+
+	$('.em-events-search-form select[name=state]').change( function(){
+		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+		var data = {
+			action : 'search_towns',
+			state : $(this).val(),
+			region : $('.em-events-search-form select[name=region]').val(),
+			country : $('.em-events-search-form select[name=country]').val(),
+			return_html : true
+		};
+		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+	});
+	
+	//in order for this to work, you need the above classes to be present in your templates
+	$(document).on('submit', '.em-events-search-form', function(e){
+    	if( this.search && this.search.value== EM.txt_search ){ this.search.value = ''; }
+    	if( this.em_search && this.em_search.value== EM.txt_search){ this.em_search.value = ''; }
+    	if( $('#em-wrapper .em-events-search-ajax').length == 1 ){
+    		e.preventDefault();
+			$('.em-events-search-form :submit').val(EM.txt_searching);
+			$.ajax( EM.ajaxurl, {
+	    		dataType : 'html',
+	    		data : $(this).serialize(),
+			    success : function(responseText) {
+					$('.em-events-search-form :submit').val(EM.txt_search);
+					$('#em-wrapper .em-events-search-ajax').replaceWith(responseText);
+			    }
+	    	});
+			return false;
+    	} 
+	});
+	if( $('#em-wrapper .em-events-search-ajax').length > 0 ){
+		$(document).on('click', '#em-wrapper .em-events-search-ajax a.page-numbers', function(e){
+			e.preventDefault();
+			var pageNo = $(this).attr('title');
+			if( $('.em-events-search-form input[name="page"]').length > 0 ){
+				$('.em-events-search-form input[name="page"]').val(pageNo);
+			}else{
+				$('.em-events-search-form').append('<input type="hidden" name="page" value="'+pageNo+'" />');
+			}
+			$('.em-events-search-form').trigger('submit');
+			return false;
+		});
+	}
+		
+	/*
+	 * ADMIN AREA AND PUBLIC FORMS (Still polishing this section up, note that form ids and classes may change accordingly)
+	 */
+	//Events List
+		//Approve/Reject Links
+		$(document).on('click', '.em-event-delete', function(){
+			if( !confirm("Are you sure you want to delete?") ){ return false; }
+			var url = em_ajaxify( el.attr('href'));		
+			var td = el.parents('td').first();
+			td.html("Loading...");
+			td.load( url );
+			return false;
+		});
+	//Tickets
+		//Tickets overlay
+		if( $("#em-tickets-add").length > 0 ){
+			var triggers = $("#em-tickets-add").overlay({
+				mask: { 
+					color: '#ebecff',
+					loadSpeed: 200,
+					opacity: 0.9
+				},
+				closeOnClick: true,
+				onLoad: function(){
+					$('#ui-datepicker-div').appendTo('#em-tickets-form').hide();
+				},
+				onClose: function(){
+					$('#ui-datepicker-div').appendTo('body').hide();
+				}
+			});
+		}
+		//Submitting ticket (Add/Edit)
+		$('#em-tickets-form form').submit(function(e){
+			e.preventDefault();
+			$('#em-tickets-intro').remove();
+			//first we get the template to insert this to
+			if( $('#em-tickets-form form input[name=prev_slot]').val() ){
+				//grab slot and populate
+				var slot = $('#'+$('#em-tickets-form form input[name=prev_slot]').val());
+				var rowNo = slot.attr('id').replace('em-tickets-row-','');
+				var edit = true;
+			}else{
+				//create copy of template slot, insert so ready for population
+				var rowNo = $('#em-tickets-body').children('tr').length+1;
+				var slot = $('#em-tickets-body tr').first().clone().attr('id','em-tickets-row-'+ rowNo).appendTo($('#em-tickets-body'));
+				var edit = false;
+				slot.show();
+			}
+			var postData = {};
+			$.each($('#em-tickets-form form *[name]'), function(index,el){
+				el = $(el);
+				slot.find('input.'+el.attr('name')).attr({
+					'value' : el.attr('value'),
+					'name' : 'em_tickets['+rowNo+']['+el.attr('name')+']'
+				});
+				slot.find('span.'+el.attr('name')).text(el.attr('value'));
+			});
+			//allow for others to hook into this
+			$(document).triggerHandler('em_maps_tickets_edit', [slot, rowNo, edit]);
+			//sort out dates and localization masking
+			var start_pub = $("#em-tickets-form input[name=ticket_start_pub]").val();
+			var end_pub = $("#em-tickets-form input[name=ticket_end_pub]").val();
+			$('#em-tickets-form *[name]').attr('value','');
+			$('#em-tickets-form .close').trigger('click');
+			return false;
+		});
+		//Edit a Ticket
+		$(document).on('click', '.ticket-actions-edit', function(e){
+			//first, populate form, then, trigger click
+			e.preventDefault();
+			$('#em-tickets-add').trigger('click');
+			var rowId = $(this).parents('tr').first().attr('id');
+			$('#em-tickets-form *[name]').attr('value','');
+			$.each( $('#'+rowId+' *[name]'), function(index,el){
+				var el = $(el);
+				var selector = el.attr('class');
+				$('#em-tickets-form *[name='+selector+']').attr('value',el.attr('value'));
+			});
+			$("#em-tickets-form input[name=prev_slot]").attr('value',rowId);
+			$("#em-tickets-form .start-loc").datepicker('refresh');
+			$("#em-tickets-form .end-loc").datepicker('refresh');
+	
+			date_dateFormat =$("#em-tickets-form .start-loc").datepicker('option', 'dateFormat');
+			if( $('#em-tickets-form .start').val() != '' || $('#em-tickets-form .end').val() != '' ){			
+				start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-tickets-form .start').val()) );
+				end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-tickets-form .end').val()) );
+				$("#em-tickets-form .start-loc").val(start_date_formatted);
+				$("#em-tickets-form .end-loc").val(end_date_formatted);
+			}
+			return false;
+		});	
+		//Delete a ticket
+		$(document).on('click', '.ticket-actions-delete', function(e){
+			e.preventDefault();
+			var el = $(this);
+			var rowId = $(this).parents('tr').first().attr('id');
+			if( $('#'+rowId+' input.ticket_id').attr('value') == '' ){
+				//not saved to db yet, so just remove
+				$('#'+rowId).remove();
+			}else{
+				//only will happen if no bookings made
+				el.text('Deleting...');	
+				$.getJSON( $(this).attr('href'), {'em_ajax_action':'delete_ticket', 'id':$('#'+rowId+' input.ticket_id').attr('value')}, function(data){
+					if(data.result){
+						$('#'+rowId).remove();
+					}else{
+						el.text('Delete');
+						alert(data.error);
+					}
+				});
+			}
+			return false;
+		});
+	//Manageing Bookings
+		//Pagination link clicks
+			$(document).on('click', '#em-bookings-table .tablenav-pages a', function(){
+				var el = $(this);
+				var form = el.parents('#em-bookings-table form.bookings-filter');
+				//get page no from url, change page, submit form
+				var match = el.attr('href').match(/#[0-9]+/);
+				if( match != null && match.length > 0){
+					var pno = match[0].replace('#','');
+					form.find('input[name=pno]').val(pno);
+				}else{
+					form.find('input[name=pno]').val(1);
+				}
+				form.trigger('submit');
+				return false;
+			});
+			//Widgets and filter submissions
+			$(document).on('submit', '#em-bookings-table form.bookings-filter', function(e){
+				var el = $(this);			
+				el.parents('#em-bookings-table').find('.table-wrap').first().append('<div id="em-loading" />');
+				$.post( EM.ajaxurl, el.serializeArray(), function(data){
+					el.parents('#em-bookings-table').first().replaceWith(data);
+					//Settings Overlay
+					if( $("#em-bookings-table-settings-trigger").length > 0 ){
+						$("#em-bookings-table-settings-trigger").overlay({
+							mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
+							closeOnClick: true
+						});
+						setup_sortable();
+					}
+					if( $("#em-bookings-table-export-trigger").length > 0 ){
+						$("#em-bookings-table-export-trigger").overlay({
+							mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
+							closeOnClick: true
+						});
+					}
+				});
+				return false;
+			});
+			//Settings Overlay
+			if( $("#em-bookings-table-settings-trigger").length > 0 ){
+				$("#em-bookings-table-settings-trigger").overlay({
+					mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
+					closeOnClick: true
+				});
+				$(document).on('submit', '#em-bookings-table-settings-form', function(el){
+					el.preventDefault();
+					var arr = $('form#em-bookings-table-settings-form').serializeArray();
+					//we know we'll deal with cols, so wipe hidden value from main
+					$("#em-bookings-table form.bookings-filter [name=cols]").val('');
+					$.each(arr, function(i,item){
+						item_match = $('form#em-bookings-table-settings-form [name='+item.name+']');
+						if( item_match.length > 0 && item_match.hasClass('em-bookings-col-item') && item_match.val() == 1 ){
+							var match = $("#em-bookings-table form.bookings-filter [name=cols]");
+							if( match.length > 0 ){
+								if(match.val() != ''){
+									match.val(match.val()+','+item.name);
+								}else{
+									match.val(item.name);
+								}
+							}
+						}else{
+							//copy it into the main form, overwrite those values
+							var match = $("#em-bookings-table form.bookings-filter [name="+item.name+"]");
+							if( match.length > 0 ){ match.val(item.value); }
+						}
+					});
+					//submit main form
+					$('#em-bookings-table-settings a.close').trigger('click');
+					$('#em-bookings-table-settings').trigger('submitted'); //hook into this with bind()
+					$('#em-bookings-table form.bookings-filter').trigger('submit');					
+					return false;
+				});
+				var setup_sortable = function(){
+					$( ".em-bookings-cols-sortable" ).sortable({
+						connectWith: ".em-bookings-cols-sortable",
+						over: function(event, ui) {
+							if( ui.item.hasClass('ui-state-highlight') ){
+								ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);							
+							}else{
+								ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
+							}
+						}
+					}).disableSelection();
+					load_ui_css = true;
+				}
+				setup_sortable();
+			}
+			//Export Overlay
+			if( $("#em-bookings-table-export-trigger").length > 0 ){
+				$("#em-bookings-table-export-trigger").overlay({
+					mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
+					closeOnClick: true
+				});
+			}
+			var export_overlay_show_tickets = function(){
+				if( $(this).is(':checked') ){
+					$('#em-bookings-table-export-form .em-bookings-col-item-ticket').show();
+					$('#em-bookings-table-export-form #em-bookings-export-cols-active .em-bookings-col-item-ticket input').val(1);
+				}else{
+					$('#em-bookings-table-export-form .em-bookings-col-item-ticket').hide().find('input').val(0);					
+				}
+			};
+			export_overlay_show_tickets();
+			$(document).on('click', '#em-bookings-table-export-form input[name=show_tickets]', export_overlay_show_tickets);
+			
+		//Old Bookings Table
+			//Widgets and filter submissions
+			$(document).on('submit', '.em_bookings_events_table form, .em_bookings_pending_table form', function(e){
+				var el = $(this);
+				var url = em_ajaxify( el.attr('action') );			
+				el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
+				$.get( url, el.serializeArray(), function(data){
+					el.parents('.wrap').first().replaceWith(data);
+				});
+				return false;
+			});
+			//Pagination link clicks
+			$(document).on('click', '.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a', function(){		
+				var el = $(this);
+				var url = em_ajaxify( el.attr('href') );	
+				el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
+				$.get( url, function(data){
+					el.parents('.wrap').first().replaceWith(data);
+				});
+				return false;
+			});
+		//Approve/Reject Links
+		$(document).on('click', '.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete', function(){
+			var el = $(this); 
+			if( el.hasClass('em-bookings-delete') ){
+				if( !confirm("Are you sure you want to delete?") ){ return false; }
+			}
+			var url = em_ajaxify( el.attr('href'));		
+			var td = el.parents('td').first();
+			td.html("Loading...");
+			td.load( url );
+			return false;
+		});
+		
+	//Datepicker
+	if( $('#em-date-start').length > 0 ){
+		if( EM.locale != 'en' ){
+			$.datepicker.regional['nl']={closeText:'Sluiten',prevText:'←',nextText:'→',currentText:'Vandaag',monthNames:['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'],monthNamesShort:['jan','feb','maa','apr','mei','jun','jul','aug','sep','okt','nov','dec'],dayNames:['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'],dayNamesShort:['zon','maa','din','woe','don','vri','zat'],dayNamesMin:['zo','ma','di','wo','do','vr','za'],weekHeader:'Wk',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['af']={closeText:'Selekteer',prevText:'Vorige',nextText:'Volgende',currentText:'Vandag',monthNames:['Januarie','Februarie','Maart','April','Mei','Junie','Julie','Augustus','September','Oktober','November','Desember'],monthNamesShort:['Jan','Feb','Mrt','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Des'],dayNames:['Sondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrydag','Saterdag'],dayNamesShort:['Son','Maa','Din','Woe','Don','Vry','Sat'],dayNamesMin:['So','Ma','Di','Wo','Do','Vr','Sa'],weekHeader:'Wk',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['ar']={closeText:'إغلاق',prevText:'<السابق',nextText:'التالي>',currentText:'اليوم',monthNames:['كانون الثاني','شباط','آذار','نيسان','آذار','حزيران','تموز','آب','أيلول','تشرين الأول','تشرين الثاني','كانون الأول'],monthNamesShort:['1','2','3','4','5','6','7','8','9','10','11','12'],dayNames:['السبت','الأحد','الاثنين','الثلاثاء','الأربعاء','الخميس','الجمعة'],dayNamesShort:['سبت','أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة'],dayNamesMin:['سبت','أحد','اثنين','ثلاثاء','أربعاء','خميس','جمعة'],weekHeader:'أسبوع',dateFormat:'dd/mm/yy',firstDay:0,isRTL:true,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['az']={closeText:'Bağla',prevText:'<Geri',nextText:'İrəli>',currentText:'Bugün',monthNames:['Yanvar','Fevral','Mart','Aprel','May','İyun','İyul','Avqust','Sentyabr','Oktyabr','Noyabr','Dekabr'],monthNamesShort:['Yan','Fev','Mar','Apr','May','İyun','İyul','Avq','Sen','Okt','Noy','Dek'],dayNames:['Bazar','Bazar ertəsi','Çərşənbə axşamı','Çərşənbə','Cümə axşamı','Cümə','Şənbə'],dayNamesShort:['B','Be','Ça','Ç','Ca','C','Ş'],dayNamesMin:['B','B','Ç','С','Ç','C','Ş'],weekHeader:'Hf',dateFormat:'dd.mm.yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['bg']={closeText:'затвори',prevText:'<назад',nextText:'напред>',nextBigText:'>>',currentText:'днес',monthNames:['Януари','Февруари','Март','Април','Май','Юни','Юли','Август','Септември','Октомври','Ноември','Декември'],monthNamesShort:['Яну','Фев','Мар','Апр','Май','Юни','Юли','Авг','Сеп','Окт','Нов','Дек'],dayNames:['Неделя','Понеделник','Вторник','Сряда','Четвъртък','Петък','Събота'],dayNamesShort:['Нед','Пон','Вто','Сря','Чет','Пет','Съб'],dayNamesMin:['Не','По','Вт','Ср','Че','Пе','Съ'],weekHeader:'Wk',dateFormat:'dd.mm.yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['bs']={closeText:'Zatvori',prevText:'<',nextText:'>',currentText:'Danas',monthNames:['Januar','Februar','Mart','April','Maj','Juni','Juli','August','Septembar','Oktobar','Novembar','Decembar'],monthNamesShort:['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],dayNames:['Nedelja','Ponedeljak','Utorak','Srijeda','Četvrtak','Petak','Subota'],dayNamesShort:['Ned','Pon','Uto','Sri','Čet','Pet','Sub'],dayNamesMin:['Ne','Po','Ut','Sr','Če','Pe','Su'],weekHeader:'Wk',dateFormat:'dd.mm.yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['cs']={closeText:'Zavřít',prevText:'<Dříve',nextText:'Později>',currentText:'Nyní',monthNames:['leden','únor','březen','duben','květen','červen','červenec','srpen','září','říjen','listopad','prosinec'],monthNamesShort:['led','úno','bře','dub','kvě','čer','čvc','srp','zář','říj','lis','pro'],dayNames:['neděle','pondělí','úterý','středa','čtvrtek','pátek','sobota'],dayNamesShort:['ne','po','út','st','čt','pá','so'],dayNamesMin:['ne','po','út','st','čt','pá','so'],weekHeader:'Týd',dateFormat:'dd.mm.yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['da']={closeText:'Luk',prevText:'<Forrige',nextText:'Næste>',currentText:'Idag',monthNames:['Januar','Februar','Marts','April','Maj','Juni','Juli','August','September','Oktober','November','December'],monthNamesShort:['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],dayNames:['Søndag','Mandag','Tirsdag','Onsdag','Torsdag','Fredag','Lørdag'],dayNamesShort:['Søn','Man','Tir','Ons','Tor','Fre','Lør'],dayNamesMin:['Sø','Ma','Ti','On','To','Fr','Lø'],weekHeader:'Uge',dateFormat:'dd-mm-yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['de']={closeText:'schließen',prevText:'<zurück',nextText:'Vor>',currentText:'heute',monthNames:['Januar','Februar','März','April','Mai','Juni','Juli','August','September','Oktober','November','Dezember'],monthNamesShort:['Jan','Feb','Mär','Apr','Mai','Jun','Jul','Aug','Sep','Okt','Nov','Dez'],dayNames:['Sonntag','Montag','Dienstag','Mittwoch','Donnerstag','Freitag','Samstag'],dayNamesShort:['So','Mo','Di','Mi','Do','Fr','Sa'],dayNamesMin:['So','Mo','Di','Mi','Do','Fr','Sa'],weekHeader:'Wo',dateFormat:'dd.mm.yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['el']={closeText:'Κλείσιμο',prevText:'Προηγούμενος',nextText:'Επόμενος',currentText:'Τρέχων Μήνας',monthNames:['Ιανουάριος','Φεβρουάριος','Μάρτιος','Απρίλιος','Μάιος','Ιούνιος','Ιούλιος','Αύγουστος','Σεπτέμβριος','Οκτώβριος','Νοέμβριος','Δεκέμβριος'],monthNamesShort:['Ιαν','Φεβ','Μαρ','Απρ','Μαι','Ιουν','Ιουλ','Αυγ','Σεπ','Οκτ','Νοε','Δεκ'],dayNames:['Κυριακή','Δευτέρα','Τρίτη','Τετάρτη','Πέμπτη','Παρασκευή','Σάββατο'],dayNamesShort:['Κυρ','Δευ','Τρι','Τετ','Πεμ','Παρ','Σαβ'],dayNamesMin:['Κυ','Δε','Τρ','Τε','Πε','Πα','Σα'],weekHeader:'Εβδ',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['en-GB']={closeText:'Done',prevText:'Prev',nextText:'Next',currentText:'Today',monthNames:['January','February','March','April','May','June','July','August','September','October','November','December'],monthNamesShort:['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'],dayNames:['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'],dayNamesShort:['Sun','Mon','Tue','Wed','Thu','Fri','Sat'],dayNamesMin:['Su','Mo','Tu','We','Th','Fr','Sa'],weekHeader:'Wk',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['eo']={closeText:'Fermi',prevText:'<Anta',nextText:'Sekv>',currentText:'Nuna',monthNames:['Januaro','Februaro','Marto','Aprilo','Majo','Junio','Julio','Aŭgusto','Septembro','Oktobro','Novembro','Decembro'],monthNamesShort:['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aŭg','Sep','Okt','Nov','Dec'],dayNames:['Dimanĉo','Lundo','Mardo','Merkredo','Ĵaŭdo','Vendredo','Sabato'],dayNamesShort:['Dim','Lun','Mar','Mer','Ĵaŭ','Ven','Sab'],dayNamesMin:['Di','Lu','Ma','Me','Ĵa','Ve','Sa'],weekHeader:'Sb',dateFormat:'dd/mm/yy',firstDay:0,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['et']={closeText:'Sulge',prevText:'Eelnev',nextText:'Järgnev',currentText:'Täna',monthNames:['Jaanuar','Veebruar','Märts','Aprill','Mai','Juuni','Juuli','August','September','Oktoober','November','Detsember'],monthNamesShort:['Jaan','Veebr','Märts','Apr','Mai','Juuni','Juuli','Aug','Sept','Okt','Nov','Dets'],dayNames:['Pühapäev','Esmaspäev','Teisipäev','Kolmapäev','Neljapäev','Reede','Laupäev'],dayNamesShort:['Pühap','Esmasp','Teisip','Kolmap','Neljap','Reede','Laup'],dayNamesMin:['P','E','T','K','N','R','L'],weekHeader:'Sm',dateFormat:'dd.mm.yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['eu']={closeText:'Egina',prevText:'<Aur',nextText:'Hur>',currentText:'Gaur',monthNames:['Urtarrila','Otsaila','Martxoa','Apirila','Maiatza','Ekaina','Uztaila','Abuztua','Iraila','Urria','Azaroa','Abendua'],monthNamesShort:['Urt','Ots','Mar','Api','Mai','Eka','Uzt','Abu','Ira','Urr','Aza','Abe'],dayNames:['Igandea','Astelehena','Asteartea','Asteazkena','Osteguna','Ostirala','Larunbata'],dayNamesShort:['Iga','Ast','Ast','Ast','Ost','Ost','Lar'],dayNamesMin:['Ig','As','As','As','Os','Os','La'],weekHeader:'Wk',dateFormat:'yy/mm/dd',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['fa']={closeText:'بستن',prevText:'<قبلي',nextText:'بعدي>',currentText:'امروز',monthNames:['فروردين','ارديبهشت','خرداد','تير','مرداد','شهريور','مهر','آبان','آذر','دي','بهمن','اسفند'],monthNamesShort:['1','2','3','4','5','6','7','8','9','10','11','12'],dayNames:['يکشنبه','دوشنبه','سه‌شنبه','چهارشنبه','پنجشنبه','جمعه','شنبه'],dayNamesShort:['ي','د','س','چ','پ','ج','ش'],dayNamesMin:['ي','د','س','چ','پ','ج','ش'],weekHeader:'هف',dateFormat:'yy/mm/dd',firstDay:6,isRTL:true,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['fo']={closeText:'Lat aftur',prevText:'<Fyrra',nextText:'Næsta>',currentText:'Í dag',monthNames:['Januar','Februar','Mars','Apríl','Mei','Juni','Juli','August','September','Oktober','November','Desember'],monthNamesShort:['Jan','Feb','Mar','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Des'],dayNames:['Sunnudagur','Mánadagur','Týsdagur','Mikudagur','Hósdagur','Fríggjadagur','Leyardagur'],dayNamesShort:['Sun','Mán','Týs','Mik','Hós','Frí','Ley'],dayNamesMin:['Su','Má','Tý','Mi','Hó','Fr','Le'],weekHeader:'Vk',dateFormat:'dd-mm-yy',firstDay:0,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['fr-CH']={closeText:'Fermer',prevText:'<Préc',nextText:'Suiv>',currentText:'Courant',monthNames:['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],monthNamesShort:['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],dayNames:['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],dayNamesShort:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],dayNamesMin:['Di','Lu','Ma','Me','Je','Ve','Sa'],weekHeader:'Sm',dateFormat:'dd.mm.yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['fr']={closeText:'Fermer',prevText:'<Préc',nextText:'Suiv>',currentText:'Courant',monthNames:['Janvier','Février','Mars','Avril','Mai','Juin','Juillet','Août','Septembre','Octobre','Novembre','Décembre'],monthNamesShort:['Jan','Fév','Mar','Avr','Mai','Jun','Jul','Aoû','Sep','Oct','Nov','Déc'],dayNames:['Dimanche','Lundi','Mardi','Mercredi','Jeudi','Vendredi','Samedi'],dayNamesShort:['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'],dayNamesMin:['Di','Lu','Ma','Me','Je','Ve','Sa'],weekHeader:'Sm',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['he']={closeText:'סגור',prevText:'<הקודם',nextText:'הבא>',currentText:'היום',monthNames:['ינואר','פברואר','מרץ','אפריל','מאי','יוני','יולי','אוגוסט','ספטמבר','אוקטובר','נובמבר','דצמבר'],monthNamesShort:['1','2','3','4','5','6','7','8','9','10','11','12'],dayNames:['ראשון','שני','שלישי','רביעי','חמישי','שישי','שבת'],dayNamesShort:['א\'','ב\'','ג\'','ד\'','ה\'','ו\'','שבת'],dayNamesMin:['א\'','ב\'','ג\'','ד\'','ה\'','ו\'','שבת'],weekHeader:'Wk',dateFormat:'dd/mm/yy',firstDay:0,isRTL:true,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['hu']={closeText:'Kész',prevText:'Előző',nextText:'Következő',currentText:'Ma',monthNames:['január','február','március','április','május','június','július','augusztus','szeptember','október','november','cecember'],monthNamesShort:['jan','febr','márc','ápr','máj','jún','júl','aug','szept','okt','nov','dec'],dayNames:['vasárnap','hétfő','kedd','szerda','csütörtök','péntek','szombat'],dayNamesShort:['va','hé','k','sze','csü','pé','szo'],dayNamesMin:['v','h','k','sze','cs','p','szo'],weekHeader:'Wk',dateFormat:'yy.mm.dd.',firstDay:1,isRTL:false,showMonthAfterYear:true,yearSuffix:''};
+			$.datepicker.regional['hr']={closeText:'Zatvori',prevText:'<',nextText:'>',currentText:'Danas',monthNames:['Siječanj','Veljača','Ožujak','Travanj','Svibanj','Lipanj','Srpanj','Kolovoz','Rujan','Listopad','Studeni','Prosinac'],monthNamesShort:['Sij','Velj','Ožu','Tra','Svi','Lip','Srp','Kol','Ruj','Lis','Stu','Pro'],dayNames:['Nedjelja','Ponedjeljak','Utorak','Srijeda','Četvrtak','Petak','Subota'],dayNamesShort:['Ned','Pon','Uto','Sri','Čet','Pet','Sub'],dayNamesMin:['Ne','Po','Ut','Sr','Če','Pe','Su'],weekHeader:'Tje',dateFormat:'dd.mm.yy.',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['ja']={closeText:'閉じる',prevText:'<前',nextText:'次>',currentText:'今日',monthNames:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],monthNamesShort:['1月','2月','3月','4月','5月','6月','7月','8月','9月','10月','11月','12月'],dayNames:['日曜日','月曜日','火曜日','水曜日','木曜日','金曜日','土曜日'],dayNamesShort:['日','月','火','水','木','金','土'],dayNamesMin:['日','月','火','水','木','金','土'],weekHeader:'週',dateFormat:'yy/mm/dd',firstDay:0,isRTL:false,showMonthAfterYear:true,yearSuffix:'年'};
+			$.datepicker.regional['ro']={closeText:'Închide',prevText:'« Luna precedentă',nextText:'Luna următoare »',currentText:'Azi',monthNames:['Ianuarie','Februarie','Martie','Aprilie','Mai','Iunie','Iulie','August','Septembrie','Octombrie','Noiembrie','Decembrie'],monthNamesShort:['Ian','Feb','Mar','Apr','Mai','Iun','Iul','Aug','Sep','Oct','Nov','Dec'],dayNames:['Duminică','Luni','Marţi','Miercuri','Joi','Vineri','Sâmbătă'],dayNamesShort:['Dum','Lun','Mar','Mie','Joi','Vin','Sâm'],dayNamesMin:['Du','Lu','Ma','Mi','Jo','Vi','Sâ'],weekHeader:'Săpt',dateFormat:'dd.mm.yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['sk']={closeText: 'Zavrieť',prevText: '&#x3c;Predchádzajúci',nextText: 'Nasledujúci&#x3e;',currentText: 'Dnes',monthNames: ['Január','Február','Marec','Apríl','Máj','Jún','Júl','August','September','Október','November','December'],monthNamesShort: ['Jan','Feb','Mar','Apr','Máj','Jún','Júl','Aug','Sep','Okt','Nov','Dec'],dayNames: ['Nedel\'a','Pondelok','Utorok','Streda','Štvrtok','Piatok','Sobota'],dayNamesShort: ['Ned','Pon','Uto','Str','Štv','Pia','Sob'],dayNamesMin: ['Ne','Po','Ut','St','Št','Pia','So'],weekHeader: 'Ty',dateFormat: 'dd.mm.yy',firstDay: 1,isRTL: false,showMonthAfterYear: false,yearSuffix: ''};			
+			$.datepicker.regional['sq']={closeText:'mbylle',prevText:'<mbrapa',nextText:'Përpara>',currentText:'sot',monthNames:['Janar','Shkurt','Mars','Prill','Maj','Qershor','Korrik','Gusht','Shtator','Tetor','Nëntor','Dhjetor'],monthNamesShort:['Jan','Shk','Mar','Pri','Maj','Qer','Kor','Gus','Sht','Tet','Nën','Dhj'],dayNames:['E Diel','E Hënë','E Martë','E Mërkurë','E Enjte','E Premte','E Shtune'],dayNamesShort:['Di','Hë','Ma','Më','En','Pr','Sh'],dayNamesMin:['Di','Hë','Ma','Më','En','Pr','Sh'],weekHeader:'Ja',dateFormat:'dd.mm.yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['sr-SR']={closeText:'Zatvori',prevText:'<',nextText:'>',currentText:'Danas',monthNames:['Januar','Februar','Mart','April','Maj','Jun','Jul','Avgust','Septembar','Oktobar','Novembar','Decembar'],monthNamesShort:['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Avg','Sep','Okt','Nov','Dec'],dayNames:['Nedelja','Ponedeljak','Utorak','Sreda','Četvrtak','Petak','Subota'],dayNamesShort:['Ned','Pon','Uto','Sre','Čet','Pet','Sub'],dayNamesMin:['Ne','Po','Ut','Sr','Če','Pe','Su'],weekHeader:'Sed',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['sr']={closeText:'Затвори',prevText:'<',nextText:'>',currentText:'Данас',monthNames:['Јануар','Фебруар','Март','Април','Мај','Јун','Јул','Август','Септембар','Октобар','Новембар','Децембар'],monthNamesShort:['Јан','Феб','Мар','Апр','Мај','Јун','Јул','Авг','Сеп','Окт','Нов','Дец'],dayNames:['Недеља','Понедељак','Уторак','Среда','Четвртак','Петак','Субота'],dayNamesShort:['Нед','Пон','Уто','Сре','Чет','Пет','Суб'],dayNamesMin:['Не','По','Ут','Ср','Че','Пе','Су'],weekHeader:'Сед',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['sv']={closeText:'Stäng',prevText:'«Förra',nextText:'Nästa»',currentText:'Idag',monthNames:['Januari','Februari','Mars','April','Maj','Juni','Juli','Augusti','September','Oktober','November','December'],monthNamesShort:['Jan','Feb','Mar','Apr','Maj','Jun','Jul','Aug','Sep','Okt','Nov','Dec'],dayNamesShort:['Sön','Mån','Tis','Ons','Tor','Fre','Lör'],dayNames:['Söndag','Måndag','Tisdag','Onsdag','Torsdag','Fredag','Lördag'],dayNamesMin:['Sö','Må','Ti','On','To','Fr','Lö'],weekHeader:'Ve',dateFormat:'yy-mm-dd',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['ta']={closeText:'மூடு',prevText:'முன்னையது',nextText:'அடுத்தது',currentText:'இன்று',monthNames:['தை','மாசி','பங்குனி','சித்திரை','வைகாசி','ஆனி','ஆடி','ஆவணி','புரட்டாசி','ஐப்பசி','கார்த்திகை','மார்கழி'],monthNamesShort:['தை','மாசி','பங்','சித்','வைகா','ஆனி','ஆடி','ஆவ','புர','ஐப்','கார்','மார்'],dayNames:['ஞாயிற்றுக்கிழமை','திங்கட்கிழமை','செவ்வாய்க்கிழமை','புதன்கிழமை','வியாழக்கிழமை','வெள்ளிக்கிழமை','சனிக்கிழமை'],dayNamesShort:['ஞாயிறு','திங்கள்','செவ்வாய்','புதன்','வியாழன்','வெள்ளி','சனி'],dayNamesMin:['ஞா','தி','செ','பு','வி','வெ','ச'],weekHeader:'Не',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['th']={closeText:'ปิด',prevText:'« ย้อน',nextText:'ถัดไป »',currentText:'วันนี้',monthNames:['มกราคม','กุมภาพันธ์','มีนาคม','เมษายน','พฤษภาคม','มิถุนายน','กรกฏาคม','สิงหาคม','กันยายน','ตุลาคม','พฤศจิกายน','ธันวาคม'],monthNamesShort:['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'],dayNames:['อาทิตย์','จันทร์','อังคาร','พุธ','พฤหัสบดี','ศุกร์','เสาร์'],dayNamesShort:['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'],dayNamesMin:['อา.','จ.','อ.','พ.','พฤ.','ศ.','ส.'],weekHeader:'Wk',dateFormat:'dd/mm/yy',firstDay:0,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['vi']={closeText:'Đóng',prevText:'<Trước',nextText:'Tiếp>',currentText:'Hôm nay',monthNames:['Tháng Một','Tháng Hai','Tháng Ba','Tháng Tư','Tháng Năm','Tháng Sáu','Tháng Bảy','Tháng Tám','Tháng Chín','Tháng Mười','Tháng Mười Một','Tháng Mười Hai'],monthNamesShort:['Tháng 1','Tháng 2','Tháng 3','Tháng 4','Tháng 5','Tháng 6','Tháng 7','Tháng 8','Tháng 9','Tháng 10','Tháng 11','Tháng 12'],dayNames:['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'],dayNamesShort:['CN','T2','T3','T4','T5','T6','T7'],dayNamesMin:['CN','T2','T3','T4','T5','T6','T7'],weekHeader:'Tu',dateFormat:'dd/mm/yy',firstDay:0,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['zh-TW']={closeText:'關閉',prevText:'<上月',nextText:'下月>',currentText:'今天',monthNames:['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月'],monthNamesShort:['一','二','三','四','五','六','七','八','九','十','十一','十二'],dayNames:['星期日','星期一','星期二','星期三','星期四','星期五','星期六'],dayNamesShort:['周日','周一','周二','周三','周四','周五','周六'],dayNamesMin:['日','一','二','三','四','五','六'],weekHeader:'周',dateFormat:'yy/mm/dd',firstDay:1,isRTL:false,showMonthAfterYear:true,yearSuffix:'年'};
+			$.datepicker.regional['es']={closeText:'Cerrar',prevText:'<Ant',nextText:'Sig>',currentText:'Hoy',monthNames:['Enero','Febrero','Marzo','Abril','Mayo','Junio','Julio','Agosto','Septiembre','Octubre','Noviembre','Diciembre'],monthNamesShort:['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'],dayNames:['Domingo','Lunes','Martes','Miércoles','Jueves','Viernes','Sábado'],dayNamesShort:['Dom','Lun','Mar','Mié','Juv','Vie','Sáb'],dayNamesMin:['Do','Lu','Ma','Mi','Ju','Vi','Sá'],weekHeader:'Sm',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.regional['it']={closeText:'Fatto',prevText:'Precedente',nextText:'Prossimo',currentText:'Oggi',monthNames:['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'],monthNamesShort:['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'],dayNames:['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'],dayNamesShort:['Lun','Mar','Mer','Gio','Ven','Sab','Dom'],dayNamesMin:['Do','Lu','Ma','Me','Gi','Ve','Sa'],weekHeader:'Wk',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
+			$.datepicker.setDefaults($.datepicker.regional[EM.locale]);
+		}
+		//default picker vals
+		var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay };
+		//start date
+		var start_datepicker_vals = {
+			altField : "#em-date-start",
+			onSelect : function( selectedDate ) {
+				if( $("#em-date-start").val() > $("#em-date-end").val() ){
+					$("#em-date-end-loc").datepicker( "setDate" , selectedDate );
+				}
+				$("#em-date-end-loc").datepicker( "option", 'minDate', selectedDate );
+			} 
+		};
+		$.extend( start_datepicker_vals, datepicker_vals );
+		$("#em-date-start-loc").datepicker(start_datepicker_vals);
+
+		//end date
+		var end_datepicker_vals = { 
+			altField : "#em-date-end" 
+		};
+		if( $("#em-date-start").val() != '' ){
+			end_datepicker_vals.minDate = new Date($("#em-date-start").val());
+		}
+		$.extend( end_datepicker_vals, datepicker_vals );
+		$("#em-date-end-loc").datepicker(end_datepicker_vals);
+		
+		//localize start/end dates
+		if( $('#em-date-start').val() != '' ){
+			load_ui_css = true;
+			if( EM.locale != 'en' && $.datepicker.regional[EM.locale] != null ){
+				var date_dateFormat = $.datepicker.regional[EM.locale].dateFormat;
+			}else{
+				var date_dateFormat = $("#em-date-start-loc").datepicker('option', 'dateFormat');
+			}
+			var start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-date-start').val()) );
+			var end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-date-end').val()) );
+			$("#em-date-start-loc").val(start_date_formatted);
+			$("#em-date-end-loc").val(end_date_formatted);
+		}
+		
+		//for the tickets form too
+		$(".em-ticket-form, #em-tickets-form").each(function(i, el){
+			el = $(el);
+			start = el.find('.start-loc');
+			load_ui_css = true;
+			if( EM.locale != 'en' && $.datepicker.regional[EM.locale] != null ){
+				var date_dateFormat = $.datepicker.regional[EM.locale].dateFormat;
+			}else{
+				var date_dateFormat = start.first().datepicker('option', 'dateFormat');
+			}
+			if(start.length > 0){
+				load_ui_css = true;
+				datepicker_vals.altField = el.find('.start').first();
+				start.first().datepicker(datepicker_vals);
+				start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', datepicker_vals.altField.val()) );
+				el.find(".start-loc").val(start_date_formatted);
+			}
+			end = el.find('.end-loc');
+			if(end.length > 0){
+				load_ui_css = true;
+				datepicker_vals.altField = el.find('.end').first();
+				end.first().datepicker(datepicker_vals);
+				end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', datepicker_vals.altField.val()) );
+				el.find(".end-loc").first().val(end_date_formatted);
+			}
+		});
+	}
+	if( load_ui_css || $("#em-date-start-loc, #em-date-end-loc").length > 0 ){
+		$('ui-datepicker-div').css();
+		var script = document.createElement("link");
+		script.rel = "stylesheet";
+		script.href = EM.ui_css;
+		document.body.appendChild(script);
+	}
+	
+	//previously in em-admin.php
+	function updateIntervalDescriptor () { 
+		$(".interval-desc").hide();
+		var number = "-plural";
+		if ($('input#recurrence-interval').val() == 1 || $('input#recurrence-interval').val() == "")
+		number = "-singular";
+		var descriptor = "span#interval-"+$("select#recurrence-frequency").val()+number;
+		$(descriptor).show();
+	}
+	function updateIntervalSelectors () {
+		$('p.alternate-selector').hide();   
+		$('p#'+ $('select#recurrence-frequency').val() + "-selector").show();
+	}
+	function updateShowHideRecurrence () {
+		if( $('input#event-recurrence').attr("checked")) {
+			$("#event_recurrence_pattern").fadeIn();
+			$("#event-date-explanation").hide();
+			$("#recurrence-dates-explanation").show();
+			$("h3#recurrence-dates-title").show();
+			$("h3#event-date-title").hide();     
+		} else {
+			$("#event_recurrence_pattern").hide();
+			$("#recurrence-dates-explanation").hide();
+			$("#event-date-explanation").show();
+			$("h3#recurrence-dates-title").hide();
+			$("h3#event-date-title").show();   
+		}
+	}		 
+	$("#recurrence-dates-explanation").hide();
+	$("#date-to-submit").hide();
+	$("#end-date-to-submit").hide();
+	
+	$("#localised-date").show();
+	$("#localised-end-date").show();
+	
+	$('input.select-all').change(function(){
+	 	if($(this).is(':checked'))
+	 	$('input.row-selector').attr('checked', true);
+	 	else
+	 	$('input.row-selector').attr('checked', false);
+	}); 
+	
+	updateIntervalDescriptor(); 
+	updateIntervalSelectors();
+	updateShowHideRecurrence();
+	$('input#event-recurrence').change(updateShowHideRecurrence);
+	   
+	// recurrency elements   
+	$('input#recurrence-interval').keyup(updateIntervalDescriptor);
+	$('select#recurrence-frequency').change(updateIntervalDescriptor);
+	$('select#recurrence-frequency').change(updateIntervalSelectors);
+	
+	/* Useful function for adding the em_ajax flag to a url, regardless of querystring format */
+	var em_ajaxify = function(url){
+		if ( url.search('em_ajax=0') != -1){
+			url = url.replace('em_ajax=0','em_ajax=1');
+		}else if( url.search(/\?/) != -1 ){
+			url = url + "&em_ajax=1";
+		}else{
+			url = url + "?em_ajax=1";
+		}
+		return url;
+	}
+
+	/* Load any maps */	
+	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
+		var script = document.createElement("script");
+		script.type = "text/javascript";
+		script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.8&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
+		document.body.appendChild(script);
+	}
+	
+});
+
+//Location functions
+function em_location_input_ajax(){
+	//Location stuff - only needed if inputs for location exist
+	if( jQuery('select#location-select-id, input#location-address').length > 0 ){
+		
+		//load map info
+		var refresh_map_location = function(){
+			var location_latitude = jQuery('#location-latitude').val();
+			var location_longitude = jQuery('#location-longitude').val();
+			if( !(location_latitude == 0 && location_longitude == 0) ){
+				var position = new google.maps.LatLng(location_latitude, location_longitude); //the location coords
+				marker.setPosition(position);
+				var mapTitle = (jQuery('input#location-name').length > 0) ? jQuery('input#location-name').val():jQuery('input#title').val();
+				marker.setTitle( jQuery('input#location-name input#title, #location-select-id').first().val() );
+				jQuery('#em-map').show();
+				jQuery('#em-map-404').hide();
+				google.maps.event.trigger(map, 'resize');
+				map.setCenter(position);
+				map.panBy(40,-55);
+				infoWindow.setContent( 
+					'<div id="location-balloon-content"><strong>' + 
+					mapTitle + 
+					'</strong><br/>' + 
+					jQuery('#location-address').val() + 
+					'<br/>' + jQuery('#location-town').val()+ 
+					'</div>'
+				);
+				infoWindow.open(map, marker);
+			} else {
+    			jQuery('#em-map').hide();
+    			jQuery('#em-map-404').show();
+			}
+		}
+		
+		//Load map
+		if(jQuery('#em-map').length > 0){
+			var em_LatLng = new google.maps.LatLng(0, 0);
+			var map = new google.maps.Map( document.getElementById('em-map'), {
+			    zoom: 14,
+			    center: em_LatLng,
+			    mapTypeId: google.maps.MapTypeId.ROADMAP,
+			    mapTypeControl: false
+			});
+			var marker = new google.maps.Marker({
+			    position: em_LatLng,
+			    map: map,
+			    draggable: true
+			});
+			var infoWindow = new google.maps.InfoWindow({
+			    content: ''
+			});
+			var geocoder = new google.maps.Geocoder();
+			google.maps.event.addListener(infoWindow, 'domready', function() { 
+				document.getElementById('location-balloon-content').parentNode.style.overflow=''; 
+				document.getElementById('location-balloon-content').parentNode.parentNode.style.overflow=''; 
+			});
+			google.maps.event.addListener(marker, 'dragend', function() {
+				var position = marker.getPosition();
+				jQuery('#location-latitude').val(position.lat());
+				jQuery('#location-longitude').val(position.lng());
+				map.setCenter(position);
+				map.panBy(40,-55);
+			});
+		    refresh_map_location();
+		}
+		
+		//Add listeners for changes to address
+		var get_map_by_id = function(id){
+			if(jQuery('#em-map').length > 0){
+				jQuery.getJSON(document.URL,{ em_ajax_action:'get_location', id:id }, function(data){
+					if( data.location_latitude!=0 && data.location_longitude!=0 ){
+						loc_latlng = new google.maps.LatLng(data.location_latitude, data.location_longitude);
+						marker.setPosition(loc_latlng);
+						marker.setTitle( data.location_name );
+						jQuery('#em-map').show();
+						jQuery('#em-map-404').hide();
+						map.setCenter(loc_latlng);
+						map.panBy(40,-55);
+						infoWindow.setContent( '<div id="location-balloon-content">'+ data.location_balloon +'</div>');
+						infoWindow.open(map, marker);
+						google.maps.event.trigger(map, 'resize');
+					}else{
+						jQuery('#em-map').hide();
+						jQuery('#em-map-404').show();
+					}
+				});
+			}
+		}
+		jQuery('#location-select-id').change( function(){get_map_by_id(jQuery(this).val())} );
+		jQuery('#location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
+			//build address
+			var addresses = [ jQuery('#location-address').val(), jQuery('#location-town').val(), jQuery('#location-state').val(), jQuery('#location-postcode').val() ];
+			var address = '';
+			jQuery.each( addresses, function(i, val){
+				if( val != '' ){
+					address = ( address == '' ) ? address+val:address+', '+val;
+				}
+			});
+			//do country last, as it's using the text version
+			if( jQuery('#location-country option:selected').val() != 0 ){
+				address = ( address == '' ) ? address+jQuery('#location-country option:selected').text():address+', '+jQuery('#location-country option:selected').text();
+			}
+			if( address != '' && jQuery('#em-map').length > 0 ){
+				geocoder.geocode( { 'address': address }, function(results, status) {
+				    if (status == google.maps.GeocoderStatus.OK) {
+						jQuery('#location-latitude').val(results[0].geometry.location.lat());
+						jQuery('#location-longitude').val(results[0].geometry.location.lng());
+					}
+				    refresh_map_location();
+				});
+			}
+		});
+		
+		//Finally, add autocomplete here
+		//Autocomplete
+		if( jQuery( "#em-location-data input#location-name, " ).length > 0 ){
+			jQuery( "#em-location-data input#location-name" ).autocomplete({
+				source: EM.locationajaxurl,
+				minLength: 2,
+				focus: function( event, ui ){
+					jQuery("input#location-id" ).val( ui.item.value );
+					return false;
+				},			 
+				select: function( event, ui ){
+					jQuery("input#location-id" ).val(ui.item.id);
+					jQuery("input#location-name" ).val(ui.item.value);
+					jQuery('input#location-address').val(ui.item.address);
+					jQuery('input#location-town').val(ui.item.town);
+					jQuery('input#location-state').val(ui.item.state);
+					jQuery('input#location-region').val(ui.item.region);
+					jQuery('input#location-postcode').val(ui.item.postcode);
+					if( ui.item.country == '' ){
+						jQuery('select#location-country option:selected').removeAttr('selected');
+					}else{
+						jQuery('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
+					}
+					get_map_by_id(ui.item.id);
+					jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
+					jQuery('#em-location-data input#location-name').css('background-color','#fff');
+					jQuery('#em-location-reset').show();
+					return false;
+				}
+			}).data( "autocomplete" )._renderItem = function( ul, item ) {
+				html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
+				return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
+			};
+			jQuery('#em-location-reset').click( function(){
+				jQuery('#em-location-data input').css('background-color','#fff').val('');
+				jQuery('#em-location-data select').css('background-color','#fff');
+				jQuery('#em-location-data option:selected').removeAttr('selected');
+				jQuery('input#location-id').val('');
+				jQuery('#em-location-reset').hide();
+				marker.setPosition(new google.maps.LatLng(0, 0));
+				infoWindow.close();
+				jQuery('#em-map').hide();
+				jQuery('#em-map-404').show();
+				marker.setDraggable(true);
+				return false;
+			});
+			if( jQuery('input#location-id').val() != '0' && jQuery('input#location-id').val() != '' ){
+				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
+				jQuery('#em-location-data input#location-name').css('background-color','#fff');
+				jQuery('#em-location-reset').show();
+				marker.setDraggable(false);
+			}
+		}
+	}
+}
+
+/*
+ * MAP FUNCTIONS
+ */
+var maps = {};
+//Load single maps (each map is treated as a seperate map.
+function em_maps() {
+	//Find all the maps on this page
+	jQuery('.em-location-map').each( function(index){
+		el = jQuery(this);
+		var map_id = el.attr('id').replace('em-location-map-','');
+		em_LatLng = new google.maps.LatLng( jQuery('#em-location-map-coords-'+map_id+' .lat').text(), jQuery('#em-location-map-coords-'+map_id+' .lng').text());
+		maps[map_id] = new google.maps.Map( document.getElementById('em-location-map-'+map_id), {
+		    zoom: 14,
+		    center: em_LatLng,
+		    mapTypeId: google.maps.MapTypeId.ROADMAP,
+		    mapTypeControl: false
+		});
+		var marker = new google.maps.Marker({
+		    position: em_LatLng,
+		    map: maps[map_id]
+		});
+		var infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
+		infowindow.open(maps[map_id],marker);
+		maps[map_id].panBy(40,-70);
+		
+		//JS Hook for handling map after instantiation
+		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
+		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker]);
+	});
+	jQuery('.em-locations-map').each( function(index){
+		var el = jQuery(this);
+		var map_id = el.attr('id').replace('em-locations-map-','');
+		var em_data = jQuery.parseJSON( jQuery('#em-locations-map-coords-'+map_id).text() );
+		jQuery.getJSON(document.URL, em_data , function(data){
+			if(data.length > 0){
+				  var myLatlng = new google.maps.LatLng(data[0].location_latitude,data[0].location_longitude);
+				  var myOptions = {
+				    mapTypeId: google.maps.MapTypeId.ROADMAP
+				  };
+				  maps[map_id] = new google.maps.Map(document.getElementById("em-locations-map-"+map_id), myOptions);
+				  
+				  var minLatLngArr = [0,0];
+				  var maxLatLngArr = [0,0];
+				  
+				  for (var i = 0; i < data.length; i++) {
+					  if( !(data[i].location_latitude == 0 && data[i].location_longitude == 0) ){
+						var latitude = parseFloat( data[i].location_latitude );
+						var longitude = parseFloat( data[i].location_longitude );
+						var location = new google.maps.LatLng( latitude, longitude );
+						var marker = new google.maps.Marker({
+						    position: location, 
+						    map: maps[map_id]
+						});
+						marker.setTitle(data[i].location_name);
+						var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
+						em_map_infobox(marker, myContent, maps[map_id]);
+						
+						//Get min and max long/lats
+						minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
+						minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
+						maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
+						maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];
+					  }
+				  }
+				  // Zoom in to the bounds
+				  var minLatLng = new google.maps.LatLng(minLatLngArr[0],minLatLngArr[1]);
+				  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
+				  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
+				  maps[map_id].fitBounds(bounds);
+				//Call a hook if exists
+				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id]]);
+			}else{
+				el.children().first().html('No locations found');
+			}
+		});
+	});
+	em_location_input_ajax();
+}
+  
+function em_map_infobox(marker, message, map) {
+  var infowindow = new google.maps.InfoWindow({ content: message });
+  google.maps.event.addListener(marker, 'click', function() {
+    infowindow.open(map,marker);
+  });
+}
 
 /*
   * jQuery UI Datepicker 1.8.13
