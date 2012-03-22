@@ -257,7 +257,6 @@ class EM_Booking extends EM_Object{
 		}else{
 			$result = false;
 		}
-		
 		return apply_filters('em_booking_validate',$result,$this);
 	}
 	

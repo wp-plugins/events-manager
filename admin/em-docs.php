@@ -229,6 +229,7 @@ function em_docs_init($force_init = false){
 					'Booking Person Information' => array(
 						'desc' => 'When a specific booking is displayed (on screen and on email), you can use these placeholders to show specific information about the booking. Event and Location placeholders are also available in these cases.',
 						'placeholders' => array(
+							'#_BOOKINGID' => array( 'desc' => 'The unique ID of this booking, useful if you are making your own customizations to this plugin.' ),
 							'#_BOOKINGNAME' => array( 'desc' => 'Name of person who made the booking.' ),
 							'#_BOOKINGEMAIL' => array( 'desc' => 'Email of person who made the booking.' ),
 							'#_BOOKINGPHONE' => array( 'desc' => 'Phone number of person who made the booking.' ),
