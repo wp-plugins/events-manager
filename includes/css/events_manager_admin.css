@@ -105,7 +105,8 @@ table.events-table .category { color:#888; }
 		.em-bookings-table .em-bookings-table-export { background:url(../images/csv.png) 0px 0px no-repeat; }
 		.em-bookings-table .em-bookings-table-settings { background:url(../images/settings.png) 0px 0px no-repeat; }
 		/* Settings & Export */	
-			#em-bookings-table-export, #em-bookings-table-settings { width:500px; }
+			#em-bookings-table-export, #em-bookings-table-settings { width:500px; height: 75%; }
+			#em-bookings-table-export form, #em-bookings-table-settings form { height: 100%; overflow:auto; }	
 			/* Sorting */
 				.em-bookings-table ul.em-bookings-cols-sortable { list-style-type: none; margin: 0; padding: 0 0 10px; float: left; margin-right: 10px; }
 				.em-bookings-table ul.em-bookings-cols-sortable li { margin: 0 5px 5px 5px; padding: 3px 8px; font-size: 12px; width: 120px; font-weight:none; cursor:move; }
