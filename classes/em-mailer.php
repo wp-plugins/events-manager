@@ -19,8 +19,36 @@ class EM_Mailer {
 	function send($subject="no title",$body="No message specified", $receiver='') {
 		//TODO add an EM_Error global object, for this sort of error reporting. (@marcus like StatusNotice)
 		global $smtpsettings, $phpmailer, $cformsSettings;
-	
-		if( preg_match('/^[_.0-9a-z-]+@([0-9a-z][0-9a-z-]+.)+[a-z]{2,3}$/i', $receiver) ){
+		if( is_array($receiver) ){
+			$receiver_emails = array();
+			foreach($receiver as $receiver_email){
+				$receiver_emails[] = is_email($receiver_email);
+			}
+			$emails_ok = !in_array(false, $receiver_emails);
+		}else{
+			$emails_ok = is_email($receiver);
+		}
+		if ( $emails_ok && get_option('dbem_rsvp_mail_send_method') == 'wp_mail' ){
+			$send = wp_mail($receiver, $subject, $body);
+			if(!$send){
+				global $phpmailer;
+				$this->errors[] = $phpmailer->ErrorInfo;
+			}
+			return $send;
+		}elseif ( $emails_ok && get_option('dbem_rsvp_mail_send_method') == 'mail' ){
+			if(is_array($receiver)){
+				$receiver = implode(', ', $receiver);
+			}
+			$from = get_option('dbem_mail_sender_address');
+			if( get_option('dbem_mail_sender_name') ){
+				$from = 'From: '.get_option('dbem_mail_sender_name').' <'.$from.'>';
+			}
+			$send = mail($receiver, $subject, $body, $from);
+			if(!$send){
+				$this->errors = __('Could not send email.', 'dbem');
+			}
+			return $send;
+		}elseif( $emails_ok ){
 			$this->load_phpmailer();
 			$mail = new EM_PHPMailer();
 			//$mail->SMTPDebug = true;
@@ -41,30 +69,27 @@ class EM_Mailer {
 			$mail->FromName = get_option('dbem_mail_sender_name'); // This is the from name in the email, you can put anything you like here
 			$mail->Body = $body;
 			$mail->Subject = $subject;  
-			$mail->AddAddress($receiver);  
-		
-			//Protocols
-			if ( get_option('dbem_rsvp_mail_send_method') == 'wp_mail' ){
-				$mail->Mailer = 'wp_mail';
-				$send = wp_mail($receiver, $subject, $body);
-				if(!$send){
-					global $phpmailer;
-					$this->errors[] = $phpmailer->ErrorInfo;
+			if(is_array($receiver)){
+				foreach($receiver as $receiver_email){
+					$mail->AddAddress($receiver_email);	
 				}
 			}else{
-			 	if( get_option('dbem_rsvp_mail_send_method') == 'qmail' ){       
-					$mail->IsQmail();
-				}else {
-					$mail->Mailer = get_option('dbem_rsvp_mail_send_method');
-				}                     
-				if(get_option('dbem_rsvp_mail_SMTPAuth') == '1'){
-					$mail->SMTPAuth = TRUE;
-			 	}
-			 	$send = $mail->Send();
-				if(!$send){
-					$this->errors[] = $mail->ErrorInfo;
-				}  
-			}		
+				$mail->AddAddress($receiver);	
+			}
+		
+			//Protocols
+		 	if( get_option('dbem_rsvp_mail_send_method') == 'qmail' ){       
+				$mail->IsQmail();
+			}else {
+				$mail->Mailer = get_option('dbem_rsvp_mail_send_method');
+			}                     
+			if(get_option('dbem_rsvp_mail_SMTPAuth') == '1'){
+				$mail->SMTPAuth = TRUE;
+		 	}
+		 	$send = $mail->Send();
+			if(!$send){
+				$this->errors[] = $mail->ErrorInfo;
+			}
 			return $send;
 		}else{
 			$this->errors = __('Please supply a valid email format.', 'dbem');
