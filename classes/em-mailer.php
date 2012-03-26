@@ -29,7 +29,12 @@ class EM_Mailer {
 			$emails_ok = is_email($receiver);
 		}
 		if ( $emails_ok && get_option('dbem_rsvp_mail_send_method') == 'wp_mail' ){
-			$send = wp_mail($receiver, $subject, $body);
+			$from = get_option('dbem_mail_sender_address');
+			$headers = get_option('dbem_mail_sender_name') ? 'From: '.get_option('dbem_mail_sender_name').' <'.$from.'>':'From: '.$from;
+			if( get_option('dbem_smtp_html') ){ //create filter to change content type to html in wp_mail
+				add_filter('wp_mail_content_type',create_function('', 'return "text/html";'));
+			}
+			$send = wp_mail($receiver, $subject, $body, $headers);
 			if(!$send){
 				global $phpmailer;
 				$this->errors[] = $phpmailer->ErrorInfo;
@@ -39,11 +44,14 @@ class EM_Mailer {
 			if(is_array($receiver)){
 				$receiver = implode(', ', $receiver);
 			}
-			$from = get_option('dbem_mail_sender_address');
-			if( get_option('dbem_mail_sender_name') ){
-				$from = 'From: '.get_option('dbem_mail_sender_name').' <'.$from.'>';
+			$headers = '';
+			if( get_option('dbem_smtp_html') ){
+				$headers  = 'MIME-Version: 1.0' . "\r\n";
+				$headers .= 'Content-type: text/html; charset=iso-8859-1' . "\r\n";
 			}
-			$send = mail($receiver, $subject, $body, $from);
+			$from = get_option('dbem_mail_sender_address');
+			$headers .= get_option('dbem_mail_sender_name') ? 'From: '.get_option('dbem_mail_sender_name').' <'.$from.'>':'From: '.$from;
+			$send = mail($receiver, $subject, $body, $headers);
 			if(!$send){
 				$this->errors = __('Could not send email.', 'dbem');
 			}

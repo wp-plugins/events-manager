@@ -1377,6 +1377,11 @@ class EM_Event extends EM_Object{
 					$template = em_locate_template('placeholders/attendees.php', true, array('EM_Event'=>$this));
 					$replace = ob_get_clean();
 					break;
+				case '#_ATTENDEESLIST':
+					ob_start();
+					$template = em_locate_template('placeholders/attendeeslist.php', true, array('EM_Event'=>$this));
+					$replace = ob_get_clean();
+					break;
 				//Categories and Tags
 				case '#_CATEGORIES': //depreciated
 				case '#_EVENTCATEGORIES':
