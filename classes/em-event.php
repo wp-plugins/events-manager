@@ -1266,15 +1266,17 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_EVENTPRICERANGE':
 					//get the range of prices
-					$min = $max = 0;
+					$min = false;
+					$max = 0;
 					foreach( $this->get_tickets()->tickets as $EM_Ticket ){
 						if($EM_Ticket->get_price() > $max ){
 							$max = $EM_Ticket->get_price();
 						}
-						if($EM_Ticket->get_price() < $min ){
+						if($EM_Ticket->get_price() < $min || $min === false){
 							$min = $EM_Ticket->get_price();
 						}						
 					}
+					if( $min === false ) $min = 0;
 					if( $min != $max ){
 						$replace = em_get_currency_formatted($min).' - '.em_get_currency_formatted($max);
 					}else{
@@ -1283,12 +1285,13 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_EVENTPRICEMIN':
 					//get the range of prices
-					$min = 0;
+					$min = false;
 					foreach( $this->get_tickets()->tickets as $EM_Ticket ){
-						if( $EM_Ticket->get_price() < $min ){
+						if( $EM_Ticket->get_price() < $min || $min === false){
 							$min = $EM_Ticket->get_price();
-						}						
+						}
 					}
+					if( $min === false ) $min = 0;
 					$replace = em_get_currency_formatted($min);
 					break;
 				case '#_EVENTPRICEMAX':

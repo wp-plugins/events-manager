@@ -98,6 +98,14 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+
+= 5.1.4.1 =
+* fixed wp rewrite issue when assigned events page slug = events slug
+* fixed minimum ticket price placheholder problems
+* added dev version auto-updater
+* improved performance in events with booking widget listings
+* improved performance in date range searches (e.g. calendar)
+
 = 5.1.4 =
 * pinpoint your location with dragable map markers!
 * sortable booking table collumns and additional collumns
