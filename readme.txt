@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.3.1
-Stable tag: 5.1.4
+Stable tag: 5.1.4.1
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -105,6 +105,10 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added dev version auto-updater
 * improved performance in events with booking widget listings
 * improved performance in date range searches (e.g. calendar)
+* reverted to using .delegate() instead of jQuery 1.7+ .on() listener for compatibility
+* slightly improved mail options logic and layout (plus php mail can send html emails now)
+* fixed buddypress conflict if groups component is disabled
+* fixed event spaces not overriding displayed values in booking stats pages
 
 = 5.1.4 =
 * pinpoint your location with dragable map markers!

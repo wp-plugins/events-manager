@@ -26,10 +26,12 @@ class BP_EM_Component extends BP_Component {
 			'buddypress/screens/my-locations.php',
 			'buddypress/screens/attending.php',
 			'buddypress/screens/my-bookings.php',
-			'buddypress/screens/my-group-events.php',
-			'buddypress/screens/group-events.php',
-			'buddypress/bp-em-groups.php'
+			'buddypress/screens/my-group-events.php'
 		);
+		if( bp_is_active('groups') ){
+			$includes[] = 'buddypress/screens/group-events.php';
+			$includes[] = 'buddypress/bp-em-groups.php';
+		}
 		parent::includes( $includes );
 		//TODO add admin pages for extra BP specific settings
 	}
