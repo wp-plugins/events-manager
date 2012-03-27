@@ -158,6 +158,8 @@ function em_get_countries($add_blank = false){
 		$lang = substr(get_locale(), 0, 2);
 		if( array_key_exists($lang, $em_countries_array_i18n) ){
 			$em_countries_array = $em_countries_array_i18n[$lang];
+		}else{
+			$em_countries_array = $em_countries_array_i18n['en'];
 		}
 	}
 	if($add_blank !== false){
