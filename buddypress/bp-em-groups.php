@@ -18,6 +18,7 @@ function bp_em_group_event_save($result, $EM_Event){
 					global $wpdb;
 					$EM_Event->event_private = 1;
 					$wpdb->update($wpdb->posts, array('post_status'=>'private'), array('ID'=>$EM_Event->post_id));
+					$wpdb->update(EM_EVENTS_TABLE, array('event_private'=>1), array('event_id'=>$EM_Event->event_id));
 				}
 			}
 		}else{

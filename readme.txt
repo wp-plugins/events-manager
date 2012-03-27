@@ -99,7 +99,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 
 == Changelog ==
 
-= 5.1.4.2 =
+= 5.1.4.3 =
 * fixed bp group hidden events not going private
 
 = 5.1.4.1 =
