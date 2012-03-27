@@ -193,9 +193,8 @@ function em_docs_init($force_init = false){
 							'#_LOCATIONEXCERPT' => array( 'desc' => 'If you added a <a href="http://en.support.wordpress.com/splitting-content/more-tag/">more tag</a> to your location description, only the content before this tag will show (currently, no read more link is added).' ),
 							'#_LOCATIONIMAGE' => array( 'desc' => 'Shows the location image.' ),
 							'#_LOCATIONIMAGE{x,y}' => array( 'desc' => 'Shows the location image thumbnail, x and y are width and height respectively, both being numbers e.g. <code>#_LOCATIONIMAGE{100,100}</code>' ),
-							'#_LOCATIONIMAGEURL' => array( 'desc' => 'Shows the cattegory image url, if available.' ),
+							'#_LOCATIONIMAGEURL' => array( 'desc' => 'Shows the location image url, if available.' ),
 							'#_LOCATIONFULLLINE' => array( 'desc' => 'Shows a comma-seperated line of location information, ommitting blanks (format of address, town, state, postcode, region' ),
-							'#_LOCATIONFULLBR' => array( 'desc' => 'Shows the cattegory image url, if available.' ),
 							'#_LOCATIONFULLBR' => array( 'desc' => 'Shows a line-break (br tag) seperated location information, ommitting blanks (format of address, town, state, postcode, region' ),
 						)
 					),

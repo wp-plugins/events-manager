@@ -99,6 +99,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 
 == Changelog ==
 
+= 5.1.4.2 =
+* fixed bp group hidden events not going private
+
 = 5.1.4.1 =
 * fixed wp rewrite issue when assigned events page slug = events slug
 * fixed minimum ticket price placheholder problems

@@ -13,7 +13,7 @@ function bp_em_group_event_save($result, $EM_Event){
 				//if group is private, make it private
 				$group = groups_get_group(array('group_id'=>$EM_Event->group_id));
 				$is_member = groups_is_user_member(get_current_user_id(), $EM_Event->group_id) || groups_is_user_admin(get_current_user_id(), $EM_Event->group_id) || groups_is_user_mod(get_current_user_id(), $EM_Event->group_id);
-				if( $group->status != 'public' && $EM_Event->post_status == "publish" && $is_member ){
+				if( $group->status != 'public' && $is_member ){
 					//Make sure event status is private and set post status to private
 					global $wpdb;
 					$EM_Event->event_private = 1;
