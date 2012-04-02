@@ -447,7 +447,7 @@ function em_init_actions() {
 		}elseif( $_REQUEST['action'] == 'booking_resend_email' ){
 			em_verify_nonce('booking_resend_email_'.$EM_Booking->booking_id);
 			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') ){
-				if( $EM_Booking->email(false) ){
+				if( $EM_Booking->email(false, true) ){
 					$EM_Notices->add_confirm( __('Mail Sent.','dbem'), true );
 					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
 					wp_redirect( $redirect );
@@ -455,7 +455,7 @@ function em_init_actions() {
 				}else{
 					$result = false;
 					$EM_Notices->add_error( __('ERROR : Mail Not Sent.','dbem') );			
-					$feedback = $EM_Booking->feedback_message;	
+					$feedback = $EM_Booking->feedback_message;
 				}	
 			}
 		}

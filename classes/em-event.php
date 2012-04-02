@@ -1425,7 +1425,7 @@ class EM_Event extends EM_Object{
 					if( $result == '#_EVENTGCALLINK' ){
 						$img_url = 'www.google.com/calendar/images/ext/gc_button2.gif';
 						$img_url = is_ssl() ? 'https://'.$img_url:'http://'.$img_url;
-						$replace = '<a href="'.$replace.'" target="_blank"><img src="'.$img_url.'" alt="0" border="0"></a>';
+						$replace = '<a href="'.esc_url($replace).'" target="_blank"><img src="'.esc_url($img_url).'" alt="0" border="0"></a>';
 					}
 					break;
 				default:

@@ -132,11 +132,12 @@ class EM_Ticket_Booking extends EM_Object{
 		if( $force_refresh || $this->ticket_booking_price == 0 || $add_tax !== 'x' || get_option('dbem_bookings_tax_auto_add') ){
 			//get the ticket, calculate price on spaces
 			$this->ticket_booking_price = round($this->get_ticket()->get_price(false, $add_tax) * $this->ticket_booking_spaces, 2);
+			$this->ticket_booking_price = apply_filters('em_ticket_booking_get_price', $this->ticket_booking_price, $this, $add_tax);
 		}
 		if($format){
-			return apply_filters('em_booking_get_prices', em_get_currency_formatted($this->ticket_booking_price), $this);
+			return em_get_currency_formatted($this->ticket_booking_price);
 		}
-		return apply_filters('em_booking_get_prices',$this->ticket_booking_price,$this);
+		return $this->ticket_booking_price;
 	}
 	
 	/**

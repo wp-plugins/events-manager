@@ -517,7 +517,7 @@ class EM_Bookings_Table{
 					$cols[] = '<a href="'.$EM_Booking->get_event()->get_bookings_url().'">'. $this->events[$EM_Booking->event_id]->name .'</a>';
 				}
 			}elseif($col == 'booking_price'){
-				$cols[] = ($this->show_tickets && !empty($EM_Ticket)) ? $EM_Ticket_Booking->get_price(false,true):$EM_Booking->get_price(false,true);
+				$cols[] = ($this->show_tickets && !empty($EM_Ticket)) ? $EM_Ticket_Booking->get_price(false,true,true):$EM_Booking->get_price(false,true,true);
 			}elseif($col == 'booking_status'){
 				$cols[] = $EM_Booking->get_status(true);
 			}elseif($col == 'booking_date'){

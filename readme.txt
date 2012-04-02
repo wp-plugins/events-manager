@@ -99,6 +99,15 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 
 == Changelog ==
 
+= 5.1.4.4 =
+* rewritten booking email function, simpler, less error-prone, overriedable same effect
+* fixed tax not showing on booking table totals
+* fixed booking objects get_price filters, removed em_booking_get_prices from em-ticket-booking.php in place of em_ticket_booking_get_price
+* changed filter name em_tickets_bookings_get_prices to em_tickets_bookings_get_price (bad name according to convention)
+* admin email can be sent to multiple emails (comma delimited in settings)
+* added booking status message filter
+* fixed ical not working in non-permalinks mode ( must have /?ical=1 at end of homt url )
+
 = 5.1.4.3 =
 * fixed bp group hidden events not going private
 * fixed countries list not working for certain langauges

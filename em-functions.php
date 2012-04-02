@@ -434,7 +434,7 @@ function em_checkbox_items($name, $array, $saved_values, $horizontal = true) {
 		$checked = "";
 		if (in_array($key, $saved_values))
 			$checked = "checked='checked'";
-		$output .=  "<input type='checkbox' name='".esc_attr($name)."' value='".esc_attr($key)."' $checked /> ".esc_html($item);
+		$output .=  "<input type='checkbox' name='".esc_attr($name)."' value='".esc_attr($key)."' $checked /> ".esc_html($item)."&nbsp; ";
 		if(!$horizontal)
 			$output .= "<br/>\n";
 	}

@@ -5,7 +5,7 @@
 	function em_ical( $regenerate = false ){
 		//check if this is a calendar request for all events
 		$cal_file_request = preg_match('/events.ics$/', $_SERVER['REQUEST_URI']); //are we askig for the ics file directly but doesn't exist?
-		if ( $cal_file_request || $regenerate ) {
+		if ( $cal_file_request || $_SERVER['REQUEST_URI'] == '/?ical=1' || $regenerate ) {
 			$calendar = em_ical_events();
 			//let's create a cache file
 			/*
