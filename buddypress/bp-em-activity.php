@@ -48,6 +48,7 @@ function bp_em_record_activity_event_save( $result, $EM_Event ){
 				'primary_link' => $EM_Event->output('#_EVENTURL'),
 				'type' => 'new_event',
 				'item_id' => $EM_Event->event_id,
+				'hide_sitewide' => $EM_Event->event_private
 			));
 		}else{
 			//tis a group event
@@ -58,6 +59,7 @@ function bp_em_record_activity_event_save( $result, $EM_Event ){
 				'component' => 'groups',
 				'type' => 'new_event',
 				'item_id' => $EM_Event->group_id,
+				'hide_sitewide' => $EM_Event->event_private
 			));
 		}
 	}
@@ -102,7 +104,8 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 				'primary_link' => $EM_Event->output('#_EVENTURL'),
 				'type' => 'new_booking',
 				'item_id' => $EM_Event->event_id,
-				'secondary_item_id' => $EM_Booking->booking_id
+				'secondary_item_id' => $EM_Booking->booking_id,
+				'hide_sitewide' => $EM_Event->event_private
 			));
 			//group activity
 			if( !empty($EM_Event->group_id) ){
@@ -114,13 +117,14 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 					'action' => $action,
 					'primary_link' => $EM_Event->output('#_EVENTURL'),
 					'type' => 'new_booking',
-					'secondary_item_id' => $EM_Booking->booking_id
+					'secondary_item_id' => $EM_Booking->booking_id,
+					'hide_sitewide' => $EM_Event->event_private
 				));
 			}
 		}
 	}
 	return $result;
 }
-add_filter('em_booking_set_status','bp_em_record_activity_booking_save', 10, 2);
-add_filter('em_booking_save','bp_em_record_activity_booking_save', 10, 2);
-add_filter('em_booking_delete','bp_em_record_activity_booking_save', 10, 2);
+add_filter('em_booking_set_status','bp_em_record_activity_booking_save', 100, 2);
+add_filter('em_booking_save','bp_em_record_activity_booking_save', 100, 2);
+add_filter('em_booking_delete','bp_em_record_activity_booking_save', 100, 2);

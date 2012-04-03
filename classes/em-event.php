@@ -955,7 +955,11 @@ class EM_Event extends EM_Object{
 			$my_bookings_page = get_permalink(get_option('dbem_edit_bookings_page'));
 			$bookings_link = em_add_get_params($my_bookings_page, array('event_id'=>$this->event_id), false);
 		}else{
-			$bookings_link = EM_ADMIN_URL ."&page=events-manager-bookings&event_id=".$this->event_id;
+			if( $this->blog_id != get_current_blog_id() ){
+				$bookings_link = get_admin_url($this->blog_id, 'edit.php?post_type='.EM_POST_TYPE_EVENT."&page=events-manager-bookings&event_id=".$this->event_id);
+			}else{
+				$bookings_link = EM_ADMIN_URL. "&page=events-manager-bookings&event_id=".$this->event_id;
+			}
 		}
 		return apply_filters('em_event_get_bookings_url', $bookings_link, $this);
 	}

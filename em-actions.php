@@ -271,6 +271,7 @@ function em_init_actions() {
 						}elseif( !is_user_logged_in() && get_option('dbem_bookings_registration_disable') ){
 							//Validate name, phone and email
 							$user_data = array();
+							if( empty($EM_Booking->booking_meta['registration']) ) $EM_Booking->booking_meta['registration'] = array();
 							// Check the e-mail address
 							if ( $_REQUEST['user_email'] == '' ) {
 								$registration = false;
