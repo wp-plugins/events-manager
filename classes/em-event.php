@@ -1393,6 +1393,11 @@ class EM_Event extends EM_Object{
 					$template = em_locate_template('placeholders/categories.php', true, array('EM_Event'=>$this));
 					$replace = ob_get_clean();
 					break;
+				case '#_EVENTCATEGORIESIMAGES':
+					ob_start();
+					$template = em_locate_template('placeholders/eventcategoriesimages.php', true, array('EM_Event'=>$this));
+					$replace = ob_get_clean();
+					break;
 				case '#_EVENTTAGS':
 					ob_start();
 					$template = em_locate_template('placeholders/eventtags.php', true, array('EM_Event'=>$this));

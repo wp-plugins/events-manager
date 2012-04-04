@@ -231,7 +231,7 @@ function em_updates_check( $transient ) {
     //only bother if we're checking for dev versions
     if( get_option('em_check_dev_version') || get_option('dbem_pro_dev_updates') ){     
 	    //check WP repo for trunk version
-	    $request = substr(file_get_contents('http://plugins.svn.wordpress.org/events-manager/trunk/events-manager.php'),0, 200);
+	    $request = wp_remote_get('http://plugins.svn.wordpress.org/events-manager/trunk/events-manager.php');
 	    
 	    preg_match('/Version: ([0-9a-z\.]+)/', $request, $matches);
 	    

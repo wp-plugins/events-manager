@@ -108,8 +108,10 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added booking status message filter
 * fixed ical not working in non-permalinks mode ( must have /?ical=1 at end of homt url )
 * removed original CSV export link in place of booking table exporter, unless users made a custom template
-* BuddyPress private group or normal private event info are now not shown in site activity. 
+* BuddyPress private group or normal private event info are now not shown in site activity.
 * fixed some php warnings
+* fixed certain languages breaking date formats
+* added #_EVENTCATEGORIESIMAGES
 
 = 5.1.4.3 =
 * fixed bp group hidden events not going private

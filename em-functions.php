@@ -230,7 +230,7 @@ function em_get_hour_format(){
 function em_get_date_format(){
 	global $localised_date_formats;
 	$locale_code = substr ( get_locale (), 0, 2 );
-	$localised_date_format = $localised_date_formats[$locale_code];
+	$localised_date_format = !empty($localised_date_formats[$locale_code]) ? $localised_date_formats[$locale_code]:$localised_date_formats['en'];
 	return $localised_date_format;
 }
 

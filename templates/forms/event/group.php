@@ -10,7 +10,7 @@ foreach( $group_data['groups'] as $group_id ){
 if( count($user_groups) > 0 ){ 
 	?>
 	<select name="group_id">
-		<option value="<?php echo $BP_Group->id; ?>">Not a Group Event</option>
+		<option value="<?php echo $BP_Group->id; ?>"><?php _e('Not a Group Event', 'dbem'); ?></option>
 	<?php
 	foreach($user_groups as $BP_Group){
 		?>

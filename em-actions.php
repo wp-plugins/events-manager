@@ -606,11 +606,12 @@ function em_init_actions() {
 		$show_tickets = !empty($_REQUEST['show_tickets']);
 		$EM_Bookings_Table = new EM_Bookings_Table($show_tickets);
 		$EM_Bookings_Table->limit = 0;
-		header("Content-Type: application/octet-stream");
+		header("Content-Type: application/octet-stream; charset=utf-8");
 		header("Content-Disposition: Attachment; filename=".sanitize_title(get_bloginfo())."-bookings-export.csv");
 		echo sprintf(__('Exported booking on %s','dbem'), date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
 		echo '"'. implode('","', $EM_Bookings_Table->get_headers(true)). '"' .  "\n";
 		//Rows
+		$handle = fopen("php://output", "w");
 		foreach( $EM_Bookings_Table->get_bookings() as $EM_Booking ) {
 			//Display all values
 			/* @var $EM_Booking EM_Booking */
@@ -618,23 +619,14 @@ function em_init_actions() {
 			if( $show_tickets ){
 				foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){
 					$row = $EM_Bookings_Table->get_row_csv($EM_Ticket_Booking);
-					foreach( $row as $value){
-						$value = str_replace('"', '""', $value);
-						$value = str_replace("=", "", $value);
-						echo '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
-					}
-					echo "\n";
+					fputcsv($handle, $row);
 				}
 			}else{
 				$row = $EM_Bookings_Table->get_row_csv($EM_Booking);
-				foreach( $row as $value){
-					$value = str_replace('"', '""', $value);
-					$value = str_replace("=", "", $value);
-					echo '"' .  preg_replace("/\n\r|\r\n|\n|\r/", ".     ", $value) . '",';
-				}
-				echo "\n";
+				fputcsv($handle, $row);
 			}
 		}
+		fclose($handle);
 		exit();
 	}
 }  
