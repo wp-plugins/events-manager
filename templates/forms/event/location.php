@@ -22,7 +22,7 @@ $required = "<i>*</i>";
 </div>
 <?php endif; ?>
 <div id="em-location-data">
-	<?php if( get_option('dbem_use_select_for_locations')) : ?> 
+	<?php if( get_option('dbem_use_select_for_locations') || !$EM_Event->can_manage('edit_locations','edit_others_locations') ) : ?> 
 	<table class="em-location-data">
 		<tr>
 			<th><?php _e('Location:','dbem') ?> </th>

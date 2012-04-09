@@ -91,6 +91,24 @@ table.events-table .category { color:#888; }
 			.em-ticket-form div.description { margin-top:9px;}
 			.em-ticket-form textarea { width:100%; margin-top:7px; }
 
+/* Booking Form */
+	div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80)}
+	#em-booking { margin:15px 0px 10px 0px; position:relative; }
+	#em-booking-form  { position:relative; clear:left; }
+	.em-booking-form-details  { padding:10px; width:360px; float:left; }  
+	.em-booking-form-details input.input, .em-booking-form-details textarea { width:250px; }
+	.em-booking-form-details p { clear:left; }
+	.em-booking-form-details label { display:block; float:left; }
+	.em-booking-form-details span.input-group input { margin-left:-20px; }
+	.em-booking-form-details span.input-group { display:block; margin-left:120px; }
+	.em-booking-form-details .em-booking-submit { width:auto; }	
+	#em-booking-form label  { display:inline-block; width:100px; }
+	/* Message Errors */
+		div.em-booking-message { margin:10px 0px; padding:10px; color:#333; border-radius:3px; }
+		div.em-booking-message p { margin:10px 0px !important; padding:0px; color:#333; }
+		div.em-booking-message-success { background-color:#f1fff0; border:1px solid #a8d144; }	
+		div.em-booking-message-error { background-color:#FFEBE8; border:1px solid #C00; }
+		
 /* Booking admin area */
 #em-booking-details .inside { padding:5px 10px; }
 .stuffbox .inside h4 { font-size:16px; font-weight:normal; margin:10px 0px 20px; font-weight:bold; }

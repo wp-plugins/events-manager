@@ -73,13 +73,6 @@ function em_admin_menu(){
 			}
 		}
 	}
-	if( !empty($_REQUEST['page']) && 'events-manager-options' == $_REQUEST['page'] && get_option('dbem_pro_dev_updates') == 1 ){
-		?>
-		<div id="message" class="updated">
-			<p><?php echo sprintf(__('Dev Mode active: Just a friendly reminder that you are updating to development versions. Only admins see this message, and it will go away when you disable this <a href="#pro-api">here</a> in your settings.','em-pro'),'<code>define(\'EMP_DEV_UPDATES\',true);</code>'); ?></p>
-		</div>
-		<?php
-	}
 	/* Hack! Add location/recurrence isn't possible atm so this is a workaround */
 	global $_wp_submenu_nopriv;
 	if( $pagenow == 'post-new.php' && !empty($_REQUEST['post_type']) ){
@@ -180,6 +173,13 @@ function em_admin_warnings() {
 				<?php
 			}
 		}
+		if( !empty($_REQUEST['page']) && 'events-manager-options' == $_REQUEST['page'] && get_option('dbem_pro_dev_updates') == 1 ){
+			?>
+			<div id="message" class="updated">
+				<p><?php echo sprintf(__('Dev Mode active: Just a friendly reminder that you are updating to development versions. Only admins see this message, and it will go away when you disable this <a href="#pro-api">here</a> in your settings.','em-pro'),'<code>define(\'EMP_DEV_UPDATES\',true);</code>'); ?></p>
+			</div>
+			<?php
+		}
 	}
 	//Warn about EM page edit
 	if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {
@@ -233,7 +233,7 @@ function em_updates_check( $transient ) {
 	    //check WP repo for trunk version
 	    $request = wp_remote_get('http://plugins.svn.wordpress.org/events-manager/trunk/events-manager.php');
 	    
-	    preg_match('/Version: ([0-9a-z\.]+)/', $request, $matches);
+	    preg_match('/Version: ([0-9a-z\.]+)/', $request['body'], $matches);
 	    
 	    if( !empty($matches[1]) ){
 	    	//we have a version number!

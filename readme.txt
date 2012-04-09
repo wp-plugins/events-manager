@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.3.1
-Stable tag: 5.1.4.3
+Stable tag: 5.1.5
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -99,19 +99,31 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 
 == Changelog ==
 
-= 5.1.4.5 =
-* rewritten booking email function, simpler, less error-prone, overriedable same effect
+= 5.1.5 =
+* rewritten booking email function, simpler, less error-prone, overriedable and yet same effect
 * fixed tax not showing on booking table totals
 * fixed booking objects get_price filters, removed em_booking_get_prices from em-ticket-booking.php in place of em_ticket_booking_get_price
 * changed filter name em_tickets_bookings_get_prices to em_tickets_bookings_get_price (bad name according to convention)
 * admin email can be sent to multiple emails (comma delimited in settings)
 * added booking status message filter
+* added custom no events message in events widget
 * fixed ical not working in non-permalinks mode ( must have /?ical=1 at end of homt url )
 * removed original CSV export link in place of booking table exporter, unless users made a custom template
 * BuddyPress private group or normal private event info are now not shown in site activity.
 * fixed some php warnings
 * fixed certain languages breaking date formats
 * added #_EVENTCATEGORIESIMAGES
+* added yearly recurrences
+* added a cut-off date for bookings, so bookings can take place past event start dates
+* fixed some issues with dev mode checks
+* fixed booking button and multiple bookings at once bug
+* fixed ticket spaces export bug
+* fixed rss pubdate format
+* improved CSS for booking tables front-end
+* edit event locations dropdown shown to users if they can read events (previously only if could edit)
+* updated the POT file and Swedish translations
+* added #_CONTACTMETA placeholder
+* cleaned up the RSS filters so HTML now is allowed in feed
 
 = 5.1.4.3 =
 * fixed bp group hidden events not going private

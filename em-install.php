@@ -107,6 +107,7 @@ function em_create_events_table() {
 		event_end_date date NULL DEFAULT NULL,
 		post_content longtext NULL DEFAULT NULL,
 		event_rsvp bool NOT NULL DEFAULT 0,
+		event_rsvp_date date NULL DEFAULT NULL,
 		event_spaces int(5) NULL DEFAULT 0,
 		event_private bool NOT NULL DEFAULT 0,
 		location_id bigint(20) unsigned NULL DEFAULT NULL,
@@ -475,6 +476,8 @@ function em_add_options() {
 		//Image Manipulation
 		'dbem_image_max_width' => 700,
 		'dbem_image_max_height' => 700,
+		'dbem_image_min_width' => 50,
+		'dbem_image_min_height' => 50,
 		'dbem_image_max_size' => 204800,
 		//Calendar Options
 		'dbem_list_date_title' => __('Events', 'dbem').' - #j #M #y',

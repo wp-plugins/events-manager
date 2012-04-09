@@ -116,6 +116,12 @@ $localised_date_format = em_get_date_format();
 			<input type="text" name="event_spaces" value="<?php echo $EM_Event->event_spaces; ?>" /><br />
 			<em><?php _e('Individual tickets with remaining spaces will not be available if total booking spaces reach this limit. Leave blank for no limit.','dbem'); ?></em>
 		</p>
+		<p>
+			<label><strong><?php _e('Booking Cut-Off Date','dbem'); ?></strong></label>
+			<input id="em-bookings-date-loc" type="text" />
+			<input id="em-bookings-date" type="hidden" name="event_rsvp_date" value="<?php echo $EM_Event->event_rsvp_date; ?>" /><br />
+			<em><?php _e('This is the definite date after which bookings will be closed for this event, regardless of individual ticket settings above. Default value will be the event start date.','dbem'); ?></em>
+		</p>
 	<?php } ?>
 	<?php do_action('em_events_admin_bookings_footer', $EM_Event); ?>
 </div>

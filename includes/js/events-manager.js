@@ -65,7 +65,7 @@ jQuery(document).ready( function($){
 	});
 
 	$('.em-events-search-form select[name=region]').change( function(){
-		$('.em-events-search select[name=state]').html('<option>'+EM.txt_loading+'</option>');
+		$('.em-events-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
 		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
 		var data = {
 			action : 'search_states',
@@ -345,10 +345,10 @@ jQuery(document).ready( function($){
 			//Widgets and filter submissions
 			$(document).delegate('.em_bookings_events_table form, .em_bookings_pending_table form', 'submit', function(e){
 				var el = $(this);
-				var url = em_ajaxify( el.attr('action') );			
-				el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
+				var url = em_ajaxify( el.attr('action') );		
+				el.parent('.em_obj').prepend('<div id="em-loading" />');
 				$.get( url, el.serializeArray(), function(data){
-					el.parents('.wrap').first().replaceWith(data);
+					el.parent('.em_obj').replaceWith(data);
 				});
 				return false;
 			});
@@ -356,9 +356,9 @@ jQuery(document).ready( function($){
 			$(document).delegate('.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a', 'click', function(){		
 				var el = $(this);
 				var url = em_ajaxify( el.attr('href') );	
-				el.parents('.wrap').find('.table-wrap').first().append('<div id="em-loading" />');
+				el.parents('.em_obj').find('.table-wrap').first().append('<div id="em-loading" />');
 				$.get( url, function(data){
-					el.parents('.wrap').first().replaceWith(data);
+					el.parents('.em_obj').first().replaceWith(data);
 				});
 				return false;
 			});
@@ -416,6 +416,14 @@ jQuery(document).ready( function($){
 		}
 		//default picker vals
 		var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay };
+
+		//bookings end date
+		var bookings_datepicker_vals = { 
+			altField : "#em-bookings-date" 
+		};
+		$.extend( bookings_datepicker_vals, datepicker_vals );
+		$("#em-bookings-date-loc").datepicker(bookings_datepicker_vals);
+		
 		//start date
 		var start_datepicker_vals = {
 			altField : "#em-date-start",
@@ -447,10 +455,12 @@ jQuery(document).ready( function($){
 			}else{
 				var date_dateFormat = $("#em-date-start-loc").datepicker('option', 'dateFormat');
 			}
+			var bookings_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-bookings-date').val()) );
 			var start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-date-start').val()) );
 			var end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-date-end').val()) );
 			$("#em-date-start-loc").val(start_date_formatted);
 			$("#em-date-end-loc").val(end_date_formatted);
+			$("#em-bookings-date-loc").val(bookings_date_formatted);
 		}
 		
 		//for the tickets form too

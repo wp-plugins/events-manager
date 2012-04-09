@@ -47,7 +47,7 @@ $button_cancel_fail = sprintf(__('%s Error. Try again?','dbem'), __('Cancellatio
 							}else{
 								$('#em-booking-button-<?php echo $EM_Event->event_id; ?>').text('<?php echo $button_fail; ?>');					
 							}
-							if(resonse.message != '') alert(response.message);
+							if(response.message != '') alert(response.message);
 						},
 						error : function(){ $('#em-booking-button-<?php echo $EM_Event->event_id; ?>').text('<?php echo $button_fail; ?>'); }
 					});

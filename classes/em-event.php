@@ -50,6 +50,7 @@ class EM_Event extends EM_Object{
 	var $event_end_date;
 	var $post_content;
 	var $event_rsvp;
+	var $event_rsvp_date;
 	var $event_spaces;
 	var $location_id;
 	var $recurrence_id;
@@ -87,6 +88,7 @@ class EM_Event extends EM_Object{
 		'event_end_date' => array( 'name'=>'end_date', 'type'=>'%s', 'null'=>true ),
 		'post_content' => array( 'name'=>'notes', 'type'=>'%s', 'null'=>true ),
 		'event_rsvp' => array( 'name'=>'rsvp', 'type'=>'%d', 'null'=>true ), //has a default, so can be null/excluded
+		'event_rsvp_date' => array( 'name'=>'event_rsvp_date', 'type'=>'%s', 'null'=>true ),
 		'event_spaces' => array( 'name'=>'spaces', 'type'=>'%d', 'null'=>true),
 		'location_id' => array( 'name'=>'location_id', 'type'=>'%d', 'null'=>true ),
 		'recurrence_id' => array( 'name'=>'recurrence_id', 'type'=>'%d', 'null'=>true ),
@@ -267,8 +269,9 @@ class EM_Event extends EM_Object{
 					if($event_meta_key[0] != '_'){
 						$this->event_attributes[$event_meta_key] = ( count($event_meta_val) > 1 ) ? $event_meta_val:$event_meta_val[0];					
 					}else{
-						foreach($this->fields as $field_name => $field_info){
-							if( $event_meta_key == '_'.$field_name && $event_meta_key != '_event_attributes'){
+						if($event_meta_key != '_event_attributes'){
+							$field_name = substr($event_meta_key, 1);
+							if( array_key_exists($field_name, $this->fields) ){
 								$this->$field_name = $event_meta_val[0];
 							}
 						}
@@ -375,6 +378,7 @@ class EM_Event extends EM_Object{
 		if( !empty($_REQUEST['event_rsvp']) && $_REQUEST['event_rsvp'] ){
 			$this->get_bookings()->get_tickets()->get_post();
 			$this->event_rsvp = 1;
+			$this->event_rsvp_date = ( !empty($_REQUEST['event_rsvp_date']) ) ? $_REQUEST['event_rsvp_date'] : $this->event_start_date;
 			$this->event_spaces = (!empty($_REQUEST['event_spaces'])) ? absint($_REQUEST['event_spaces']):0;
 		}else{
 			$this->event_rsvp = 0;
@@ -410,7 +414,7 @@ class EM_Event extends EM_Object{
 		//Recurrence data
 		if( $this->is_recurring() ){
 			$this->recurrence = 1; //just in case
-			$this->recurrence_freq = ( !empty($_REQUEST['recurrence_freq']) && in_array($_REQUEST['recurrence_freq'], array('daily','weekly','monthly')) ) ? $_REQUEST['recurrence_freq']:'daily';
+			$this->recurrence_freq = ( !empty($_REQUEST['recurrence_freq']) && in_array($_REQUEST['recurrence_freq'], array('daily','weekly','monthly','yearly')) ) ? $_REQUEST['recurrence_freq']:'daily';
 			if( !empty($_REQUEST['recurrence_bydays']) && $this->recurrence_freq == 'weekly' && self::array_is_numeric($_REQUEST['recurrence_bydays']) ){
 				$this->recurrence_byday = implode( ",", $_REQUEST['recurrence_bydays'] );
 			}elseif( !empty($_REQUEST['recurrence_byday']) && $this->recurrence_freq == 'monthly' ){
@@ -1126,7 +1130,7 @@ class EM_Event extends EM_Object{
 			}
 	 	}
 		//Now let's check out the placeholders.
-	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9_,]+)})?/", $format, $placeholders);
 		foreach($placeholders[1] as $key => $result) {
 			$match = true;
 			$replace = '';
@@ -1256,6 +1260,7 @@ class EM_Event extends EM_Object{
 								<?php
 							}
 							add_action('wp_footer','em_booking_js_footer');
+							add_action('admin_footer','em_booking_js_footer');
 							define('EM_BOOKING_JS_LOADED',true);
 						}
 						$replace = ob_get_clean();
@@ -1374,6 +1379,11 @@ class EM_Event extends EM_Object{
 						if( $result == '#_CONTACTPROFILELINK' ){
 							$replace = '<a href="'.esc_url($replace).'">'.__('Profile', 'dbem').'</a>';
 						}
+					}
+					break;
+				case '#_CONTACTMETA':
+					if( !empty($placeholders[3][$key]) ){
+						$replace = get_user_meta($this->event_owner, $placeholders[3][$key], true);
 					}
 					break;
 				case '#_ATTENDEES':
@@ -1843,6 +1853,18 @@ class EM_Event extends EM_Object{
 					$current_date = strtotime("{$current_arr['year']}-{$current_arr['mon']}-1"); 
 				}
 				break;
+			case 'yearly':
+				//If yearly, it's simple. Get start date, add interval timestamps to that and create matching day for each interval until end date.
+				$month = date('m', $this->start);
+				$day = date('d',$this->start);
+				$year = date('Y',$this->start); 
+				$end_year = date('Y',$this->end); 
+				if( @mktime(0,0,0,$day,$month,$end_year) < $this->end ) $end_year--;
+				while( $year <= $end_year ){
+					$matching_days[] = mktime(0,0,0,$day,$month,$year);
+					$year++;
+				}			
+				break;
 		}	
 		sort($matching_days);
 		return apply_filters('em_events_get_recurrence_days', $matching_days, $this);
@@ -1899,6 +1921,11 @@ class EM_Event extends EM_Object{
 			$freq_desc = sprintf (($monthweek_name[$EM_Event_Recurring->recurrence_byweekno]), implode(" and ", $natural_days));
 			if ($EM_Event_Recurring->recurrence_interval > 1 ) {
 				$freq_desc .= ", ".sprintf (__("every %s months",'dbem'), $EM_Event_Recurring->recurrence_interval);
+			}
+		}elseif ($EM_Event_Recurring->recurrence_freq == 'yearly')  {
+			$freq_desc .= __("every year", 'dbem');
+			if ($EM_Event_Recurring->recurrence_interval > 1 ) {
+				$freq_desc .= sprintf (__("every %s years",'dbem'), $EM_Event_Recurring->recurrence_interval);
 			}
 		}else{
 			$freq_desc = "[ERROR: corrupted database record]";
@@ -1972,13 +1999,8 @@ add_filter('dbem_notes', 'convert_smilies');
 add_filter('dbem_notes', 'convert_chars');
 add_filter('dbem_notes', 'wpautop');
 add_filter('dbem_notes', 'prepend_attachment');
-// RSS general filters
-add_filter('dbem_general_rss', 'strip_tags');
-add_filter('dbem_general_rss', 'ent2ncr', 8);
-add_filter('dbem_general_rss', 'esc_html');
 // RSS content filter
 add_filter('dbem_notes_rss', 'convert_chars', 8);
-add_filter('dbem_notes_rss', 'ent2ncr', 8);
 // Notes map filters
 add_filter('dbem_notes_map', 'convert_chars', 8);
 add_filter('dbem_notes_map', 'js_escape');

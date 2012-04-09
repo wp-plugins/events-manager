@@ -19,7 +19,8 @@ class EM_Widget extends WP_Widget {
     		'nolistwrap' => false,
     		'orderby' => 'event_start_date,event_start_time,event_name',
 			'all_events' => 0,
-			'all_events_text' => __('all events', 'dbem')
+			'all_events_text' => __('all events', 'dbem'),
+			'no_events_text' => __('No events', 'dbem')
     	);
 		$this->em_orderby_options = apply_filters('em_settings_events_default_orderby_ddm', array(
 			'event_start_date,event_start_time,event_name' => __('start date, start time, event name','dbem'),
@@ -67,7 +68,7 @@ class EM_Widget extends WP_Widget {
 				}
 			}
 		}else{
-			echo '<li>'.__('No events', 'dbem').'</li>';
+			echo '<li>'.$instance['no_events_text'].'</li>';
 		}
 		if ( !empty($instance['all_events']) ){
 			$events_link = (!empty($instance['all_events_text'])) ? em_get_link($instance['all_events_text']) : em_get_link(__('all events','dbem'));
@@ -157,6 +158,10 @@ class EM_Widget extends WP_Widget {
 		<p>
 			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php _e('All events link text?','dbem'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('all_events_text'); ?>" name="<?php echo $this->get_field_name('all_events_text'); ?>" value="<?php echo (!empty($instance['all_events_text'])) ? $instance['all_events_text']:__('all events','dbem'); ?>" >
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id('no_events_text'); ?>"><?php _e('No events text','dbem'); ?>: </label>
+			<input type="text" id="<?php echo $this->get_field_id('no_events_text'); ?>" name="<?php echo $this->get_field_name('no_events_text'); ?>" value="<?php echo (!empty($instance['no_events_text'])) ? $instance['no_events_text']:__('No events', 'dbem'); ?>" >
 		</p>
         <?php 
     }

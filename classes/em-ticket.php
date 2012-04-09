@@ -165,10 +165,11 @@ class EM_Ticket extends EM_Object{
 	
 	function is_available(){
 		$timestamp = current_time('timestamp');
+		$EM_Event = $this->get_event();
 		$available_spaces = $this->get_available_spaces();
 		$condition_1 = (empty($this->ticket_start) || $this->start_timestamp <= $timestamp);
-		$condition_2 = ($this->end_timestamp >= $timestamp || empty($this->ticket_end));
-		$condition_3 = $this->get_event()->end > $timestamp;
+		$condition_2 = $this->end_timestamp + 86400 >= $timestamp || empty($this->ticket_end);
+		$condition_3 = $EM_Event->start > $timestamp || strtotime($EM_Event->event_rsvp_date) > $timestamp;
 		if( $condition_1 && $condition_2 && $condition_3 ){
 			//Time Constraints met, now quantities
 			if( $available_spaces > 0 && ($available_spaces >= $this->ticket_min || empty($this->ticket_min)) ){

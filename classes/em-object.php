@@ -1160,9 +1160,14 @@ class EM_Object {
 				     	$this->add_error( __('The image file is too big! Maximum size:', 'dbem')." $maximum_size");
 					}
 					$maximum_width = get_option('dbem_image_max_width'); 
-					$maximum_height = get_option('dbem_image_max_height'); 
+					$maximum_height = get_option('dbem_image_max_height');
+					$minimum_width = get_option('dbem_image_min_width'); 
+					$minimum_height = get_option('dbem_image_min_height');  
 				  	if (($width > $maximum_width) || ($height > $maximum_height)) { 
 						$this->add_error( __('The image is too big! Maximum size allowed:','dbem')." $maximum_width x $maximum_height");
+				  	}
+				  	if (($width < $minimum_width) || ($height < $minimum_height)) { 
+						$this->add_error( __('The image is too small! Minimum size allowed:','dbem')." $minimum_width x $minimum_height");
 				  	}
 				  	if ( empty($mime_type) || !array_key_exists($mime_type, $this->mime_types) ){ 
 						$this->add_error(__('The image is in a wrong format!','dbem'));

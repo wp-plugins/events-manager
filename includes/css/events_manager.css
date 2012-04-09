@@ -11,8 +11,10 @@
 	#em-booking-form  { position:relative; clear:left; }
 	.em-booking-form-details  { padding:10px; width:360px; float:left; }  
 	.em-booking-form-details input.input, .em-booking-form-details textarea { width:250px; }
-	.em-booking-form-details .input-group label { display:block; float:left; }
-	.em-booking-form-details .input-group span { display:block; margin-left:110px; }
+	.em-booking-form-details p { clear:left; }
+	.em-booking-form-details label { display:block; float:left; }
+	.em-booking-form-details span.input-group input { margin-left:-20px; }
+	.em-booking-form-details span.input-group { display:block; margin-left:120px; }
 	.em-booking-form-details .em-booking-submit { width:auto; }	
 	#em-booking-form label  { display:inline-block; width:100px; }	
 	/* Tickets */
@@ -68,6 +70,7 @@
 		#event-form .em-location-map-404 { vertical-align:middle; text-align: center; }
 /* Booking Admin */
 	/* Bookings Table */
+		.em_obj { position:relative; }
 		.em-bookings-table .em-bookings-table-export, .em-bookings-table .em-bookings-table-settings { float:left; display:block; margin:2px 5px; width:25px; height:25px;  }
 		.em-bookings-table .em-bookings-table-export { background:url(../images/csv.png) 0px 0px no-repeat; }
 		.em-bookings-table .em-bookings-table-settings { background:url(../images/settings.png) 0px 0px no-repeat; }

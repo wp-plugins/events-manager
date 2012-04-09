@@ -89,13 +89,11 @@ if( !empty($_REQUEST['success']) ){
 			}
 		?>
 		</div>
-		
-		<?php if( get_option('dbem_locations_enabled') && $EM_Event->can_manage('edit_locations','edit_others_locations') ): ?>
+
 		<h4 class="event-form-where"><?php _e ( 'Where', 'dbem' ); ?></h4>
 		<div class="inside">
 		<?php em_locate_template('forms/event/location.php',true); ?>
 		</div>
-		<?php endif; ?>
 		
 		<h4 class="event-form-details"><?php _e ( 'Details', 'dbem' ); ?></h4>
 		<div class="inside event-form-details">

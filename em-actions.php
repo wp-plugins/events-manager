@@ -239,7 +239,7 @@ function em_init_actions() {
 					$registration = true;
 					//TODO do some ticket validation before registering the user
 					if ( $EM_Event->get_bookings()->get_available_spaces() >= $EM_Booking->get_spaces(true) ) {
-						if( !is_user_logged_in() && get_option('dbem_bookings_anonymous') && !get_option('dbem_bookings_registration_disable') ){
+						if( (!is_user_logged_in() || defined('EM_FORCE_REGISTRATION')) && get_option('dbem_bookings_anonymous') && !get_option('dbem_bookings_registration_disable') ){
 							//find random username - less options for user, less things go wrong
 							$username_root = explode('@', $_REQUEST['user_email']);
 							$username_rand = $username_root[0].rand(1,1000);
@@ -268,7 +268,7 @@ function em_init_actions() {
 									$EM_Notices->add_error( get_option('dbem_booking_feedback_reg_error') );
 								}
 							}
-						}elseif( !is_user_logged_in() && get_option('dbem_bookings_registration_disable') ){
+						}elseif( (!is_user_logged_in() || defined('EM_FORCE_REGISTRATION')) && get_option('dbem_bookings_registration_disable') ){
 							//Validate name, phone and email
 							$user_data = array();
 							if( empty($EM_Booking->booking_meta['registration']) ) $EM_Booking->booking_meta['registration'] = array();
@@ -334,12 +334,12 @@ function em_init_actions() {
 			//ADD/EDIT Booking
 			em_verify_nonce('booking_add_one');
 			if( !$EM_Event->get_bookings()->has_booking(get_current_user_id()) || get_option('dbem_bookings_double')){
-				$EM_Booking = new EM_Booking(array('person_id'=>get_current_user_id(), 'event_id'=>$EM_Event->event_id)); //new booking
-				$EM_Ticket = $EM_Event->get_bookings()->get_tickets()->get_first();			
+				$EM_Booking = new EM_Booking(array('person_id'=>get_current_user_id(), 'event_id'=>$EM_Event->event_id, 'booking_spaces'=>1)); //new booking
+				$EM_Ticket = $EM_Event->get_bookings()->get_tickets()->get_first();	
 				//get first ticket in this event and book one place there. similar to getting the form values in EM_Booking::get_post_values()
 				$EM_Ticket_Booking = new EM_Ticket_Booking(array('ticket_id'=>$EM_Ticket->ticket_id, 'ticket_booking_spaces'=>1));
-				$EM_Booking->get_tickets_bookings();
-				$EM_Booking->tickets_bookings->booking = $EM_Booking;
+				$EM_Booking->tickets_bookings = new EM_Tickets_Bookings();
+				$EM_Booking->tickets_bookings->booking = $EM_Ticket_Booking->booking = $EM_Booking;
 				$EM_Booking->tickets_bookings->add( $EM_Ticket_Booking );
 				//Now save booking
 				if( $EM_Event->get_bookings()->add($EM_Booking) ){

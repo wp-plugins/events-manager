@@ -144,7 +144,8 @@ function em_docs_init($force_init = false){
 							'#_CONTACTAVATAR' => array( 'desc' => 'Contact person\'s avatar.' ),
 							'#_CONTACTPROFILELINK' => array( 'desc' => 'Contact person\'s "Profile" link. Only works with BuddyPress enabled.' ),
 							'#_CONTACTPROFILEURL' => array( 'desc' => 'Contact person\'s profile url. Only works with BuddyPress enabled.' ),
-							'#_CONTACTID' => array( 'desc' => 'Contact person\'s WordPress user ID.')
+							'#_CONTACTID' => array( 'desc' => 'Contact person\'s WordPress user ID.'),
+							'#_CONTACTMETA' => array( 'desc' => 'Display any user meta of a WordPress account by including the meta key, e.g. #_CONTACTMETA{dbem_phone}'),
 						)
 					),
 					'iCal/Calendar' => array(

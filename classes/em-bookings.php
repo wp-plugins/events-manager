@@ -153,9 +153,8 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get_available_tickets(){
 		$tickets = array();
-		$timesamp = current_time('timestamp');
 		foreach ($this->get_tickets() as $EM_Ticket){
-			/* @var EM_Ticket $EM_Ticket */
+			/* @var $EM_Ticket EM_Ticket */
 			if( $EM_Ticket->is_available() ){
 				//within time range
 				if( $EM_Ticket->get_available_spaces() > 0 ){
@@ -192,7 +191,10 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function is_open(){
 		//TODO extend booking options
 		$return = false;
-		if( $this->get_event()->start > current_time('timestamp') ){
+		$EM_Event = $this->get_event();
+		if( !empty($EM_Event->event_rsvp_date) && strtotime($EM_Event->event_rsvp_date) > current_time('timestamp') ){
+			$return = true;
+		}elseif( $EM_Event->start > current_time('timestamp') ){
 			$return = true;
 		}
 		if( count($this->get_available_tickets()->tickets) == 0){

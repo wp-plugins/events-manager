@@ -32,25 +32,20 @@ $admin_recurring = is_admin() && $EM_Event->is_recurring();
 			<?php _e ( 'This event repeats', 'dbem' ); ?> 
 			<select id="recurrence-frequency" name="recurrence_freq">
 				<?php
-					$freq_options = array ("daily" => __ ( 'Daily', 'dbem' ), "weekly" => __ ( 'Weekly', 'dbem' ), "monthly" => __ ( 'Monthly', 'dbem' ) );
+					$freq_options = array ("daily" => __ ( 'Daily', 'dbem' ), "weekly" => __ ( 'Weekly', 'dbem' ), "monthly" => __ ( 'Monthly', 'dbem' ), 'yearly' => __('Yearly','dbem') );
 					em_option_items ( $freq_options, $EM_Event->recurrence_freq ); 
 				?>
 			</select>
 			<?php _e ( 'every', 'dbem' )?>
 			<input id="recurrence-interval" name='recurrence_interval' size='2' value='<?php echo $EM_Event->interval ; ?>' />
-			<span class='interval-desc' id="interval-daily-singular">
-			<?php _e ( 'day', 'dbem' )?>
-			</span> <span class='interval-desc' id="interval-daily-plural">
-			<?php _e ( 'days', 'dbem' ) ?>
-			</span> <span class='interval-desc' id="interval-weekly-singular">
-			<?php _e ( 'week on', 'dbem'); ?>
-			</span> <span class='interval-desc' id="interval-weekly-plural">
-			<?php _e ( 'weeks on', 'dbem'); ?>
-			</span> <span class='interval-desc' id="interval-monthly-singular">
-			<?php _e ( 'month on the', 'dbem' )?>
-			</span> <span class='interval-desc' id="interval-monthly-plural">
-			<?php _e ( 'months on the', 'dbem' )?>
-			</span>
+			<span class='interval-desc' id="interval-daily-singular"><?php _e ( 'day', 'dbem' )?></span>
+			<span class='interval-desc' id="interval-daily-plural"><?php _e ( 'days', 'dbem' ) ?></span>
+			<span class='interval-desc' id="interval-weekly-singular"><?php _e ( 'week on', 'dbem'); ?></span>
+			<span class='interval-desc' id="interval-weekly-plural"><?php _e ( 'weeks on', 'dbem'); ?></span>
+			<span class='interval-desc' id="interval-monthly-singular"><?php _e ( 'month on the', 'dbem' )?></span>
+			<span class='interval-desc' id="interval-monthly-plural"><?php _e ( 'months on the', 'dbem' )?></span>
+			<span class='interval-desc' id="interval-yearly-singular"><?php _e ( 'year', 'dbem' )?></span> 
+			<span class='interval-desc' id="interval-yearly-plural"><?php _e ( 'years', 'dbem' ) ?></span>
 		</p>
 		<p class="alternate-selector" id="weekly-selector">
 			<?php
