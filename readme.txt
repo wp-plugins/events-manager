@@ -98,6 +98,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1.5.1 =
+* fixed multiple admin emails not going out
+* updated timthumb to v2.8.10
 
 = 5.1.5 =
 * rewritten booking email function, simpler, less error-prone, overriedable and yet same effect
