@@ -561,6 +561,7 @@ class EM_Location extends EM_Object {
 			$location_string = str_replace($result, $attString ,$location_string );
 		}
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+	 	$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$replace = '';
 			$full_result = $placeholders[0][$key];
@@ -572,6 +573,7 @@ class EM_Location extends EM_Object {
 					$replace = $this->location_id;
 					break;
 				case '#_NAME': //Depreciated
+				case '#_LOCATION': //Depreciated
 				case '#_LOCATIONNAME':
 					$replace = $this->location_name;
 					break;
@@ -696,11 +698,14 @@ class EM_Location extends EM_Object {
 					$replace = $full_result;
 					break;
 			}
-			$replace = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target);
-			$location_string = str_replace($full_result, $replace , $location_string );
+			$replaces[$key] = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target);
 		}
-		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
-		$location_string = str_replace('#_LOCATION', apply_filters($name_filter, $this->location_name) , $location_string ); //Depreciated
+		//sort out replacements of placeholders here so that e.g. #_X won't overwrite #_XY by mistake
+		krsort($replaces);
+		foreach($replaces as $key => $value){
+			$full_result = $placeholders[0][$key];
+			$location_string = str_replace($full_result, $value , $location_string );
+		}
 		return apply_filters('em_location_output', $location_string, $this, $format, $target);	
 	}
 	

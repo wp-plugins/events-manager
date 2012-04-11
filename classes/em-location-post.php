@@ -27,7 +27,7 @@ class EM_Location_Post {
 	}
 	
 	function the_content( $content ){
-		global $post;
+		global $post, $EM_Location;
 		if( $post->post_type == EM_POST_TYPE_LOCATION ){
 			if( is_archive() || is_search() ){
 				if( get_option('dbem_cp_locations_archive_formats') ){
@@ -37,7 +37,9 @@ class EM_Location_Post {
 			}else{
 				if( get_option('dbem_cp_locations_formats') && !post_password_required() ){
 					$EM_Location = em_get_location($post);
-					$content = $EM_Location->output_single();
+					ob_start();
+					em_locate_template('templates/location-single.php',true);
+					$content = ob_get_clean();
 				}
 			}
 		}

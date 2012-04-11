@@ -1131,6 +1131,7 @@ class EM_Event extends EM_Object{
 	 	}
 		//Now let's check out the placeholders.
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9_,]+)})?/", $format, $placeholders);
+	 	$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$match = true;
 			$replace = '';
@@ -1171,10 +1172,18 @@ class EM_Event extends EM_Object{
 								$replace = "<img src='".esc_url($this->image_url)."' alt='".esc_attr($this->event_name)."'/>";
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
+								$image_src = $this->image_url;
 								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
-									$replace = "<img src='".esc_url(em_get_thumbnail_url($this->image_url, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."'/>";
+									global $blog_id;
+									if ( is_multisite() && $blog_id > 0) {
+										$imageParts = explode('/blogs.dir/', $image_src);
+										if (isset($imageParts[1])) {
+											$image_src = network_site_url('/wp-content/blogs.dir/' . $imageParts[1]);
+										}
+									}
+									$replace = "<img src='".esc_url(em_get_thumbnail_url($image_src, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."'/>";
 								}else{
-									$replace = "<img src='".esc_url($this->image_url)."' alt='".esc_attr($this->event_name)."'/>";
+									$replace = "<img src='".esc_url($image_src)."' alt='".esc_attr($this->event_name)."'/>";
 								}
 							}
 						}
@@ -1451,8 +1460,13 @@ class EM_Event extends EM_Object{
 					$replace = $full_result;
 					break;
 			}
-			$replace = apply_filters('em_event_output_placeholder', $replace, $this, $full_result, $target );
-			$event_string = str_replace($full_result, $replace , $event_string );
+			$replaces[$key] = apply_filters('em_event_output_placeholder', $replace, $this, $full_result, $target);
+		}
+		//sort out replacements of placeholders here so that e.g. #_X won't overwrite #_XY by mistake
+		krsort($replaces);
+		foreach($replaces as $key => $value){
+			$full_result = $placeholders[0][$key];
+			$event_string = str_replace($full_result, $value , $event_string );
 		}
 		//Time placeholders
 		foreach($placeholders[1] as $result) {

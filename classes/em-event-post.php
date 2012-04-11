@@ -47,13 +47,8 @@ class EM_Event_Post {
 			}else{
 				if( get_option('dbem_cp_events_formats') && !post_password_required() ){
 					$EM_Event = em_get_event($post);
-					//general defaults
-					$args = array(				
-						'owner' => false,
-						'pagination' => 1
-					);
 					ob_start();
-					em_locate_template('templates/event-single.php',true, array('args'=>$args));
+					em_locate_template('templates/event-single.php',true);
 					$content = ob_get_clean();
 				}
 			}

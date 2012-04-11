@@ -81,7 +81,7 @@ function em_docs_init($force_init = false){
 							'#_EVENTCATEGORIESIMAGES'  => array( 'desc' => 'Shows a list of category images this event belongs to. Categories without an image will be ignored.' ),
 							'#_EVENTTAGS' => array( 'desc' => 'Shows a list of tag links this event belongs to.' ),
 						)
-					),			
+					),
 					'Date and Times' => array(
 						'desc' => '',
 						'placeholders' => array(

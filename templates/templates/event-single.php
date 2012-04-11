@@ -1,7 +1,7 @@
 <?php
 /* 
- * WARNING - This file is only useful if you're using MultiSite Global Mode. 
- * If not, you want to create custom post type templates, as described here - http://codex.wordpress.org/Post_Types#Template_Files
+ * Remember that this file is only used if you have chosen to override event pages with formats in your event settings!
+ * You can also override the single event page completely in any case (e.g. at a level where you can control sidebars etc.), as described here - http://codex.wordpress.org/Post_Types#Template_Files
  * Your file would be named single-event.php
  */
 /*

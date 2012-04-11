@@ -490,6 +490,7 @@ class EM_Booking extends EM_Object{
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([^}]+)})?/", $format, $placeholders);
 		foreach( $this->get_tickets() as $EM_Ticket){ break; } //Get first ticket for single ticket placeholders
 		$output_string = $format;
+		$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$replace = '';
 			$full_result = $placeholders[0][$key];		
@@ -531,6 +532,9 @@ class EM_Booking extends EM_Object{
 				case '#_BOOKINGPRICE':
 					$replace = em_get_currency_symbol(true)." ". number_format($this->get_price(),2);
 					break;
+				case '#_BOOKINGTICKETNAME':
+					$replace = $EM_Ticket->name;
+					break;
 				case '#_BOOKINGTICKETDESCRIPTION':
 					$replace = $EM_Ticket->description;
 					break;
@@ -555,9 +559,15 @@ class EM_Booking extends EM_Object{
 					$replace = $full_result;
 					break;
 			}
-			$replace = apply_filters('em_booking_output_placeholder', $replace, $this, $full_result, $target);
-			$output_string = str_replace($full_result, $replace , $output_string );
+			$replaces[$key] = apply_filters('em_booking_output_placeholder', $replace, $this, $full_result, $target);
 		}
+		//sort out replacements so that 
+		krsort($replaces);
+		foreach($replaces as $key => $value){
+			$full_result = $placeholders[0][$key];
+			$output_string = str_replace($full_result, $value , $output_string );
+		}
+		//run event output too, since this is never run from within events and will not infinitely loop
 		$output_string = $this->get_event()->output($output_string, $target);
 		return apply_filters('em_booking_output', $output_string, $this, $format, $target);	
 	}

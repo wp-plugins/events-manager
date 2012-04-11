@@ -98,9 +98,13 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.5.1 =
+= 5.1.5.2 =
 * fixed multiple admin emails not going out
 * updated timthumb to v2.8.10
+* updated placeholder outputting to avoid overwriting longer variations of similarly named placeholders
+* fixed #_BOOKINGTICKETNAME not working
+* single location and event pages will still use location-single.php and event-single.php templates
+* fixed thumbnail image links on multisite to work with timthumb, thanks BinaryMoon for the tut!
 
 = 5.1.5 =
 * rewritten booking email function, simpler, less error-prone, overriedable and yet same effect
