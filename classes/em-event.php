@@ -544,6 +544,14 @@ class EM_Event extends EM_Object{
 		$previous_status = $this->previous_status;
 		if($result) $this->load_postdata($post_data, $blog_id); //reload post info
 		$this->previous_status = $previous_status;
+		//do a dirty update for location too if it's not published
+		if( $this->is_published() && !empty($this->location_id) ){
+			$EM_Location = $this->get_location();
+			if( $EM_Location->location_status !== 1 ){
+				//let's also publish the location
+				$EM_Location->set_status(1, true);
+			}
+		}
 		return apply_filters('em_event_save', $result, $this);
 	}
 	

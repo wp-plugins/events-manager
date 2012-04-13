@@ -20,7 +20,7 @@ class EM_Booking extends EM_Object{
 		'booking_meta' => array('name'=>'meta','type'=>'%s')
 	);
 	//Other Vars
-	var $notes = array(); //loaded from em_meta table in construct
+	var $notes; //loaded from em_meta table in construct
 	var $timestamp;
 	var $person;
 	var $required_fields = array('booking_id', 'event_id', 'person_id', 'booking_spaces');
@@ -66,23 +66,16 @@ class EM_Booking extends EM_Object{
 	 */
 	function EM_Booking( $booking_data = false ){
 		//Get the person for this booking
+		global $wpdb;
 	  	if( $booking_data !== false ){
 			//Load booking data
 			$booking = array();
 			if( is_array($booking_data) ){
 				$booking = $booking_data;
 			}elseif( is_numeric($booking_data) ){
-				//Retreiving from the database		
-				global $wpdb;			
+				//Retreiving from the database				
 				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data'";
 				$booking = $wpdb->get_row($sql, ARRAY_A);
-				//Custom Fields
-				$custom = $wpdb->get_row("SELECT meta_key, meta_value FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data' AND meta_key='booking_custom'");
-			  	//Booking notes
-			  	$notes = $wpdb->get_results("SELECT * FROM ". EM_META_TABLE ." WHERE meta_key='booking-note' AND object_id ='$booking_data'", ARRAY_A);
-			  	foreach($notes as $note){
-			  		$this->notes[] = unserialize($note['meta_value']);
-			  	}
 			}
 			//booking meta
 			$booking['booking_meta'] = (!empty($booking['booking_meta'])) ? unserialize($booking['booking_meta']):array();
@@ -91,10 +84,6 @@ class EM_Booking extends EM_Object{
 			$this->previous_status = $this->booking_status;
 			$this->get_person();
 			$this->timestamp = !empty($booking['booking_date']) ? strtotime($booking['booking_date']):false;
-			//Add custom booking data
-			if( !empty($custom['meta_key']) && $custom['meta_key'] == 'booking_custom' && is_serialized($custom['meta_value']) ){
-				$this->custom = unserialize($custom['meta_value']);
-			}
 		}
 		//Do it here so things appear in the po file.
 		$this->status_array = array(
@@ -107,6 +96,20 @@ class EM_Booking extends EM_Object{
 		);
 		$this->compat_keys();
 		do_action('em_booking', $this, $booking_data);
+	}
+	
+	function get_notes(){
+		global $wpdb;
+		if( !is_array($this->notes) && !empty($this->booking_id) ){
+		  	$notes = $wpdb->get_results("SELECT * FROM ". EM_META_TABLE ." WHERE meta_key='booking-note' AND object_id ='{$this->booking_id}'", ARRAY_A);
+		  	$this->notes = array();
+		  	foreach($notes as $note){
+		  		$this->notes[] = unserialize($note['meta_value']);
+		  	}
+		}elseif( empty($this->booking_id) ){
+			$this->notes = array();
+		}
+		return $this->notes;
 	}
 	
 	/**
@@ -478,6 +481,7 @@ class EM_Booking extends EM_Object{
 	function add_note( $note_text ){
 		global $wpdb;
 		if( $this->can_manage() ){
+			$this->get_notes();
 			$note = array('author'=>get_current_user_id(),'note'=>$note_text,'timestamp'=>current_time('timestamp'));
 			$this->notes[] = $note;
 			$this->feedback_message = __('Booking note successfully added.','dbem');

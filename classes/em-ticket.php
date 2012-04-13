@@ -55,11 +55,6 @@ class EM_Ticket extends EM_Object{
 				global $wpdb;
 				$sql = "SELECT * FROM ". EM_TICKETS_TABLE ." WHERE ticket_id ='$ticket_data'";   
 			  	$ticket = $wpdb->get_row($sql, ARRAY_A);
-			  	//Ticket notes
-			  	$notes = $wpdb->get_results("SELECT * FROM ". EM_META_TABLE ." WHERE meta_key='ticket-note' AND object_id ='$ticket_data'", ARRAY_A);
-			  	foreach($notes as $note){
-			  		$this->notes[] = unserialize($note['meta_value']);
-			  	}
 			}
 			//Save into the object
 			$this->to_object($ticket);
@@ -68,6 +63,19 @@ class EM_Ticket extends EM_Object{
 		}
 		$this->compat_keys();
 		do_action('em_ticket',$this, $ticket_data);
+	}
+	
+	function get_notes(){
+		global $wpdb;
+		if( !is_array($this->notes) && !empty($this->ticket_id) ){
+		  	$notes = $wpdb->get_results("SELECT * FROM ". EM_META_TABLE ." WHERE meta_key='ticket-note' AND object_id ='{$this->ticket_id}'", ARRAY_A);
+		  	foreach($notes as $note){
+		  		$this->ticket_id[] = unserialize($note['meta_value']);
+		  	}
+		}elseif( empty($this->booking_id) ){
+			$this->notes = array();
+		}
+		return $this->notes;
 	}
 	
 	/**

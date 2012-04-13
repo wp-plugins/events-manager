@@ -94,13 +94,13 @@ class EM_Category extends EM_Object {
 		return $this->link;
 	}
 	
+	/**
+	 * Depreciated, don't use.
+	 * @return mixed
+	 */
 	function has_events(){
 		global $wpdb;
-		//FIXME old event category checking
-		$events_table = EM_EVENTS_TABLE;
-		$sql = "SELECT count(event_id) as events_no FROM $events_table WHERE category_id = {$this->id}";   
-	 	$affected_events = $wpdb->get_row($sql);
-		return apply_filters('em_category_has_events', (count($affected_events) > 0), $this);
+		return false;
 	}
 	
 	function output_single($target = 'html'){

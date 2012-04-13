@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.3.1
-Stable tag: 5.1.5
+Stable tag: 5.1.6
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,13 +98,19 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.5.2 =
+= 5.1.6 =
 * fixed multiple admin emails not going out
 * updated timthumb to v2.8.10
 * updated placeholder outputting to avoid overwriting longer variations of similarly named placeholders
 * fixed #_BOOKINGTICKETNAME not working
 * single location and event pages will still use location-single.php and event-single.php templates
 * fixed thumbnail image links on multisite to work with timthumb, thanks BinaryMoon for the tut!
+* Reduced sql calls for booking object instantiation. $EM_Booking->custom doesn't exist anymore, and notes must be loaded first with $EM_Booking->get_notes().
+* EM_Category->has_events() depreciated, returns false always
+* More wp_rewrite tweaks to improve compatability
+* fixed 24 hour formatting setting being ignored in timepicker
+* fixed bad datepickers in single ticket mode
+* fixed locations not being auto-approved if submitted via front-end and event is auto-approved.
 
 = 5.1.5 =
 * rewritten booking email function, simpler, less error-prone, overriedable and yet same effect

@@ -110,7 +110,7 @@ if( !class_exists('EM_Permalinks') ){
 				$em_rules[$events_slug.EM_LOCATION_SLUG.'/(.+)$'] = 'index.php?pagename='.$events_slug.'&em_redirect=1&location_slug=$matches[1]'; //single location page
 				$em_rules[$events_slug.EM_CATEGORY_SLUG.'/(.+)$'] = 'index.php?pagename='.$events_slug.'&em_redirect=1&category_slug=$matches[1]'; //single category page slug
 				//add a rule that ensures that the events page is found and used over other pages
-				$em_rules[trim($events_slug,'/').'$'] = 'index.php?pagename='.trim($events_slug,'/') ;
+				$em_rules[trim($events_slug,'/').'/?$'] = 'index.php?pagename='.trim($events_slug,'/') ;
 			}else{
 				$events_slug = EM_POST_TYPE_EVENT_SLUG;
 				$em_rules[$events_slug.'/(\d{4}-\d{2}-\d{2})$'] = 'index.php?post_type='.EM_POST_TYPE_EVENT.'&calendar_day=$matches[1]'; //event calendar date search
@@ -128,6 +128,18 @@ if( !class_exists('EM_Permalinks') ){
 						}
 					}
 				}
+			}
+			//make sure there's no page with same name as archives, that should take precedence as it can easily be deleted wp admin side
+			$em_query = new WP_Query(array('pagename'=>EM_POST_TYPE_EVENT_SLUG));
+			if( $em_query->have_posts() ){
+				$em_rules[trim(EM_POST_TYPE_EVENT_SLUG,'/').'/?$'] = 'index.php?pagename='.trim(EM_POST_TYPE_EVENT_SLUG,'/') ;
+				wp_reset_postdata();
+			}
+			//make sure there's no page with same name as archives, that should take precedence as it can easily be deleted wp admin side
+			$em_query = new WP_Query(array('pagename'=>EM_POST_TYPE_LOCATION_SLUG));
+			if( $em_query->have_posts() ){
+				$em_rules[trim(EM_POST_TYPE_LOCATION_SLUG,'/').'/?$'] = 'index.php?pagename='.trim(EM_POST_TYPE_LOCATION_SLUG,'/') ;
+				wp_reset_postdata();
 			}
 			//If in MS global mode and locations are linked on same site
 			if( EM_MS_GLOBAL && !get_site_option('dbem_ms_global_locations_links', true) ){

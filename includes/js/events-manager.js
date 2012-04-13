@@ -3,7 +3,7 @@ jQuery(document).ready( function($){
 	/* Time Entry */
 	if( $("#start-time").length > 0 ){
 		$("#start-time, #end-time").timePicker({
-			show24Hours: EM.show24hours,
+			show24Hours: EM.show24hours == 1,
 			step:15
 		});
 		// Store time used by duration.
@@ -455,12 +455,14 @@ jQuery(document).ready( function($){
 			}else{
 				var date_dateFormat = $("#em-date-start-loc").datepicker('option', 'dateFormat');
 			}
-			var bookings_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-bookings-date').val()) );
+			if($('#em-bookings-date').length > 0 && $('#em-bookings-date').val() != ''){
+				var bookings_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-bookings-date').val()) );
+				$("#em-bookings-date-loc").val(bookings_date_formatted);
+			}
 			var start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-date-start').val()) );
 			var end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-date-end').val()) );
 			$("#em-date-start-loc").val(start_date_formatted);
 			$("#em-date-end-loc").val(end_date_formatted);
-			$("#em-bookings-date-loc").val(bookings_date_formatted);
 		}
 		
 		//for the tickets form too
@@ -490,7 +492,7 @@ jQuery(document).ready( function($){
 			}
 		});
 	}
-	if( load_ui_css || $("#em-date-start-loc, #em-date-end-loc").length > 0 ){
+	if( load_ui_css || $("#em-date-start-loc, #em-date-end-loc, .em-ticket-form .start-loc, #em-bookings-date-loc").length > 0 ){
 		$('ui-datepicker-div').css();
 		var script = document.createElement("link");
 		script.rel = "stylesheet";
