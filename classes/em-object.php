@@ -330,7 +330,7 @@ class EM_Object {
 			$not = ( $category < 0 ) ? "NOT":'';
 			//get the term id directly
 			$term = new EM_Category(absint($category));
-			if( $term !== false && !is_wp_error($term) ){
+			if( !empty($term->term_id) ){
 				if( EM_MS_GLOBAL ){
 					$conditions['category'] = " ".EM_EVENTS_TABLE.".event_id $not IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value={$term->term_id} AND meta_key='event-category' ) ";
 				}else{
