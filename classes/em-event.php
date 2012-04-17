@@ -1344,8 +1344,12 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_BOOKEDSEATS': //Depreciated
 				case '#_BOOKEDSPACES':
+					//This placeholder is actually a little misleading, as it'll consider reserved (i.e. pending) bookings as 'booked'
 					if ($this->event_rsvp && get_option('dbem_rsvp_enabled')) {
-					   $replace = $this->get_bookings()->get_booked_spaces();
+						$replace = $this->get_bookings()->get_booked_spaces();
+						if( get_option('dbem_bookings_approval_reserved') ){
+							$replace += $this->get_bookings()->get_pending_spaces();
+						}
 					} else {
 						$replace = "0";
 					}

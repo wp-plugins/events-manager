@@ -311,7 +311,10 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get_available_spaces(){
 		$spaces = $this->get_spaces();
-		$available_spaces = $spaces - $this->get_booked_spaces() - $this->get_pending_spaces();
+		$available_spaces = $spaces - $this->get_booked_spaces();
+		if( get_option('dbem_bookings_approval_reserved') ){ //deduct reserved/pending spaces from available spaces 
+			$available_spaces -= $this->get_pending_spaces();
+		}
 		return apply_filters('em_booking_get_available_spaces', $available_spaces, $this);
 	}
 
@@ -321,12 +324,8 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function get_booked_spaces($force_refresh = false){
 		$booked_spaces = 0;
-		$EM_Bookings = $this->get_bookings(true);
-		$reserved_pending = get_option('dbem_bookings_approval_reserved');
-		$auto_approval = get_option('dbem_bookings_approval');
-		foreach ( $EM_Bookings->bookings as $EM_Booking ){
-			//never show cancelled status, nor pending if approvals required
-			if( $EM_Booking->booking_status == 1 || ((!$auto_approval || $reserved_pending) && $EM_Booking->booking_status == 0) ){
+		foreach ( $this->bookings as $EM_Booking ){
+			if( $EM_Booking->booking_status == 1 ){
 				$booked_spaces += $EM_Booking->get_spaces($force_refresh);
 			}
 		}
