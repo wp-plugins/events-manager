@@ -234,7 +234,7 @@ class EM_Event extends EM_Object{
 						$event_post = get_blog_post($search_by, $id);
 					}else{
 						//search for the post id only
-						$event_post = get_post($id);	
+						$event_post = get_post($id);
 					}
 				}else{
 					$event_post = $id;
@@ -603,7 +603,11 @@ class EM_Event extends EM_Object{
 			if( $this->post_status == 'private' ) $event_array['event_private'] = 1;
 			$event_array['event_attributes'] = serialize($this->event_attributes); //might as well
 			if( !empty($this->event_id) ){
-				$event_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}") == $this->post_id;
+				$blog_condition = '';
+				if( EM_MS_GLOBAL ){
+					$blog_condition = " AND blog_id='".get_current_blog_id()."' ";
+				}
+				$event_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}".$blog_condition) == $this->post_id;
 			}else{
 				$event_truly_exists = false;
 			}
