@@ -1186,7 +1186,7 @@ class EM_Event extends EM_Object{
 									if ( is_multisite() && $blog_id > 0) {
 										$imageParts = explode('/blogs.dir/', $image_src);
 										if (isset($imageParts[1])) {
-											$image_src = network_site_url('/wp-content/blogs.dir/' . $imageParts[1]);
+											$image_src = network_site_url('/wp-content/blogs.dir/'. $blog_id. '/' . $imageParts[1]);
 										}
 									}
 									$replace = "<img src='".esc_url(em_get_thumbnail_url($image_src, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."'/>";

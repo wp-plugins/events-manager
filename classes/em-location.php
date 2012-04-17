@@ -643,6 +643,13 @@ class EM_Location extends EM_Object {
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
 								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
+									global $blog_id;
+									if ( is_multisite() && $blog_id > 0) {
+										$imageParts = explode('/blogs.dir/', $image_url);
+										if (isset($imageParts[1])) {
+											$image_url = network_site_url('/wp-content/blogs.dir/'. $blog_id. '/' . $imageParts[1]);
+										}
+									}
 									$replace = "<img src='".esc_url(em_get_thumbnail_url($image_url, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->location_name)."'/>";
 								}else{
 									$replace = "<img src='".$image_url."' alt='".esc_attr($this->location_name)."'/>";

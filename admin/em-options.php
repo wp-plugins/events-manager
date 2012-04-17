@@ -923,10 +923,12 @@ function em_admin_options_page() {
 							</select>
 						</td>
 				   	</tr>
-					<tr><td colspan="2"><h4><?php echo _e('Front-end management pages','dbem'); ?></h4></td></tr><?php
+					<tr><td colspan="2"><h4><?php echo _e('Front-end management pages','dbem'); ?></h4></td></tr>
+					<tr><td colspan="2"><?php echo _e('Users can create and edit events and locations, as well as managing bookings for their events.','dbem'); ?></td></tr>
+					<?php
 	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Edit events','dbem')), 'dbem_edit_events_page', $events_page_options, sprintf(__('Users can view, add and edit their %s on this page.','dbem'),__('events','dbem')) );
 	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Edit locations','dbem')), 'dbem_edit_locations_page', $events_page_options, sprintf(__('Users can view, add and edit their %s on this page.','dbem'),__('locations','dbem')) );
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Manage bookings','dbem')), 'dbem_edit_bookings_page', $events_page_options, sprintf(__('Users can manage their %s on this page.','dbem'),__('bookings','dbem')) );
+	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Manage bookings','dbem')), 'dbem_edit_bookings_page', $events_page_options, __('Users can manage bookings for their events on this page.','dbem') );
 					echo $save_button;
 					?>
 	            	</table>
