@@ -75,6 +75,8 @@ class EM_Bookings_Table{
 		$this->cols_template = apply_filters('em_bookings_table_cols_template', array(
 			'user_name'=>__('Name','dbem'),
 			'event_name'=>__('Event','dbem'),
+			'event_date'=>__('Event Date(s)','dbem'),
+			'event_time'=>__('Event Time(s)','dbem'),
 			'user_email'=>__('E-mail','dbem'),
 			'dbem_phone'=>__('Phone Number','dbem'),
 			'booking_spaces'=>__('Spaces','dbem'),
@@ -516,6 +518,10 @@ class EM_Bookings_Table{
 				}else{
 					$cols[] = '<a href="'.$EM_Booking->get_event()->get_bookings_url().'">'. $this->events[$EM_Booking->event_id]->name .'</a>';
 				}
+			}elseif($col == 'event_date'){
+				$cols[] = $EM_Booking->get_event()->output('#_EVENTDATES');
+			}elseif($col == 'event_time'){
+				$cols[] = $EM_Booking->get_event()->output('#_EVENTTIMES');
 			}elseif($col == 'booking_price'){
 				$cols[] = ($this->show_tickets && !empty($EM_Ticket)) ? $EM_Ticket_Booking->get_price(false,true,true):$EM_Booking->get_price(false,true,true);
 			}elseif($col == 'booking_status'){

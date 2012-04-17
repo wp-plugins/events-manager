@@ -325,29 +325,50 @@ class EM_Object {
 		//Add conditions for category selection
 		//Filter by category, can be id or comma seperated ids
 		//TODO create an exclude category option
-		if ( is_numeric($category) && $category > 0 ){
+		$not = '';
+		if ( is_numeric($category) ){
+			$not = ( $category < 0 ) ? "NOT":'';
 			//get the term id directly
-			$term = new EM_Category($category);
+			$term = new EM_Category(absint($category));
 			if( $term !== false && !is_wp_error($term) ){
 				if( EM_MS_GLOBAL ){
-					$conditions['category'] = " ".EM_EVENTS_TABLE.".event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value={$term->term_id} AND meta_key='event-category' ) ";
+					$conditions['category'] = " ".EM_EVENTS_TABLE.".event_id $not IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value={$term->term_id} AND meta_key='event-category' ) ";
 				}else{
-					$conditions['category'] = " ".EM_EVENTS_TABLE.".post_id IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id={$term->term_taxonomy_id} ) ";
+					$conditions['category'] = " ".EM_EVENTS_TABLE.".post_id $not IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id={$term->term_taxonomy_id} ) ";
 				}
 			} 
 		}elseif( self::array_is_numeric($category) ){
 			$term_ids = array();
+			$term_not_ids = array();
 			foreach($category as $category_id){
-				$term = new EM_Category($category_id);
+				$term = new EM_Category(absint($category_id));
 				if( !empty($term->term_taxonomy_id) ){
-					$term_ids[] = $term->term_taxonomy_id;
+					if( $category_id > 0 ){
+						$term_ids[] = $term->term_taxonomy_id;
+					}else{
+						$term_not_ids[] = $term->term_taxonomy_id;
+					}
 				}
 			}
-			if( count($term_ids) > 0 ){
+			if( count($term_ids) > 0 || count($term_not_ids) > 0 ){
 				if( EM_MS_GLOBAL ){
-					$conditions['category'] = " ".EM_EVENTS_TABLE.".event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_name='event-category' ) ";
+					$cat_conds = array();
+					if( count($term_ids) > 0 ){
+						$cat_conds[] = EM_EVENTS_TABLE.".event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_name='event-category' )";
+					}
+					if( count($term_not_ids) > 0 ){
+						$cat_conds[] = EM_EVENTS_TABLE.".event_id NOT IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_name='event-category' )";			
+					}
+					$conditions['category'] = '('. implode(' || ', $cat_conds) .')';
 				}else{
-					$conditions['category'] = " ".EM_EVENTS_TABLE.".post_id IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") ) ";
+					$cat_conds = array();
+					if( count($term_ids) > 0 ){
+						$cat_conds[] = EM_EVENTS_TABLE.".post_id IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") )";
+					}
+					if( count($term_not_ids) > 0 ){
+						$cat_conds[] = EM_EVENTS_TABLE.".post_id NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") )";			
+					}
+					$conditions['category'] = '('. implode(' || ', $cat_conds) .')';
 				}
 			}
 		}		
@@ -884,7 +905,7 @@ class EM_Object {
 						$array[$key] = (int) $string;
 					}elseif( self::array_is_numeric($string) ){
 						$array[$key] = $string;
-					}elseif( !is_array($string) && preg_match('/^([0-9],?)+$/', $string) ){
+					}elseif( !is_array($string) && preg_match('/^([\-0-9],?)+$/', $string) ){
 						$array[$key] = explode(',', $string);
 					}else{
 						//No format we accept
