@@ -74,6 +74,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 					$this->feedback_message = get_option('dbem_booking_feedback');
 				}
 				if(!$email){
+					$EM_Booking->email_not_sent = true;
 					$this->feedback_message .= ' '.get_option('dbem_booking_feedback_nomail');
 					if( current_user_can('activate_plugins') ){
 						if( count($EM_Booking->get_errors()) > 0 ){

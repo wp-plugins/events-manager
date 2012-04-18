@@ -58,6 +58,7 @@ class EM_Categories extends EM_Object implements Iterator{
 	
 	function get_post(){
 		$this->ms_global_switch();
+		$this->categories = array();
 		if(!empty($_POST['event_categories']) && $this->array_is_numeric($_POST['event_categories'])){
 			foreach( $_POST['event_categories'] as $term ){
 				$this->categories[$term] = new EM_Category($term);

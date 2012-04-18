@@ -230,6 +230,7 @@ function em_init_actions() {
 		$feedback = '';
 		if ( $_REQUEST['action'] == 'booking_add') {
 			//ADD/EDIT Booking
+			ob_start();
 			em_verify_nonce('booking_add');
 			if( !is_user_logged_in() || get_option('dbem_bookings_double') || !$EM_Event->get_bookings()->has_booking(get_current_user_id()) ){
 				$post_validation = $EM_Booking->get_post();
@@ -330,6 +331,7 @@ function em_init_actions() {
 				$feedback = get_option('dbem_booking_feedback_already_booked');
 				$EM_Notices->add_error( $feedback );
 			}
+			ob_clean();
 	  	}elseif ( $_REQUEST['action'] == 'booking_add_one' && is_object($EM_Event) && is_user_logged_in() ) {
 			//ADD/EDIT Booking
 			em_verify_nonce('booking_add_one');

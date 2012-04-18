@@ -98,6 +98,20 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1.6.3 =
+* added excludeable categories (use negative numbers instead)
+* clarified some of the field tips of "other pages" in options
+* fixed thumbnail issue in MS (again)
+* added event dates and times as sortable booking collumns
+* fixed multisite duplicate post id bug in global mode
+* simplified meaning of EM_Bookings::get_booked_spaces, so it's just booked spaces, not pending. get_available_spaces() should be used for reserved seats instead.
+* replaced old default date formats with #_EVENTDATES and #_EVENTTIMES
+* fixed some datepicker problems in single ticket mode with start/end date tickets
+* removed jQuery datepicker and autocomplete libraries, now using WP's internal scripts instead
+* improved the reliability of returned json data in booking form
+* fixed categories not editable in front-end,
+* added email not sent flag to booking object
+
 = 5.1.6 =
 * fixed multiple admin emails not going out
 * updated timthumb to v2.8.10
