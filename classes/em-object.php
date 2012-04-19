@@ -57,7 +57,10 @@ class EM_Object {
 			if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
 		
 			//Clean all id lists
-			$array = self::clean_id_atts($array, array('location', 'event', 'category', 'tag', 'post_id'));
+			$array = self::clean_id_atts($array, array('location', 'event', 'category', 'post_id'));
+			if( !empty($array['tag']) && strstr(',', $array['tag']) !== false ){
+				$array['tag'] = explode(',',$array['tag']);
+			}
 			
 			//OrderBy - can be a comma-seperated array of field names to order by (field names of object, not db)
 			if( array_key_exists('orderby', $array)){
@@ -72,7 +75,6 @@ class EM_Object {
 			}
 			//return clean array
 			$defaults = array_merge ( $defaults, $array ); //No point using WP's cleaning function, we're doing it already.
-			
 		}
 		
 		//Do some spring cleaning for known values
@@ -374,17 +376,17 @@ class EM_Object {
 		}		
 		//Add conditions for tags
 		//Filter by tag, can be id or comma seperated ids
-		if ( is_numeric($tag) && $tag > 0 ){
+		if ( !empty($tag) && !is_array($tag) ){
 			//get the term id directly
 			$term = new EM_Tag($tag);
-			if( $term !== false && !is_wp_error($term) ){
+			if( !empty($term->term_id) ){
 				$conditions['tag'] = " ".EM_EVENTS_TABLE.".post_id IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id={$term->term_taxonomy_id} ) ";
-			} 
-		}elseif( self::array_is_numeric($tag) ){
+			}
+		}elseif( is_array($tag) ){
 			$term_ids = array();
 			foreach($tag as $tag_id){
 				$term = new EM_Tag($tag_id);
-				if( $term !== false && !is_wp_error($term) ){
+				if( !empty($term->term_id) ){
 					$term_ids[] = $term->term_taxonomy_id;
 				}
 			}
@@ -407,6 +409,7 @@ class EM_Object {
 	}
 	
 	/**
+	 * WORK IN PROGRESS
 	 * Builds an array of SQL query conditions based on regularly used arguments
 	 * @param array $args
 	 * @return array
@@ -628,7 +631,7 @@ class EM_Object {
 		if ( is_numeric($category) && $category > 0 ){
 			//get the term id directly
 			$term = new EM_Category($category);
-			if( $term !== false && !is_wp_error($term) ){
+			if( !empty($term->term_id) ){
 				if( EM_MS_GLOBAL ){
 					$event_ids = $wpdb->get_col($wpdb->prepare("SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value={$term->term_id} AND meta_key='event-category'"));
 					$query[] = array( 'key' => '_event_id', 'value' => $event_ids, 'compare' => 'IN' );
@@ -641,7 +644,7 @@ class EM_Object {
 			$term_ids = array();
 			foreach($category as $category_id){
 				$term = new EM_Category($category_id);
-				if( $term !== false && !is_wp_error($term) ){
+				if( !empty($term->term_id) ){
 					$term_ids[] = $term->term_taxonomy_id;
 				}
 			}
@@ -657,18 +660,18 @@ class EM_Object {
 		}		
 		//Add conditions for tags
 		//Filter by tag, can be id or comma seperated ids
-		if ( is_numeric($tag) && $tag > 0 ){
+		if ( !empty($tag) && !is_array($tag) ){
 			//get the term id directly
 			$term = new EM_Tag($tag);
-			if( $term !== false && !is_wp_error($term) ){
+			if( !empty($term->term_id) ){
 				if( !is_array($wp_query->query_vars['tax_query']) ) $wp_query->query_vars['tax_query'] = array();
 				$wp_query->query_vars['tax_query'] = array('taxonomy' => EM_TAXONOMY_TAXONOMY, 'field'=>'id', 'terms'=>$term->term_taxonomy_id);
 			} 
-		}elseif( self::array_is_numeric($tag) ){
+		}elseif( is_array($tag) ){
 			$term_ids = array();
-			foreach($tag as $tag_id){
-				$term = new EM_Tag($tag_id);
-				if( $term !== false && !is_wp_error($term) ){
+			foreach($tag as $tag_data){
+				$term = new EM_Tag($tag_data);
+				if( !empty($term->term_id) ){
 					$term_ids[] = $term->term_taxonomy_id;
 				}
 			}

@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.6.3 =
+= 5.1.6.4 =
 * added excludeable categories (use negative numbers instead)
 * clarified some of the field tips of "other pages" in options
 * fixed thumbnail issue in MS (again)
@@ -111,6 +111,8 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * improved the reliability of returned json data in booking form
 * fixed categories not editable in front-end,
 * added email not sent flag to booking object
+* fixed tags not working for slug searches
+* fixed dst issues in ical calendars
 
 = 5.1.6 =
 * fixed multiple admin emails not going out

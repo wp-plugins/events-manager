@@ -15,7 +15,8 @@ function em_docs_init($force_init = false){
 				'events' => array(
 					'blog' => array( 'desc' => sprintf('Limit search to %s created in a specific blog id (MultiSite only)','events')),
 					'bookings' => array( 'desc'=> 'Include only events with bookings enabled. Use \'user\' to show events a logged in user has booked.'.'1 = yes, 0 = no'),
-					'category' => array( 'desc'=> sprintf('Supply a single id or comma-seperated ids (e.g. "1,2,3") to limit the search to events in these %s.','categories'), 'default'=>0),
+					'category' => array( 'desc'=> sprintf('Supply a single id or comma-seperated ids (e.g. "1,2,3") to limit the search to events in these %s. You can also use negative numbers to exclude specific categories (e.g. -1,-2,-3).','categories'), 'default'=>0),
+					'tag' => array( 'desc'=> sprintf('Supply a single id or comma-seperated ids (e.g. "music,theatre,sport") to limit the search to events in these %s.','tags'), 'default'=>0),
 					'event' => array( 'desc'=> sprintf('Supply a single id or comma-seperated ids (e.g. "1,2,3") to limit the search to %s with the %s.','events', 'event_id(s)'), 'default'=>0),
 					'group' => array( 'desc' => 'Limit search to events belonging to a specific group id (BuddyPress only). Using \'my\' will show events belonging to groups the logged in user is a member of.'),
 					'post_id' => array( 'desc' => sprintf('Supply a single id or comma-seperated ids (e.g. "1,2,3") to limit the search to %s with the %s.','events', 'post_id(s)')),
@@ -46,6 +47,9 @@ function em_docs_init($force_init = false){
 					'postcode' => array( 'desc'=> sprintf('Search for %s in this %s (no partial matches, case sensitive).','locations','Postcode'), 'default' => 'none')
 				),
 				'categories' => array(
+					'' => array( 'desc' => 'See the <a href="http://codex.wordpress.org/Function_Reference/get_terms">WordPress get_terms() Codex</a> for a list of possible search attributes/arguments.'),
+				),
+				'tags' => array(
 					'' => array( 'desc' => 'See the <a href="http://codex.wordpress.org/Function_Reference/get_terms">WordPress get_terms() Codex</a> for a list of possible search attributes/arguments.'),
 				),
 				'calendar' => array(
