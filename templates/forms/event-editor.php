@@ -27,7 +27,20 @@ if( !empty($_REQUEST['success']) ){
 <form enctype='multipart/form-data' id="event-form" method="post" action="">
 	<div class="wrap">
 		<?php do_action('em_front_event_form_header'); ?>
-		
+		<?php if(get_option('dbem_events_anonymous_submissions')): ?>
+			<h4 class="event-form-submitter"><?php _e ( 'Your Details', 'dbem' ); ?></h4>
+			<div class="inside event-form-submitter">
+				<p>
+					<label><?php _e('Name', 'dbem'); ?></label>
+					<input type="text" name="event_owner_name" id="event-owner-name" value="<?php echo esc_attr($EM_Event->event_owner_name); ?>" />
+				</p>
+				<p>
+					<label><?php _e('Email', 'dbem'); ?></label>
+					<input type="text" name="event_owner_email" id="event-owner-email" value="<?php echo esc_attr($EM_Event->event_owner_email); ?>" />
+				</p>
+				<?php do_action('em_font_event_form_guest'); ?>
+			</div>
+		<?php endif; ?>
 		<h4 class="event-form-name"><?php _e ( 'Event Name', 'dbem' ); ?></h4>
 		<div class="inside event-form-name">
 			<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->event_name,ENT_QUOTES); ?>" /><?php echo $required; ?>

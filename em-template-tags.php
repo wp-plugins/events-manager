@@ -293,6 +293,8 @@ function em_events_admin($args = array()){
 				'show_add_new' => true
 			));
 		}
+	}elseif( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
+		em_event_form($args);
 	}else{
 		echo __("You must log in to view and manage your events.",'dbem');
 	}

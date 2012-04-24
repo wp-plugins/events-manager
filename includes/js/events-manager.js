@@ -1,5 +1,5 @@
+var load_ui_css = false; //load jquery ui css?
 jQuery(document).ready( function($){
-	var load_ui_css = false; //load jquery ui css?
 	/* Time Entry */
 	if( $("#start-time").length > 0 ){
 		$("#start-time, #end-time").timePicker({
@@ -416,7 +416,10 @@ jQuery(document).ready( function($){
 		}
 		//default picker vals
 		var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay };
-
+		if( EM.dateFormat != ''){
+			datepicker_vals.dateFormat = EM.dateFormat;
+		}
+		
 		//bookings end date
 		var bookings_datepicker_vals = { 
 			altField : "#em-bookings-date" 

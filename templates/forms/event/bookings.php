@@ -1,6 +1,5 @@
 <?php
 global $EM_Event, $post;
-$localised_date_format = em_get_date_format();
 ?>
 <div id="event-rsvp-box">
 	<input id="event-rsvp" name='event_rsvp' value='1' type='checkbox' <?php echo ($EM_Event->event_rsvp) ? 'checked="checked"' : ''; ?> />

@@ -227,13 +227,6 @@ function em_get_hour_format(){
 	return get_option('dbem_time_24h') ? "H:i":"h:i A";
 }
 
-function em_get_date_format(){
-	global $localised_date_formats;
-	$locale_code = substr ( get_locale (), 0, 2 );
-	$localised_date_format = !empty($localised_date_formats[$locale_code]) ? $localised_date_formats[$locale_code]:$localised_date_formats['en'];
-	return $localised_date_format;
-}
-
 function em_get_days_names(){
 	return array (1 => __ ( 'Mon' ), 2 => __ ( 'Tue' ), 3 => __ ( 'Wed' ), 4 => __ ( 'Thu' ), 5 => __ ( 'Fri' ), 6 => __ ( 'Sat' ), 0 => __ ( 'Sun' ) );
 }

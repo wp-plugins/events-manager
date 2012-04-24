@@ -71,6 +71,10 @@ class EM_Event extends EM_Object{
 	var $recurrence_byday;
 	var $recurrence_days = 0;
 	var $recurrence_byweekno;
+	/* anonymous submission information */
+	var $event_owner_anonymous;
+	var $event_owner_name;
+	var $event_owner_email;
 	/**
 	 * Previously used to give this object shorter property names for db values (each key has a name) but this is now depreciated, use the db field names as properties. This propertey provides extra info about the db fields.
 	 * @var array
@@ -268,12 +272,12 @@ class EM_Event extends EM_Object{
 				foreach($event_meta as $event_meta_key => $event_meta_val){
 					if($event_meta_key[0] != '_'){
 						$this->event_attributes[$event_meta_key] = ( count($event_meta_val) > 1 ) ? $event_meta_val:$event_meta_val[0];					
-					}else{
-						if($event_meta_key != '_event_attributes'){
-							$field_name = substr($event_meta_key, 1);
-							if( array_key_exists($field_name, $this->fields) ){
-								$this->$field_name = $event_meta_val[0];
-							}
+					}elseif($event_meta_key != '_event_attributes'){
+						$field_name = substr($event_meta_key, 1);
+						if( array_key_exists($field_name, $this->fields) ){
+							$this->$field_name = $event_meta_val[0];
+						}elseif( in_array($field_name, array('event_owner_name','event_owner_anonymous','event_owner_email')) ){
+							$this->$field_name = $event_meta_val[0];
 						}
 					}
 				}
@@ -323,6 +327,13 @@ class EM_Event extends EM_Object{
 		$this->post_type = ($this->is_recurring() || !empty($_POST['recurring'])) ? 'event-recurring':EM_POST_TYPE_EVENT;
 		//don't forget categories!
 		$this->get_categories()->get_post();
+		//anonymous submissions and guest basic info
+		if( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') && empty($this->event_id) ){
+			$this->event_owner_anonymous = 1;
+			$this->event_owner_name = !empty($_REQUEST['event_owner_name']) ? $_REQUEST['event_owner_name']:'';
+			$this->event_owner_email = !empty($_REQUEST['event_owner_email']) ? $_REQUEST['event_owner_email']:'';
+		}
+		//get the rest and validate (optional)
 		$this->get_post_meta(false);
 		$result = $validate ? $this->validate():true; //validate both post and meta, otherwise return true
 		return apply_filters('em_event_get_post', $result, $this);		
@@ -428,6 +439,7 @@ class EM_Event extends EM_Object{
 		if(EM_MS_GLOBAL && !is_main_site()){
 			$this->get_categories()->get_post(); //it'll know what to do
 		}
+		//validate (optional) and return result
 		$result = $validate ? $this->validate_meta():true;
 		$this->compat_keys(); //compatability
 		return apply_filters('em_event_get_post', $result, $this);
@@ -437,7 +449,16 @@ class EM_Event extends EM_Object{
 		$validate_post = true;
 		if( empty($this->event_name) ){
 			$validate_post = false; 
-			$this->add_error( __('Event name').__(" is required.", "dbem") );
+			$this->add_error( sprintf(__("%s is required.", "dbem"), __('Event name','dbem')) );
+		}
+		//anonymous submissions and guest basic info
+		if( !empty($this->event_owner_anonymous) ){
+			if( !is_email($this->event_owner_email) ){
+				$this->add_error( sprintf(__("%s is required.", "dbem"), __('A valid email','dbem')) );
+			}
+			if( empty($this->event_owner_name) ){
+				$this->add_error( sprintf(__("%s is required.", "dbem"), __('Your name','dbem')) );
+			}
 		}
 		$validate_image = $this->image_validate();
 		$validate_meta = $this->validate_meta();
@@ -534,6 +555,12 @@ class EM_Event extends EM_Object{
 			$this->get_status();
 			//Categories? note that categories will soft-fail, so no errors
 			$this->get_categories()->save();
+			//anonymous submissions should save this information
+			if( !empty($this->event_owner_anonymous) ){
+				update_post_meta($this->post_id, '_event_owner_anonymous', 1);
+				update_post_meta($this->post_id, '_event_owner_name', $this->event_owner_name);
+				update_post_meta($this->post_id, '_event_owner_email', $this->event_owner_email);
+			}
 			//now save the meta
 			$meta_save = $this->save_meta();
 			//save the image
@@ -591,9 +618,10 @@ class EM_Event extends EM_Object{
 					}
 				}
 			}
+			//update timestampes
 			update_post_meta($this->post_id, '_start_ts', str_pad($this->start, 10, 0, STR_PAD_LEFT));
 			update_post_meta($this->post_id, '_end_ts', str_pad($this->end, 10, 0, STR_PAD_LEFT));
-			
+			//sort out event status			
 			$result = count($this->errors) == 0;
 			$this->get_status();
 			$this->event_status = ($result) ? $this->event_status:null; //set status at this point, it's either the current status, or if validation fails, null
@@ -901,6 +929,15 @@ class EM_Event extends EM_Object{
 	function get_contact(){
 		if( !is_object($this->contact) ){
 			$this->contact = new EM_Person($this->event_owner);
+			//if this is anonymous submission, change contact email and name
+			if( $this->event_owner_anonymous ){
+				$this->contact->user_email = $this->event_owner_email;
+				$name = explode(' ',$this->event_owner_name);
+				$first_name = array_shift($name);
+				$last_name = (count($name) > 0) ? implode(' ',$name):'';
+				$this->contact->user_firstname = $this->contact->first_name = $first_name;
+				$this->contact->user_lastname = $this->contact->last_name = $last_name;
+			}
 		}
 		return $this->contact;
 	}
@@ -1112,10 +1149,10 @@ class EM_Event extends EM_Object{
 						$show_condition = !is_user_logged_in();
 					}elseif ($condition == 'has_spaces'){
 						//is it an all day event
-						$show_condition = $this->rsvp && $this->get_bookings()->get_available_spaces() > 0;
+						$show_condition = $this->event_rsvp && $this->get_bookings()->get_available_spaces() > 0;
 					}elseif ($condition == 'fully_booked'){
 						//is it an all day event
-						$show_condition = $this->rsvp && $this->get_bookings()->get_available_spaces() <= 0;
+						$show_condition = $this->event_rsvp && $this->get_bookings()->get_available_spaces() <= 0;
 					}elseif ($condition == 'is_long'){
 						//is it an all day event
 						$show_condition = $this->event_start_date != $this->event_end_date;
@@ -1461,7 +1498,13 @@ class EM_Event extends EM_Object{
 					$gcal_url = str_replace('event_name', urlencode($this->event_name), $gcal_url);
 					$gcal_url = str_replace('start_date', urlencode($dateStart), $gcal_url);
 					$gcal_url = str_replace('end_date', urlencode($dateEnd), $gcal_url);
-					$gcal_url = str_replace('post_content', urlencode($this->post_content), $gcal_url);
+					if( !empty($this->post_excerpt) ){
+						$excerpt = $this->post_excerpt;
+					}else{
+						$matches = explode('<!--more', $this->post_content);
+						$excerpt = wp_kses_data($matches[0]);
+					}
+					$gcal_url = str_replace('post_content', urlencode($excerpt), $gcal_url);
 					$gcal_url = str_replace('location_name', urlencode($this->output('#_LOCATION')), $gcal_url);
 					$gcal_url = str_replace('event_url', urlencode($this->get_permalink()), $gcal_url);
 					$gcal_url = str_replace('blog_name', urlencode(get_bloginfo()), $gcal_url);

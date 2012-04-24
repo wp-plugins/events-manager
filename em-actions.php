@@ -310,6 +310,8 @@ function em_init_actions() {
 						}elseif( !is_user_logged_in() ){
 							$registration = false;
 							$EM_Notices->add_error( get_option('dbem_booking_feedback_log_in') );
+						}elseif( empty($EM_Booking->person_id) ){ //user must be logged in, so we make this person the current user id
+							$EM_Booking->person_id = get_current_user_id();
 						}
 					}
 					$EM_Bookings = $EM_Event->get_bookings();
