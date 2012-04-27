@@ -3,8 +3,8 @@
 $tz = date_default_timezone_get(); // get current PHP timezone
 date_default_timezone_set( get_option('timezone_string')); // set the PHP timezone to match WordPress
 //send headers
-//header('Content-type: text/calendar; charset=utf-8');
-//header('Content-Disposition: inline; filename="events.ics"');
+header('Content-type: text/calendar; charset=utf-8');
+header('Content-Disposition: inline; filename="events.ics"');
 		
 $description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_description_format' ) ) );
 if( !empty($_REQUEST['event_id']) ){

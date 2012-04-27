@@ -1459,12 +1459,6 @@ class EM_Event extends EM_Object{
 					$replace = ob_get_clean();
 					break;
 				//Categories and Tags
-				case '#_CATEGORIES': //depreciated
-				case '#_EVENTCATEGORIES':
-					ob_start();
-					$template = em_locate_template('placeholders/categories.php', true, array('EM_Event'=>$this));
-					$replace = ob_get_clean();
-					break;
 				case '#_EVENTCATEGORIESIMAGES':
 					ob_start();
 					$template = em_locate_template('placeholders/eventcategoriesimages.php', true, array('EM_Event'=>$this));
@@ -1473,6 +1467,12 @@ class EM_Event extends EM_Object{
 				case '#_EVENTTAGS':
 					ob_start();
 					$template = em_locate_template('placeholders/eventtags.php', true, array('EM_Event'=>$this));
+					$replace = ob_get_clean();
+					break;
+				case '#_CATEGORIES': //depreciated
+				case '#_EVENTCATEGORIES':
+					ob_start();
+					$template = em_locate_template('placeholders/categories.php', true, array('EM_Event'=>$this));
 					$replace = ob_get_clean();
 					break;
 				//Ical Stuff
