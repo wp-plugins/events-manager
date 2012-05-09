@@ -1,5 +1,5 @@
+var load_ui_css = false; //load jquery ui css?
 jQuery(document).ready( function($){
-	var load_ui_css = false; //load jquery ui css?
 	/* Time Entry */
 	if( $("#start-time").length > 0 ){
 		$("#start-time, #end-time").timePicker({
@@ -416,7 +416,10 @@ jQuery(document).ready( function($){
 		}
 		//default picker vals
 		var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay };
-
+		if( EM.dateFormat != ''){
+			datepicker_vals.dateFormat = EM.dateFormat;
+		}
+		
 		//bookings end date
 		var bookings_datepicker_vals = { 
 			altField : "#em-bookings-date" 
@@ -469,32 +472,35 @@ jQuery(document).ready( function($){
 		$(".em-ticket-form, #em-tickets-form").each(function(i, el){
 			el = $(el);
 			start = el.find('.start-loc');
+			end = el.find('.end-loc');
 			load_ui_css = true;
-			if( EM.locale != 'en' && $.datepicker.regional[EM.locale] != null ){
-				var date_dateFormat = $.datepicker.regional[EM.locale].dateFormat;
-			}else{
-				var date_dateFormat = start.first().datepicker('option', 'dateFormat');
-			}
 			if(start.length > 0){
 				load_ui_css = true;
 				datepicker_vals.altField = el.find('.start').first();
-				start.first().datepicker(datepicker_vals);
-				start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', datepicker_vals.altField.val()) );
+				start.datepicker(datepicker_vals);
+				//formatting for both
+				if( EM.locale != 'en' && $.datepicker.regional[EM.locale] != null ){
+					var date_dateFormat = $.datepicker.regional[EM.locale].dateFormat;
+				}else{
+					var date_dateFormat = start.datepicker('option', 'dateFormat');
+				}
+				start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd' , datepicker_vals.altField.val()) );
 				el.find(".start-loc").val(start_date_formatted);
-			}
-			end = el.find('.end-loc');
-			if(end.length > 0){
-				load_ui_css = true;
-				datepicker_vals.altField = el.find('.end').first();
-				end.first().datepicker(datepicker_vals);
-				end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', datepicker_vals.altField.val()) );
-				el.find(".end-loc").first().val(end_date_formatted);
+				//end 
+				if(end.length > 0){
+					load_ui_css = true;
+					datepicker_vals.altField = el.find('.end').first();
+					end.first().datepicker(datepicker_vals);
+					end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd' , datepicker_vals.altField.val()) );
+					el.find(".end-loc").first().val(end_date_formatted);
+				}
 			}
 		});
 	}
 	if( load_ui_css || $("#em-date-start-loc, #em-date-end-loc, .em-ticket-form .start-loc, #em-bookings-date-loc").length > 0 ){
 		$('ui-datepicker-div').css();
 		var script = document.createElement("link");
+		script.id = 'jquery-ui-css';
 		script.rel = "stylesheet";
 		script.href = EM.ui_css;
 		document.body.appendChild(script);

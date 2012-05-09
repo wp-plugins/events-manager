@@ -500,6 +500,7 @@ jQuery(document).ready( function($){
 	if( load_ui_css || $("#em-date-start-loc, #em-date-end-loc, .em-ticket-form .start-loc, #em-bookings-date-loc").length > 0 ){
 		$('ui-datepicker-div').css();
 		var script = document.createElement("link");
+		script.id = 'jquery-ui-css';
 		script.rel = "stylesheet";
 		script.href = EM.ui_css;
 		document.body.appendChild(script);

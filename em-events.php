@@ -216,7 +216,7 @@ function em_wp_the_title($data){
 	$edit_events_page_id = get_option( 'dbem_edit_events_page' );
 	$edit_locations_page_id = get_option( 'dbem_edit_locations_page' );
 	$edit_bookings_page_id = get_option( 'dbem_edit_bookings_page' );
-	if( get_option('dbem_disable_title_rewrites') != 1 && !empty($post->ID) && in_array($post->ID, array($events_page_id, $locations_page_id, $edit_events_page_id, $edit_locations_page_id, $edit_bookings_page_id)) ){
+	if( !is_main_query() && !empty($post->ID) && in_array($post->ID, array($events_page_id, $locations_page_id, $edit_events_page_id, $edit_locations_page_id, $edit_bookings_page_id)) ){
 		if ( $wp_query->in_the_loop ) {
 			return apply_filters('em_wp_the_title', em_content_page_title($data)) ;
 		}

@@ -561,10 +561,10 @@ class EM_Event extends EM_Object{
 				update_post_meta($this->post_id, '_event_owner_name', $this->event_owner_name);
 				update_post_meta($this->post_id, '_event_owner_email', $this->event_owner_email);
 			}
-			//now save the meta
-			$meta_save = $this->save_meta();
 			//save the image
 			$this->image_upload();
+			//now save the meta
+			$meta_save = $this->save_meta();
 			$image_save = (count($this->errors) == 0); //whilst it might not be an image save that fails, we can know something went wrong
 		}
 		$result = $meta_save && $post_save && $image_save;

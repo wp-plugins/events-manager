@@ -549,6 +549,14 @@ if( !function_exists('get_current_blog_id') ){
 	function get_current_blog_id(){ return 1; } //for < 3.1
 }
 
+if( !function_exists( 'is_main_query' ) ){
+	/**
+	 * Substitutes the original function in 3.3 onwards, for backwards compatability (only created if not previously defined)
+	 * @return bool
+	 */
+	function is_main_query(){ global $wp_query; return $wp_query->in_the_loop == true; }
+}
+
 function em_get_thumbnail_url($image_url, $width, $height){
 	return plugins_url('includes/thumbnails/timthumb.php', __FILE__).'?src='.$image_url.'&amp;h='. $height .'&amp;w='. $width;
 }

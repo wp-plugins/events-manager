@@ -39,22 +39,24 @@ $can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is
 			 	<input type='hidden' name='action' value='booking_add'/>
 			 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
 			 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_add'); ?>'/>
-				<?php do_action('em_booking_form_before_tickets'); //do not delete ?>
 				<?php 
 					// Tickets Form
 					if( ($can_book || get_option('dbem_bookings_tickets_show_loggedout')) && (count($EM_Tickets->tickets) > 1 || get_option('dbem_bookings_tickets_single_form')) ){ //show if more than 1 ticket, or if in forced ticket list view mode
+						do_action('em_booking_form_before_tickets'); //do not delete
 						//Show multiple tickets form to user, or single ticket list if settings enable this
 						//If logged out, can be allowed to see this in settings witout the register form 
 						em_locate_template('forms/bookingform/tickets-list.php',true, array('EM_Event'=>$EM_Event));
+						do_action('em_booking_form_after_tickets'); //do not delete
 					}
 				?>
 				<?php if( $can_book ): ?>
-					<?php do_action('em_booking_form_after_tickets'); ?>
 					<div class='em-booking-form-details'>
 						<?php 
 							if( is_object($EM_Ticket) && count($EM_Tickets->tickets) == 1 && !get_option('dbem_bookings_tickets_single_form') ){
+								do_action('em_booking_form_before_tickets'); //do not delete
 								//show single ticket form, only necessary to show to users able to book (or guests if enabled)
 								em_locate_template('forms/bookingform/ticket-single.php',true, array('EM_Event'=>$EM_Event, 'EM_Ticket'=>$EM_Ticket));
+								do_action('em_booking_form_after_tickets'); //do not delete
 							} 
 						?>	
 						<?php 
@@ -76,6 +78,7 @@ $can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is
 							<input type="submit" class="em-booking-submit" id="em-booking-submit" value="<?php echo get_option('dbem_bookings_submit_button'); ?>" />
 							<?php endif; ?>
 						</div>
+						<?php do_action('em_booking_form_footer_after_buttons', $EM_Event); //do not delete ?>
 					</div>
 				<?php else: ?>
 					<p class="em-booking-form-details"><?php echo get_option('dbem_booking_feedback_log_in'); ?></p>

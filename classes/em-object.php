@@ -993,7 +993,7 @@ class EM_Object {
 		}else{
 			$return = self::array_to_json($array);
 		}
-		if( isset($_REQUEST['callback']) ){
+		if( isset($_REQUEST['callback']) && preg_match("/^jQuery[_a-zA-Z0-9]+$/", $_REQUEST['callback']) ){
 			$return = $_REQUEST['callback']."($return)";
 		}
 		return apply_filters('em_object_json_encode', $return, $array);
