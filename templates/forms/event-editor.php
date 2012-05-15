@@ -127,17 +127,12 @@ if( !empty($_REQUEST['success']) ){
 						<!-- START Categories -->
 						<label for="event_categories[]"><?php _e ( 'Category:', 'dbem' ); ?></label>
 						<select name="event_categories[]" multiple size="10">
-							<?php
-							foreach ( $categories as $EM_Category ){
-								$selected = ($EM_Event->get_categories()->has($EM_Category->term_id)) ? "selected='selected'": '';
-								?>
-								<option value="<?php echo $EM_Category->term_id ?>" <?php echo $selected ?>>
-								<?php echo $EM_Category->name ?>
-								</option>
-								<?php 
-							}
-							?>
-						</select>						
+						<?php
+						$selected = $EM_Event->get_categories()->get_ids();
+						$walker = new EM_Walker_CategoryMultiselect();
+						$args_em = array( 'hide_empty' => 0, 'name' => 'event_categories[]', 'hierarchical' => true, 'id' => EM_TAXONOMY_CATEGORY, 'taxonomy' => EM_TAXONOMY_CATEGORY, 'selected' => $selected, 'walker'=> $walker);
+						echo walk_category_dropdown_tree($categories, 0, $args_em);
+						?></select>
 						<!-- END Categories -->
 					</div>
 					<?php endif; ?>

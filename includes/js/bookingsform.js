@@ -24,6 +24,7 @@ $('#em-booking-form').submit( function(e){
 				$('<div class="em-booking-message-success em-booking-message">'+response.message+'</div>').insertBefore('#em-booking-form');
 				$('#em-booking-form').hide();
 				$('.em-booking-login').hide();
+				$(document).trigger('em_booking_success', [response]);
 			}else{
 				if( response.errors != null ){
 					if( $.isArray(response.errors) && response.errors.length > 0 ){

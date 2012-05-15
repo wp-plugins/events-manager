@@ -101,7 +101,6 @@ $required = "<i>*</i>";
 					<option value="<?php echo $country_key; ?>" <?php echo ( $EM_Location->location_country == $country_key || ($EM_Location->location_country == '' && $EM_Location->location_id == '' && get_option('dbem_location_default_country')==$country_key) ) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
 					<?php endforeach; ?>
 				</select><?php echo $required; ?>
-				<!-- <p><em><?php _e('Filling this in first will allow you to quickly find previously filled states and regions for the country.','dbem'); ?></em></p> -->
 			</td>
 		</tr>
 	</table>

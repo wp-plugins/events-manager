@@ -44,12 +44,10 @@
 		
 		<?php if( !empty($search_categories) || (get_option('dbem_search_form_categories') && empty($search_categories)) ): ?>	
 		<!-- START Category Search -->
-		<select name="category" class="em-events-search-category">
-			<option value=''><?php echo get_option('dbem_search_form_categories_label') ?></option>
-			<?php foreach(EM_Categories::get(array('orderby'=>'category_name')) as $EM_Category): ?>
-			 <option value="<?php echo $EM_Category->id; ?>" <?php echo (!empty($_REQUEST['category']) && $_REQUEST['category'] == $EM_Category->id) ? 'selected="selected"':''; ?>><?php echo $EM_Category->name; ?></option>
-			<?php endforeach; ?>
-		</select>
+			<?php 
+				$selected = !empty($_REQUEST['category']) ? $_REQUEST['category'] : 0;
+				wp_dropdown_categories(array( 'hide_empty' => 0, 'name' => 'category', 'hierarchical' => true, 'taxonomy' => EM_TAXONOMY_CATEGORY, 'selected' => $selected, 'show_option_none' => get_option('dbem_search_form_categories_label'), 'class'=>'em-events-search-category'));		
+			?>
 		<!-- END Category Search -->
 		<?php endif; ?>
 		

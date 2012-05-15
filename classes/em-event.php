@@ -1498,16 +1498,22 @@ class EM_Event extends EM_Object{
 					$gcal_url = str_replace('event_name', urlencode($this->event_name), $gcal_url);
 					$gcal_url = str_replace('start_date', urlencode($dateStart), $gcal_url);
 					$gcal_url = str_replace('end_date', urlencode($dateEnd), $gcal_url);
+					$gcal_url = str_replace('location_name', urlencode($this->output('#_LOCATION')), $gcal_url);
+					$gcal_url = str_replace('blog_name', urlencode(get_bloginfo()), $gcal_url);
+					$gcal_url = str_replace('event_url', urlencode($this->get_permalink()), $gcal_url);
+					//calculate URL length so we know how much we can work with to make a description.
 					if( !empty($this->post_excerpt) ){
-						$excerpt = $this->post_excerpt;
+						$gcal_url_description = $this->post_excerpt;
 					}else{
 						$matches = explode('<!--more', $this->post_content);
-						$excerpt = wp_kses_data($matches[0]);
+						$gcal_url_description = wp_kses_data($matches[0]);
 					}
-					$gcal_url = str_replace('post_content', urlencode($excerpt), $gcal_url);
-					$gcal_url = str_replace('location_name', urlencode($this->output('#_LOCATION')), $gcal_url);
-					$gcal_url = str_replace('event_url', urlencode($this->get_permalink()), $gcal_url);
-					$gcal_url = str_replace('blog_name', urlencode(get_bloginfo()), $gcal_url);
+					$gcal_url_length = strlen($gcal_url) - 9;
+					if( strlen($gcal_url_description) + $gcal_url_length > 1500 ){
+						$gcal_url_description = substr($gcal_url_description, 0, 1530 - $gcal_url_length - 3 ).'...';
+					}
+					$gcal_url = str_replace('post_content', urlencode($gcal_url_description), $gcal_url);
+					//get the final url
 					$replace = $gcal_url;
 					if( $result == '#_EVENTGCALLINK' ){
 						$img_url = 'www.google.com/calendar/images/ext/gc_button2.gif';

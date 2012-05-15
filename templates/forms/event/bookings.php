@@ -62,8 +62,8 @@ global $EM_Event, $post;
 								<span class="ticket_max"><?php echo ( !empty($EM_Ticket->ticket_max) ) ? $EM_Ticket->ticket_max:'-'; ?></span>
 							</td>
 							<td class="ticket-time">
-								<span class="ticket_start"><?php echo ( !empty($EM_Ticket->ticket_start) ) ? date($localised_date_format, $EM_Ticket->start_timestamp):''; ?></span> -
-								<span class="ticket_end"><?php echo ( !empty($EM_Ticket->ticket_end) ) ? date($localised_date_format, $EM_Ticket->end_timestamp):''; ?></span>
+								<span class="ticket_start"><?php echo ( !empty($EM_Ticket->ticket_start) ) ? date(get_option('dbem_date_format'), $EM_Ticket->start_timestamp):''; ?></span> -
+								<span class="ticket_end"><?php echo ( !empty($EM_Ticket->ticket_end) ) ? date(get_option('dbem_date_format'), $EM_Ticket->end_timestamp):''; ?></span>
 							</td>
 							<td class="ticket-qty">
 								<span class="ticket_available_spaces"><?php echo $EM_Ticket->get_available_spaces(); ?></span>/

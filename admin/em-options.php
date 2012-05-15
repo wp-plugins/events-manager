@@ -320,7 +320,10 @@ function em_admin_options_page() {
 								foreach($EM_Categories as $EM_Category){
 							 		$category_options[$EM_Category->id] = $EM_Category->name;
 							 	}
-								em_options_select ( __( 'Default Category', 'dbem' ), 'dbem_default_category', $category_options, __( 'This option allows you to select the default category when adding an event.','dbem' ).' '.__('If an event does not have a category assigned when editing, this one will be assigned automatically.','dbem'));
+							 	echo "<tr><td>".__( 'Default Category', 'dbem' )."</td><td>";
+								wp_dropdown_categories(array( 'hide_empty' => 0, 'name' => 'dbem_default_category', 'hierarchical' => true, 'taxonomy' => EM_TAXONOMY_CATEGORY, 'selected' => get_option('dbem_default_category'), 'show_option_none' => __('None','dbem'), 'class'=>''));
+								echo "</br><em>" .__( 'This option allows you to select the default category when adding an event.','dbem' ).' '.__('If an event does not have a category assigned when editing, this one will be assigned automatically.','dbem')."</em>";
+								echo "</td></tr>";
 							}
 						}
 						em_options_radio_binary ( sprintf(__( 'Enable %s attributes?', 'dbem' ),__('event','dbem')), 'dbem_attributes_enabled', __( 'Select yes to enable the attributes feature','dbem' ) );

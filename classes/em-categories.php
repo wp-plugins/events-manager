@@ -74,7 +74,7 @@ class EM_Categories extends EM_Object implements Iterator{
 			/* @var $EM_Category EM_Category */
 			if( !empty($EM_Category->slug) ) $term_slugs[] = $EM_Category->slug; //save of category will soft-fail if slug is empty
 		}
-		if( count($term_slugs) == 0 && get_option('dbem_default_category') ){
+		if( count($term_slugs) == 0 && get_option('dbem_default_category') > 0 ){
 			$default_term = get_term_by('id',get_option('dbem_default_category'), EM_TAXONOMY_CATEGORY);
 			if($default_term) $term_slugs[] = $default_term->slug;
 		}

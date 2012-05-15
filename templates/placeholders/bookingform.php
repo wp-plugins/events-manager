@@ -27,10 +27,10 @@ $can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is
 		</p>
 	<?php elseif( !$EM_Event->rsvp ): //bookings not enabled ?>
 		<p><?php echo get_option('dbem_bookings_form_msg_disabled'); ?></p>
-	<?php elseif( !$EM_Event->get_bookings()->is_open() ): //event has started ?>
-		<p><?php echo get_option('dbem_bookings_form_msg_closed');  ?></p>
 	<?php elseif( $EM_Event->get_bookings()->get_available_spaces() <= 0 ): ?>
 		<p><?php echo get_option('dbem_bookings_form_msg_full'); ?></p>
+	<?php elseif( !$EM_Event->get_bookings()->is_open() ): //event has started ?>
+		<p><?php echo get_option('dbem_bookings_form_msg_closed');  ?></p>
 	<?php else: ?>
 		<?php echo $EM_Notices; ?>
 		<?php if( count($EM_Tickets->tickets) > 0) : ?>
