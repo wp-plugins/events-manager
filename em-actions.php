@@ -184,23 +184,27 @@ function em_init_actions() {
 				}
 			}
 		}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "locations_search" && (!empty($_REQUEST['term']) || !empty($_REQUEST['q'])) ){
-			$location_cond = ( !current_user_can('edit_others_locations') && !current_user_can('read_others_locations') ) ? "AND location_owner=".get_current_user_id() : '';
-			$term = (isset($_REQUEST['term'])) ? '%'.$_REQUEST['term'].'%' : '%'.$_REQUEST['q'].'%';
-			$sql = $wpdb->prepare("
-				SELECT 
-					location_id AS `id`,
-					Concat( location_name, ', ', location_address, ', ', location_town)  AS `label`,
-					location_name AS `value`,
-					location_address AS `address`, 
-					location_town AS `town`, 
-					location_state AS `state`,
-					location_region AS `region`,
-					location_postcode AS `postcode`,
-					location_country AS `country`
-				FROM ".EM_LOCATIONS_TABLE." 
-				WHERE ( `location_name` LIKE %s ) $location_cond LIMIT 10
-			", $term);
-			echo EM_Object::json_encode($wpdb->get_results($sql));
+			$results = array();
+			if( is_user_logged_in() || ( get_option('dbem_events_anonymous_submissions') && user_can(get_option('dbem_events_anonymous_user'), 'read_others_locations') ) ){
+				$location_cond = !current_user_can('read_others_locations') ? "AND location_owner=".get_current_user_id() : '';
+				$term = (isset($_REQUEST['term'])) ? '%'.$_REQUEST['term'].'%' : '%'.$_REQUEST['q'].'%';
+				$sql = $wpdb->prepare("
+					SELECT 
+						location_id AS `id`,
+						Concat( location_name, ', ', location_address, ', ', location_town)  AS `label`,
+						location_name AS `value`,
+						location_address AS `address`, 
+						location_town AS `town`, 
+						location_state AS `state`,
+						location_region AS `region`,
+						location_postcode AS `postcode`,
+						location_country AS `country`
+					FROM ".EM_LOCATIONS_TABLE." 
+					WHERE ( `location_name` LIKE %s ) $location_cond LIMIT 10
+				", $term);
+				$results = $wpdb->get_results($sql);
+			}
+			echo EM_Object::json_encode($results);
 			die();
 		}
 		if( isset($result) && $result && !empty($_REQUEST['em_ajax']) ){

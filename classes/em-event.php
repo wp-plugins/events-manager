@@ -362,6 +362,7 @@ class EM_Event extends EM_Object{
 			//we're adding a new location, so create an empty location and populate
 			$this->location_id = null;
 			$this->get_location()->get_post(false);
+			$this->get_location()->post_content = ''; //reset post content, as it'll grab the event description otherwise
 		}
 		//Sort out time
 		$this->event_all_day = ( !empty($_POST['event_all_day']) ) ? 1 : 0;

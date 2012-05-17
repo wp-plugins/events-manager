@@ -27,7 +27,7 @@ if( !empty($_REQUEST['success']) ){
 <form enctype='multipart/form-data' id="event-form" method="post" action="">
 	<div class="wrap">
 		<?php do_action('em_front_event_form_header'); ?>
-		<?php if(get_option('dbem_events_anonymous_submissions')): ?>
+		<?php if(get_option('dbem_events_anonymous_submissions') && !is_user_logged_in()): ?>
 			<h4 class="event-form-submitter"><?php _e ( 'Your Details', 'dbem' ); ?></h4>
 			<div class="inside event-form-submitter">
 				<p>

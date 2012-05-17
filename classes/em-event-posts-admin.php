@@ -26,7 +26,6 @@ class EM_Event_Posts_Admin{
 			//TODO alter views of locations, events and recurrences, specifically find a good way to alter the wp_count_posts method to force user owned posts only
 			//add_filter('views_edit-'.EM_POST_TYPE_EVENT, array('EM_Event_Posts_Admin','views'),10,1);
 		}
-		add_action('pre_get_posts' , array('EMH_Event_Posts_Admin','filter_get_posts'),9);
 		add_action('restrict_manage_posts', array('EM_Event_Posts_Admin','restrict_manage_posts'));
 	}
 	
