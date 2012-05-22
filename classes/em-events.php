@@ -238,7 +238,7 @@ class EM_Events extends EM_Object implements Iterator {
 		return apply_filters('em_events_can_manage', false, $event_ids);
 	}
 	
-	function get_post_search($args = array()){
+	function get_post_search($args = array(), $filter = false){
 		if( !empty($_REQUEST['em_search']) && empty($args['search']) ) $_REQUEST['search'] = $_REQUEST['em_search'];
 		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state','region','town'), $args);
 		foreach($_REQUEST as $post_key => $post_value){
@@ -248,6 +248,13 @@ class EM_Events extends EM_Object implements Iterator {
 				}
 				if($post_value != ',' ){
 					$args[$post_key] = $post_value;
+				}
+			}
+		}
+		if( $filter ){
+			foreach($args as $arg_key => $arg_value){
+				if( !in_array($arg_key, $accepted_searches) ){
+					unset($args[$arg_key]);
 				}
 			}
 		}

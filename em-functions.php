@@ -560,4 +560,12 @@ if( !function_exists( 'is_main_query' ) ){
 function em_get_thumbnail_url($image_url, $width, $height){
 	return plugins_url('includes/thumbnails/timthumb.php', __FILE__).'?src='.$image_url.'&amp;h='. $height .'&amp;w='. $width;
 }
+
+/**
+ * Depreciated
+ * @return unknown
+ */
+function em_get_date_format(){
+	return get_option('dbem_date_format');
+}
 ?>

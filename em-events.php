@@ -29,6 +29,7 @@ function em_content($page_content) {
 			if ( $post->ID == $events_page_id && $events_page_id != 0 ) {
 				if ( !empty($_REQUEST['calendar_day']) ) {
 					//Events for a specific day
+					$args = EM_Events::get_post_search( array_merge($args, $_REQUEST) );
 					em_locate_template('templates/calendar-day.php',true, array('args'=>$args));
 				}elseif ( $wp_query->get('bookings_page') && empty($my_bookings_page_id)) {
 					//Bookings Page
@@ -46,7 +47,7 @@ function em_content($page_content) {
 						//Intercept search request, if defined
 						$args['scope'] = get_option('dbem_events_page_scope');
 						if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'search_events' ){
-							$args = EM_Events::get_post_search($args + $_REQUEST);
+							$args = EM_Events::get_post_search( array_merge($args, $_REQUEST) );
 						}
 						em_locate_template('templates/events-list.php', true, array('args'=>$args));
 					}

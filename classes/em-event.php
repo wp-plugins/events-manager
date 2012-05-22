@@ -1690,19 +1690,6 @@ class EM_Event extends EM_Object{
 			$event_ids = array();
 			$post_ids = array();
 			$matching_days = $this->get_recurrence_days(); //Get days where events recur
-			/*
-			echo 'tickets';
-			echo "<pre>"; print_r($this->recurrence_tickets); echo "</pre>";
-			echo '$meta_fields';
-			echo "<pre>"; print_r($meta_fields); echo "</pre>";
-			echo '$post_fields';
-			echo "<pre>"; print_r($post_fields); echo "</pre>";
-			echo '$event';
-			echo "<pre>"; print_r($event); echo "</pre>";
-			echo '$matching_days';
-			echo "<pre>"; print_r($matching_days); echo "</pre>";
-			die('i got here and we have '.count($this->errors).' errors');
-			*/
 			if( count($matching_days) > 0 ){
 				//first save event post data
 				foreach( $matching_days as $day ) {

@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.3.1
-Stable tag: 5.1.6
+Stable tag: 5.1.7
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.6.5 =
+= 5.1.7 =
 * added excludeable categories (use negative numbers instead)
 * clarified some of the field tips of "other pages" in options
 * fixed thumbnail issue in MS (again)
@@ -116,7 +116,21 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added name/slug search fall back for tags search
 * added datepicker custom date formatting
 * fixed non registered user problem for failed JS submissions
-* fixed some rsvp conditional and gcal placeholders  
+* fixed some rsvp conditional and gcal placeholders
+* added jquery-ui-css id to jquery ui css loader to promote compatability with others
+* you can now add a custom functions.php file within yourtheme/plugins/events-manager/
+* improved title rewriting compatibility
+* added hierarchies to category dropdowns
+* fixed an object reference error in em-object.php send_mail()
+* added jQuery em_booking_success event to document
+* fixed tickets not showing start/end dates in admin after editing
+* fully booked message now shown rather than closed message
+* location description won't take event description in public submission forms
+* re-added get_date_format for backwards compatability with overriding templates
+* fixed pagination issue in my events page on front-end
+* fixed potential security xss exploit in json call links
+* fixed default country overriding all country search option on search pages
+* fixed pagination issue on my events page on the front-end
 
 = 5.1.6 =
 * fixed multiple admin emails not going out

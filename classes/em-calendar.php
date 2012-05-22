@@ -231,6 +231,8 @@ class EM_Calendar extends EM_Object {
 				}
 			}
 		}
+		//generate a link argument string containing event search only
+		$day_link_args = self::get_link_args( EM_Events::get_post_search($args, true) );
 		foreach($eventful_days as $day_key => $events) {
 			if( array_key_exists($day_key, $calendar_array['cells']) ){
 				//Get link title for this date
@@ -259,9 +261,15 @@ class EM_Calendar extends EM_Object {
 					}
 					if( $wp_rewrite->using_permalinks() && !defined('EM_DISABLE_PERMALINKS') ){
 						$calendar_array['cells'][$day_key]['link'] = $event_page_link.$day_key."/";
+						if( !empty($day_link_args) ){
+							$calendar_array['cells'][$day_key]['link'] .= '?'.$day_link_args;
+						}
 					}else{
 						$joiner = (stristr($event_page_link, "?")) ? "&amp;" : "?";				
 						$calendar_array['cells'][$day_key]['link'] = $event_page_link.$joiner."calendar_day=".$day_key;
+						if( !empty($day_link_args) ){
+							$calendar_array['cells'][$day_key]['link'] .= 'amp;'.$day_link_args;
+						}
 					}
 				}else{
 					foreach($events as $EM_Event){

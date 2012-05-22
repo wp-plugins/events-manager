@@ -326,7 +326,6 @@ class EM_Object {
 		}
 		//Add conditions for category selection
 		//Filter by category, can be id or comma seperated ids
-		//TODO create an exclude category option
 		$not = '';
 		if ( is_numeric($category) ){
 			$not = ( $category < 0 ) ? "NOT":'';
@@ -359,7 +358,7 @@ class EM_Object {
 						$cat_conds[] = EM_EVENTS_TABLE.".event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_name='event-category' )";
 					}
 					if( count($term_not_ids) > 0 ){
-						$cat_conds[] = EM_EVENTS_TABLE.".event_id NOT IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_name='event-category' )";			
+						$cat_conds[] = EM_EVENTS_TABLE.".event_id NOT IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_not_ids).") AND meta_name='event-category' )";			
 					}
 					$conditions['category'] = '('. implode(' || ', $cat_conds) .')';
 				}else{
@@ -368,7 +367,7 @@ class EM_Object {
 						$cat_conds[] = EM_EVENTS_TABLE.".post_id IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") )";
 					}
 					if( count($term_not_ids) > 0 ){
-						$cat_conds[] = EM_EVENTS_TABLE.".post_id NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") )";			
+						$cat_conds[] = EM_EVENTS_TABLE.".post_id NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_not_ids).") )";			
 					}
 					$conditions['category'] = '('. implode(' || ', $cat_conds) .')';
 				}
