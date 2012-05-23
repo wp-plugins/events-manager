@@ -191,6 +191,9 @@
 	    }        
         
     }
-    global $EM_Notices;
-    $EM_Notices = new EM_Notices();
+    function em_notices_init(){
+	    global $EM_Notices;
+	    $EM_Notices = new EM_Notices();	
+    }
+    add_action('plugins_loaded', 'em_notices_init');
 ?>

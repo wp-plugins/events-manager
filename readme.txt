@@ -98,6 +98,10 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1.7.1 =
+* fixed jigoshop session_start conflict
+* removed some group metabox php warnings
+
 = 5.1.7 =
 * added excludeable categories (use negative numbers instead)
 * clarified some of the field tips of "other pages" in options
