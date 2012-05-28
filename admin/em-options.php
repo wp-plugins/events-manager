@@ -399,7 +399,7 @@ function em_admin_options_page() {
 				
 				<?php if ( !is_multisite() ){ em_admin_option_box_image_sizes(); } ?>
 				
-				<?php if ( !is_multisite() || !get_site_option('dbem_ms_global_caps') ){ em_admin_option_box_caps(); } ?>
+				<?php if ( !is_multisite() || (is_super_admin() && !get_site_option('dbem_ms_global_caps')) ){ em_admin_option_box_caps(); } ?>
 				
 				<div  class="postbox" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Submission Forms', 'dbem' ); ?></span></h3>
