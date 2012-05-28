@@ -247,9 +247,8 @@ class EM_Bookings_Table{
 		$this->get_bookings(true); //get bookings and refresh
 		?>
 		<div class='em-bookings-table em_obj' id="em-bookings-table">
-			<div id="em-bookings-table-settings" class="em-bookings-table-overlay" style="display:none;">
+			<div id="em-bookings-table-settings" class="em-bookings-table-overlay" style="display:none;" title="<?php _e('Bookings Table Settings','dbem'); ?>">
 				<form id="em-bookings-table-settings-form" class="em-bookings-table-form" action="" method="post">
-					<h4><?php _e('Bookings Table Settings','dbem'); ?></h4>
 					<p><?php _e('Modify what information is displayed in this booking table.','dbem') ?></p>
 					<div id="em-bookings-table-settings-form-cols">
 						<p>
@@ -275,12 +274,10 @@ class EM_Bookings_Table{
 							<?php endforeach; ?>
 						</ul>
 					</div>
-					<p style="clear:both;"><input type="submit" class="button-primary" value="<?php echo __('Save Settings','dbem'); ?>" /></p>
 				</form>
 			</div>
-			<div id="em-bookings-table-export" class="em-bookings-table-overlay">
+			<div id="em-bookings-table-export" class="em-bookings-table-overlay" style="display:none;" title="<?php _e('Export Bookings','dbem'); ?>">
 				<form id="em-bookings-table-export-form" class="em-bookings-table-form" action="" method="post">
-					<h4><?php _e('Export Bookings','dbem'); ?></h4>
 					<p><?php _e('Select the options below and export all the bookings you have currently filtered (all pages) into a CSV spreadsheet format.','dbem') ?></p>
 					<?php if( !get_option('dbem_bookings_tickets_single') ): //single ticket mode means no splitting by ticket type ?>
 						<p><?php _e('Split bookings by ticket type','dbem')?> <input type="checkbox" name="show_tickets" value="1" />
@@ -317,23 +314,20 @@ class EM_Bookings_Table{
 							<?php endif; ?>
 						</ul>
 					</div>
-					<p style="clear:both;">
-						<?php if( $EM_Event !== false ): ?>
-						<input type="hidden" name="event_id" value='<?php echo $EM_Event->event_id; ?>' />
-						<?php endif; ?>
-						<?php if( $EM_Ticket !== false ): ?>
-						<input type="hidden" name="ticket_id" value='<?php echo $EM_Ticket->ticket_id; ?>' />
-						<?php endif; ?>
-						<?php if( $EM_Person !== false ): ?>
-						<input type="hidden" name="person_id" value='<?php echo $EM_Person->ID; ?>' />
-						<?php endif; ?>
-						<input type="hidden" name="scope" value='<?php echo $this->scope ?>' />
-						<input type="hidden" name="status" value='<?php echo $this->status ?>' />
-						<input type="hidden" name="no_save" value='1' />
-						<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('export_bookings_csv'); ?>" />
-						<input type="hidden" name="action" value="export_bookings_csv" />
-						<input type="submit" class="button-primary" value="<?php echo __('Export Bookings Report','dbem'); ?>" />
-					</p>
+					<?php if( $EM_Event !== false ): ?>
+					<input type="hidden" name="event_id" value='<?php echo $EM_Event->event_id; ?>' />
+					<?php endif; ?>
+					<?php if( $EM_Ticket !== false ): ?>
+					<input type="hidden" name="ticket_id" value='<?php echo $EM_Ticket->ticket_id; ?>' />
+					<?php endif; ?>
+					<?php if( $EM_Person !== false ): ?>
+					<input type="hidden" name="person_id" value='<?php echo $EM_Person->ID; ?>' />
+					<?php endif; ?>
+					<input type="hidden" name="scope" value='<?php echo $this->scope ?>' />
+					<input type="hidden" name="status" value='<?php echo $this->status ?>' />
+					<input type="hidden" name="no_save" value='1' />
+					<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('export_bookings_csv'); ?>" />
+					<input type="hidden" name="action" value="export_bookings_csv" />
 				</form>
 			</div>
 			<form class='bookings-filter' method='post' action='<?php bloginfo('wpurl') ?>/wp-admin/edit.php'>

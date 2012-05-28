@@ -136,58 +136,54 @@ jQuery(document).ready( function($){
 			return false;
 		});
 	//Tickets
-		//Tickets overlay
-		if( $("#em-tickets-add").length > 0 ){
-			var triggers = $("#em-tickets-add").overlay({
-				mask: { 
-					color: '#ebecff',
-					loadSpeed: 200,
-					opacity: 0.9
-				},
-				closeOnClick: true,
-				onLoad: function(){
-					$('#ui-datepicker-div').appendTo('#em-tickets-form').hide();
-				},
-				onClose: function(){
-					$('#ui-datepicker-div').appendTo('body').hide();
+	if( $("#em-tickets-form").length > 0 ){
+		load_ui_css = true;
+		//Dialog/Overlay
+		$("#em-tickets-form").dialog({
+			modal : true,
+			autoOpen: false,
+			minWidth: 350,
+			height: 'auto',
+			buttons: [{
+				text: EM.tickets_dialog,
+				click: function(e){
+					e.preventDefault();
+					//Submitting ticket (Add/Edit)
+					$('#em-tickets-intro').remove();
+					//first we get the template to insert this to
+					if( $('#em-tickets-form form input[name=prev_slot]').val() ){
+						//grab slot and populate
+						var slot = $('#'+$('#em-tickets-form form input[name=prev_slot]').val());
+						var rowNo = slot.attr('id').replace('em-tickets-row-','');
+						var edit = true;
+					}else{
+						//create copy of template slot, insert so ready for population
+						var rowNo = $('#em-tickets-body').children('tr').length+1;
+						var slot = $('#em-tickets-body tr').first().clone().attr('id','em-tickets-row-'+ rowNo).appendTo($('#em-tickets-body'));
+						var edit = false;
+						slot.show();
+					}
+					var postData = {};
+					$.each($('#em-tickets-form form *[name]'), function(index,el){
+						el = $(el);
+						slot.find('input.'+el.attr('name')).attr({
+							'value' : el.attr('value'),
+							'name' : 'em_tickets['+rowNo+']['+el.attr('name')+']'
+						});
+						slot.find('span.'+el.attr('name')).text(el.attr('value'));
+					});
+					//allow for others to hook into this
+					$(document).triggerHandler('em_maps_tickets_edit', [slot, rowNo, edit]);
+					//sort out dates and localization masking
+					var start_pub = $("#em-tickets-form input[name=ticket_start_pub]").val();
+					var end_pub = $("#em-tickets-form input[name=ticket_end_pub]").val();
+					$('#em-tickets-form *[name]').attr('value','');
+					$('#em-tickets-form .close').trigger('click');
+					$(this).dialog('close');
 				}
-			});
-		}
-		//Submitting ticket (Add/Edit)
-		$('#em-tickets-form form').submit(function(e){
-			e.preventDefault();
-			$('#em-tickets-intro').remove();
-			//first we get the template to insert this to
-			if( $('#em-tickets-form form input[name=prev_slot]').val() ){
-				//grab slot and populate
-				var slot = $('#'+$('#em-tickets-form form input[name=prev_slot]').val());
-				var rowNo = slot.attr('id').replace('em-tickets-row-','');
-				var edit = true;
-			}else{
-				//create copy of template slot, insert so ready for population
-				var rowNo = $('#em-tickets-body').children('tr').length+1;
-				var slot = $('#em-tickets-body tr').first().clone().attr('id','em-tickets-row-'+ rowNo).appendTo($('#em-tickets-body'));
-				var edit = false;
-				slot.show();
-			}
-			var postData = {};
-			$.each($('#em-tickets-form form *[name]'), function(index,el){
-				el = $(el);
-				slot.find('input.'+el.attr('name')).attr({
-					'value' : el.attr('value'),
-					'name' : 'em_tickets['+rowNo+']['+el.attr('name')+']'
-				});
-				slot.find('span.'+el.attr('name')).text(el.attr('value'));
-			});
-			//allow for others to hook into this
-			$(document).triggerHandler('em_maps_tickets_edit', [slot, rowNo, edit]);
-			//sort out dates and localization masking
-			var start_pub = $("#em-tickets-form input[name=ticket_start_pub]").val();
-			var end_pub = $("#em-tickets-form input[name=ticket_end_pub]").val();
-			$('#em-tickets-form *[name]').attr('value','');
-			$('#em-tickets-form .close').trigger('click');
-			return false;
+			}]
 		});
+		$("#em-tickets-add").click(function(e){ e.preventDefault(); $("#em-tickets-form").dialog('open'); });
 		//Edit a Ticket
 		$(document).delegate('.ticket-actions-edit', 'click', function(e){
 			//first, populate form, then, trigger click
@@ -235,53 +231,48 @@ jQuery(document).ready( function($){
 			}
 			return false;
 		});
+	}
 	//Manageing Bookings
+	if( $('#em-bookings-table').length > 0 ){
 		//Pagination link clicks
-			$(document).delegate('#em-bookings-table .tablenav-pages a', 'click', function(){
-				var el = $(this);
-				var form = el.parents('#em-bookings-table form.bookings-filter');
-				//get page no from url, change page, submit form
-				var match = el.attr('href').match(/#[0-9]+/);
-				if( match != null && match.length > 0){
-					var pno = match[0].replace('#','');
-					form.find('input[name=pno]').val(pno);
-				}else{
-					form.find('input[name=pno]').val(1);
+		$(document).delegate('#em-bookings-table .tablenav-pages a', 'click', function(){
+			var el = $(this);
+			var form = el.parents('#em-bookings-table form.bookings-filter');
+			//get page no from url, change page, submit form
+			var match = el.attr('href').match(/#[0-9]+/);
+			if( match != null && match.length > 0){
+				var pno = match[0].replace('#','');
+				form.find('input[name=pno]').val(pno);
+			}else{
+				form.find('input[name=pno]').val(1);
+			}
+			form.trigger('submit');
+			return false;
+		});
+		//Sortables
+		var setup_sortable = function(){
+			$( ".em-bookings-cols-sortable" ).sortable({
+				connectWith: ".em-bookings-cols-sortable",
+				over: function(event, ui) {
+					if( ui.item.hasClass('ui-state-highlight') ){
+						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);							
+					}else{
+						ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
+					}
 				}
-				form.trigger('submit');
-				return false;
-			});
-			//Widgets and filter submissions
-			$(document).delegate('#em-bookings-table form.bookings-filter', 'submit', function(e){
-				var el = $(this);			
-				el.parents('#em-bookings-table').find('.table-wrap').first().append('<div id="em-loading" />');
-				$.post( EM.ajaxurl, el.serializeArray(), function(data){
-					el.parents('#em-bookings-table').first().replaceWith(data);
-					//Settings Overlay
-					if( $("#em-bookings-table-settings-trigger").length > 0 ){
-						$("#em-bookings-table-settings-trigger").overlay({
-							mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
-							closeOnClick: true
-						});
-						setup_sortable();
-					}
-					if( $("#em-bookings-table-export-trigger").length > 0 ){
-						$("#em-bookings-table-export-trigger").overlay({
-							mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
-							closeOnClick: true
-						});
-					}
-				});
-				return false;
-			});
-			//Settings Overlay
-			if( $("#em-bookings-table-settings-trigger").length > 0 ){
-				$("#em-bookings-table-settings-trigger").overlay({
-					mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
-					closeOnClick: true
-				});
-				$(document).delegate('#em-bookings-table-settings-form', 'submit', function(el){
-					el.preventDefault();
+			}).disableSelection();
+			load_ui_css = true;
+		}
+		//Overlay Options
+		var em_bookings_settings_dialog = {
+			modal : true,
+			autoOpen: false,
+			minWidth: 500,
+			height: 'auto',
+			buttons: [{
+				text: EM.bookings_settings_save,
+				click: function(e){
+					e.preventDefault();
 					var arr = $('form#em-bookings-table-settings-form').serializeArray();
 					//we know we'll deal with cols, so wipe hidden value from main
 					$("#em-bookings-table form.bookings-filter [name=cols]").val('');
@@ -306,30 +297,32 @@ jQuery(document).ready( function($){
 					$('#em-bookings-table-settings a.close').trigger('click');
 					$('#em-bookings-table-settings').trigger('submitted'); //hook into this with bind()
 					$('#em-bookings-table form.bookings-filter').trigger('submit');					
-					return false;
-				});
-				var setup_sortable = function(){
-					$( ".em-bookings-cols-sortable" ).sortable({
-						connectWith: ".em-bookings-cols-sortable",
-						over: function(event, ui) {
-							if( ui.item.hasClass('ui-state-highlight') ){
-								ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);							
-							}else{
-								ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
-							}
-						}
-					}).disableSelection();
-					load_ui_css = true;
+					$(this).dialog('close');
 				}
-				setup_sortable();
-			}
+			}]
+		};
+		var em_bookings_export_dialog = {
+			modal : true,
+			autoOpen: false,
+			minWidth: 500,
+			height: 'auto',
+			buttons: [{
+				text: EM.bookings_export_save,
+				click: function(e){
+					$(this).children('form').submit();
+					$(this).dialog('close');
+				}
+			}]
+		};
+		//Overlays
+		if( $("#em-bookings-table-settings").length > 0 ){
+			//Settings Overlay
+			$("#em-bookings-table-settings").dialog(em_bookings_settings_dialog);
+			$(document).delegate('#em-bookings-table-settings-trigger','click', function(e){ e.preventDefault(); $("#em-bookings-table-settings").dialog('open'); });
+
 			//Export Overlay
-			if( $("#em-bookings-table-export-trigger").length > 0 ){
-				$("#em-bookings-table-export-trigger").overlay({
-					mask: { color: '#ebecff', loadSpeed: 200, opacity: 0.9 },
-					closeOnClick: true
-				});
-			}
+			$("#em-bookings-table-export").dialog(em_bookings_export_dialog);
+			$(document).delegate('#em-bookings-table-export-trigger','click', function(e){ e.preventDefault(); $("#em-bookings-table-export").dialog('open'); });
 			var export_overlay_show_tickets = function(){
 				if( $(this).is(':checked') ){
 					$('#em-bookings-table-export-form .em-bookings-col-item-ticket').show();
@@ -341,27 +334,23 @@ jQuery(document).ready( function($){
 			export_overlay_show_tickets();
 			$(document).delegate('#em-bookings-table-export-form input[name=show_tickets]', 'click', export_overlay_show_tickets);
 			
-		//Old Bookings Table
-			//Widgets and filter submissions
-			$(document).delegate('.em_bookings_events_table form, .em_bookings_pending_table form', 'submit', function(e){
-				var el = $(this);
-				var url = em_ajaxify( el.attr('action') );		
-				el.parent('.em_obj').prepend('<div id="em-loading" />');
-				$.get( url, el.serializeArray(), function(data){
-					el.parent('.em_obj').replaceWith(data);
-				});
-				return false;
+			setup_sortable();
+		}
+		//Widgets and filter submissions
+		$(document).delegate('#em-bookings-table form.bookings-filter', 'submit', function(e){
+			var el = $(this);			
+			el.parents('#em-bookings-table').find('.table-wrap').first().append('<div id="em-loading" />');
+			$.post( EM.ajaxurl, el.serializeArray(), function(data){
+				el.parents('#em-bookings-table').first().replaceWith(data);
+				//Settings Overlay
+				if( $("#em-bookings-table-settings").length > 0 ){
+					$("#em-bookings-table-settings").dialog(em_bookings_settings_dialog);
+					$("#em-bookings-table-export").dialog(em_bookings_export_dialog);
+					setup_sortable();
+				}
 			});
-			//Pagination link clicks
-			$(document).delegate('.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a', 'click', function(){		
-				var el = $(this);
-				var url = em_ajaxify( el.attr('href') );	
-				el.parents('.em_obj').find('.table-wrap').first().append('<div id="em-loading" />');
-				$.get( url, function(data){
-					el.parents('.em_obj').first().replaceWith(data);
-				});
-				return false;
-			});
+			return false;
+		});
 		//Approve/Reject Links
 		$(document).delegate('.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete', 'click', function(){
 			var el = $(this); 
@@ -374,6 +363,30 @@ jQuery(document).ready( function($){
 			td.load( url );
 			return false;
 		});
+	}
+	//Old Bookings Table - depreciating soon
+	if( $('.em_bookings_pending_table, .em_bookings_pending_table').length > 0 ){
+		//Widgets and filter submissions
+		$(document).delegate('.em_bookings_events_table form, .em_bookings_pending_table form', 'submit', function(e){
+			var el = $(this);
+			var url = em_ajaxify( el.attr('action') );		
+			el.parent('.em_obj').prepend('<div id="em-loading" />');
+			$.get( url, el.serializeArray(), function(data){
+				el.parent('.em_obj').replaceWith(data);
+			});
+			return false;
+		});
+		//Pagination link clicks
+		$(document).delegate('.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a', 'click', function(){		
+			var el = $(this);
+			var url = em_ajaxify( el.attr('href') );	
+			el.parents('.em_obj').find('.table-wrap').first().append('<div id="em-loading" />');
+			$.get( url, function(data){
+				el.parents('.em_obj').first().replaceWith(data);
+			});
+			return false;
+		});
+	}
 		
 	//Datepicker
 	if( $('#em-date-start').length > 0 ){
@@ -835,17 +848,5 @@ function em_map_infobox(marker, message, map) {
   });
 }
 
- /* jQuery Tools 1.2.5 Overlay & Expose */
- (function(a){function t(d,b){var c=this,j=d.add(c),o=a(window),k,f,m,g=a.tools.expose&&(b.mask||b.expose),n=Math.random().toString().slice(10);if(g){if(typeof g=="string")g={color:g};g.closeOnClick=g.closeOnEsc=false}var p=b.target||d.attr("rel");f=p?a(p):d;if(!f.length)throw"Could not find Overlay: "+p;d&&d.index(f)==-1&&d.click(function(e){c.load(e);return e.preventDefault()});a.extend(c,{load:function(e){if(c.isOpened())return c;var h=q[b.effect];if(!h)throw'Overlay: cannot find effect : "'+b.effect+
- '"';b.oneInstance&&a.each(s,function(){this.close(e)});e=e||a.Event();e.type="onBeforeLoad";j.trigger(e);if(e.isDefaultPrevented())return c;m=true;g&&a(f).expose(g);var i=b.top,r=b.left,u=f.outerWidth({margin:true}),v=f.outerHeight({margin:true});if(typeof i=="string")i=i=="center"?Math.max((o.height()-v)/2,0):parseInt(i,10)/100*o.height();if(r=="center")r=Math.max((o.width()-u)/2,0);h[0].call(c,{top:i,left:r},function(){if(m){e.type="onLoad";j.trigger(e)}});g&&b.closeOnClick&&a.mask.getMask().one("click",
- c.close);b.closeOnClick&&a(document).bind("click."+n,function(l){a(l.target).parents(f).length||c.close(l)});b.closeOnEsc&&a(document).bind("keydown."+n,function(l){l.keyCode==27&&c.close(l)});return c},close:function(e){if(!c.isOpened())return c;e=e||a.Event();e.type="onBeforeClose";j.trigger(e);if(!e.isDefaultPrevented()){m=false;q[b.effect][1].call(c,function(){e.type="onClose";j.trigger(e)});a(document).unbind("click."+n).unbind("keydown."+n);g&&a.mask.close();return c}},getOverlay:function(){return f},
- getTrigger:function(){return d},getClosers:function(){return k},isOpened:function(){return m},getConf:function(){return b}});a.each("onBeforeLoad,onStart,onLoad,onBeforeClose,onClose".split(","),function(e,h){a.isFunction(b[h])&&a(c).bind(h,b[h]);c[h]=function(i){i&&a(c).bind(h,i);return c}});k=f.find(b.close||".close");if(!k.length&&!b.close){k=a('<a class="close"></a>');f.prepend(k)}k.click(function(e){c.close(e)});b.load&&c.load()}a.tools=a.tools||{version:"1.2.5"};a.tools.overlay={addEffect:function(d,
- b,c){q[d]=[b,c]},conf:{close:null,closeOnClick:true,closeOnEsc:true,closeSpeed:"fast",effect:"default",fixed:!a.browser.msie||a.browser.version>6,left:"center",load:false,mask:null,oneInstance:true,speed:"normal",target:null,top:"10%"}};var s=[],q={};a.tools.overlay.addEffect("default",function(d,b){var c=this.getConf(),j=a(window);if(!c.fixed){d.top+=j.scrollTop();d.left+=j.scrollLeft()}d.position=c.fixed?"fixed":"absolute";this.getOverlay().css(d).fadeIn(c.speed,b)},function(d){this.getOverlay().fadeOut(this.getConf().closeSpeed,
- d)});a.fn.overlay=function(d){var b=this.data("overlay");if(b)return b;if(a.isFunction(d))d={onBeforeLoad:d};d=a.extend(true,{},a.tools.overlay.conf,d);this.each(function(){b=new t(a(this),d);s.push(b);a(this).data("overlay",b)});return d.api?b:this}})(jQuery);
- (function(b){function k(){if(b.browser.msie){var a=b(document).height(),d=b(window).height();return[window.innerWidth||document.documentElement.clientWidth||document.body.clientWidth,a-d<20?d:a]}return[b(document).width(),b(document).height()]}function h(a){if(a)return a.call(b.mask)}b.tools=b.tools||{version:"1.2.5"};var l;l=b.tools.expose={conf:{maskId:"exposeMask",loadSpeed:"slow",closeSpeed:"fast",closeOnClick:true,closeOnEsc:true,zIndex:9998,opacity:0.8,startOpacity:0,color:"#fff",onLoad:null,
- onClose:null}};var c,i,e,g,j;b.mask={load:function(a,d){if(e)return this;if(typeof a=="string")a={color:a};a=a||g;g=a=b.extend(b.extend({},l.conf),a);c=b("#"+a.maskId);if(!c.length){c=b("<div/>").attr("id",a.maskId);b("body").append(c)}var m=k();c.css({position:"absolute",top:0,left:0,width:m[0],height:m[1],display:"none",opacity:a.startOpacity,zIndex:a.zIndex});a.color&&c.css("backgroundColor",a.color);if(h(a.onBeforeLoad)===false)return this;a.closeOnEsc&&b(document).bind("keydown.mask",function(f){f.keyCode==
- 27&&b.mask.close(f)});a.closeOnClick&&c.bind("click.mask",function(f){b.mask.close(f)});b(window).bind("resize.mask",function(){b.mask.fit()});if(d&&d.length){j=d.eq(0).css("zIndex");b.each(d,function(){var f=b(this);/relative|absolute|fixed/i.test(f.css("position"))||f.css("position","relative")});i=d.css({zIndex:Math.max(a.zIndex+1,j=="auto"?0:j)})}c.css({display:"block"}).fadeTo(a.loadSpeed,a.opacity,function(){b.mask.fit();h(a.onLoad);e="full"});e=true;return this},close:function(){if(e){if(h(g.onBeforeClose)===
- false)return this;c.fadeOut(g.closeSpeed,function(){h(g.onClose);i&&i.css({zIndex:j});e=false});b(document).unbind("keydown.mask");c.unbind("click.mask");b(window).unbind("resize.mask")}return this},fit:function(){if(e){var a=k();c.css({width:a[0],height:a[1]})}},getMask:function(){return c},isLoaded:function(a){return a?e=="full":e},getConf:function(){return g},getExposed:function(){return i}};b.fn.mask=function(a){b.mask.load(a);return this};b.fn.expose=function(a){b.mask.load(a,this);return this}})(jQuery);
- 
- /* jQuery timePicker - http://labs.perifer.se/timedatepicker/ @ http://github.com/perifer/timePicker commit 100644 */
+/* jQuery timePicker - http://labs.perifer.se/timedatepicker/ @ http://github.com/perifer/timePicker commit 100644 */
  (function(a){function g(a){a.setFullYear(2001),a.setMonth(0),a.setDate(0);return a}function f(a,b){if(a){var c=a.split(b.separator),d=parseFloat(c[0]),e=parseFloat(c[1]);b.show24Hours||(d===12&&a.indexOf("AM")!==-1?d=0:d!==12&&a.indexOf("PM")!==-1&&(d+=12));var f=new Date(0,0,0,d,e,0);return g(f)}return null}function e(a,b){return typeof a=="object"?g(a):f(a,b)}function d(a){return(a<10?"0":"")+a}function c(a,b){var c=a.getHours(),e=b.show24Hours?c:(c+11)%12+1,f=a.getMinutes();return d(e)+b.separator+d(f)+(b.show24Hours?"":c<12?" AM":" PM")}function b(b,c,d,e){b.value=a(c).text(),a(b).change(),a.browser.msie||b.focus(),d.hide()}a.fn.timePicker=function(b){var c=a.extend({},a.fn.timePicker.defaults,b);return this.each(function(){a.timePicker(this,c)})},a.timePicker=function(b,c){var d=a(b)[0];return d.timePicker||(d.timePicker=new jQuery._timePicker(d,c))},a.timePicker.version="0.3",a._timePicker=function(d,h){var i=!1,j=!1,k=e(h.startTime,h),l=e(h.endTime,h),m="selected",n="li."+m;a(d).attr("autocomplete","OFF");var o=[],p=new Date(k);while(p<=l)o[o.length]=c(p,h),p=new Date(p.setMinutes(p.getMinutes()+h.step));var q=a('<div class="time-picker'+(h.show24Hours?"":" time-picker-12hours")+'"></div>'),r=a("<ul></ul>");for(var s=0;s<o.length;s++)r.append("<li>"+o[s]+"</li>");q.append(r),q.appendTo("body").hide(),q.mouseover(function(){i=!0}).mouseout(function(){i=!1}),a("li",r).mouseover(function(){j||(a(n,q).removeClass(m),a(this).addClass(m))}).mousedown(function(){i=!0}).click(function(){b(d,this,q,h),i=!1});var t=function(){if(q.is(":visible"))return!1;a("li",q).removeClass(m);var b=a(d).offset();q.css({top:b.top+d.offsetHeight,left:b.left}),q.show();var e=d.value?f(d.value,h):k,i=k.getHours()*60+k.getMinutes(),j=e.getHours()*60+e.getMinutes()-i,n=Math.round(j/h.step),o=g(new Date(0,0,0,0,n*h.step+i,0));o=k<o&&o<=l?o:k;var p=a("li:contains("+c(o,h)+")",q);p.length&&(p.addClass(m),q[0].scrollTop=p[0].offsetTop);return!0};a(d).focus(t).click(t),a(d).blur(function(){i||q.hide()});var u=a.browser.opera||a.browser.mozilla?"keypress":"keydown";a(d)[u](function(c){var e;j=!0;var f=q[0].scrollTop;switch(c.keyCode){case 38:if(t())return!1;e=a(n,r);var g=e.prev().addClass(m)[0];g?(e.removeClass(m),g.offsetTop<f&&(q[0].scrollTop=f-g.offsetHeight)):(e.removeClass(m),g=a("li:last",r).addClass(m)[0],q[0].scrollTop=g.offsetTop-g.offsetHeight);return!1;case 40:if(t())return!1;e=a(n,r);var i=e.next().addClass(m)[0];i?(e.removeClass(m),i.offsetTop+i.offsetHeight>f+q[0].offsetHeight&&(q[0].scrollTop=f+i.offsetHeight)):(e.removeClass(m),i=a("li:first",r).addClass(m)[0],q[0].scrollTop=0);return!1;case 13:if(q.is(":visible")){var k=a(n,r)[0];b(d,k,q,h)}return!1;case 27:q.hide();return!1}return!0}),a(d).keyup(function(a){j=!1}),this.getTime=function(){return f(d.value,h)},this.setTime=function(b){d.value=c(e(b,h),h),a(d).change()}},a.fn.timePicker.defaults={step:30,startTime:new Date(0,0,0,0,0,0),endTime:new Date(0,0,0,23,30,0),separator:":",show24Hours:!0}})(jQuery)

@@ -25,12 +25,33 @@ function em_options_save(){
 		//set capabilities
 		if( !empty($_POST['em_capabilities']) && is_array($_POST['em_capabilities']) && (!is_multisite() || is_multisite() && is_super_admin()) ){
 			global $em_capabilities_array, $wp_roles;
-			foreach( $wp_roles->role_objects as $role_name => $role ){
-				foreach( array_keys($em_capabilities_array) as $capability){
-					if( !empty($_POST['em_capabilities'][$role_name][$capability]) ){
-						$role->add_cap($capability);
-					}else{
-						$role->remove_cap($capability);						
+			if( is_multisite() && is_network_admin() && $_POST['dbem_ms_global_caps'] == 1 ){
+			    //apply_caps_to_blog
+				global $current_site,$wpdb;
+				$blog_ids = $wpdb->get_col('SELECT blog_id FROM '.$wpdb->blogs.' WHERE site_id='.$current_site->id);
+				foreach($blog_ids as $blog_id){
+					switch_to_blog($blog_id);
+				    //normal blog role application
+					foreach( $wp_roles->role_objects as $role_name => $role ){
+						foreach( array_keys($em_capabilities_array) as $capability){
+							if( !empty($_POST['em_capabilities'][$role_name][$capability]) ){
+								$role->add_cap($capability);
+							}else{
+								$role->remove_cap($capability);
+							}
+						}
+					}
+					restore_current_blog();
+				}
+			}elseif( !is_network_admin() ){
+			    //normal blog role application
+				foreach( $wp_roles->role_objects as $role_name => $role ){
+					foreach( array_keys($em_capabilities_array) as $capability){
+						if( !empty($_POST['em_capabilities'][$role_name][$capability]) ){
+							$role->add_cap($capability);
+						}else{
+							$role->remove_cap($capability);
+						}
 					}
 				}
 			}
@@ -378,7 +399,7 @@ function em_admin_options_page() {
 				
 				<?php if ( !is_multisite() ){ em_admin_option_box_image_sizes(); } ?>
 				
-				<?php if ( !is_multisite() ){ em_admin_option_box_caps(); } ?>
+				<?php if ( !is_multisite() || !get_site_option('dbem_ms_global_caps') ){ em_admin_option_box_caps(); } ?>
 				
 				<div  class="postbox" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Submission Forms', 'dbem' ); ?></span></h3>
@@ -1523,7 +1544,7 @@ function em_admin_option_box_email(){
  * Meta options box for user capabilities. Shared in both MS and Normal options page, hence it's own function 
  */
 function em_admin_option_box_caps(){
-	global $save_button;
+	global $save_button, $wpdb;
 	?>
 	<div  class="postbox" >
 	<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'User Capabilities', 'dbem' ); ?></span></h3>
@@ -1577,6 +1598,15 @@ function em_admin_option_box_caps(){
             ?>
             <tr><td colspan="2">
             	<p><em><?php _e('You can now give fine grained control with regards to what your users can do with events. Each user role can have perform different sets of actions.','dbem'); ?></em></p>
+            </td></tr>
+            <tr><td colspan="2">
+            	<?php 
+            	if( is_multisite() && is_network_admin() ){
+		            echo em_options_radio_binary(__('Apply global capabilities?','dbem'), 'dbem_ms_global_caps', __('If set to yes the capabilities will be applied all your network blogs and you will not be able to set custom capabilities each blog. You can select no later and visit specific blog settings pages to add/remove capabilities.','dbem') );
+		        } 
+		        ?>
+		    </td></tr>
+            <tr><td colspan="2">
 	            <table class="em-caps-table" style="width:auto;" cellspacing="0" cellpadding="0">
 					<thead>
 						<tr>

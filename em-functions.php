@@ -512,8 +512,8 @@ function em_options_radio_binary($title, $name, $description, $option_names = ''
 	<?php
 }
 
-function em_options_select($title, $name, $list, $description) {
-	$option_value = get_option($name);
+function em_options_select($title, $name, $list, $description, $default='') {
+	$option_value = get_option($name, $default);
 	if( $name == 'dbem_events_page' && !is_object(get_page($option_value)) ){
 		$option_value = 0; //Special value
 	}

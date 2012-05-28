@@ -15,7 +15,7 @@ global $EM_Event, $post;
 		$EM_Tickets->tickets[] = new EM_Ticket();
 		$delete_temp_ticket = true;
 	}
-	if( get_option('dbem_bookings_tickets_single') ){	
+	if( get_option('dbem_bookings_tickets_single') && count($EM_Tickets->tickets) == 1 ){	
 		$EM_Ticket = $EM_Tickets->get_first();							
 		include( em_locate_template('forms/ticket-form.php') );
 	}else{

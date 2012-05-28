@@ -98,9 +98,13 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.7.1 =
+= 5.1.7.2 =
 * fixed jigoshop session_start conflict
 * removed some group metabox php warnings
+* fixed slashes added to location/event name in db table
+* fixed/improved multisite capability management
+* events with >1 ticket will show multi-ticket editor regardless of single ticket mode setting
+* updated Brazilian language 
 
 = 5.1.7 =
 * added excludeable categories (use negative numbers instead)

@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.1.7.1
+Version: 5.1.7.2
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -196,7 +196,7 @@ class EM_Scripts_and_Styles {
 	 */
 	function public_enqueue() {
 		//Scripts
-		wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete')); //jQuery will load as dependency
+		wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete','jquery-ui-dialog')); //jQuery will load as dependency
 		//Styles
 		wp_enqueue_style('events-manager', plugins_url('includes/css/events_manager.css',__FILE__)); //main css
 	}
@@ -216,9 +216,12 @@ class EM_Scripts_and_Styles {
 			'locale' => $locale_code,
 			'dateFormat' => get_option('dbem_date_format_js'),
 			'bookingInProgress' => __('Please wait while the booking is being submitted.','dbem'),
-			'ui_css' => plugins_url('includes/css/jquery-ui-1.8.13.custom.css', __FILE__),
+			'ui_css' => plugins_url('includes/css/ui-lightness.css', __FILE__),
 			'show24hours' => get_option('dbem_time_24h'),
-			'is_ssl' => is_ssl()
+			'is_ssl' => is_ssl(),
+			'tickets_save' => __('Save Ticket','dbem'),
+			'bookings_export_save' => __('Export Bookings','dbem'),
+			'bookings_settings_save' => __('Save Settings','dbem'),
 		);
 		//logged in messages that visitors shouldn't need to see
 		if( is_user_logged_in() ){
@@ -247,7 +250,7 @@ class EM_Scripts_and_Styles {
 	}
 	function admin_scripts(){
 		global $post;
-		wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete'));
+		wp_enqueue_script('events-manager', WP_PLUGIN_URL.'/events-manager/includes/js/events-manager.js', array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete','jquery-ui-dialog'));
 		self::localize_script();
 	}
 }
@@ -417,7 +420,7 @@ class EM_MS_Globals {
 	function get_globals(){
 		$globals = array(
 			//multisite settings
-			'dbem_ms_global_table',
+			'dbem_ms_global_table', 'dbem_ms_global_caps',
 			'dbem_ms_global_events', 'dbem_ms_global_events_links','dbem_ms_events_slug',
 			'dbem_ms_global_locations','dbem_ms_global_locations_links','dbem_ms_locations_slug','dbem_ms_mainblog_locations',
 			//mail

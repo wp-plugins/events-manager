@@ -322,16 +322,16 @@ class EM_Event extends EM_Object{
 	function get_post($validate = true){	
 		global $allowedposttags;
 		//we need to get the post/event name and content.... that's it.
-		$this->post_content = !empty($_POST['content']) ? wp_kses($_POST['content'], $allowedposttags):'';
-		$this->event_name = !empty($_POST['event_name']) ? wp_kses($_POST['event_name'], array()):'';
+		$this->post_content = !empty($_POST['content']) ? wp_kses( stripslashes($_POST['content']), $allowedposttags):'';
+		$this->event_name = !empty($_POST['event_name']) ? wp_kses_data( stripslashes($_POST['event_name']) ):'';
 		$this->post_type = ($this->is_recurring() || !empty($_POST['recurring'])) ? 'event-recurring':EM_POST_TYPE_EVENT;
 		//don't forget categories!
 		$this->get_categories()->get_post();
 		//anonymous submissions and guest basic info
 		if( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') && empty($this->event_id) ){
 			$this->event_owner_anonymous = 1;
-			$this->event_owner_name = !empty($_REQUEST['event_owner_name']) ? $_REQUEST['event_owner_name']:'';
-			$this->event_owner_email = !empty($_REQUEST['event_owner_email']) ? $_REQUEST['event_owner_email']:'';
+			$this->event_owner_name = !empty($_POST['event_owner_name']) ? stripslashes($_POST['event_owner_name']):'';
+			$this->event_owner_email = !empty($_POST['event_owner_email']) ? $_POST['event_owner_email']:'';
 		}
 		//get the rest and validate (optional)
 		$this->get_post_meta(false);
@@ -349,7 +349,7 @@ class EM_Event extends EM_Object{
 		$this->event_start_date = ( !empty($_POST['event_start_date']) ) ? $_POST['event_start_date'] : '';
 		$this->event_end_date = ( !empty($_POST['event_end_date']) ) ? $_POST['event_end_date'] : $this->event_start_date;
 		//check if this is recurring or not
-		if( !empty($_REQUEST['recurring']) ){
+		if( !empty($_POST['recurring']) ){
 			$this->recurrence = 1;
 			$this->post_type = 'event-recurring';
 		}
@@ -387,11 +387,11 @@ class EM_Event extends EM_Object{
 		$this->start = strtotime($this->event_start_date." ".$this->event_start_time);
 		$this->end = strtotime($this->event_end_date." ".$this->event_end_time);
 		//Bookings
-		if( !empty($_REQUEST['event_rsvp']) && $_REQUEST['event_rsvp'] ){
+		if( !empty($_POST['event_rsvp']) && $_POST['event_rsvp'] ){
 			$this->get_bookings()->get_tickets()->get_post();
 			$this->event_rsvp = 1;
-			$this->event_rsvp_date = ( !empty($_REQUEST['event_rsvp_date']) ) ? $_REQUEST['event_rsvp_date'] : $this->event_start_date;
-			$this->event_spaces = (!empty($_REQUEST['event_spaces'])) ? absint($_REQUEST['event_spaces']):0;
+			$this->event_rsvp_date = ( !empty($_POST['event_rsvp_date']) ) ? $_POST['event_rsvp_date'] : $this->event_start_date;
+			$this->event_spaces = (!empty($_POST['event_spaces'])) ? absint($_POST['event_spaces']):0;
 		}else{
 			$this->event_rsvp = 0;
 		}
@@ -426,15 +426,15 @@ class EM_Event extends EM_Object{
 		//Recurrence data
 		if( $this->is_recurring() ){
 			$this->recurrence = 1; //just in case
-			$this->recurrence_freq = ( !empty($_REQUEST['recurrence_freq']) && in_array($_REQUEST['recurrence_freq'], array('daily','weekly','monthly','yearly')) ) ? $_REQUEST['recurrence_freq']:'daily';
-			if( !empty($_REQUEST['recurrence_bydays']) && $this->recurrence_freq == 'weekly' && self::array_is_numeric($_REQUEST['recurrence_bydays']) ){
-				$this->recurrence_byday = implode( ",", $_REQUEST['recurrence_bydays'] );
-			}elseif( !empty($_REQUEST['recurrence_byday']) && $this->recurrence_freq == 'monthly' ){
-				$this->recurrence_byday = $_REQUEST['recurrence_byday'];
+			$this->recurrence_freq = ( !empty($_POST['recurrence_freq']) && in_array($_POST['recurrence_freq'], array('daily','weekly','monthly','yearly')) ) ? $_POST['recurrence_freq']:'daily';
+			if( !empty($_POST['recurrence_bydays']) && $this->recurrence_freq == 'weekly' && self::array_is_numeric($_POST['recurrence_bydays']) ){
+				$this->recurrence_byday = implode( ",", $_POST['recurrence_bydays'] );
+			}elseif( !empty($_POST['recurrence_byday']) && $this->recurrence_freq == 'monthly' ){
+				$this->recurrence_byday = $_POST['recurrence_byday'];
 			}
-			$this->recurrence_interval = ( !empty($_REQUEST['recurrence_interval']) && is_numeric($_REQUEST['recurrence_interval']) ) ? $_REQUEST['recurrence_interval']:1;
-			$this->recurrence_byweekno = ( !empty($_REQUEST['recurrence_byweekno']) ) ? $_REQUEST['recurrence_byweekno']:'';
-			$this->recurrence_days = ( !empty($_REQUEST['recurrence_days']) && is_numeric($_REQUEST['recurrence_days']) ) ? (int) $_REQUEST['recurrence_days']:0;
+			$this->recurrence_interval = ( !empty($_POST['recurrence_interval']) && is_numeric($_POST['recurrence_interval']) ) ? $_POST['recurrence_interval']:1;
+			$this->recurrence_byweekno = ( !empty($_POST['recurrence_byweekno']) ) ? $_POST['recurrence_byweekno']:'';
+			$this->recurrence_days = ( !empty($_POST['recurrence_days']) && is_numeric($_POST['recurrence_days']) ) ? (int) $_POST['recurrence_days']:0;
 		}
 		//categories in MS GLobal
 		if(EM_MS_GLOBAL && !is_main_site()){

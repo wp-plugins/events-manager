@@ -184,9 +184,10 @@ class EM_Location extends EM_Object {
 	 * @return boolean
 	 */
 	function get_post($validate = true){
+	    global $allowedtags;
 		do_action('em_location_get_post_pre', $this);
-		$this->location_name = ( !empty($_POST['location_name']) ) ? wp_kses($_POST['location_name'], array()):'';
-		$this->post_content = ( !empty($_POST['content']) ) ? wp_kses($_POST['content'], array()):'';
+		$this->location_name = ( !empty($_POST['location_name']) ) ? wp_kses_data( stripslashes($_POST['location_name'])):'';
+		$this->post_content = ( !empty($_POST['content']) ) ? wp_kses( stripslashes($_POST['content']), $allowedtags):'';
 		$this->get_post_meta(false);
 		$result = $validate ? $this->validate():true; //validate both post and meta, otherwise return true
 		$this->compat_keys();
@@ -200,12 +201,12 @@ class EM_Location extends EM_Object {
 	function get_post_meta($validate = true){
 		//We are getting the values via POST or GET
 		do_action('em_location_get_post_meta_pre', $this);
-		$this->location_address = ( !empty($_POST['location_address']) ) ? wp_kses($_POST['location_address'], array()):'';
-		$this->location_town = ( !empty($_POST['location_town']) ) ? wp_kses($_POST['location_town'], array()):'';
-		$this->location_state = ( !empty($_POST['location_state']) ) ? wp_kses($_POST['location_state'], array()):'';
-		$this->location_postcode = ( !empty($_POST['location_postcode']) ) ? wp_kses($_POST['location_postcode'], array()):'';
-		$this->location_region = ( !empty($_POST['location_region']) ) ? wp_kses($_POST['location_region'], array()):'';
-		$this->location_country = ( !empty($_POST['location_country']) ) ? wp_kses($_POST['location_country'], array()):'';
+		$this->location_address = ( !empty($_POST['location_address']) ) ? wp_kses(stripslashes($_POST['location_address']), array()):'';
+		$this->location_town = ( !empty($_POST['location_town']) ) ? wp_kses(stripslashes($_POST['location_town']), array()):'';
+		$this->location_state = ( !empty($_POST['location_state']) ) ? wp_kses(stripslashes($_POST['location_state']), array()):'';
+		$this->location_postcode = ( !empty($_POST['location_postcode']) ) ? wp_kses(stripslashes($_POST['location_postcode']), array()):'';
+		$this->location_region = ( !empty($_POST['location_region']) ) ? wp_kses(stripslashes($_POST['location_region']), array()):'';
+		$this->location_country = ( !empty($_POST['location_country']) ) ? wp_kses(stripslashes($_POST['location_country']), array()):'';
 		$this->location_latitude = ( !empty($_POST['location_latitude']) && is_numeric($_POST['location_latitude']) ) ? $_POST['location_latitude']:'';
 		$this->location_longitude = ( !empty($_POST['location_longitude']) && is_numeric($_POST['location_longitude']) ) ? $_POST['location_longitude']:'';
 		//Set Blog ID
@@ -675,6 +676,7 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONNEXTEVENTS':
 				case '#_ALLEVENTS': //Depreciated
 				case '#_LOCATIONALLEVENTS':
+					//TODO: add limit to lists of events
 					//convert depreciated placeholders for compatability
 					$result = ($result == '#_PASTEVENTS') ? '#_LOCATIONPASTEVENTS':$result; 
 					$result = ($result == '#_NEXTEVENTS') ? '#_LOCATIONNEXTEVENTS':$result;

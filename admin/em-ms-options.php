@@ -7,7 +7,7 @@ function em_ms_upgrade( $blog_id ){
 		<?php
 		if( $_REQUEST['action'] == 'upgrade' && check_admin_referer('em_ms_ugrade_'.get_current_user_id()) ){
 			global $current_site,$wpdb;
-			$blog_ids = $wpdb->get_col('SELECT blog_id FROM '.$wpdb->blogs.' WHERE site_id='.$current_site->blog_id);
+			$blog_ids = $wpdb->get_col('SELECT blog_id FROM '.$wpdb->blogs.' WHERE site_id='.$current_site->id);
 			foreach($blog_ids as $blog_id){
 				switch_to_blog($blog_id);
 				if( EM_VERSION > get_option('dbem_version', 0) ){
