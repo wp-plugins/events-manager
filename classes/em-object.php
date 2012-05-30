@@ -1097,7 +1097,13 @@ class EM_Object {
 			//legacy image finder, annoying, but must be done
 			if( empty($image_url) ){
 				$type = $this->get_image_type();
-				$id = ( get_class($this) == "EM_Event" && $this->is_recurrence() ) ? $this->recurrence_id:$this->event_id; //quick fix for recurrences
+				if( get_class($this) == "EM_Event" ){
+					$id = ( $this->is_recurrence() ) ? $this->recurrence_id:$this->event_id; //quick fix for recurrences
+				}elseif( get_class($this) == "EM_Location" ){
+				    $id = $this->location_id;
+				}else{
+				    $id = $this->id;
+				}
 				if( $type ){
 				  	foreach($this->mime_types as $mime_type) {
 						$file_name = $this->get_image_type(true)."-{$id}.$mime_type";

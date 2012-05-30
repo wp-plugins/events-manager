@@ -2041,7 +2041,7 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 		}else{
 			$result = apply_filters('dbem_notes', $result);
 		}
-	}elseif( in_array($placeholder, array("#_NAME",'#_ADDRESS','#_LOCATION','#_TOWN')) ){
+	}elseif( in_array($placeholder, array("#_NAME",'#_LOCATION','#_TOWN','#_ADDRESS','#_LOCATIONNAME',"#_EVENTNAME","#_LOCATIONNAME")) ){
 		if ($target == "rss"){    
 			$result = apply_filters('dbem_general_rss', $result);
 	  	}elseif ($target == "ical"){    
@@ -2068,6 +2068,7 @@ add_filter('dbem_notes', 'wpautop');
 add_filter('dbem_notes', 'prepend_attachment');
 // RSS content filter
 add_filter('dbem_notes_rss', 'convert_chars', 8);
+add_filter('dbem_general_rss', 'esc_html', 8);
 // Notes map filters
 add_filter('dbem_notes_map', 'convert_chars', 8);
 add_filter('dbem_notes_map', 'js_escape');

@@ -3,7 +3,7 @@ Contributors: nutsmuggler, netweblogic
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
-Tested up to: 3.3.1
+Tested up to: 3.3.2
 Stable tag: 5.1.7
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
@@ -98,13 +98,15 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.7.2 =
+= 5.1.7.3 =
 * fixed jigoshop session_start conflict
 * removed some group metabox php warnings
 * fixed slashes added to location/event name in db table
-* fixed/improved multisite capability management
+* fixed/improved multisite capability management (see network admin settings)
 * events with >1 ticket will show multi-ticket editor regardless of single ticket mode setting
-* updated Brazilian language 
+* updated Brazilian language
+* fixed RSS validation fails for some special characters
+* fixed cancellations being possible after event boookings close 
 
 = 5.1.7 =
 * added excludeable categories (use negative numbers instead)
