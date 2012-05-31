@@ -200,12 +200,14 @@ class EM_Bookings_Table{
 			}elseif( $EM_Event !== false ){
 				//bookings for an event
 				$args = array('event'=>$EM_Event->event_id,'scope'=>false,'status'=>$this->get_status_search(),'order'=>$this->order,'orderby'=>$this->orderby);
+				$args['owner'] = !current_user_can('manage_others_bookings') ? get_current_user_id() : false;
 				$this->bookings_count = EM_Bookings::count($args);
 				$this->bookings = EM_Bookings::get(array_merge($args, array('limit'=>$this->limit,'offset'=>$this->offset)));
 				$this->events[$EM_Event->event_id] = $EM_Event;
 			}else{
 				//all bookings for a status
 				$args = array('status'=>$this->get_status_search(),'scope'=>$this->scope,'order'=>$this->order,'orderby'=>$this->orderby);
+				$args['owner'] = !current_user_can('manage_others_bookings') ? get_current_user_id() : false;
 				$this->bookings_count = EM_Bookings::count($args);
 				$this->bookings = EM_Bookings::get(array_merge($args, array('limit'=>$this->limit,'offset'=>$this->offset)));
 				//Now let's create events and bookings for this instead of giving each booking an event

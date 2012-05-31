@@ -12,6 +12,7 @@ class EM_Calendar extends EM_Object {
 		$calendar_array = array();
 		$calendar_array['cells'] = array();
 	 	
+		$original_args = $args;
 		$args = self::get_default_search($args);
 		$full = $args['full']; //For ZDE, don't delete pls
 		$month = $args['month']; 
@@ -232,7 +233,7 @@ class EM_Calendar extends EM_Object {
 			}
 		}
 		//generate a link argument string containing event search only
-		$day_link_args = self::get_link_args( EM_Events::get_post_search($args, true) );
+		$day_link_args = self::get_link_args( array_intersect_key($original_args, EM_Events::get_post_search($args, true) ));
 		foreach($eventful_days as $day_key => $events) {
 			if( array_key_exists($day_key, $calendar_array['cells']) ){
 				//Get link title for this date

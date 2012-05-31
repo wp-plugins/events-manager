@@ -74,8 +74,8 @@ class EM_Event_Posts_Admin{
 			<?php
 			if( get_option('dbem_categories_enabled') ){
 				//Categories
-	            $selected = !empty($_GET['category_id']) ? $_GET['category_id'] : 0;
-				wp_dropdown_categories(array( 'hide_empty' => 1, 'name' => 'category_id',
+	            $selected = !empty($_GET['event-categories']) ? $_GET['event-categories'] : 0;
+				wp_dropdown_categories(array( 'hide_empty' => 1, 'name' => 'event-categories',
                               'hierarchical' => true, 'id' => EM_TAXONOMY_CATEGORY,
                               'taxonomy' => EM_TAXONOMY_CATEGORY, 'selected' => $selected,
                               'show_option_all' => __('View all categories')));
