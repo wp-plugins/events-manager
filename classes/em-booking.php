@@ -591,10 +591,7 @@ class EM_Booking extends EM_Object{
 		if( $this->booking_status !== $this->previous_status || $force_resend ){
 			$msg = array( 'user'=> array('subject'=>'', 'body'=>''), 'admin'=> array('subject'=>'', 'body'=>'')); //blank msg template
 			
-			//admin messages won't change whether pending or already approved
-			$msg['admin']['subject'] = get_option('dbem_bookings_contact_email_subject');
-			$msg['admin']['body'] = get_option('dbem_bookings_contact_email_body');
-			
+			//admin messages won't change whether pending or already approved			
 			switch( $this->booking_status ){
 				case 0:
 				case 5: //TODO remove offline status from here and move to pro
@@ -604,15 +601,18 @@ class EM_Booking extends EM_Object{
 				case 1:
 					$msg['user']['subject'] = get_option('dbem_bookings_email_confirmed_subject');
 					$msg['user']['body'] = get_option('dbem_bookings_email_confirmed_body');
+					//admins should get something (if set to)
+					$msg['admin']['subject'] = get_option('dbem_bookings_contact_email_subject');
+					$msg['admin']['body'] = get_option('dbem_bookings_contact_email_body');
 					break;
 				case 2:
 					$msg['user']['subject'] = get_option('dbem_bookings_email_rejected_subject');
 					$msg['user']['body'] = get_option('dbem_bookings_email_rejected_body');
-					$msg['admin']['subject'] = ''; //only admins can reject
 					break;
 				case 3:
 					$msg['user']['subject'] = get_option('dbem_bookings_email_cancelled_subject');
 					$msg['user']['body'] = get_option('dbem_bookings_email_cancelled_body');
+					//admins should get something (if set to)
 					$msg['admin']['subject'] = get_option('dbem_contactperson_email_cancelled_subject');
 					$msg['admin']['body'] = get_option('dbem_contactperson_email_cancelled_body');
 					break;
