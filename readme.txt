@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.7.5 =
+= 5.1.7.6 =
 * fixed jigoshop session_start conflict
 * removed some group metabox php warnings
 * fixed slashes added to location/event name in db table
@@ -111,6 +111,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed manage_others_bookings not allowing access to bookings without other caps
 * fixed calendar widgets taking on day link search arguments from other parts of the page
 * fixed admin email problems when in auto-approve mode and using alternate status numbers e.g. 5
+* added force-approve booking flag in EM_Booking::set_status
 
 = 5.1.7 =
 * added excludeable categories (use negative numbers instead)
