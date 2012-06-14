@@ -390,8 +390,8 @@ class EM_Event extends EM_Object{
 		if( !empty($_POST['event_rsvp']) && $_POST['event_rsvp'] ){
 			$this->get_bookings()->get_tickets()->get_post();
 			$this->event_rsvp = 1;
-			$this->event_rsvp_date = ( !empty($_POST['event_rsvp_date']) ) ? $_POST['event_rsvp_date'] : $this->event_start_date;
-			$this->event_spaces = (!empty($_POST['event_spaces'])) ? absint($_POST['event_spaces']):0;
+			$this->event_rsvp_date = ( !isset($_POST['event_rsvp_date']) ) ? $_POST['event_rsvp_date'] : $this->event_start_date;
+			$this->event_spaces = (!isset($_POST['event_spaces'])) ? absint($_POST['event_spaces']):0;
 		}else{
 			$this->event_rsvp = 0;
 		}
@@ -1526,13 +1526,12 @@ class EM_Event extends EM_Object{
 					$replace = $full_result;
 					break;
 			}
-			$replaces[$key] = apply_filters('em_event_output_placeholder', $replace, $this, $full_result, $target);
+			$replaces[$full_result] = apply_filters('em_event_output_placeholder', $replace, $this, $full_result, $target);
 		}
-		//sort out replacements of placeholders here so that e.g. #_X won't overwrite #_XY by mistake
+		//sort out replacements so that during replacements shorter placeholders don't overwrite longer varieties.
 		krsort($replaces);
-		foreach($replaces as $key => $value){
-			$full_result = $placeholders[0][$key];
-			$event_string = str_replace($full_result, $value , $event_string );
+		foreach($replaces as $full_result => $replacement){
+			$event_string = str_replace($full_result, $replacement , $event_string );
 		}
 		//Time placeholders
 		foreach($placeholders[1] as $result) {
@@ -2038,7 +2037,9 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 			$result = apply_filters('dbem_notes_map', $result);
 		}elseif($target == 'ical'){
 			$result = apply_filters('dbem_notes_ical', $result);
-		}else{
+		}elseif ($target == "email"){    
+			$result = apply_filters('dbem_notes_email', $result); 
+	  	}else{ //html
 			$result = apply_filters('dbem_notes', $result);
 		}
 	}elseif( in_array($placeholder, array("#_NAME",'#_LOCATION','#_TOWN','#_ADDRESS','#_LOCATIONNAME',"#_EVENTNAME","#_LOCATIONNAME")) ){
@@ -2046,7 +2047,9 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 			$result = apply_filters('dbem_general_rss', $result);
 	  	}elseif ($target == "ical"){    
 			$result = apply_filters('dbem_general_ical', $result); 
-	  	}else{
+	  	}elseif ($target == "email"){    
+			$result = apply_filters('dbem_general_email', $result); 
+	  	}else{ //html
 			$result = apply_filters('dbem_general', $result); 
 	  	}				
 	}
@@ -2060,7 +2063,7 @@ add_filter('em_location_output_placeholder','em_event_output_placeholder',1,4);
 add_filter('dbem_general', 'wptexturize');
 add_filter('dbem_general', 'convert_chars');
 add_filter('dbem_general', 'trim');
-// filters for the notes field  (corresponding to those of  "the _content")
+// filters for the notes field in html (corresponding to those of  "the _content")
 add_filter('dbem_notes', 'wptexturize');
 add_filter('dbem_notes', 'convert_smilies');
 add_filter('dbem_notes', 'convert_chars');
@@ -2072,4 +2075,22 @@ add_filter('dbem_general_rss', 'esc_html', 8);
 // Notes map filters
 add_filter('dbem_notes_map', 'convert_chars', 8);
 add_filter('dbem_notes_map', 'js_escape');
+
+/**
+ * This function replaces the default gallery shortcode, so it can check if this is a recurring event recurrence and pass on the parent post id as the default post. 
+ * @param array $attr
+ */
+function em_event_gallery_override( $attr = array() ){
+	global $post;
+	if( $post->post_type == EM_POST_TYPE_EVENT && empty($attr['id']) ){
+		//no id specified, so check if it's recurring and override id with recurrence template post id
+		$EM_Event = em_get_event($post->ID, 'post_id');
+		if( $EM_Event->is_recurrence() ){
+			$attr['id'] = $EM_Event->get_event_recurrence()->post_id;
+		}
+	}
+	return gallery_shortcode($attr);
+}
+remove_shortcode('gallery');
+add_shortcode('gallery', 'em_event_gallery_override');
 ?>

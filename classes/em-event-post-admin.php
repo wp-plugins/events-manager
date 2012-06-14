@@ -229,9 +229,7 @@ class EM_Event_Post_Admin{
 
 	function meta_box_bookings(){
 		em_locate_template('forms/event/bookings.php', true);
-		if( !get_option('dbem_bookings_tickets_single') ){
-			add_action('admin_footer',array('EM_Event_Post_Admin','meta_box_bookings_overlay'));
-		}
+		add_action('admin_footer',array('EM_Event_Post_Admin','meta_box_bookings_overlay'));
 	}
 	
 	function meta_box_bookings_overlay(){

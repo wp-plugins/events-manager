@@ -11,9 +11,16 @@
 			<div><label><?php _e('Price','dbem') ?></label><input type="text" name="ticket_price" /></div>
 			<div>
 				<label><?php _e('Available ticket spaces','dbem') ?></label><input type="text" name="ticket_spaces" /><br />
-			</div><br />
-			<div><label><?php _e('Start date of ticket availability','dbem') ?></label><input type="hidden" name="ticket_start" class="start" /><input type="text" name="ticket_start_pub" class="start-loc" /></div>
-			<div><label><?php _e('End date of ticket availability','dbem') ?></label><input type="hidden" name="ticket_end" class="end" /><input type="text" name="ticket_end_pub" class="end-loc" /></div>
+			</div>
+			<div class="em-date-range">
+				<label><?php _e('Start date of ticket availability','dbem') ?></label>
+				<input type="text" name="ticket_start_pub" class="em-date-input-loc em-date-start" />
+				<input type="hidden" name="ticket_start" class="em-date-input" />
+				<br />
+				<label><?php _e('End date of ticket availability','dbem') ?></label>
+				<input type="text" name="ticket_end_pub" class="em-date-input-loc em-date-end" />
+				<input type="hidden" name="ticket_end" class="em-date-input" />
+			</div>
 			<div><label><?php _e('Minimum tickets required per booking','dbem') ?></label><input type="text" name="ticket_min" /></div>
 			<div><label><?php _e('Maximum tickets required per booking','dbem') ?></label><input type="text" name="ticket_max" /></div>
 			<?php do_action('em_tickets_edit_form_fields'); //do not delete, add your own fields here ?>

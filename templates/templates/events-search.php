@@ -31,13 +31,13 @@
 		
 		<?php if( get_option('dbem_search_form_dates') ): ?>
 		<!-- START Date Search -->
-		<span class="em-events-search-dates">
+		<span class="em-events-search-dates em-date-range">
 			<?php _e('between','dbem'); ?>:
-			<input type="text" id="em-date-start-loc" />
-			<input type="hidden" id="em-date-start" name="scope[0]" value="<?php if( !empty($_REQUEST['scope'][0]) ) echo $_REQUEST['scope'][0]; ?>" />
+			<input type="text" class="em-date-input-loc em-date-start" />
+			<input type="hidden" class="em-date-input" name="scope[0]" value="<?php if( !empty($_REQUEST['scope'][0]) ) echo $_REQUEST['scope'][0]; ?>" />
 			<?php _e('and','dbem'); ?>
-			<input type="text" id="em-date-end-loc" />
-			<input type="hidden" id="em-date-end" name="scope[1]" value="<?php if( !empty($_REQUEST['scope'][1]) ) echo $_REQUEST['scope'][1]; ?>" />
+			<input type="text" class="em-date-input-loc em-date-end" />
+			<input type="hidden" class="em-date-input" name="scope[1]" value="<?php if( !empty($_REQUEST['scope'][1]) ) echo $_REQUEST['scope'][1]; ?>" />
 		</span>
 		<!-- END Date Search -->
 		<?php endif; ?>

@@ -1,7 +1,7 @@
 <?php  
 /* 
  * This is where the booking form is generated.
- * It's not recommended you edit this form directly if avoidable, as you can change booking form settings in various ways:
+ * For non-advanced users, It's not recommended you edit this form directly if avoidable, as you can change booking form settings in various less obtrusive and upgrade-safe ways:
  * - check your booking form options panel in the Booking Options tab in your settings.
  * - use CSS or jQuery to change the look of your booking forms
  * - edit the files in the forms/bookingform folder individually instead of this file, to make it more upgrade-safe
@@ -14,7 +14,7 @@ $EM_Tickets = $EM_Event->get_bookings()->get_tickets();
 $EM_Ticket = $EM_Tickets->get_first();
 $can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is_user_logged_in());
 ?>
-<div id="em-booking">
+<div id="em-booking" class="em-booking">
 	<a name="em-booking"></a>
 	<?php 
 		// We are firstly checking if the user has already booked a ticket at this event, if so offer a link to view their bookings.
@@ -35,7 +35,7 @@ $can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is
 		<?php echo $EM_Notices; ?>
 		<?php if( count($EM_Tickets->tickets) > 0) : ?>
 			<?php //Tickets exist, so we show a booking form. ?>
-			<form id='em-booking-form' name='booking-form' method='post' action='<?php echo apply_filters('em_booking_form_action_url',home_url($_SERVER['REQUEST_URI'])); ?>'>
+			<form id='em-booking-form' class="em-booking-form" name='booking-form' method='post' action='<?php echo apply_filters('em_booking_form_action_url',home_url($_SERVER['REQUEST_URI'])); ?>'>
 			 	<input type='hidden' name='action' value='booking_add'/>
 			 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
 			 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_add'); ?>'/>

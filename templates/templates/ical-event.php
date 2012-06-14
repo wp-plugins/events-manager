@@ -22,14 +22,18 @@ $description = str_replace("\\","\\\\",ent2ncr(convert_chars(strip_tags($descrip
 $description = str_replace(';','\;',$description);
 $description = str_replace(',','\,',$description);
 
+$offset = 3600 * get_option('gmt_offset');
+$start_offset = ( date('I', $EM_Event->start) ) ? 0 : 3600;
+$end_offset = ( date('I', $EM_Event->end) ) ? 0 : 3600;
+
 if($EM_Event->event_all_day && $EM_Event->event_start_date == $EM_Event->event_end_date){
-	$dateStart	= date('Ymd\T000000',$EM_Event->start - (60*60*get_option('gmt_offset')));
-	$dateEnd	= date('Ymd\T000000',$EM_Event->start + 60*60*24 - (60*60*get_option('gmt_offset')));
+	$dateStart	= date('Ymd\T000000',$EM_Event->start - $offset + $start_offset);
+	$dateEnd	= date('Ymd\T000000',$EM_Event->start - $offset + $end_offset + 86400); //add one day
 }else{
-	$dateStart	= date('Ymd\THis\Z',$EM_Event->start - (60*60*get_option('gmt_offset')));
-	$dateEnd = date('Ymd\THis\Z',$EM_Event->end - (60*60*get_option('gmt_offset')));
+	$dateStart	= date('Ymd\THis\Z',$EM_Event->start - $offset + $start_offset);
+	$dateEnd = date('Ymd\THis\Z',$EM_Event->end - $offset + $end_offset);
 }
-$dateModified = date('Ymd\THis\Z', $EM_Event->modified);			
+$dateModified = date('Ymd\THis\Z', $EM_Event->modified - $offset + $start_offset);			
 
 $location		= $EM_Event->output('#_LOCATION');
 $location		= str_replace(',','\,',ent2ncr(convert_chars(strip_tags($location))));

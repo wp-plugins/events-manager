@@ -7,8 +7,8 @@
 	a.em-button:hover { text-decoration:none; }	
 
 /* Booking Form */
-	#em-booking { margin:15px 0px 10px 0px; position:relative; }
-	#em-booking-form  { position:relative; clear:left; }
+	.em-booking { margin:15px 0px 10px 0px; position:relative; }
+	.em-booking-form  { position:relative; clear:left; }
 	.em-booking-form-details  { padding:10px; width:360px; float:left; }  
 	.em-booking-form-details input.input, .em-booking-form-details textarea { width:250px; }
 	.em-booking-form-details p { clear:left; }
@@ -16,7 +16,7 @@
 	.em-booking-form-details span.input-group input { margin-left:-20px; }
 	.em-booking-form-details span.input-group { display:block; margin-left:120px; }
 	.em-booking-form-details .em-booking-submit { width:auto; }	
-	#em-booking-form label  { display:inline-block; width:100px; }	
+	.em-booking-form label  { display:inline-block; width:100px; }	
 	/* Tickets */
 		.em-tickets { margin-bottom:20px; }
 	/* Message Errors */

@@ -818,6 +818,7 @@ function em_admin_options_page() {
 				 				</option>
 								<?php endforeach; ?>
 							</select>
+							<br /><?php echo __('When listing events for a category, this order is applied.', 'dbem'); ?>
 						</td>
 				   	</tr>
 					<tr>
@@ -832,9 +833,11 @@ function em_admin_options_page() {
 							<select name="dbem_categories_default_orderby" >
 								<?php 
 									$orderby_options = apply_filters('em_settings_categories_default_orderby_ddm', array(
-										'category_country' => sprintf(__('Order by %s','dbem'),__('Country','dbem')),
-										'category_town' => sprintf(__('Order by %s','dbem'),__('Town','dbem')),
-										'category_name' => sprintf(__('Order by %s','dbem'),__('Name','dbem'))
+										'id' => sprintf(__('Order by %s','dbem'),__('ID','dbem')),
+										'count' => sprintf(__('Order by %s','dbem'),__('Count','dbem')),
+										'name' => sprintf(__('Order by %s','dbem'),__('Name','dbem')),
+										'slug' => sprintf(__('Order by %s','dbem'),__('Slug','dbem')),
+										'term_group' => sprintf(__('Order by %s','dbem'),'term_group'),
 									)); 
 								?>
 								<?php foreach($orderby_options as $key => $value) : ?>
@@ -858,6 +861,7 @@ function em_admin_options_page() {
 				 				</option>
 								<?php endforeach; ?>
 							</select>
+							<br /><?php echo __('When listing categories, this order is applied.', 'dbem'); ?>
 						</td>
 				   	</tr>
 					<?php

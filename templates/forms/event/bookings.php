@@ -94,8 +94,8 @@ global $EM_Event, $post;
 								<input type="hidden" class="ticket_description" name="em_tickets[<?php echo $count; ?>][ticket_description]" value="<?php echo esc_attr(stripslashes($EM_Ticket->ticket_description)) ?>" />
 								<input type="hidden" class="ticket_price" name="em_tickets[<?php echo $count; ?>][ticket_price]" value="<?php echo $EM_Ticket->ticket_price ?>" />
 								<input type="hidden" class="ticket_spaces" name="em_tickets[<?php echo $count; ?>][ticket_spaces]" value="<?php echo $EM_Ticket->ticket_spaces ?>" />
-								<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->ticket_start) ) ? date("Y-m-d H:i", $EM_Ticket->start_timestamp):''; ?>" />
-								<input type="hidden" class="ticket_end" name="em_tickets[<?php echo $count; ?>][ticket_end]" value="<?php echo ( !empty($EM_Ticket->ticket_end) ) ? date("Y-m-d H:i", $EM_Ticket->end_timestamp):''; ?>" />
+								<input type="hidden" class="ticket_start" name="em_tickets[<?php echo $count; ?>][ticket_start]" value="<?php echo ( !empty($EM_Ticket->ticket_start) ) ? date("Y-m-d", $EM_Ticket->start_timestamp):''; ?>" />
+								<input type="hidden" class="ticket_end" name="em_tickets[<?php echo $count; ?>][ticket_end]" value="<?php echo ( !empty($EM_Ticket->ticket_end) ) ? date("Y-m-d", $EM_Ticket->end_timestamp):''; ?>" />
 								<input type="hidden" class="ticket_min" name="em_tickets[<?php echo $count; ?>][ticket_min]" value="<?php echo $EM_Ticket->ticket_min ?>" />
 								<input type="hidden" class="ticket_max" name="em_tickets[<?php echo $count; ?>][ticket_max]" value="<?php echo $EM_Ticket->ticket_max ?>" />
 								<?php do_action('em_event_edit_ticket_hidden', $EM_Ticket); ?>
@@ -117,8 +117,11 @@ global $EM_Event, $post;
 		</p>
 		<p>
 			<label><strong><?php _e('Booking Cut-Off Date','dbem'); ?></strong></label>
-			<input id="em-bookings-date-loc" type="text" />
-			<input id="em-bookings-date" type="hidden" name="event_rsvp_date" value="<?php echo $EM_Event->event_rsvp_date; ?>" /><br />
+			<span class="em-date-single">
+				<input id="em-bookings-date-loc" class="em-date-input-loc" type="text" />
+				<input id="em-bookings-date" class="em-date-input" type="hidden" name="event_rsvp_date" value="<?php echo $EM_Event->event_rsvp_date; ?>" />
+			</span>
+			<br />
 			<em><?php _e('This is the definite date after which bookings will be closed for this event, regardless of individual ticket settings above. Default value will be the event start date.','dbem'); ?></em>
 		</p>
 	<?php } ?>

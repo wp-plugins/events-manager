@@ -3,7 +3,7 @@ Contributors: nutsmuggler, netweblogic
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
-Tested up to: 3.3.2
+Tested up to: 3.4
 Stable tag: 5.1.7
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
@@ -98,7 +98,8 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.7.6 =
+= 5.1.8 =
+* important - Modified template files? See this http://em.cm/datetime
 * fixed jigoshop session_start conflict
 * removed some group metabox php warnings
 * fixed slashes added to location/event name in db table
@@ -112,6 +113,17 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed calendar widgets taking on day link search arguments from other parts of the page
 * fixed admin email problems when in auto-approve mode and using alternate status numbers e.g. 5
 * added force-approve booking flag in EM_Booking::set_status
+* fixed ical locations and apostrophes and single ical file time offsets
+* fixed gallery shortcode for recurring events
+* fixed guest event submission auto-complete
+* refactored booking form JS to allow multiple forms on one page
+* fixed some booking js ui animations
+* fixed booking table overlay issues
+* added more js vars for translation purposes
+* improved placeholder replacement logic
+* added em_event_submission_login filter
+* simplified timepicker and datepicker JS and html strucuture for re-use
+* EM_Notices behaviour changed so errors are printed and not deleted, only at start/end of script
 
 = 5.1.7 =
 * added excludeable categories (use negative numbers instead)

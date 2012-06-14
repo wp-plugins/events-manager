@@ -197,19 +197,6 @@ add_action ( 'admin_notices', 'em_admin_warnings', 100 );
  * @param string $file
  * @return array
  */
-function em_set_plugin_meta($links, $file) {
-	$plugin = plugin_basename(__FILE__);
-	// create link
-	if ($file == $plugin) {
-		return array_merge(
-			$links,
-			array( sprintf( '<a href="'.EM_ADMIN_URL.'&amp;page=events-manager-options">%s</a>', __('Settings', 'dbem') ) )
-		);
-	}
-	return $links;
-}
-//add_filter( 'plugin_row_meta', 'em_set_plugin_meta', 10, 2 );
-
 function em_plugin_action_links($actions, $file, $plugin_data) {
 	$actions['settings'] = sprintf( '<a href="'.EM_ADMIN_URL.'&amp;page=events-manager-options">%s</a>', __('Settings', 'dbem') );
 	if( is_multisite() ){

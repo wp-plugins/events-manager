@@ -41,13 +41,13 @@ foreach ( $EM_Events as $EM_Event ) {
 		$dateEnd = date('Ymd\THis\Z',$EM_Event->end - $offset + $end_offset);
 	}
 	if( !empty($EM_Event->event_date_modified) ){
-		$dateModified = date('Ymd\THis\Z', strtotime($EM_Event->event_date_modified));
+		$dateModified = date('Ymd\THis\Z', strtotime($EM_Event->event_date_modified) - $offset + $start_offset);
 	}else{
-		$dateModified = date('Ymd\THis\Z', strtotime($EM_Event->event_date_created));
+		$dateModified = date('Ymd\THis\Z', strtotime($EM_Event->event_date_created) - $offset + $start_offset);
 	}	
 	
-	$location		= $EM_Event->output('#_LOCATION');
-	$location		= str_replace(',','\,',ent2ncr(convert_chars(strip_tags($location))));
+	$location		= $EM_Event->output('#_LOCATION', 'ical');
+	$description = str_replace("\\","\\\\",ent2ncr(convert_chars(strip_tags($description))));
 	//$location = str_replace('"','DQUOTE',$location);
 	$location = str_replace(';','\;',$location);
 	$location = str_replace(',','\,',$location);

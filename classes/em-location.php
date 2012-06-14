@@ -707,13 +707,12 @@ class EM_Location extends EM_Object {
 					$replace = $full_result;
 					break;
 			}
-			$replaces[$key] = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target);
+			$replaces[$full_result] = apply_filters('em_location_output_placeholder', $replace, $this, $full_result, $target);
 		}
-		//sort out replacements of placeholders here so that e.g. #_X won't overwrite #_XY by mistake
+		//sort out replacements so that during replacements shorter placeholders don't overwrite longer varieties.
 		krsort($replaces);
-		foreach($replaces as $key => $value){
-			$full_result = $placeholders[0][$key];
-			$location_string = str_replace($full_result, $value , $location_string );
+		foreach($replaces as $full_result => $replacement){
+			$location_string = str_replace($full_result, $replacement , $location_string );
 		}
 		return apply_filters('em_location_output', $location_string, $this, $format, $target);	
 	}

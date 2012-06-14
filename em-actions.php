@@ -32,7 +32,7 @@ function em_init_actions() {
 			}			
 		    echo EM_Object::json_encode($result);
 			die();
-		} 
+		}
 		if(isset($_REQUEST['query']) && $_REQUEST['query'] == 'GlobalMapData') {
 			$EM_Locations = EM_Locations::get( $_REQUEST );
 			$json_locations = array();
@@ -186,7 +186,7 @@ function em_init_actions() {
 		}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "locations_search" && (!empty($_REQUEST['term']) || !empty($_REQUEST['q'])) ){
 			$results = array();
 			if( is_user_logged_in() || ( get_option('dbem_events_anonymous_submissions') && user_can(get_option('dbem_events_anonymous_user'), 'read_others_locations') ) ){
-				$location_cond = !current_user_can('read_others_locations') ? "AND location_owner=".get_current_user_id() : '';
+				$location_cond = (is_user_logged_in() && !current_user_can('read_others_locations')) ? "AND location_owner=".get_current_user_id() : '';
 				$term = (isset($_REQUEST['term'])) ? '%'.$_REQUEST['term'].'%' : '%'.$_REQUEST['q'].'%';
 				$sql = $wpdb->prepare("
 					SELECT 
@@ -642,7 +642,7 @@ add_action('init','em_init_actions',11);
 
 function em_ajax_bookings_table(){
 	$EM_Bookings_Table = new EM_Bookings_Table();
-	$EM_Bookings_Table->output_content();
+	$EM_Bookings_Table->output_table();
 	exit();
 }
 add_action('wp_ajax_em_bookings_table','em_ajax_bookings_table');

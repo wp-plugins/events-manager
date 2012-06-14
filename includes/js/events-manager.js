@@ -1,39 +1,49 @@
 var load_ui_css = false; //load jquery ui css?
 jQuery(document).ready( function($){
 	/* Time Entry */
-	if( $("#start-time").length > 0 ){
-		$("#start-time, #end-time").timePicker({
+	$('#start-time').each(function(i, el){
+		$(el).addClass('em-time-input em-time-start').next('#end-time').addClass('em-time-input em-time-end').parent().addClass('em-time-range');
+	});
+	if( $(".em-time-input").length > 0 ){
+		$(".em-time-input").timePicker({
 			show24Hours: EM.show24hours == 1,
 			step:15
 		});
-		// Store time used by duration.
-		var oldTime = $.timePicker("#start-time").getTime();
+		
 		// Keep the duration between the two inputs.
-		$("#start-time").change(function() {
-		  if ($("#end-time").val()) { // Only update when second input has a value.
-		    // Calculate duration.
-		    var duration = ($.timePicker("#end-time").getTime() - oldTime);
-		    var time = $.timePicker("#start-time").getTime();
-		    // Calculate and update the time in the second input.
-		    $.timePicker("#end-time").setTime(new Date(new Date(time.getTime() + duration)));
-		    oldTime = time;
-		  }
+		$(".em-time-range input.em-time-start").each( function(i, el){
+			$(el).data('oldTime', $.timePicker(el).getTime());
+		}).change( function() {
+			var start = $(this);
+			var end = start.next('.em-time-end');
+			if (end.val()) { // Only update when second input has a value.
+			    // Calculate duration.
+				var oldTime = start.data('oldTime');
+			    var duration = ($.timePicker(end).getTime() - oldTime);
+			    var time = $.timePicker(start).getTime();
+			    if( $.timePicker(end).getTime() >= oldTime ){
+				    // Calculate and update the time in the second input.
+				    $.timePicker(end).setTime(new Date(new Date(time.getTime() + duration)));
+				}
+			    start.data('oldTime', time); 
+			}
 		});
 		// Validate.
-		$("#end-time").change(function() {
-		  if($.timePicker("#start-time").getTime() > $.timePicker(this).getTime()) { $(this).addClass("error"); }
-		  else { $(this).removeClass("error"); }
+		$(".em-time-range input.em-time-end").change(function() {
+			var end = $(this);
+			var start = end.prev('.em-time-start');
+			if( start.val() ){
+				if($.timePicker(start).getTime() > $.timePicker(this).getTime()) { end.addClass("error"); }
+				else { end.removeClass("error"); }
+			}
 		});
 		//Sort out all day checkbox
-		$('#em-time-all-day').change(function(){
-			if( $('#em-time-all-day').is(':checked') ){
-				$("#start-time").css('background-color','#ccc');
-				$.timePicker("#start-time").setTime(new Date(0,0,0,0,0,0));
-				$("#end-time").css('background-color','#ccc');
-				$.timePicker("#end-time").setTime(new Date(0,0,0,0,0,0));
+		$('.em-time-range input.em-time-all-day').change(function(){
+			var allday = $(this);
+			if( allday.is(':checked') ){
+				allday.siblings('.em-time-input').css('background-color','#ccc');
 			}else{
-				$("#end-time").css('background-color','#fff');
-				$("#start-time").css('background-color','#fff');			
+				allday.siblings('.em-time-input').css('background-color','#fff');
 			}
 		}).trigger('change');
 	}
@@ -145,7 +155,7 @@ jQuery(document).ready( function($){
 			minWidth: 350,
 			height: 'auto',
 			buttons: [{
-				text: EM.tickets_dialog,
+				text: EM.tickets_save,
 				click: function(e){
 					e.preventDefault();
 					//Submitting ticket (Add/Edit)
@@ -170,7 +180,13 @@ jQuery(document).ready( function($){
 							'value' : el.attr('value'),
 							'name' : 'em_tickets['+rowNo+']['+el.attr('name')+']'
 						});
-						slot.find('span.'+el.attr('name')).text(el.attr('value'));
+						if( el.attr('name') == 'ticket_start_pub'){
+							slot.find('span.ticket_start').text(el.attr('value'));
+						}else if( el.attr('name') == 'ticket_end_pub' ){
+							slot.find('span.ticket_end').text(el.attr('value'));
+						}else{
+							slot.find('span.'+el.attr('name')).text(el.attr('value'));
+						}
 					});
 					//allow for others to hook into this
 					$(document).triggerHandler('em_maps_tickets_edit', [slot, rowNo, edit]);
@@ -183,12 +199,13 @@ jQuery(document).ready( function($){
 				}
 			}]
 		});
-		$("#em-tickets-add").click(function(e){ e.preventDefault(); $("#em-tickets-form").dialog('open'); });
+		$("#em-tickets-add").click(function(e){ e.preventDefault(); $('#em-tickets-form *[name]').attr('value',''); $("#em-tickets-form").dialog('open'); });
 		//Edit a Ticket
 		$(document).delegate('.ticket-actions-edit', 'click', function(e){
-			//first, populate form, then, trigger click
+			//trigger click
 			e.preventDefault();
 			$('#em-tickets-add').trigger('click');
+			//populate form
 			var rowId = $(this).parents('tr').first().attr('id');
 			$('#em-tickets-form *[name]').attr('value','');
 			$.each( $('#'+rowId+' *[name]'), function(index,el){
@@ -196,17 +213,17 @@ jQuery(document).ready( function($){
 				var selector = el.attr('class');
 				$('#em-tickets-form *[name='+selector+']').attr('value',el.attr('value'));
 			});
-			$("#em-tickets-form input[name=prev_slot]").attr('value',rowId);
-			$("#em-tickets-form .start-loc").datepicker('refresh');
-			$("#em-tickets-form .end-loc").datepicker('refresh');
-	
-			date_dateFormat =$("#em-tickets-form .start-loc").datepicker('option', 'dateFormat');
-			if( $('#em-tickets-form .start').val() != '' || $('#em-tickets-form .end').val() != '' ){			
-				start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-tickets-form .start').val()) );
-				end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-tickets-form .end').val()) );
-				$("#em-tickets-form .start-loc").val(start_date_formatted);
-				$("#em-tickets-form .end-loc").val(end_date_formatted);
-			}
+			$("#em-tickets-form input[name=prev_slot]").attr('value',rowId); //save the current slot number
+			//refresh datepicker and values
+			$("#em-tickets-form .em-date-input-loc").datepicker('refresh');
+			$('#em-tickets-form input.em-date-input-loc').each(function(i,el){
+				el = $(el);
+				date_value = el.next('.em-date-input').val();
+				if( date_value != '' ){
+					date_formatted = $.datepicker.formatDate( EM.dateFormat, $.datepicker.parseDate('yy-mm-dd', date_value) );
+					el.val(date_formatted);
+				}
+			});
 			return false;
 		});	
 		//Delete a ticket
@@ -249,20 +266,6 @@ jQuery(document).ready( function($){
 			form.trigger('submit');
 			return false;
 		});
-		//Sortables
-		var setup_sortable = function(){
-			$( ".em-bookings-cols-sortable" ).sortable({
-				connectWith: ".em-bookings-cols-sortable",
-				over: function(event, ui) {
-					if( ui.item.hasClass('ui-state-highlight') ){
-						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);							
-					}else{
-						ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
-					}
-				}
-			}).disableSelection();
-			load_ui_css = true;
-		}
 		//Overlay Options
 		var em_bookings_settings_dialog = {
 			modal : true,
@@ -273,28 +276,20 @@ jQuery(document).ready( function($){
 				text: EM.bookings_settings_save,
 				click: function(e){
 					e.preventDefault();
-					var arr = $('form#em-bookings-table-settings-form').serializeArray();
 					//we know we'll deal with cols, so wipe hidden value from main
-					$("#em-bookings-table form.bookings-filter [name=cols]").val('');
-					$.each(arr, function(i,item){
-						item_match = $('form#em-bookings-table-settings-form [name='+item.name+']');
-						if( item_match.length > 0 && item_match.hasClass('em-bookings-col-item') && item_match.val() == 1 ){
-							var match = $("#em-bookings-table form.bookings-filter [name=cols]");
-							if( match.length > 0 ){
-								if(match.val() != ''){
-									match.val(match.val()+','+item.name);
-								}else{
-									match.val(item.name);
-								}
+					var match = $("#em-bookings-table form.bookings-filter [name=cols]").val('');
+					var booking_form_cols = $('form#em-bookings-table-settings-form input.em-bookings-col-item');
+					$.each( booking_form_cols, function(i,item_match){
+						//item_match = $(item_match);
+						if( item_match.value == 1 ){
+							if( match.val() != ''){
+								match.val(match.val()+','+item_match.name);
+							}else{
+								match.val(item_match.name);
 							}
-						}else{
-							//copy it into the main form, overwrite those values
-							var match = $("#em-bookings-table form.bookings-filter [name="+item.name+"]");
-							if( match.length > 0 ){ match.val(item.value); }
 						}
 					});
 					//submit main form
-					$('#em-bookings-table-settings a.close').trigger('click');
 					$('#em-bookings-table-settings').trigger('submitted'); //hook into this with bind()
 					$('#em-bookings-table form.bookings-filter').trigger('submit');					
 					$(this).dialog('close');
@@ -314,17 +309,15 @@ jQuery(document).ready( function($){
 				}
 			}]
 		};
-		//Overlays
 		if( $("#em-bookings-table-settings").length > 0 ){
 			//Settings Overlay
 			$("#em-bookings-table-settings").dialog(em_bookings_settings_dialog);
 			$(document).delegate('#em-bookings-table-settings-trigger','click', function(e){ e.preventDefault(); $("#em-bookings-table-settings").dialog('open'); });
-
 			//Export Overlay
 			$("#em-bookings-table-export").dialog(em_bookings_export_dialog);
 			$(document).delegate('#em-bookings-table-export-trigger','click', function(e){ e.preventDefault(); $("#em-bookings-table-export").dialog('open'); });
 			var export_overlay_show_tickets = function(){
-				if( $(this).is(':checked') ){
+				if( $('#em-bookings-table-export-form input[name=show_tickets]').is(':checked') ){
 					$('#em-bookings-table-export-form .em-bookings-col-item-ticket').show();
 					$('#em-bookings-table-export-form #em-bookings-export-cols-active .em-bookings-col-item-ticket input').val(1);
 				}else{
@@ -332,20 +325,30 @@ jQuery(document).ready( function($){
 				}
 			};
 			export_overlay_show_tickets();
-			$(document).delegate('#em-bookings-table-export-form input[name=show_tickets]', 'click', export_overlay_show_tickets);
-			
-			setup_sortable();
+			$('#em-bookings-table-export-form input[name=show_tickets]').click(export_overlay_show_tickets);
+			//Sortables
+			$( ".em-bookings-cols-sortable" ).sortable({
+				connectWith: ".em-bookings-cols-sortable",
+				over: function(event, ui) {
+					if( ui.item.hasClass('ui-state-highlight') ){
+						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);							
+					}else{
+						ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
+					}
+				}
+			}).disableSelection();
+			load_ui_css = true;
 		}
 		//Widgets and filter submissions
 		$(document).delegate('#em-bookings-table form.bookings-filter', 'submit', function(e){
 			var el = $(this);			
+			//append loading spinner
 			el.parents('#em-bookings-table').find('.table-wrap').first().append('<div id="em-loading" />');
+			//ajax call
 			$.post( EM.ajaxurl, el.serializeArray(), function(data){
 				el.parents('#em-bookings-table').first().replaceWith(data);
-				//Settings Overlay
+				//recreate overlays
 				if( $("#em-bookings-table-settings").length > 0 ){
-					$("#em-bookings-table-settings").dialog(em_bookings_settings_dialog);
-					$("#em-bookings-table-export").dialog(em_bookings_export_dialog);
 					setup_sortable();
 				}
 			});
@@ -355,11 +358,11 @@ jQuery(document).ready( function($){
 		$(document).delegate('.em-bookings-approve,.em-bookings-reject,.em-bookings-unapprove,.em-bookings-delete', 'click', function(){
 			var el = $(this); 
 			if( el.hasClass('em-bookings-delete') ){
-				if( !confirm("Are you sure you want to delete?") ){ return false; }
+				if( !confirm(EM.booking_delete) ){ return false; }
 			}
 			var url = em_ajaxify( el.attr('href'));		
 			var td = el.parents('td').first();
-			td.html("Loading...");
+			td.html(EM.txt_loading);
 			td.load( url );
 			return false;
 		});
@@ -389,7 +392,7 @@ jQuery(document).ready( function($){
 	}
 		
 	//Datepicker
-	if( $('#em-date-start').length > 0 ){
+	if( $('.em-date-single, .em-date-range, #em-date-start').length > 0 ){
 		if( EM.locale != 'en' ){
 			$.datepicker.regional['nl']={closeText:'Sluiten',prevText:'←',nextText:'→',currentText:'Vandaag',monthNames:['januari','februari','maart','april','mei','juni','juli','augustus','september','oktober','november','december'],monthNamesShort:['jan','feb','maa','apr','mei','jun','jul','aug','sep','okt','nov','dec'],dayNames:['zondag','maandag','dinsdag','woensdag','donderdag','vrijdag','zaterdag'],dayNamesShort:['zon','maa','din','woe','don','vri','zat'],dayNamesMin:['zo','ma','di','wo','do','vr','za'],weekHeader:'Wk',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
 			$.datepicker.regional['af']={closeText:'Selekteer',prevText:'Vorige',nextText:'Volgende',currentText:'Vandag',monthNames:['Januarie','Februarie','Maart','April','Mei','Junie','Julie','Augustus','September','Oktober','November','Desember'],monthNamesShort:['Jan','Feb','Mrt','Apr','Mei','Jun','Jul','Aug','Sep','Okt','Nov','Des'],dayNames:['Sondag','Maandag','Dinsdag','Woensdag','Donderdag','Vrydag','Saterdag'],dayNamesShort:['Son','Maa','Din','Woe','Don','Vry','Sat'],dayNamesMin:['So','Ma','Di','Wo','Do','Vr','Sa'],weekHeader:'Wk',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
@@ -429,61 +432,81 @@ jQuery(document).ready( function($){
 			$.datepicker.regional['it']={closeText:'Fatto',prevText:'Precedente',nextText:'Prossimo',currentText:'Oggi',monthNames:['Gennaio','Febbraio','Marzo','Aprile','Maggio','Giugno','Luglio','Agosto','Settembre','Ottobre','Novembre','Dicembre'],monthNamesShort:['Gen','Feb','Mar','Apr','Mag','Giu','Lug','Ago','Set','Ott','Nov','Dic'],dayNames:['Lunedì','Martedì','Mercoledì','Giovedì','Venerdì','Sabato','Domenica'],dayNamesShort:['Lun','Mar','Mer','Gio','Ven','Sab','Dom'],dayNamesMin:['Do','Lu','Ma','Me','Gi','Ve','Sa'],weekHeader:'Wk',dateFormat:'dd/mm/yy',firstDay:1,isRTL:false,showMonthAfterYear:false,yearSuffix:''};
 			$.datepicker.setDefaults($.datepicker.regional[EM.locale]);
 		}
+		load_ui_css = true;
 		//default picker vals
 		var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay };
 		if( EM.dateFormat != ''){
 			datepicker_vals.dateFormat = EM.dateFormat;
 		}
 		
-		//bookings end date
-		var bookings_datepicker_vals = { 
-			altField : "#em-bookings-date" 
-		};
-		$.extend( bookings_datepicker_vals, datepicker_vals );
-		$("#em-bookings-date-loc").datepicker(bookings_datepicker_vals);
-		
-		//start date
-		var start_datepicker_vals = {
-			altField : "#em-date-start",
-			onSelect : function( selectedDate ) {
-				if( $("#em-date-start").val() > $("#em-date-end").val() ){
-					$("#em-date-end-loc").datepicker( "setDate" , selectedDate );
-				}
-				$("#em-date-end-loc").datepicker( "option", 'minDate', selectedDate );
-			} 
-		};
-		$.extend( start_datepicker_vals, datepicker_vals );
-		$("#em-date-start-loc").datepicker(start_datepicker_vals);
-
-		//end date
-		var end_datepicker_vals = { 
-			altField : "#em-date-end" 
-		};
-		if( $("#em-date-start").val() != '' ){
-			end_datepicker_vals.minDate = new Date($("#em-date-start").val());
+		//initialize legacy start/end dates, makes the following code compatible
+		if( $('#em-date-start').length > 0 ){
+			$('#em-date-start').addClass('em-date-input').parent().addClass('em-date-range');
+			$("#em-date-start-loc").addClass('em-date-input-loc em-date-start');
+			$('#em-date-end').addClass('em-date-input');
+			$("#em-date-end-loc").addClass('em-date-input-loc em-date-end');
 		}
-		$.extend( end_datepicker_vals, datepicker_vals );
-		$("#em-date-end-loc").datepicker(end_datepicker_vals);
+		if( $(".em-ticket-form, #em-tickets-form").length > 0 ){
+			$(".em-ticket-form, #em-tickets-form .start").addClass('em-date-input').parent().addClass('em-date-single');
+			$(".em-ticket-form, #em-tickets-form .start-loc").addClass('em-date-input-loc').each(
+				function(i,el){ $(el).prev('.start').insertAfter(el); 
+			}); //reverse elements for comapatability
+			$(".em-ticket-form, #em-tickets-form .end").addClass('em-date-input').parent().addClass('em-date-single');
+			$(".em-ticket-form, #em-tickets-form .end-loc").addClass('em-date-input-loc').each(
+				function(i,el){ $(el).prev('.end').insertAfter(el);
+			}); //reverse elements for comapatability
+		}
 		
-		//localize start/end dates
-		if( $('#em-date-start').val() != '' ){
-			load_ui_css = true;
-			if( EM.locale != 'en' && $.datepicker.regional[EM.locale] != null ){
-				var date_dateFormat = $.datepicker.regional[EM.locale].dateFormat;
-			}else{
-				var date_dateFormat = $("#em-date-start-loc").datepicker('option', 'dateFormat');
-			}
-			if($('#em-bookings-date').length > 0 && $('#em-bookings-date').val() != ''){
-				var bookings_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-bookings-date').val()) );
-				$("#em-bookings-date-loc").val(bookings_date_formatted);
-			}
-			var start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-date-start').val()) );
-			var end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd', $('#em-date-end').val()) );
-			$("#em-date-start-loc").val(start_date_formatted);
-			$("#em-date-end-loc").val(end_date_formatted);
+		//apply datepickers
+		dateDivs = $('.em-date-single, .em-date-range');
+		if( dateDivs.length > 0 ){
+			//apply datepickers to elements
+			dateDivs.find('input.em-date-input-loc').each(function(i,dateInput){
+				//init the datepicker
+				var dateInput = $(dateInput);
+				var dateValue = dateInput.next('input.em-date-input');
+				var dateValue_value = dateValue.val();
+				dateInput.datepicker(datepicker_vals);
+				dateInput.datepicker('option', 'altField', dateValue);
+				//now set the value
+				if( dateValue_value ){
+					var this_date_formatted = $.datepicker.formatDate( EM.dateFormat, $.datepicker.parseDate('yy-mm-dd', dateValue_value) );
+					dateInput.val(this_date_formatted);	
+				}
+				//add logic for texts
+				dateInput.change(function(){
+					dateValue_value = $(this).val();
+					if( dateValue_value ){
+						$(this).next('.em-date-input').val('');
+						//this_date_formatted = $.datepicker.formatDate( 'yy-mm-dd', $.datepicker.parseDate(EM.dateFormat, dateValue_value) );
+					}
+				});
+			});
+			//deal with date ranges
+			$('.em-date-range input.em-date-input-loc').each(function(i,dateInput){
+				//finally, apply start/end logic to this field
+				dateInput = $(dateInput);
+				if( dateInput.hasClass('em-date-start') ){
+					dateInput.datepicker('option','onSelect', function( selectedDate ) {
+						//get corresponding end date input, we expect ranges to be contained in .em-date-range with a start/end input element
+						var startDate = $(this);
+						var endDate = startDate.parents('.em-date-range').find('.em-date-end').first();
+						if( startDate.val() > endDate.val() && endDate.val() != '' ){
+							endDate.datepicker( "setDate" , selectedDate );
+						}
+						endDate.datepicker( "option", 'minDate', selectedDate );
+					});
+				}else if( dateInput.hasClass('em-date-end') ){
+					var startInput = dateInput.parents('.em-date-range').find('.em-date-start').first();
+					if( startInput.val() != '' ){
+						dateInput.datepicker('option', 'minDate', startInput.val());
+					}
+				}
+			});
 		}
 		
 		//for the tickets form too
+		/*
 		$(".em-ticket-form, #em-tickets-form").each(function(i, el){
 			el = $(el);
 			start = el.find('.start-loc');
@@ -493,27 +516,21 @@ jQuery(document).ready( function($){
 				load_ui_css = true;
 				datepicker_vals.altField = el.find('.start').first();
 				start.datepicker(datepicker_vals);
-				//formatting for both
-				if( EM.locale != 'en' && $.datepicker.regional[EM.locale] != null ){
-					var date_dateFormat = $.datepicker.regional[EM.locale].dateFormat;
-				}else{
-					var date_dateFormat = start.datepicker('option', 'dateFormat');
-				}
-				start_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd' , datepicker_vals.altField.val()) );
+				start_date_formatted = $.datepicker.formatDate( EM.dateFormat, $.datepicker.parseDate('yy-mm-dd' , datepicker_vals.altField.val()) );
 				el.find(".start-loc").val(start_date_formatted);
 				//end 
 				if(end.length > 0){
 					load_ui_css = true;
 					datepicker_vals.altField = el.find('.end').first();
 					end.first().datepicker(datepicker_vals);
-					end_date_formatted = $.datepicker.formatDate( date_dateFormat, $.datepicker.parseDate('yy-mm-dd' , datepicker_vals.altField.val()) );
+					end_date_formatted = $.datepicker.formatDate( EM.dateFormat, $.datepicker.parseDate('yy-mm-dd' , datepicker_vals.altField.val()) );
 					el.find(".end-loc").first().val(end_date_formatted);
 				}
 			}
 		});
+		*/
 	}
-	if( load_ui_css || $("#em-date-start-loc, #em-date-end-loc, .em-ticket-form .start-loc, #em-bookings-date-loc").length > 0 ){
-		$('ui-datepicker-div').css();
+	if( load_ui_css ){
 		var script = document.createElement("link");
 		script.id = 'jquery-ui-css';
 		script.rel = "stylesheet";
@@ -572,18 +589,6 @@ jQuery(document).ready( function($){
 	$('input#recurrence-interval').keyup(updateIntervalDescriptor);
 	$('select#recurrence-frequency').change(updateIntervalDescriptor);
 	$('select#recurrence-frequency').change(updateIntervalSelectors);
-	
-	/* Useful function for adding the em_ajax flag to a url, regardless of querystring format */
-	var em_ajaxify = function(url){
-		if ( url.search('em_ajax=0') != -1){
-			url = url.replace('em_ajax=0','em_ajax=1');
-		}else if( url.search(/\?/) != -1 ){
-			url = url + "&em_ajax=1";
-		}else{
-			url = url + "?em_ajax=1";
-		}
-		return url;
-	}
 
 	/* Load any maps */	
 	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
@@ -594,6 +599,18 @@ jQuery(document).ready( function($){
 	}
 	
 });
+
+/* Useful function for adding the em_ajax flag to a url, regardless of querystring format */
+var em_ajaxify = function(url){
+	if ( url.search('em_ajax=0') != -1){
+		url = url.replace('em_ajax=0','em_ajax=1');
+	}else if( url.search(/\?/) != -1 ){
+		url = url + "&em_ajax=1";
+	}else{
+		url = url + "?em_ajax=1";
+	}
+	return url;
+}
 
 //Location functions
 function em_location_input_ajax(){

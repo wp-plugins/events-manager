@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.1.7.6
+Version: 5.1.8
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -9,7 +9,7 @@ Author URI: http://wp-events-plugin.com
 */
 
 /*
-Copyright (c) 2011, Marcus Sykes
+Copyright (c) 2012, Marcus Sykes
 
 This program is free software; you can redistribute it and/or
 modify it under the terms of the GNU General Public License
@@ -27,8 +27,8 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 // Setting constants
-define('EM_VERSION', 5.176); //self expanatory
-define('EM_PRO_MIN_VERSION', 2.143); //self expanatory
+define('EM_VERSION', 5.177); //self expanatory
+define('EM_PRO_MIN_VERSION', 2.144); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 define('EM_SLUG', plugin_basename( __FILE__ )); //for updates
 
@@ -222,7 +222,11 @@ class EM_Scripts_and_Styles {
 			'tickets_save' => __('Save Ticket','dbem'),
 			'bookings_export_save' => __('Export Bookings','dbem'),
 			'bookings_settings_save' => __('Save Settings','dbem'),
+			'booking_delete' => __("Are you sure you want to delete?",'dbem')
 		);
+		$em_localized_js['txt_search'] = get_option('dbem_search_form_text_label',__('Search','dbem'));
+		$em_localized_js['txt_searching'] = __('Searching...','dbem');
+		$em_localized_js['txt_loading'] = __('Loading...','dbem');
 		//logged in messages that visitors shouldn't need to see
 		if( is_user_logged_in() ){
 			$em_localized_js['event_reschedule_warning'] = __('Are you sure you want to reschedule this recurring event? If you do this, you will lose all booking information and the old recurring events will be deleted.', 'dbem');
@@ -236,10 +240,6 @@ class EM_Scripts_and_Styles {
 		if( is_admin() ){
 			$em_localized_js['event_post_type'] = EM_POST_TYPE_EVENT;
 			$em_localized_js['location_post_type'] = EM_POST_TYPE_LOCATION;
-		}else{
-			$em_localized_js['txt_search'] = get_option('dbem_search_form_text_label',__('Search','dbem'));
-			$em_localized_js['txt_searching'] = __('Searching...','dbem');
-			$em_localized_js['txt_loading'] = __('Loading...','dbem');
 		}
 		wp_localize_script('events-manager','EM', apply_filters('em_wp_localize_script', $em_localized_js));
 	}
