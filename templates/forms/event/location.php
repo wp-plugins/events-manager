@@ -6,7 +6,7 @@ $required = "<i>*</i>";
 <div>
 	<p>
 		<input type="checkbox" name="no_location" id="no-location" value="1" <?php if( !empty($EM_Event->event_id) && ($EM_Event->location_id === '0' || $EM_Event->location_id === 0) ) echo 'checked="checked"'; ?>>
-		<?php _e('This event does not have a physical location.'); ?>
+		<?php _e('This event does not have a physical location.','dbem'); ?>
 	</p>
 	<script type="text/javascript">
 		jQuery(document).ready(function($){

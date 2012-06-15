@@ -103,10 +103,12 @@ if( !empty($_REQUEST['success']) ){
 		?>
 		</div>
 
+		<?php if( get_option('dbem_locations_enabled') ): ?>
 		<h4 class="event-form-where"><?php _e ( 'Where', 'dbem' ); ?></h4>
-		<div class="inside">
+		<div class="inside event-form-where">
 		<?php em_locate_template('forms/event/location.php',true); ?>
 		</div>
+		<?php endif; ?>
 		
 		<h4 class="event-form-details"><?php _e ( 'Details', 'dbem' ); ?></h4>
 		<div class="inside event-form-details">

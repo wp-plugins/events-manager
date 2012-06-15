@@ -1691,9 +1691,10 @@ class EM_Event extends EM_Object{
 			$matching_days = $this->get_recurrence_days(); //Get days where events recur
 			if( count($matching_days) > 0 ){
 				//first save event post data
+				$recurring_date_format = apply_filters('em_event_save_events_format', 'Y-m-d');
 				foreach( $matching_days as $day ) {
 					//rewrite post fields if needed
-					$post_fields['post_name'] = $event['event_slug'] = $meta_fields['_event_slug'] = $post_name.'-'.date("Y-m-d", $day);
+					$post_fields['post_name'] = $event['event_slug'] = $meta_fields['_event_slug'] = $post_name.'-'.date($recurring_date_format, $day);
 					//adjust certain meta information
 					$event['event_start_date'] = $meta_fields['_event_start_date'] = date("Y-m-d", $day);
 					$meta_fields['_start_ts'] = $day;

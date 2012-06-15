@@ -200,7 +200,7 @@ function em_init_actions() {
 						location_postcode AS `postcode`,
 						location_country AS `country`
 					FROM ".EM_LOCATIONS_TABLE." 
-					WHERE ( `location_name` LIKE %s ) $location_cond LIMIT 10
+					WHERE ( `location_name` LIKE %s ) AND location_status=1 $location_cond LIMIT 10
 				", $term);
 				$results = $wpdb->get_results($sql);
 			}
@@ -613,26 +613,32 @@ function em_init_actions() {
 		//generate bookings export according to search request
 		$show_tickets = !empty($_REQUEST['show_tickets']);
 		$EM_Bookings_Table = new EM_Bookings_Table($show_tickets);
-		$EM_Bookings_Table->limit = 0;
 		header("Content-Type: application/octet-stream; charset=utf-8");
 		header("Content-Disposition: Attachment; filename=".sanitize_title(get_bloginfo())."-bookings-export.csv");
 		echo sprintf(__('Exported booking on %s','dbem'), date_i18n('D d M Y h:i', current_time('timestamp'))) .  "\n";
 		echo '"'. implode('","', $EM_Bookings_Table->get_headers(true)). '"' .  "\n";
 		//Rows
+		$EM_Bookings_Table->limit = 150; //if you're having server memory issues, try messing with this number
+		$EM_Bookings = $EM_Bookings_Table->get_bookings();
 		$handle = fopen("php://output", "w");
-		foreach( $EM_Bookings_Table->get_bookings() as $EM_Booking ) {
-			//Display all values
-			/* @var $EM_Booking EM_Booking */
-			/* @var $EM_Ticket_Booking EM_Ticket_Booking */
-			if( $show_tickets ){
-				foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){
-					$row = $EM_Bookings_Table->get_row_csv($EM_Ticket_Booking);
+		while(!empty($EM_Bookings)){
+			foreach( $EM_Bookings as $EM_Booking ) {
+				//Display all values
+				/* @var $EM_Booking EM_Booking */
+				/* @var $EM_Ticket_Booking EM_Ticket_Booking */
+				if( $show_tickets ){
+					foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){
+						$row = $EM_Bookings_Table->get_row_csv($EM_Ticket_Booking);
+						fputcsv($handle, $row);
+					}
+				}else{
+					$row = $EM_Bookings_Table->get_row_csv($EM_Booking);
 					fputcsv($handle, $row);
 				}
-			}else{
-				$row = $EM_Bookings_Table->get_row_csv($EM_Booking);
-				fputcsv($handle, $row);
 			}
+			//reiterate loop
+			$EM_Bookings_Table->offset += $EM_Bookings_Table->limit;
+			$EM_Bookings = $EM_Bookings_Table->get_bookings();
 		}
 		fclose($handle);
 		exit();
