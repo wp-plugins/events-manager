@@ -475,8 +475,8 @@ jQuery(document).ready( function($){
 				}
 				//add logic for texts
 				dateInput.change(function(){
-					dateValue_value = $(this).val();
-					if( dateValue_value ){
+					var dateValue_value = $(this).val();
+					if( !dateValue_value ){
 						$(this).next('.em-date-input').val('');
 						//this_date_formatted = $.datepicker.formatDate( 'yy-mm-dd', $.datepicker.parseDate(EM.dateFormat, dateValue_value) );
 					}
