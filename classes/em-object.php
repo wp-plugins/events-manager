@@ -219,7 +219,11 @@ class EM_Object {
 			}
 		} elseif ( preg_match ( "/^[0-9]{4}-[0-9]{2}-[0-9]{2}$/", $scope ) ) {
 			//Scope can also be a specific date. However, if 'day', 'month', or 'year' are set, that will take precedence
-			$conditions['scope'] = " ( event_start_date = CAST('$scope' AS DATE) OR ( event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE) ) )";
+			if( get_option('dbem_events_current_are_past') ){
+				$conditions['scope'] = "event_start_date = CAST('$scope' AS DATE)";
+			}else{
+				$conditions['scope'] = " ( event_start_date = CAST('$scope' AS DATE) OR ( event_start_date <= CAST('$scope' AS DATE) AND event_end_date >= CAST('$scope' AS DATE) ) )";
+			}
 		} else {
 			if ($scope == "past"){
 				if( get_option('dbem_events_current_are_past') ){

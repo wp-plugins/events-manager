@@ -51,6 +51,7 @@ class EM_Event extends EM_Object{
 	var $post_content;
 	var $event_rsvp;
 	var $event_rsvp_date;
+	var $event_rsvp_time = "00:00:00";
 	var $event_spaces;
 	var $location_id;
 	var $recurrence_id;
@@ -92,7 +93,8 @@ class EM_Event extends EM_Object{
 		'event_end_date' => array( 'name'=>'end_date', 'type'=>'%s', 'null'=>true ),
 		'post_content' => array( 'name'=>'notes', 'type'=>'%s', 'null'=>true ),
 		'event_rsvp' => array( 'name'=>'rsvp', 'type'=>'%d', 'null'=>true ), //has a default, so can be null/excluded
-		'event_rsvp_date' => array( 'name'=>'event_rsvp_date', 'type'=>'%s', 'null'=>true ),
+		'event_rsvp_date' => array( 'name'=>'rsvp_date', 'type'=>'%s', 'null'=>true ),
+		'event_rsvp_time' => array( 'name'=>'rsvp_time', 'type'=>'%s', 'null'=>true ),
 		'event_spaces' => array( 'name'=>'spaces', 'type'=>'%d', 'null'=>true),
 		'location_id' => array( 'name'=>'location_id', 'type'=>'%d', 'null'=>true ),
 		'recurrence_id' => array( 'name'=>'recurrence_id', 'type'=>'%d', 'null'=>true ),
@@ -124,6 +126,11 @@ class EM_Event extends EM_Object{
 	 * @var int
 	 */
 	var $end;
+	/**
+	 * Timestamp for booking cut-off date/time
+	 * @var int
+	 */
+	var $rsvp_end;
 	/**
 	 * Created on timestamp, taken from DB, converted to TS
 	 * @var int
@@ -284,6 +291,9 @@ class EM_Event extends EM_Object{
 				//Start/End times should be available as timestamp
 				$this->start = strtotime($this->event_start_date." ".$this->event_start_time);
 				$this->end = strtotime($this->event_end_date." ".$this->event_end_time);
+				if( !empty($this->event_rsvp_date ) ){
+				    $this->rsvp_end = strtotime($this->event_rsvp_date." ".$this->event_rsvp_time); 
+				}
 				//quick compatability fix in case _event_id isn't loaded or somehow got erased in post meta
 				if( empty($this->event_id) && !$this->is_recurring() ){
 					global $wpdb;
@@ -368,7 +378,7 @@ class EM_Event extends EM_Object{
 		$this->event_all_day = ( !empty($_POST['event_all_day']) ) ? 1 : 0;
 		if( !$this->event_all_day ){
 			$match = array();
-			foreach( array('event_start_time','event_end_time') as $timeName ){
+			foreach( array('event_start_time','event_end_time', 'event_rsvp_time') as $timeName ){
 				if( !empty($_POST[$timeName]) && preg_match ( '/^([01]\d|2[0-3]):([0-5]\d) ?(AM|PM)?$/', $_POST[$timeName], $match ) ){
 					if( !empty($match[3]) && $match[3] == 'PM' && $match[1] != 12 ){
 						$match[1] = 12+$match[1];
@@ -390,10 +400,13 @@ class EM_Event extends EM_Object{
 		if( !empty($_POST['event_rsvp']) && $_POST['event_rsvp'] ){
 			$this->get_bookings()->get_tickets()->get_post();
 			$this->event_rsvp = 1;
-			$this->event_rsvp_date = ( !isset($_POST['event_rsvp_date']) ) ? $_POST['event_rsvp_date'] : $this->event_start_date;
-			$this->event_spaces = (!isset($_POST['event_spaces'])) ? absint($_POST['event_spaces']):0;
+			//RSVP cuttoff TIME is set up above where start/end times are as well 
+			$this->event_rsvp_date = ( isset($_POST['event_rsvp_date']) ) ? $_POST['event_rsvp_date'] : $this->event_start_date;
+			if( empty($this->event_rsvp_date) ){ $this->event_rsvp_time = '00:00:00'; }
+			$this->event_spaces = ( isset($_POST['event_spaces']) ) ? absint($_POST['event_spaces']):0;
 		}else{
 			$this->event_rsvp = 0;
+			$this->event_rsvp_time = '00:00:00';
 		}
 		//Sort out event attributes - note that custom post meta now also gets inserted here automatically (and is overwritten by these attributes)
 		if(get_option('dbem_attributes_enabled')){
@@ -483,8 +496,13 @@ class EM_Event extends EM_Object{
 			if( !empty($missing_fields['event_end_date']) ) { unset($missing_fields['event_end_date']); }
 			$this->add_error(__('Dates must have correct formatting. Please use the date picker provided.','dbem'));
 		}
-		if( $this->event_rsvp && !$this->get_bookings()->get_tickets()->validate() ){
-			$this->add_error($this->get_bookings()->get_tickets()->get_errors());
+		if( $this->event_rsvp ){
+		    if( !$this->get_bookings()->get_tickets()->validate() ){
+		        $this->add_error($this->get_bookings()->get_tickets()->get_errors());
+		    }
+		    if( !empty($this->event_rsvp_date) && !preg_match('/\d{4}-\d{2}-\d{2}/', $this->event_rsvp_date) ){
+				$this->add_error(__('Dates must have correct formatting. Please use the date picker provided.','dbem'));
+		    }
 		}
 		if( get_option('dbem_locations_enabled') && empty($this->location_id) ){ //location ids don't need validating as we're not saving a location
 			if( get_option('dbem_require_location',true) || $this->location_id !== 0 ){

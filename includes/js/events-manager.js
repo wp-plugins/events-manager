@@ -368,19 +368,19 @@ jQuery(document).ready( function($){
 		});
 	}
 	//Old Bookings Table - depreciating soon
-	if( $('.em_bookings_pending_table, .em_bookings_pending_table').length > 0 ){
+	if( $('.em_obj').length > 0 ){
 		//Widgets and filter submissions
-		$(document).delegate('.em_bookings_events_table form, .em_bookings_pending_table form', 'submit', function(e){
+		$(document).delegate('.em_obj form', 'submit', function(e){
 			var el = $(this);
 			var url = em_ajaxify( el.attr('action') );		
-			el.parent('.em_obj').prepend('<div id="em-loading" />');
+			el.parents('.em_obj').find('.table-wrap').first().append('<div id="em-loading" />');
 			$.get( url, el.serializeArray(), function(data){
-				el.parent('.em_obj').replaceWith(data);
+				el.parents('.em_obj').first().replaceWith(data);
 			});
 			return false;
 		});
 		//Pagination link clicks
-		$(document).delegate('.em_bookings_events_table .tablenav-pages a, .em_bookings_pending_table .tablenav-pages a', 'click', function(){		
+		$(document).delegate('.em_obj .tablenav-pages a', 'click', function(){		
 			var el = $(this);
 			var url = em_ajaxify( el.attr('href') );	
 			el.parents('.em_obj').find('.table-wrap').first().append('<div id="em-loading" />');
@@ -471,7 +471,8 @@ jQuery(document).ready( function($){
 				//now set the value
 				if( dateValue_value ){
 					var this_date_formatted = $.datepicker.formatDate( EM.dateFormat, $.datepicker.parseDate('yy-mm-dd', dateValue_value) );
-					dateInput.val(this_date_formatted);	
+					dateInput.val(this_date_formatted);
+					dateValue.val(dateValue_value);
 				}
 				//add logic for texts
 				dateInput.change(function(){

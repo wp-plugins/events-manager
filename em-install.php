@@ -108,6 +108,7 @@ function em_create_events_table() {
 		post_content longtext NULL DEFAULT NULL,
 		event_rsvp bool NOT NULL DEFAULT 0,
 		event_rsvp_date date NULL DEFAULT NULL,
+		event_rsvp_time time NULL DEFAULT NULL,
 		event_spaces int(5) NULL DEFAULT 0,
 		event_private bool NOT NULL DEFAULT 0,
 		location_id bigint(20) unsigned NULL DEFAULT NULL,

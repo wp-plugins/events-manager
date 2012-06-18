@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.4
-Stable tag: 5.1.8.1
+Stable tag: 5.1.8.2
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,6 +98,12 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1.8.2 =
+* added booking cut-off times
+* fixed events with bookings table ajax
+* fixed bp group events list not showing location info
+* fixed calendar day pages showing 'past' events if option is set not to
+
 = 5.1.8.1 =
 * important - Modified template files? See this http://em.cm/templates-5181
 * fixed date ranges not working properly
