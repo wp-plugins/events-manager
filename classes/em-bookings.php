@@ -193,7 +193,9 @@ class EM_Bookings extends EM_Object implements Iterator{
 		//TODO extend booking options
 		$return = false;
 		$EM_Event = $this->get_event();
-		if( $EM_Event->start > current_time('timestamp') && (!empty($EM_Event->event_rsvp_date) && $EM_Event->rsvp_end > current_time('timestamp')) ){
+		if(!empty($EM_Event->event_rsvp_date) && $EM_Event->rsvp_end > current_time('timestamp')){
+		    $return = true;
+		}elseif( empty($EM_Event->event_rsvp_date) && $EM_Event->start > current_time('timestamp') ){
 			$return = true;
 		}
 		if( count($this->get_available_tickets()->tickets) == 0){
