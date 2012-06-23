@@ -22,6 +22,10 @@ $required = "<i>*</i>";
 </div>
 <?php endif; ?>
 <div id="em-location-data">
+	<div id="location_coordinates" style='display: none;'>
+		<input id='location-latitude' name='location_latitude' type='text' value='<?php echo $EM_Location->location_latitude; ?>' size='15' />
+		<input id='location-longitude' name='location_longitude' type='text' value='<?php echo $EM_Location->location_longitude; ?>' size='15' />
+	</div>
 	<?php if( get_option('dbem_use_select_for_locations') || !$EM_Event->can_manage('edit_locations','edit_others_locations') ) : ?> 
 	<table class="em-location-data">
 		<tr>
@@ -105,10 +109,6 @@ $required = "<i>*</i>";
 		</tr>
 	</table>
 	<?php endif; ?>
-	<div id="location_coordinates" style='display: none;'>
-		<input id='location-latitude' name='location_latitude' type='text' value='<?php echo $EM_Location->location_latitude; ?>' size='15' />
-		<input id='location-longitude' name='location_longitude' type='text' value='<?php echo $EM_Location->location_longitude; ?>' size='15' />
-	</div>
 	<?php if ( get_option( 'dbem_gmap_is_active' ) ) : ?>
 	<div class="em-location-map-container">
 		<div id='em-map-404'  class="em-location-map-404">

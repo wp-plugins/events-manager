@@ -34,8 +34,8 @@ foreach ( $EM_Events as $EM_Event ) {
 	$end_offset = ( date('I', $EM_Event->end) ) ? 0 : 3600;
 	
 	if($EM_Event->event_all_day && $EM_Event->event_start_date == $EM_Event->event_end_date){
-		$dateStart	= date('Ymd\T000000',$EM_Event->start - $offset + $start_offset);
-		$dateEnd	= date('Ymd\T000000',$EM_Event->start - $offset + $end_offset + 86400); //add one day
+		$dateStart	= date('Ymd\T000000',$EM_Event->start); //all day
+		$dateEnd	= date('Ymd\T000000',$EM_Event->start + 86400); //add one day
 	}else{
 		$dateStart	= date('Ymd\THis\Z',$EM_Event->start - $offset + $start_offset);
 		$dateEnd = date('Ymd\THis\Z',$EM_Event->end - $offset + $end_offset);

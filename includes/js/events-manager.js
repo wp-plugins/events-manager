@@ -368,24 +368,24 @@ jQuery(document).ready( function($){
 		});
 	}
 	//Old Bookings Table - depreciating soon
-	if( $('.em_obj').length > 0 ){
+	if( $('.em_bookings_events_table').length > 0 ){
 		//Widgets and filter submissions
-		$(document).delegate('.em_obj form', 'submit', function(e){
+		$(document).delegate('.em_bookings_events_table form', 'submit', function(e){
 			var el = $(this);
 			var url = em_ajaxify( el.attr('action') );		
-			el.parents('.em_obj').find('.table-wrap').first().append('<div id="em-loading" />');
+			el.parents('.em_bookings_events_table').find('.table-wrap').first().append('<div id="em-loading" />');
 			$.get( url, el.serializeArray(), function(data){
-				el.parents('.em_obj').first().replaceWith(data);
+				el.parents('.em_bookings_events_table').first().replaceWith(data);
 			});
 			return false;
 		});
 		//Pagination link clicks
-		$(document).delegate('.em_obj .tablenav-pages a', 'click', function(){		
+		$(document).delegate('.em_bookings_events_table .tablenav-pages a', 'click', function(){		
 			var el = $(this);
 			var url = em_ajaxify( el.attr('href') );	
-			el.parents('.em_obj').find('.table-wrap').first().append('<div id="em-loading" />');
+			el.parents('.em_bookings_events_table').find('.table-wrap').first().append('<div id="em-loading" />');
 			$.get( url, function(data){
-				el.parents('.em_obj').first().replaceWith(data);
+				el.parents('.em_bookings_events_table').first().replaceWith(data);
 			});
 			return false;
 		});
@@ -599,6 +599,60 @@ jQuery(document).ready( function($){
 		document.body.appendChild(script);
 	}
 	
+	//Finally, add autocomplete here
+	//Autocomplete
+	if( jQuery( "#em-location-data input#location-name, " ).length > 0 ){
+		jQuery( "#em-location-data input#location-name" ).autocomplete({
+			source: EM.locationajaxurl,
+			minLength: 2,
+			focus: function( event, ui ){
+				jQuery("input#location-id" ).val( ui.item.value );
+				return false;
+			},			 
+			select: function( event, ui ){
+				jQuery("input#location-id" ).val(ui.item.id).trigger('change');
+				jQuery("input#location-name" ).val(ui.item.value);
+				jQuery('input#location-address').val(ui.item.address);
+				jQuery('input#location-town').val(ui.item.town);
+				jQuery('input#location-state').val(ui.item.state);
+				jQuery('input#location-region').val(ui.item.region);
+				jQuery('input#location-postcode').val(ui.item.postcode);
+				if( ui.item.country == '' ){
+					jQuery('select#location-country option:selected').removeAttr('selected');
+				}else{
+					jQuery('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
+				}
+				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
+				jQuery('#em-location-data input#location-name').css('background-color','#fff');
+				jQuery('#em-location-reset').show();
+				return false;
+			}
+		}).data( "autocomplete" )._renderItem = function( ul, item ) {
+			html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
+			return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
+		};
+		jQuery('#em-location-reset').click( function(){
+			jQuery('#em-location-data input').css('background-color','#fff').val('');
+			jQuery('#em-location-data select').css('background-color','#fff');
+			jQuery('#em-location-data option:selected').removeAttr('selected');
+			jQuery('input#location-id').val('');
+			jQuery('#em-location-reset').hide();
+			jQuery('#em-map').hide();
+			jQuery('#em-map-404').show();
+			if(typeof(marker) !== 'undefined'){
+				marker.setPosition(new google.maps.LatLng(0, 0));
+				infoWindow.close();
+				marker.setDraggable(true);
+			}
+			return false;
+		});
+		if( jQuery('input#location-id').val() != '0' && jQuery('input#location-id').val() != '' ){
+			jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
+			jQuery('#em-location-data input#location-name').css('background-color','#fff');
+			jQuery('#em-location-reset').show();
+		}
+	}
+	
 });
 
 /* Useful function for adding the em_ajax flag to a url, regardless of querystring format */
@@ -611,13 +665,85 @@ var em_ajaxify = function(url){
 		url = url + "?em_ajax=1";
 	}
 	return url;
-}
+};
 
-//Location functions
-function em_location_input_ajax(){
+/*
+ * MAP FUNCTIONS
+ */
+var maps = {};
+//Load single maps (each map is treated as a seperate map.
+function em_maps() {
+	//Find all the maps on this page
+	jQuery('.em-location-map').each( function(index){
+		el = jQuery(this);
+		var map_id = el.attr('id').replace('em-location-map-','');
+		em_LatLng = new google.maps.LatLng( jQuery('#em-location-map-coords-'+map_id+' .lat').text(), jQuery('#em-location-map-coords-'+map_id+' .lng').text());
+		maps[map_id] = new google.maps.Map( document.getElementById('em-location-map-'+map_id), {
+		    zoom: 14,
+		    center: em_LatLng,
+		    mapTypeId: google.maps.MapTypeId.ROADMAP,
+		    mapTypeControl: false
+		});
+		var marker = new google.maps.Marker({
+		    position: em_LatLng,
+		    map: maps[map_id]
+		});
+		var infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
+		infowindow.open(maps[map_id],marker);
+		maps[map_id].panBy(40,-70);
+		
+		//JS Hook for handling map after instantiation
+		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
+		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker]);
+	});
+	jQuery('.em-locations-map').each( function(index){
+		var el = jQuery(this);
+		var map_id = el.attr('id').replace('em-locations-map-','');
+		var em_data = jQuery.parseJSON( jQuery('#em-locations-map-coords-'+map_id).text() );
+		jQuery.getJSON(document.URL, em_data , function(data){
+			if(data.length > 0){
+				  var myOptions = {
+				    mapTypeId: google.maps.MapTypeId.ROADMAP
+				  };
+				  maps[map_id] = new google.maps.Map(document.getElementById("em-locations-map-"+map_id), myOptions);
+				  
+				  var minLatLngArr = [0,0];
+				  var maxLatLngArr = [0,0];
+				  
+				  for (var i = 0; i < data.length; i++) {
+					  if( !(data[i].location_latitude == 0 && data[i].location_longitude == 0) ){
+						var latitude = parseFloat( data[i].location_latitude );
+						var longitude = parseFloat( data[i].location_longitude );
+						var location = new google.maps.LatLng( latitude, longitude );
+						var marker = new google.maps.Marker({
+						    position: location, 
+						    map: maps[map_id]
+						});
+						marker.setTitle(data[i].location_name);
+						var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
+						em_map_infobox(marker, myContent, maps[map_id]);
+						
+						//Get min and max long/lats
+						minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
+						minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
+						maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
+						maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];
+					  }
+				  }
+				  // Zoom in to the bounds
+				  var minLatLng = new google.maps.LatLng(minLatLngArr[0],minLatLngArr[1]);
+				  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
+				  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
+				  maps[map_id].fitBounds(bounds);
+				//Call a hook if exists
+				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id]]);
+			}else{
+				el.children().first().html('No locations found');
+			}
+		});
+	});
 	//Location stuff - only needed if inputs for location exist
 	if( jQuery('select#location-select-id, input#location-address').length > 0 ){
-		
 		//load map info
 		var refresh_map_location = function(){
 			var location_latitude = jQuery('#location-latitude').val();
@@ -627,6 +753,7 @@ function em_location_input_ajax(){
 				marker.setPosition(position);
 				var mapTitle = (jQuery('input#location-name').length > 0) ? jQuery('input#location-name').val():jQuery('input#title').val();
 				marker.setTitle( jQuery('input#location-name input#title, #location-select-id').first().val() );
+				marker.setDraggable(jQuery('input#location-id').val() == '');
 				jQuery('#em-map').show();
 				jQuery('#em-map-404').hide();
 				google.maps.event.trigger(map, 'resize');
@@ -687,6 +814,7 @@ function em_location_input_ajax(){
 						loc_latlng = new google.maps.LatLng(data.location_latitude, data.location_longitude);
 						marker.setPosition(loc_latlng);
 						marker.setTitle( data.location_name );
+						marker.setDraggable(false);
 						jQuery('#em-map').show();
 						jQuery('#em-map-404').hide();
 						map.setCenter(loc_latlng);
@@ -701,7 +829,7 @@ function em_location_input_ajax(){
 				});
 			}
 		}
-		jQuery('#location-select-id').change( function(){get_map_by_id(jQuery(this).val())} );
+		jQuery('#location-select-id, input#location-id').change( function(){get_map_by_id(jQuery(this).val())} );
 		jQuery('#location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
 			//build address
 			var addresses = [ jQuery('#location-address').val(), jQuery('#location-town').val(), jQuery('#location-state').val(), jQuery('#location-postcode').val() ];
@@ -725,140 +853,7 @@ function em_location_input_ajax(){
 				});
 			}
 		});
-		
-		//Finally, add autocomplete here
-		//Autocomplete
-		if( jQuery( "#em-location-data input#location-name, " ).length > 0 ){
-			jQuery( "#em-location-data input#location-name" ).autocomplete({
-				source: EM.locationajaxurl,
-				minLength: 2,
-				focus: function( event, ui ){
-					jQuery("input#location-id" ).val( ui.item.value );
-					return false;
-				},			 
-				select: function( event, ui ){
-					jQuery("input#location-id" ).val(ui.item.id);
-					jQuery("input#location-name" ).val(ui.item.value);
-					jQuery('input#location-address').val(ui.item.address);
-					jQuery('input#location-town').val(ui.item.town);
-					jQuery('input#location-state').val(ui.item.state);
-					jQuery('input#location-region').val(ui.item.region);
-					jQuery('input#location-postcode').val(ui.item.postcode);
-					if( ui.item.country == '' ){
-						jQuery('select#location-country option:selected').removeAttr('selected');
-					}else{
-						jQuery('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
-					}
-					get_map_by_id(ui.item.id);
-					jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-					jQuery('#em-location-data input#location-name').css('background-color','#fff');
-					jQuery('#em-location-reset').show();
-					return false;
-				}
-			}).data( "autocomplete" )._renderItem = function( ul, item ) {
-				html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
-				return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
-			};
-			jQuery('#em-location-reset').click( function(){
-				jQuery('#em-location-data input').css('background-color','#fff').val('');
-				jQuery('#em-location-data select').css('background-color','#fff');
-				jQuery('#em-location-data option:selected').removeAttr('selected');
-				jQuery('input#location-id').val('');
-				jQuery('#em-location-reset').hide();
-				marker.setPosition(new google.maps.LatLng(0, 0));
-				infoWindow.close();
-				jQuery('#em-map').hide();
-				jQuery('#em-map-404').show();
-				marker.setDraggable(true);
-				return false;
-			});
-			if( jQuery('input#location-id').val() != '0' && jQuery('input#location-id').val() != '' ){
-				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-				jQuery('#em-location-data input#location-name').css('background-color','#fff');
-				jQuery('#em-location-reset').show();
-				marker.setDraggable(false);
-			}
-		}
 	}
-}
-
-/*
- * MAP FUNCTIONS
- */
-var maps = {};
-//Load single maps (each map is treated as a seperate map.
-function em_maps() {
-	//Find all the maps on this page
-	jQuery('.em-location-map').each( function(index){
-		el = jQuery(this);
-		var map_id = el.attr('id').replace('em-location-map-','');
-		em_LatLng = new google.maps.LatLng( jQuery('#em-location-map-coords-'+map_id+' .lat').text(), jQuery('#em-location-map-coords-'+map_id+' .lng').text());
-		maps[map_id] = new google.maps.Map( document.getElementById('em-location-map-'+map_id), {
-		    zoom: 14,
-		    center: em_LatLng,
-		    mapTypeId: google.maps.MapTypeId.ROADMAP,
-		    mapTypeControl: false
-		});
-		var marker = new google.maps.Marker({
-		    position: em_LatLng,
-		    map: maps[map_id]
-		});
-		var infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
-		infowindow.open(maps[map_id],marker);
-		maps[map_id].panBy(40,-70);
-		
-		//JS Hook for handling map after instantiation
-		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
-		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker]);
-	});
-	jQuery('.em-locations-map').each( function(index){
-		var el = jQuery(this);
-		var map_id = el.attr('id').replace('em-locations-map-','');
-		var em_data = jQuery.parseJSON( jQuery('#em-locations-map-coords-'+map_id).text() );
-		jQuery.getJSON(document.URL, em_data , function(data){
-			if(data.length > 0){
-				  var myLatlng = new google.maps.LatLng(data[0].location_latitude,data[0].location_longitude);
-				  var myOptions = {
-				    mapTypeId: google.maps.MapTypeId.ROADMAP
-				  };
-				  maps[map_id] = new google.maps.Map(document.getElementById("em-locations-map-"+map_id), myOptions);
-				  
-				  var minLatLngArr = [0,0];
-				  var maxLatLngArr = [0,0];
-				  
-				  for (var i = 0; i < data.length; i++) {
-					  if( !(data[i].location_latitude == 0 && data[i].location_longitude == 0) ){
-						var latitude = parseFloat( data[i].location_latitude );
-						var longitude = parseFloat( data[i].location_longitude );
-						var location = new google.maps.LatLng( latitude, longitude );
-						var marker = new google.maps.Marker({
-						    position: location, 
-						    map: maps[map_id]
-						});
-						marker.setTitle(data[i].location_name);
-						var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
-						em_map_infobox(marker, myContent, maps[map_id]);
-						
-						//Get min and max long/lats
-						minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
-						minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
-						maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
-						maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];
-					  }
-				  }
-				  // Zoom in to the bounds
-				  var minLatLng = new google.maps.LatLng(minLatLngArr[0],minLatLngArr[1]);
-				  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
-				  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
-				  maps[map_id].fitBounds(bounds);
-				//Call a hook if exists
-				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id]]);
-			}else{
-				el.children().first().html('No locations found');
-			}
-		});
-	});
-	em_location_input_ajax();
 }
   
 function em_map_infobox(marker, message, map) {

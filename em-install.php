@@ -92,7 +92,7 @@ function em_create_events_table() {
 	get_currentuserinfo();
 	require_once(ABSPATH . 'wp-admin/includes/upgrade.php');
 
-	$table_name = EM_EVENTS_TABLE;
+	$table_name = $wpdb->prefix.'em_events';
 	$sql = "CREATE TABLE ".$table_name." (
 		event_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
 		post_id bigint(20) unsigned NOT NULL,
@@ -157,7 +157,7 @@ function em_create_events_table() {
 
 function em_create_events_meta_table(){
 	global  $wpdb, $user_level;
-	$table_name = EM_META_TABLE;
+	$table_name = $wpdb->prefix.'em_meta';
 
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
@@ -179,7 +179,7 @@ function em_create_events_meta_table(){
 function em_create_locations_table() {
 
 	global  $wpdb, $user_level;
-	$table_name = EM_LOCATIONS_TABLE;
+	$table_name = $wpdb->prefix.'em_locations';
 
 	// Creating the events table
 	$sql = "CREATE TABLE ".$table_name." (
@@ -229,7 +229,7 @@ function em_create_locations_table() {
 function em_create_bookings_table() {
 
 	global  $wpdb, $user_level;
-	$table_name = EM_BOOKINGS_TABLE;
+	$table_name = $wpdb->prefix.'em_bookings';
 
 	$sql = "CREATE TABLE ".$table_name." (
 		booking_id bigint(20) unsigned NOT NULL AUTO_INCREMENT,
@@ -253,7 +253,7 @@ function em_create_bookings_table() {
 function em_create_tickets_table() {
 
 	global  $wpdb, $user_level;
-	$table_name = EM_TICKETS_TABLE;
+	$table_name = $wpdb->prefix.'em_tickets';
 
 	// Creating the events table
 	$sql = "CREATE TABLE {$table_name} (
@@ -278,7 +278,7 @@ function em_create_tickets_table() {
 //Add the categories table
 function em_create_tickets_bookings_table() {
 	global  $wpdb, $user_level;
-	$table_name = EM_TICKETS_BOOKINGS_TABLE;
+	$table_name = $wpdb->prefix.'em_tickets_bookings';
 
 	// Creating the events table
 	$sql = "CREATE TABLE {$table_name} (

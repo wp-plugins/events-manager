@@ -2043,7 +2043,8 @@ class EM_Event extends EM_Object{
  * @param string $target
  * @return mixed
  */
-function em_event_output_placeholder($result,$event,$placeholder,$target='html'){	
+function em_event_output_placeholder($result,$event,$placeholder,$target='html'){
+	if( $target == 'raw' ) return $result;
 	if( ($placeholder == "#_EXCERPT" || $placeholder == "#_LOCATIONEXCERPT") && $target == 'html' ){
 		$result = apply_filters('dbem_notes_excerpt', $result);
 	}elseif( $placeholder == '#_CONTACTEMAIL' && $target == 'html' ){
