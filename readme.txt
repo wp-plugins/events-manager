@@ -98,6 +98,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1.8.5 =
+* fixed bug with bookings being open/closed due to changes in 5.1.8.5
+
 = 5.1.8.4 =
 * fixed some issues in the EM blog updater and EM use of table constants
 * improved BP member link generation in activity stream, uses bp_core_bet_user_domain now

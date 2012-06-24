@@ -190,7 +190,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	}
 	
 	function has_space(){
-		return count($this->get_available_tickets()->tickets) == 0;
+		return count($this->get_available_tickets()->tickets) > 0;
 	}
 	
 	function has_open_time(){
