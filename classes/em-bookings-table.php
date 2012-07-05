@@ -176,6 +176,11 @@ class EM_Bookings_Table{
 		return false;
 	}
 	
+	/**
+	 * Gets the bookings for this object instance according to its settings
+	 * @param boolean $force_refresh
+	 * @return EM_Bookings
+	 */
 	function get_bookings($force_refresh = true){	
 		if( empty($this->bookings) || $force_refresh ){
 			$this->events = array();

@@ -98,6 +98,14 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.1.8.6 (dev) =
+* reversed order of settings link in plugins page
+* updated French, Czech, Dutch and pot language files
+* fixed category page display problems on some themes (e.g. Thesis) and for some plugins using the loop on the same page
+* added rss pubdate to individual events
+* removed cut-off time for now from recurring events, since it copies same date over to every recurrence
+* fixed bug in bookings table ajax
+
 = 5.1.8.5 =
 * fixed bug with bookings being open/closed due to changes in 5.1.8.5
 

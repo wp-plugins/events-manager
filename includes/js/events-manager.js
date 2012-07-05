@@ -324,6 +324,16 @@ jQuery(document).ready( function($){
 					$('#em-bookings-table-export-form .em-bookings-col-item-ticket').hide().find('input').val(0);					
 				}
 			};
+			//Sync export overlay with table search field changes
+			$('#em-bookings-table form select').each(function(i, el){
+				$(el).change(function(e){
+					var select_el = $(this);
+					var input_par = $('#em-bookings-table-export-form input[name='+select_el.attr('name')+']');
+					var input_par_selected = select_el.find('option:selected');
+					input_par.val(input_par_selected.val());
+				});
+			});
+			
 			export_overlay_show_tickets();
 			$('#em-bookings-table-export-form input[name=show_tickets]').click(export_overlay_show_tickets);
 			//Sortables

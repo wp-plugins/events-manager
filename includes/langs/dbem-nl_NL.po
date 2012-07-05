@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: Events Manager 5.1.2\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/events-manager\n"
 "POT-Creation-Date: 2011-09-20 20:44:48+00:00\n"
-"PO-Revision-Date: 2012-03-13 11:16+0100\n"
-"Last-Translator: Richard <uwsitehier.nl>\n"
+"PO-Revision-Date: 2012-06-28 07:15+0100\n"
+"Last-Translator: Tom Pijnenburg <tom.pijnenburg@gilaworks.nl>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -2624,7 +2624,7 @@ msgstr "E-mail naar contactpersoon?"
 
 #: admin/em-options.php:1168
 msgid "Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)"
-msgstr "Zet deze optie aan als u wilt dat de evenements contactpersoon een email ontvangt wanneer iemand plaatsen boekt. Er wordt een e-mail verstuurd als een reservering gemaakt wordt (ongeacht of deze bevestigd is of wacht op goedkeur)"
+msgstr "Zet deze optie aan als u wilt dat de evenements contactpersoon een email ontvangt wanneer iemand plaatsen boekt. Er wordt een e-mail verstuurd als een reservering gemaakt wordt (ongeacht of deze bevestigd is of wacht op goedkeuring)"
 
 #: admin/em-options.php:1169
 msgid "Disable new registration email?"
@@ -2684,7 +2684,7 @@ msgstr "Reservering in behandeling e-mail"
 
 #: admin/em-options.php:1190
 msgid "This will be sent to the person when they first submit their booking. Not relevant if bookings don't require approval."
-msgstr "Deze wordt verstuurd als een gebruiker een reservering maakt. Niet van toepassing voor reserveringen die geen goedkeur behoeven."
+msgstr "Deze wordt verstuurd als een gebruiker een reservering maakt. Niet van toepassing voor reserveringen die geen goedkeuring behoeven."
 
 #: admin/em-options.php:1192
 msgid "Booking pending email subject"
@@ -2700,7 +2700,7 @@ msgstr "Afgewezen reservering e-mail"
 
 #: admin/em-options.php:1196
 msgid "This will be sent automatically when a booking is rejected. Not relevant if bookings don't require approval."
-msgstr "Deze wordt automatisch verzonden als een reservering is afgewezen. Niet van toepassing voor reserveringen die geen goedkeur behoeven."
+msgstr "Deze wordt automatisch verzonden als een reservering is afgewezen. Niet van toepassing voor reserveringen die geen goedkeuring behoeven."
 
 #: admin/em-options.php:1198
 msgid "Booking rejected email subject"
@@ -2708,7 +2708,7 @@ msgstr "Afgewezen reservering e-mail onderwerp"
 
 #: admin/em-options.php:1198
 msgid "The subject of the email sent to the person making a booking that is awaiting administrator approval. Not relevant if bookings don't require approval."
-msgstr "Het onderwerp van de e-mail die aan de gebruiker wordt gestuurd die wacht op goedkeuring door de beheerder. Niet van toepassing voor reserveringen die geen goedkeur behoeven."
+msgstr "Het onderwerp van de e-mail die aan de gebruiker wordt gestuurd die wacht op goedkeuring door de beheerder. Niet van toepassing voor reserveringen die geen goedkeuring behoeven."
 
 #: admin/em-options.php:1199
 msgid "Booking rejected email"
@@ -2716,7 +2716,7 @@ msgstr "Reservering afgewezen e-mail"
 
 #: admin/em-options.php:1199
 msgid "The body of the email which will be sent to the person if the booking is rejected. Not relevant if bookings don't require approval."
-msgstr "De tekst van de email die gestuurd wordt waarvan een reservering is afgewezen. Niet van toepassing voor reserveringen die geen goedkeur behoeven."
+msgstr "De tekst van de email die gestuurd wordt waarvan een reservering is afgewezen. Niet van toepassing voor reserveringen die geen goedkeuring behoeven."
 
 #: admin/em-options.php:1202
 msgid "This will be sent when a user cancels their booking."
@@ -2861,7 +2861,7 @@ msgstr "Anonieme toevoegers kunnen het evenement niet zien of aanpassen zodra di
 
 #: admin/em-bookings.php:59
 msgid "Event Bookings Dashboard"
-msgstr "Evenement reserveringen dashboard"
+msgstr "Dashboard voor evenement reserveringen"
 
 #: admin/em-bookings.php:63
 #: admin/em-bookings.php:114
@@ -2871,7 +2871,7 @@ msgstr "Reserveringen in behandeling"
 
 #: admin/em-bookings.php:66
 msgid "Events With Bookings Enabled"
-msgstr "Evenementen waarbij boekignen mogelijk zijn"
+msgstr "Evenementen waarbij boekingen mogelijk zijn"
 
 #: admin/em-bookings.php:81
 #: admin/em-bookings.php:188
@@ -2911,7 +2911,7 @@ msgstr "Afgewezen reserveringen"
 #: admin/em-bookings.php:121
 #: admin/em-bookings.php:173
 msgid "Cancelled Bookings"
-msgstr "Gecancelde reserveringen"
+msgstr "Geannuleerde reserveringen"
 
 #: admin/em-bookings.php:137
 msgid "You do not have the rights to manage this ticket."
@@ -3171,7 +3171,7 @@ msgstr "Bevestigde plaatsen"
 
 #: templates/forms/event/booking-stats.php:14
 msgid "Pending Spaces"
-msgstr "Plaatsen die wachten op goedkeur"
+msgstr "Plaatsen die wachten op goedkeuring"
 
 #: templates/forms/event/booking-stats.php:32
 msgid "No responses yet!"
@@ -3229,7 +3229,7 @@ msgstr "Beste #_BOOKINGNAME, <br/>wij hebben u reservering voor #_BOOKINGSPACES 
 
 #: em-install.php:287
 msgid "Dear #_BOOKINGNAME, <br/>You have requested #_BOOKINGSPACES space/spaces for #_NAME.<br/>Your booking is currently pending approval by our administrators. Once approved you will receive an automatic confirmation.<br/>Yours faithfully,<br/>#_CONTACTNAME"
-msgstr "Beste #_BOOKINGNAME, <br/>U heeft verzocht om reservering van #_BOOKINGSPACES plaats(en) voorr #_NAME.<br/>Uw reservering is in behandeling en wacht op goedkeur van de beheerder. Zodra uw reservering is goedgekeurd ontvangt u een automatische bevestiging.<br/>Met vriendelijke groet,<br/>#_CONTACTNAME"
+msgstr "Beste #_BOOKINGNAME, <br/>U heeft verzocht om reservering van #_BOOKINGSPACES plaats(en) voor #_NAME.<br/>Uw reservering is in behandeling en wacht op goedkeuring van de beheerder. Zodra uw reservering is goedgekeurd ontvangt u een automatische bevestiging.<br/>Met vriendelijke groet,<br/>#_CONTACTNAME"
 
 #: em-install.php:288
 msgid "Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_NAME on #F #j, #Y has been rejected.<br/>Yours faithfully,<br/>#_CONTACTNAME"
