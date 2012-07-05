@@ -198,14 +198,16 @@ add_action ( 'admin_notices', 'em_admin_warnings', 100 );
  * @return array
  */
 function em_plugin_action_links($actions, $file, $plugin_data) {
-	$actions['settings'] = sprintf( '<a href="'.EM_ADMIN_URL.'&amp;page=events-manager-options">%s</a>', __('Settings', 'dbem') );
+	$new_actions = array();
+	$new_actions[] = sprintf( '<a href="'.EM_ADMIN_URL.'&amp;page=events-manager-options">%s</a>', __('Settings', 'dbem') );
+	$new_actions = array_merge($new_actions, $actions);
 	if( is_multisite() ){
 		$uninstall_url = admin_url().'network/admin.php?page=events-manager-options&amp;action=uninstall&amp;_wpnonce='.wp_create_nonce('em_uninstall_'.get_current_user_id().'_wpnonce');
 	}else{
 		$uninstall_url = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=uninstall&amp;_wpnonce='.wp_create_nonce('em_uninstall_'.get_current_user_id().'_wpnonce');
 	}
-	$actions['uninstall'] = '<span class="delete"><a href="'.$uninstall_url.'" class="delete">'.__('Uninstall','dbem').'</a></span>';
-	return $actions;
+	$new_actions[] = '<span class="delete"><a href="'.$uninstall_url.'" class="delete">'.__('Uninstall','dbem').'</a></span>';
+	return $new_actions;
 }
 add_filter( 'plugin_action_links_events-manager/events-manager.php', 'em_plugin_action_links', 10, 3 );
 
