@@ -65,8 +65,7 @@ class EM_Events extends EM_Object implements Iterator {
 		
 		//Get ordering instructions
 		$EM_Event = new EM_Event();
-		$accepted_fields = $EM_Event->get_fields(true);
-		$orderby = self::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order'));
+		$orderby = self::build_sql_orderby($args, array_keys($EM_Event->fields), get_option('dbem_events_default_order'));
 		//Now, build orderby sql
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
 		

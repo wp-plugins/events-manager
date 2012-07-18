@@ -1426,7 +1426,7 @@ function em_admin_options_page() {
 				<?php endif; ?>
 				
 				<div  class="postbox " >
-				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Email Templates', 'dbem' ); ?> </span></h3>
+				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Submission Templates', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 					<table class='form-table'>
 						<tr><td colspan='2'><strong><?php _e('Event Submitted','dbem') ?></strong></td></tr>

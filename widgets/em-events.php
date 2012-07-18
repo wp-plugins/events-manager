@@ -72,7 +72,7 @@ class EM_Widget extends WP_Widget {
 		}
 		if ( !empty($instance['all_events']) ){
 			$events_link = (!empty($instance['all_events_text'])) ? em_get_link($instance['all_events_text']) : em_get_link(__('all events','dbem'));
-			echo '<li>'.$events_link.'</li>';
+			echo '<li class="all-events-link">'.$events_link.'</li>';
 		}
 		echo "</ul>";
 		

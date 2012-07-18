@@ -868,9 +868,9 @@ class EM_Object {
 			$return = array();
 			foreach($this->fields as $fieldName => $fieldArray){
 				if($inverted_array){
-					$return[$fieldName] = $fieldName;
+					$return[$fieldArray['name']] = $fieldName;
 				}else{
-					$return[$fieldName] = $fieldName;
+					$return[$fieldName] = $fieldArray['name'];
 				}
 			}
 			return apply_filters('em_object_get_fields', $return, $this, $inverted_array);

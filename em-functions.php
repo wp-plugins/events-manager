@@ -166,7 +166,7 @@ function em_get_countries($add_blank = false){
 		if(is_array($add_blank)){
 			$em_countries_array = $add_blank + $em_countries_array;
 		}else{
-			array_unshift($em_countries_array, $add_blank);
+		    $em_countries_array = array(0 => $add_blank) + $em_countries_array;
 		}
 	}
 	return apply_filters('em_get_countries', $em_countries_array);
@@ -207,7 +207,7 @@ function em_get_currency_formatted($price, $currency=false, $format=false){
 	if(!$currency) $currency = get_option('dbem_bookings_currency');
 	$formatted_price = str_replace('@', em_get_currency_symbol(true,$currency), $format);
 	$formatted_price = str_replace('#', number_format( $price, 2, get_option('dbem_bookings_currency_decimal_point','.'), get_option('dbem_bookings_currency_thousands_sep',',') ), $formatted_price);
-	return $formatted_price;
+	return apply_filters('em_get_currency_formatted', $formatted_price, $price, $currency, $format);
 }
 
 function em_get_currency_symbol($true_symbol = false, $currency = false){

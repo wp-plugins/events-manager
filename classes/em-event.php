@@ -1942,15 +1942,15 @@ class EM_Event extends EM_Object{
 				//If yearly, it's simple. Get start date, add interval timestamps to that and create matching day for each interval until end date.
 				$month = date('m', $this->start);
 				$day = date('d',$this->start);
-				$year = date('Y',$this->start); 
+				$year = date('Y',$this->start);
 				$end_year = date('Y',$this->end); 
 				if( @mktime(0,0,0,$day,$month,$end_year) < $this->end ) $end_year--;
 				while( $year <= $end_year ){
-					$matching_days[] = mktime(0,0,0,$day,$month,$year);
+					$matching_days[] = mktime(0,0,0,$month,$day,$year);
 					$year++;
 				}			
 				break;
-		}	
+		}
 		sort($matching_days);
 		return apply_filters('em_events_get_recurrence_days', $matching_days, $this);
 	}

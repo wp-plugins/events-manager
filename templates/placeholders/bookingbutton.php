@@ -3,6 +3,7 @@
  * This template needs updating, soon the JS will be removed from here, and most probably the button variables will be localized so that the JS isn't using PHP to output info.
  * Please keep an eye on this file when updating if you depend heavily on this button. We'll aim to make one big change and leave it at that (or at least for as long as possible!)
  */
+$notice_full = __('Sold Out', 'dbem');
 $button_text = __('Book Now', 'dbem');
 $button_booking = __('Booking...','dbem');
 $button_success = sprintf(__('%s Submitted','dbem'), __('Booking','dbem'));
@@ -76,4 +77,6 @@ $button_cancel_fail = sprintf(__('%s Error. Try again?','dbem'), __('Cancellatio
 		});
 	</script>
 	<?php echo apply_filters( 'em_booking_button_js', ob_get_clean(), $EM_Event ); endif; ?>
+<?php elseif(!$EM_Event->get_bookings()->has_space()): ?>
+	<span class="em-full-button"><?php echo $notice_full ?></span>
 <?php endif; ?>

@@ -53,8 +53,8 @@ class EM_Bookings_Table{
 			'all' => array('label'=>__('All','dbem'), 'search'=>false),
 			'pending' => array('label'=>__('Pending','dbem'), 'search'=>0),
 			'confirmed' => array('label'=>__('Confirmed','dbem'), 'search'=>1),
-			'cancelled' => array('label'=>__('Cancelled','dbem'), 'search'=>2),
-			'rejected' => array('label'=>__('Rejected','dbem'), 'search'=>3),
+			'cancelled' => array('label'=>__('Cancelled','dbem'), 'search'=>3),
+			'rejected' => array('label'=>__('Rejected','dbem'), 'search'=>2),
 			'needs-attention' => array('label'=>__('Needs Attention','dbem'), 'search'=>array(0)),
 			'incomplete' => array('label'=>__('Incomplete Bookings','dbem'), 'search'=>array(0))
 		);
@@ -74,6 +74,8 @@ class EM_Bookings_Table{
 		//build template of possible collumns
 		$this->cols_template = apply_filters('em_bookings_table_cols_template', array(
 			'user_name'=>__('Name','dbem'),
+			'first_name'=>__('Fist Name','dbem'),
+			'last_name'=>__('Last Name','dbem'),
 			'event_name'=>__('Event','dbem'),
 			'event_date'=>__('Event Date(s)','dbem'),
 			'event_time'=>__('Event Time(s)','dbem'),
@@ -523,6 +525,10 @@ class EM_Bookings_Table{
 				}else{
 					$cols[] = '<a href="'.add_query_arg(array('person_id'=>$EM_Booking->person_id, 'event_id'=>null), $EM_Booking->get_event()->get_bookings_url()).'">'. $EM_Booking->person->get_name() .'</a>';
 				}
+			}elseif($col == 'first_name'){
+				$cols[] = $EM_Booking->get_person()->first_name;
+			}elseif($col == 'last_name'){
+				$cols[] = $EM_Booking->get_person()->last_name;
 			}elseif($col == 'event_name'){
 				if( $csv ){
 					$cols[] = $EM_Booking->get_event()->event_name;

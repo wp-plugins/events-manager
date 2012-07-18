@@ -98,13 +98,24 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.8.6 (dev) =
+= 5.1.8.7 (dev) =
 * reversed order of settings link in plugins page
 * updated French, Czech, Dutch and pot language files
 * fixed category page display problems on some themes (e.g. Thesis) and for some plugins using the loop on the same page
 * added rss pubdate to individual events
 * removed cut-off time for now from recurring events, since it copies same date over to every recurrence
 * fixed bug in bookings table ajax
+* updated to PHPMailer 5.2.1, added attachment capabilities and the em_mailer or em_mailer_sent actions
+* fixed magnified google maps logo size
+* fixed admin emails not going out on event submission under some configurations
+* improvements to permalinks for home page loading
+* added first/last name collumn to bookings admin table
+* added conditional placeholders for location image has_loc_image and no_loc_image
+* fixed cancelled/rejected mixup in bookings admin table
+* single booking button will show 'Sold Out' if full
+* booking cancel link will not show to rejected, cancelled, pending online payment statuses
+* fixed yearly recurrences bug
+* added em_get_currency_formatted filter 
 
 = 5.1.8.5 =
 * fixed bug with bookings being open/closed due to changes in 5.1.8.5

@@ -763,7 +763,6 @@ function em_maps() {
 				marker.setPosition(position);
 				var mapTitle = (jQuery('input#location-name').length > 0) ? jQuery('input#location-name').val():jQuery('input#title').val();
 				marker.setTitle( jQuery('input#location-name input#title, #location-select-id').first().val() );
-				marker.setDraggable(jQuery('input#location-id').val() == '');
 				jQuery('#em-map').show();
 				jQuery('#em-map-404').hide();
 				google.maps.event.trigger(map, 'resize');

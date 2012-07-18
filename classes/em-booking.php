@@ -335,6 +335,9 @@ class EM_Booking extends EM_Object{
 		return apply_filters('em_booking_get_tickets_bookings', $this->tickets_bookings, $this);
 	}
 	
+	/**
+	 * @return EM_Person
+	 */
 	function get_person(){
 		global $EM_Person;
 		if( is_object($this->person) && get_class($this->person)=='EM_Person' && ($this->person->ID == $this->person_id || empty($this->person_id) ) ){

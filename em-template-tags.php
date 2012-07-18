@@ -177,7 +177,7 @@ function em_events_list_grouped($args, $format=''){ echo em_get_events_list_grou
 function em_get_link( $text = '' ) {
 	$text = ($text == '') ? get_option ( "dbem_events_page_title" ) : $text;
 	$text = ($text == '') ? __('Events','dbem') : $text; //In case options aren't there....
-	return '<a href="'.esc_url(EM_URI).'" title="'.esc_url($text).'">'.esc_html($text).'</a>';
+	return '<a href="'.esc_url(EM_URI).'" title="'.esc_attr($text).'">'.esc_html($text).'</a>';
 }
 /**
  * Prints the result of em_get_link()
