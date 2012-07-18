@@ -116,6 +116,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * booking cancel link will not show to rejected, cancelled, pending online payment statuses
 * fixed yearly recurrences bug
 * added em_get_currency_formatted filter 
+* added event_category shortcode
 
 = 5.1.8.5 =
 * fixed bug with bookings being open/closed due to changes in 5.1.8.5
