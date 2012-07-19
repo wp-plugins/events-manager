@@ -826,29 +826,6 @@ class EM_Event extends EM_Object{
 	}
 	
 	/**
-	 * Publish Events
-	 * @return bool
-	 */
-	function send_approval_notification(){
-		if( (!$this->is_recurring() && !user_can($this->event_owner, 'publish_events')) || ($this->is_recurring() && !user_can($this->event_owner, 'publish_recurring_events')) ){
-			//only send email to users that can't publish events themselves and that were previously unpublished
-			if( !$this->previous_status && $this->is_published() ){
-				//email
-				if( $this->event_owner == "" ) return true;	
-				$subject = $this->output(get_option('dbem_event_approved_email_subject'), 'email'); 
-				$body = $this->output(get_option('dbem_event_approved_email_body'), 'email');
-							
-				//Send to the person booking
-				if( !$this->email_send( $subject, $body, $this->get_contact()->user_email) ){
-					return false;
-				}
-				return true;
-			}
-		}
-		return false;
-	}
-	
-	/**
 	 * Change the status of the event. This will save to the Database too. 
 	 * @param int $status
 	 * @param boolean $set_post_status
@@ -1153,7 +1130,7 @@ class EM_Event extends EM_Object{
 						$show_condition = ( $this->get_image_url() == '' );
 					}elseif ($condition == 'has_time'){
 						//are the booking times different and not an all-day event
-						$show_condition = ( $this->start != $this->end && !$this->event_all_day );
+						$show_condition = ( $this->event_start_time != $this->event_end_time && !$this->event_all_day );
 					}elseif ($condition == 'no_time'){
 						//are the booking times exactly the same and it's not an all-day event.
 						$show_condition = ( $this->event_start_time == $this->event_end_time && !$this->event_all_day );

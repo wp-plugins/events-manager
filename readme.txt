@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.8.7 (dev) =
+= 5.1.8.8 (dev) =
 * reversed order of settings link in plugins page
 * updated French, Czech, Dutch and pot language files
 * fixed category page display problems on some themes (e.g. Thesis) and for some plugins using the loop on the same page
@@ -117,6 +117,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed yearly recurrences bug
 * added em_get_currency_formatted filter 
 * added event_category shortcode
+* fixed search bug not showing long events outside start/end parameters
+* fixed event form not showing submitted data on validation fail during second event submit
+* added event re-submission and re-approval custom emails
 
 = 5.1.8.5 =
 * fixed bug with bookings being open/closed due to changes in 5.1.8.5

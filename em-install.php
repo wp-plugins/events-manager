@@ -309,6 +309,8 @@ function em_add_options() {
 	$event_approved_email_body = __("Dear #_CONTACTNAME, <br/>Your event #_EVENTNAME on #_EVENTDATES has been approved.<br/>You can view your event here: #_EVENTURL",'dbem').$email_footer;
 	$event_submitted_email_body = __("A new event has been submitted by #_CONTACTNAME.<br/>Name : #_EVENTNAME <br/>Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Please visit #_EDITEVENTURL to review this event for approval.",'dbem').$email_footer;
 	$event_submitted_email_body = str_replace('#_EDITEVENTURL', admin_url().'post.php?action=edit&post=#_EVENTPOSTID', $event_submitted_email_body);
+	$event_resubmitted_email_body = __("A previously published event has been modified by #_CONTACTNAME, and this event is now unpublished and pending your approval.<br/>Name : #_EVENTNAME <br/>Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Please visit #_EDITEVENTURL to review this event for approval.",'dbem').$email_footer;
+	$event_resubmitted_email_body = str_replace('#_EDITEVENTURL', admin_url().'post.php?action=edit&post=#_EVENTPOSTID', $event_resubmitted_email_body);
 
 	$dbem_options = array(
 		//time formats
@@ -350,8 +352,12 @@ function em_add_options() {
 		'dbem_event_submitted_email_admin' => '',
 		'dbem_event_submitted_email_subject' => __('Submitted Event Awaiting Approval', 'dbem'),
 		'dbem_event_submitted_email_body' => str_replace("<br/>", "\n\r", $event_submitted_email_body),
+		'dbem_event_resubmitted_email_subject' => __('Re-Submitted Event Awaiting Approval', 'dbem'),
+		'dbem_event_resubmitted_email_body' => str_replace("<br/>", "\n\r", $event_resubmitted_email_body),
 		'dbem_event_approved_email_subject' => __("Event Approved",'dbem'). " - #_EVENTNAME" ,
 		'dbem_event_approved_email_body' => str_replace("<br/>", "\n\r", $event_approved_email_body),
+		'dbem_event_reapproved_email_subject' => __("Event Approved",'dbem'). " - #_EVENTNAME" ,
+		'dbem_event_reapproved_email_body' => str_replace("<br/>", "\n\r", $event_approved_email_body),
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_events_page_scope' => 'future',
@@ -655,6 +661,10 @@ function em_add_options() {
 		update_option('dbem_taxonomy_tag_slug', $events_page->post_name.'/tags');
 		if( defined('EM_LOCATIONS_SLUG') && EM_LOCATIONS_SLUG != 'locations' ) update_option('dbem_cp_locations_slug', EM_LOCATIONS_SLUG);
 		if( defined('EM_CATEGORIES_SLUG') && EM_CATEGORIES_SLUG != 'categories' ) update_option('dbem_taxonomy_category_slug', $events_page->post_name.'/'.EM_CATEGORIES_SLUG);
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.19 ){
+	    update_option('dbem_event_reapproved_email_subject',  get_option('dbem_event_approved_email_subject'));
+	    update_option('dbem_event_reapproved_email_body', get_option('dbem_event_approved_email_body'));
 	}
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless

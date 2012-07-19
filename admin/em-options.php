@@ -1430,17 +1430,29 @@ function em_admin_options_page() {
 				<div class="inside">
 					<table class='form-table'>
 						<tr><td colspan='2'><strong><?php _e('Event Submitted','dbem') ?></strong></td></tr>
+						<?php 
+						em_options_input_text ( __( 'Administrator Email', 'dbem' ), 'dbem_event_submitted_email_admin', __('If left blank, no email will be sent. Seperate emails with commas for more than one email.','dbem') );
+						?>
 						<tr><td colspan='2'><?php echo __('An email will be sent to the an administrator of your choice when an event is submitted and pending approval.','dbem').$bookings_placeholder_tip ?></td></tr>
 						<?php
-						em_options_input_text ( __( 'Administrator Email', 'dbem' ), 'dbem_event_submitted_email_admin', __('If left blank, no email will be sent. Seperate emails with commas for more than one email.','dbem') );
-						em_options_input_text ( __( 'Event approved subject', 'dbem' ), 'dbem_event_submitted_email_subject', '' );
-						em_options_textarea ( __( 'Event approved email', 'dbem' ), 'dbem_event_submitted_email_body', '' );
+						em_options_input_text ( __( 'Event submitted subject', 'dbem' ), 'dbem_event_submitted_email_subject', '' );
+						em_options_textarea ( __( 'Event submitted email', 'dbem' ), 'dbem_event_submitted_email_body', '' );
+						?>
+						<tr><td colspan='2'><?php echo __('When a user modifies a previously published event, it will be put back into pending review status and will not be publisehd until you re-approve it.','dbem').$bookings_placeholder_tip ?></td></tr>
+						<?php
+						em_options_input_text ( __( 'Event resubmitted subject', 'dbem' ), 'dbem_event_resubmitted_email_subject', '' );
+						em_options_textarea ( __( 'Event resubmitted email', 'dbem' ), 'dbem_event_resubmitted_email_body', '' );
 						?>
 						<tr><td colspan='2'><strong><?php _e('Event Approved','dbem') ?></strong></td></tr>
 						<tr><td colspan='2'><?php echo __('An email will be sent to the event owner when their event is approved. Users requiring event approval do not have the <code>publish_events</code> capability.','dbem').$bookings_placeholder_tip ?></td></tr>
 						<?php
 						em_options_input_text ( __( 'Event approved subject', 'dbem' ), 'dbem_event_approved_email_subject', '' );
 						em_options_textarea ( __( 'Event approved email', 'dbem' ), 'dbem_event_approved_email_body', '' );
+						?>
+						<tr><td colspan='2'><?php echo __('When a user modifies a previously published event, it will be put back into pending review status and will not be publisehd until you re-approve it.','dbem').$bookings_placeholder_tip ?></td></tr>
+						<?php
+						em_options_input_text ( __( 'Event reapproved subject', 'dbem' ), 'dbem_event_reapproved_email_subject', '' );
+						em_options_textarea ( __( 'Event reapproved email', 'dbem' ), 'dbem_event_reapproved_email_body', '' );						
 						?>
 						<?php echo $save_button; ?>
 					</table>
