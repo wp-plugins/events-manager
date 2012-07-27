@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.1.8.8 (dev) =
+= 5.1.8.9 (dev) =
 * reversed order of settings link in plugins page
 * updated French, Czech, Dutch and pot language files
 * fixed category page display problems on some themes (e.g. Thesis) and for some plugins using the loop on the same page
@@ -120,6 +120,15 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed search bug not showing long events outside start/end parameters
 * fixed event form not showing submitted data on validation fail during second event submit
 * added event re-submission and re-approval custom emails
+* added has_category_x, no_category_x, has_tag_x, and no_tag
+* my-bookings auto permalink won't happen if bookings disabled
+* added israeli translation
+* added choice of initial length for calendar day names
+* template modification: passed on $EM_Event to em_booking_form_custom action, may prevent some bugs in certain situations
+* fixed ical modified timestamp issue
+* fixed scheduled events not being published
+* fixed incorrect event links to cross blog events in MultiSite global mode
+* added $post_ids to em_event_save_events filter
 
 = 5.1.8.5 =
 * fixed bug with bookings being open/closed due to changes in 5.1.8.5

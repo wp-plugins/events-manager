@@ -40,11 +40,11 @@ foreach ( $EM_Events as $EM_Event ) {
 		$dateStart	= date('Ymd\THis\Z',$EM_Event->start - $offset + $start_offset);
 		$dateEnd = date('Ymd\THis\Z',$EM_Event->end - $offset + $end_offset);
 	}
-	if( !empty($EM_Event->event_date_modified) ){
+	if( !empty($EM_Event->event_date_modified) && $EM_Event->event_date_modified != '0000-00-00 00:00:00' ){
 		$dateModified = date('Ymd\THis\Z', strtotime($EM_Event->event_date_modified) - $offset + $start_offset);
 	}else{
-		$dateModified = date('Ymd\THis\Z', strtotime($EM_Event->event_date_created) - $offset + $start_offset);
-	}	
+	    $dateModified = date('Ymd\THis\Z', strtotime($EM_Event->post_modified) - $offset + $start_offset);
+	}
 	
 	$location		= $EM_Event->output('#_LOCATION', 'ical');
 	$description = str_replace("\\","\\\\",ent2ncr(convert_chars(strip_tags($description))));

@@ -222,20 +222,23 @@ function em_updates_check( $transient ) {
 	    //check WP repo for trunk version
 	    $request = wp_remote_get('http://plugins.svn.wordpress.org/events-manager/trunk/events-manager.php');
 	    
-	    preg_match('/Version: ([0-9a-z\.]+)/', $request['body'], $matches);
-	    
-	    if( !empty($matches[1]) ){
-	    	//we have a version number!
-		    if( version_compare($transient->checked[EM_SLUG], $matches[1]) < 0) {
-		    	$response = new stdClass();
-		    	$response->slug = EM_SLUG;
-				$response->new_version = $matches[1] ;
-		        $response->url = 'http://wordpress.org/extend/plugins/events-manager/';
-			    $response->package = 'http://downloads.wordpress.org/plugin/events-manager.zip';
-		       	$transient->response[EM_SLUG] = $response;
+	    if( !is_wp_error($request) ){
+		    preg_match('/Version: ([0-9a-z\.]+)/', $request['body'], $matches);
+		    
+		    if( !empty($matches[1]) ){
+		    	//we have a version number!
+			    if( version_compare($transient->checked[EM_SLUG], $matches[1]) < 0) {
+			    	$response = new stdClass();
+			    	$response->slug = EM_SLUG;
+					$response->new_version = $matches[1] ;
+			        $response->url = 'http://wordpress.org/extend/plugins/events-manager/';
+				    $response->package = 'http://downloads.wordpress.org/plugin/events-manager.zip';
+			       	$transient->response[EM_SLUG] = $response;
+			    }
 		    }
-	    }
-	    delete_option('em_check_dev_version');
+		}
+		
+		delete_option('em_check_dev_version');
     }
     
     return $transient;

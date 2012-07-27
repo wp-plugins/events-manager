@@ -744,6 +744,11 @@ class EM_Event extends EM_Object{
 				}
 				$EM_Event->get_bookings(true); //refresh booking tickets
 				$EM_Event->feedback_message = sprintf(__("%s successfully duplicated.", 'dbem'), __('Event','dbem'));
+			 	//featured images
+			 	$featured_image = get_post_meta( $this->post_id, '_thumbnail_id', true );
+			 	if( !empty($featured_image) ){
+			 		$wpdb->query('INSERT INTO '.$wpdb->postmeta." (post_id, meta_key, meta_value) VALUES ({$EM_Event->post_id}, '_thumbnail_id', {$featured_image})");
+			 	}
 				return apply_filters('em_event_duplicate', $EM_Event, $this);
 			}
 		}
@@ -1015,7 +1020,7 @@ class EM_Event extends EM_Object{
 	
 	function get_permalink(){
 		if( EM_MS_GLOBAL ){
-			if( get_site_option('dbem_ms_global_events_links') && !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
+			if( get_site_option('dbem_ms_global_events_links') && !empty($this->blog_id) && $this->blog_id != get_current_blog_id() ){
 				//linking directly to the blog
 				$event_link = get_blog_permalink( $this->blog_id, $this->post_id);
 			}elseif( !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
@@ -1161,6 +1166,18 @@ class EM_Event extends EM_Object{
 					}elseif ($condition == 'is_future'){
 						//if event is upcoming
 						$show_condition = $this->start > current_time('timestamp');
+					}elseif ( preg_match('/^has_category_([a-zA-Z0-9_\-]+)$/', $condition, $category_match)){
+					    //event is in this category
+					    $show_condition = has_term($category_match[1], EM_TAXONOMY_CATEGORY, $this->post_id);
+					}elseif ( preg_match('/^no_category_([a-zA-Z0-9_\-]+)$/', $condition, $category_match)){
+					    //event is NOT in this category
+					    $show_condition = !has_term($category_match[1], EM_TAXONOMY_CATEGORY, $this->post_id);
+					}elseif ( preg_match('/^has_tag_([a-zA-Z0-9_\-]+)$/', $condition, $tag_match)){
+					    //event has this tag
+					    $show_condition = has_term($tag_match[1], EM_TAXONOMY_TAG, $this->post_id);
+					}elseif ( preg_match('/^no_tag_([a-zA-Z0-9_\-]+)$/', $condition, $tag_match)){
+					   //event doesn't have this tag
+					    $show_condition = !has_term($tag_match[1], EM_TAXONOMY_TAG, $this->post_id);
 					}
 					$show_condition = apply_filters('em_event_output_show_condition', $show_condition, $condition, $conditionals[0][$key], $this);
 					if($show_condition){
@@ -1796,9 +1813,9 @@ class EM_Event extends EM_Object{
 		 		$this->add_error('You have not defined a date range long enough to create a recurrence.','dbem');
 		 		$result = false;
 		 	}
-		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this, $event_ids);
+		 	return apply_filters('em_event_save_events', !in_array(false, $event_saves) && $result !== false, $this, $event_ids, $post_ids);
 		}
-		return apply_filters('em_event_save_events', false, $this, $event_ids);
+		return apply_filters('em_event_save_events', false, $this, $event_ids, $post_ids);
 	}
 	
 	/**
