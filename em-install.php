@@ -555,6 +555,16 @@ function em_add_options() {
 			'dbem_booking_feedback_reg_error' => __('There was a problem creating a user account, please contact a website administrator.','dbem'),
 			'dbem_booking_feedback_already_booked' => __('You already have booked a seat at this event.','dbem'),
 			'dbem_booking_feedback_min_space' => __('You must request at least one space to book an event.','dbem'),
+			//button messages
+			'dbem_booking_button_msg_book' => __('Book Now', 'dbem'),
+			'dbem_booking_button_msg_booking' => __('Booking...','dbem'),
+			'dbem_booking_button_msg_booked' => sprintf(__('%s Submitted','dbem'), __('Booking','dbem')),
+			'dbem_booking_button_msg_error' => sprintf(__('%s Error. Try again?','dbem'), __('Booking','dbem')),
+			'dbem_booking_button_msg_full' => __('Sold Out', 'dbem'),
+			'dbem_booking_button_msg_cancel' => __('Cancel', 'dbem'),
+			'dbem_booking_button_msg_canceling' => __('Canceling...','dbem'),
+			'dbem_booking_button_msg_cancelled' => __('Cancelled','dbem'),
+			'dbem_booking_button_msg_cancel_error' => sprintf(__('%s Error. Try again?','dbem'), __('Cancellation','dbem')),
 			//Emails
 			'dbem_default_contact_person' => 1, //admin
 			'dbem_bookings_notify_admin' => 0,

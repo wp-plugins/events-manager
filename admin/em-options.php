@@ -1299,7 +1299,21 @@ function em_admin_options_page() {
 						em_options_input_text ( __( 'User must log in', 'dbem' ), 'dbem_booking_feedback_log_in', __( 'When a user must log in before making a booking.', 'dbem' ) );
 						em_options_input_text ( __( 'Error mailing user', 'dbem' ), 'dbem_booking_feedback_nomail', __( 'If a booking is made and an email cannot be sent, this is added to the success message.', 'dbem' ) );
 						em_options_input_text ( __( 'Already booked', 'dbem' ), 'dbem_booking_feedback_already_booked', __( 'If the user made a previous booking and cannot double-book.', 'dbem' ) );
-						em_options_input_text ( __( 'No spaces booked', 'dbem' ), 'dbem_booking_feedback_min_space', __( 'If the user tries to make a booking without requesting any spaces.', 'dbem' ) );
+						em_options_input_text ( __( 'No spaces booked', 'dbem' ), 'dbem_booking_feedback_min_space', __( 'If the user tries to make a booking without requesting any spaces.', 'dbem' ) );$notice_full = __('Sold Out', 'dbem');
+						?>
+						<tr><td colspan='2'><h4><?php _e('Booking button feedback messages','dbem') ?></h4></td></tr>
+						<tr><td colspan='2'><?php echo sprintf(__('When the %s placeholder, the below texts will be used.','dbem'),'<code>#_BOOKINGBUTTON</code>'); ?></td></tr>
+						<?php			
+						em_options_input_text ( __( 'User can book', 'dbem' ), 'dbem_booking_button_msg_book', '');
+						em_options_input_text ( __( 'Booking in progress', 'dbem' ), 'dbem_booking_button_msg_booking', '');
+						em_options_input_text ( __( 'Booking complete', 'dbem' ), 'dbem_booking_button_msg_booked', '');
+						em_options_input_text ( __( 'Booking error', 'dbem' ), 'dbem_booking_button_msg_error', '');
+						em_options_input_text ( __( 'Event fully booked', 'dbem' ), 'dbem_booking_button_msg_full', '');
+						em_options_input_text ( __( 'Cancel', 'dbem' ), 'dbem_booking_button_msg_cancel', '');
+						em_options_input_text ( __( 'Cancelation in progress', 'dbem' ), 'dbem_booking_button_msg_canceling', '');
+						em_options_input_text ( __( 'Cancelation complete', 'dbem' ), 'dbem_booking_button_msg_cancelled', '');
+						em_options_input_text ( __( 'Cancelation error', 'dbem' ), 'dbem_booking_button_msg_cancel_error', '');
+						
 						echo $save_button; 
 						?>
 					</table>

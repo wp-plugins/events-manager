@@ -400,7 +400,58 @@ jQuery(document).ready( function($){
 			return false;
 		});
 	}
-		
+	
+	//Manual Booking
+	$('a.em-booking-button').click(function(){
+		var button = $(this);
+		if( button.text() != EM.bb_booked && $(this).text() != EM.bb_booking){
+			button.text(EM.bb_booking);
+			var button_data = button.attr('id').split('_'); 
+			$.ajax({
+				url: EM.ajaxurl,
+				dataType: 'jsonp',
+				data: {
+					event_id : button_data[1],
+					_wpnonce : button_data[2],
+					action : 'booking_add_one'
+				},
+				success : function(response, statusText, xhr, $form) {
+					if(response.result){
+						button.text(EM.bb_booked);
+					}else{
+						button.text(EM.bb_error);					
+					}
+					if(response.message != '') alert(response.message);
+				},
+				error : function(){ button.text(EM.bb_error); }
+			});
+		}
+	});	
+	$('a.em-cancel-button').click(function(){
+		var button = $(this);
+		if( button.text() != EM.bb_cancelled && button.text() != EM.bb_canceling){
+			button.text(EM.bb_canceling);
+			var button_data = button.attr('id').split('_'); 
+			$.ajax({
+				url: EM.ajaxurl,
+				dataType: 'jsonp',
+				data: {
+					booking_id : button_data[1],
+					_wpnonce : button_data[2],
+					action : 'booking_cancel'
+				},
+				success : function(response, statusText, xhr, $form) {
+					if(response.result){
+						button.text(EM.bb_cancelled);
+					}else{
+						button.text(EM.bb_cancel_error);
+					}
+				},
+				error : function(){ button.text(EM.bb_cancel_error); }
+			});
+		}
+	});  
+
 	//Datepicker
 	if( $('.em-date-single, .em-date-range, #em-date-start').length > 0 ){
 		if( EM.locale != 'en' ){

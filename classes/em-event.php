@@ -1338,7 +1338,7 @@ class EM_Event extends EM_Object{
 					}
 					break;
 				case '#_BOOKINGBUTTON':
-					if( get_option('dbem_rsvp_enabled')){
+					if( get_option('dbem_rsvp_enabled') && $this->event_rsvp ){
 						ob_start();
 						$template = em_locate_template('placeholders/bookingbutton.php', true, array('EM_Event'=>$this));
 						$replace = ob_get_clean();
