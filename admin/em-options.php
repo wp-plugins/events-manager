@@ -145,7 +145,7 @@ function em_options_save(){
 		exit();
 	}
 	//Flag version checking to look at trunk, not tag
-	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'check_devs' && check_admin_referer('em_check_devs_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
+	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'check_devs' && check_admin_referer('em_check_devs_wpnonce') && is_super_admin() ){
 		//delete transients, and add a flag to recheck dev version next time round
 		delete_transient('update_plugins');
 		delete_site_transient('update_plugins');
@@ -157,6 +157,29 @@ function em_options_save(){
 	
 }
 add_action('admin_init', 'em_options_save');
+
+function em_admin_email_test_ajax(){
+    if( wp_verify_nonce($_REQUEST['_check_email_nonce'],'check_email') && current_user_can('activate_plugins') ){
+        $subject = __("Events Manager Test Email",'dbem');
+        $content = __('Congratulations! Your email settings work.','dbem');
+        $current_user = get_user_by('id', get_current_user_id());
+        $EM_Event = new EM_Event();
+        if( $EM_Event->email_send($subject,$content,$current_user->user_email) ){
+        	$result = array(
+        		'result' => true,
+        		'message' => sprintf(__('Email sent succesfully to %s','dbem'),$current_user->user_email)
+        	);
+        }else{
+            $result = array(
+            	'result' => false,
+            	'message' => __('Email not sent.','dbem')." <ul><li>".implode('</li><li>',$EM_Event->get_errors()).'</li></ul>'
+            );
+        }
+        echo json_encode($result);
+    }
+    exit();
+}
+add_action('wp_ajax_em_admin_test_email','em_admin_email_test_ajax');
 
 function em_admin_options_reset_page(){
 	if( check_admin_referer('em_reset_'.get_current_user_id().'_wpnonce') && is_super_admin() ){
@@ -1539,8 +1562,14 @@ function em_admin_option_box_email(){
 	?>
 	<div  class="postbox " >
 	<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Email Settings', 'dbem' ); ?></span></h3>
-	<div class="inside">
-		<table class='form-table'>
+	<div class="inside em-email-form">
+		<p class="em-email-settings-check">
+			<?php _e('Before you save your changes, you can quickly send yourself a test email by clicking this button.'); ?>
+			<input type="button" id="em-admin-check-email" class="secondary-button" value="<?php _e('Test Email Settings','dbem'); ?>" />
+			<input type="hidden" name="_check_email_nonce" value="<?php echo wp_create_nonce('check_email'); ?>" />
+			<span id="em-email-settings-check-status"></span>
+		</p>
+		<table class="form-table">
 			<?php
 			em_options_input_text ( __( 'Notification sender name', 'dbem' ), 'dbem_mail_sender_name', __( "Insert the display name of the notification sender.", 'dbem' ) );
 			em_options_input_text ( __( 'Notification sender address', 'dbem' ), 'dbem_mail_sender_address', __( "Insert the address of the notification sender.", 'dbem' ) );
@@ -1570,6 +1599,25 @@ function em_admin_option_box_email(){
 						$('.em-email-settings-smtp').hide();
 					}
 				}).trigger('change');
+				$('input#em-admin-check-email').click(function(e,el){
+					var email_data = $('.em-email-form input').serialize();
+					$.ajax({
+						url: EM.ajaxurl,
+						dataType: 'json',
+						data: email_data+"&action=em_admin_test_email",
+						success: function(data){
+							if(data.result && data.message){
+								$('#em-email-settings-check-status').css({'color':'green','display':'block'}).html(data.message);
+							}else{
+								var msg = (data.message) ? data.message:'Email not sent';
+								$('#em-email-settings-check-status').css({'color':'red','display':'block'}).html(msg);
+							}
+						},
+						error: function(){ $('#em-email-settings-check-status').css({'color':'red','display':'block'}).html('Server Error'); },
+						beforeSend: function(){ $('input#em-admin-check-email').val('<?php _e('Checking...','dbem') ?>'); },
+						complete: function(){ $('input#em-admin-check-email').val('<?php _e('Test Email Settings','dbem'); ?>');  }
+					});
+				});
 			});
 		</script>
 	</div> <!-- . inside -->
@@ -1693,12 +1741,12 @@ function em_admin_option_box_uninstall(){
 		$uninstall_url = admin_url().'network/admin.php?page=events-manager-options&amp;action=uninstall&amp;_wpnonce='.wp_create_nonce('em_uninstall_'.get_current_user_id().'_wpnonce');
 		$reset_url = admin_url().'network/admin.php?page=events-manager-options&amp;action=reset&amp;_wpnonce='.wp_create_nonce('em_reset_'.get_current_user_id().'_wpnonce');
 		$recheck_updates_url = admin_url().'network/admin.php?page=events-manager-options&amp;action=recheck_updates&amp;_wpnonce='.wp_create_nonce('em_recheck_updates_'.get_current_user_id().'_wpnonce');
-		$check_devs = admin_url().'network/admin.php?page=events-manager-options&amp;action=check_devs&amp;_wpnonce='.wp_create_nonce('em_check_devs'.get_current_user_id().'_wpnonce');
+		$check_devs = admin_url().'network/admin.php?page=events-manager-options&amp;action=check_devs&amp;_wpnonce='.wp_create_nonce('em_check_devs_wpnonce');
 	}else{
 		$uninstall_url = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=uninstall&amp;_wpnonce='.wp_create_nonce('em_uninstall_'.get_current_user_id().'_wpnonce');
 		$reset_url = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=reset&amp;_wpnonce='.wp_create_nonce('em_reset_'.get_current_user_id().'_wpnonce');
 		$recheck_updates_url = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=recheck_updates&amp;_wpnonce='.wp_create_nonce('em_recheck_updates_'.get_current_user_id().'_wpnonce');
-		$check_devs = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=check_devs&amp;_wpnonce='.wp_create_nonce('em_check_devs_'.get_current_user_id().'_wpnonce');
+		$check_devs = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=check_devs&amp;_wpnonce='.wp_create_nonce('em_check_devs_wpnonce');
 	}
 	?>
 	<div  class="postbox" >

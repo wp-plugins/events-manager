@@ -431,7 +431,7 @@ class EM_Booking extends EM_Object{
 		return $this->set_status(2, $email);
 	}	
 	/**
-	 * Unpprove a booking.
+	 * Unapprove a booking.
 	 * @return bool
 	 */
 	function unapprove($email = true){

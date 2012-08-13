@@ -342,12 +342,10 @@ function em_bookings_single(){
 										<?php do_action('em_bookings_admin_ticket_totals_footer'); ?>
 									</tfoot>
 								</table>
-								<table cellspacing="0" cellpadding="0">
+								<table class="em-form-fields" cellspacing="0" cellpadding="0">
 									<?php if( !has_action('em_bookings_single_custom') ): //default behaviour ?>
 									<tr>
-										<td>
-											<strong><?php _e('Comment','dbem'); ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;</strong>
-										</td>
+										<th><?php _e('Comment','dbem'); ?></th>
 										<td>
 											<span class="em-booking-single-info"><?php echo $EM_Booking->booking_comment; ?></span>
 											<div class="em-booking-single-edit"><textarea name="booking_comment"><?php echo $EM_Booking->booking_comment; ?></textarea></div>

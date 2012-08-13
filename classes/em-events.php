@@ -340,7 +340,6 @@ class EM_Events extends EM_Object implements Iterator {
 			'post_id' => false
 		);
 		if(EM_MS_GLOBAL){
-			global $bp;
 			if( !is_main_site() && !array_key_exists('blog', $array) ){
 				$array['blog'] = get_current_blog_id();
 			}elseif( empty($array['blog']) && get_site_option('dbem_ms_global_events') ) {
