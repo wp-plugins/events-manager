@@ -281,7 +281,7 @@ class EM_Events extends EM_Object implements Iterator {
 		}elseif( !empty($args['private_only']) ){
 			$conditions['private_only'] = "(`event_private`=1)";
 		}
-		if( EM_MS_GLOBAL && array_key_exists('blog',$args) && is_numeric($args['blog']) ){
+		if( EM_MS_GLOBAL && !empty($args['blog']) && is_numeric($args['blog']) ){
 			if( is_main_site($args['blog']) ){
 				$conditions['blog'] = "(".EM_EVENTS_TABLE.".blog_id={$args['blog']} OR ".EM_EVENTS_TABLE.".blog_id IS NULL)";
 			}else{
@@ -340,10 +340,8 @@ class EM_Events extends EM_Object implements Iterator {
 			'post_id' => false
 		);
 		if(EM_MS_GLOBAL){
-			if( !is_main_site() && !array_key_exists('blog', $array) ){
-				$array['blog'] = get_current_blog_id();
-			}elseif( empty($array['blog']) && get_site_option('dbem_ms_global_events') ) {
-				$array['blog'] = false;
+			if( empty($array['blog']) && is_main_site() && get_site_option('dbem_ms_global_events') ){
+			    $array['blog'] = false;
 			}
 		}
 		if( is_admin() ){

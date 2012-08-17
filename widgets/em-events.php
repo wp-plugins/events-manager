@@ -36,10 +36,14 @@ class EM_Widget extends WP_Widget {
     function widget($args, $instance) {
     	$instance = array_merge($this->defaults, $instance);
     	$instance = $this->fix_scope($instance); // depcreciate	
+
     	echo $args['before_widget'];
-	    echo $args['before_title'];
-	    echo $instance['title'];
-	    echo $args['after_title'];
+    	if( !empty($instance['title']) ){
+		    echo $args['before_title'];
+		    echo $instance['title'];
+		    echo $args['after_title'];
+    	}
+    	
 		$instance['owner'] = false;
 		//orderby fix for previous versions with old orderby values
 		if( !array_key_exists($instance['orderby'], $this->em_orderby_options) ){
@@ -82,7 +86,7 @@ class EM_Widget extends WP_Widget {
     /** @see WP_Widget::update */
     function update($new_instance, $old_instance) {
     	foreach($this->defaults as $key => $value){
-    		if( empty($new_instance[$key]) ){
+    		if( !isset($new_instance[$key]) ){
     			$new_instance[$key] = $value;
     		}
     	}

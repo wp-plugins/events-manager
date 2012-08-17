@@ -1005,7 +1005,7 @@ class EM_Event extends EM_Object{
 	}
 	
 	function get_bookings_url(){
-		if( get_option('dbem_edit_bookings_page') && !is_admin() ){
+		if( get_option('dbem_edit_bookings_page') && (!is_admin() || !empty($_REQUEST['is_public'])) ){
 			$my_bookings_page = get_permalink(get_option('dbem_edit_bookings_page'));
 			$bookings_link = em_add_get_params($my_bookings_page, array('event_id'=>$this->event_id), false);
 		}else{
@@ -1871,18 +1871,12 @@ class EM_Event extends EM_Object{
 				$start_of_week = get_option('start_of_week'); //Start of week depends on WordPress
 				//first, get the start of this week as timestamp
 				$event_start_day = date('w', $start_date);
-				$offset = 0;
-				if( $event_start_day > $start_of_week ){
-					$offset = $event_start_day - $start_of_week; //x days backwards
-				}elseif( $event_start_day < $start_of_week ){
-					$offset = $start_of_week;
-				}
-				$start_week_date = $start_date - ( ($event_start_day - $start_of_week) * $aDay );
 				//then get the timestamps of weekdays during this first week, regardless if within event range
 				$start_weekday_dates = array(); //Days in week 1 where there would events, regardless of event date range
 				for($i = 0; $i < 7; $i++){
-					$weekday_date = $start_week_date+($aDay*$i); //the date of the weekday we're currently checking
+					$weekday_date = $start_date+($aDay*$i); //the date of the weekday we're currently checking
 					$weekday_day = date('w',$weekday_date); //the day of the week we're checking, taking into account wp start of week setting
+
 					if( in_array( $weekday_day, $weekdays) ){
 						$start_weekday_dates[] = $weekday_date; //it's in our starting week day, so add it
 					}

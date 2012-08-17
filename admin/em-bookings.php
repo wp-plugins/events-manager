@@ -439,7 +439,7 @@ function em_bookings_person(){
 			$has_booking = true;
 		}
 	}
-	if( !$has_booking ){
+	if( !$has_booking && !current_user_can('manage_others_bookings') ){
 		?>
 		<div class="wrap"><h2><?php _e('Unauthorized Access','dbem'); ?></h2><p><?php _e('You do not have the rights to manage this event.','dbem'); ?></p></div>
 		<?php

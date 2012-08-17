@@ -20,7 +20,6 @@ $required = '*';
 echo $EM_Notices;
 //Success notice
 if( !empty($_REQUEST['success']) ){
-	$EM_Event = new $EM_Event(); //reset the event
 	if(!get_option('dbem_events_form_reshow')) return false;
 }
 ?>	

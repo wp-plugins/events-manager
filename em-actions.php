@@ -191,7 +191,7 @@ function em_init_actions() {
 				$sql = $wpdb->prepare("
 					SELECT 
 						location_id AS `id`,
-						Concat( location_name, ', ', location_address, ', ', location_town)  AS `label`,
+						Concat( location_name )  AS `label`,
 						location_name AS `value`,
 						location_address AS `address`, 
 						location_town AS `town`, 

@@ -340,10 +340,11 @@ function em_register_new_user( $user_data ) {
 	$errors = apply_filters( 'registration_errors', $errors, $sanitized_user_login, $user_email );
 	ob_clean();
 
-	if ( $errors->get_error_code() )
-		return $errors;
+	if ( $errors->get_error_code() ) return $errors;
 
-	$user_data['user_pass'] = wp_generate_password( 12, false);
+	if(empty($user_data['user_pass'])){
+		$user_data['user_pass'] =  wp_generate_password( 12, false);
+	}
 
 	$user_id = wp_insert_user( $user_data );
 	if( is_numeric($user_id) && !empty($user_data['dbem_phone']) ){
