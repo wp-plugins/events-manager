@@ -1,6 +1,6 @@
 <?php
 global $EM_Event;
-if( !bp_is_active('groups') ) return false;
+if( !function_exists('bp_is_active') || !bp_is_active('groups') ) return false;
 $user_groups = array();
 $group_data = groups_get_user_groups(get_current_user_id());
 if( !is_super_admin() ){
