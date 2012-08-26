@@ -21,9 +21,9 @@ PRODID:-//wp-events-plugin.com//".EM_VERSION."//EN";
 foreach ( $EM_Events as $EM_Event ) {
 	/* @var $EM_Event EM_Event */
 	date_default_timezone_set('UTC'); // set the PHP timezone to UTC, we already calculated event    
-	if($EM_Event->event_all_day && $EM_Event->event_start_date == $EM_Event->event_end_date){
+	if($EM_Event->event_all_day){
 		$dateStart	= date('Ymd\T000000',$EM_Event->start); //all day
-		$dateEnd	= date('Ymd\T000000',$EM_Event->start + 86400); //add one day
+		$dateEnd	= date('Ymd\T000000',$EM_Event->end + 86400); //add one day
 	}else{
 		$dateStart	= date('Ymd\THis\Z',$EM_Event->start);
 		$dateEnd = date('Ymd\THis\Z',$EM_Event->end);

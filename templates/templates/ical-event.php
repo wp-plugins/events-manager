@@ -21,9 +21,9 @@ VERSION:2.0
 PRODID:-//wp-events-plugin.com//".EM_VERSION."//EN";
 
 	/* @var $EM_Event EM_Event */
-	if($EM_Event->event_all_day && $EM_Event->event_start_date == $EM_Event->event_end_date){
+	if($EM_Event->event_all_day){
 		$dateStart	= date('Ymd\T000000',$EM_Event->start); //all day
-		$dateEnd	= date('Ymd\T000000',$EM_Event->start + 86400); //add one day
+		$dateEnd	= date('Ymd\T000000',$EM_Event->end + 86400); //add one day
 	}else{
 		$dateStart	= date('Ymd\THis\Z',$EM_Event->start);
 		$dateEnd = date('Ymd\THis\Z',$EM_Event->end);

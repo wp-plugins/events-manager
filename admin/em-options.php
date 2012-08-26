@@ -1162,7 +1162,7 @@ function em_admin_options_page() {
 				
 				<?php if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_blog()) ): ?>
 				<div  class="postbox " >
-				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Categories', 'dbem' ); ?> </span></h3>
+				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Categories', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 	            	<table class="form-table">
 					 	<tr><td><strong><?php echo sprintf(__('%s Page','dbem'),__('Categories','dbem')); ?></strong></td></tr>
@@ -1192,7 +1192,7 @@ function em_admin_options_page() {
 				
 				<?php if( get_option('dbem_tags_enabled') ): ?>
 				<div  class="postbox " >
-				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Tags', 'dbem' ); ?> </span></h3>
+				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Tags', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 	            	<table class="form-table">
 					 	<tr><td><strong><?php echo sprintf(__('Single %s Page','dbem'),__('Tag','dbem')); ?></strong></td></tr>
