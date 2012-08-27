@@ -98,6 +98,10 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 2.2.2.1 (dev) =
+* improvement to ical all-day time format
+* fixed grouped events shortcode not using formats supplied
+
 = 5.2.2 =
 * added member-only tickets
 * added em_bookings_added action
