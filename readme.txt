@@ -98,9 +98,12 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 2.2.2.1 (dev) =
+= 5.2.2.2 (dev) =
 * improvement to ical all-day time format
 * fixed grouped events shortcode not using formats supplied
+* removed 'remove from page lists' options for category/event/location pages, see http://em.cm/rplo
+* added calendar day abbriviations (useful for some languages e.g. Catalan, Welsh)
+* moved events page calendar options to 'pages' tab, event list/archives panel
 
 = 5.2.2 =
 * added member-only tickets
