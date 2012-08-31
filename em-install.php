@@ -328,6 +328,7 @@ function em_add_options() {
 		'dbem_events_default_order' => 'ASC',
 		'dbem_events_default_limit' => 10,
 		//Event Search Options
+		'dbem_serach_form_submit' => __('Search','dbem'),
 		'dbem_search_form_text' => 1,
 		'dbem_search_form_text_label' => __('Search','dbem'),
 		'dbem_search_form_dates' => 1,

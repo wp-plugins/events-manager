@@ -1005,6 +1005,7 @@ function em_admin_options_page() {
 				<div class="inside">
 	            	<table class="form-table">
 					    <?php 
+						em_options_input_text ( __( 'Search button text', 'dbem' ), 'dbem_serach_form_submit' );
 						em_options_radio_binary ( __( 'Show text search?', 'dbem' ), 'dbem_search_form_text', '' );
 						em_options_input_text ( __( 'Text search label', 'dbem' ), 'dbem_search_form_text_label', __('Appears within the input box.','dbem') );
 						em_options_radio_binary ( __( 'Show date range?', 'dbem' ), 'dbem_search_form_dates', '' );
