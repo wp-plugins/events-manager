@@ -98,6 +98,16 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.2.3.1 (dev) =
+* fixed single ticket template and name of spaces being hard coded
+* added em_booking_form_ticket_spaces action
+* closed date and time picker inits with functions
+* fixed warnings on options page
+* fixed potential 0 spaces being available on tickets with a min requirement
+* fixed ticket warning
+* fixed some permalink issues for homepage and child pages of events pages
+* fixed rare fatal error due to undefined object in admin/em-bookings.php
+
 = 5.2.3 =
 * improvement to ical all-day time format
 * fixed grouped events shortcode not using formats supplied
