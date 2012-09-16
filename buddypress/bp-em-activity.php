@@ -97,17 +97,17 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 			}
 		}
 		if( !empty($action) ){
-			bp_em_record_activity( array(
-				'user_id' => $EM_Booking->person->ID,
-				'action' => $action,
-				'primary_link' => $EM_Event->output('#_EVENTURL'),
-				'type' => 'new_booking',
-				'item_id' => $EM_Event->event_id,
-				'secondary_item_id' => $EM_Booking->booking_id,
-				'hide_sitewide' => $EM_Event->event_private
-			));
-			//group activity
-			if( !empty($EM_Event->group_id) ){
+			if( empty($EM_Event->group_id) ){
+				bp_em_record_activity( array(
+					'user_id' => $EM_Booking->person->ID,
+					'action' => $action,
+					'primary_link' => $EM_Event->output('#_EVENTURL'),
+					'type' => 'new_booking',
+					'item_id' => $EM_Event->event_id,
+					'secondary_item_id' => $EM_Booking->booking_id,
+					'hide_sitewide' => $EM_Event->event_private
+				));
+			}else{
 				//tis a group event
 				bp_em_record_activity( array(
 					'component' => 'groups',
