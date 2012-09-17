@@ -98,13 +98,17 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.2.4.1 (dev) =
+= 5.2.4.2 (dev) =
 * fixed long google calendar link issue
 * fixed and improved duplication function
 * allowed cancel link for offline pending bookings status
 * fixed MS bug with featured images in global mode on different main/sub sites
 * fixed duplicate booking activity posts when event belongs to a group
 * fixed template templates/events-list.php for grouped events list
+* fixed dots in usernames breaking booking activity feed links
+* added booking comment collumn to booking admin tables
+* changed some localized edit %s strings
+* fixed booking links pointing to admin/front-side oppositely on ajax calls
 
 = 5.2.4 =
 * fixed single ticket template and name of spaces being hard coded

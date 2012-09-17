@@ -1317,7 +1317,7 @@ class EM_Event extends EM_Object{
 					if( $this->can_manage('edit_events','edit_others_events') ){
 						$link = esc_url($this->get_edit_url());
 						if( $result == '#_EDITEVENTLINK'){
-							$replace = '<a href="'.$link.'">'.esc_html(sprintf(__('Edit %s','dbem'),__('Event','dbem'))).'</a>';
+							$replace = '<a href="'.$link.'">'.esc_html(sprintf(__('Edit Event','dbem'))).'</a>';
 						}else{
 							$replace = $link;
 						}

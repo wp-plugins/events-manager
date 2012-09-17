@@ -75,8 +75,7 @@ function bp_em_record_activity_booking_save( $result, $EM_Booking ){
 	if( $result ){
 		$rejected_statuses = array(0,2,3); //these statuses apply to rejected/cancelled bookings
 		$user = $EM_Booking->person;
-		$member_slug = function_exists( 'bp_get_members_root_slug' ) ? bp_get_members_root_slug() : BP_MEMBERS_SLUG;
-		$member_link = trailingslashit(bp_get_root_domain()) . $member_slug . '/' . $user->user_login;
+		$member_link = bp_core_get_user_domain($user->ID);
 		$user_link = "<a href='".$member_link."/'>".$user->display_name."</a>";
 		$event_link = $EM_Booking->get_event()->output('#_EVENTLINK');
 		$status = $EM_Booking->booking_status;
