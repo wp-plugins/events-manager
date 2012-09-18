@@ -109,6 +109,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added booking comment collumn to booking admin tables
 * changed some localized edit %s strings
 * fixed booking links pointing to admin/front-side oppositely on ajax calls
+* fixed tag and category searches showing all events if categories/tags don't exist
 
 = 5.2.4 =
 * fixed single ticket template and name of spaces being hard coded
