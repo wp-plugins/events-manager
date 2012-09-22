@@ -98,6 +98,15 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.2.5.1 (dev) =
+* changed validation order for bookings (no validation done in EM_Event::get_post())
+* EM_Tickets_Bookings::$tickets_bookings now an associative array, keys are ticket id
+* EM_Notices now accepts 2 level arrays for nested errors
+* added em_bookings_table_export_options, em_bookings_admin_ticket_row actions 
+* added em_bookings_table_get_headers filter 
+* admins can now manually approve bookings regardless of whether events are fully booked and overbooking enabled
+* fixed search page bugs
+
 = 5.2.5 =
 * fixed long google calendar link issue
 * fixed and improved duplication function

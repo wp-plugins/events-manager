@@ -233,6 +233,7 @@ class EM_Ticket extends EM_Object{
 	}
 	
 	function get_pending_spaces(){
+	    $spaces = 0;
 		foreach( $this->get_bookings()->get_pending_bookings()->bookings as $EM_Booking ){ //get_bookings() is used twice so we get the confirmed (or all if confirmation disabled) bookings of this ticket's total bookings.
 			//foreach booking, get this ticket booking info if found
 			foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){

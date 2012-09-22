@@ -995,9 +995,13 @@ class EM_Object {
 	function add_error($errors){
 		if(!is_array($errors)){ $errors = array($errors); } //make errors var an array if it isn't already
 		if(!is_array($this->errors)){ $this->errors = array(); } //create empty array if this isn't an array
-		foreach($errors as $error){			
+		foreach($errors as $key => $error){			
 			if( !in_array($error, $this->errors) ){
-				$this->errors[] = $error;
+			    if( !is_array($error) ){
+					$this->errors[] = $error;
+			    }else{
+			        $this->errors[] = array($key => $error);
+			    }
 			}
 		}
 	}

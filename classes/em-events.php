@@ -244,9 +244,14 @@ class EM_Events extends EM_Object implements Iterator {
 			if( in_array($post_key, $accepted_searches) && !empty($post_value) ){
 				if(is_array($post_value)){
 					$post_value = implode(',',$post_value);
+				}elseif( $post_key == 'category' && $post_value == '-1' ){
+				    $post_value = 0;
+				    $_REQUEST['category'] = 0;
 				}
 				if($post_value != ',' ){
 					$args[$post_key] = $post_value;
+				}elseif( $post_value == ',' && $post_key == 'scope' ){
+					$args['scope'] = get_option('dbem_events_page_scope');
 				}
 			}
 		}
