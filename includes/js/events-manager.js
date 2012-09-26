@@ -527,7 +527,7 @@ jQuery(document).ready( function($){
 	
 	//Finally, add autocomplete here
 	//Autocomplete
-	if( jQuery( "#em-location-data input#location-name, " ).length > 0 ){
+	if( jQuery( "#em-location-data input#location-name" ).length > 0 ){
 		jQuery( "#em-location-data input#location-name" ).autocomplete({
 			source: EM.locationajaxurl,
 			minLength: 2,

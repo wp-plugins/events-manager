@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.2.5.2 (dev) =
+= 5.2.5.3 (dev) =
 * changed validation order for bookings (no validation done in EM_Event::get_post())
 * EM_Tickets_Bookings::$tickets_bookings now an associative array, keys are ticket id
 * EM_Notices now accepts 2 level arrays for nested errors
@@ -111,6 +111,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * hooked into the_excerpt_rss filter to allow overriding event formats on normal rss feed
 * fixed recurring event not correctly saving timestamps
 * fixed minimum spaces problem on booking form, added 'required' tickets option to allow more possibilities
+* fixed js incompatability
+* fixed link on single booking admin page if user is a guest in no-user mode
+* updated German, French, Hebrew, Dutch, added partial Chinese translation
 
 = 5.2.5 =
 * fixed long google calendar link issue

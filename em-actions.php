@@ -248,8 +248,8 @@ function em_init_actions() {
 						if( (!is_user_logged_in() || defined('EM_FORCE_REGISTRATION')) && get_option('dbem_bookings_anonymous') && !get_option('dbem_bookings_registration_disable') ){
 							//find random username - less options for user, less things go wrong
 							$username_root = explode('@', $_REQUEST['user_email']);
-							$username_rand = $username_root[0].rand(1,1000);
-							while( username_exists($username_root[0].rand(1,1000)) ){
+							$username_rand = $username_root[0];
+							while( username_exists($username_rand) ) {
 								$username_rand = $username_root[0].rand(1,1000);
 							}
 							$_REQUEST['dbem_phone'] = (!empty($_REQUEST['dbem_phone'])) ? $_REQUEST['dbem_phone']:''; //fix to prevent warnings
