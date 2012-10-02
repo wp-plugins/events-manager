@@ -1365,12 +1365,15 @@ class EM_Event extends EM_Object{
 					$min = false;
 					$max = 0;
 					foreach( $this->get_tickets()->tickets as $EM_Ticket ){
-						if($EM_Ticket->get_price() > $max ){
-							$max = $EM_Ticket->get_price();
+						/* @var $EM_Ticket EM_Ticket */
+						if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') ){
+							if($EM_Ticket->get_price() > $max ){
+								$max = $EM_Ticket->get_price();
+							}
+							if($EM_Ticket->get_price() < $min || $min === false){
+								$min = $EM_Ticket->get_price();
+							}						
 						}
-						if($EM_Ticket->get_price() < $min || $min === false){
-							$min = $EM_Ticket->get_price();
-						}						
 					}
 					if( $min === false ) $min = 0;
 					if( $min != $max ){
@@ -1383,8 +1386,11 @@ class EM_Event extends EM_Object{
 					//get the range of prices
 					$min = false;
 					foreach( $this->get_tickets()->tickets as $EM_Ticket ){
-						if( $EM_Ticket->get_price() < $min || $min === false){
-							$min = $EM_Ticket->get_price();
+						/* @var $EM_Ticket EM_Ticket */
+						if( $EM_Ticket->is_available()|| get_option('dbem_bookings_tickets_show_unavailable') ){
+							if( $EM_Ticket->get_price() < $min || $min === false){
+								$min = $EM_Ticket->get_price();
+							}
 						}
 					}
 					if( $min === false ) $min = 0;
@@ -1394,9 +1400,12 @@ class EM_Event extends EM_Object{
 					//get the range of prices
 					$max = 0;
 					foreach( $this->get_tickets()->tickets as $EM_Ticket ){
-						if( $EM_Ticket->get_price() > $max ){
-							$max = $EM_Ticket->get_price();
-						}						
+						/* @var $EM_Ticket EM_Ticket */
+						if( $EM_Ticket->is_available()|| get_option('dbem_bookings_tickets_show_unavailable') ){
+							if( $EM_Ticket->get_price() > $max ){
+								$max = $EM_Ticket->get_price();
+							}
+						}			
 					}
 					$replace = em_get_currency_formatted($max);
 					break;

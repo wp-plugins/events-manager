@@ -345,7 +345,7 @@ class EM_Object {
 				}else{
 					$conditions['category'] = " ".EM_EVENTS_TABLE.".post_id $not IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id={$term->term_taxonomy_id} ) ";
 				}
-			}else{
+			}elseif( $category > 0 ){
 			    $conditions = array('category'=>'2=1'); //force a false
 			}
 		}elseif( self::array_is_numeric($category) ){
