@@ -52,9 +52,13 @@ $('.em-booking-form').submit( function(e){
 			}
 			$(document).trigger('em_booking_complete', [response]);
 		},
-		complete : function(){
+		error : function(jqXHR, textStatus, errorThrown){
+			$(document).trigger('em_booking_ajax_error', [jqXHR, textStatus, errorThrown]);
+		},
+		complete : function(jqXHR, textStatus){
 			em_booking_doing_ajax = false;
 			$('#em-loading').remove();
+			$(document).trigger('em_booking_ajax_complete', [jqXHR, textStatus]);
 		}
 	});
 	return false;	

@@ -322,10 +322,21 @@ class EM_Ticket extends EM_Object{
 	 */
 	function get_spaces_minimum(){
 	    $ticket_count = count($this->get_event()->get_bookings()->get_tickets()->tickets);
+	    //count available tickets to make sure
+	    $available_tickets = 0;
+	    foreach($this->get_event()->get_bookings()->get_tickets()->tickets as $EM_Ticket){
+	    	if($EM_Ticket->is_available()){
+	    		$available_tickets++;
+	    	}
+	    }
 	    $min_spaces = 0;
 	    if( $ticket_count > 1 ){
-	        if( $this->ticket_required ){
+	        if( $this->ticket_required && $this->is_available() ){
 	            $min_spaces = ($this->ticket_min > 0) ? $this->ticket_min:1;
+	        }elseif( $this->is_available() && $this->ticket_min > 0 ){
+	            $min_spaces = $this->ticket_min;	            
+	        }elseif( $this->is_available() && $available_tickets == 1 ){
+	            $min_spaces = 1;
 	        }
 	    }else{
 	    	$min_spaces = $this->ticket_min > 0 ? $this->ticket_min : 1;
@@ -338,7 +349,7 @@ class EM_Ticket extends EM_Object{
 	 * @return string
 	 */
 	function get_spaces_options($zero_value = true, $default_value = 0){
-		$available_spaces = $this->get_available_spaces();
+		$available_spaces = $this->get_available_spaces();		
 		if( $this->is_available() ) {
 		    $min_spaces = $this->get_spaces_minimum();
 		    $default_value = $min_spaces > $default_value ? $min_spaces:$default_value;

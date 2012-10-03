@@ -98,6 +98,11 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.2.6.1 =
+* fixed min ticket space number calculation issues in booking forms
+* fixed multiple admin emails for event submission by members with publish rights
+* added em_bookings_ajax_complete/error jquery events/hooks
+
 = 5.2.6 =
 * changed validation order for bookings (no validation done in EM_Event::get_post())
 * EM_Tickets_Bookings::$tickets_bookings now an associative array, keys are ticket id
