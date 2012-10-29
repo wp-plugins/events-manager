@@ -336,8 +336,7 @@ class EM_Event_Recurring_Post_Admin{
 			global $wpdb;
 			//set a constant so we know this event doesn't need 'saving'
 			if(!defined('UNTRASHING_'.$post_id)) define('UNTRASHING_'.$post_id, true);
-			$EM_Event = em_get_event($post_id,'post_id');			
-			$wpdb->query('UPDATE '.EM_EVENTS_TABLE.' SET event_status='.$EM_Event->event_status.' WHERE event_id='.$EM_Event->event_id);
+			$EM_Event = em_get_event($post_id,'post_id');
 			$events_array = EM_Events::get( array('recurrence_id'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'all' ) );
 			foreach($events_array as $event){
 				/* @var $event EM_Event */

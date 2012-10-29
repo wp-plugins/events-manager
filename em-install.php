@@ -482,6 +482,8 @@ function em_add_options() {
 		'dbem_mail_sender_name' => '',
 		'dbem_rsvp_mail_send_method' => 'mail',
 		'dbem_rsvp_mail_SMTPAuth' => 1,
+		'dbem_smtp_html' => 1,
+		'dbem_smtp_html_br' => 1,
 		//Image Manipulation
 		'dbem_image_max_width' => 700,
 		'dbem_image_max_height' => 700,
@@ -566,7 +568,6 @@ function em_add_options() {
 			'dbem_booking_button_msg_cancelled' => __('Cancelled','dbem'),
 			'dbem_booking_button_msg_cancel_error' => sprintf(__('%s Error. Try again?','dbem'), __('Cancellation','dbem')),
 			//Emails
-			'dbem_default_contact_person' => 1, //admin
 			'dbem_bookings_notify_admin' => 0,
 			'dbem_bookings_contact_email' => 1,
 			'dbem_bookings_contact_email_subject' => __("New Booking",'dbem'),
@@ -888,7 +889,7 @@ function em_migrate_v4(){
 	}
 	//-- EVENTS & Recurrences --
 	if( is_multisite() ){
-		if(EM_MS_GLOBAL && is_main_blog()){
+		if(EM_MS_GLOBAL && is_main_site()){
 			$sql = "SELECT * FROM ".EM_EVENTS_TABLE." WHERE post_id=0 AND (blog_id=$blog_id OR blog_id=0 OR blog_id IS NULL) LIMIT $limit";
 		}elseif(EM_MS_GLOBAL){
 			$sql = "SELECT * FROM ".EM_EVENTS_TABLE." WHERE post_id=0 AND blog_id=$blog_id LIMIT $limit";

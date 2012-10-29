@@ -66,7 +66,7 @@ class EM_Ticket extends EM_Object{
 			$this->end_timestamp = (!empty($ticket['ticket_end'])) ? strtotime($ticket['ticket_end']):false;
 		}
 		$this->compat_keys();
-		do_action('em_ticket',$this, $ticket_data);
+		do_action('em_ticket',$this, $ticket_data, $ticket);
 	}
 	
 	function get_notes(){

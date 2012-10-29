@@ -346,7 +346,7 @@ function em_admin_options_page() {
 						em_options_radio_binary ( __( 'Enable recurrence?', 'dbem' ), 'dbem_recurrence_enabled', __( 'Select yes to enable the recurrence features feature','dbem' ) ); 
 						em_options_radio_binary ( __( 'Enable bookings?', 'dbem' ), 'dbem_rsvp_enabled', __( 'Select yes to allow bookings and tickets for events.','dbem' ) );     
 						em_options_radio_binary ( __( 'Enable tags?', 'dbem' ), 'dbem_tags_enabled', __( 'Select yes to enable the tag features','dbem' ) );
-						if( !(EM_MS_GLOBAL && !is_main_blog()) ){
+						if( !(EM_MS_GLOBAL && !is_main_site()) ){
 							em_options_radio_binary ( __( 'Enable categories?', 'dbem' ), 'dbem_categories_enabled', __( 'Select yes to enable the category features','dbem' ) );     
 							if( get_option('dbem_categories_enabled') ){
 								/*default category*/
@@ -478,7 +478,7 @@ function em_admin_options_page() {
 					if( get_option('dbem_locations_enabled') ){
 		            	em_options_input_text ( __( 'Locations', 'dbem' ), 'dbem_cp_locations_slug', sprintf(__('e.g. %s - you can use / Separators too', 'dbem' ), '<strong>'.home_url().'/<code>'.get_option('dbem_cp_locations_slug',EM_POST_TYPE_LOCATION_SLUG).'</code>/wembley-stadium/</strong>'), EM_POST_TYPE_LOCATION_SLUG );
 					}
-	            	if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_blog()) ){
+	            	if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_site()) ){
 	            		em_options_input_text ( __( 'Event Categories', 'dbem' ), 'dbem_taxonomy_category_slug', sprintf(__('e.g. %s - you can use / Separators too', 'dbem' ), '<strong>'.home_url().'/<code>'.get_option('dbem_taxonomy_category_slug',EM_TAXONOMY_CATEGORY_SLUG).'</code>/sports/</strong>'), EM_TAXONOMY_CATEGORY_SLUG );
 	            	}
 	            	if( get_option('dbem_tags_enabled') ){
@@ -785,7 +785,7 @@ function em_admin_options_page() {
 				</div> <!-- .postbox -->
 				<?php endif; ?>
 				
-				<?php if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_blog()) ): ?>
+				<?php if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_site()) ): ?>
 				<div  class="postbox " >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo __('Event Categories','dbem'); ?></span></h3>
 				<div class="inside">
@@ -1147,7 +1147,7 @@ function em_admin_options_page() {
 				</div> <!-- .postbox -->
 				<?php endif; ?>
 				
-				<?php if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_blog()) ): ?>
+				<?php if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_site()) ): ?>
 				<div  class="postbox " >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Categories', 'dbem' ); ?> </span></h3>
 				<div class="inside">
@@ -1234,14 +1234,14 @@ function em_admin_options_page() {
 							<p><?php echo sprintf(__('If you use the %s <a href="%s">shortcode</a>, you can display a map of all your locations and events, the settings below will be used.','dbem'), '<code>[locations_map]</code>','http://wp-events-plugin.com/documentation/shortcodes/'); ?></p>
 						</td></tr>
 						<?php
-						em_options_textarea ( __( 'Location balloon format', 'dbem' ), 'dbem_map_text_format', __( 'The format of of the text appearing in the balloon describing the location and the first upcoming event.', 'dbem' ).' '.__( 'Event.', 'dbem' ).$events_placeholder_tip );
+						em_options_textarea ( __( 'Location balloon format', 'dbem' ), 'dbem_map_text_format', __( 'The format of of the text appearing in the balloon describing the location.', 'dbem' ).' '.__( 'Event.', 'dbem' ).$locations_placeholder_tip );
 						?>
 						<tr><td colspan="2">
 							<strong><?php _e('Single Location/Event Map Format','dbem'); ?></strong>
 							<p><?php echo sprintf(_e('If you use the <code>#_LOCATIONMAP</code> <a href="%s">placeholder</a> when displaying individual event and location information, the settings below will be used.','dbem'), '<code>[locations_map]</code>','http://wp-events-plugin.com/documentation/placeholders/'); ?></p>
 						</td></tr>
 						<?php
-						em_options_textarea ( __( 'Location balloon format', 'dbem' ), 'dbem_location_baloon_format', __( 'The format of of the text appearing in the balloon describing the location.', 'dbem' ).$locations_placeholder_tip );
+						em_options_textarea ( __( 'Location balloon format', 'dbem' ), 'dbem_location_baloon_format', __( 'The format of of the text appearing in the balloon describing the location.', 'dbem' ).$events_placeholder_tip );
 						echo $save_button;     
 						?> 
 					</table>
@@ -1415,9 +1415,8 @@ function em_admin_options_page() {
 					<table class='form-table'>
 						<?php
 						$email_subject_tip = __('You can disable this email by leaving the subject blank.','dbem');
-						em_options_select ( __( 'Default contact person', 'dbem' ), 'dbem_default_contact_person', em_get_wp_users(), __( 'Select the default contact person. This user will be employed whenever a contact person is not explicitly specified for an event', 'dbem' ) );
 						em_options_input_text ( __( 'Email events admin?', 'dbem' ), 'dbem_bookings_notify_admin', __( "If you would like every event booking confirmation email sent to an administrator write their email here (leave blank to not send an email).", 'dbem' ).' '.__('For multiple emails, seperate by commas (e.g. email1@test.com,email2@test.com,etc.)','dbem') );
-						em_options_radio_binary ( __( 'Email contact person?', 'dbem' ), 'dbem_bookings_contact_email', __( 'Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)', 'dbem' ) );
+						em_options_radio_binary ( __( 'Email event owner?', 'dbem' ), 'dbem_bookings_contact_email', __( 'Check this option if you want the event contact to receive an email when someone books places. An email will be sent when a booking is first made (regardless if confirmed or pending)', 'dbem' ) );
 						em_options_radio_binary ( __( 'Disable new registration email?', 'dbem' ), 'dbem_email_disable_registration', __( 'Check this option if you want to prevent the WordPress registration email from going out when a user anonymously books an event.', 'dbem' ) );
 						?>
 						<tr><td colspan='2'><h4><?php _e('Contact person booking confirmed','dbem') ?></h4></td></tr>
@@ -1580,6 +1579,7 @@ function em_admin_option_box_email(){
 			em_options_input_text ( __( 'Notification sender address', 'dbem' ), 'dbem_mail_sender_address', __( "Insert the address of the notification sender.", 'dbem' ) );
 			em_options_select ( __( 'Mail sending method', 'dbem' ), 'dbem_rsvp_mail_send_method', array ('smtp' => 'SMTP', 'mail' => __( 'PHP mail function', 'dbem' ), 'sendmail' => 'Sendmail', 'qmail' => 'Qmail', 'wp_mail' => 'WP Mail' ), __( 'Select the method to send email notification.', 'dbem' ) );
 			em_options_radio_binary ( __( 'Send HTML Emails?', 'dbem' ), 'dbem_smtp_html', __( 'If set to yes, your emails will be sent in HTML format, otherwise plaintext.', 'dbem' ).' '.__( 'Depending on server settings, some sending methods may ignore this settings.', 'dbem' ) );
+			em_options_radio_binary ( __( 'Add br tags to HTML emails?', 'dbem' ), 'dbem_smtp_html_br', __( 'If HTML emails are enabled, br tags will automatically be added for new lines.', 'dbem' ) );
 			?>
 			<tbody class="em-email-settings-smtp">
 				<?php

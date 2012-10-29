@@ -240,7 +240,7 @@ class EM_Location extends EM_Object {
 		$validate_post = true;
 		if( empty($this->location_name) ){
 			$validate_post = false;
-			$this->add_error( __('Location name').__(" is required.", "dbem") );
+			$this->add_error( __('Location name','dbem').__(" is required.", "dbem") );
 		}
 		$validate_image = $this->image_validate();
 		$validate_meta = $this->validate_meta();
@@ -670,7 +670,7 @@ class EM_Location extends EM_Object {
 											$image_url = network_site_url('/wp-content/blogs.dir/'. $blog_id. '/' . $imageParts[1]);
 										}
 									}
-									$replace = "<img src='".esc_url(em_get_thumbnail_url($image_url, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->location_name)."'/>";
+									$replace = "<img src='".esc_url(em_get_thumbnail_url($image_url, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->location_name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
 								}else{
 									$replace = "<img src='".$image_url."' alt='".esc_attr($this->location_name)."'/>";
 								}
@@ -686,8 +686,10 @@ class EM_Location extends EM_Object {
 					break;
 				case '#_LOCATIONEDITURL':
 				case '#_LOCATIONEDITLINK':
-					$link = esc_url($this->get_edit_url());
-					$replace = ($result == '#_LOCATIONEDITURL') ? $link : '<a href="'.$link.'" title="'.esc_attr($this->location_name).'">'.esc_html(sprintf(__('Edit Location','dbem'))).'</a>';
+				    if( $this->can_manage('edit_locations','edit_others_locations') ){
+						$link = esc_url($this->get_edit_url());
+						$replace = ($result == '#_LOCATIONEDITURL') ? $link : '<a href="'.$link.'" title="'.esc_attr($this->location_name).'">'.esc_html(sprintf(__('Edit Location','dbem'))).'</a>';
+				    }
 					break;
 				case '#_PASTEVENTS': //Depreciated
 				case '#_LOCATIONPASTEVENTS':

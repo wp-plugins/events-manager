@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.4.1
-Stable tag: 5.2.6
+Stable tag: 5.2.7
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,10 +98,41 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.2.6.1 =
+= 5.2.7 =
 * fixed min ticket space number calculation issues in booking forms
 * fixed multiple admin emails for event submission by members with publish rights
 * added em_bookings_ajax_complete/error jquery events/hooks
+* updated/added Swedish, Chinese, and Finnish translations, kudos to Tommy Wahlund, Leonardo Losoviz and @Daedalon respectively
+* fixed mailer charset problem in SMTP mails
+* added dbem to some __ functions
+* added ticket-price class to single ticket booking form html
+* fixed datepicker breaking on themes inserting br tags into search/booking forms
+* fixed html email setting not working in MultiSite
+* added Guadaloupe to countries list
+* added em_csv_header_output action (e.g. for Excel hack)
+* changed/prevented registration email going out until after booking is completely saved
+* added filter em_object_json_encode_pre
+* fixed country searches on events page/search form
+* added conditional placeholders is_private not_private is_recurrence not_recurrence
+* fixed #_EVENTEXCERPT not having formatting filters applied
+* changed the_content run at priority 9 for category pages
+* fixed private location autocomplete/search issues
+* fixed recurrences not being deleted when done from front-end
+* fixed edit user link on booking admin area
+* fixed edit location link showing to all
+* fixed typo in map balloon hint on settings page
+* removed default contact person setting (used in < v5.0, now uses author)
+* added width/height property to thumbnail img html
+* fixed deleted MS subsites not deleting events/locations from global tables
+* fixed maps showing undefined fields on first load of edit event with location ddm enabled
+* fixed non-registered attendees not being included in no-user mode for #_ATTENDEE and #_ATTENDEELIST
+* fixed front-end location admin pagination
+* reduced sql statements for county my/all locations on front-end locations admin page
+* fixed select all ui problem (thx @Daedalon)
+* fixed array_key_exists php warning in EM_Object::can_manage
+* changed is_main_blog to is_main_site
+* added grandchildren detection when generating permalink rules for events page
+* added auto br to emails option in email settings
 
 = 5.2.6 =
 * changed validation order for bookings (no validation done in EM_Event::get_post())

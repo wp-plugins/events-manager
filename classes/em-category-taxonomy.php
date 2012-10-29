@@ -17,7 +17,7 @@ class EM_Category_Taxonomy{
 		if( is_archive() ){
 			if( !empty($wp_query->queried_object->taxonomy) && $wp_query->queried_object->taxonomy == EM_TAXONOMY_CATEGORY && get_option('dbem_cp_categories_formats', true)){
 				$EM_Category = em_get_category($wp_query->queried_object->term_id);
-				add_filter('the_content', array('EM_Category_Taxonomy','the_content'));
+				add_filter('the_content', array('EM_Category_Taxonomy','the_content'), 9); //come in slightly early and consider other plugins
 				$wp_query->posts = array();
 				$wp_query->posts[0] = new stdClass();
 				$wp_query->posts[0]->post_title = $EM_Category->output(get_option('dbem_category_page_title_format'));

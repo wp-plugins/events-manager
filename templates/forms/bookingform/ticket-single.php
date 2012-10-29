@@ -22,7 +22,7 @@ foreach( $collumns as $type => $name ): ?>
 			}
 			break;
 		case 'price':
-			?><p><label><?php echo $name; ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong></p><?php
+			?><p class="ticket-price"><label><?php echo $name; ?></label><strong><?php echo $EM_Ticket->get_price(true); ?></strong></p><?php
 			break;
 		case 'spaces':
 			if( $EM_Ticket->get_available_spaces() > 1 && ( empty($EM_Ticket->ticket_max) || $EM_Ticket->ticket_max > 1 ) ): //more than one space available ?>				

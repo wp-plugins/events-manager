@@ -257,7 +257,7 @@ class EM_Locations extends EM_Object implements Iterator {
 			'status' => 1, //approved locations only
 			'scope' => 'all', //we probably want to search all locations by default, not like events
 			'blog' => get_current_blog_id(),
-			'private' => !current_user_can('read_private_locations'),
+			'private' => current_user_can('read_private_locations'),
 			'private_only' => false,
 			'post_id' => false
 		);

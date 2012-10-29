@@ -458,7 +458,7 @@ function em_bookings_person(){
   		<h2>
   			<?php _e('Manage Person\'s Booking', 'dbem'); ?>
   			<?php if( current_user_can('edit_users') ) : ?>
-  			<a href="<?php admin_url('user-edit.php?user_id='.$EM_Person->ID); ?>" class="button add-new-h2"><?php _e('Edit User','dbem') ?></a>
+  			<a href="<?php echo admin_url('user-edit.php?user_id='.$EM_Person->ID); ?>" class="button add-new-h2"><?php _e('Edit User','dbem') ?></a>
   			<?php endif; ?>
   		</h2>
   		<?php if( !is_admin() ) echo $EM_Notices; ?>
