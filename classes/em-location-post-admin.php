@@ -48,7 +48,7 @@ class EM_Location_Post_Admin{
 		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
 		$is_post_type = get_post_type($post_id) == EM_POST_TYPE_LOCATION;
 		if(!defined('UNTRASHING_'.$post_id) && $is_post_type && $saving_status){
-			if( wp_verify_nonce($_REQUEST['_emnonce'], 'edit_location')){
+			if( !empty($_REQUEST['_emnonce']) && wp_verify_nonce($_REQUEST['_emnonce'], 'edit_location')){
 				$EM_Location = em_get_location($post_id, 'post_id');
 				do_action('em_location_save_pre', $EM_Location);
 				$get_meta = $EM_Location->get_post_meta();

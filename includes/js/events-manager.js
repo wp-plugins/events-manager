@@ -600,7 +600,7 @@ function em_setup_datepicker(wrap){
 		dateDivs.find('input.em-date-input-loc').each(function(i,dateInput){
 			//init the datepicker
 			var dateInput = jQuery(dateInput);
-			var dateValue = dateInput.nextAll('input.em-date-input');
+			var dateValue = dateInput.nextAll('input.em-date-input').first();
 			var dateValue_value = dateValue.val();
 			dateInput.datepicker(datepicker_vals);
 			dateInput.datepicker('option', 'altField', dateValue);
@@ -613,7 +613,7 @@ function em_setup_datepicker(wrap){
 			//add logic for texts
 			dateInput.change(function(){
 				if( jQuery(this).val() == '' ){
-					jQuery(this).nextAll('.em-date-input').val('');
+					jQuery(this).nextAll('.em-date-input').first().val('');
 				}
 			});
 		});
