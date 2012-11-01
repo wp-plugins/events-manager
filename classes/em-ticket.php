@@ -352,7 +352,11 @@ class EM_Ticket extends EM_Object{
 		$available_spaces = $this->get_available_spaces();		
 		if( $this->is_available() ) {
 		    $min_spaces = $this->get_spaces_minimum();
-		    $default_value = $min_spaces > $default_value ? $min_spaces:$default_value;
+		    if( $default_value > 0 ){
+			    $default_value = $min_spaces > $default_value ? $min_spaces:$default_value;
+		    }else{
+		        $default_value = $this->ticket_required ? $min_spaces:0;
+		    }
 			ob_start();
 			?>
 			<select name="em_tickets[<?php echo $this->ticket_id ?>][spaces]" class="em-ticket-select" id="em-ticket-spaces-<?php echo $this->ticket_id ?>">
@@ -360,7 +364,7 @@ class EM_Ticket extends EM_Object{
 					$min = ($this->ticket_min > 0) ? $this->ticket_min:1;
 					$max = ($this->ticket_max > 0) ? $this->ticket_max:get_option('dbem_bookings_form_max');
 				?>
-				<?php if($zero_value && $min_spaces == 0) : ?><option>0</option><?php endif; ?>
+				<?php if($zero_value && !$this->ticket_required) : ?><option>0</option><?php endif; ?>
 				<?php for( $i=$min; $i<=$available_spaces && $i<=$max; $i++ ): ?>
 					<option <?php if($i == $default_value){ echo 'selected="selected"'; $shown_default = true; } ?>><?php echo $i ?></option>
 				<?php endfor; ?>

@@ -98,6 +98,15 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.2.8.1 =
+* added spaces to comma seperators of location on locations admin table
+* improved user deletion hook, bookings now get deleted along with user
+* replaced depreciated placeholders in default widget values
+* added booking form anchor to action url
+* updated POT file and Swedish
+* added Japanese
+* fixed minimum ticket space value not allowing 0 spaces even if ticket not required
+
 = 5.2.8 =
 * fixed js bug arsing from 5.2.7 js 'fix' for datepickers
 * fixed categories not showing up on single category pages

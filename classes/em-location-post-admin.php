@@ -64,15 +64,15 @@ class EM_Location_Post_Admin{
 				}
 			}else{
 				//do a quick and dirty update
-				do_action('em_location_save_pre', $this);
 				$EM_Location = new EM_Location($post_id, 'post_id');
+				do_action('em_location_save_pre', $EM_Location);
 				//check for existence of index
 				$loc_truly_exists = $wpdb->get_var('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$EM_Location->location_id}") == $EM_Location->location_id;
 				if(empty($EM_Location->location_id) || !$loc_truly_exists){ $EM_Location->save_meta(); }
 				//continue
 				$location_status = ($EM_Location->is_published()) ? 1:0;
 				$wpdb->query("UPDATE ".EM_LOCATIONS_TABLE." SET location_name='{$EM_Location->location_name}', location_slug='{$EM_Location->location_slug}', location_private='{$EM_Location->location_private}',location_status={$location_status} WHERE location_id='{$EM_Location->location_id}'");
-				apply_filters('em_location_save', true , $this);
+				apply_filters('em_location_save', true , $EM_Location);
 			}
 		}
 	}

@@ -15,7 +15,6 @@ $EM_Ticket = $EM_Tickets->get_first();
 $can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is_user_logged_in());
 ?>
 <div id="em-booking" class="em-booking">
-	<a name="em-booking"></a>
 	<?php 
 		// We are firstly checking if the user has already booked a ticket at this event, if so offer a link to view their bookings.
 		$EM_Booking = $EM_Event->get_bookings()->has_booking();
@@ -35,7 +34,7 @@ $can_book = is_user_logged_in() || (get_option('dbem_bookings_anonymous') && !is
 		<?php echo $EM_Notices; ?>
 		<?php if( count($EM_Tickets->tickets) > 0) : ?>
 			<?php //Tickets exist, so we show a booking form. ?>
-			<form id='em-booking-form' class="em-booking-form" name='booking-form' method='post' action='<?php echo apply_filters('em_booking_form_action_url',$_SERVER['REQUEST_URI']); ?>'>
+			<form id='em-booking-form' class="em-booking-form" name='booking-form' method='post' action='<?php echo apply_filters('em_booking_form_action_url',$_SERVER['REQUEST_URI']); ?>#em-booking'>
 			 	<input type='hidden' name='action' value='booking_add'/>
 			 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
 			 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_add'); ?>'/>

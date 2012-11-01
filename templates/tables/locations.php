@@ -65,7 +65,7 @@
 						<a href='<?php echo $EM_Location->output('#_LOCATIONURL'); ?>'><?php _e('View') ?></a>
 						<?php endif; ?>
 					</td>
-					<td><?php echo implode(',', array($EM_Location->location_address,$EM_Location->location_town,$EM_Location->location_postcode)); ?></td>
+					<td><?php echo implode(', ', array($EM_Location->location_address,$EM_Location->location_town,$EM_Location->location_postcode)); ?></td>
 					<td><?php echo $EM_Location->location_state ?></td>  
 					<td><?php echo $EM_Location->get_country() ?></td>                             
 				</tr>
