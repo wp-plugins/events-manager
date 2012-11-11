@@ -149,7 +149,7 @@ class EM_Ticket extends EM_Object{
 		$this->end_timestamp = ( !empty($post['ticket_end']) ) ? strtotime($post['ticket_end']):'';
 		$this->ticket_min = ( !empty($post['ticket_min']) ) ? $post['ticket_min']:'';
 		$this->ticket_max = ( !empty($post['ticket_max']) ) ? $post['ticket_max']:'';
-		$this->ticket_spaces = ( !empty($post['ticket_spaces']) ) ? $post['ticket_spaces']:'';
+		$this->ticket_spaces = ( !empty($post['ticket_spaces']) ) ? $post['ticket_spaces']:10;
 		$this->ticket_members = ( !empty($post['ticket_members']) ) ? 1:0;
 		$this->ticket_required = ( !empty($post['ticket_required']) ) ? 1:0;
 		$this->compat_keys();
@@ -331,7 +331,7 @@ class EM_Ticket extends EM_Object{
 	    }
 	    $min_spaces = 0;
 	    if( $ticket_count > 1 ){
-	        if( $this->ticket_required && $this->is_available() ){
+	        if( $this->is_required() && $this->is_available() ){
 	            $min_spaces = ($this->ticket_min > 0) ? $this->ticket_min:1;
 	        }elseif( $this->is_available() && $this->ticket_min > 0 ){
 	            $min_spaces = $this->ticket_min;	            
@@ -342,6 +342,13 @@ class EM_Ticket extends EM_Object{
 	    	$min_spaces = $this->ticket_min > 0 ? $this->ticket_min : 1;
 	    }
 	    return $min_spaces;
+	}
+	
+	function is_required(){
+	    if( $this->ticket_required || count($this->get_event()->get_tickets()->tickets) == 1 ){
+	        return true;
+	    }
+	    return false;
 	}
 
 	/**
@@ -355,7 +362,7 @@ class EM_Ticket extends EM_Object{
 		    if( $default_value > 0 ){
 			    $default_value = $min_spaces > $default_value ? $min_spaces:$default_value;
 		    }else{
-		        $default_value = $this->ticket_required ? $min_spaces:0;
+		        $default_value = $this->is_required() ? $min_spaces:0;
 		    }
 			ob_start();
 			?>
@@ -364,7 +371,7 @@ class EM_Ticket extends EM_Object{
 					$min = ($this->ticket_min > 0) ? $this->ticket_min:1;
 					$max = ($this->ticket_max > 0) ? $this->ticket_max:get_option('dbem_bookings_form_max');
 				?>
-				<?php if($zero_value && !$this->ticket_required) : ?><option>0</option><?php endif; ?>
+				<?php if($zero_value && !$this->is_required()) : ?><option>0</option><?php endif; ?>
 				<?php for( $i=$min; $i<=$available_spaces && $i<=$max; $i++ ): ?>
 					<option <?php if($i == $default_value){ echo 'selected="selected"'; $shown_default = true; } ?>><?php echo $i ?></option>
 				<?php endfor; ?>
@@ -375,7 +382,6 @@ class EM_Ticket extends EM_Object{
 		}else{
 			return false;
 		}
-			
 	}
 	
 	/**

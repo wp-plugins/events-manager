@@ -331,6 +331,9 @@ function em_init_actions() {
 					}
 					$EM_Bookings = $EM_Event->get_bookings();
 					if( $registration && $EM_Bookings->add($EM_Booking) ){
+					    if( is_user_logged_in() && is_multisite() && !is_user_member_of_blog(get_current_user_id(), get_current_blog_id()) ){
+					        add_user_to_blog(get_current_blog_id(), get_current_user_id());
+					    }
 						$result = true;
 						$EM_Notices->add_confirm( $EM_Bookings->feedback_message );		
 						$feedback = $EM_Bookings->feedback_message;

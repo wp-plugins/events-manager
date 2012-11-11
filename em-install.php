@@ -386,7 +386,7 @@ function em_add_options() {
         </tr>',
 		'dbem_event_list_item_format_footer' => '</tbody></table>',
 		'dbem_display_calendar_in_events_page' => 0,
-		'dbem_single_event_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_MAP</div>
+		'dbem_single_event_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_LOCATIONMAP</div>
 <p>
 	<strong>Date/Time</strong><br/>
 	Date(s) - #_EVENTDATES<br /><i>#_EVENTTIMES</i>
@@ -419,7 +419,7 @@ function em_add_options() {
 		'dbem_location_default_country' => 'US',
 		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_LOCATIONFULLLINE</li></ul>',
 		'dbem_location_page_title_format' => '#_LOCATIONNAME',
-		'dbem_single_location_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_MAP</div>
+		'dbem_single_location_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_LOCATIONMAP</div>
 <p>
 	<strong>Address</strong><br/>
 	#_LOCATIONADDRESS<br/>

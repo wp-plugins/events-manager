@@ -98,14 +98,25 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.2.8.1 =
+= 5.2.8.2 =
 * added spaces to comma seperators of location on locations admin table
 * improved user deletion hook, bookings now get deleted along with user
 * replaced depreciated placeholders in default widget values
 * added booking form anchor to action url
 * updated POT file and Swedish
-* added Japanese
+* added Japanese, kudos to Kenta Sakamoto
 * fixed minimum ticket space value not allowing 0 spaces even if ticket not required
+* added em_event_save_events_slug filter
+* added $EM_Event to all do_action parameters on templates/placeholders/bookingform.php
+* changed #_MAP to #_LOCATIONMAP on installation defaults
+* wrapped bookings dashboard sections into divs with class names
+* fixed formatting links/texts in settings page tips
+* added em_options_booking_form_options action and save button on settings page > bookings > booking form options
+* fixed use of global $wp_query when passed within parse_query action - thx Scott @ Pods framework plugin
+* added wp_dropdown_pages instead of manual page select generation
+* fixed useage of outdated user_firstname/user_lastname property for EM_Person::get_name()
+* improved ticket minimum calculation (takes into account if ticket is only ticket in event, therefore required)
+* fixed EM_Tickets and EM_Tickets_Bookings not storing ticket/ticket_bookings array key by ticket id
 
 = 5.2.8 =
 * fixed js bug arsing from 5.2.7 js 'fix' for datepickers

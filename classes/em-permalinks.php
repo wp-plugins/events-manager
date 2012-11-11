@@ -55,10 +55,11 @@ if( !class_exists('EM_Permalinks') ){
 		
 		/**
 		 * will redirect old links to new link structures.
+		 * @param WP_Query $wp_query
 		 * @return mixed
 		 */
-		function redirection(){
-			global $wpdb, $wp_rewrite, $post, $wp_query;
+		function redirection( $wp_query ){
+			global $wpdb;
 			if( is_object($wp_query) && $wp_query->get('em_redirect') ){
 				//is this a querystring url?
 				if( $wp_query->get('event_slug') ){
@@ -81,7 +82,8 @@ if( !class_exists('EM_Permalinks') ){
 					exit();
 				}
 			}
-		}		
+		}
+
 		// Adding a new rule
 		function rewrite_rules_array($rules){
 			//get the slug of the event page
@@ -185,7 +187,7 @@ if( !class_exists('EM_Permalinks') ){
 		/**
 		 * Depreciated, use get_post_permalink() from now on or the output function with a placeholder
 		 * Generate a URL. Pass each section of a link as a parameter, e.g. EM_Permalinks::url('event',$event_id); will create an event link.
-		 * @param mixed 
+		 * @return string 
 		 */
 		function url(){
 			global $wp_rewrite;
@@ -218,10 +220,11 @@ if( !class_exists('EM_Permalinks') ){
 		}
 		
 		/**
-		 * Not the "WP way" but for now this'll do! 
+		 * Not the "WP way" but for now this'll do!
+		 * @param WP_Query $wp_query 
 		 */
-		function init_objects(){
-			global $wp_query, $wp_rewrite;
+		function init_objects( $wp_query ){
+			global $wp_rewrite;
 			//check some homepage conditions
 			$events_page_id = get_option ( 'dbem_events_page' );
 			if( is_object($wp_query) && $wp_query->is_home && !$wp_query->is_posts_page && 'page' == get_option('show_on_front') && get_option('page_on_front') == $events_page_id ){

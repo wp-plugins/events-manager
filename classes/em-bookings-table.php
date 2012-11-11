@@ -414,7 +414,6 @@ class EM_Bookings_Table{
 						echo $bookings_nav;
 					}
 					?>
-					<div class="clear"></div>
 				</div>
 				<div class="clear"></div>
 				<div class='table-wrap'>

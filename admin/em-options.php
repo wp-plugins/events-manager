@@ -387,7 +387,7 @@ function em_admin_options_page() {
 							</td>
 						</tr>
 						<?php
-						em_options_radio_binary ( __( 'Enable locations?', 'dbem' ), 'dbem_locations_enabled', __( 'If you disable locations, bear in mind that you should remove your location page, shortcodes and related placeholders from your formats.','dbem' ) );
+						em_options_radio_binary ( __( 'Enable locations?', 'dbem' ), 'dbem_locations_enabled', __( 'If you disable locations, bear in mind that you should remove your location page, shortcodes and related placeholders from your <a href="#formats" class="nav-tab-link" rel="#em-menu-formats">formats</a>.','dbem' ) );
 						if( get_option('dbem_locations_enabled') ){ 
 							em_options_radio_binary ( __( 'Require locations for events?', 'dbem' ), 'dbem_require_location', __( 'Setting this to no will allow you to submit events without locations. You can use the <code>{no_location}...{/no_location}</code> or <code>{has_location}..{/has_location}</code> conditional placeholder to selectively display location information.','dbem' ) );
 							em_options_radio_binary ( __( 'Use dropdown for locations?', 'dbem' ), 'dbem_use_select_for_locations', __( 'Select yes to select location from a drow-down menu; location selection will be faster, but you will lose the ability to insert locations with events','dbem' ) );
@@ -466,7 +466,7 @@ function em_admin_options_page() {
             	<?php
             	$template_page_tip = __( "Many themes display extra meta information on post pages such as 'posted by' or 'post date' information, which may not be desired. Usually, page templates contain less clutter.", 'dbem' );
             	$template_page_tip .= str_replace('#','http://codex.wordpress.org/Post_Types#Template_Files',__("Be aware that some themes will not work with this option, if so (or you want to make your own changes), you can create a file named <code>single-%s.php</code> <a href='#'>as shown on the wordpress codex</a>, and leave this set to Posts.", 'dbem'));
-            	$format_override_tip = __("By using formats, you can control how your %s are displayed from within the Events Manager <a href='#formats' class='nav-tab-link' rel='#em-menu-formats'>Formats</a> tab above without having to edit your theme files.")
+            	$format_override_tip = __("By using formats, you can control how your %s are displayed from within the Events Manager <a href='#formats' class='nav-tab-link' rel='#em-menu-formats'>Formating</a> tab above without having to edit your theme files.")
             	?>
             	<div  class="postbox " >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('Permalink Slugs','dbem')); ?></span></h3>
@@ -508,16 +508,14 @@ function em_admin_options_page() {
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('%s List/Archives','dbem'),__('Event','dbem')); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
-	            	<?php //WordPress Pages
-				 	$get_pages = get_pages();
-				 	$events_page_options = array();
-				 	$events_page_options[0] = sprintf(__('[No %s Page]', 'dbem'),__('Events','dbem'));
-				 	//TODO Add the hierarchy style ddm, like when choosing page parents
-				 	foreach($get_pages as $page){
-				 		$events_page_options[$page->ID] = $page->post_title;
-				 	}
-				   	em_options_select ( __( 'Events page', 'dbem' ), 'dbem_events_page', $events_page_options, __( 'This option allows you to select which page to use as an events page. If you do not select an events page, to display event lists you can enable event archives or use the appropriate shortcodes and/or template tags.','dbem' ) );
-					?>
+					<tr>
+						<td><?php echo sprintf(__( 'Events page', 'dbem' )); ?></td>
+						<td>
+							<?php wp_dropdown_pages(array('name'=>'dbem_events_page', 'selected'=>get_option('dbem_events_page'), 'show_option_none'=>sprintf(__('[No %s Page]', 'dbem'),__('Events','dbem')) )); ?>
+							<br />
+							<em><?php echo __( 'This option allows you to select which page to use as an events page. If you do not select an events page, to display event lists you can enable event archives or use the appropriate shortcodes and/or template tags.','dbem' ); ?></em>
+						</td>
+					</tr>
 					<tbody class="em-event-page-options">
 						<?php 
 						em_options_radio_binary ( __( 'Show events search?', 'dbem' ), 'dbem_events_page_search', __( "If set to yes, a search form will appear just above your list of events.", 'dbem' ) );
@@ -675,10 +673,14 @@ function em_admin_options_page() {
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('%s List/Archives','dbem'),__('Location','dbem')); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
-	            	<?php
-				 	$events_page_options[0] = sprintf(__('[No %s Page]', 'dbem'),__('Locations','dbem'));
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Locations','dbem')), 'dbem_locations_page', $events_page_options, sprintf(__( 'This option allows you to select which page to use as the %s page. If you do not select no %s page, to display lists you can enable archives or use the appropriate shortcodes and/or template tags.','dbem' ),__('locations','dbem'),__('locations','dbem')) );
-					?>
+					<tr>
+						<td><?php echo sprintf(__( '%s page', 'dbem' ),__('Locations','dbem')); ?></td>
+						<td>
+							<?php wp_dropdown_pages(array('name'=>'dbem_locations_page', 'selected'=>get_option('dbem_locations_page'), 'show_option_none'=>sprintf(__('[No %s Page]', 'dbem'),__('Locations','dbem')) )); ?>
+							<br />
+							<em><?php echo sprintf(__( 'This option allows you to select which page to use as the %s page. If you do not select a %s page, to display lists you can enable archives or use the appropriate shortcodes and/or template tags.','dbem' ),__('locations','dbem'),__('locations','dbem')); ?></em>
+						</td>
+					</tr>
 					<tr>
 						<td colspan="2">
 							<h4><?php echo sprintf(__('WordPress %s Archives','dbem'), __('Location','dbem')); ?></h4>
@@ -790,10 +792,14 @@ function em_admin_options_page() {
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo __('Event Categories','dbem'); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
-	            	<?php
-				 	$events_page_options[0] = sprintf(__('[No %s Page]', 'dbem'),__('Categories','dbem'));
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Categories','dbem')), 'dbem_categories_page', $events_page_options, sprintf(__( 'This option allows you to select which page to use as the %s page.','dbem' ),__('categories','dbem'),__('categories','dbem')) );
-					?>
+					<tr>
+						<td><?php echo sprintf(__( '%s page', 'dbem' ),__('Categories','dbem')); ?></td>
+						<td>
+							<?php wp_dropdown_pages(array('name'=>'dbem_categories_page','selected'=>get_option('dbem_categories_page'), 'show_option_none'=>sprintf(__('[No %s Page]', 'dbem'),__('Categories','dbem')) )); ?>
+							<br />
+							<em><?php echo sprintf(__( 'This option allows you to select which page to use as the %s page.','dbem' ),__('categories','dbem'),__('categories','dbem')); ?></em>
+						</td>
+					</tr>
 					<tr>
 						<td colspan="2">
 							<h4><?php echo _e('General settings','dbem'); ?></h4>
@@ -914,10 +920,16 @@ function em_admin_options_page() {
 	            	<table class="form-table">
 					<?php
 					$other_pages_tip = 'Using the %s shortcode, you can allow users to manage %s outside the admin area.';
-					$events_page_options[0] = '['.__('None', 'dbem').']';
-					?><tr><td colspan="2"><h4><?php echo _e('My Bookings','dbem'); ?></h4></td></tr><?php
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('My bookings','dbem')), 'dbem_my_bookings_page', $events_page_options, sprintf(__('Users can view their bookings for other events on this page.','dbem' ),'<code>[my_bookings]</code>',__('bookings','dbem')) );
-					?>	
+					?>
+					<tr><td colspan="2"><h4><?php echo _e('My Bookings','dbem'); ?></h4></td></tr>
+					<tr>
+						<td><?php echo sprintf(__( '%s page', 'dbem' ),__('My bookings','dbem')); ?></td>
+						<td>
+							<?php wp_dropdown_pages(array('name'=>'dbem_my_bookings_page', 'selected'=>get_option('dbem_my_bookings_page'), 'show_option_none'=>'['.__('None', 'dbem').']' )); ?>
+							<br />
+							<em><?php echo sprintf(__('Users can view their bookings for other events on this page.','dbem' ),'<code>[my_bookings]</code>',__('bookings','dbem')); ?></em>
+						</td>
+					</tr>	
 					<tr valign="top" id='dbem_bookings_default_orderby_row'>
 				   		<th scope="row"><?php _e('Default list ordering','dbem'); ?></th>
 				   		<td>   
@@ -954,12 +966,31 @@ function em_admin_options_page() {
 				   	</tr>
 					<tr><td colspan="2"><h4><?php echo _e('Front-end management pages','dbem'); ?></h4></td></tr>
 					<tr><td colspan="2"><?php echo _e('Users can create and edit events and locations, as well as managing bookings for their events.','dbem'); ?></td></tr>
-					<?php
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Edit events','dbem')), 'dbem_edit_events_page', $events_page_options, sprintf(__('Users can view, add and edit their %s on this page.','dbem'),__('events','dbem')) );
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Edit locations','dbem')), 'dbem_edit_locations_page', $events_page_options, sprintf(__('Users can view, add and edit their %s on this page.','dbem'),__('locations','dbem')) );
-	            	em_options_select ( sprintf(__( '%s page', 'dbem' ),__('Manage bookings','dbem')), 'dbem_edit_bookings_page', $events_page_options, __('Users can manage bookings for their events on this page.','dbem') );
-					echo $save_button;
-					?>
+					<tr>
+						<td><?php echo sprintf(__( '%s page', 'dbem' ),__('Edit events','dbem')); ?></td>
+						<td>
+							<?php wp_dropdown_pages(array('name'=>'dbem_edit_events_page', 'selected'=>get_option('dbem_edit_events_page'), 'show_option_none'=>'['.__('None', 'dbem').']' )); ?>
+							<br />
+							<em><?php echo sprintf(__('Users can view, add and edit their %s on this page.','dbem'),__('events','dbem')); ?></em>
+						</td>
+					</tr>	            	
+					<tr>
+						<td><?php echo sprintf(__( '%s page', 'dbem' ),__('Edit locations','dbem')); ?></td>
+						<td>
+							<?php wp_dropdown_pages(array('name'=>'dbem_edit_locations_page', 'selected'=>get_option('dbem_edit_locations_page'), 'show_option_none'=>'['.__('None', 'dbem').']' )); ?>
+							<br />
+							<em><?php echo sprintf(__('Users can view, add and edit their %s on this page.','dbem'),__('locations','dbem')); ?></em>
+						</td>
+					</tr>	            	
+					<tr>
+						<td><?php echo sprintf(__( '%s page', 'dbem' ),__('Manage bookings','dbem')); ?></td>
+						<td>
+							<?php wp_dropdown_pages(array('name'=>'dbem_edit_bookings_page', 'selected'=>get_option('dbem_edit_bookings_page'), 'show_option_none'=>'['.__('None', 'dbem').']' )); ?>
+							<br />
+							<em><?php _e('Users can manage bookings for their events on this page.','dbem'); ?></em>
+						</td>
+					</tr>
+					<?php echo $save_button; ?>
 	            	</table>
 				</div> <!-- . inside --> 
 				</div> <!-- .postbox -->
@@ -1348,6 +1379,8 @@ function em_admin_options_page() {
 						<?php
 						em_options_radio_binary ( __( 'Display login form?', 'dbem' ), 'dbem_bookings_login_form', __( 'Choose whether or not to display a login form in the booking form area to remind your members to log in before booking.', 'dbem' ) );
 						em_options_input_text ( __( 'Submit button text', 'dbem' ), 'dbem_bookings_submit_button', sprintf(__( 'The text used by the submit button. To use an image instead, enter the full url starting with %s or %s.', 'dbem' ), '<code>http://</code>','<code>https://</code>') );
+						do_action('em_options_booking_form_options');
+						echo $save_button;
 						?>
 					</table>
 				</div> <!-- . inside -->

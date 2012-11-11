@@ -153,8 +153,10 @@ class EM_Event_Post {
 		return $thelist;
 	}
 	
-	function parse_query( ){
-		global $wp_query;
+	/**
+	 * @param WP_Query $wp_query
+	 */
+	function parse_query( $wp_query ){
 		//Search Query Filtering
 		if( !is_admin() ){
 			if( !empty($wp_query->query_vars['s']) && !get_option('dbem_cp_events_search_results') ){

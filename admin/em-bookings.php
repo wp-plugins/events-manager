@@ -50,7 +50,7 @@ function em_bookings_page(){
 function em_bookings_dashboard(){
 	global $EM_Notices;
 	?>
-	<div class='wrap'>
+	<div class='wrap em-bookings-dashboard'>
 		<?php if( is_admin() ): ?>
 		<div id='icon-users' class='icon32'>
 			<br/>
@@ -60,22 +60,26 @@ function em_bookings_dashboard(){
   		</h2>
   		<?php else: echo $EM_Notices; ?>
   		<?php endif; ?>
-		<?php if( is_admin() ): ?>
-		<div class="icon32" id="icon-bookings"><br></div>
-		<?php endif; ?>
-		<h2><?php _e('Recent Bookings','dbem'); ?></h2>	
-  		<?php
-		$EM_Bookings_Table = new EM_Bookings_Table();
-		$EM_Bookings_Table->status = get_option('dbem_bookings_approval') ? 'needs-attention':'confirmed';
-		$EM_Bookings_Table->output();
-  		?>
+  		<div class="em-bookings-recent">
+			<?php if( is_admin() ): ?>
+			<div class="icon32" id="icon-bookings"><br></div>
+			<?php endif; ?>
+			<h2><?php _e('Recent Bookings','dbem'); ?></h2>	
+	  		<?php
+			$EM_Bookings_Table = new EM_Bookings_Table();
+			$EM_Bookings_Table->status = get_option('dbem_bookings_approval') ? 'needs-attention':'confirmed';
+			$EM_Bookings_Table->output();
+	  		?>
+  		</div>
   		<br class="clear" />
-		<?php if( is_admin() ): ?>
-		<div class="icon32" id="events"><br></div>
-		<?php endif; ?>
-		<h2><?php _e('Events With Bookings Enabled','dbem'); ?></h2>		
-		<?php em_bookings_events_table(); ?>
-		<?php do_action('em_bookings_dashboard'); ?>
+  		<div class="em-bookings-events">
+			<?php if( is_admin() ): ?>
+			<div class="icon32" id="events"><br></div>
+			<?php endif; ?>
+			<h2><?php _e('Events With Bookings Enabled','dbem'); ?></h2>		
+			<?php em_bookings_events_table(); ?>
+			<?php do_action('em_bookings_dashboard'); ?>
+		</div>
 	</div>
 	<?php		
 }

@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Events Manager v5.1.9.2\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: \n"
-"PO-Revision-Date: 2012-11-01 19:26+0100\n"
+"PO-Revision-Date: 2012-11-05 16:02+0100\n"
 "Last-Translator: Marcus Sykes <wp.plugins@netweblogic.com>\n"
 "Language-Team: イベントマネジ翻訳 <sakaken77@gmail.com>\n"
 "MIME-Version: 1.0\n"
@@ -1267,7 +1267,7 @@ msgstr "ページ"
 # @ dbem
 #: admin/em-options.php:319
 msgid "Formatting"
-msgstr ""
+msgstr "フォーマッティング"
 
 # @ dbem
 #: admin/em-options.php:323
@@ -2531,9 +2531,8 @@ msgstr "小さいカレンダーのタイトル"
 
 # @ dbem
 #: admin/em-options.php:1057
-#, fuzzy
 msgid "Event titles"
-msgstr "イベントの詳細"
+msgstr "イベントの題名"
 
 # @ dbem
 #: admin/em-options.php:1057
@@ -2554,19 +2553,18 @@ msgstr "同じ日に二つ以上イベントがある時にタイトルの上に
 # @ dbem
 #: admin/em-options.php:1059
 msgid "Abbreviated weekdays"
-msgstr ""
+msgstr "省略された週"
 
 # @ default
 #: admin/em-options.php:1059
 msgid "The calendar headings uses abbreviated weekdays"
-msgstr ""
+msgstr "カレンダーのヘッディングは省略された週を使います"
 
 # @ dbem
 #: admin/em-options.php:1060
 #: admin/em-options.php:1066
-#, fuzzy
 msgid "Initial lengths"
-msgstr "完全なカレンダーのイニシャルの長さ"
+msgstr "イニシャルの長さ"
 
 # @ dbem
 #: admin/em-options.php:1060
@@ -2577,9 +2575,8 @@ msgstr "カレンダーの見出しには１週にあたる日にちが書かれ
 
 # @ dbem
 #: admin/em-options.php:1062
-#, fuzzy
 msgid "Full Calendar"
-msgstr "カレンダー"
+msgstr "完全なカレンダー"
 
 # @ dbem
 #: admin/em-options.php:1064
@@ -2595,12 +2592,12 @@ msgstr "完全なカレンダーに表示されるそれぞれのイベントの
 # @ dbem
 #: admin/em-options.php:1065
 msgid "Abbreviated weekdays?"
-msgstr ""
+msgstr "省略された週ですか？"
 
 # @ dbem
 #: admin/em-options.php:1065
 msgid "Use abbreviations, e.g. Friday = Fri. Useful for certain languages where abbreviations differ from full names."
-msgstr ""
+msgstr "省略が使えます。例えばFriday= Fri。省略された曜日名がフルネームと違う言語に役に立ちます。"
 
 # @ dbem
 #: admin/em-options.php:1068
@@ -2834,7 +2831,7 @@ msgstr "利用できるイベントがないときに、<code>#_CATEGORYNEXTEVEN
 # @ dbem
 #: admin/em-options.php:1204
 msgid "RSS"
-msgstr ""
+msgstr "RSS"
 
 # @ dbem
 #: admin/em-options.php:1208
@@ -2879,13 +2876,13 @@ msgstr "イベントRSSフィードのそれぞれの要素の紹介のフォー
 # @ dbem
 #: admin/em-options.php:1219
 msgid "Maps"
-msgstr ""
+msgstr "マップ"
 
 # @ dbem
 #: admin/em-options.php:1221
 #, php-format
 msgid "You can use Google Maps to show where your events are located. For more information on using maps, <a href=\"%s\">see our documentation</a>."
-msgstr ""
+msgstr "Google Mapsをイベントの場所の表示に使用できます。より詳しい情報は <a href=\"%s\">こちら</a>."
 
 # @ dbem
 #: admin/em-options.php:1225
@@ -2914,45 +2911,41 @@ msgstr "Google Mapsインテグレーションを有効にするためにこの�
 # @ dbem
 #: admin/em-options.php:1233
 msgid "Global Map Format"
-msgstr ""
+msgstr "グローバルマップフォーマット"
 
 # @ dbem
 #: admin/em-options.php:1234
 #, php-format
 msgid "If you use the %s <a href=\"%s\">shortcode</a>, you can display a map of all your locations and events, the settings below will be used."
-msgstr ""
+msgstr "%s <a href=\"%s\">shortcode</a>を使用するなら、あなたのすべてのイベントと場所をマップに表示できます。設定は以下の物が使われます。"
 
 # @ dbem
 #: admin/em-options.php:1237
 #: admin/em-options.php:1244
-#, fuzzy
 msgid "Location balloon format"
-msgstr "デフォルトのロケーションバルーンのフォーマット"
+msgstr "ロケーションバルーンのフォーマット"
 
 # @ dbem
 #: admin/em-options.php:1237
 #: admin/em-options.php:1244
-#, fuzzy
 msgid "The format of of the text appearing in the balloon describing the location."
-msgstr "単一のマップを表示するバルーンに使われるテキストのフォーマットです"
+msgstr "単一のマップを表示するバルーンに使われる、テキストのフォーマットです"
 
 # @ dbem
 #: admin/em-options.php:1237
-#, fuzzy
 msgid "Event."
-msgstr "イベント"
+msgstr "イベントです。"
 
 # @ dbem
 #: admin/em-options.php:1240
-#, fuzzy
 msgid "Single Location/Event Map Format"
-msgstr "単一のページのタイトル形式"
+msgstr "単一の場所/イベントマップのフォーマット"
 
 # @ dbem
 #: admin/em-options.php:1241
 #, php-format
 msgid "If you use the <code>#_LOCATIONMAP</code> <a href=\"%s\">placeholder</a> when displaying individual event and location information, the settings below will be used."
-msgstr ""
+msgstr "個別のイベントと場所の情報を表示するとき、もし <code>#_LOCATIONMAP</code> <a href=\"%s\">placeholder</a>を使用するなら、設定は以下のものが使用されます。"
 
 # @ dbem
 #: admin/em-options.php:1264
@@ -3486,9 +3479,8 @@ msgstr "複数のメールの為には、コンマで区切ってください（
 
 # @ dbem
 #: admin/em-options.php:1419
-#, fuzzy
 msgid "Email event owner?"
-msgstr "イベントのメールの管理者はどうしますか？"
+msgstr "メールをイベントオーナーに送りますか？"
 
 # @ dbem
 #: admin/em-options.php:1419
@@ -3638,13 +3630,12 @@ msgstr "管理者のメール"
 # @ dbem
 #: admin/em-options.php:1469
 msgid "Event submission notifications will be sent to emails added here."
-msgstr ""
+msgstr "イベント決定の認証はここに加えられたメールアドレスに送られます。"
 
 # @ dbem
 #: admin/em-options.php:1469
-#, fuzzy
 msgid "If left blank, no emails will be sent. Seperate emails with commas for more than one email."
-msgstr "もし空白なら、メールは送られません。一つ以上のメールを使うならアドレスをコンマで区切ってください。"
+msgstr "もし空白なら、メールは送られません。二つ以上のメールを使うならアドレスをコンマで区切ってください。"
 
 # @ dbem
 #: admin/em-options.php:1471
@@ -3653,9 +3644,8 @@ msgstr "決定されたイベント"
 
 # @ dbem
 #: admin/em-options.php:1472
-#, fuzzy
 msgid "An email will be sent to your administrator emails when an event is submitted and pending approval."
-msgstr "メールはあなたの選んだ管理者に、イベントが決定され、認証が行われている時に送られます"
+msgstr "メールは管理者に、イベントが決定され、認証待ちの時に送られます。"
 
 # @ dbem
 #: admin/em-options.php:1474
@@ -3669,7 +3659,7 @@ msgstr "決定されたイベントの項目"
 #: admin/em-options.php:1492
 #: admin/em-options.php:1497
 msgid "If left blank, this email will not be sent."
-msgstr ""
+msgstr "もし空白にすると、メールは送られません。"
 
 # @ dbem
 #: admin/em-options.php:1475
@@ -3678,9 +3668,8 @@ msgstr "決定されたイベントのメール"
 
 # @ dbem
 #: admin/em-options.php:1477
-#, fuzzy
 msgid "Event Re-Submitted"
-msgstr "決定されたイベント"
+msgstr "再決定されたイベント"
 
 # @ dbem
 #: admin/em-options.php:1478
@@ -3700,27 +3689,23 @@ msgstr "再決定されたイベントメール"
 
 # @ dbem
 #: admin/em-options.php:1483
-#, fuzzy
 msgid "Event Published"
-msgstr "決定されたイベント"
+msgstr "発表されたイベント"
 
 # @ dbem
 #: admin/em-options.php:1484
-#, fuzzy
 msgid "An email will be sent to an administrator of your choice when an event is published by users who are not administrators."
-msgstr "メールはあなたの選んだ管理者に、イベントが決定され、認証が行われている時に送られます"
+msgstr "メールは管理者に、イベントが管理者でないユーザーによって決定され、認証が行われている時に送られます"
 
 # @ dbem
 #: admin/em-options.php:1486
-#, fuzzy
 msgid "Event published subject"
-msgstr "決定されたイベントの項目"
+msgstr "発表されたイベントの項目"
 
 # @ dbem
 #: admin/em-options.php:1487
-#, fuzzy
 msgid "Event published email"
-msgstr "決定されたイベントのメール"
+msgstr "発表されたイベントのメール"
 
 # @ dbem
 #: admin/em-options.php:1489
@@ -3878,12 +3863,12 @@ msgstr "サーバーの設定によって、いくつかの送信方法はこの
 # @ dbem
 #: admin/em-options.php:1582
 msgid "Add br tags to HTML emails?"
-msgstr ""
+msgstr "HTMLメールにbr タグを追加しますか？"
 
 # @ dbem
 #: admin/em-options.php:1582
 msgid "If HTML emails are enabled, br tags will automatically be added for new lines."
-msgstr ""
+msgstr "もしHTMLメールが有効なら、brタグは新しいラインに自動的に追加されます。"
 
 # @ dbem
 #: admin/em-options.php:1586
@@ -4484,9 +4469,8 @@ msgstr "予約ID"
 
 # @ dbem
 #: classes/em-bookings-table.php:89
-#, fuzzy
 msgid "Booking Comment"
-msgstr "予約完了"
+msgstr "予約コメント"
 
 # @ dbem
 #: classes/em-bookings-table.php:92
@@ -5488,9 +5472,8 @@ msgstr "新しいイベントが#_CONTACTNAMEによって生成されました�
 
 # @ dbem
 #: em-install.php:312
-#, fuzzy
 msgid "A new event has been published by #_CONTACTNAME.<br/>Name : #_EVENTNAME <br/>Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Edit this event - #_EDITEVENTURL <br/> View this event - #_EVENTURL"
-msgstr "新しいイベントが#_CONTACTNAMEによって生成されました。<br/>イベント名 : #_EVENTNAME <br/>期日 : #_EVENTDATES <br/>時間 : #_EVENTTIMES <br/> #_EDITEVENTURL により詳しい情報があります。"
+msgstr "新しいイベントが#_CONTACTNAMEによって生成されました。<br/>イベント名 : #_EVENTNAME <br/>期日 : #_EVENTDATES <br/>時間 : #_EVENTTIMES <br/>このイベントを編集 #_EDITEVENTURL により詳しい情報があります。"
 
 # @ dbem
 #: em-install.php:314
@@ -5540,9 +5523,8 @@ msgstr "再参加イベントは認証を待っています。"
 
 # @ dbem
 #: em-install.php:359
-#, fuzzy
 msgid "Published Event"
-msgstr "決定する"
+msgstr "決定されたイベント"
 
 # @ dbem
 #: em-install.php:411
@@ -6647,9 +6629,8 @@ msgstr "イベントの詳細"
 
 # @ dbem
 #: templates/forms/event-editor.php:79
-#, fuzzy
 msgid "HTML allowed."
-msgstr "HTMLは使用できます。"
+msgstr "HTMLを使用できます。"
 
 # @ dbem
 #: templates/forms/event-editor.php:89
@@ -6762,20 +6743,19 @@ msgstr "制限がないなら両方とも空白にしてください。"
 #: templates/forms/ticket-form.php:43
 #: templates/forms/tickets-form.php:26
 msgid "Members Only?"
-msgstr ""
+msgstr "メンバー限定にしますか？"
 
 # @ dbem
 #: templates/forms/ticket-form.php:47
 #: templates/forms/tickets-form.php:27
-#, fuzzy
 msgid "Required?"
-msgstr "必要案件"
+msgstr "必要ですか？"
 
 # @ default
 #: templates/forms/ticket-form.php:49
 #: templates/forms/tickets-form.php:27
 msgid "If checked every booking must select one or the minimum number of this ticket."
-msgstr ""
+msgstr "チェックした場合、すべての予約は一つまたは最小の数のこのチケットを選択しなければいけません。"
 
 # @ dbem
 #: templates/forms/tickets-form.php:6
