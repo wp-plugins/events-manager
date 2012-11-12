@@ -417,7 +417,9 @@ function em_add_options() {
 		'dbem_locations_page_title' => __('Event','dbem')." ".__('Locations','dbem'),
 		'dbem_no_locations_message' => sprintf(__( 'No %s', 'dbem' ),__('Locations','dbem')),
 		'dbem_location_default_country' => 'US',
-		'dbem_location_list_item_format' => '#_LOCATIONLINK<ul><li>#_LOCATIONFULLLINE</li></ul>',
+		'dbem_location_list_item_format_header' => '<ul class="em-locations-list">',
+		'dbem_location_list_item_format' => '<li>#_LOCATIONLINK<ul><li>#_LOCATIONFULLLINE</li></ul></li>',
+		'dbem_location_list_item_format_footer' => '</ul>',
 		'dbem_location_page_title_format' => '#_LOCATIONNAME',
 		'dbem_single_location_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_LOCATIONMAP</div>
 <p>
@@ -436,7 +438,7 @@ function em_add_options() {
 <p>#_LOCATIONNEXTEVENTS</p>',
 		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
 		'dbem_location_event_list_item_header_format' => "<ul>",
-		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #j #M #Y - #H:#i</li>",
+		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_location_event_list_item_footer_format' => "</ul>",
 		//Category page options
 		'dbem_categories_default_limit' => 10,
@@ -448,7 +450,7 @@ function em_add_options() {
 		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
 		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
-		'dbem_category_no_events_message' => __('<li>No events in this category</li>', 'dbem'),
+		'dbem_category_no_events_message' => __('No events in this category', 'dbem'),
 		'dbem_category_event_list_item_header_format' => '<ul>',
 		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_category_event_list_item_footer_format' => '</ul>',
@@ -595,7 +597,7 @@ function em_add_options() {
 		'dbem_hello_to_user' => 1,
 		//BP Settings
 		'dbem_bp_events_list_format_header' => '<ul class="em-events-list">',
-		'dbem_bp_events_list_format' => '<li>#_EVENTLINK - #j #M #Y #_12HSTARTTIME #@_{ \u\n\t\i\l j M Y}<ul><li>#_LOCATIONLINK - #_LOCATIONADDRESS, #_LOCATIONTOWN</li></ul></li>',
+		'dbem_bp_events_list_format' => '<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES<ul><li>#_LOCATIONLINK - #_LOCATIONADDRESS, #_LOCATIONTOWN</li></ul></li>',
 		'dbem_bp_events_list_format_footer' => '</ul>',
 		'dbem_bp_events_list_none_format' => '<p class="em-events-list">'.__('No Events','dbem').'</p>',
 		/*

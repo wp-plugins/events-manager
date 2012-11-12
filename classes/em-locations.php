@@ -146,9 +146,7 @@ class EM_Locations extends EM_Object implements Iterator {
 			//Add headers and footers to output
 			if( $format == get_option ( 'dbem_location_list_item_format' ) ){
 				$single_event_format_header = get_option ( 'dbem_location_list_item_format_header' );
-				$single_event_format_header = ( $single_event_format_header != '' ) ? $single_event_format_header : "<ul class='em-locations-list'>";
 				$single_event_format_footer = get_option ( 'dbem_location_list_item_format_footer' );
-				$single_event_format_footer = ( $single_event_format_footer != '' ) ? $single_event_format_footer : "</ul>";
 				$output =  $single_event_format_header .  $output . $single_event_format_footer;
 			}
 			//Pagination (if needed/requested)

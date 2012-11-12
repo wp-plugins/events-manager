@@ -1563,8 +1563,8 @@ class EM_Event extends EM_Object{
 						$gcal_url_description = wp_kses_data($matches[0]);
 					}
 					$gcal_url_length = strlen($gcal_url) - 9;
-					if( strlen($gcal_url_description) + $gcal_url_length > 1450 ){
-						$gcal_url_description = substr($gcal_url_description, 0, 1480 - $gcal_url_length - 3 ).'...';
+					if( strlen($gcal_url_description) + $gcal_url_length > 1350 ){
+						$gcal_url_description = substr($gcal_url_description, 0, 1380 - $gcal_url_length - 3 ).'...';
 					}
 					$gcal_url = str_replace('post_content', urlencode($gcal_url_description), $gcal_url);
 					//get the final url
