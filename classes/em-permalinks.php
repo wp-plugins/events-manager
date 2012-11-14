@@ -58,8 +58,8 @@ if( !class_exists('EM_Permalinks') ){
 		 * @param WP_Query $wp_query
 		 * @return mixed
 		 */
-		function redirection( $wp_query ){
-			global $wpdb;
+		function redirection(){
+			global $wpdb, $wp_query;
 			if( is_object($wp_query) && $wp_query->get('em_redirect') ){
 				//is this a querystring url?
 				if( $wp_query->get('event_slug') ){
@@ -223,8 +223,8 @@ if( !class_exists('EM_Permalinks') ){
 		 * Not the "WP way" but for now this'll do!
 		 * @param WP_Query $wp_query 
 		 */
-		function init_objects( $wp_query ){
-			global $wp_rewrite;
+		function init_objects(){
+			global $wp_rewrite, $wp_query;
 			//check some homepage conditions
 			$events_page_id = get_option ( 'dbem_events_page' );
 			if( is_object($wp_query) && $wp_query->is_home && !$wp_query->is_posts_page && 'page' == get_option('show_on_front') && get_option('page_on_front') == $events_page_id ){

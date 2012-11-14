@@ -17,7 +17,7 @@
 	<div class='tablenav'>					
 		<div class="alignleft actions">
 			<select name="action">
-				<option value="" selected="selected"><?php _e ( 'Bulk Actions' ); ?></option>
+				<option value="" selected="selected"><?php _e ( 'Bulk Actions', 'dbem' ); ?></option>
 				<option value="location_delete"><?php _e ( 'Delete selected','dbem' ); ?></option>
 			</select> 
 			<input type="submit" value="<?php _e ( 'Apply' ); ?>" id="doaction2" class="button-secondary action" /> 

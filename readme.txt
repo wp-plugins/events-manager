@@ -98,6 +98,15 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.2.9.1 =
+* corrected date_format/dbem_date_format typo on templates/templates/my-bookings.php
+* fixed calendar links with extra search args if using non-permalinks
+* fixed some non-translated strings
+* updated pot file
+* added em_booking_add_registration_result filter
+* fixed add_user_to_blog on MS bookings not providing a default role
+* fixed navbar issue for blogs with events page assigned to homepage
+
 = 5.2.9 =
 * added spaces to comma seperators of location on locations admin table
 * improved user deletion hook, bookings now get deleted along with user
