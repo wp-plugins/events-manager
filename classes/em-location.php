@@ -733,8 +733,20 @@ class EM_Location extends EM_Object {
 		//sort out replacements so that during replacements shorter placeholders don't overwrite longer varieties.
 		krsort($replaces);
 		foreach($replaces as $full_result => $replacement){
-			$location_string = str_replace($full_result, $replacement , $location_string );
+			if( !in_array($full_result, array('#_DESCRIPTION','#_LOCATIONNOTES')) ){
+				$location_string = str_replace($full_result, $replacement , $location_string );
+			}else{
+				$desc_replace[$full_result] = $replacement;
+			}
 		}
+		
+		//Finally, do the location notes, so that previous placeholders don't get replaced within the content, which may use shortcodes
+		if( !empty($desc_replace) ){
+			foreach($desc_replace as $full_result => $replacement){
+				$location_string = str_replace($full_result, $replacement , $location_string );
+			}
+		}
+		
 		return apply_filters('em_location_output', $location_string, $this, $format, $target);	
 	}
 	

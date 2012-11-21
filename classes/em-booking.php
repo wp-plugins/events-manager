@@ -448,7 +448,7 @@ class EM_Booking extends EM_Object{
 		$action_string = strtolower($this->status_array[$status]); 
 		//if we're approving we can't approve a booking if spaces are full, so check before it's approved.
 		if(!$ignore_spaces && $status == 1){
-			if( $this->get_event()->get_bookings()->get_available_spaces() < $this->get_spaces() && !get_option('dbem_bookings_approval_overbooking') ){
+			if( !$this->is_reserved() && $this->get_event()->get_bookings()->get_available_spaces() < $this->get_spaces() && !get_option('dbem_bookings_approval_overbooking') ){
 				$this->feedback_message = sprintf(__('Not approved, spaces full.','dbem'), $action_string);
 				$this->add_error($this->feedback_message);
 				return apply_filters('em_booking_set_status', false, $this);
@@ -475,6 +475,18 @@ class EM_Booking extends EM_Object{
 			$this->add_error(sprintf(__('Booking could not be %s.','dbem'), $action_string));
 		}
 		return apply_filters('em_booking_set_status', $result, $this);
+	}
+	
+	function is_reserved(){
+	    $result = false;
+	    if( $this->booking_status == 0 && get_option('dbem_bookings_approval_reserved') ){
+	        $result = true;
+	    }elseif( $this->booking_status == 0 && !get_option('dbem_bookings_approval') ){
+	        $result = true;
+	    }elseif( $this->booking_status == 1 ){
+	        $result = true;
+	    }
+	    return apply_filters('em_booking_is_reserved', $result, $this);
 	}
 	
 	/**

@@ -265,16 +265,21 @@ class EM_Event extends EM_Object{
 	
 	function load_postdata($event_post, $search_by = false){
 		if( is_object($event_post) ){
+			//load post data - regardless
+			$this->post_id = $event_post->ID;
+			$this->event_name = $event_post->post_title;
+			$this->event_owner = $event_post->post_author;
+			$this->post_content = $event_post->post_content;
+			$this->event_slug = $event_post->post_name;
+			$this->event_modified = $event_post->post_modified;
+			foreach( $event_post as $key => $value ){ //merge post object into this object
+				$this->$key = $value;
+			}
+			$this->previous_status = $this->event_status; //so we know about updates
+			$this->recurrence = $this->is_recurring() ? 1:0;
+			//load meta data and other related information
 			if( $event_post->post_status != 'auto-draft' ){
-				if( is_numeric($search_by) && is_multisite() ){
-					// if in multisite mode, switch blogs quickly to get the right post meta.
-					switch_to_blog($search_by);
-					$event_meta = get_post_custom($event_post->ID);
-					restore_current_blog();
-					$this->blog_id = $search_by;
-				}else{
-					$event_meta = get_post_custom($event_post->ID);
-				}
+			    $event_meta = $this->get_event_meta($search_by);
 				//Get custom fields and post meta
 				foreach($event_meta as $event_meta_key => $event_meta_val){
 					if($event_meta_key[0] != '_'){
@@ -308,21 +313,22 @@ class EM_Event extends EM_Object{
 					}
 				}
 			}
-			//load post data - regardless
-			$this->post_id = $event_post->ID;
-			$this->event_name = $event_post->post_title;
-			$this->event_owner = $event_post->post_author;
-			$this->post_content = $event_post->post_content;
-			$this->event_slug = $event_post->post_name;
-			$this->event_modified = $event_post->post_modified;
-			foreach( $event_post as $key => $value ){ //merge post object into this object
-				$this->$key = $value;
-			}
-			$this->previous_status = $this->event_status; //so we know about updates
-			$this->recurrence = $this->is_recurring() ? 1:0;
 			$this->get_status();
 			$this->compat_keys();
 		}
+	}
+	
+	function get_event_meta($blog_id = false){
+		if( is_numeric($blog_id) && $blog_id > 0 && is_multisite() ){
+			// if in multisite mode, switch blogs quickly to get the right post meta.
+			switch_to_blog($blog_id);
+			$event_meta = get_post_meta($this->post_id);
+			restore_current_blog();
+			$this->blog_id = $blog_id;
+		}else{
+			$event_meta = get_post_meta($this->post_id);
+		}
+		return $event_meta;
 	}
 	
 	/**
@@ -575,7 +581,9 @@ class EM_Event extends EM_Object{
 			$this->post_status = $post_data->post_status;
 			$this->get_status();
 			//Categories? note that categories will soft-fail, so no errors
-			$this->get_categories()->save();
+			$this->get_categories()->event_id = $this->event_id;
+			$this->categories->post_id = $this->post_id;
+			$this->categories->save();
 			//anonymous submissions should save this information
 			if( !empty($this->event_owner_anonymous) ){
 				update_post_meta($this->post_id, '_event_owner_anonymous', 1);
@@ -725,6 +733,7 @@ class EM_Event extends EM_Object{
 		//First, duplicate.
 		if( $this->can_manage('edit_events','edit_others_events') ){
 			$EM_Event = clone $this;
+			$EM_Event->get_categories(); //before we remove event/post ids
 			$EM_Event->get_bookings()->get_tickets(); //in case this wasn't loaded and before we reset ids
 			$EM_Event->event_id = null;
 			$EM_Event->post_id = null;
@@ -741,10 +750,23 @@ class EM_Event extends EM_Object{
 			do_action('em_event_duplicate_pre', $EM_Event);
 			if( $EM_Event->save() ){
 				$EM_Event->feedback_message = sprintf(__("%s successfully duplicated.", 'dbem'), __('Event','dbem'));
-			 	//featured images
-			 	$featured_image = get_post_meta( $this->post_id, '_thumbnail_id', true );
-			 	if( !empty($featured_image) ){
-			 		$wpdb->query('INSERT INTO '.$wpdb->postmeta." (post_id, meta_key, meta_value) VALUES ({$EM_Event->post_id}, '_thumbnail_id', {$featured_image})");
+			 	//other non-EM post meta inc. featured image
+				$event_meta = $this->get_event_meta($this->blog_id);
+				$event_meta_inserts = array();
+			 	//Get custom fields and post meta - adapted from $this->load_post_meta()
+			 	foreach($event_meta as $event_meta_key => $event_meta_vals){
+			 		if($event_meta_key[0] == '_'){
+			 		    $field_name = substr($event_meta_key, 1);
+			 			if($field_name != 'event_attributes' && !array_key_exists($field_name, $this->fields) && !in_array($field_name, array('edit_last', 'edit_lock', 'event_owner_name','event_owner_anonymous','event_owner_email')) ){
+				 			foreach($event_meta_vals as $event_meta_val){
+				 			    $event_meta_inserts[] = "({$EM_Event->post_id}, '{$event_meta_key}', '{$event_meta_val}')";
+				 			}
+			 			}
+			 		}
+			 	}
+			 	//save in one SQL statement
+			 	if( !empty($event_meta_inserts) ){
+			 		$wpdb->query('INSERT INTO '.$wpdb->postmeta." (post_id, meta_key, meta_value) VALUES ".implode(', ', $event_meta_inserts));
 			 	}
 				return apply_filters('em_event_duplicate', $EM_Event, $this);
 			}
@@ -1512,6 +1534,11 @@ class EM_Event extends EM_Object{
 					$template = em_locate_template('placeholders/attendeeslist.php', true, array('EM_Event'=>$this));
 					$replace = ob_get_clean();
 					break;
+				case '#_ATTENDEESPENDINGLIST':
+					ob_start();
+					$template = em_locate_template('placeholders/attendeespendinglist.php', true, array('EM_Event'=>$this));
+					$replace = ob_get_clean();
+					break;
 				//Categories and Tags
 				case '#_EVENTCATEGORIESIMAGES':
 					ob_start();
@@ -1584,7 +1611,11 @@ class EM_Event extends EM_Object{
 		//sort out replacements so that during replacements shorter placeholders don't overwrite longer varieties.
 		krsort($replaces);
 		foreach($replaces as $full_result => $replacement){
-			$event_string = str_replace($full_result, $replacement , $event_string );
+			if( !in_array($full_result, array('#_NOTES','#_EVENTNOTES')) ){
+				$event_string = str_replace($full_result, $replacement , $event_string );
+			}else{
+				$desc_replace[$full_result] = $replacement;
+			}
 		}
 		//Time placeholders
 		foreach($placeholders[1] as $result) {
@@ -1617,6 +1648,13 @@ class EM_Event extends EM_Object{
 		
 		if( empty($EM_Category) ) $EM_Category = new EM_Category();
 		$event_string = $EM_Category->output($event_string, $target);
+		
+		//Finally, do the event notes, so that previous placeholders don't get replaced within the content, which may use shortcodes
+		if( !empty($desc_replace) ){
+			foreach($desc_replace as $full_result => $replacement){
+				$event_string = str_replace($full_result, $replacement , $event_string );
+			}
+		}
 		
 		return apply_filters('em_event_output', $event_string, $this, $format, $target);
 	}	

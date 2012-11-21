@@ -15,7 +15,7 @@ $('.em-booking-form').submit( function(e){
 			}
 			em_booking_doing_ajax = true;
 			$('.em-booking-message').remove();
-			em_booking_form.parent('.em-booking').append('<div id="em-loading"></div>');
+			em_booking_form.parent().append('<div id="em-loading"></div>');
 		},
 		success : function(response, statusText, xhr, $form) {
 			$('#em-loading').remove();
@@ -42,7 +42,7 @@ $('.em-booking-form').submit( function(e){
 				}
 				$(document).trigger('em_booking_error', [response]);
 			}
-		    $('html, body').animate({ scrollTop: em_booking_form.parent('.em-booking').offset().top - 30 }); //sends user back to top of form
+		    $('html, body').animate({ scrollTop: em_booking_form.parent().offset().top - 30 }); //sends user back to top of form
 			//run extra actions after showing the message here
 			if( response.gateway != null ){
 				$(document).trigger('em_booking_gateway_add_'+response.gateway, [response]);
