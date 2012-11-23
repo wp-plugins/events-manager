@@ -293,7 +293,7 @@ class EM_Location extends EM_Object {
 				restore_current_blog();
 				$switch_back = true;
 			}
-			$post_array['post_status'] = ( current_user_can('publish_locations') ) ? 'publish':'pending';
+			$post_array['post_status'] = $this->can_manage('publish_locations') ? 'publish':'pending';
 			if(!empty($switch_back) && get_site_option('dbem_ms_mainblog_locations') ) EM_Object::ms_global_switch(); //switch 'back' to main blog
 		}else{
 			$post_array['post_status'] = 'draft';
@@ -496,14 +496,18 @@ class EM_Location extends EM_Object {
 	
 	function get_permalink(){	
 		if( EM_MS_GLOBAL ){
-			if( get_site_option('dbem_ms_global_locations_links') && !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
-				//linking directly to the blog, we should be on the main blog here
-				$link = get_blog_permalink( $this->blog_id, $this->post_id);
-			}elseif( !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
-				if( get_option('dbem_locations_page') ){
-					$link = trailingslashit(get_permalink(get_option('dbem_locations_page')).get_site_option('dbem_ms_locations_slug',EM_LOCATION_SLUG).'/'.$this->location_slug.'-'.$this->location_id);
-				}else{
-					$link = trailingslashit(home_url()).EM_POST_TYPE_LOCATION_SLUG.'/'.get_site_option('dbem_ms_events_slug',EM_LOCATION_SLUG).'/'.$this->location_slug.'-'.$this->location_id;
+			if( get_site_option('dbem_ms_mainblog_locations') ){
+				$link = get_blog_permalink( get_current_site()->blog_id, $this->post_id);
+			}else{
+				if( get_site_option('dbem_ms_global_locations_links') && !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
+					//linking directly to the blog, we should be on the main blog here
+					$link = get_blog_permalink( $this->blog_id, $this->post_id);
+				}elseif( !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
+					if( get_option('dbem_locations_page') ){
+						$link = trailingslashit(get_permalink(get_option('dbem_locations_page')).get_site_option('dbem_ms_locations_slug',EM_LOCATION_SLUG).'/'.$this->location_slug.'-'.$this->location_id);
+					}else{
+						$link = trailingslashit(home_url()).EM_POST_TYPE_LOCATION_SLUG.'/'.get_site_option('dbem_ms_events_slug',EM_LOCATION_SLUG).'/'.$this->location_slug.'-'.$this->location_id;
+					}
 				}
 			}
 		}
@@ -515,14 +519,35 @@ class EM_Location extends EM_Object {
 	
 	function get_edit_url(){
 		if( $this->can_manage('edit_locations','edit_others_locations') ){
-			if( EM_MS_GLOBAL && get_site_option('dbem_ms_global_locations_links') && !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
-				if( get_blog_option($this->blog_id, 'dbem_edit_locations_page') ){
-					$link = em_add_get_params(get_permalink(get_blog_option($this->blog_id, 'dbem_edit_locations_page')), array('action'=>'edit','location_id'=>$this->location_id), false);
-				}
-				if( empty($link))
-					$link = get_admin_url($this->blog_id, "post.php?post={$this->post_id}&action=edit");
+			if( EM_MS_GLOBAL ){
+			    global $current_site, $current_blog;
+			    if( get_site_option('dbem_ms_mainblog_locations') ){
+			        //location stored as post on main blog, but can be edited either in sub-blog admin area or if not on main blog
+			        if( get_blog_option($this->blog_id, 'dbem_edit_locations_page') && !is_admin() ){
+			        	$link = em_add_get_params(get_blog_permalink($this->blog_id, get_blog_option($this->blog_id, 'dbem_edit_locations_page')), array('action'=>'edit','location_id'=>$this->location_id), false);
+			        }
+					if( (is_main_site() || empty($link)) && get_blog_option($current_site->blog_id, 'dbem_edit_locations_page') && !is_admin() ){ //if editing on main site and edit page exists, stay on same site
+						$link = em_add_get_params(get_blog_permalink(get_option('dbem_edit_locations_page')), array('action'=>'edit','location_id'=>$this->location_id), false);
+					}
+			        if( empty($link) && !is_main_site() ){
+			        	$link = get_admin_url($current_blog->blog_id, "edit.php?post_type=event&page=locations&action=edit&location_id={$this->location_id}");
+			        }elseif( empty($link) && is_main_site() ){
+			            $link = get_admin_url($current_site->blog_id, "post.php?post={$this->post_id}&action=edit");
+			        }
+			    }else{
+			        //location stored as post on blog where location was created
+					if( get_blog_option($this->blog_id, 'dbem_edit_locations_page') && !is_admin() ){
+						$link = em_add_get_params(get_blog_permalink($this->blog_id, get_blog_option($this->blog_id, 'dbem_edit_locations_page')), array('action'=>'edit','location_id'=>$this->location_id), false);
+					}
+					if( (is_main_site() || empty($link)) && get_blog_option($current_site->blog_id, 'dbem_edit_locations_page') && !is_admin() ){ //if editing on main site and edit page exists, stay on same site
+						$link = em_add_get_params(get_blog_permalink($current_site->blog_id, get_blog_option($current_site->blog_id, 'dbem_edit_locations_page')), array('action'=>'edit','location_id'=>$this->location_id), false);
+					}
+					if( empty($link)){
+						$link = get_admin_url($this->blog_id, "post.php?post={$this->post_id}&action=edit");
+					}
+			    }
 			}else{
-				if( get_option('dbem_edit_locations_page') ){
+				if( get_option('dbem_edit_locations_page') && !is_admin() ){
 					$link = em_add_get_params(get_permalink(get_option('dbem_edit_locations_page')), array('action'=>'edit','location_id'=>$this->location_id), false);
 				}
 				if( empty($link))

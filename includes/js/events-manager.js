@@ -671,7 +671,7 @@ function em_setup_timepicker(wrap){
 		var end = jQuery(this);
 		var start = end.prevAll('.em-time-start');
 		if( start.val() ){
-			if(jQuery.timePicker(start).getTime() > jQuery.timePicker(this).getTime()) { end.addClass("error"); }
+			if( jQuery.timePicker(start).getTime() > jQuery.timePicker(this).getTime() && ( jQuery('.em-date-end').val().length == 0 || jQuery('.em-date-start').val() == jQuery('.em-date-end').val() ) ) { end.addClass("error"); }
 			else { end.removeClass("error"); }
 		}
 	});

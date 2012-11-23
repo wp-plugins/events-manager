@@ -41,6 +41,7 @@ foreach( $collumns as $type => $name ): ?>
 				<?php do_action('em_booking_form_ticket_spaces', $EM_Ticket); //do not delete ?>
 			<?php else: //if only one space or ticket max spaces per booking is 1 ?>
 				<input type="hidden" name="em_tickets[<?php echo $EM_Ticket->ticket_id ?>][spaces]" value="1" class="em-ticket-select" />
+				<?php do_action('em_booking_form_ticket_spaces', $EM_Ticket); //do not delete ?>
 			<?php endif;
 			break;
 		default:

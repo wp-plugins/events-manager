@@ -776,6 +776,7 @@ class EM_Object {
 			$error_msg = $em_capabilities_array[$owner_capability];
 		}
 		//admins have special rights
+		if( !admin_capability ) $admin_capability = $owner_capability;
 		if( current_user_can($admin_capability) || (!empty($user) && $user->has_cap($admin_capability)) ){
 			$can_manage = true;
 		}elseif( $admin_capability && array_key_exists($admin_capability, $em_capabilities_array) ){

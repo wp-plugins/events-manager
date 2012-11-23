@@ -24,13 +24,10 @@
 	}
 	add_action ( 'init', 'em_ical' );
 	
-	/**
-	 * @param WP_Query $wp_query
-	 */
-	function em_ical_event( $wp_query ){
-		global $wpdb;
+	function em_ical_event(){
+		global $wpdb, $wp_query;
 		//add endpoints to events
-		if( $wp_query->get(EM_POST_TYPE_EVENT) && $wp_query->get('ical') ){
+		if( !empty($wp_query) && $wp_query->get(EM_POST_TYPE_EVENT) && $wp_query->get('ical') ){
 			$event_id = $wpdb->get_var('SELECT event_id FROM '.EM_EVENTS_TABLE." WHERE event_slug='".$wp_query->get(EM_POST_TYPE_EVENT)."' AND event_status=1 LIMIT 1");
 			if( !empty($event_id) ){
 				global $EM_Event;

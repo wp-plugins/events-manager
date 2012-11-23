@@ -50,10 +50,8 @@ class EM_Category_Taxonomy{
 		return $content;
 	}
 	
-	/**
-	 * @param WP_Query $wp_query
-	 */
-	function parse_query( $wp_query ){
+	function parse_query( ){
+	    global $wp_query;
 		if( !empty($wp_query->tax_query->queries[0]['taxonomy']) &&  $wp_query->tax_query->queries[0]['taxonomy'] == EM_TAXONOMY_CATEGORY) {
 			//Scope is future
 			$today = strtotime(date('Y-m-d', current_time('timestamp')));

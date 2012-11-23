@@ -369,10 +369,18 @@ function em_locations_admin($args = array()){
 			}else{
 				$status = false;
 			}
-			$args = array('limit'=>$limit, 'offset'=>$offset, 'status'=>$status, 'blog'=>false);
+			$blog = false;
+			if( EM_MS_GLOBAL ){
+			    if( get_site_option('dbem_ms_mainblog_locations') ){
+			    	$blog = get_current_site()->blog_id;
+			    }elseif( !is_main_site() ){
+			    	$blog = get_current_blog_id();
+			    }
+			}
+			$args = array('limit'=>$limit, 'offset'=>$offset, 'status'=>$status, 'blog'=>$blog);
 			//count locations
-			$locations_mine_count = EM_Locations::count( array('owner'=>get_current_user_id(), 'blog'=>false, 'status'=>false) );
-			$locations_all_count = current_user_can('read_others_locations') ? EM_Locations::count(array('blog'=>false, 'status'=>false, 'owner'=>false)):0;
+			$locations_mine_count = EM_Locations::count( array('owner'=>get_current_user_id(), 'blog'=>$blog, 'status'=>false) );
+			$locations_all_count = current_user_can('read_others_locations') ? EM_Locations::count(array('blog'=>$blog, 'status'=>false, 'owner'=>false)):0;
 			//get set of locations
 			if( !empty($_REQUEST['view']) && $_REQUEST['view'] == 'others' && current_user_can('read_others_locations') ){
 				$locations = EM_Locations::get($args);

@@ -201,12 +201,20 @@ class EM_Locations extends EM_Object implements Iterator {
 			$conditions['owner'] = 'location_owner='.get_current_user_id();
 		}
 		//blog id in events table
-		if( EM_MS_GLOBAL && !empty($args['blog']) && is_numeric($args['blog']) ){
-			if( is_main_site($args['blog']) ){
-				$conditions['blog'] = "($locations_table.blog_id={$args['blog']} OR $locations_table.blog_id IS NULL)";
-			}else{
-				$conditions['blog'] = "($locations_table.blog_id={$args['blog']})";
-			}
+		if( EM_MS_GLOBAL && !empty($args['blog']) ){
+		    if( is_numeric($args['blog']) ){
+				if( is_main_site($args['blog']) ){
+					$conditions['blog'] = "(".$locations_table.".blog_id={$args['blog']} OR ".$locations_table.".blog_id IS NULL)";
+				}else{
+					$conditions['blog'] = "(".$locations_table.".blog_id={$args['blog']})";
+				}
+		    }else{
+		        if( !is_array($args['blog']) && preg_match('/^([\-0-9],?)+$/', $args['blog']) ){
+		            $conditions['blog'] = "(".$locations_table.".blog_id IN ({$args['blog']}) )";
+			    }elseif( is_array($args['blog']) && $this->array_is_numeric($args['blog']) ){
+			        $conditions['blog'] = "(".$locations_table.".blog_id IN (".implode(',',$args['blog']).") )";
+			    }
+		    }
 		}
 		//status
 		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
@@ -260,9 +268,13 @@ class EM_Locations extends EM_Object implements Iterator {
 			'post_id' => false
 		);
 		if( EM_MS_GLOBAL && !is_admin() ){
-			if( empty($array['blog']) && is_main_site() && get_site_option('dbem_ms_global_locations') ){
-			    $array['blog'] = false;
-			}
+		    if( get_site_option('dbem_ms_mainblog_locations') ){
+		        $array['blog'] = get_current_site()->blog_id;
+		    }else{
+				if( empty($array['blog']) && is_main_site() && get_site_option('dbem_ms_global_locations') ){
+				    $array['blog'] = false;
+				}		        
+		    }
 		}
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );

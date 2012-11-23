@@ -55,8 +55,6 @@ if( !class_exists('EM_Permalinks') ){
 		
 		/**
 		 * will redirect old links to new link structures.
-		 * @param WP_Query $wp_query
-		 * @return mixed
 		 */
 		function redirection(){
 			global $wpdb, $wp_query;
@@ -176,7 +174,8 @@ if( !class_exists('EM_Permalinks') ){
 				$locations_page = get_post($locations_page_id);
 				if( is_object($locations_page) ){
 					$locations_slug = preg_replace('/\/$/', '', str_replace( trailingslashit(home_url()), '', get_permalink($locations_page_id) ));
-					$em_rules[$locations_slug.'/'.get_site_option('dbem_ms_locations_slug',EM_LOCATION_SLUG).'/(.+)$'] = 'index.php?pagename='.$locations_page->page_name.'&location_slug=$matches[1]'; //single event booking form with slug
+					$locations_slug_slashed = ( !empty($locations_slug) ) ? trailingslashit($locations_slug) : $locations_slug;
+					$em_rules[$locations_slug.'/'.get_site_option('dbem_ms_locations_slug',EM_LOCATION_SLUG).'/(.+)$'] = 'index.php?pagename='.$locations_slug_slashed.'&location_slug=$matches[1]'; //single event booking form with slug
 				}					
 			}
 			//add ical endpoint
@@ -221,7 +220,6 @@ if( !class_exists('EM_Permalinks') ){
 		
 		/**
 		 * Not the "WP way" but for now this'll do!
-		 * @param WP_Query $wp_query 
 		 */
 		function init_objects(){
 			global $wp_rewrite, $wp_query;
