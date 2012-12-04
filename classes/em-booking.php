@@ -665,7 +665,7 @@ class EM_Booking extends EM_Object{
 						}
 					}
 					//email admin
-					if( get_option('dbem_bookings_notify_admin') != '' && preg_match('/^([_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3}( *, *)?)+$/', get_option('dbem_bookings_notify_admin')) ){
+					if( get_option('dbem_bookings_notify_admin') != '' && preg_match('/^([_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3},?)+$/', str_replace(' ', '', get_option('dbem_bookings_notify_admin'))) ){
 						$admin_emails =  get_option('dbem_bookings_notify_admin');
 						$admin_emails = explode(',', $admin_emails); //supply emails as array
 						foreach($admin_emails as $key => $email){ $admin_emails[$key] = trim($email); } //strip whitespace

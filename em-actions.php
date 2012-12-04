@@ -68,7 +68,11 @@ function em_init_actions() {
 				$events_result = true;
 				//Success notice
 				if( is_user_logged_in() ){
-					$EM_Notices->add_confirm( $EM_Event->output(get_option('dbem_events_form_result_success')), true);
+					if( empty($_REQUEST['event_id']) ){
+						$EM_Notices->add_confirm( $EM_Event->output(get_option('dbem_events_form_result_success')), true);
+					}else{
+					    $EM_Notices->add_confirm( $EM_Event->output(get_option('dbem_events_form_result_success_updated')), true);
+					}
 				}else{
 					$EM_Notices->add_confirm( $EM_Event->output(get_option('dbem_events_anonymous_result_success')), true);
 				}

@@ -2060,10 +2060,10 @@ class EM_Event extends EM_Object{
 			foreach($weekday_array as $day){
 				array_push($natural_days, $weekdays_name[$day]);
 			}
-			$output .= implode(" and ", $natural_days);
-			$freq_desc = ", " . __("every week", 'dbem');
+			$output .= implode(", ", $natural_days);
+			$freq_desc = " " . __("every week", 'dbem');
 			if ($EM_Event_Recurring->recurrence_interval > 1 ) {
-				$freq_desc = ", ".sprintf (__("every %s weeks", 'dbem'), $EM_Event_Recurring->recurrence_interval);
+				$freq_desc = " ".sprintf (__("every %s weeks", 'dbem'), $EM_Event_Recurring->recurrence_interval);
 			}
 			
 		}elseif ($EM_Event_Recurring->recurrence_freq == 'monthly')  {
