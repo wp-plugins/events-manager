@@ -1233,6 +1233,7 @@ class EM_Event extends EM_Object{
 					   //event doesn't have this tag
 					    $show_condition = !has_term($tag_match[1], EM_TAXONOMY_TAG, $this->post_id);
 					}
+					//other potential ones - has_attribute_... no_attribute_... has_categories_...
 					$show_condition = apply_filters('em_event_output_show_condition', $show_condition, $condition, $conditionals[0][$key], $this);
 					if($show_condition){
 						//calculate lengths to delete placeholders
@@ -2059,10 +2060,10 @@ class EM_Event extends EM_Object{
 			foreach($weekday_array as $day){
 				array_push($natural_days, $weekdays_name[$day]);
 			}
-			$output .= implode(" and ", $natural_days);
-			$freq_desc = ", " . __("every week", 'dbem');
+			$output .= implode(", ", $natural_days);
+			$freq_desc = " " . __("every week", 'dbem');
 			if ($EM_Event_Recurring->recurrence_interval > 1 ) {
-				$freq_desc = ", ".sprintf (__("every %s weeks", 'dbem'), $EM_Event_Recurring->recurrence_interval);
+				$freq_desc = " ".sprintf (__("every %s weeks", 'dbem'), $EM_Event_Recurring->recurrence_interval);
 			}
 			
 		}elseif ($EM_Event_Recurring->recurrence_freq == 'monthly')  {

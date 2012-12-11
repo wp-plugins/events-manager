@@ -14,6 +14,7 @@ function em_options_save(){
 			if( substr($postKey, 0, 5) == 'dbem_' ){
 				//TODO some more validation/reporting
 				$numeric_options = array('dbem_locations_default_limit','dbem_events_default_limit');
+				if( in_array($postKey, array('dbem_bookings_notify_admin','dbem_event_submitted_email_admin')) ){ $postValue = str_replace(' ', '', $postValue); } //clean up comma seperated emails, no spaces needed
 				if( in_array($postKey,$numeric_options) && !is_numeric($postValue) ){
 					//Do nothing, keep old setting.
 				}else{
@@ -427,6 +428,7 @@ function em_admin_options_page() {
 							em_options_radio_binary ( __( 'Use Visual Editor?', 'dbem' ), 'dbem_events_form_editor', __( 'Users can now use the WordPress editor for easy HTML entry in the submission form.', 'dbem' ) );
 							em_options_radio_binary ( __( 'Show form again?', 'dbem' ), 'dbem_events_form_reshow', __( 'When a user submits their event, you can display a new event form again.', 'dbem' ) );
 							em_options_textarea ( __( 'Success Message', 'dbem' ), 'dbem_events_form_result_success', __( 'Customize the message your user sees when they submitted their event.', 'dbem' ).$events_placeholder_tip );
+							em_options_textarea ( __( 'Successfully Updated Message', 'dbem' ), 'dbem_events_form_result_success_updated', __( 'Customize the message your user sees when they resubmit/update their event.', 'dbem' ).$events_placeholder_tip );
 						?>
 			            <tr><td colspan="2">
 			            	<strong><?php echo sprintf(__('Anonymous event submissions','dbem'), '<code>[event_form]</code>'); ?></strong>

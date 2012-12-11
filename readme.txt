@@ -3,8 +3,8 @@ Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
-Tested up to: 3.4.2
-Stable tag: 5.3
+Tested up to: 3.5
+Stable tag: 5.3.1
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,6 +98,19 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.3.1 =
+* Updated russian translation, thanks to Alexander Tsinkalov
+* improved how EM hooks into the_content and similar template tag hooks to improve compatability with other plugins incorrectly using this outside the loop
+* fixed rsvp cut-off time not being considered
+* fixed missing $ in admin_capability variable of EM_Object::can_manage()
+* added recurrences search attribute
+* corrected some typos in category event form class, recurrence description
+* prevented spaces in comma-delimited email lists failing email validations
+* fixed bp event profile page urls breaking when event slugs contain slashes
+* updated [events] and [location] to default to use globals if no ids passed on, so it can be used in location/event descriptions
+* added resubmitted event confirmation messages
+* Updated Spanish translation - thanks to Ponç Joan Llaneras
+
 = 5.3 =
 * corrected date_format/dbem_date_format typo on templates/templates/my-bookings.php
 * fixed calendar links with extra search args if using non-permalinks
@@ -114,6 +127,13 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * improved JS compatability with booking form (spinner and jumping up to errors/confirmation feedback)
 * fixed reserved pending spaces not being approvable if event is full
 * fixed categories and other plugin postmeta not being duplicated with event
+* fixed admin emails not going out if setting of admin emails contains spaces
+* fixed blog search filter not allowing comma seperated values e.g. 1,2,3
+* improvements to listings, edit pages and admin linking of locations on MS Global setups, especially if locations are restricted only to main blog
+* adjustment to title rewriting, fixing issues such as calendar day pages not having custom titles
+* event end time js not failing validation if event dates span
+* fixed locations not publishing on anonymous submission even if publish_locations is correctly enabled for assigned anon user
+* added second em_booking_form_ticket_spaces action to templates/forms/bookingform/ticket-single.php fixes attendee field not showing for single/last ticket/space bookings
 * reverted to previous use of global $wp_query in parse_query filters with additional fix to prevent clash with Pods framework
 
 = 5.2.9 =

@@ -10,6 +10,7 @@
  */
 function em_content($page_content) {
 	global $post, $wpdb, $wp_query, $EM_Event, $EM_Location, $EM_Category;
+	if( empty($post) ) return $page_content; //fix for any other plugins calling the_content outside the loop
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$categories_page_id = get_option( 'dbem_categories_page' );
@@ -99,6 +100,7 @@ add_filter('the_content', 'em_content');
  */
 function em_content_page_title($original_content) {
 	global $EM_Event, $EM_Location, $EM_Category, $wp_query, $post;
+	if( empty($post) ) return $original_content; //fix for any other plugins calling the_content outside the loop
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$edit_events_page_id = get_option( 'dbem_edit_events_page' );
@@ -183,6 +185,7 @@ function em_content_page_title($original_content) {
 
 function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	global $EM_Location, $post;
+	if( empty($post) ) return $title; //fix for any other plugins calling the_content outside the loop
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	if( !empty($post->ID) && $post->ID != $events_page_id && !in_array($post->ID, array($events_page_id, $locations_page_id)) ){ return $title; }
@@ -211,6 +214,7 @@ add_filter ( 'wp_title', 'em_content_wp_title',100,3 ); //override other plugin 
  */
 function em_wp_the_title($data){
 	global $post, $wp_query, $EM_Location;
+	if( empty($post) ) return $data; //fix for any other plugins calling the_content outside the loop
 	//because we're only editing the main title of the page here, we make sure we're in the main query
 	if( is_main_query() ){
 	    $events_page_id = get_option ( 'dbem_events_page' );

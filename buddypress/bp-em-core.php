@@ -43,7 +43,7 @@ class BP_EM_Component extends BP_Component {
 		global $bp, $wpdb;
 		// Define a slug constant that will be used to view this components pages
 		if ( !defined( 'BP_EM_SLUG' ) )
-			define ( 'BP_EM_SLUG', EM_POST_TYPE_EVENT_SLUG );
+			define ( 'BP_EM_SLUG', str_replace('/','-', EM_POST_TYPE_EVENT_SLUG) );
 
 		// Set up the $globals array to be passed along to parent::setup_globals()
 		$globals = array(

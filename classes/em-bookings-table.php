@@ -259,8 +259,8 @@ class EM_Bookings_Table{
 				<p><?php _e('Modify what information is displayed in this booking table.','dbem') ?></p>
 				<div id="em-bookings-table-settings-form-cols">
 					<p>
-						<strong><?php _e('Collumns to show','dbem')?></strong><br />
-						<?php _e('Drag items to or from the left collumn to add or remove them.','dbem'); ?>
+						<strong><?php _e('Columns to show','dbem')?></strong><br />
+						<?php _e('Drag items to or from the left column to add or remove them.','dbem'); ?>
 					</p>
 					<ul id="em-bookings-cols-active" class="em-bookings-cols-sortable">
 						<?php foreach( $this->cols as $col_key ): ?>
@@ -292,7 +292,7 @@ class EM_Bookings_Table{
 				<?php endif; ?>
 				<?php do_action('em_bookings_table_export_options'); ?>
 				<div id="em-bookings-table-settings-form-cols">
-					<p><strong><?php _e('Collumns to export','dbem')?></strong></p>
+					<p><strong><?php _e('Columns to export','dbem')?></strong></p>
 					<ul id="em-bookings-export-cols-active" class="em-bookings-cols-sortable">
 						<?php foreach( $this->cols as $col_key ): ?>
 							<li class="ui-state-highlight">
