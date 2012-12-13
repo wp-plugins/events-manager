@@ -804,7 +804,7 @@ class EM_Object {
 	}
 	
 	function ms_global_switch_back(){
-		if( EM_MS_GLOBAL && !is_main_site() ){
+		if( EM_MS_GLOBAL ){
 			restore_current_blog();
 		}
 	}
