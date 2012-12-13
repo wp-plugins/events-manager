@@ -31,6 +31,7 @@ class EM_Category_Taxonomy{
 				$wp_query->max_num_pages = 1;
 				$wp_query->is_page = 1;
 				$wp_query->is_single = 0;
+				$wp_query->is_singular = 1;
 				$wp_query->is_archive = 0;
 				//echo "<pre>"; print_r($wp_query); echo "</pre>";
 				$template = locate_template(array('page.php','index.php'),false); //category becomes a page
