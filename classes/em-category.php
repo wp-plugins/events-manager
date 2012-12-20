@@ -159,6 +159,9 @@ class EM_Category extends EM_Object {
 					$link = $this->get_url();
 					$replace = ($result == '#_CATEGORYURL') ? $link : '<a href="'.$link.'">'.esc_html($this->name).'</a>';
 					break;
+				case '#_CATEGORYSLUG':
+					$replace = $this->slug;
+					break;
 				case '#_CATEGORYEVENTSPAST': //depreciated, erroneous documentation, left for compatability
 				case '#_CATEGORYEVENTSNEXT': //depreciated, erroneous documentation, left for compatability
 				case '#_CATEGORYEVENTSALL': //depreciated, erroneous documentation, left for compatability

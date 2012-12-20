@@ -200,6 +200,7 @@ function em_init_actions() {
 				}elseif( !is_user_logged_in() ){
 					$location_cond = " AND location_private=0";		    
 				}
+				$location_cond = apply_filters('em_actions_locations_search_cond', $location_cond);
 				$term = (isset($_REQUEST['term'])) ? '%'.$_REQUEST['term'].'%' : '%'.$_REQUEST['q'].'%';
 				$sql = $wpdb->prepare("
 					SELECT 

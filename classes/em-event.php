@@ -282,10 +282,10 @@ class EM_Event extends EM_Object{
 			    $event_meta = $this->get_event_meta($search_by);
 				//Get custom fields and post meta
 				foreach($event_meta as $event_meta_key => $event_meta_val){
+					$field_name = substr($event_meta_key, 1);
 					if($event_meta_key[0] != '_'){
 						$this->event_attributes[$event_meta_key] = ( count($event_meta_val) > 1 ) ? $event_meta_val:$event_meta_val[0];					
-					}elseif($event_meta_key != '_event_attributes'){
-						$field_name = substr($event_meta_key, 1);
+					}elseif( !in_array($field_name, $this->post_fields) ){
 						if( array_key_exists($field_name, $this->fields) ){
 							$this->$field_name = $event_meta_val[0];
 						}elseif( in_array($field_name, array('event_owner_name','event_owner_anonymous','event_owner_email')) ){

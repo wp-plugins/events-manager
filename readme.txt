@@ -98,7 +98,21 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.2.1 (dev) =
+= 5.3.2.2 (dev) =
+* changed taxonomy pages to use is_tax() to check whether page is a taxonomy page, rather than checking the $wp_query object
+* fixed booked spaces being off if approvals are disabled and booking has status 0 from when approvals were enabled
+* added #_CATEGORYSLUG
+* fixed bad usage of wpdb::prepare in classes/em-object.php
+* added em_actions_locations_search_cond for autocompleter
+* added Bermuda to countries list
+* fixed title rewriting warning when $sep is blank
+* fixed BP 'add event' link appearing to all users on event profile pages
+* fixed loading of unused post meta overwriting post fields/properties
+* added multilingual capability
+* added WPML add-on warning
+* simplified enqueue of styles and scripts (more to do before stable)
+
+= 5.3.2.1 =
 * added is_singular to $wp_query on format overriden category pages, fixes conflict with WooThemes Canvas theme
 
 = 5.3.2 =

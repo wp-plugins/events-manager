@@ -19,7 +19,12 @@ function em_options_save(){
 					//Do nothing, keep old setting.
 				}else{
 					//TODO slashes being added?
-					update_option($postKey, stripslashes($postValue));
+					if( is_array($postValue) ){
+					    foreach($postValue as $postValue_key=>$postValue_val) $postValue[$postValue_key] = stripslashes($postValue_val);
+					}else{
+					    $postValue = stripslashes($postValue);
+					}
+					update_option($postKey, $postValue);
 				}
 			}
 		}
@@ -309,6 +314,10 @@ function em_admin_options_page() {
 				}
 			});
 			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');
+			//ML Stuff
+			$('.em-translatable').click(function(){
+				$(this).nextAll('.em-ml-options').toggle();
+			});
 		});
 	</script>
 	<style type="text/css">.postbox h3 { cursor:pointer; }</style>

@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.3.2.1
+Version: 5.3.2.2
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 // Setting constants
-define('EM_VERSION', 5.31); //self expanatory
+define('EM_VERSION', 5.321); //self expanatory
 define('EM_PRO_MIN_VERSION', 2.221); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 define('EM_SLUG', plugin_basename( __FILE__ )); //for updates
@@ -65,6 +65,7 @@ include("em-functions.php");
 include("em-ical.php");
 include("em-shortcode.php");
 include("em-template-tags.php");
+include("em-ml.php");
 //Widgets
 include("widgets/em-events.php");
 if( get_option('dbem_locations_enabled') ){
@@ -173,32 +174,45 @@ class EM_Scripts_and_Styles {
 	function init(){
 		if( is_admin() ){
 			//Scripts and Styles
-			add_action('admin_print_styles-post.php', array('EM_Scripts_and_Styles','admin_styles'));
-			add_action('admin_print_styles-post-new.php', array('EM_Scripts_and_Styles','admin_styles'));
-			add_action('admin_print_styles-edit.php', array('EM_Scripts_and_Styles','admin_styles'));
-			if( (!empty($_GET['page']) && substr($_GET['page'],0,14) == 'events-manager') || (!empty($_GET['post_type']) && $_GET['post_type'] == EM_POST_TYPE_EVENT) ){
-				add_action('admin_print_styles', array('EM_Scripts_and_Styles','admin_styles'));
-			}
-			add_action('admin_print_scripts-post.php', array('EM_Scripts_and_Styles','admin_scripts'));
-			add_action('admin_print_scripts-post-new.php', array('EM_Scripts_and_Styles','admin_scripts'));
-			add_action('admin_print_scripts-edit.php', array('EM_Scripts_and_Styles','admin_scripts'));
-			if( (!empty($_GET['page']) && substr($_GET['page'],0,14) == 'events-manager') || (!empty($_GET['post_type']) && $_GET['post_type'] == EM_POST_TYPE_EVENT) ){
-				add_action('admin_print_scripts', array('EM_Scripts_and_Styles','admin_scripts'));
+			if( (!empty($_GET['page']) && substr($_GET['page'],0,14) == 'events-manager') || (!empty($_GET['post_type']) && in_array($_GET['post_type'], array(EM_POST_TYPE_EVENT,EM_POST_TYPE_LOCATION,'event-recurring'))) ){
+				add_action('admin_print_scripts', array('EM_Scripts_and_Styles','admin_enqueue'));
+			}else{
+				add_action('admin_print_styles-post.php', array('EM_Scripts_and_Styles','admin_enqueue'));
 			}
 		}else{
-			add_action('init', array('EM_Scripts_and_Styles','public_enqueue'));
+			add_action('wp_enqueue_scripts', array('EM_Scripts_and_Styles','public_enqueue'));
 		}
-		add_action('init', array('EM_Scripts_and_Styles','localize_script'));
 	}
 
 	/**
-	 * Enqueing public scripts and styles
+	 * Enqueuing public scripts and styles
 	 */
 	function public_enqueue() {
-		//Scripts
-		wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete','jquery-ui-dialog')); //jQuery will load as dependency
-		//Styles
-		wp_enqueue_style('events-manager', plugins_url('includes/css/events_manager.css',__FILE__)); //main css
+	    $enqueue_scripts = true;
+	    if( $enqueue_scripts ){
+	        do_action('em_enqueue_scripts');
+	        //here you can hook in and remove dependencies depending on the page being displayed at the moment
+	        $script_deps = apply_filters('em_public_script_deps', array(
+	        	'jquery'=>'jquery', 
+	        	'jquery-ui-core'=>'jquery-ui-core',
+	        	'jquery-ui-widget'=>'jquery-ui-widget',
+	        	'jquery-ui-position'=>'jquery-ui-position',
+	        	'jquery-ui-sortable'=>'jquery-ui-sortable',
+	        	'jquery-ui-datepicker'=>'jquery-ui-datepicker',
+	        	'jquery-ui-autocomplete'=>'jquery-ui-autocomplete',
+	        	'jquery-ui-dialog'=>'jquery-ui-dialog'
+	        ));
+			wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array_values($script_deps)); //jQuery will load as dependency
+			wp_enqueue_style('events-manager', plugins_url('includes/css/events_manager.css',__FILE__)); //main css
+			self::localize_script();
+	    }
+	}
+	
+	function admin_enqueue(){
+	    do_action('em_enqueue_admin_scripts');
+		wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete','jquery-ui-dialog'));
+		wp_enqueue_style('events-manager-admin', plugins_url('includes/css/events_manager_admin.css',__FILE__));
+		self::localize_script();
 	}
 
 	/**
@@ -305,19 +319,8 @@ class EM_Scripts_and_Styles {
 			$em_localized_js['locale_data'] = $calendar_languages[$locale_code];
 		}elseif( array_key_exists($locale_code_short, $calendar_languages) ){
 			$em_localized_js['locale_data'] = $calendar_languages[$locale_code_short];
-		}
-		
+		}		
 		wp_localize_script('events-manager','EM', apply_filters('em_wp_localize_script', $em_localized_js));
-	}
-
-	function admin_styles(){
-		global $post;
-		wp_enqueue_style('events-manager-admin', plugins_url('includes/css/events_manager_admin.css',__FILE__));
-	}
-	function admin_scripts(){
-		global $post;
-		wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete','jquery-ui-dialog'));
-		self::localize_script();
 	}
 }
 EM_Scripts_and_Styles::init();

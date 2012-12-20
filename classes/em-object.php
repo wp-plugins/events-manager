@@ -653,7 +653,7 @@ class EM_Object {
 			$term = new EM_Category($category);
 			if( !empty($term->term_id) ){
 				if( EM_MS_GLOBAL ){
-					$event_ids = $wpdb->get_col($wpdb->prepare("SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value={$term->term_id} AND meta_key='event-category'"));
+					$event_ids = $wpdb->get_col($wpdb->prepare("SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value=%d AND meta_key='event-category'", $term->term_id));
 					$query[] = array( 'key' => '_event_id', 'value' => $event_ids, 'compare' => 'IN' );
 				}else{
 					if( !is_array($wp_query->query_vars['tax_query']) ) $wp_query->query_vars['tax_query'] = array();
@@ -670,7 +670,7 @@ class EM_Object {
 			}
 			if( count($term_ids) > 0 ){
 				if( EM_MS_GLOBAL ){
-					$event_ids = $wpdb->get_col($wpdb->prepare("SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_name='event-category'"));
+					$event_ids = $wpdb->get_col("SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_name='event-category'");
 					$query[] = array( 'key' => '_event_id', 'value' => $event_ids, 'compare' => 'IN' );
 				}else{
 					if( !is_array($wp_query->query_vars['tax_query']) ) $wp_query->query_vars['tax_query'] = array();
