@@ -1290,15 +1290,25 @@ class EM_Event extends EM_Object{
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
 								$image_src = $this->image_url;
-								if ( is_multisite() ) { //get the direct url as timthumb doesn't support redirect urls
-									global $blog_id;
-									$imageParts = explode('/blogs.dir/', $image_src);
-									if (isset($imageParts[1])) {
-										$image_src = network_site_url('/wp-content/blogs.dir/'. $imageParts[1]);
-									}
-								}
 								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
-									$replace = "<img src='".esc_url(em_get_thumbnail_url($image_src, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
+								    //get a thumbnail
+								    if( get_option('dbem_disable_timthumb') ){
+									    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
+									        switch_to_blog($this->blog_id);
+									        $switch_back = true;
+									    }
+										$replace = get_the_post_thumbnail($this->ID, $image_size);
+										if( !empty($switch_back) ){ restore_current_blog(); }
+								    }else{
+										if ( is_multisite() ) { //get the direct url as timthumb doesn't support redirect urls
+											global $blog_id;
+											$imageParts = explode('/blogs.dir/', $image_src);
+											if (isset($imageParts[1])) {
+												$image_src = network_site_url('/wp-content/blogs.dir/'. $imageParts[1]);
+											}
+										}
+									    $replace = "<img src='".esc_url(em_get_thumbnail_url($image_src, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
+								    }
 								}else{
 									$replace = "<img src='".esc_url($image_src)."' alt='".esc_attr($this->event_name)."'/>";
 								}

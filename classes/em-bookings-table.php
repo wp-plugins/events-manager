@@ -543,7 +543,11 @@ class EM_Bookings_Table{
 			}elseif($col == 'event_time'){
 				$cols[] = $EM_Booking->get_event()->output('#_EVENTTIMES');
 			}elseif($col == 'booking_price'){
-				$cols[] = ($this->show_tickets && !empty($EM_Ticket)) ? $EM_Ticket_Booking->get_price(false,true,true):$EM_Booking->get_price(false,true,true);
+				if($this->show_tickets && !empty($EM_Ticket)){ 
+					$cols[] = em_get_currency_formatted(apply_filters('em_bookings_table_row_booking_price_ticket', $EM_Ticket_Booking->get_price(false,false, true), $EM_Booking, true));
+				}else{
+					$cols[] = $EM_Booking->get_price(false,true,true);
+				}
 			}elseif($col == 'booking_status'){
 				$cols[] = $EM_Booking->get_status(true);
 			}elseif($col == 'booking_date'){

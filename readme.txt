@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.2.2 (dev) =
+= 5.3.2.3 (dev) =
 * changed taxonomy pages to use is_tax() to check whether page is a taxonomy page, rather than checking the $wp_query object
 * fixed booked spaces being off if approvals are disabled and booking has status 0 from when approvals were enabled
 * added #_CATEGORYSLUG
@@ -111,6 +111,14 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added multilingual capability
 * added WPML add-on warning
 * simplified enqueue of styles and scripts (more to do before stable)
+* added performance optimization options for CSS and JS files
+* removed usage of PHP sessions in exchange for temporary cookies
+* added possiblility to use wp thumbnails rather than timthumb
+* added #_LOCATIONLONGITUDE and #_LOCATIONLATITUDE placeholders
+* fixed permissions issue with groups plugin (thx itthinx)
+* added Slovak translation, thansk to [Branco](http://webhostinggeeks.com)
+* added em_bookings_table_row_booking_price_ticket filter (needed for Pro ticket exports w/coupons)
+* added default rows/cols attributes to booking form textarea field for valid html
 
 = 5.3.2.1 =
 * added is_singular to $wp_query on format overriden category pages, fixes conflict with WooThemes Canvas theme
