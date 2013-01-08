@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 5.3.2.1
+Stable tag: 5.3.3
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,27 +98,39 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.2.3 (dev) =
+= 5.3.3 =
 * changed taxonomy pages to use is_tax() to check whether page is a taxonomy page, rather than checking the $wp_query object
 * fixed booked spaces being off if approvals are disabled and booking has status 0 from when approvals were enabled
 * added #_CATEGORYSLUG
 * fixed bad usage of wpdb::prepare in classes/em-object.php
 * added em_actions_locations_search_cond for autocompleter
-* added Bermuda to countries list
+* added Bermuda and Jersey to countries list
 * fixed title rewriting warning when $sep is blank
 * fixed BP 'add event' link appearing to all users on event profile pages
 * fixed loading of unused post meta overwriting post fields/properties
 * added multilingual capability
 * added WPML add-on warning
-* simplified enqueue of styles and scripts (more to do before stable)
+* simplified enqueue of styles and scripts, now uses wp_enqueue_scripts action
 * added performance optimization options for CSS and JS files
 * removed usage of PHP sessions in exchange for temporary cookies
-* added possiblility to use wp thumbnails rather than timthumb
+* added possiblility to use wp thumbnails rather than timthumb (category images need resaving via uploader)
 * added #_LOCATIONLONGITUDE and #_LOCATIONLATITUDE placeholders
+* added em-pagination span wrapper and em-tablenav-pagination classnames to normal and table pagination sections
+* fixed location searches not returning results admin-side in MS global tables with locations on main blog
+* updated JS for location map to update when location name changed
+* added pagination and limits to location and category event list placeholders.
+* updated finnish language
+* fixed minor php warning when deleting a user with no events in MultiSite
+* fixed php warnings on category pages using formats, major change to how formats are overriden, now rewrites WP_Query completely
+* added em_options_page_panel_admin_tools action to admin tools section of options page
+* fixed #_BOOKINGPRICE and other booking price placeholders not using currency formatting option
 * fixed permissions issue with groups plugin (thx itthinx)
-* added Slovak translation, thansk to [Branco](http://webhostinggeeks.com)
+* added Slovak translation, thanks to [Branco](http://webhostinggeeks.com)
 * added em_bookings_table_row_booking_price_ticket filter (needed for Pro ticket exports w/coupons)
 * added default rows/cols attributes to booking form textarea field for valid html
+* fixed conflict with caching plugins and booking forms due to cached wpnonces
+* added #_CATEGORYDESCRIPTION to default EM filters of content placeholders
+* updated timthumb.php to version 2.8.11
 
 = 5.3.2.1 =
 * added is_singular to $wp_query on format overriden category pages, fixes conflict with WooThemes Canvas theme
