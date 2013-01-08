@@ -282,10 +282,10 @@ class EM_Event extends EM_Object{
 			    $event_meta = $this->get_event_meta($search_by);
 				//Get custom fields and post meta
 				foreach($event_meta as $event_meta_key => $event_meta_val){
+					$field_name = substr($event_meta_key, 1);
 					if($event_meta_key[0] != '_'){
 						$this->event_attributes[$event_meta_key] = ( count($event_meta_val) > 1 ) ? $event_meta_val:$event_meta_val[0];					
-					}elseif($event_meta_key != '_event_attributes'){
-						$field_name = substr($event_meta_key, 1);
+					}elseif( !in_array($field_name, $this->post_fields) ){
 						if( array_key_exists($field_name, $this->fields) ){
 							$this->$field_name = $event_meta_val[0];
 						}elseif( in_array($field_name, array('event_owner_name','event_owner_anonymous','event_owner_email')) ){
@@ -1290,15 +1290,25 @@ class EM_Event extends EM_Object{
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
 								$image_src = $this->image_url;
-								if ( is_multisite() ) { //get the direct url as timthumb doesn't support redirect urls
-									global $blog_id;
-									$imageParts = explode('/blogs.dir/', $image_src);
-									if (isset($imageParts[1])) {
-										$image_src = network_site_url('/wp-content/blogs.dir/'. $imageParts[1]);
-									}
-								}
 								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
-									$replace = "<img src='".esc_url(em_get_thumbnail_url($image_src, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
+								    //get a thumbnail
+								    if( get_option('dbem_disable_timthumb') ){
+									    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
+									        switch_to_blog($this->blog_id);
+									        $switch_back = true;
+									    }
+										$replace = get_the_post_thumbnail($this->ID, $image_size);
+										if( !empty($switch_back) ){ restore_current_blog(); }
+								    }else{
+										if ( is_multisite() ) { //get the direct url as timthumb doesn't support redirect urls
+											global $blog_id;
+											$imageParts = explode('/blogs.dir/', $image_src);
+											if (isset($imageParts[1])) {
+												$image_src = network_site_url('/wp-content/blogs.dir/'. $imageParts[1]);
+											}
+										}
+									    $replace = "<img src='".esc_url(em_get_thumbnail_url($image_src, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
+								    }
 								}else{
 									$replace = "<img src='".esc_url($image_src)."' alt='".esc_attr($this->event_name)."'/>";
 								}
@@ -2112,13 +2122,13 @@ class EM_Event extends EM_Object{
  * @param string $target
  * @return mixed
  */
-function em_event_output_placeholder($result,$event,$placeholder,$target='html'){
+function em_event_output_placeholder($result,$event,$placeholder,$full_result,$target='html'){
 	if( $target == 'raw' ) return $result;
 	if( in_array($placeholder, array("#_EXCERPT",'#_EVENTEXCERPT', "#_LOCATIONEXCERPT")) && $target == 'html' ){
 		$result = apply_filters('dbem_notes_excerpt', $result);
 	}elseif( $placeholder == '#_CONTACTEMAIL' && $target == 'html' ){
 		$result = em_ascii_encode($event->get_contact()->user_email);
-	}elseif( in_array($placeholder, array('#_EVENTNOTES','#_NOTES','#_DESCRIPTION','#_LOCATIONNOTES','#_CATEGORYNOTES')) ){
+	}elseif( in_array($placeholder, array('#_EVENTNOTES','#_NOTES','#_DESCRIPTION','#_LOCATIONNOTES','#_CATEGORYNOTES','#_CATEGORYDESCRIPTION')) ){
 		if($target == 'rss'){
 			$result = apply_filters('dbem_notes_rss', $result);
 			$result = apply_filters('the_content_rss', $result);

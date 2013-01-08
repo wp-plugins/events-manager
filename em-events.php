@@ -192,6 +192,7 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	// Determines position of the separator and direction of the breadcrumb
 	$new_title = em_content_page_title($title);
 	if( $new_title != $title ){
+	    if( $sep == '' ) $sep = '  ';
 		$title_array = explode( $sep, $title );
 		foreach($title_array as $title_item_key => $title_item){ if(trim($title_item) == ''){ unset($title_array[$title_item_key]); } } //remove blanks
 		$title_array[] = $new_title;
@@ -201,6 +202,7 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 		}else{
 		    $title_array[] = '';
 		}
+	    if( $sep == '  ' ) $sep = '';
 		$title = implode( " $sep ", $title_array );
 	}
 	return $title;

@@ -142,7 +142,9 @@ class EM_Events extends EM_Object implements Iterator {
 		}else{
 			$events = $array;
 		}
+		$event_ids = array();
 		foreach ($events as $EM_Event){
+		    $event_ids[] = $EM_Event->event_id;
 			$results[] = $EM_Event->delete();
 		}
 		//TODO add better error feedback on events delete fails

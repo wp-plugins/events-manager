@@ -24,5 +24,5 @@
 <?php endif; ?>		
 <p>
 	<label for='booking_comment'><?php _e('Comment', 'dbem') ?></label>
-	<textarea name='booking_comment'><?php echo !empty($_POST['booking_comment']) ? $_POST['booking_comment']:'' ?></textarea>
+	<textarea name='booking_comment' rows="2" cols="20"><?php echo !empty($_POST['booking_comment']) ? $_POST['booking_comment']:'' ?></textarea>
 </p>	
