@@ -460,7 +460,7 @@ function em_admin_options_page() {
 					<?php 
 						$performance_opt_page_instructions = __('In the boxes below, you are expected to write the page IDs. For multiple pages, use comma-seperated values e.g. 1,2,3. Entering 0 means EVERY page, -1 means the home page.','dbem');
 					?>
-					<p><?php _e('This section allows you to configure parts of this plugin that will improve performance on your site and increase page speeds by reducing extra files from being unecessarily included on pages as well as reducing server loads where possible. This only applies to pages outside the admin area.','dbem'); ?></p>
+					<p><?php _e('This section allows you to configure parts of this plugin that will improve performance on your site and increase page speeds by reducing extra files from being unnecessarily included on pages as well as reducing server loads where possible. This only applies to pages outside the admin area.','dbem'); ?></p>
 					<p><em><strong><?php _e('Warning!','dbem'); ?></strong> <?php echo sprintf(__('This is for advanced users, you should know what you\'re doing here or things will not work properly. For more information on how these options work see our <a href="%s" target="_blank">optimization recommendations</a>','dbem'), 'http://wp-events-plugin.com/documentation/optimization-recommendations/'); ?></em></p>
 			            <table class="form-table">
 			            <tr><td colspan="2">
@@ -468,7 +468,7 @@ function em_admin_options_page() {
 			            	<p><?php echo sprintf(__('If you are not using it already, we recommend you try the <a href="%s" target="_blank">Use Google Libraries</a> plugin, because without further optimization options below it already significantly reduces the number of files needed to display your Event pages and will most likely speed up your overall website loading time.' ,'dbem'),'http://wordpress.org/extend/plugins/use-google-libraries/'); ?>
 						</td></tr>
 						<?php
-							em_options_radio_binary ( __( 'Limit JS file loading?', 'dbem' ), 'dbem_js_limit', __( 'Prevent unecessary loading of JavaScript files on pages where they are not needed.', 'dbem' ) );
+							em_options_radio_binary ( __( 'Limit JS file loading?', 'dbem' ), 'dbem_js_limit', __( 'Prevent unnecessary loading of JavaScript files on pages where they are not needed.', 'dbem' ) );
 						?>
 						<tbody id="dbem-js-limit-options">
 							<tr><td colspan="2">

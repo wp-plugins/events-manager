@@ -156,10 +156,12 @@ class EM_ML{
 		self::$langs = apply_filters('em_ml_langs', array());
 		self::$wplang = apply_filters('em_ml_wplang',get_locale());
 		
-		if( count(self::$langs) > 0 && self::$wplang != get_locale() ){
-		 	foreach(self::$translatable_options as $option){
-		 	    add_filter('pre_option_'.$option, array(&$this, 'pre_option_'.$option), 1,1);
-		 	}
+		if( !is_admin() ){
+			if( count(self::$langs) > 0 && self::$wplang != get_locale() ){
+			 	foreach(self::$translatable_options as $option){
+			 	    add_filter('pre_option_'.$option, array(&$this, 'pre_option_'.$option), 1,1);
+		 		}
+			}
 		}
 	}
 	

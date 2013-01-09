@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.3.3
+Version: 5.3.3.1
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -197,7 +197,12 @@ class EM_Scripts_and_Styles {
            	'my-bookings' => get_option('dbem_my_bookings_page')
         );
 		$obj = $wp_query->get_queried_object();
-		$obj_id = is_home() ? '-1':$obj->ID;
+		$obj_id = 0;
+		if( is_home() ){
+		    $obj_id = '-1';
+		}elseif( !empty( $obj->ID ) ){
+			$obj_id = $obj->ID;
+		}
 		
 	    //Decide whether or not to include certain JS files and dependencies
         if( get_option('dbem_js_limit') ){

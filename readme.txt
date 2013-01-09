@@ -98,6 +98,11 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.3.3.1 (dev) =
+* fixed Multilingual settings not saving default language setting if other than english
+* fixed typo in performance optimization settings
+* fixed warning of undefined ID on archive pages when enqueuing scripts
+
 = 5.3.3 =
 * changed taxonomy pages to use is_tax() to check whether page is a taxonomy page, rather than checking the $wp_query object
 * fixed booked spaces being off if approvals are disabled and booking has status 0 from when approvals were enabled
