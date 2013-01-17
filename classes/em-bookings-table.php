@@ -363,7 +363,7 @@ class EM_Bookings_Table{
 				<input type="hidden" name="pno" value='<?php echo $this->page ?>' />
 				<input type="hidden" name="order" value='<?php echo $this->order ?>' />
 				<input type="hidden" name="orderby" value='<?php echo $this->orderby ?>' />
-				<input type="hidden" name="_wpnonce" value="<?php echo ( !empty($_REQUEST['_wpnonce']) ) ? $_REQUEST['_wpnonce']:wp_create_nonce('em_bookings_table'); ?>" />
+				<input type="hidden" name="_wpnonce" value="<?php echo ( !empty($_REQUEST['_wpnonce']) ) ? esc_attr($_REQUEST['_wpnonce']):wp_create_nonce('em_bookings_table'); ?>" />
 				<input type="hidden" name="action" value="em_bookings_table" />
 				<input type="hidden" name="cols" value="<?php echo implode(',', $this->cols); ?>" />
 				

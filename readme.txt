@@ -98,10 +98,20 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.3.1 (dev) =
+= 5.3.3.2 (dev) =
 * fixed Multilingual settings not saving default language setting if other than english
 * fixed typo in performance optimization settings
 * fixed warning of undefined ID on archive pages when enqueuing scripts
+* fixed special characters being converted to entities in non-html emails
+* fixed typo in options for category/location event list placeholders
+* corrected Slovak translation, thanks to Julius Pastierik 
+* added British translation, thanks to Jeff Cole
+* added some code to booking form js to prevent JS conflicts with JetPack's reCaptcha
+* added base64 encoding/decoding to em_notice cookies for improved compatibility
+* fixed potential php warning in EM_Tickets class
+* event spaces show as blank rather than 0 on input form (aesthetic change in line with the field help text)
+* added alphabetical ordering to category and countries ddms in search form and admin event categories ddm
+* fixed XSS vulnerabilities (more info tbd)
 
 = 5.3.3 =
 * changed taxonomy pages to use is_tax() to check whether page is a taxonomy page, rather than checking the $wp_query object
@@ -130,7 +140,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added em_options_page_panel_admin_tools action to admin tools section of options page
 * fixed #_BOOKINGPRICE and other booking price placeholders not using currency formatting option
 * fixed permissions issue with groups plugin (thx itthinx)
-* added Slovak translation, thanks to [Branco](http://webhostinggeeks.com)
+* added Slovak translation, thanks to Branco
 * added em_bookings_table_row_booking_price_ticket filter (needed for Pro ticket exports w/coupons)
 * added default rows/cols attributes to booking form textarea field for valid html
 * fixed conflict with caching plugins and booking forms due to cached wpnonces
