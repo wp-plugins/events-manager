@@ -541,16 +541,16 @@ class EM_Booking extends EM_Object{
 					$replace = $this->booking_comment;
 					break;
 				case '#_BOOKINGPRICEWITHTAX':
-					$replace = em_get_currency_symbol(true)." ". number_format($this->get_price(false,false,true),2);
+					$replace = em_get_currency_formatted($this->get_price(false,false,true));
 					break;
 				case '#_BOOKINGPRICEWITHOUTTAX':
-					$replace = em_get_currency_symbol(true)." ". number_format($this->get_price(false,false,false),2);
+					$replace = em_get_currency_formatted($this->get_price(false,false,false));
 					break;
 				case '#_BOOKINGPRICETAX':
-					$replace = em_get_currency_symbol(true)." ". number_format($this->get_price(false,false,false)*(get_option('dbem_bookings_tax')/100),2);
+					$replace = em_get_currency_formatted($this->get_price(false,false,false)*(get_option('dbem_bookings_tax')/100));
 					break;
 				case '#_BOOKINGPRICE':
-					$replace = em_get_currency_symbol(true)." ". number_format($this->get_price(),2);
+					$replace = em_get_currency_formatted($this->get_price());
 					break;
 				case '#_BOOKINGTICKETNAME':
 					$replace = $EM_Ticket->name;
@@ -559,16 +559,16 @@ class EM_Booking extends EM_Object{
 					$replace = $EM_Ticket->description;
 					break;
 				case '#_BOOKINGTICKETPRICEWITHTAX':
-					$replace = em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,true),2);
+					$replace = em_get_currency_formatted($EM_Ticket->get_price(false,true));
 					break;
 				case '#_BOOKINGTICKETPRICEWITHOUTTAX':
-					$replace = em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,false),2);
+					$replace = em_get_currency_formatted($EM_Ticket->get_price(false,false));
 					break;
 				case '#_BOOKINGTICKETTAX':
-					$replace = em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(false,false)*(get_option('dbem_bookings_tax')/100),2);
+					$replace = em_get_currency_formatted($EM_Ticket->get_price(false,false)*(get_option('dbem_bookings_tax')/100));
 					break;
 				case '#_BOOKINGTICKETPRICE':
-					$replace = em_get_currency_symbol(true)." ". number_format($EM_Ticket->get_price(),2);
+					$replace = em_get_currency_formatted($EM_Ticket->get_price());
 					break;
 				case '#_BOOKINGTICKETS':
 					ob_start();
