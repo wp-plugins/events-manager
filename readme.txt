@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.5
-Stable tag: 5.3.3
+Stable tag: 5.3.4
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.3.2 (dev) =
+= 5.3.4 =
 * fixed Multilingual settings not saving default language setting if other than english
 * fixed typo in performance optimization settings
 * fixed warning of undefined ID on archive pages when enqueuing scripts
@@ -112,6 +112,11 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * event spaces show as blank rather than 0 on input form (aesthetic change in line with the field help text)
 * added alphabetical ordering to category and countries ddms in search form and admin event categories ddm
 * fixed XSS vulnerabilities (more info tbd)
+* fixed em_is_category_page() and added check for specific categories (like is_tax() second parameter), added em_is_tag_page() with checks for specific tags
+* added #_EVENTPRICERANGEALL and fixed #_EVENTPRICERANGE showing if booking closed but unavailable tickets set to true (docs need revising)
+* improved speed of event shortcode by adding global event object
+* added ordering of locations by name and other location table fields in event queries such as events_list shortcode
+* added some missing classes to event form 'when' section 
 
 = 5.3.3 =
 * changed taxonomy pages to use is_tax() to check whether page is a taxonomy page, rather than checking the $wp_query object

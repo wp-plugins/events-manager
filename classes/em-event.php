@@ -1409,19 +1409,23 @@ class EM_Event extends EM_Object{
 						$replace = ob_get_clean();
 					}
 					break;
+				case '#_EVENTPRICERANGEALL':				    
+				    $show_all_ticket_prices = true; //continues below
 				case '#_EVENTPRICERANGE':
 					//get the range of prices
 					$min = false;
 					$max = 0;
-					foreach( $this->get_tickets()->tickets as $EM_Ticket ){
-						/* @var $EM_Ticket EM_Ticket */
-						if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') ){
-							if($EM_Ticket->get_price() > $max ){
-								$max = $EM_Ticket->get_price();
+					if( $this->get_bookings()->is_open() || $show_all_ticket_prices ){
+						foreach( $this->get_tickets()->tickets as $EM_Ticket ){
+							/* @var $EM_Ticket EM_Ticket */
+							if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') || !empty($show_all_ticket_prices) ){
+								if($EM_Ticket->get_price() > $max ){
+									$max = $EM_Ticket->get_price();
+								}
+								if($EM_Ticket->get_price() < $min || $min === false){
+									$min = $EM_Ticket->get_price();
+								}						
 							}
-							if($EM_Ticket->get_price() < $min || $min === false){
-								$min = $EM_Ticket->get_price();
-							}						
 						}
 					}
 					if( $min === false ) $min = 0;
