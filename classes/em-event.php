@@ -2126,7 +2126,7 @@ class EM_Event extends EM_Object{
  * @param string $target
  * @return mixed
  */
-function em_event_output_placeholder($result,$event,$full_result,$target='html'){
+function em_event_output_placeholder($result,$event,$placeholder,$target='html'){
 	if( $target == 'raw' ) return $result;
 	if( in_array($placeholder, array("#_EXCERPT",'#_EVENTEXCERPT', "#_LOCATIONEXCERPT")) && $target == 'html' ){
 		$result = apply_filters('dbem_notes_excerpt', $result);
@@ -2146,7 +2146,7 @@ function em_event_output_placeholder($result,$event,$full_result,$target='html')
 			$result = apply_filters('dbem_notes', $result);
 		}
 	}elseif( in_array($placeholder, array("#_NAME",'#_LOCATION','#_TOWN','#_ADDRESS','#_LOCATIONNAME',"#_EVENTNAME","#_LOCATIONNAME")) ){
-		if ($target == "rss"){    
+		if ($target == "rss"){
 			$result = apply_filters('dbem_general_rss', $result);
 	  	}elseif ($target == "ical"){    
 			$result = apply_filters('dbem_general_ical', $result); 
