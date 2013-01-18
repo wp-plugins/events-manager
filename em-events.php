@@ -192,6 +192,7 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	// Determines position of the separator and direction of the breadcrumb
 	$new_title = em_content_page_title($title);
 	if( $new_title != $title ){
+	    if( $sep == '' ) $sep = '  ';
 		$title_array = explode( $sep, $title );
 		foreach($title_array as $title_item_key => $title_item){ if(trim($title_item) == ''){ unset($title_array[$title_item_key]); } } //remove blanks
 		$title_array[] = $new_title;
@@ -201,6 +202,7 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 		}else{
 		    $title_array[] = '';
 		}
+	    if( $sep == '  ' ) $sep = '';
 		$title = implode( " $sep ", $title_array );
 	}
 	return $title;
@@ -234,7 +236,7 @@ add_filter ( 'the_title', 'em_wp_the_title',10,1 );
 
 
 function em_get_page_type(){
-	global $EM_Location, $EM_Category, $EM_Event, $wp_query, $post;	
+	global $EM_Location, $EM_Category, $EM_Event, $wp_query, $post, $em_category_id, $em_tag_id;
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$categories_page_id = get_option( 'dbem_categories_page' );
@@ -262,9 +264,11 @@ function em_get_page_type(){
 		return 'location';
 	}
 	if( (!empty($categories_page_id) && $post->ID == $categories_page_id) ){
-		return "categories";		
-	}elseif( !empty($wp_query->tax_query->queries[0]['taxonomy']) &&  $wp_query->tax_query->queries[0]['taxonomy'] == EM_TAXONOMY_CATEGORY ){
+		return "categories";
+	}elseif( is_tax(EM_TAXONOMY_CATEGORY) || !empty($wp_query->em_category_id) || ($post->ID == get_option('dbem_categories_page') && !empty($em_category_id)) ){
 		return "category";
+	}elseif( is_tax(EM_TAXONOMY_TAG) || !empty($wp_query->em_tag_id) || !empty($em_tag_id) ){
+		return "tag";
 	}
 }
 ?>
