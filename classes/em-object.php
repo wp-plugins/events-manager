@@ -356,27 +356,38 @@ class EM_Object {
 		}elseif( self::array_is_numeric($category) ){
 			$term_ids = array();
 			$term_not_ids = array();
-			foreach($category as $category_id){
-				$term = new EM_Category(absint($category_id));
-				if( !empty($term->term_taxonomy_id) ){
+			if( EM_MS_GLOBAL ){
+			    //we're directly looking for category ids from within the em_meta table
+				foreach($category as $category_id){
 					if( $category_id > 0 ){
-						$term_ids[] = $term->term_taxonomy_id;
+						$term_ids[] = $category_id;
 					}else{
-						$term_not_ids[] = $term->term_taxonomy_id;
+						$term_not_ids[] = absint($category_id);
 					}
 				}
-			}
-			if( count($term_ids) > 0 || count($term_not_ids) > 0 ){
-				if( EM_MS_GLOBAL ){
-					$cat_conds = array();
-					if( count($term_ids) > 0 ){
-						$cat_conds[] = EM_EVENTS_TABLE.".event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_name='event-category' )";
+				$cat_conds = array();
+				if( count($term_ids) > 0 ){
+					$cat_conds[] = EM_EVENTS_TABLE.".event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_key='event-category' )";
+				}
+				if( count($term_not_ids) > 0 ){
+					$cat_conds[] = EM_EVENTS_TABLE.".event_id NOT IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_not_ids).") AND meta_key='event-category' )";			
+				}
+				if( count($cat_conds) > 0 ){
+					$conditions['category'] = '('. implode(' AND ', $cat_conds) .')';
+				}
+			}else{
+			    //normal taxonomy filtering
+				foreach($category as $category_id){
+					$term = new EM_Category(absint($category_id));
+					if( !empty($term->term_taxonomy_id) ){
+						if( $category_id > 0 ){
+							$term_ids[] = $term->term_taxonomy_id;
+						}else{
+							$term_not_ids[] = $term->term_taxonomy_id;
+						}
 					}
-					if( count($term_not_ids) > 0 ){
-						$cat_conds[] = EM_EVENTS_TABLE.".event_id NOT IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_not_ids).") AND meta_name='event-category' )";			
-					}
-					$conditions['category'] = '('. implode(' || ', $cat_conds) .')';
-				}else{
+				}
+				if( count($term_ids) > 0 || count($term_not_ids) > 0 ){
 					$cat_conds = array();
 					if( count($term_ids) > 0 ){
 						$cat_conds[] = EM_EVENTS_TABLE.".post_id IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") )";
@@ -384,10 +395,12 @@ class EM_Object {
 					if( count($term_not_ids) > 0 ){
 						$cat_conds[] = EM_EVENTS_TABLE.".post_id NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_not_ids).") )";			
 					}
-					$conditions['category'] = '('. implode(' || ', $cat_conds) .')';
+					if( count($cat_conds) > 0 ){
+						$conditions['category'] = '('. implode(' AND ', $cat_conds) .')';
+					}
+				}else{
+				    $conditions = array('tag'=>'2=1'); //force a false
 				}
-			}else{
-			    $conditions = array('tag'=>'2=1'); //force a false
 			}
 		}		
 		//Add conditions for tags

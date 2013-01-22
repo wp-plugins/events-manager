@@ -1085,11 +1085,14 @@ class EM_Event extends EM_Object{
 		}
 	}
 	
-	function is_free(){
+	function is_free( $now = false ){
 		$free = true;
 		foreach($this->get_tickets() as $EM_Ticket){
+		    /* @var $EM_Ticket EM_Ticket */
 			if( $EM_Ticket->get_price() > 0 ){
-				$free = false;
+				if( !$now || $EM_Ticket->is_available() ){	
+				    $free = false;
+				}
 			}
 		}
 		return apply_filters('em_event_is_free',$free,$this);
@@ -1196,6 +1199,12 @@ class EM_Event extends EM_Object{
 					}elseif ($condition == 'fully_booked'){
 						//is it an all day event
 						$show_condition = $this->event_rsvp && $this->get_bookings()->get_available_spaces() <= 0;
+					}elseif ($condition == 'is_free' || $condition == 'is_free_now'){
+						//is it a free day event, if _now then free right now
+						$show_condition = !$this->event_rsvp || $this->is_free( $condition == 'is_free_now' );
+					}elseif ($condition == 'not_free' || $condition == 'not_free_now'){
+						//is it a paid event, if _now then paid right now
+						$show_condition = $this->event_rsvp && !$this->is_free( $condition == 'not_free_now' );
 					}elseif ($condition == 'is_long'){
 						//is it an all day event
 						$show_condition = $this->event_start_date != $this->event_end_date;
@@ -2172,6 +2181,7 @@ add_filter('dbem_notes', 'convert_smilies');
 add_filter('dbem_notes', 'convert_chars');
 add_filter('dbem_notes', 'wpautop');
 add_filter('dbem_notes', 'prepend_attachment');
+add_filter('dbem_notes', 'do_shortcode');
 // RSS content filter
 add_filter('dbem_notes_rss', 'convert_chars', 8);
 add_filter('dbem_general_rss', 'esc_html', 8);

@@ -98,6 +98,13 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.3.5.1 =
+* added is_free, is_free_now, not_free and not_free_now conditional placeholders 
+* modified EM_Event::is_free() so it can also check if event is free at that moment, 
+* added do_shortcode filter to dbem_notes so shortcode is parsed outside single event pages
+* fixed category filtering when using negative/positive combinations
+* fixed category filtering in MS Global mode
+
 = 5.3.5 =
 * fixed bug in placeholder formatting
 
@@ -114,7 +121,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed potential php warning in EM_Tickets class
 * event spaces show as blank rather than 0 on input form (aesthetic change in line with the field help text)
 * added alphabetical ordering to category and countries ddms in search form and admin event categories ddm
-* fixed XSS vulnerabilities (more info tbd)
+* fixed XSS vulnerabilities - https://www.htbridge.com/advisory/HTB23139
 * fixed em_is_category_page() and added check for specific categories (like is_tax() second parameter), added em_is_tag_page() with checks for specific tags
 * added #_EVENTPRICERANGEALL and fixed #_EVENTPRICERANGE showing if booking closed but unavailable tickets set to true (docs need revising)
 * improved speed of event shortcode by adding global event object
