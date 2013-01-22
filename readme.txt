@@ -121,7 +121,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed potential php warning in EM_Tickets class
 * event spaces show as blank rather than 0 on input form (aesthetic change in line with the field help text)
 * added alphabetical ordering to category and countries ddms in search form and admin event categories ddm
-* fixed XSS vulnerabilities - [http://em.cm/xss]
+* fixed XSS vulnerabilities - http://em.cm/xss
 * fixed em_is_category_page() and added check for specific categories (like is_tax() second parameter), added em_is_tag_page() with checks for specific tags
 * added #_EVENTPRICERANGEALL and fixed #_EVENTPRICERANGE showing if booking closed but unavailable tickets set to true (docs need revising)
 * improved speed of event shortcode by adding global event object
