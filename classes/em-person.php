@@ -38,7 +38,7 @@ class EM_Person extends WP_User{
 				$blog_condition = "AND (e.blog_id=".get_current_blog_id().' OR e.blog_id IS NULL)';
 			}
 		}		
-		$EM_Booking = new EM_Booking(); //empty booking for fields
+		$EM_Booking = em_get_booking(); //empty booking for fields
 		$results = $wpdb->get_results("SELECT b.".implode(', b.', array_keys($EM_Booking->fields))." FROM ".EM_BOOKINGS_TABLE." b, ".EM_EVENTS_TABLE." e WHERE e.event_id=b.event_id AND person_id={$this->ID} {$blog_condition} ORDER BY ".get_option('dbem_bookings_default_orderby','event_start_date')." ".get_option('dbem_bookings_default_order','ASC'),ARRAY_A);
 		$bookings = array();
 		if($ids_only){
@@ -48,7 +48,7 @@ class EM_Person extends WP_User{
 			return apply_filters('em_person_get_bookings', $bookings, $this);
 		}else{
 			foreach($results as $booking_data){
-				$bookings[] = new EM_Booking($booking_data);
+				$bookings[] = em_get_booking($booking_data);
 			}
 			return apply_filters('em_person_get_bookings', new EM_Bookings($bookings), $this);
 		}

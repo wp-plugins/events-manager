@@ -7,9 +7,9 @@
  */
 function em_get_location($id = false, $search_by = 'location_id') {
 	if( is_object($id) && get_class($id) == 'EM_Location' ){
-		return $id;
+		return apply_filters('em_get_location', $id);
 	}else{
-		return new EM_Location($id,$search_by);
+		return apply_filters('em_get_location', new EM_Location($id,$search_by));
 	}
 }
 /**

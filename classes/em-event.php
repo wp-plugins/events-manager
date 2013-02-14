@@ -10,19 +10,19 @@ function em_get_event($id = false, $search_by = 'event_id') {
 	//check if it's not already global so we don't instantiate again
 	if( is_object($EM_Event) && get_class($EM_Event) == 'EM_Event' ){
 		if( is_object($id) && $EM_Event->post_id == $id->ID ){
-			return $EM_Event;
+			return apply_filters('em_get_event', $EM_Event);
 		}elseif( !is_object($id) ){
 			if( $search_by == 'event_id' && $EM_Event->event_id == $id ){
-				return $EM_Event;
+				return apply_filters('em_get_event', $EM_Event);
 			}elseif( $search_by == 'post_id' && $EM_Event->post_id == $id ){
-				return $EM_Event;
+				return apply_filters('em_get_event', $EM_Event);
 			}
 		}
 	}
 	if( is_object($id) && get_class($id) == 'EM_Event' ){
-		return $id;
+		return apply_filters('em_get_event', $id);
 	}else{
-		return new EM_Event($id,$search_by);
+		return apply_filters('em_get_event', new EM_Event($id,$search_by));
 	}
 }
 /**

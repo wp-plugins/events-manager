@@ -173,7 +173,7 @@ function em_docs_init($force_init = false){
 							'#_CATEGORYIMAGE' => array( 'desc' => 'Shows the category image, if available.' ),
 							'#_CATEGORYIMAGE{x,y}' => array( 'desc' => 'Shows the category image thumbnail if available, x and y are width and height respectively, both being numbers e.g. <code>#_CATEGORYIMAGE{100,100}</code>' ),
 							'#_CATEGORYIMAGEURL' => array( 'desc' => 'Shows the category image url, if available.' ),
-							'#_CATEGORYNOTES' => array( 'desc' => 'Shows the location description.' )
+							'#_CATEGORYNOTES' => array( 'desc' => 'Shows the category description.' )
 						)
 					),			
 					'Related Events' => array(

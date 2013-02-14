@@ -29,7 +29,7 @@ class EM_Object {
 			'category' => 0,
 			'tag' => 0,
 			'location' => 0,
-			'event' => 0, 
+			'event' => false, 
 			'offset'=>0,
 			'page'=>1,//basically, if greater than 0, calculates offset at end
 			'recurrence'=>0,
@@ -1254,4 +1254,18 @@ class EM_Object {
 	/*
 	 * END IMAGE UPlOAD FUNCTIONS
 	 */
+	
+	/**
+	 * 
+	 * @return boolean
+	 */
+	function has_taxes(){
+	    //TODO make all functions use this to check tax availability (using extended object for function access)
+	    //TODO override this function in e.g. events to allow custom tax values
+	    return !get_option('dbem_bookings_tax_auto_add') && is_numeric(get_option('dbem_bookings_tax')) && $this->get_tax_rate() > 0;
+	}
+	
+	function get_tax_rate(){
+		return get_option('dbem_bookings_tax');
+	}
 }
