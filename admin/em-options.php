@@ -1450,6 +1450,7 @@ function em_admin_options_page() {
 						em_options_input_text ( __( 'User can book', 'dbem' ), 'dbem_booking_button_msg_book', '');
 						em_options_input_text ( __( 'Booking in progress', 'dbem' ), 'dbem_booking_button_msg_booking', '');
 						em_options_input_text ( __( 'Booking complete', 'dbem' ), 'dbem_booking_button_msg_booked', '');
+						em_options_input_text ( __( 'Booking already made', 'dbem' ), 'dbem_booking_button_msg_already_booked', '');
 						em_options_input_text ( __( 'Booking error', 'dbem' ), 'dbem_booking_button_msg_error', '');
 						em_options_input_text ( __( 'Event fully booked', 'dbem' ), 'dbem_booking_button_msg_full', '');
 						em_options_input_text ( __( 'Cancel', 'dbem' ), 'dbem_booking_button_msg_cancel', '');
@@ -1711,12 +1712,14 @@ function em_admin_option_box_image_sizes(){
  */
 function em_admin_option_box_email(){
 	global $save_button;
+	$current_user = get_user_by('id', get_current_user_id());
 	?>
 	<div  class="postbox " >
 	<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Email Settings', 'dbem' ); ?></span></h3>
 	<div class="inside em-email-form">
 		<p class="em-email-settings-check">
-			<?php _e('Before you save your changes, you can quickly send yourself a test email by clicking this button.'); ?>
+			<em><?php _e('Before you save your changes, you can quickly send yourself a test email by clicking this button.','dbem'); ?>
+			<?php echo sprintf(__('A test email will be sent to your account email - %s','dbem'), $current_user->user_email); ?></em><br />
 			<input type="button" id="em-admin-check-email" class="secondary-button" value="<?php _e('Test Email Settings','dbem'); ?>" />
 			<input type="hidden" name="_check_email_nonce" value="<?php echo wp_create_nonce('check_email'); ?>" />
 			<span id="em-email-settings-check-status"></span>

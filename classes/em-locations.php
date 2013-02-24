@@ -166,9 +166,12 @@ class EM_Locations extends EM_Object implements Iterator {
 	}
 	
 	function delete( $args = array() ){
-		if( !is_object(current($args)) && get_class((current($args))) != 'EM_Location' ){
+	    $locations = array();
+		if( !is_object(current($args)) ){
+		    //we've been given an array or search arguments to find the relevant locations to delete
 			$locations = self::get($args);
-		}else{
+		}elseif( get_class(current($args)) == 'EM_Location' ){
+		    //we're deleting an array of locations
 			$locations = $args;
 		}
 		$results = array();

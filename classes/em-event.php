@@ -1388,26 +1388,7 @@ class EM_Event extends EM_Object{
 					if( get_option('dbem_rsvp_enabled')){
 						ob_start();
 						$template = em_locate_template('placeholders/bookingform.php', true, array('EM_Event'=>$this));
-						if( !defined('EM_BOOKING_JS_LOADED') ){
-							//this kicks off the Javascript required by booking forms. This is fired once for all booking forms on a page load and appears at the bottom of the page
-							//your theme must call the wp_footer() function for this to work (as required by many other plugins too) 
-							function em_booking_js_footer(){
-								?>		
-								<script type="text/javascript">
-									jQuery(document).ready( function($){	
-										<?php
-											//we call the segmented JS files and include them here
-											include(WP_PLUGIN_DIR.'/events-manager/includes/js/bookingsform.js'); 
-											do_action('em_gateway_js'); 
-										?>							
-									});
-								</script>
-								<?php
-							}
-							add_action('wp_footer','em_booking_js_footer');
-							add_action('admin_footer','em_booking_js_footer');
-							define('EM_BOOKING_JS_LOADED',true);
-						}
+						EM_Bookings::enqueue_js();
 						$replace = ob_get_clean();
 					}
 					break;

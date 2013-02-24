@@ -27,8 +27,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	
 	/**
 	 * Creates an EM_Tickets instance, 
-	 * @param EM_Event $event
-	 * @return null
+	 * @param mixed $object
 	 */
 	function EM_Tickets_Bookings( $object = false ){
 		global $wpdb;

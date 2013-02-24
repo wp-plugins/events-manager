@@ -411,6 +411,26 @@ function em_init_actions() {
 					$feedback = $EM_Booking->feedback_message;
 				}	
 			}
+		}elseif( $_REQUEST['action'] == 'booking_modify_person' ){
+			em_verify_nonce('booking_modify_person_'.$EM_Booking->booking_id);
+			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') ){
+			    global $wpdb;
+			    $no_user = get_option('dbem_bookings_registration_disable') && $EM_Booking->get_person()->ID == get_option('dbem_bookings_registration_user');
+				if( //save just the booking meta, avoid extra unneccesary hooks and things to go wrong
+					$no_user && $EM_Booking->get_person_post() && 
+			    	$wpdb->update(EM_BOOKINGS_TABLE, array('booking_meta'=> serialize($EM_Booking->booking_meta)), array('booking_id'=>$EM_Booking->booking_id))
+				){
+					$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
+					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
+					wp_redirect( $redirect );
+					exit();
+				}else{
+					$result = false;
+					$EM_Notices->add_error( $EM_Booking->get_errors() );			
+					$feedback = $EM_Booking->feedback_message;	
+				}	
+			}
+			do_action('em_booking_modify_person', $EM_Event, $EM_Booking);
 		}
 		if( $result && defined('DOING_AJAX') ){
 			$return = array('result'=>true, 'message'=>$feedback);

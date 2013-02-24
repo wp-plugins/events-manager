@@ -3,7 +3,7 @@ msgstr ""
 "Project-Id-Version: Events Manager v5.3.5.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/events-manager\n"
 "POT-Creation-Date: 2011-09-20 20:44:48+00:00\n"
-"PO-Revision-Date: 2013-02-09 18:30+0100\n"
+"PO-Revision-Date: 2013-02-21 21:11+0100\n"
 "Last-Translator: Marcus Sykes <wp.plugins@netweblogic.com>\n"
 "Language-Team: \n"
 "MIME-Version: 1.0\n"
@@ -4226,9 +4226,9 @@ msgid ""
 "When displaying global %s on the main site you have the option of users "
 "viewing the %s details on the main site or being directed to the sub-site."
 msgstr ""
-"Bei der Anzeige von globalen Ereignissen auf der Haupt-Website haben Sie die "
-"Möglichkeit, dass Nutzer beim Betrachten der Veranstaltungsdetails  auf die "
-"Haupt-Website oder die sub-Website geleitet werden."
+"Bei der Anzeige von global %s auf der Haupt-Website haben Sie die "
+"Möglichkeit, Nutzer beim Betrachten der %s Details zur Haupt-Website oder an "
+"die Unter-Website geleitet."
 
 # @ dbem
 #: admin/em-ms-options.php:166
@@ -4238,10 +4238,10 @@ msgid ""
 "%s by blog using shortcodes and template tags coupled with the <code>blog</"
 "code> attribute. Requires global tables to be turned on."
 msgstr ""
-"Zeigt standardmäßig Veranstaltungen von allen Sites im Netzwerk an. Sie "
-"können Veranstaltungen pro Blog immer noch einschränken, wenn sie Shortcodes "
-"und Template-Tags mit dem <code> Blog </ code>-Attribut gekoppelt verwenden. "
-"Globale Tabellen müssen dafür eingeschaltet werden."
+"Zeigt standardmäßig %s von allen Sites im Netzwerk an. Sie können %s  pro "
+"Blog immer noch einschränken, wenn sie Shortcodes und Template-Tags mit dem "
+"<code> Blog </ code>-Attribut gekoppelt verwenden. Globale Tabellen müssen "
+"dafür eingeschaltet werden."
 
 # @ default
 #: admin/em-ms-options.php:167
@@ -4257,15 +4257,13 @@ msgstr ""
 #: admin/em-options.php:1467 admin/em-options.php:1481
 #, php-format
 msgid "%s Options"
-msgstr "Option eins"
+msgstr "%s Optionen"
 
 # @ dbem
 #: admin/em-ms-options.php:171 admin/em-ms-options.php:180
 #, php-format
 msgid "Link sub-site %s directly to sub-site?"
-msgstr ""
-"Verlinken der Veranstaltungen von Unterwebsites direkt zu diesen "
-"Unterwebsites?"
+msgstr "Verlinken der %s von Unterwebsites direkt zu diesen Unterwebsites?"
 
 # @ dbem
 #: admin/em-ms-options.php:172 admin/em-ms-options.php:181
@@ -4295,7 +4293,7 @@ msgstr ""
 #: admin/em-ms-options.php:179
 #, php-format
 msgid "Display global %s on main blog?"
-msgstr "Globale Veranstaltungen auf dem Haupt-Blog anzeigen?"
+msgstr "Globale %s auf dem Haupt-Blog anzeigen?"
 
 # @ dbem
 #: admin/em-options.php:139
@@ -4383,7 +4381,7 @@ msgstr ""
 #: admin/em-options.php:352 admin/em-options.php:396 admin/em-options.php:413
 #, php-format
 msgid "%s Settings"
-msgstr "Einstellungen"
+msgstr "%s Einstellungen"
 
 # @ dbem
 #: admin/em-options.php:356
@@ -4493,7 +4491,7 @@ msgstr "%s Seite"
 #: admin/em-options.php:587 admin/em-options.php:752
 #, php-format
 msgid "Display %s as"
-msgstr "Zeigt die Adresse."
+msgstr ""
 
 # @ default
 #: admin/em-options.php:587 admin/em-options.php:752
@@ -4516,7 +4514,7 @@ msgstr ""
 #: admin/em-options.php:603 admin/em-options.php:769 admin/em-options.php:888
 #, php-format
 msgid "[No %s Page]"
-msgstr "[Keine Veranstaltungsseite]"
+msgstr "[Keine %s seite]"
 
 # @ dbem
 #: admin/em-options.php:605
@@ -4614,7 +4612,7 @@ msgstr "Sortierung der Veranstaltungsliste"
 #: admin/em-options.php:1031 admin/em-options.php:1032
 #, php-format
 msgid "Order by %s"
-msgstr "Sortieren nach"
+msgstr "Sortieren nach %s"
 
 # @ dbem
 #: admin/em-options.php:838 admin/em-options.php:928 admin/em-options.php:1025
@@ -4630,16 +4628,15 @@ msgstr "Anzahl Veranstaltungen in der Veranstaltungsliste"
 #: admin/em-options.php:872 admin/em-options.php:965
 #, php-format
 msgid "This will control how many %s are shown on one list by default."
-msgstr ""
-"Gibt an, wie viele Ereignisse auf einer Liste standardmäßig angezeigt werden."
+msgstr "Gibt an, wie viele %s auf einer Liste standardmäßig angezeigt werden."
 
 # @ dbem
 #: admin/em-options.php:890
 #, php-format
 msgid "This option allows you to select which page to use as the %s page."
 msgstr ""
-"Mit dieser Option können Sie wählen, welche Seite als Veranstaltungsseite "
-"verwendet werden soll."
+"Mit dieser Option können Sie wählen, welche Seite als %s seite verwendet "
+"werden soll."
 
 # @ dbem
 #: admin/em-options.php:899
@@ -4921,7 +4918,7 @@ msgid ""
 "shortcode, and enabling anonymous submissions below."
 msgstr ""
 "Sie können Benutzern erlauben, in ihrem Blog Veranstaltungen vorzuschlagen, "
-"indem Sie den [event_form]-Shortcode nutzen und das anonyme Einsenden von "
+"indem Sie den %s shortcode nutzen und das anonyme Einsenden von "
 "Veranstaltungen unten erlauben."
 
 # @ dbem
@@ -4995,44 +4992,42 @@ msgstr ""
 #: admin/em-options.php:1791 admin/em-options.php:1802
 #, php-format
 msgid "%s Capabilities"
-msgstr "Berechtigungen"
+msgstr "%s Berechtigungen"
 
 # @ dbem
 #: admin/em-options.php:1775 admin/em-options.php:1785
 #: admin/em-options.php:1793
 #, php-format
 msgid "Users can publish %s and skip any admin approval"
-msgstr ""
-"Benutzer kann Veranstaltungen ohne jegliche Admin-Genehmigung "
-"veröffentlichen."
+msgstr "Benutzer kann %s ohne jegliche Admin-Genehmigung veröffentlichen."
 
 # @ dbem
 #: admin/em-options.php:1776 admin/em-options.php:1786
 #: admin/em-options.php:1794
 #, php-format
 msgid "User can delete other users %s"
-msgstr "Benutzer kann Veranstaltungen andere Benutzer löschen."
+msgstr "Benutzer kann %s  andere Benutzer löschen."
 
 # @ dbem
 #: admin/em-options.php:1777 admin/em-options.php:1787
 #: admin/em-options.php:1795
 #, php-format
 msgid "User can edit other users %s"
-msgstr "Benutzer kann Veranstaltungen anderer Benutzer bearbeiten."
+msgstr "Benutzer kann %s anderer Benutzer bearbeiten."
 
 # @ dbem
 #: admin/em-options.php:1778 admin/em-options.php:1788
 #: admin/em-options.php:1796
 #, php-format
 msgid "User can delete their own %s"
-msgstr "Benutzer kann ihre eigenen Standorte löschen."
+msgstr "Benutzer kann ihre %s löschen."
 
 # @ dbem
 #: admin/em-options.php:1779 admin/em-options.php:1789
 #: admin/em-options.php:1797
 #, php-format
 msgid "User can create and edit %s"
-msgstr "Benutzer können ihre Veranstaltungen erstellen und bearbeiten."
+msgstr "Benutzer können ihre %s erstellen und bearbeiten."
 
 # @ dbem
 #: admin/em-options.php:1780 admin/em-options.php:1798
@@ -5062,13 +5057,13 @@ msgstr "Benutzer kann Veranstaltungsorte anderer Benutzer bearbeiten."
 #: admin/em-options.php:1804
 #, php-format
 msgid "User can delete %s categories and tags."
-msgstr "Benutzer kann eigene Veranstaltungen löschen."
+msgstr "Benutzer kann eigene %s löschen."
 
 # @ dbem
 #: admin/em-options.php:1805
 #, php-format
 msgid "User can edit %s categories and tags."
-msgstr "Benutzer kann globale Kategorien bearbeiten."
+msgstr "Benutzer kann globale %s bearbeiten."
 
 # @ dbem
 #: admin/em-options.php:1809
@@ -5100,7 +5095,7 @@ msgstr "Ablehnen"
 #: buddypress/bp-em-activity.php:57
 #, php-format
 msgid "%s added the event %s to %s."
-msgstr "%s fügt die Veranstaltung %s hinzu"
+msgstr "%s fügt die Veranstaltung %s hinzu %s"
 
 # @ dbem
 #: buddypress/bp-em-core.php:53
@@ -5221,7 +5216,7 @@ msgstr "Suche"
 #: classes/em-event-posts-admin.php:182
 #, php-format
 msgid "Duplicate %s"
-msgstr "Duplizieren"
+msgstr "Duplizieren %s"
 
 # @ dbem
 #: classes/em-event-posts-admin.php:182
@@ -5240,7 +5235,7 @@ msgstr ""
 "Änderungen an dieser Veranstaltung führen dazu, dass alle Wiederholungen "
 "dieser Veranstaltung gelöscht und neu erstellt werden. Dabei werden alle "
 "Reservierungen gelöscht! Sie können die einzelnen Wiederholungen bearbeiten "
-"und diese von dieser Veranstaltung lösen."
+"und diese von dieser <a href=\"%s\">Veranstaltung</a> lösen."
 
 # @ dbem
 #: classes/em-event.php:473

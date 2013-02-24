@@ -59,7 +59,7 @@ class EM_Object {
 		
 			//Clean all id lists
 			$array = self::clean_id_atts($array, array('location', 'event', 'category', 'post_id'));
-			if( !empty($array['tag']) && strstr(',', $array['tag']) !== false ){
+			if( !empty($array['tag']) && !is_array($array['tag']) && strstr($array['tag'],',') !== false ){ //accepts numbers or words
 				$array['tag'] = explode(',',$array['tag']);
 			}
 			
@@ -809,7 +809,7 @@ class EM_Object {
 
 	
 	function ms_global_switch(){
-		if( EM_MS_GLOBAL && !is_main_site() ){
+		if( EM_MS_GLOBAL ){
 			//If in multisite global, then get the main blog categories
 			global $current_site;
 			switch_to_blog($current_site->blog_id);

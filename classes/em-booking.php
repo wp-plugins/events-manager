@@ -390,7 +390,7 @@ class EM_Booking extends EM_Object{
 			$this->person = new EM_Person(0);
 		}
 		//if this user is the parent user of disabled registrations, replace user details here:
-		if( get_option('dbem_bookings_registration_disable') && $this->person->ID == get_option('dbem_bookings_registration_user') ){
+		if( get_option('dbem_bookings_registration_disable') && $this->person->ID == get_option('dbem_bookings_registration_user') && empty($this->person->loaded_no_user) ){
 			//override any registration data into the person objet
 			if( !empty($this->booking_meta['registration']) ){
 				foreach($this->booking_meta['registration'] as $key => $value){
@@ -413,8 +413,78 @@ class EM_Booking extends EM_Object{
 			$full_name = trim($full_name);
 			$display_name = ( empty($full_name) ) ? __('Guest User','dbem'):$full_name;
 			$this->person->display_name = $display_name;
+			$this->person->loaded_no_user = true;
 		}
 		return apply_filters('em_booking_get_person', $this->person, $this);
+	}
+	
+	function get_person_post(){
+	    $user_data = array();
+	    $registration = true;
+	    if( empty($this->booking_meta['registration']) ) $this->booking_meta['registration'] = array();
+	    // Check the e-mail address
+	    if ( $_REQUEST['user_email'] == '' ) {
+	    	$registration = false;
+	    	$this->add_error(__( '<strong>ERROR</strong>: Please type your e-mail address.', 'dbem') );
+	    } elseif ( !is_email( $_REQUEST['user_email'] ) ) {
+	    	$registration = false;
+	    	$this->add_error( __( '<strong>ERROR</strong>: The email address isn&#8217;t correct.', 'dbem') );
+	    }elseif(email_exists( $_REQUEST['user_email'] )){
+	    	$registration = false;
+	    	$this->add_error( get_option('dbem_booking_feedback_email_exists') );
+	    }else{
+	    	$user_data['user_email'] = $_REQUEST['user_email'];
+	    }
+	    //Check the user name
+	    if( !empty($_REQUEST['user_name']) ){
+	    	$name_string = explode(' ',wp_kses($_REQUEST['user_name'], array()));
+	    	$user_data['first_name'] = array_shift($name_string);
+	    	$user_data['last_name'] = implode(' ', $name_string);
+	    }
+	    //Check the first/last name
+	    if( !empty($_REQUEST['first_name']) ){
+	    	$user_data['first_name'] = wp_kses($_REQUEST['first_name'], array());
+	    }
+	    if( !empty($_REQUEST['last_name']) ){
+	    	$user_data['last_name'] = wp_kses($_REQUEST['last_name'], array());
+	    }
+	    //Check the phone
+	    if( !empty($_REQUEST['dbem_phone']) ){
+	    	$user_data['dbem_phone'] = wp_kses($_REQUEST['dbem_phone'], array());
+	    }
+	    //Add booking meta
+	    if( $registration ){
+		    $this->booking_meta['registration'] = array_merge($this->booking_meta['registration'], $user_data);	//in case someone else added stuff
+	    }
+	    $registration = apply_filters('em_booking_get_person_post', $registration, $this);
+	    if( $registration ){
+	        $this->feedback_message = __('Personal details have successfully been modified.', 'dbem');
+	    }
+	    return $registration;
+	}
+	
+	/**
+	 * Displays a form containing user fields, used in no-user booking mode for editing guest users within a booking
+	 * @return string
+	 */
+	function get_person_editor(){
+		ob_start();
+		$name = $this->get_person()->get_name();
+		$email = $this->get_person()->user_email;
+		$phone = ($this->get_person()->phone != __('Not Supplied','dbem')) ? $this->get_person()->phone:'';
+		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'booking_modify_person' ){
+		    $name = !empty($_REQUEST['user_name']) ? $_REQUEST['user_name']:$name;
+		    $email = !empty($_REQUEST['user_email']) ? $_REQUEST['user_email']:$email;
+		    $phone = !empty($_REQUEST['dbem_phone']) ? $_REQUEST['dbem_phone']:$phone;
+		}
+		?>
+		<table class="em-form-fields">
+			<tr><th><?php _e('Name','dbem'); ?> : </th><td><input type="text" name="user_name" value="<?php echo esc_attr($name); ?>" /></td></tr>
+			<tr><th><?php _e('Email','dbem'); ?> : </th><td><input type="text" name="user_email" value="<?php echo esc_attr($email); ?>" /></td></tr>
+			<tr><th><?php _e('Phone','dbem'); ?> : </th><td><input type="text" name="dbem_phone" value="<?php echo esc_attr($phone); ?>" /></td></tr>
+		</table>
+		<?php
+		return apply_filters('em_booking_get_person_editor', ob_get_clean(), $this);
 	}
 
 	/**

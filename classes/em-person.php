@@ -68,13 +68,14 @@ class EM_Person extends WP_User{
 	
 	function display_summary(){
 		ob_start();
+		$no_user = get_option('dbem_bookings_registration_disable') && $this->ID == get_option('dbem_bookings_registration_user');
 		?>
 		<table class="em-form-fields">
 			<tr>
 				<td><?php echo get_avatar($this->ID); ?></td>
 				<td style="padding-left:10px; vertical-align: top;">
 					<table>
-						<?php if( get_option('dbem_bookings_registration_disable') && $this->ID == get_option('dbem_bookings_registration_user') ): ?>
+						<?php if( $no_user ): ?>
 						<tr><th><?php _e('Name','dbem'); ?> : </th><th><?php echo $this->get_name() ?></th></tr>
 						<?php else: ?>
 						<tr><th><?php _e('Name','dbem'); ?> : </th><th><a href="<?php echo EM_ADMIN_URL ?>&amp;page=events-manager-bookings&amp;person_id=<?php echo $this->ID; ?>"><?php echo $this->get_name() ?></a></th></tr>

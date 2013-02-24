@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.5.2 (dev) =
+= 5.3.5.3 (dev) =
 * added is_free, is_free_now, not_free and not_free_now conditional placeholders 
 * modified EM_Event::is_free() so it can also check if event is free at that moment, 
 * added do_shortcode filter to dbem_notes so shortcode is parsed outside single event pages
@@ -122,6 +122,22 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added get_admin_url function for booking object
 * added get_price_taxes function to booking object
 * added bookings filter condition to exclude bookings with event_id of 0 by default (for Pro Multi-Bookings)
+* added data response as second argument to jQuery em_maps_locations_hook event
+* fixed bookings form showing on password-protected events
+* fixed MS Global blog switching issues when saving
+* fixed $EM_Booking->get_tickets() returning all tickets rather than tickets in specific booking
+* fixed hidden BP groups not showing to admins
+* fixed some German translation file inconsistencies
+* fixed blank datepickers if date format is left blank in settings
+* fixed tags filter searching multiple tags returning no events
+* fixed some MultiSite PHP warnings when adding/deleting sites
+* fixed booking button not showing cancel if event is fully booked
+* changed booking button so only one booking can be made
+* fixed attributes not showing on event submission forms if categories are disabled (option name typo)
+* added editable form, so no-user bookings user data can also be edited
+* changed booking form JS enqueueing by moving it into EM_Bookings object as a function 
+* changed booking JS to use on() event delegation for more AJAX compatibility
+* fixed some booking form CSS field styling inconsistencies
 
 = 5.3.5 =
 * fixed bug in placeholder formatting

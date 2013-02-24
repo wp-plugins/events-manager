@@ -113,7 +113,7 @@ function em_docs_init($force_init = false){
 						)
 					),
 					'Custom Attributes' => array(
-						'desc' => 'Events Manager allows you to create dynamic attributes to your events, which act as extra information fields for your events (e.g. "Dress Code"). For more information see <a href="http://wp-events-plugin.com/documentation/categories-and-attributes/">our online documentation</a> for more info on attributes.',
+						'desc' => 'Events Manager allows you to create dynamic attributes to your events, which act as extra information fields for your events (e.g. "Dress Code"). For more information see <a href="http://wp-events-plugin.com/documentation/event-attributes/">our online documentation</a> for more info on attributes.',
 						'placeholders' => array( 
 							'#_ATT{key}' => array('desc'=> 'This key will appear as an option when adding attributes to your event.'),
 							'#_ATT{key}{alternative text}' => array('desc'=> 'This key will appear as an option when adding attributes to your event. The text in the second braces will appear if the attribute is not defined or left blank for that event.'),
@@ -211,7 +211,7 @@ function em_docs_init($force_init = false){
 						)
 					),
 					'Custom Attributes' => array(
-						'desc' => 'Events Manager allows you to create dynamic attributes to your locations, which act as extra information fields for your locations (e.g. "Dress Code"). For more information see <a href="http://wp-events-plugin.com/documentation/categories-and-attributes/">our online documentation</a> for more info on attributes.',
+						'desc' => 'Events Manager allows you to create dynamic attributes to your locations, which act as extra information fields for your locations (e.g. "Dress Code"). For more information see <a href="http://wp-events-plugin.com/documentation/event-attributes/">our online documentation</a> for more info on attributes.',
 						'placeholders' => array( 
 							'#_LATT{key}' => array('desc'=> 'This key will appear as an option when adding attributes to your location.'),
 							'#_LATT{key}{alternative text}' => array('desc'=> 'This key will appear as an option when adding attributes to your location. The text in the second braces will appear if the attribute is not defined or left blank for that location.'),

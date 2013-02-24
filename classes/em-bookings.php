@@ -554,6 +554,32 @@ class EM_Bookings extends EM_Object implements Iterator{
 		exit();
 	}
 	
+	static function enqueue_js(){
+        if( !defined('EM_BOOKING_JS_LOADED') ){ //request loading of JS file in footer of page load
+        	add_action('wp_footer','EM_Bookings::em_booking_js_footer');
+        	add_action('admin_footer','EM_Bookings::em_booking_js_footer');
+        	define('EM_BOOKING_JS_LOADED',true);
+        }
+	}
+	
+	static function em_booking_js_footer(){
+		?>		
+		<script type="text/javascript">
+			jQuery(document).ready( function($){	
+				<?php
+					//we call the segmented JS files and include them here
+					$include_path = dirname(dirname(__FILE__)); //get path to parent directory
+					include($include_path.'/includes/js/bookingsform.js'); 
+					do_action('em_gateway_js'); 
+				?>							
+			});
+			<?php
+			do_action('em_booking_js_footer');
+			?>
+		</script>
+		<?php
+	}
+	
 	/* Overrides EM_Object method to apply a filter to result
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */
