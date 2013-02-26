@@ -93,7 +93,7 @@ function em_ms_admin_menu(){
 add_action('network_admin_menu','em_ms_admin_menu');
 
 function em_admin_init(){
-	//in MS global mode
+	//in MS global mode and locations are stored in the main blog, then a user must have at least a subscriber role
 	if( EM_MS_GLOBAL && is_user_logged_in() && !is_main_site() && get_site_option('dbem_ms_mainblog_locations') ){
 		EM_Object::ms_global_switch();
 		$user = new WP_User(get_current_user_id());

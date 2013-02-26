@@ -153,7 +153,6 @@ function em_init_actions() {
 			$EM_Location = new EM_Location();
 		}
 		if( $_REQUEST['action'] == 'location_save' && current_user_can('edit_locations') ){
-			if( get_site_option('dbem_ms_mainblog_locations') ) EM_Object::ms_global_switch(); //switch to main blog if locations are global
 			//Check Nonces
 			em_verify_nonce('location_save');
 			//Grab and validate submitted data
@@ -166,7 +165,6 @@ function em_init_actions() {
 				$EM_Notices->add_error( $EM_Location->get_errors() );
 				$result = false;		
 			}
-			if( get_site_option('dbem_ms_mainblog_locations') ) EM_Object::ms_global_switch_back();
 		}elseif( !empty($_REQUEST['action']) && $_REQUEST['action'] == "location_delete" ){
 			//delete location
 			//get object or objects			
@@ -564,6 +562,9 @@ function em_init_actions() {
 	}
 	//Export CSV - WIP
 	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'export_bookings_csv' && wp_verify_nonce($_REQUEST['_wpnonce'], 'export_bookings_csv')){
+		if( !empty($_REQUEST['event_id']) ){
+			$EM_Event = em_get_event($_REQUEST['event_id']);
+		}
 		//sort out cols
 		if( !empty($_REQUEST['cols']) && is_array($_REQUEST['cols']) ){
 			$cols = array();
@@ -576,13 +577,13 @@ function em_init_actions() {
 		
 		//generate bookings export according to search request
 		$show_tickets = !empty($_REQUEST['show_tickets']);
-		$EM_Bookings_Table = em_get_bookings_Table($show_tickets);
+		$EM_Bookings_Table = new EM_Bookings_Table($show_tickets);
 		header("Content-Type: application/octet-stream; charset=utf-8");
-		header("Content-Disposition: Attachment; filename=".sanitize_title(get_bloginfo())."-bookings-export.csv");
+		$file_name = !empty($EM_Event->event_slug) ? $EM_Event->event_slug:get_bloginfo();
+		header("Content-Disposition: Attachment; filename=".sanitize_title($file_name)."-bookings-export.csv");
 		do_action('em_csv_header_output');
 		if( !defined('EM_CSV_DISABLE_HEADERS') || !EM_CSV_DISABLE_HEADERS ){
 			if( !empty($_REQUEST['event_id']) ){
-				$EM_Event = em_get_event($_REQUEST['event_id']);
 				echo __('Event','dbem') . ' : ' . $EM_Event->event_name .  "\n";
 				if( $EM_Event->location_id > 0 ) echo __('Where','dbem') . ' - ' . $EM_Event->get_location()->location_name .  "\n";
 				echo __('When','dbem') . ' : ' . $EM_Event->output('#_EVENTDATES - #_EVENTTIMES') .  "\n";

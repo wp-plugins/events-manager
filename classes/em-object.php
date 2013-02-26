@@ -776,17 +776,18 @@ class EM_Object {
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false, $user_to_check = false ){
 		global $em_capabilities_array;
-		if( $user_to_check ){
-			$user = new WP_User($user_to_check);
-			if( empty($user->ID) ) $user = false;
-		} 
-		//if multisite and supoer admin, just return true
+		//if multisite and super admin, just return true
 		if( is_multisite() && is_super_admin() ){ return true; }
+		//set user to the desired user we're verifying, otherwise default to current user
+	    if( $user_to_check ){
+	    	$user = new WP_User($user_to_check);	
+	    }
+	    if( empty($user->ID) ) $user = wp_get_current_user();
 		//do they own this?
 		$is_owner = ( (!empty($this->owner) && ($this->owner == get_current_user_id()) || empty($this->id) || (!empty($user) && $this->owner == $user->ID)) );
 		//now check capability
 		$can_manage = false;
-		if( $is_owner && (current_user_can($owner_capability) || (!empty($user) && $user->has_cap($owner_capability))) ){
+		if( $is_owner && $owner_capability && $user->has_cap($owner_capability) ){
 			//user owns the object and can therefore manage it
 			$can_manage = true;
 		}elseif( $owner_capability && array_key_exists($owner_capability, $em_capabilities_array) ){
@@ -795,7 +796,7 @@ class EM_Object {
 		}
 		//admins have special rights
 		if( !$admin_capability ) $admin_capability = $owner_capability;
-		if( current_user_can($admin_capability) || (!empty($user) && $user->has_cap($admin_capability)) ){
+		if( $admin_capability && $user->has_cap($admin_capability) ){
 			$can_manage = true;
 		}elseif( $admin_capability && array_key_exists($admin_capability, $em_capabilities_array) ){
 			$error_msg = $em_capabilities_array[$admin_capability];
@@ -810,7 +811,7 @@ class EM_Object {
 	
 	function ms_global_switch(){
 		if( EM_MS_GLOBAL ){
-			//If in multisite global, then get the main blog categories
+			//If in multisite global, then get the main blog
 			global $current_site;
 			switch_to_blog($current_site->blog_id);
 		}

@@ -617,7 +617,6 @@ class EM_Event extends EM_Object{
 			do_action('em_event_save_meta_pre', $this);
 			//first save location
 			if( empty($this->location_id) && !($this->location_id === 0 && !get_option('dbem_require_location',true)) ){
-				if( get_site_option('dbem_ms_mainblog_locations') ){ $this->ms_global_switch(); }
 				if( !$this->get_location()->save() ){ //soft fail
 					global $EM_Notices;
 					if( !empty($this->get_location()->location_id) ){
@@ -627,7 +626,6 @@ class EM_Event extends EM_Object{
 						$EM_Notices->add_error( __('There were some errors saving your location.'), true);
 					}
 				}
-				if( get_site_option('dbem_ms_mainblog_locations') ){ $this->ms_global_switch_back(); }
 				if( !empty($this->location->location_id) ){ //only case we don't use get_location(), since it will fail as location has an id, whereas location_id isn't set in this object
 					$this->location_id = $this->location->location_id;
 				}
