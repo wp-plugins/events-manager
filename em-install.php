@@ -441,6 +441,7 @@ function em_add_options() {
 		'dbem_location_event_list_item_header_format' => "<ul>",
 		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_location_event_list_item_footer_format' => "</ul>",
+		'dbem_location_event_list_limit' => 20,
 		//Category page options
 		'dbem_categories_default_limit' => 10,
 		'dbem_categories_default_orderby' => 'name',
@@ -455,6 +456,7 @@ function em_add_options() {
 		'dbem_category_event_list_item_header_format' => '<ul>',
 		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_category_event_list_item_footer_format' => '</ul>',
+		'dbem_category_event_list_limit' => 20,
 		//Tag Formatting
 		'dbem_tag_page_title_format' => '#_TAGNAME',
 		'dbem_tag_page_format' => '<h3>Upcoming Events</h3>#_TAGNEXTEVENTS',
@@ -564,6 +566,7 @@ function em_add_options() {
 			'dbem_booking_button_msg_book' => __('Book Now', 'dbem'),
 			'dbem_booking_button_msg_booking' => __('Booking...','dbem'),
 			'dbem_booking_button_msg_booked' => sprintf(__('%s Submitted','dbem'), __('Booking','dbem')),
+			'dbem_booking_button_msg_already_booked' => __('Already Booked','dbem'),
 			'dbem_booking_button_msg_error' => sprintf(__('%s Error. Try again?','dbem'), __('Booking','dbem')),
 			'dbem_booking_button_msg_full' => __('Sold Out', 'dbem'),
 			'dbem_booking_button_msg_cancel' => __('Cancel', 'dbem'),

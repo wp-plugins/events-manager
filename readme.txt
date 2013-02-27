@@ -3,8 +3,8 @@ Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
-Tested up to: 3.5
-Stable tag: 5.3.2.1
+Tested up to: 3.5.1
+Stable tag: 5.3.6
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,7 +98,109 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.2.1 (dev) =
+= 5.3.6 =
+* added is_free, is_free_now, not_free and not_free_now conditional placeholders 
+* modified EM_Event::is_free() so it can also check if event is free at that moment, 
+* added do_shortcode filter to dbem_notes so shortcode is parsed outside single event pages
+* fixed category filtering when using negative/positive combinations
+* fixed category filtering in MS Global mode
+* fixed missing menus items for normal blog admins in MS without plugin caps
+* updated italian and swedish
+* added finish countries translations
+* added sorting for countries lists (previously sorted by country code)
+* updated POT file
+* updated French, updated German (unfuzzied loads of strings, may need some corrections)
+* booking meta now uses maybe_unserialize on instantiation
+* separated booking validation from save function
+* moved user registration logic during bookings into a reusable function
+* cleaned up the email admin setting panels for submissions and booking templates
+* booking email messages array now generated in separate function
+* added em_get_location and em_get_event filters for event/location object retrieval functions
+* added em_get_booking getter function with corresponding filter and changed all used of new EM_Booking()
+* added em_bookings_admin_page action at start of booking admin pages
+* added taxes functions to booking and object classes
+* added get_admin_url function for booking object
+* added get_price_taxes function to booking object
+* added bookings filter condition to exclude bookings with event_id of 0 by default (for Pro Multi-Bookings)
+* added data response as second argument to jQuery em_maps_locations_hook event
+* fixed bookings form showing on password-protected events
+* fixed MS Global blog switching issues when saving
+* fixed $EM_Booking->get_tickets() returning all tickets rather than tickets in specific booking
+* fixed hidden BP groups not showing to admins
+* fixed some German translation file inconsistencies
+* fixed blank datepickers if date format is left blank in settings
+* fixed tags filter searching multiple tags returning no events
+* fixed some MultiSite PHP warnings when adding/deleting sites
+* fixed booking button not showing cancel if event is fully booked
+* changed booking button so only one booking can be made
+* fixed attributes not showing on event submission forms if categories are disabled (option name typo)
+* added editable form, so no-user bookings user data can also be edited
+* changed booking form JS enqueueing by moving it into EM_Bookings object as a function 
+* changed booking JS to use on() event delegation for more AJAX compatibility
+* fixed some booking form CSS field styling inconsistencies
+* fixed issues with locations on sub-blogs when in MultiSite Global mode with locations restricted to main blog
+* fixed duplicate confirmations/warnings on MultiSite location admin pages
+* changed (improved) EM_Object::can_manage method to avoid extra calls and potential warnings
+* changed csv export of single event so the file name = the event name
+
+= 5.3.5 =
+* fixed bug in placeholder formatting
+
+= 5.3.4 =
+* fixed Multilingual settings not saving default language setting if other than english
+* fixed typo in performance optimization settings
+* fixed warning of undefined ID on archive pages when enqueuing scripts
+* fixed special characters being converted to entities in non-html emails
+* fixed typo in options for category/location event list placeholders
+* corrected Slovak translation, thanks to Julius Pastierik 
+* added British translation, thanks to Jeff Cole
+* added some code to booking form js to prevent JS conflicts with JetPack's reCaptcha
+* added base64 encoding/decoding to em_notice cookies for improved compatibility
+* fixed potential php warning in EM_Tickets class
+* event spaces show as blank rather than 0 on input form (aesthetic change in line with the field help text)
+* added alphabetical ordering to category and countries ddms in search form and admin event categories ddm
+* fixed XSS vulnerabilities - http://em.cm/xss
+* fixed em_is_category_page() and added check for specific categories (like is_tax() second parameter), added em_is_tag_page() with checks for specific tags
+* added #_EVENTPRICERANGEALL and fixed #_EVENTPRICERANGE showing if booking closed but unavailable tickets set to true (docs need revising)
+* improved speed of event shortcode by adding global event object
+* added ordering of locations by name and other location table fields in event queries such as events_list shortcode
+* added some missing classes to event form 'when' section 
+
+= 5.3.3 =
+* changed taxonomy pages to use is_tax() to check whether page is a taxonomy page, rather than checking the $wp_query object
+* fixed booked spaces being off if approvals are disabled and booking has status 0 from when approvals were enabled
+* added #_CATEGORYSLUG
+* fixed bad usage of wpdb::prepare in classes/em-object.php
+* added em_actions_locations_search_cond for autocompleter
+* added Bermuda and Jersey to countries list
+* fixed title rewriting warning when $sep is blank
+* fixed BP 'add event' link appearing to all users on event profile pages
+* fixed loading of unused post meta overwriting post fields/properties
+* added multilingual capability
+* added WPML add-on warning
+* simplified enqueue of styles and scripts, now uses wp_enqueue_scripts action
+* added performance optimization options for CSS and JS files
+* removed usage of PHP sessions in exchange for temporary cookies
+* added possiblility to use wp thumbnails rather than timthumb (category images need resaving via uploader)
+* added #_LOCATIONLONGITUDE and #_LOCATIONLATITUDE placeholders
+* added em-pagination span wrapper and em-tablenav-pagination classnames to normal and table pagination sections
+* fixed location searches not returning results admin-side in MS global tables with locations on main blog
+* updated JS for location map to update when location name changed
+* added pagination and limits to location and category event list placeholders.
+* updated finnish language
+* fixed minor php warning when deleting a user with no events in MultiSite
+* fixed php warnings on category pages using formats, major change to how formats are overriden, now rewrites WP_Query completely
+* added em_options_page_panel_admin_tools action to admin tools section of options page
+* fixed #_BOOKINGPRICE and other booking price placeholders not using currency formatting option
+* fixed permissions issue with groups plugin (thx itthinx)
+* added Slovak translation, thanks to Branco
+* added em_bookings_table_row_booking_price_ticket filter (needed for Pro ticket exports w/coupons)
+* added default rows/cols attributes to booking form textarea field for valid html
+* fixed conflict with caching plugins and booking forms due to cached wpnonces
+* added #_CATEGORYDESCRIPTION to default EM filters of content placeholders
+* updated timthumb.php to version 2.8.11
+
+= 5.3.2.1 =
 * added is_singular to $wp_query on format overriden category pages, fixes conflict with WooThemes Canvas theme
 
 = 5.3.2 =
