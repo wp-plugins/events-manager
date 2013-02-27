@@ -346,8 +346,8 @@ class EM_Event extends EM_Object{
 		//anonymous submissions and guest basic info
 		if( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') && empty($this->event_id) ){
 			$this->event_owner_anonymous = 1;
-			$this->event_owner_name = !empty($_POST['event_owner_name']) ? stripslashes($_POST['event_owner_name']):'';
-			$this->event_owner_email = !empty($_POST['event_owner_email']) ? $_POST['event_owner_email']:'';
+			$this->event_owner_name = !empty($_POST['event_owner_name']) ? wp_kses_data(stripslashes($_POST['event_owner_name'])):'';
+			$this->event_owner_email = !empty($_POST['event_owner_email']) ? wp_kses_data($_POST['event_owner_email']):'';
 		}
 		//get the rest and validate (optional)
 		$this->get_post_meta(false);
@@ -362,8 +362,8 @@ class EM_Event extends EM_Object{
 	 */
 	function get_post_meta($validate = true){
 		//Grab POST data	
-		$this->event_start_date = ( !empty($_POST['event_start_date']) ) ? $_POST['event_start_date'] : '';
-		$this->event_end_date = ( !empty($_POST['event_end_date']) ) ? $_POST['event_end_date'] : $this->event_start_date;
+		$this->event_start_date = ( !empty($_POST['event_start_date']) ) ? wp_kses_data($_POST['event_start_date']) : '';
+		$this->event_end_date = ( !empty($_POST['event_end_date']) ) ? wp_kses_data($_POST['event_end_date']) : $this->event_start_date;
 		//check if this is recurring or not
 		if( !empty($_POST['recurring']) ){
 			$this->recurrence = 1;
@@ -408,7 +408,7 @@ class EM_Event extends EM_Object{
 			$this->event_rsvp = 1;
 			//RSVP cuttoff TIME is set up above where start/end times are as well 
 			if( !$this->is_recurring() ){
-				$this->event_rsvp_date = ( isset($_POST['event_rsvp_date']) ) ? $_POST['event_rsvp_date'] : $this->event_start_date;
+				$this->event_rsvp_date = ( isset($_POST['event_rsvp_date']) ) ? wp_kses_data($_POST['event_rsvp_date']) : $this->event_start_date;
 				if( empty($this->event_rsvp_date) ){ $this->event_rsvp_time = '00:00:00'; }
 			}
 			$this->event_spaces = ( isset($_POST['event_spaces']) ) ? absint($_POST['event_spaces']):0;
@@ -451,10 +451,10 @@ class EM_Event extends EM_Object{
 			if( !empty($_POST['recurrence_bydays']) && $this->recurrence_freq == 'weekly' && self::array_is_numeric($_POST['recurrence_bydays']) ){
 				$this->recurrence_byday = implode( ",", $_POST['recurrence_bydays'] );
 			}elseif( !empty($_POST['recurrence_byday']) && $this->recurrence_freq == 'monthly' ){
-				$this->recurrence_byday = $_POST['recurrence_byday'];
+				$this->recurrence_byday = wp_kses_data($_POST['recurrence_byday']);
 			}
 			$this->recurrence_interval = ( !empty($_POST['recurrence_interval']) && is_numeric($_POST['recurrence_interval']) ) ? $_POST['recurrence_interval']:1;
-			$this->recurrence_byweekno = ( !empty($_POST['recurrence_byweekno']) ) ? $_POST['recurrence_byweekno']:'';
+			$this->recurrence_byweekno = ( !empty($_POST['recurrence_byweekno']) ) ? wp_kses_data($_POST['recurrence_byweekno']):'';
 			$this->recurrence_days = ( !empty($_POST['recurrence_days']) && is_numeric($_POST['recurrence_days']) ) ? (int) $_POST['recurrence_days']:0;
 		}
 		//categories in MS GLobal

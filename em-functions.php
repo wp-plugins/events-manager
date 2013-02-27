@@ -311,13 +311,13 @@ function em_booking_add_registration( $EM_Booking ){
     $registration = true;
     if( (!is_user_logged_in() || defined('EM_FORCE_REGISTRATION')) && get_option('dbem_bookings_anonymous') && !get_option('dbem_bookings_registration_disable') ){
     	//find random username - less options for user, less things go wrong
-    	$username_root = explode('@', $_REQUEST['user_email']);
+    	$username_root = explode('@', wp_kses_data($_REQUEST['user_email']));
     	$username_rand = $username_root[0];
     	while( username_exists($username_rand) ) {
     		$username_rand = $username_root[0].rand(1,1000);
     	}
-    	$_REQUEST['dbem_phone'] = (!empty($_REQUEST['dbem_phone'])) ? $_REQUEST['dbem_phone']:''; //fix to prevent warnings
-    	$_REQUEST['user_name'] = (!empty($_REQUEST['user_name'])) ? $_REQUEST['user_name']:''; //fix to prevent warnings
+    	$_REQUEST['dbem_phone'] = (!empty($_REQUEST['dbem_phone'])) ? wp_kses_data($_REQUEST['dbem_phone']):''; //fix to prevent warnings
+    	$_REQUEST['user_name'] = (!empty($_REQUEST['user_name'])) ? wp_kses_data($_REQUEST['user_name']):''; //fix to prevent warnings
     	$user_data = array('user_login' => $username_rand, 'user_email'=> $_REQUEST['user_email'], 'user_name'=> $_REQUEST['user_name'], 'dbem_phone'=> $_REQUEST['dbem_phone']);
     	$id = em_register_new_user($user_data);
     	if( is_numeric($id) ){

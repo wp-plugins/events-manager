@@ -23,7 +23,7 @@ class EM_Person extends WP_User{
 		}else{
 			parent::__construct($person_id);
 		}
-		$this->phone = get_metadata('user', $this->ID, 'dbem_phone', true); //extra field for EM
+		$this->phone = wp_kses_data(get_metadata('user', $this->ID, 'dbem_phone', true)); //extra field for EM
 		do_action('em_person',$this, $person_id, $username);
 	}
 	
@@ -92,7 +92,7 @@ class EM_Person extends WP_User{
 	
 	function get_name(){
 		$full_name = $this->first_name  . " " . $this->last_name ;
-		$full_name = trim($full_name);
+		$full_name = wp_kses_data(trim($full_name));
 		$name = !empty($full_name) ? $full_name : $this->display_name;
 		return apply_filters('em_person_get_name', $name, $this);
 	}
