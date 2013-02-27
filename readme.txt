@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 5.3.5
+Stable tag: 5.3.6
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.5.4 (dev) =
+= 5.3.6 =
 * added is_free, is_free_now, not_free and not_free_now conditional placeholders 
 * modified EM_Event::is_free() so it can also check if event is free at that moment, 
 * added do_shortcode filter to dbem_notes so shortcode is parsed outside single event pages
@@ -111,7 +111,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * updated POT file
 * updated French, updated German (unfuzzied loads of strings, may need some corrections)
 * booking meta now uses maybe_unserialize on instantiation
-* seperated booking validation from save function
+* separated booking validation from save function
 * moved user registration logic during bookings into a reusable function
 * cleaned up the email admin setting panels for submissions and booking templates
 * booking email messages array now generated in separate function
