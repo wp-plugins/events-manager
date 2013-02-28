@@ -205,6 +205,7 @@ function wp_events_plugin_init(){
 			'public' => true,
 			'hierarchical' => false,
 			'show_in_admin_bar' => true,
+			//if in MS Global mode with locations shown on main blog, then the ui shouldn't be available on network blogs:
 			'show_ui' => !(EM_MS_GLOBAL && !is_main_site() && get_site_option('dbem_ms_mainblog_locations')),
 			'show_in_menu' => 'edit.php?post_type='.EM_POST_TYPE_EVENT,
 			'show_in_nav_menus'=>true,
@@ -295,94 +296,96 @@ function supported_custom_fields($supported, $remove = array()){
 }
 
 function em_map_meta_cap( $caps, $cap, $user_id, $args ) {
-	/* Handle event reads */
-	if ( 'edit_event' == $cap || 'delete_event' == $cap || 'read_event' == $cap ) {
-		$EM_Event = em_get_event($args[0],'post_id');
-		$post_type = get_post_type_object( $EM_Event->post_type );
-		/* Set an empty array for the caps. */
-		$caps = array();
-		//Filter according to event caps
-		switch( $cap ){
-			case 'read_event':
-				if ( 'private' != $EM_Event->post_status )
-					$caps[] = 'read';
-				elseif ( $user_id == $EM_Event->event_owner )
-					$caps[] = 'read';
-				else
-					$caps[] = $post_type->cap->read_private_posts;
-				break;
-			case 'edit_event':
-				if ( $user_id == $EM_Event->event_owner )
-					$caps[] = $post_type->cap->edit_posts;
-				else
-					$caps[] = $post_type->cap->edit_others_posts;
-				break;
-			case 'delete_event':
-				if ( $user_id == $EM_Event->event_owner )
-					$caps[] = $post_type->cap->delete_posts;
-				else
-					$caps[] = $post_type->cap->delete_others_posts;
-				break;
+    if( !empty( $args[0]) ){
+		/* Handle event reads */
+		if ( 'edit_event' == $cap || 'delete_event' == $cap || 'read_event' == $cap ) {
+			$EM_Event = em_get_event($args[0],'post_id');
+			$post_type = get_post_type_object( $EM_Event->post_type );
+			/* Set an empty array for the caps. */
+			$caps = array();
+			//Filter according to event caps
+			switch( $cap ){
+				case 'read_event':
+					if ( 'private' != $EM_Event->post_status )
+						$caps[] = 'read';
+					elseif ( $user_id == $EM_Event->event_owner )
+						$caps[] = 'read';
+					else
+						$caps[] = $post_type->cap->read_private_posts;
+					break;
+				case 'edit_event':
+					if ( $user_id == $EM_Event->event_owner )
+						$caps[] = $post_type->cap->edit_posts;
+					else
+						$caps[] = $post_type->cap->edit_others_posts;
+					break;
+				case 'delete_event':
+					if ( $user_id == $EM_Event->event_owner )
+						$caps[] = $post_type->cap->delete_posts;
+					else
+						$caps[] = $post_type->cap->delete_others_posts;
+					break;
+			}
 		}
-	}
-	if ( 'edit_recurring_event' == $cap || 'delete_recurring_event' == $cap || 'read_recurring_event' == $cap ) {
-		$EM_Event = em_get_event($args[0],'post_id');
-		$post_type = get_post_type_object( $EM_Event->post_type );
-		/* Set an empty array for the caps. */
-		$caps = array();
-		//Filter according to recurring_event caps
-		switch( $cap ){
-			case 'read_recurring_event':
-				if ( 'private' != $EM_Event->post_status )
-					$caps[] = 'read';
-				elseif ( $user_id == $EM_Event->event_owner )
-					$caps[] = 'read';
-				else
-					$caps[] = $post_type->cap->read_private_posts;
-				break;
-			case 'edit_recurring_event':
-				if ( $user_id == $EM_Event->event_owner )
-					$caps[] = $post_type->cap->edit_posts;
-				else
-					$caps[] = $post_type->cap->edit_others_posts;
-				break;
-			case 'delete_recurring_event':
-				if ( $user_id == $EM_Event->event_owner )
-					$caps[] = $post_type->cap->delete_posts;
-				else
-					$caps[] = $post_type->cap->delete_others_posts;
-				break;
+		if ( 'edit_recurring_event' == $cap || 'delete_recurring_event' == $cap || 'read_recurring_event' == $cap ) {
+			$EM_Event = em_get_event($args[0],'post_id');
+			$post_type = get_post_type_object( $EM_Event->post_type );
+			/* Set an empty array for the caps. */
+			$caps = array();
+			//Filter according to recurring_event caps
+			switch( $cap ){
+				case 'read_recurring_event':
+					if ( 'private' != $EM_Event->post_status )
+						$caps[] = 'read';
+					elseif ( $user_id == $EM_Event->event_owner )
+						$caps[] = 'read';
+					else
+						$caps[] = $post_type->cap->read_private_posts;
+					break;
+				case 'edit_recurring_event':
+					if ( $user_id == $EM_Event->event_owner )
+						$caps[] = $post_type->cap->edit_posts;
+					else
+						$caps[] = $post_type->cap->edit_others_posts;
+					break;
+				case 'delete_recurring_event':
+					if ( $user_id == $EM_Event->event_owner )
+						$caps[] = $post_type->cap->delete_posts;
+					else
+						$caps[] = $post_type->cap->delete_others_posts;
+					break;
+			}
 		}
-	}
-	if ( 'edit_location' == $cap || 'delete_location' == $cap || 'read_location' == $cap ) {
-		$EM_Location = em_get_location($args[0],'post_id');
-		$post_type = get_post_type_object( $EM_Location->post_type );
-		/* Set an empty array for the caps. */
-		$caps = array();
-		//Filter according to location caps
-		switch( $cap ){
-			case 'read_location':
-				if ( 'private' != $EM_Location->post_status )
-					$caps[] = 'read';
-				elseif ( $user_id == $EM_Location->location_owner )
-					$caps[] = 'read';
-				else
-					$caps[] = $post_type->cap->read_private_posts;
-				break;
-			case 'edit_location':
-				if ( $user_id == $EM_Location->location_owner )
-					$caps[] = $post_type->cap->edit_posts;
-				else
-					$caps[] = $post_type->cap->edit_others_posts;
-				break;
-			case 'delete_location':
-				if ( $user_id == $EM_Location->location_owner )
-					$caps[] = $post_type->cap->delete_posts;
-				else
-					$caps[] = $post_type->cap->delete_others_posts;
-				break;
+		if ( 'edit_location' == $cap || 'delete_location' == $cap || 'read_location' == $cap ) {
+			$EM_Location = em_get_location($args[0],'post_id');
+			$post_type = get_post_type_object( $EM_Location->post_type );
+			/* Set an empty array for the caps. */
+			$caps = array();
+			//Filter according to location caps
+			switch( $cap ){
+				case 'read_location':
+					if ( 'private' != $EM_Location->post_status )
+						$caps[] = 'read';
+					elseif ( $user_id == $EM_Location->location_owner )
+						$caps[] = 'read';
+					else
+						$caps[] = $post_type->cap->read_private_posts;
+					break;
+				case 'edit_location':
+					if ( $user_id == $EM_Location->location_owner )
+						$caps[] = $post_type->cap->edit_posts;
+					else
+						$caps[] = $post_type->cap->edit_others_posts;
+					break;
+				case 'delete_location':
+					if ( $user_id == $EM_Location->location_owner )
+						$caps[] = $post_type->cap->delete_posts;
+					else
+						$caps[] = $post_type->cap->delete_others_posts;
+					break;
+			}
 		}
-	}
+    }
 	/* Return the capabilities required by the user. */
 	return $caps;
 }
