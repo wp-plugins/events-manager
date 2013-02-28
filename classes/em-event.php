@@ -1617,7 +1617,9 @@ class EM_Event extends EM_Object{
 			if( !in_array($full_result, array('#_NOTES','#_EVENTNOTES')) ){
 				$event_string = str_replace($full_result, $replacement , $event_string );
 			}else{
-				$desc_replace[$full_result] = $replacement;
+			    $new_placeholder = str_replace('#_', '__#', $full_result); //this will avoid repeated filters when locations/categories are parsed
+			    $event_string = str_replace($full_result, $new_placeholder , $event_string );
+				$desc_replace[$new_placeholder] = $replacement;
 			}
 		}
 		//Time placeholders

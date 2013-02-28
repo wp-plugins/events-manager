@@ -781,7 +781,7 @@ class EM_Location extends EM_Object {
 						$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : 1;
 					    $replace = EM_Events::output($args);
 					} else {
-						$replace = get_option('dbem_location_no_events_message');
+						$replace = get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_no_events_message').get_option('dbem_location_event_list_item_footer_format');
 					}
 					break;
 				case '#_LOCATIONNEXTEVENT':
