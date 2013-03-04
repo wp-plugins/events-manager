@@ -13,8 +13,15 @@ class EM_Event_Post {
 			add_filter('the_content', array('EM_Event_Post','the_content'));
 			add_filter('the_excerpt_rss', array('EM_Event_Post','the_excerpt_rss'));
 			//display as page template?
-			if( get_option('dbem_cp_events_template_page') ){
+			if( get_option('dbem_cp_events_template') ){
 				add_filter('single_template',array('EM_Event_Post','single_template'));
+			}
+			//add classes to body and post_class()
+			if( get_option('dbem_cp_events_post_class') != '' ){
+			    add_filter('post_class', array('EM_Event_Post','post_class'), 10, 3);
+			}
+			if( get_option('dbem_cp_events_body_class') != '' ){
+			    add_filter('body_class', array('EM_Event_Post','body_class'), 10, 3);
 			}
 			//Override post template tags
 			add_filter('the_date',array('EM_Event_Post','the_date'));
@@ -44,9 +51,37 @@ class EM_Event_Post {
 	function single_template($template){
 		global $post;
 		if( !locate_template('single-'.EM_POST_TYPE_EVENT.'.php') && $post->post_type == EM_POST_TYPE_EVENT ){
-			$template = locate_template(array('page.php','index.php'),false);
+			//do we have a default template to choose for events?
+			if( get_option('dbem_cp_events_template') == 'page' ){
+				$post_templates = array('page.php','index.php');
+			}else{
+			    $post_templates = array(get_option('dbem_cp_events_template'));
+			}
+			if( !empty($post_templates) ){
+			    $post_template = locate_template($post_templates,false);
+			    if( !empty($post_template) ) $template = $post_template;
+			}
 		}
 		return $template;
+	}
+	
+	function post_class( $classes, $class, $post_id ){
+	    $post = get_post($post_id);
+	    if( $post->post_type == EM_POST_TYPE_EVENT ){
+	        foreach( explode(' ', get_option('dbem_cp_events_post_class')) as $class ){
+	            $classes[] = esc_attr($class);
+	        }
+	    }
+	    return $classes;
+	}
+	
+	function body_class( $classes ){
+	    if( em_is_event_page() ){
+	        foreach( explode(' ', get_option('dbem_cp_events_body_class')) as $class ){
+	            $classes[] = esc_attr($class);
+	        }
+	    }
+	    return $classes;
 	}
 	
 	function the_excerpt_rss( $content ){

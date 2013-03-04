@@ -613,7 +613,10 @@ function em_add_options() {
 		'dbem_taxonomy_category_slug' => 'events/categories',
 		'dbem_taxonomy_tag_slug' => 'events/tags',
 		//event cp options
-		'dbem_cp_events_template_page' => 0,
+		'dbem_cp_events_template' => '',
+		//'dbem_cp_events_template_page' => 0, DEPREICATED
+		'dbem_cp_events_body_class' => '',
+		'dbem_cp_events_post_class' => '',
 		'dbem_cp_events_formats' => 1,
 		'dbem_cp_events_has_archive' => 1,
 		'dbem_events_default_archive_orderby' => '_start_ts',
@@ -623,7 +626,10 @@ function em_add_options() {
 		'dbem_cp_events_custom_fields' => 0,
 		'dbem_cp_events_comments' => 1,
 		//location cp options
-		'dbem_cp_locations_template_page' => 0,
+		'dbem_cp_locations_template' => '',
+		//'dbem_cp_locations_template_page' => 0, DEPREICATED
+		'dbem_cp_locations_body_class' => '',
+		'dbem_cp_locations_post_class' => '',
 		'dbem_cp_locations_formats' => 1,
 		'dbem_cp_locations_has_archive' => 1,
 		'dbem_locations_default_archive_orderby' => 'title',
@@ -690,6 +696,16 @@ function em_add_options() {
 	    global $wpdb;
 	    $wpdb->query("UPDATE ".$wpdb->postmeta." SET meta_value = NULL WHERE meta_key IN ('_event_rsvp_date','_event_rsvp_time') AND post_id IN (SELECT post_id FROM ".EM_EVENTS_TABLE." WHERE recurrence_id > 0)");
 	    $wpdb->query("UPDATE ".EM_EVENTS_TABLE." SET event_rsvp_time = NULL, event_rsvp_date = NULL WHERE recurrence_id > 0");
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') <= 5.354 ){
+	    if( get_option('dbem_cp_events_template_page') ){
+	        update_option('dbem_cp_events_template', 'page');
+	        delete_option('dbem_cp_events_template_page');
+	    }
+	    if( get_option('dbem_cp_locations_template_page') ){
+	        update_option('dbem_cp_locations_template', 'page');
+	        delete_option('dbem_cp_locations_template_page');
+	    }
 	}
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless

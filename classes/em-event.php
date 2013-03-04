@@ -232,7 +232,8 @@ class EM_Event extends EM_Object{
 			if($search_by == 'event_id' && !$is_post ){
 				//search by event_id, get post_id and blog_id (if in ms mode) and load the post
 				$results = $wpdb->get_row($wpdb->prepare("SELECT post_id, blog_id FROM ".EM_EVENTS_TABLE." WHERE event_id=%d",$id), ARRAY_A);
-				if( is_multisite() && is_numeric($results['blog_id']) ){
+				if( is_multisite() && (is_numeric($results['blog_id']) || $results['blog_id']=='' ) ){
+				    if( $results['blog_id']=='' )  $results['blog_id'] = get_current_site()->blog_id;
 					$event_post = get_blog_post($results['blog_id'], $results['post_id']);
 					$search_by = $results['blog_id'];
 				}else{
@@ -240,7 +241,8 @@ class EM_Event extends EM_Object{
 				}
 			}else{
 				if(!$is_post){
-					if( is_numeric($search_by) && is_multisite() ){
+					if( is_multisite() && (is_numeric($search_by) || $search_by == '') ){
+					    if( $search_by == '' ) $search_by = get_current_site()->blog_id;
 						//we've been given a blog_id, so we're searching for a post id
 						$event_post = get_blog_post($search_by, $id);
 					}else{
@@ -660,7 +662,11 @@ class EM_Event extends EM_Object{
 			if( !empty($this->event_id) ){
 				$blog_condition = '';
 				if( EM_MS_GLOBAL ){
-					$blog_condition = " AND blog_id='".get_current_blog_id()."' ";
+				    if( is_main_site() ){
+				        $blog_condition = " AND (blog_id='".get_current_blog_id()."' OR blog_id IS NULL)";
+				    }else{
+						$blog_condition = " AND blog_id='".get_current_blog_id()."' ";
+				    }
 				}
 				$event_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}".$blog_condition) == $this->post_id;
 			}else{
@@ -2176,7 +2182,7 @@ add_filter('dbem_notes_map', 'js_escape');
  */
 function em_event_gallery_override( $attr = array() ){
 	global $post;
-	if( $post->post_type == EM_POST_TYPE_EVENT && empty($attr['id']) ){
+	if( $post->post_type == EM_POST_TYPE_EVENT && empty($attr['id']) && empty($attr['ids']) ){
 		//no id specified, so check if it's recurring and override id with recurrence template post id
 		$EM_Event = em_get_event($post->ID, 'post_id');
 		if( $EM_Event->is_recurrence() ){
@@ -2185,6 +2191,9 @@ function em_event_gallery_override( $attr = array() ){
 	}
 	return gallery_shortcode($attr);
 }
-remove_shortcode('gallery');
-add_shortcode('gallery', 'em_event_gallery_override');
+function em_event_gallery_override_init(){
+	remove_shortcode('gallery');
+	add_shortcode('gallery', 'em_event_gallery_override');
+}
+add_action('init','em_event_gallery_override_init', 1000); //so that plugins like JetPack don't think we're overriding gallery, we're not i swear!
 ?>

@@ -5,9 +5,16 @@ class EM_Location_Post {
 		if( !is_admin() ){
 			//override single page with formats? 
 			add_filter('the_content', array('EM_Location_Post','the_content'));
-			//display as page template?
-			if( get_option('dbem_cp_locations_template_page') ){
+			//display as page or other template?
+			if( get_option('dbem_cp_locations_template') ){
 				add_filter('single_template',array('EM_Location_Post','single_template'));
+			}
+			//add classes to body and post_class()
+			if( get_option('dbem_cp_locations_post_class') ){
+			    add_filter('post_class', array('EM_Location_Post','post_class'), 10, 3);
+			}
+			if( get_option('dbem_cp_locations_body_class') ){
+			    add_filter('body_class', array('EM_Location_Post','body_class'), 10, 3);
 			}
 		}
 		add_action('parse_query', array('EM_Location_Post','parse_query'));
@@ -21,9 +28,37 @@ class EM_Location_Post {
 	function single_template($template){
 		global $post;
 		if( !locate_template('single-'.EM_POST_TYPE_LOCATION.'.php') && $post->post_type == EM_POST_TYPE_LOCATION ){
-			$template = locate_template(array('page.php','index.php'),false);
+			//do we have a default template to choose for events?
+			if( get_option('dbem_cp_locations_template') == 'page' ){
+				$post_templates = array('page.php','index.php');
+			}else{
+			    $post_templates = array(get_option('dbem_cp_locations_template'));
+			}
+			if( !empty($post_templates) ){
+			    $post_template = locate_template($post_templates,false);
+			    if( !empty($post_template) ) $template = $post_template;
+			}
 		}
 		return $template;
+	}
+	
+	function post_class( $classes, $class, $post_id ){
+	    $post = get_post($post_id);
+	    if( $post->post_type == EM_POST_TYPE_LOCATION ){
+	        foreach( explode(' ', get_option('dbem_cp_locations_post_class')) as $class ){
+	            $classes[] = esc_attr($class);
+	        }
+	    }
+	    return $classes;
+	}
+	
+	function body_class( $classes ){
+	    if( em_is_location_page() ){
+	        foreach( explode(' ', get_option('dbem_cp_locations_body_class')) as $class ){
+	            $classes[] = esc_attr($class);
+	        }
+	    }
+	    return $classes;
 	}
 	
 	function the_content( $content ){

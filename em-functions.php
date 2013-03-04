@@ -631,11 +631,27 @@ function em_options_select($title, $name, $list, $description='', $default='') {
    		<th scope="row"><?php echo esc_html($title); ?></th>
    		<td>
 			<select name="<?php echo esc_attr($name); ?>" >
-				<?php foreach($list as $key => $value) : ?>
- 				<option value='<?php echo esc_attr($key) ?>' <?php echo ("$key" == $option_value) ? "selected='selected' " : ''; ?>>
- 					<?php echo esc_html($value); ?>
- 				</option>
-				<?php endforeach; ?>
+				<?php 
+				foreach($list as $key => $value) {
+					if( is_array($value) ){
+						?><optgroup label="<?php echo $key; ?>"><?php
+						foreach( $value as $key_group => $value_group ){
+							?>
+			 				<option value='<?php echo esc_attr($key_group) ?>' <?php echo ("$key_group" == $option_value) ? "selected='selected' " : ''; ?>>
+			 					<?php echo esc_html($value_group); ?>
+			 				</option>
+							<?php 
+						}
+						?></optgroup><?php
+					}else{
+						?>
+		 				<option value='<?php echo esc_attr($key) ?>' <?php echo ("$key" == $option_value) ? "selected='selected' " : ''; ?>>
+		 					<?php echo esc_html($value); ?>
+		 				</option>
+						<?php 
+					} 
+				}
+				?>
 			</select> <br/>
 			<em><?php echo $description; ?></em>
 		</td>
