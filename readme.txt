@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.6.2 (dev) =
+= 5.3.6.3 (dev) =
 * fixed extra paragraphs being added to #_EVENTNOTES
 * fixed location 'no events' message format not using header/footer formats
 * updated Finnish and POT files
@@ -107,6 +107,27 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed clashes with JetPack Tiled Galleries
 * fixed timthumb thumbnails issues with MultiSite and virtual links
 * fixed multisite global problems when fetching and saving main blog events previously saved with NULL blog_id
+* fixed bug with categories search attribute not working if any spaces exist such as "1, 2"
+* improved offset calculations in ical for some servers
+* improved ical generation to avoid memory limit problems with very large numbers of events
+* fixed RSS feed pubdate format
+* improved generation of RSS feed to avoid memory_limit errors on very large feeds
+* changed em_rss_pubdate wp_option to em_last_modified which is now a timestamp
+* improved em_get_wp_users() function to fix overload caused by http://core.trac.wordpress.org/ticket/23609
+* changed default events aren't created anymore
+* changed public events admin table template to allow viewing of draft events (duplicates) and modified view linking formats
+* changed duplicates so they now become drafts by default not published
+* improved settings page tab/section loading UX
+* added event archives scope
+* improved MultiSite Global so unnecessary tables aren't created for every blog
+* fixed outdated group tip on event form (you can detach group events)
+* added #_CONTACTURL
+* fixed tags not being added to recurrences if no categories assigned too
+* fixed datepicker problem on search pages when scope not defined and switching pages
+* fixed wp_em_events post_content not being updated if description is removed
+* added wp_title filter to widgets
+* fixed incorrect number of events per day shown in full calendar according to settings
+* 
 
 = 5.3.6.1 =
 * fixed some XSS vulnerabilites in the booking form/admin areas

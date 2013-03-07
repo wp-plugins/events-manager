@@ -14,11 +14,15 @@
 		<?php echo $EM_Notices; ?>
 		<form id="posts-filter" action="" method="get">
 			<div class="subsubsub">
-				<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], array('scope'=>null,'status'=>null)); ?>' <?php echo ( !isset($_GET['status']) ) ? 'class="current"':''; ?>><?php _e ( 'Upcoming', 'dbem' ); ?> <span class="count">(<?php echo $future_count; ?>)</span></a> &nbsp;|&nbsp; 
-				<?php if( !current_user_can('publish_events') ): ?>
-				<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], array('scope'=>null,'status'=>0)); ?>' <?php echo ( isset($_GET['status']) && $_GET['status']=='0' ) ? 'class="current"':''; ?>><?php _e ( 'Pending', 'dbem' ); ?> <span class="count">(<?php echo $pending_count; ?>)</span></a> &nbsp;|&nbsp; 
+				<?php $default_params = array('scope'=>null,'status'=>null,'em_search'=>null,'pno'=>null); //template for cleaning the link for each view below ?>
+				<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], $default_params + array('view'=>'future')); ?>' <?php echo ( !isset($_GET['status']) ) ? 'class="current"':''; ?>><?php _e ( 'Upcoming', 'dbem' ); ?> <span class="count">(<?php echo $future_count; ?>)</span></a> &nbsp;|&nbsp; 
+				<?php if( $pending_count > 0 ): ?>
+				<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], $default_params + array('view'=>'pending')); ?>' <?php echo ( !empty($_REQUEST['scope']) && $_REQUEST['scope'] == 'all' && !isset($_GET['status']) ) ? 'class="current"':''; ?>><?php _e ( 'Pending', 'dbem' ); ?> <span class="count">(<?php echo $pending_count; ?>)</span></a> &nbsp;|&nbsp; 
 				<?php endif; ?>
-				<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], array('scope'=>'past','status'=>null)); ?>' <?php echo ( !empty($_REQUEST['scope']) && $_REQUEST['scope'] == 'past' ) ? 'class="current"':''; ?>><?php _e ( 'Past Events', 'dbem' ); ?></a>
+				<?php if( $draft_count > 0 ): ?>
+				<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], $default_params + array('view'=>'draft')); ?>' <?php echo ( isset($_GET['status']) && $_GET['status']=='draft' ) ? 'class="current"':''; ?>><?php _e ( 'Draft', 'dbem' ); ?> <span class="count">(<?php echo $draft_count; ?>)</span></a> &nbsp;|&nbsp;
+				<?php endif; ?>
+				<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], $default_params + array('view'=>'past')); ?>' <?php echo ( !empty($_REQUEST['scope']) && $_REQUEST['scope'] == 'past' ) ? 'class="current"':''; ?>><?php _e ( 'Past Events', 'dbem' ); ?> <span class="count">(<?php echo $past_count; ?>)</span></a>
 			</div>
 			<p class="search-box">
 				<label class="screen-reader-text" for="post-search-input"><?php _e('Search Events','dbem'); ?>:</label>

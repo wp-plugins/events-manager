@@ -252,7 +252,7 @@ class EM_Events extends EM_Object implements Iterator {
 				if($post_value != ',' ){
 					$args[$post_key] = $post_value;
 				}elseif( $post_value == ',' && $post_key == 'scope' ){
-					$args['scope'] = get_option('dbem_events_page_scope');
+					unset($args['scope']);
 				}
 			}
 		}
@@ -278,6 +278,8 @@ class EM_Events extends EM_Object implements Iterator {
 		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
 			$null = ($args['status'] == 0) ? ' OR `event_status` = 0':'';
 			$conditions['status'] = "(`event_status`={$args['status']}{$null} )";
+		}elseif( array_key_exists('status',$args) && $args['status'] === null ){
+		    $conditions['status'] = "(`event_status` IS NULL )"; //by default, we don't ever show deleted items
 		}elseif( empty($args['status']) || $args['status'] != 'all'){
 			$conditions['status'] = "(`event_status` IS NOT NULL )"; //by default, we don't ever show deleted items
 		}

@@ -46,9 +46,11 @@ function em_content($page_content) {
 						em_locate_template('templates/events-calendar.php',true, array('args'=>$args));
 					}else{
 						//Intercept search request, if defined
-						$args['scope'] = get_option('dbem_events_page_scope');
 						if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'search_events' ){
 							$args = EM_Events::get_post_search( array_merge($args, $_REQUEST) );
+						}
+						if( empty($args['scope']) ){
+						    $args['scope'] = get_option('dbem_events_page_scope');
 						}
 						em_locate_template('templates/events-list.php', true, array('args'=>$args));
 					}

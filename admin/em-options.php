@@ -246,80 +246,7 @@ function em_admin_options_page() {
 	global $save_button;
 	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" class="button-primary" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes', 'dbem') .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
 	?>
-	<script type="text/javascript" charset="utf-8">
-		jQuery(document).ready(function($){
-			//Meta Box Options
-			var close_text = '<?php _e('Collapse All','dbem'); ?>';
-			var open_text = '<?php _e('Expand All','dbem'); ?>';
-			var open_close = $('<a href="#" style="display:block; float:right; clear:right; margin:10px;">'+open_text+'</a>');
-			$('#em-options-title').before(open_close);
-			open_close.click( function(e){
-				e.preventDefault();
-				if($(this).text() == close_text){
-					$(".postbox").addClass('closed');
-					$(this).text(open_text);
-				}else{
-					$(".postbox").removeClass('closed');
-					$(this).text(close_text);
-				} 
-			});
-			$(".postbox > h3").click(function(){ $(this).parent().toggleClass('closed'); });
-			$(".postbox").addClass('closed');
-			//Navigation Tabs
-			$('.nav-tab-wrapper .nav-tab').click(function(){
-				$('.nav-tab-wrapper .nav-tab').removeClass('nav-tab-active');
-				el = $(this);
-				elid = el.attr('id');
-				$('.em-menu-group').hide(); 
-				$('.'+elid).show();
-				el.addClass('nav-tab-active');
-				$(".postbox").addClass('closed');
-				open_close.text(open_text);
-			});
-			var navUrl = document.location.toString();
-			if (navUrl.match('#')) { //anchor-based navigation
-				var current_tab = 'a#em-menu-' + navUrl.split('#')[1];
-				$(current_tab).trigger('click');
-			}
-			$('.nav-tab-link').click(function(){ $($(this).attr('rel')).trigger('click'); }); //links to mimick tabs
-			//Page Options
-			$('input[name="dbem_cp_events_has_archive"]').change(function(){ //event archives
-				if( $('input:radio[name="dbem_cp_events_has_archive"]:checked').val() == 1 ){
-					$('tbody.em-event-archive-sub-options').show();
-				}else{
-					$('tbody.em-event-archive-sub-options').hide();
-				}
-			}).trigger('change');
-			$('select[name="dbem_events_page"]').change(function(){
-				if( $('select[name="dbem_events_page"]').val() == 0 ){
-					$('tbody.em-event-page-options').hide();
-				}else{
-					$('tbody.em-event-page-options').show();
-				}
-			}).trigger('change');
-			$('input[name="dbem_cp_locations_has_archive"]').change(function(){ //location archives
-				if( $('input:radio[name="dbem_cp_locations_has_archive"]:checked').val() == 1 ){
-					$('tbody.em-location-archive-sub-options').show();
-				}else{
-					$('tbody.em-location-archive-sub-options').hide();
-				}
-			}).trigger('change');
-			//For rewrite titles
-			$('input:radio[name=dbem_disable_title_rewrites]').live('change',function(){
-				checked_check = $('input:radio[name=dbem_disable_title_rewrites]:checked');
-				if( checked_check.val() == 1 ){
-					$('#dbem_title_html_row').show();
-				}else{
-					$('#dbem_title_html_row').hide();	
-				}
-			});
-			$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');
-			//ML Stuff
-			$('.em-translatable').click(function(){
-				$(this).nextAll('.em-ml-options').toggle();
-			});
-		});
-	</script>
+	<script type="text/javascript" charset="utf-8"><?php include(EM_DIR.'/includes/js/admin-settings.js'); ?></script>
 	<style type="text/css">.postbox h3 { cursor:pointer; }</style>
 	<div class="wrap">		
 		<div id='icon-options-general' class='icon32'><br /></div>
@@ -342,7 +269,7 @@ function em_admin_options_page() {
 		  	<div class="em-menu-general em-menu-group">
 			  
 			  	<!-- GENERAL OPTIONS -->
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-general"  >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'General Options', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 		            <table class="form-table">
@@ -426,7 +353,7 @@ function em_admin_options_page() {
 				
 				<?php if ( !is_multisite() || (is_super_admin() && !get_site_option('dbem_ms_global_caps')) ){ em_admin_option_box_caps(); } ?>
 				
-				<div  class="postbox" >
+				<div  class="postbox" id="em-opt-event-submissions" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Submission Forms', 'dbem' ); ?></span></h3>
 				<div class="inside">
 			            <table class="form-table">
@@ -454,7 +381,7 @@ function em_admin_options_page() {
 
 				<?php do_action('em_options_page_footer'); ?>
 				
-				<div  class="postbox" >
+				<div  class="postbox" id="em-opt-performance-optimization" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Performance Optimization', 'dbem' ); ?> (<?php _e('Advanced','dbem'); ?>) <em>Beta</em></span></h3>
 				<div class="inside">
 					<?php 
@@ -561,7 +488,7 @@ function em_admin_options_page() {
             	$format_override_tip = __("By using formats, you can control how your %s are displayed from within the Events Manager <a href='#formats' class='nav-tab-link' rel='#em-menu-formats'>Formating</a> tab above without having to edit your theme files.");
             	$page_templates = array(''=>__('Posts'), 'page' => __('Pages'), __('Theme Templates','dbem') => array_flip(get_page_templates()));
             	?>
-            	<div  class="postbox " >
+            	<div  class="postbox" id="em-opt-permalinks" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('Permalink Slugs','dbem')); ?></span></h3>
 				<div class="inside">
 					<p><?php _e('You can change the permalink structure of your events, locations, categories and tags here. Be aware that you may want to set up redirects if you change your permalink structures to maintain SEO rankings.','dbem'); ?></p>
@@ -583,7 +510,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside --> 
 				</div> <!-- .postbox -->	
 
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-event-pages" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('%s Pages','dbem'),__('Event','dbem')); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -600,7 +527,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside --> 
 				</div> <!-- .postbox -->	
             		
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-event-archives" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('%s List/Archives','dbem'),__('Event','dbem')); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -667,7 +594,10 @@ function em_admin_options_page() {
 								<br/>
 								<em><?php _e('When Events Manager displays lists of events the default behaviour is ordering by start date in ascending order. To change this, modify the values above.','dbem'); ?></em>
 							</td>
-					   	</tr>	
+					   	</tr>
+					   	<?php 
+					   	em_options_select( __('Event archives scope','dbem'), 'dbem_events_archive_scope', em_get_scopes() );
+					   	?>
 					</tbody>
 					<tr>
 						<td colspan="2">
@@ -727,22 +657,9 @@ function em_admin_options_page() {
 							<br/>
 							<em><?php _e('When Events Manager displays lists of events the default behaviour is ordering by start date in ascending order. To change this, modify the values above.','dbem'); ?></em>
 						</td>
-				   	</tr>										   	
-					<tr valign="top" id='dbem_events_display_time_limit'>
-				   		<th scope="row"><?php _e('Event list scope','dbem'); ?></th>
-						<td>
-							<select name="dbem_events_page_scope" >
-								<?php foreach( em_get_scopes() as $key => $value) : ?>   
-								<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_page_scope')) ? "selected='selected'" : ''; ?>>
-									<?php echo $value; ?>
-								</option>
-								<?php endforeach; ?>
-							</select>
-							<br />
-							<em><?php _e('Only show events starting within a certain time limit on the events page. Default is future events with no end time limit.','dbem'); ?></em>
-						</td>
-					</tr>
+				   	</tr>
 					<?php
+					em_options_select( __('Event list scope','dbem'), 'dbem_events_page_scope', em_get_scopes(), __('Only show events starting within a certain time limit on the events page. Default is future events with no end time limit.','dbem') );
 					em_options_input_text ( __( 'Event List Limits', 'dbem' ), 'dbem_events_default_limit', __( "This will control how many events are shown on one list by default.", 'dbem' ) );
 					echo $save_button;
 	            	?>
@@ -751,7 +668,7 @@ function em_admin_options_page() {
 				</div> <!-- .postbox -->	
 				
 				<?php if( get_option('dbem_locations_enabled') ): ?>
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-location-pages" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('%s Pages','dbem'),__('Location','dbem')); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -769,7 +686,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside --> 
 				</div> <!-- .postbox -->	
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-location-archives" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('%s List/Archives','dbem'),__('Location','dbem')); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -888,7 +805,7 @@ function em_admin_options_page() {
 				<?php endif; ?>
 				
 				<?php if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_site()) ): ?>
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-categories-pages" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo __('Event Categories','dbem'); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -982,7 +899,7 @@ function em_admin_options_page() {
 				<?php endif; ?>	
 				
 				<?php if( get_option('dbem_tags_enabled') ): //disabled for now, will add tag stuff later ?>
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-tags-pages" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo __('Event Tags','dbem'); ?></span></h3>
 				<div class="inside">
 		            	<table class="form-table">
@@ -1014,7 +931,7 @@ function em_admin_options_page() {
 				</div> <!-- .postbox -->
 				<?php endif; ?>
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-other-pages" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('%s Pages','dbem'),__('Other','dbem')); ?></span></h3>
 				<div class="inside">
 					<p><?php _e('These pages allow you to provide an event management interface outside the admin area on whatever page you want on your website. Bear in mind that this is overriden by BuddyPress if activated.'); ?></p>
@@ -1102,7 +1019,7 @@ function em_admin_options_page() {
 			
 			<!-- FORMAT OPTIONS -->
 		  	<div class="em-menu-formats em-menu-group" style="display:none;">				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-events-formats" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Events', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -1132,7 +1049,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox -->
 
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-search-form" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Search Form', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -1157,7 +1074,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox -->
 
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-date-time" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Date/Time', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 					<p><?php echo sprintf(__('Date and Time formats follow the <a href="%s">WordPress time formatting conventions</a>', 'dbem'), 'http://codex.wordpress.org/Formatting_Date_and_Time'); ?></p>
@@ -1176,7 +1093,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox -->
 				      
-	           	<div  class="postbox " >
+	           	<div  class="postbox " id="em-opt-calendar-formats" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Calendar', 'dbem' ); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -1250,7 +1167,7 @@ function em_admin_options_page() {
 				</div> <!-- .postbox -->
 				
 				<?php if( get_option('dbem_locations_enabled') ): ?>
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-locations-formats" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Locations', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -1280,7 +1197,7 @@ function em_admin_options_page() {
 				<?php endif; ?>
 				
 				<?php if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_site()) ): ?>
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-categories-formats" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Categories', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -1310,7 +1227,7 @@ function em_admin_options_page() {
 				<?php endif; ?>
 				
 				<?php if( get_option('dbem_tags_enabled') ): ?>
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-tags-formats" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Tags', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -1332,7 +1249,7 @@ function em_admin_options_page() {
 				</div> <!-- .postbox -->
 				<?php endif; ?>
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-rss-formats" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'RSS', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 	            	<table class="form-table">
@@ -1347,7 +1264,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox -->
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-maps-formats" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Maps', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 					<p><?php echo sprintf(__('You can use Google Maps to show where your events are located. For more information on using maps, <a href="%s">see our documentation</a>.','dbem'),'http://wp-events-plugin.com/documentation/google-maps/'); ?>
@@ -1388,7 +1305,7 @@ function em_admin_options_page() {
 			<!-- BOOKING OPTIONS -->
 		  	<div class="em-menu-bookings em-menu-group" style="display:none;">	
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-bookings-general" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__( '%s Options', 'dbem' ),__('General','dbem')); ?> </span></h3>
 				<div class="inside">
 					<table class='form-table'> 
@@ -1405,7 +1322,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox -->
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-pricing-options" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__( '%s Options', 'dbem' ),__('Pricing','dbem')); ?> </span></h3>
 				<div class="inside">
 					<table class='form-table'>
@@ -1423,7 +1340,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox --> 
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-booking-feedbacks" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e( 'Customize Feedback Messages', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 					<p><?php _e('Below you will find texts that will be displayed to users in various areas during the bookings process, particularly on booking forms.','dbem'); ?></p>
@@ -1474,7 +1391,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox --> 
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-booking-form-options" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__( '%s Options', 'dbem' ),__('Booking Form','dbem')); ?> </span></h3>
 				<div class="inside">
 					<table class='form-table'>
@@ -1488,7 +1405,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox --> 
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-ticket-options" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__( '%s Options', 'dbem' ),__('Ticket','dbem')); ?> </span></h3>
 				<div class="inside">
 					<table class='form-table'>
@@ -1510,7 +1427,7 @@ function em_admin_options_page() {
 				</div> <!-- . inside -->
 				</div> <!-- .postbox --> 
 					
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-no-user-bookings" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e('No-User Booking Mode','dbem'); ?> </span></h3>
 				<div class="inside">
 					<table class='form-table'>
@@ -1544,7 +1461,7 @@ function em_admin_options_page() {
 				<?php if ( !is_multisite() ) { em_admin_option_box_email(); } ?>
 		  	
 		  		<?php if( get_option('dbem_rsvp_enabled') ): ?>
-				<div  class="postbox " >
+				<div  class="postbox "  id="em-opt-booking-emails">
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Booking Email Templates', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 					<table class='form-table'>
@@ -1610,7 +1527,7 @@ function em_admin_options_page() {
 				</div> <!-- .postbox -->
 				<?php endif; ?>
 				
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-event-submission-emails" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Event Submission Templates', 'dbem' ); ?> </span></h3>
 				<div class="inside">
 					<table class='form-table'>
@@ -1699,7 +1616,7 @@ function em_admin_options_page() {
 function em_admin_option_box_image_sizes(){
 	global $save_button;
 	?>
-	<div  class="postbox " >
+	<div  class="postbox " id="em-opt-image-sizes" >
 	<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Image Sizes', 'dbem' ); ?> </span></h3>
 	<div class="inside">
 		<table class='form-table'>
@@ -1724,7 +1641,7 @@ function em_admin_option_box_email(){
 	global $save_button;
 	$current_user = get_user_by('id', get_current_user_id());
 	?>
-	<div  class="postbox " >
+	<div  class="postbox "  id="em-opt-email-settings">
 	<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Email Settings', 'dbem' ); ?></span></h3>
 	<div class="inside em-email-form">
 		<p class="em-email-settings-check">
@@ -1797,7 +1714,7 @@ function em_admin_option_box_email(){
 function em_admin_option_box_caps(){
 	global $save_button, $wpdb;
 	?>
-	<div  class="postbox" >
+	<div  class="postbox" id="em-opt-user-caps" >
 	<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'User Capabilities', 'dbem' ); ?></span></h3>
 	<div class="inside">
             <table class="form-table">
@@ -1916,7 +1833,7 @@ function em_admin_option_box_uninstall(){
 		$check_devs = EM_ADMIN_URL.'&amp;page=events-manager-options&amp;action=check_devs&amp;_wpnonce='.wp_create_nonce('em_check_devs_wpnonce');
 	}
 	?>
-	<div  class="postbox" >
+	<div  class="postbox" id="em-opt-admin-tools" >
 		<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Admin Tools', 'dbem' ); ?> (<?php _e ( 'Advanced', 'dbem' ); ?>)</span></h3>
 		<div class="inside">
 			<h4 style="font-size:1.1em;"><?php _e ( 'Development Versions &amp; Updates', 'dbem' ); ?></h4>

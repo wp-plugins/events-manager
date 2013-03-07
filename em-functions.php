@@ -251,7 +251,12 @@ function em_verify_nonce($action, $nonce_name='_wpnonce'){
  */
 function em_get_wp_users( $args = array(), $extra_users = array() ) {
 	global $wpdb;
-	$users = get_users($args);
+	if( !empty($args) ){
+	    $users = get_users($args);
+	}else{
+	    //added as a temp fix for http://core.trac.wordpress.org/ticket/23609, we need to make some sort of autocompleter search for users instead
+	    $users = $wpdb->get_results("SELECT ID, display_name FROM {$wpdb->users} ORDER BY display_name");
+	}
 	$indexed_users = array();
 	foreach($users as $user){
 		$indexed_users[$user->ID] = $user->display_name;

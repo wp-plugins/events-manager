@@ -146,6 +146,7 @@ function em_docs_init($force_init = false){
 							'#_CONTACTNAME' => array( 'desc' => 'Name of the contact person for this event (as shown in the dropdown when adding an event).' ),
 							'#_CONTACTUSERNAME' => array( 'desc' => 'Contact person\'s username.' ),
 							'#_CONTACTEMAIL' => array( 'desc' => 'E-mail of the contact person for this event.' ),
+							'#_CONTACTURL' => array( 'desc' => 'Website of the contact person for this event.' ),
 							'#_CONTACTPHONE' => array( 'desc' => 'Phone number of the contact person for this event. Can be set in the user profile page.' ),
 							'#_CONTACTAVATAR' => array( 'desc' => 'Contact person\'s avatar.' ),
 							'#_CONTACTPROFILELINK' => array( 'desc' => 'Contact person\'s "Profile" link. Only works with BuddyPress enabled.' ),

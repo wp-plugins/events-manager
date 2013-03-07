@@ -340,7 +340,7 @@ class EM_Event extends EM_Object{
 	function get_post($validate = true){	
 		global $allowedposttags;
 		//we need to get the post/event name and content.... that's it.
-		$this->post_content = !empty($_POST['content']) ? wp_kses( stripslashes($_POST['content']), $allowedposttags):'';
+		$this->post_content = isset($_POST['content']) ? wp_kses( stripslashes($_POST['content']), $allowedposttags):'';
 		$this->event_name = !empty($_POST['event_name']) ? wp_kses_data( stripslashes($_POST['event_name']) ):'';
 		$this->post_type = ($this->is_recurring() || !empty($_POST['recurring'])) ? 'event-recurring':EM_POST_TYPE_EVENT;
 		//don't forget categories!
@@ -686,6 +686,7 @@ class EM_Event extends EM_Object{
 					do_action('em_event_save_new', $this);
 				}
 			}else{
+			    $event_array['post_content'] = $this->post_content; //in case the content was removed, which is acceptable
 				$this->previous_status = $this->get_previous_status();
 				$this->event_date_modified = $event_array['event_date_modified'] = current_time('mysql');
 				if ( $wpdb->update(EM_EVENTS_TABLE, $event_array, array('event_id'=>$this->event_id) ) === false ){
@@ -752,10 +753,12 @@ class EM_Event extends EM_Object{
 				$EM_Ticket->event_id = null;
 			}
 			do_action('em_event_duplicate_pre', $EM_Event);
+			$EM_Event->duplicated = true;
 			if( $EM_Event->save() ){
 				$EM_Event->feedback_message = sprintf(__("%s successfully duplicated.", 'dbem'), __('Event','dbem'));
 			 	//other non-EM post meta inc. featured image
 				$event_meta = $this->get_event_meta($this->blog_id);
+				$event_meta['_event_approvals_count'] = 0; //reset this counter for new event
 				$event_meta_inserts = array();
 			 	//Get custom fields and post meta - adapted from $this->load_post_meta()
 			 	foreach($event_meta as $event_meta_key => $event_meta_vals){
@@ -772,6 +775,8 @@ class EM_Event extends EM_Object{
 			 	if( !empty($event_meta_inserts) ){
 			 		$wpdb->query('INSERT INTO '.$wpdb->postmeta." (post_id, meta_key, meta_value) VALUES ".implode(', ', $event_meta_inserts));
 			 	}
+			 	//set event to draft status
+				$EM_Event->set_status(null,true);
 				return apply_filters('em_event_duplicate', $EM_Event, $this);
 			}
 		}
@@ -1510,6 +1515,9 @@ class EM_Event extends EM_Object{
 				case '#_CONTACTMAIL': //Depreciated
 					$replace = $this->get_contact()->user_email;
 					break;
+				case '#_CONTACTURL':
+					$replace = $this->get_contact()->user_url;
+					break;
 				case '#_CONTACTID':
 					$replace = $this->get_contact()->ID;
 					break;
@@ -1846,7 +1854,7 @@ class EM_Event extends EM_Object{
 						if( !empty($tag->slug) ) $tax_slugs[] = $tag->slug; //save of category will soft-fail if slug is empty
 					}
 		 		}
-				$tax_slugs_count = count($categories);
+				$tax_slugs_count = count($tags);
 			 	foreach($post_ids as $post_id){
 					if( $cat_slugs_count > 0 && !EM_MS_GLOBAL ){
 						wp_set_object_terms($post_id, $cat_slugs, EM_TAXONOMY_CATEGORY);

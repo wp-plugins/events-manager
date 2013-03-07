@@ -24,8 +24,10 @@ class EM_Event_Post {
 			    add_filter('body_class', array('EM_Event_Post','body_class'), 10, 3);
 			}
 			//Override post template tags
-			add_filter('the_date',array('EM_Event_Post','the_date'));
+			add_filter('the_date',array('EM_Event_Post','the_date'),10,2);
 			add_filter('get_the_date',array('EM_Event_Post','the_date'),10,2);
+			add_filter('the_time',array('EM_Event_Post','the_time'),10,2);
+			add_filter('get_the_time',array('EM_Event_Post','the_time'),10,2);
 			add_filter('the_category',array('EM_Event_Post','the_category'),10,3);
 		}
 		add_action('parse_query', array('EM_Event_Post','parse_query'));
@@ -134,6 +136,19 @@ class EM_Event_Post {
 		return $the_date;
 	}
 	
+	function the_time( $the_time, $f = '' ){
+		global $post;
+		if( $post->post_type == EM_POST_TYPE_EVENT ){
+			$EM_Event = em_get_event($post);
+			if ( '' == $f ){
+				$the_time = date(get_option('time_format'), $EM_Event->start);
+			}else{
+				$the_time = date($f, $EM_Event->start);
+			}
+		}
+		return $the_time;
+	}
+	
 	function the_category( $thelist, $separator = '', $parents='' ){
 		global $post, $wp_rewrite;
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
@@ -212,7 +227,7 @@ class EM_Event_Post {
 				if( !empty($wp_query->query_vars['calendar_day']) ) $wp_query->query_vars['scope'] = $wp_query->query_vars['calendar_day'];
 				if( empty($wp_query->query_vars['scope']) ){
 					if( is_archive() ){
-						$scope = $wp_query->query_vars['scope'] = get_option('dbem_events_page_scope');
+						$scope = $wp_query->query_vars['scope'] = get_option('dbem_events_archive_scope');
 					}else{
 						$scope = $wp_query->query_vars['scope'] = 'all'; //otherwise we'll get 404s for past events
 					}

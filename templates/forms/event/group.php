@@ -37,7 +37,7 @@ if( count($user_groups) > 0 ){
 		?>
 	</select>
 	<br />
-	<em><?php _e ( 'Select a group you admin to attach this event to it. Note that all other admins of that group can modify the booking, and you will not be able to unattach the event without deleting it.', 'dbem' )?></em>
+	<em><?php _e ( 'Select a group you admin to attach this event to it. Note that all other admins of that group can modify the booking.', 'dbem' )?></em>
 	</p>
 	<?php if( is_super_admin() ): ?>
 	<p><em><?php _e ( 'As a site admin, you see all group events, users will only be able to choose groups they are admins of.', 'dbem' )?></em></p>

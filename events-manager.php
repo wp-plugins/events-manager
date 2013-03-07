@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.3.6.2
+Version: 5.3.6.3
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 // Setting constants
-define('EM_VERSION', 5.363); //self expanatory
+define('EM_VERSION', 5.3631); //self expanatory
 define('EM_PRO_MIN_VERSION', 2.221); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 define('EM_SLUG', plugin_basename( __FILE__ )); //for updates
@@ -346,6 +346,10 @@ class EM_Scripts_and_Styles {
 		if( is_admin() ){
 			$em_localized_js['event_post_type'] = EM_POST_TYPE_EVENT;
 			$em_localized_js['location_post_type'] = EM_POST_TYPE_LOCATION;
+			if( !empty($_GET['page']) && $_GET['page'] == 'events-manager-options' ){
+			    $em_localized_js['close_text'] = __('Collapse All','dbem');
+			    $em_localized_js['open_text'] = __('Expand All','dbem');
+			}
 		}
 		//calendar translations
 		$locale_code = get_locale();
@@ -470,7 +474,7 @@ function em_init(){
 	$EM_Mailer = new EM_Mailer();
 	//Upgrade/Install Routine
 	if( is_admin() && current_user_can('list_users') ){
-		if( EM_VERSION > get_option('dbem_version', 0) ){
+		if( EM_VERSION > get_option('dbem_version', 0) || (is_multisite() && !EM_MS_GLOBAL && get_option('em_ms_global_install')) ){
 			require_once( dirname(__FILE__).'/em-install.php');
 			em_install();
 		}
@@ -663,15 +667,18 @@ function em_rss() {
 add_action ( 'template_redirect', 'em_rss' );
 
 /**
- * Monitors event saves and changes the rss pubdate so it's current
+ * Monitors event saves and changes the rss pubdate and a last modified option so it's current
  * @param boolean $result
  * @return boolean
  */
-function em_rss_pubdate_change($result){
-	if($result) update_option('em_rss_pubdate', date('D, d M Y H:i:s ', current_time('timestamp', true)).'GMT');
+function em_modified_monitor($result){
+	if($result){
+	    update_option('em_last_modified', current_time('timestamp', true));
+	}
 	return $result;
 }
-add_filter('em_event_save', 'em_rss_pubdate_change', 10,1);
+add_filter('em_event_save', 'em_modified_monitor', 10,1);
+add_filter('em_location_save', 'em_modified_monitor', 10,1);
 
 function em_admin_bar_mod($wp_admin_bar){
 	$wp_admin_bar->add_menu( array(
