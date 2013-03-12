@@ -37,7 +37,7 @@ global $EM_Event, $post;
 			</thead>    
 			<tfoot>
 				<tr valign="top">
-					<td colspan="6">
+					<td colspan="8">
 						<a href="#" id="em-tickets-add" rel="#em-tickets-form"><?php _e('Add new ticket','dbem'); ?></a>
 					</td>
 				</tr>

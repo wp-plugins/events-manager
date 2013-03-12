@@ -8,7 +8,7 @@
 	/* @var pending_count int */
 	/* @var url string */
 	//add new button will only appear if called from em_event_admin template tag, or if the $show_add_new var is set
-	if(!empty($show_add_new) && current_user_can('edit_events')) echo '<a class="em-button button add-new-h2" href="'.em_add_get_params($_SERVER['REQUEST_URI'],array('action'=>'edit','scope'=>null,'status'=>null,'event_id'=>null)).'">'.__('Add New','dbem').'</a>';
+	if(!empty($show_add_new) && current_user_can('edit_events')) echo '<a class="em-button button add-new-h2" href="'.em_add_get_params($_SERVER['REQUEST_URI'],array('action'=>'edit','scope'=>null,'status'=>null,'event_id'=>null, 'success'=>null)).'">'.__('Add New','dbem').'</a>';
 	?>
 	<div class="wrap">
 		<?php echo $EM_Notices; ?>

@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.6.3 (dev) =
+= 5.3.6.4 (dev) =
 * fixed extra paragraphs being added to #_EVENTNOTES
 * fixed location 'no events' message format not using header/footer formats
 * updated Finnish and POT files
@@ -127,7 +127,14 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed wp_em_events post_content not being updated if description is removed
 * added wp_title filter to widgets
 * fixed incorrect number of events per day shown in full calendar according to settings
-* 
+* updated Finnish, thanks to Jan-Erik Finlander and his team!
+* fixed the_title usage to check the post id supplied in second parameter
+* changed/fixed action where rules are rewritten on settings changes causing 404s for CPTs created in theme functions.php file
+* fixed bug with W3TC repeating first no-user booking name for all others in admin table views
+* fixed 'email exists' errors in no-user bookings mode
+* added option for no-user registration with registered emails
+* added #_CATEGORYNEXTEVENT, added formatting options for location/category next event placeholders
+* improved event, location and category timthumb thumbnails so they accept 0 as a width/height to prevent cropping
 
 = 5.3.6.1 =
 * fixed some XSS vulnerabilites in the booking form/admin areas

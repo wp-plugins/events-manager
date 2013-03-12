@@ -1325,7 +1325,9 @@ class EM_Event extends EM_Object{
 												$image_src = network_site_url('/wp-content/blogs.dir/'. $imageParts[1]);
 											}
 										}
-									    $replace = "<img src='".esc_url(em_get_thumbnail_url($image_src, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
+										$width = ($image_size[0]) ? 'width="'.esc_attr($image_size[0]).'"':'';
+										$height = ($image_size[1]) ? 'height="'.esc_attr($image_size[1]).'"':'';
+									    $replace = "<img src='".esc_url(em_get_thumbnail_url($image_src, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."' $width $height />";
 								    }
 								}else{
 									$replace = "<img src='".esc_url($image_src)."' alt='".esc_attr($this->event_name)."'/>";

@@ -734,7 +734,9 @@ class EM_Location extends EM_Object {
 												$image_url = network_site_url('/wp-content/blogs.dir/'. $blog_id. '/' . $imageParts[1]);
 											}
 										}
-										$replace = "<img src='".esc_url(em_get_thumbnail_url($image_url, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->location_name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
+										$width = ($image_size[0]) ? 'width="'.esc_attr($image_size[0]).'"':'';
+										$height = ($image_size[1]) ? 'height="'.esc_attr($image_size[1]).'"':'';
+									    $replace = "<img src='".esc_url(em_get_thumbnail_url($image_url, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->location_name)."' $width $height />";
 								    }
 								}else{
 									$replace = "<img src='".$image_url."' alt='".esc_attr($this->location_name)."'/>";
@@ -786,9 +788,9 @@ class EM_Location extends EM_Object {
 					break;
 				case '#_LOCATIONNEXTEVENT':
 					$events = EM_Events::get( array('location'=>$this->location_id, 'scope'=>'future', 'limit'=>1, 'orderby'=>'event_start_date,event_start_time') );
-					$replace = get_option('dbem_location_no_events_message');
+					$replace = get_option('dbem_location_no_event_message');
 					foreach($events as $EM_Event){
-						$replace = $EM_Event->output('#_EVENTLINK');
+						$replace = $EM_Event->output(get_option('dbem_location_event_single_format'));
 					}
 					break;
 				default:

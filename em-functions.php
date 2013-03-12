@@ -308,7 +308,8 @@ function em_get_attributes($lattributes = false){
 }
 
 /**
- * Decides whether to register a user based on a certain booking that is to be added 
+ * Decides whether to register a user based on a certain booking that is to be added
+ * @param EM_Booking $EM_Booking 
  */
 function em_booking_add_registration( $EM_Booking ){
     global $EM_Notices;

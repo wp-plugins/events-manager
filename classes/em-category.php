@@ -158,7 +158,9 @@ class EM_Category extends EM_Object {
 								    	$replace = wp_get_attachment_image($this->get_image_id(), $image_size);
 								    	$this->ms_global_switch_back();
 								    }else{
-										$replace = "<img src='".em_get_thumbnail_url($this->get_image_url(), $image_size[0], $image_size[1])."' alt='".esc_attr($this->name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
+										$width = ($image_size[0]) ? 'width="'.esc_attr($image_size[0]).'"':'';
+										$height = ($image_size[1]) ? 'height="'.esc_attr($image_size[1]).'"':'';
+										$replace = "<img src='".esc_url(em_get_thumbnail_url($this->get_image_url(), $image_size[0], $image_size[1]))."' alt='".esc_attr($this->name)."' $width $height />";
 								    }
 								}else{
 									$replace = "<img src='".esc_url($this->get_image_url())."' alt='".esc_attr($this->name)."'/>";
@@ -203,6 +205,13 @@ class EM_Category extends EM_Object {
 					    $replace = EM_Events::output($args);
 					} else {
 						$replace = get_option('dbem_category_no_events_message','</ul>');
+					}
+					break;
+				case '#_CATEGORYNEXTEVENT':
+					$events = EM_Events::get( array('category'=>$this->term_id, 'scope'=>'future', 'limit'=>1, 'orderby'=>'event_start_date,event_start_time') );
+					$replace = get_option('dbem_category_no_event_message');
+					foreach($events as $EM_Event){
+						$replace = $EM_Event->output(get_option('dbem_category_event_single_format'));
 					}
 					break;
 				default:

@@ -447,11 +447,13 @@ function em_add_options() {
 
 <h3>Upcoming Events</h3>
 <p>#_LOCATIONNEXTEVENTS</p>',
-		'dbem_location_no_events_message' => __('<li>No events in this location</li>', 'dbem'),
+		'dbem_location_no_events_message' => '<li>'.__('No events in this location', 'dbem').'</li>',
 		'dbem_location_event_list_item_header_format' => "<ul>",
 		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_location_event_list_item_footer_format' => "</ul>",
 		'dbem_location_event_list_limit' => 20,
+		'dbem_location_event_single_format' => '#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES',
+		'dbem_location_no_event_message' => __('No events in this location', 'dbem'),
 		//Category page options
 		'dbem_categories_default_limit' => 10,
 		'dbem_categories_default_orderby' => 'name',
@@ -467,6 +469,8 @@ function em_add_options() {
 		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_category_event_list_item_footer_format' => '</ul>',
 		'dbem_category_event_list_limit' => 20,
+		'dbem_category_event_single_format' => '#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES',
+		'dbem_category_no_event_message' => __('No events in this category', 'dbem'),
 		//Tag Formatting
 		'dbem_tag_page_title_format' => '#_TAGNAME',
 		'dbem_tag_page_format' => '<h3>Upcoming Events</h3>#_TAGNEXTEVENTS',
@@ -535,6 +539,7 @@ function em_add_options() {
 		'dbem_location_placeholders_custom' => '',
 		//Bookings
 		'dbem_bookings_registration_disable' => 0,
+		'dbem_bookings_registration_disable_user_emails' => 0,
 		'dbem_bookings_registration_user' => '',
 		'dbem_bookings_approval' => 1, //approval is on by default
 		'dbem_bookings_approval_reserved' => 0, //overbooking before approval?
@@ -708,7 +713,7 @@ function em_add_options() {
 	    $wpdb->query("UPDATE ".$wpdb->postmeta." SET meta_value = NULL WHERE meta_key IN ('_event_rsvp_date','_event_rsvp_time') AND post_id IN (SELECT post_id FROM ".EM_EVENTS_TABLE." WHERE recurrence_id > 0)");
 	    $wpdb->query("UPDATE ".EM_EVENTS_TABLE." SET event_rsvp_time = NULL, event_rsvp_date = NULL WHERE recurrence_id > 0");
 	}
-	if( get_option('dbem_version') != '' && get_option('dbem_version') <= 5.3631 ){
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.364 ){
 	    if( get_option('dbem_cp_events_template_page') ){
 	        update_option('dbem_cp_events_template', 'page');
 	        delete_option('dbem_cp_events_template_page');
@@ -719,6 +724,10 @@ function em_add_options() {
 	    }
 	    update_option('dbem_events_archive_scope', get_option('dbem_events_page_scope'));
 	    update_option('em_last_modified', current_time('timestamp', true));
+	    update_option('dbem_category_event_single_format',get_option('dbem_category_event_list_item_header_format').get_option('dbem_category_event_list_item_format').get_option('dbem_category_event_list_item_footer_format'));
+	    update_option('dbem_category_no_event_message',get_option('dbem_category_event_list_item_header_format').get_option('dbem_category_no_events_message').get_option('dbem_category_event_list_item_footer_format'));
+	    update_option('dbem_location_event_single_format',get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_event_list_item_format').get_option('dbem_location_event_list_item_footer_format'));
+	    update_option('dbem_location_no_event_message',get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_no_events_message').get_option('dbem_location_event_list_item_footer_format'));
 	}
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless

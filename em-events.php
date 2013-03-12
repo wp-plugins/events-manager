@@ -100,9 +100,11 @@ add_filter('the_content', 'em_content');
  * @param $data
  * @return string
  */
-function em_content_page_title($original_content) {
+function em_content_page_title($original_content, $id = null) {
 	global $EM_Event, $EM_Location, $EM_Category, $wp_query, $post;
 	if( empty($post) ) return $original_content; //fix for any other plugins calling the_content outside the loop
+	if ($id && $id !== $post->ID) return $original_content;
+	
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$edit_events_page_id = get_option( 'dbem_edit_events_page' );
@@ -149,8 +151,8 @@ function em_content_page_title($original_content) {
 					$content = $original_content;
 				}
 			}elseif( $post->ID == $edit_events_page_id ){
-				if( !empty($_REQUEST['action']) && $_REQUEST['action'] = 'edit' ){			
-					if( is_object($EM_Event) ){
+				if( !empty($_REQUEST['action']) && $_REQUEST['action'] = 'edit' ){
+					if( is_object($EM_Event) && $EM_Event->event_id){					
 						if($EM_Event->is_recurring()){
 							$content = __( "Reschedule Events", 'dbem' )." '{$EM_Event->event_name}'";
 						}else{
@@ -216,7 +218,7 @@ add_filter ( 'wp_title', 'em_content_wp_title',100,3 ); //override other plugin 
  * @param string $data
  * @return string
  */
-function em_wp_the_title($data){
+function em_wp_the_title($data, $id = null){
 	global $post, $wp_query, $EM_Location;
 	if( empty($post) ) return $data; //fix for any other plugins calling the_content outside the loop
 	//because we're only editing the main title of the page here, we make sure we're in the main query
@@ -228,13 +230,13 @@ function em_wp_the_title($data){
 	    $edit_bookings_page_id = get_option( 'dbem_edit_bookings_page' );
 		if( is_main_query() && !empty($post->ID) && in_array($post->ID, array($events_page_id, $locations_page_id, $edit_events_page_id, $edit_locations_page_id, $edit_bookings_page_id)) ){
 			if ( $wp_query->in_the_loop ) {
-				return apply_filters('em_wp_the_title', em_content_page_title($data)) ;
+				return apply_filters('em_wp_the_title', em_content_page_title($data, $id)) ;
 			}
 		}
 	}
 	return $data;
 }
-add_filter ( 'the_title', 'em_wp_the_title',10,1 );
+add_filter ( 'the_title', 'em_wp_the_title',10, 2 );
 
 
 function em_get_page_type(){

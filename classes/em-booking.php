@@ -390,7 +390,7 @@ class EM_Booking extends EM_Object{
 			$this->person = new EM_Person(0);
 		}
 		//if this user is the parent user of disabled registrations, replace user details here:
-		if( get_option('dbem_bookings_registration_disable') && $this->person->ID == get_option('dbem_bookings_registration_user') && empty($this->person->loaded_no_user) ){
+		if( get_option('dbem_bookings_registration_disable') && $this->person->ID == get_option('dbem_bookings_registration_user') && (empty($this->person->loaded_no_user) || $this->person->loaded_no_user != $this->booking_id) ){
 			//override any registration data into the person objet
 			if( !empty($this->booking_meta['registration']) ){
 				foreach($this->booking_meta['registration'] as $key => $value){
@@ -413,11 +413,15 @@ class EM_Booking extends EM_Object{
 			$full_name = trim($full_name);
 			$display_name = ( empty($full_name) ) ? __('Guest User','dbem'):$full_name;
 			$this->person->display_name = $display_name;
-			$this->person->loaded_no_user = true;
+			$this->person->loaded_no_user = $this->booking_id;
 		}
 		return apply_filters('em_booking_get_person', $this->person, $this);
 	}
 	
+	/**
+	 * Gets personal information from the $_REQUEST array and saves it to the $EM_Booking->booking_meta['registration'] array
+	 * @return boolean
+	 */
 	function get_person_post(){
 	    $user_data = array();
 	    $registration = true;
@@ -429,7 +433,7 @@ class EM_Booking extends EM_Object{
 	    } elseif ( !is_email( $_REQUEST['user_email'] ) ) {
 	    	$registration = false;
 	    	$this->add_error( __( '<strong>ERROR</strong>: The email address isn&#8217;t correct.', 'dbem') );
-	    }elseif(email_exists( $_REQUEST['user_email'] )){
+	    }elseif(email_exists( $_REQUEST['user_email'] ) && !get_option('dbem_bookings_registration_disable_user_emails') ){
 	    	$registration = false;
 	    	$this->add_error( get_option('dbem_booking_feedback_email_exists') );
 	    }else{
