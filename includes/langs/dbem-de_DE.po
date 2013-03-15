@@ -3,18 +3,20 @@ msgstr ""
 "Project-Id-Version: Events Manager v5.3.5.1\n"
 "Report-Msgid-Bugs-To: http://wordpress.org/tag/events-manager\n"
 "POT-Creation-Date: 2011-09-20 20:44:48+00:00\n"
-"PO-Revision-Date: 2013-02-21 21:11+0100\n"
+"PO-Revision-Date: 2013-03-14 20:11+0100\n"
 "Last-Translator: Marcus Sykes <wp.plugins@netweblogic.com>\n"
-"Language-Team: \n"
+"Language-Team: alex sebastian <alex@alexsebastian.de>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Poedit 1.5.4\n"
-"X-Poedit-SourceCharset: utf-8\n"
+"X-Generator: Poedit 1.5.5\n"
+"X-Poedit-SourceCharset: UTF-8\n"
 "X-Poedit-KeywordsList: __;_e;__ngettext:1,2;_n:1,2;__ngettext_noop:1,2;"
 "_n_noop:1,2;_c,_nc:4c,1,2;_x:1,2c;_ex:1,2c;_nx:4c,1,2;_nx_noop:4c,1,2\n"
 "X-Textdomain-Support: yes\n"
+"Language: de_DE\n"
+"X-Poedit-Basepath: .\n"
 "X-Poedit-SearchPath-0: .\n"
 
 # @ dbem
@@ -47,7 +49,7 @@ msgstr ""
 #: buddypress/bp-em-activity.php:95
 #, php-format
 msgid "%s will not be attending %s of group %s anymore."
-msgstr "% s wird nicht anwesend sein% s der Gruppe% s nicht mehr."
+msgstr "%s wird an %s der Gruppe %s nicht mehr teilnehmen."
 
 # @ dbem
 #: admin/em-admin.php:197 admin/em-ms-options.php:172 admin/em-options.php:566
@@ -87,24 +89,24 @@ msgstr "Meine Reservierungen"
 # @ dbem
 #: buddypress/bp-em-notifications.php:24
 msgid "You have a pending booking"
-msgstr "Sie haben einen unbestätigte Reservierung"
+msgstr "Du hast eine unbestätigte Reservierung"
 
 # @ dbem
 #: buddypress/bp-em-notifications.php:26
 #, php-format
 msgid "You have %s pending bookings"
-msgstr "Sie haben %s unbestätigte Reservierung"
+msgstr "Du hast %s unbestätigte Reservierung(en)"
 
 # @ dbem
 #: buddypress/bp-em-notifications.php:33
 msgid "You have a confirmed booking"
-msgstr "Sie haben eine bestätigte Reservierung"
+msgstr "Du hast eine bestätigte Reservierung"
 
 # @ dbem
 #: buddypress/bp-em-notifications.php:35
 #, php-format
 msgid "You have %s confirmed bookings"
-msgstr "Sie haben %s bestätigte Reservierungen"
+msgstr "Du hast %s bestätigte Reservierungen"
 
 # @ dbem
 #: buddypress/bp-em-notifications.php:41
@@ -146,7 +148,7 @@ msgid ""
 "You are currently viewing your public page, this is what other users will "
 "see."
 msgstr ""
-"Sie sehen gerade Ihre öffentliche Seite und sehen das, was andere Benutzer "
+"Du siehst gerade Deine öffentliche Seite und siehst das, was andere Benutzer "
 "sehen können."
 
 # @ dbem
@@ -218,7 +220,7 @@ msgstr "Kalender"
 # @ dbem
 #: widgets/em-calendar.php:17
 msgid "Display your events in a calendar widget."
-msgstr "Zeigen Sie Ihre Veranstaltungen in einem Kalender-Widget."
+msgstr "Zeige Deine Veranstaltungen in einem Kalender-Widget."
 
 # @ dbem
 #: widgets/em-calendar.php:18
@@ -434,7 +436,7 @@ msgstr "Versuch, eine illegale Aktion auszuführen."
 # @ dbem
 #: em-functions.php:410
 msgid "<strong>ERROR</strong>: Please enter a username."
-msgstr "<strong>FEHLER</strong>: Bitte geben Sie einen Benutzernamen ein."
+msgstr "<strong>FEHLER</strong>: Bitte gib einen Benutzernamen ein."
 
 # @ dbem
 #: em-functions.php:412
@@ -443,8 +445,7 @@ msgid ""
 "characters. Please enter a valid username."
 msgstr ""
 "<strong>FEHLER</strong>: Dieser Benutzername ist ungültig, da er nicht "
-"zugelassene Zeichen verwendet. Bitte geben Sie einen gültigen Benutzernamen "
-"ein."
+"zugelassene Zeichen verwendet. Bitte gib einen gültigen Benutzernamen ein."
 
 # @ dbem
 #: em-functions.php:415
@@ -452,13 +453,13 @@ msgid ""
 "<strong>ERROR</strong>: This username is already registered, please choose "
 "another one."
 msgstr ""
-"<strong>FEHLER</strong>: Dieser Benutzername ist bereits registriert, wählen "
-"Sie bitte einen anderen."
+"<strong>FEHLER</strong>: Dieser Benutzername ist bereits registriert, wähle "
+"bitte einen anderen."
 
 # @ dbem
 #: em-functions.php:349 em-functions.php:420
 msgid "<strong>ERROR</strong>: Please type your e-mail address."
-msgstr "<strong>FEHLER</strong>: Bitte geben Sie Ihre E-Mail-Adresse ein."
+msgstr "<strong>FEHLER</strong>: Bitte gib Deine E-Mail-Adresse ein."
 
 # @ dbem
 #: em-functions.php:352 em-functions.php:422
@@ -471,8 +472,8 @@ msgid ""
 "<strong>ERROR</strong>: This email is already registered, please choose "
 "another one."
 msgstr ""
-"<strong>FEHLER</strong>: Diese E-Mail ist bereits registriert, wählen Sie "
-"bitte eine andere."
+"<strong>FEHLER</strong>: Diese E-Mail ist bereits registriert, wähle bitte "
+"eine andere."
 
 # @ dbem
 #: em-functions.php:446
@@ -481,8 +482,8 @@ msgid ""
 "<strong>ERROR</strong>: Couldn&#8217;t register you... please contact the <a "
 "href=\"mailto:%s\">webmaster</a> !"
 msgstr ""
-"<strong>FEHLER</strong>: Sie konnten nicht registriert werden.  Bitte "
-"kontaktieren Sie den <a href=\"mailto:%s\">Adinistrator</a> !"
+"<strong>FEHLER</strong>: Du  konntest nicht registriert werden.  Bitte "
+"kontaktiere den <a href=\"mailto:%s\">Adinistrator</a> !"
 
 # @ dbem
 #: em-functions.php:482
@@ -547,7 +548,7 @@ msgstr "Fehlende Felder:"
 #: classes/em-ticket.php:312
 msgid "You cannot delete a ticket that has a booking on it."
 msgstr ""
-"Sie können ein Ticket nicht löschen, solange noch Reservierungen dafür "
+"Du kannst ein Ticket nicht löschen, solange noch Reservierungen dafür "
 "existieren."
 
 # @ dbem
@@ -601,7 +602,7 @@ msgstr "Veranstaltungsort"
 #: classes/em-location.php:377
 #, php-format
 msgid "You do not have permission to create/edit %s."
-msgstr "Sie haben keine Berechtigungu %s zu erstellen / bearbeiten."
+msgstr "Du hast keine Berechtigungu %s zu erstellen / bearbeiten."
 
 # @ dbem
 #: admin/em-ms-options.php:174 admin/em-ms-options.php:179
@@ -650,7 +651,7 @@ msgstr "Reservierung kann nicht vorgenommen werden, nicht genug Plätze frei!"
 #: templates/forms/location-editor.php:11
 #, php-format
 msgid "You do not have the rights to manage this %s."
-msgstr "Sie haben nicht die Rechte, %s zu bearbeiten."
+msgstr "Du hast nicht die Rechte, %s zu bearbeiten."
 
 # @ dbem
 #: classes/em-booking.php:168 classes/em-booking.php:404
@@ -731,7 +732,7 @@ msgstr "In Bearbeitung"
 # @ dbem
 #: classes/em-booking.php:91 classes/em-event.php:261
 msgid "Approved"
-msgstr "Genehmigt"
+msgstr "Bestätigt"
 
 # @ dbem
 #: classes/em-booking.php:92 classes/em-bookings-table.php:57
@@ -752,24 +753,24 @@ msgstr "Online Zahlung erwartet"
 # @ dbem
 #: classes/em-booking.php:95
 msgid "Awaiting Payment"
-msgstr "Zahlung erwartet"
+msgstr "Unbestätigt"
 
 # @ dbem
 #: classes/em-booking.php:142
 msgid "Your booking has been recorded"
-msgstr "Ihre Reservierung wurde erfasst"
+msgstr "Deine Reservierung wurde erfasst"
 
 # @ dbem
 #: classes/em-booking.php:168
 #, php-format
 msgid "You cannot manage this %s."
-msgstr "Sie dürfen %s nicht bearbeiten."
+msgstr "Du darfst %s nicht bearbeiten."
 
 # @ dbem
 #: classes/em-booking.php:221
 msgid "You are trying to book a non-existent ticket for this event."
 msgstr ""
-"Sie versuchen, ein nicht vorhandenes Ticket für diese Veranstaltung zu "
+"Du versuchst, ein nicht vorhandenes Ticket für diese Veranstaltung zu "
 "reservieren."
 
 # @ dbem
@@ -857,8 +858,8 @@ msgid ""
 "You cannot delete tickets if there are any bookings associated with them. "
 "Please delete these bookings first."
 msgstr ""
-"Sie können keine Tickets löschen, wenn Reservierungen dafür existieren. "
-"Bitte löschen sie zuerst die Reservierungen."
+"Du kannst keine Tickets löschen, wenn Reservierungen dafür existieren. Bitte "
+"lösche zuerst die Reservierungen."
 
 # @ dbem
 #: classes/em-tickets.php:141
@@ -884,7 +885,7 @@ msgid ""
 msgstr ""
 "Änderungen an dieser Veranstaltung führen dazu, dass alle Wiederholungen "
 "dieser Veranstaltung gelöscht und neu erstellt werden. Dabei werden alle "
-"Reservierungen gelöscht! Sie können die einzelnen Wiederholungen bearbeiten "
+"Reservierungen gelöscht! Du kannst die einzelnen Wiederholungen bearbeiten "
 "und diese von dieser Veranstaltung lösen."
 
 # @ dbem
@@ -940,7 +941,7 @@ msgstr "Veranstaltung kann nicht später starten als enden."
 msgid ""
 "Dates must have correct formatting. Please use the date picker provided."
 msgstr ""
-"Daten müssen richtig formatiert werden. Bitte benutzen Sie die Datumsauswahl."
+"Daten müssen richtig formatiert werden. Bitte benutze die Datumsauswahl."
 
 # @ dbem
 #: classes/em-event.php:1532 templates/forms/bookingform/ticket-single.php:37
@@ -1070,7 +1071,7 @@ msgstr "Das Bild hat ein falsches Format!"
 # @ dbem
 #: classes/em-mailer.php:121
 msgid "Please supply a valid email format."
-msgstr "Bitte geben Sie ein eine gültige Email-Addresse ein."
+msgstr "Bitte gib ein eine gültige Email-Addresse ein."
 
 # @ dbem
 #: admin/em-options.php:1576
@@ -1080,7 +1081,7 @@ msgstr "Reservierung storniert"
 # @ dbem
 #: em-actions.php:332
 msgid "You must log in to cancel your booking."
-msgstr "Sie müssen angemeldet sein, um ihre Reservierung zu stornieren."
+msgstr "Du musst angemeldet sein, um Deine Reservierung zu stornieren."
 
 # @ dbem
 #: admin/em-bookings.php:297 classes/em-tickets.php:206
@@ -1138,9 +1139,9 @@ msgid ""
 "Add a start or end date (or both) to impose time constraints on ticket "
 "availability. Leave either blank for no upper/lower limit."
 msgstr ""
-"Fügen Sie einen Start-oder Enddatum (oder beides) ein, um die Verfügbarkeit "
-"der Ticket einzuschränken. Lassen Sie das Feld leer, um keine obere bzw. "
-"untere Grenze festzulegen."
+"Füge einen Start-oder Enddatum (oder beides) ein, um die Verfügbarkeit der "
+"Ticket einzuschränken. Lasse das Feld leer, um keine obere bzw. untere "
+"Grenze festzulegen."
 
 # @ dbem
 #: templates/forms/ticket-form.php:31
@@ -1210,9 +1211,9 @@ msgid ""
 "adding all the fields below seperated by commas."
 msgstr ""
 "Google kann den Veranstaltungsort je besser finden, desto mehr Informationen "
-"Sie eingeben. Wenn Ihre Adresse nicht gefunden wird, probieren Sie sie aus "
-"auf <a='http://maps.google.com'> maps.google.com</a>, indem Sie alle unten "
-"angegebenen Felder durch Komma getrennt eingeben."
+"Du eingibst. Wenn Deine Adresse nicht gefunden wird, probiere sie aus auf "
+"<a='http://maps.google.com'> maps.google.com</a>, indem Du alle unten "
+"angegebenen Felder durch Komma getrennt eingibst."
 
 # @ dbem
 #: templates/forms/event/location.php:70 templates/forms/location/where.php:9
@@ -1291,7 +1292,7 @@ msgstr "E-mail"
 # @ dbem
 #: templates/forms/bookingform/login.php:8
 msgid "Log in if you already have an account with us."
-msgstr "Melden Sie sich an, wenn Sie bereits ein Konto bei uns haben."
+msgstr "Melde Dich an, wenn Du bereits ein Konto bei uns hast."
 
 # @ dbem
 #: templates/forms/bookingform/login.php:10
@@ -1346,10 +1347,10 @@ msgid ""
 "admins of that group can modify the booking, and you will not be able to "
 "unattach the event without deleting it."
 msgstr ""
-"Wählen Sie eine Gruppe, die Sie verwalten, der diese Verwaltung zugeordnet "
-"werden soll. Beachten Sie, dass alle anderen Admins der Gruppe die Buchung "
-"ändern können. Und Sie werden nicht in der Lage sein, das Ereignis von der "
-"Gruppe zu lösen, ohne es zu löschen."
+"Wähle eine Gruppe, die Du verwaltest, der diese Verwaltung zugeordnet werden "
+"soll. Beachte, dass alle anderen Admins der Gruppe die Buchung ändern "
+"können. Und Du wirst nicht in der Lage sein, das Ereignis von der Gruppe zu "
+"lösen, ohne es zu löschen."
 
 # @ dbem
 #: classes/em-event-post-admin.php:181 em-actions.php:568
@@ -1495,8 +1496,8 @@ msgstr "Veranstaltungsort:"
 msgid ""
 "Create a location or start typing to search a previously created location."
 msgstr ""
-"Erstellen Sie einen Veranstaltungsort, oder fangen Sie an zu einzugeben, um "
-"einen zuvor erstellten Veranstaltungsort zu suchen."
+"Erstelle einen Veranstaltungsort, oder fange an zu einzugeben, um einen "
+"zuvor erstellten Veranstaltungsort zu suchen."
 
 # @ dbem
 #: templates/forms/event/location.php:66
@@ -1629,8 +1630,8 @@ msgid ""
 "you will lose all booking information and the old recurring events will be "
 "deleted."
 msgstr ""
-"Sind Sie sicher, dass Sie diese sich wiederholedne Veranstaltung verschieben "
-"wollen? Wenn Sie dies tun, verlieren Sie alle Reservierungsinformationen und "
+"Bist Du sicher, dass Du diese sich wiederholedne Veranstaltung verschieben "
+"willst? Wenn Du dies tust, verlierst Du alle Reservierungsinformationen und "
 "die alte wiederkehrenden Veranstaltung werden gelöscht."
 
 # @ dbem
@@ -1640,15 +1641,15 @@ msgid ""
 "lose all previous bookings. If you wish to prevent further bookings, reduce "
 "the number of spaces available to the amount of bookings you currently have"
 msgstr ""
-"Sind Sie sicher, dass Sie Reservierung deaktivieren wollen? Wenn Sie das tun "
-"und speichern, werden Sie alle bisherigen Reservierungen verlieren. Wenn Sie "
-"weitere Reservierungen verhindern wollen, reduzieren Sie die Anzahl der "
+"Bist Du sicher, dass Du Reservierung deaktivieren willst? Wenn Du das tust "
+"und speicherst, wirst Du alle bisherigen Reservierungen verlieren. Wenn Du "
+"weitere Reservierungen verhindern willst, reduziere die Anzahl der "
 "verfügbaren Plätze auf die Anzahl der bisherigen Reservierungen."
 
 # @ dbem
 #: templates/forms/tickets-form.php:6
 msgid "Create a ticket"
-msgstr "Erstellen Sie ein Ticket"
+msgstr "Erstelle ein Ticket"
 
 # @ dbem
 #: templates/forms/tickets-form.php:13
@@ -1817,9 +1818,9 @@ msgid ""
 "information, go to the relevant single event and save it to detach it from "
 "this recurrence series."
 msgstr ""
-"WARNUNG! Sie löschen alle Wiederholungen dieser Veranstaltung, "
-"einschließlich der Reservierungen und der Reservierungshistorie dafür. Um "
-"einzelne Reservierungsinformationen zu behalten, müssen Sie zu den einzelnen "
+"WARNUNG! Du löschst alle Wiederholungen dieser Veranstaltung, einschließlich "
+"der Reservierungen und der Reservierungshistorie dafür. Um einzelne "
+"Reservierungsinformationen zu behalten, musst Du zu den einzelnen "
 "Veranstaltungen gehen und dort die Informationen sichern, oder die "
 "Veranstaltungen aus der Serie entfernen."
 
@@ -1861,7 +1862,7 @@ msgstr "Status"
 # @ dbem
 #: em-install.php:552
 msgid "Are you sure you want to cancel your booking?"
-msgstr "Sind Sie sicher, dass Sie Ihre Reservierung stornieren wollen?"
+msgstr "Bist Du sicher, dass Du Deine Reservierung stornieren willst?"
 
 # @ dbem
 #: admin/em-bookings.php:285 admin/em-bookings.php:374
@@ -1873,7 +1874,7 @@ msgstr "Stornieren"
 # @ dbem
 #: templates/templates/my-bookings.php:85
 msgid "You do not have any bookings."
-msgstr "Sie haben noch keine Reservierungen."
+msgstr "Du hast noch keine Reservierungen."
 
 # @ dbem
 #: templates/templates/my-bookings.php:95
@@ -1954,7 +1955,7 @@ msgstr "Buchungen sind für diese Veranstaltung geschlossen."
 # @ dbem
 #: events-manager.php:309
 msgid "Please wait while the booking is being submitted."
-msgstr "Bitte warten Sie, bis die Reservierung geseichert ist."
+msgstr "Bitte warte, bis die Reservierung geseichert ist."
 
 # @ dbem
 #: admin/em-options.php:67
@@ -2069,16 +2070,16 @@ msgid ""
 "be accessible anymore, and if you switch back they will be but new events "
 "created during global events mode will only remain on the main site."
 msgstr ""
-"Wird dies auf Yes gesetzt, wird alle Veranstaltungen in den Tabellen der "
-"Haupt-Site speichern (EM muss dafür aktiviert sein). Dies ermöglicht Ihnen "
-"Ereignisse über verschiedene Blogs zu teilen, zum Beispiele Ihre "
-"Veranstaltungen in Ihrem Netzwerk während Nutzer ihre eigenen "
-"Veranstaltungen in ihrem eigenen Blog verwalten können. Denken Sie daran, "
-"dass die Aktivierung dieser Option bedeutet, dass alte, in Sub-Blogs "
-"angelegte Veranstaltungen dann nicht mehr zugänglich sind. Und wenn Sie "
-"wieder zurückwechseln, sind sie zwar diese alten Veranstaltungen wieder "
-"zugänglich, aber die inzwischen neu angelegten Veranstaltungen  sind dann "
-"nur noch auf der Haupt-Website verfügbar."
+"Wird dies auf Ja gesetzt, wird alle Veranstaltungen in den Tabellen der "
+"Haupt-Site speichern (EM muss dafür aktiviert sein). Dies ermöglicht Dir, "
+"Ereignisse über verschiedene Blogs zu teilen, zum Beispiele Deine "
+"Veranstaltungen in Deinem Netzwerk während Nutzer ihre eigenen "
+"Veranstaltungen in ihrem eigenen Blog verwalten können. Denke daran, dass "
+"die Aktivierung dieser Option bedeutet, dass alte, in Sub-Blogs angelegte "
+"Veranstaltungen dann nicht mehr zugänglich sind. Und wenn Du wieder "
+"zurückwechselst, sind sie zwar diese alten Veranstaltungen wieder "
+"zugänglich, aber die inzwischen neu angelegten Veranstaltungen sind dann nur "
+"noch auf der Haupt-Website verfügbar."
 
 # @ dbem
 #: admin/em-ms-options.php:170
@@ -2096,17 +2097,16 @@ msgid ""
 "Select yes to select location from a drow-down menu; location selection will "
 "be faster, but you will lose the ability to insert locations with events"
 msgstr ""
-"Wählen Sie Ja um Veranstaltungsorte aus einer Dropdown-Liste auszuwählen. "
-"Die Auswahl vom Veranstaltungsort wird schneller sein, aber Sie verlieren "
-"damit die Möglichkeit, direkt in der Veranstaltung einen neuen "
-"Veranstaltungsort anzulegen."
+"Wähle Ja um Veranstaltungsorte aus einer Dropdown-Liste auszuwählen. Die "
+"Auswahl vom Veranstaltungsort wird schneller sein, aber Du verlierest damit "
+"die Möglichkeit, direkt in der Veranstaltung einen neuen Veranstaltungsort "
+"anzulegen."
 
 # @ dbem
 #: admin/em-options.php:356
 msgid "Select yes to enable the recurrence features feature"
 msgstr ""
-"Wählen Sie Ja, um Funktionen für sich wiederholende Veranstaltungen zu "
-"aktivieren"
+"Wähle Ja, um Funktionen für sich wiederholende Veranstaltungen zu aktivieren"
 
 # @ dbem
 #: admin/em-options.php:357
@@ -2123,12 +2123,12 @@ msgstr ""
 # @ dbem
 #: admin/em-options.php:360
 msgid "Select yes to enable the category features"
-msgstr "Wählen Sie Ja, um die Veranstaltungen in Kategorien zu verwalten."
+msgstr "Wähle Ja, um die Veranstaltungen in Kategorien zu verwalten."
 
 # @ dbem
 #: admin/em-options.php:375 admin/em-options.php:404
 msgid "Select yes to enable the attributes feature"
-msgstr "Wählen Sie Ja, um die Attribute zu aktivieren"
+msgstr "Wähle Ja, um die Attribute zu aktivieren"
 
 # @ dbem
 #: admin/em-options.php:364
@@ -2169,7 +2169,7 @@ msgstr "Standard-Veranstaltungsort"
 msgid ""
 "This option allows you to select the default location when adding an event."
 msgstr ""
-"Diese Option ermöglicht es Ihnen, einen Standard-Veranstaltungsort für neue "
+"Diese Option ermöglicht es Dir, einen Standard-Veranstaltungsort für neue "
 "Veranstaltungen auszuwählen."
 
 # @ dbem
@@ -2188,7 +2188,7 @@ msgid ""
 "If you select a default country, that will be pre-selected when creating a "
 "new location."
 msgstr ""
-"Wenn Sie ein Land als Standard auswählen, wird dieses beim Erstellen eines "
+"Wenn Du ein Land als Standard auswählest, wird dieses beim Erstellen eines "
 "neuen Veranstaltungsortes vorgeschlagen."
 
 # @ dbem
@@ -2201,17 +2201,17 @@ msgid ""
 "information about an event for other uses. <a href='%s'>More information on "
 "placeholders.</a>"
 msgstr ""
-"Sie können hier Veranstaltungsattribute hinzufügen, ein Attribut pro Zeile "
-"in folgendem Format: <code>#_ATT{key}</code>. Die Attribute werden auf der "
-"Veranstaltungsseite erst angezeigt, wenn Sie sie in ein anderes Template "
-"unten einfügen, aber vielleicht wollen Sie die Extra-Informationen zu einer "
+"Du kannst hier Veranstaltungsattribute hinzufügen, ein Attribut pro Zeile in "
+"folgendem Format: <code>#_ATT{key}</code>. Die Attribute werden auf der "
+"Veranstaltungsseite erst angezeigt, wenn Du sie in ein anderes Template "
+"unten einfügest, aber vielleicht willst Du die Extra-Informationen zu einer "
 "Veranstaltung für andere Zwecke speichern. <a href='%s'>Weitere "
 "Informationen zu Platzhaltern.</a>"
 
 # @ dbem
 #: admin/em-options.php:417
 msgid "Show some love?"
-msgstr "Zeigen Sie etwas Liebe?"
+msgstr "Zeige etwas Liebe?"
 
 # @ dbem
 #: admin/em-options.php:417
@@ -2221,8 +2221,8 @@ msgid ""
 "event pages."
 msgstr ""
 "Hunderte von freien Stunden sind in die Erstellung dieses Plugins geflossen. "
-"Zeigen Sie Ihre Unterstützung und fügen Sie einen kleinen Link zur Plugin-"
-"Website am unteren Rand Ihrer Veranstaltungsseite."
+"Zeige Deine Unterstützung und füge einen kleinen Link zur Plugin-Website am "
+"unteren Rand Deiner Veranstaltungsseite."
 
 # @ dbem
 #: admin/em-options.php:601
@@ -2251,7 +2251,7 @@ msgid ""
 "If you would like to show events that span over more than one day, see the "
 "Calendar section on this page."
 msgstr ""
-"Wenn Sie Veranstaltungen anzeigen möchten, die über mehr als einen Tag "
+"Wenn Du Veranstaltungen anzeigen möchtest, die über mehr als einen Tag "
 "dauern, siehe den Abschnitt Kalender auf dieser Seite."
 
 # @ dbem
@@ -2274,12 +2274,12 @@ msgid ""
 "that's what is rewritten by events manager. To control what's rewritten in "
 "this title, see settings further down for page titles."
 msgstr ""
-"Diese Einstellung ist nur dann wichtig, wenn sie oben 'ja' ausgewählt haben. "
-"Sie werden bemerken, dass der Seitentitel auf der Veranstaltungsseite nicht "
+"Diese Einstellung ist nur dann wichtig, wenn Du oben 'ja' ausgewählt hast. "
+"Du wirst bemerken, dass der Seitentitel auf der Veranstaltungsseite nicht "
 "verändert wird und dass sie einen neuen Titel direkt unter dem Standard-"
-"Seitennamen haben. Hier können Sie das HTML für diesen Titel einstellen. "
-"Achten Sie darauf, dass sie den Platzhalter #_PAGETITLE Platzhalter hier "
-"verwenden, damit Events Manager den Titel (siehe weiter unten) richtig "
+"Seitennamen haben. Hier kannst Du das HTML für diesen Titel einstellen. "
+"Achte darauf, dass Du den Platzhalter #_PAGETITLE Platzhalter hier "
+"verwendest, damit Events Manager den Titel (siehe weiter unten) richtig "
 "einsetzen kann."
 
 # @ dbem
@@ -2306,7 +2306,7 @@ msgid ""
 "'yesterday' as past."
 msgstr ""
 "Standardmäßig werden Veranstaltungen, deren Enddatum später als heute liegt, "
-"werden bei der Suche einbezogen. Setzen Sie diese Option auf Ja, um "
+"werden bei der Suche einbezogen. Setze diese Option auf Ja, um "
 "Veranstaltungen, die \"gestern\" begonnen haben, als vergangene "
 "Veranstaltungen zu behandeln."
 
@@ -2366,8 +2366,8 @@ msgid ""
 "above."
 msgstr ""
 "Normalerweise sortiert Event-Manager die Liste der Veranstaltungen nach dem "
-"Startdatum in aufsteigender Reihenfolge. Um die Sortierung zu ändern, passen "
-"Sie die Werte oben an."
+"Startdatum in aufsteigender Reihenfolge. Um die Sortierung zu ändern, passe "
+"die Werte oben an."
 
 # @ dbem
 #: admin/em-options.php:725
@@ -2460,8 +2460,8 @@ msgid ""
 "<code>#j</code>, etc.<br/>"
 msgstr ""
 "Wenn nur Veranstaltungen für ein bestimmtes Datum angezeigt werden, kann "
-"hier der Titel eingegeben werden. Um Datumswerte einzufügen, verwenden Sie "
-"<a href=\"http://www.php.net/manual/en/function.date.php\">PHP Zeitformat "
+"hier der Titel eingegeben werden. Um Datumswerte einzufügen, verwende <a "
+"href=\"http://www.php.net/manual/en/function.date.php\">PHP Zeitformat "
 "Zeichen</a>  mit einem <code>#</code> Zeichen davor, z.B. <code>#m</code>, "
 "<code>#M</code>, <code>#j</code>, usw.<br/>"
 
@@ -2516,7 +2516,7 @@ msgid ""
 "The format of each event when displayed in the full calendar. Remember to "
 "include <code>li</code> tags before and after the event."
 msgstr ""
-"Formatierung für eine Veranstaltung im großen Kalender. Denken Sie daran, "
+"Formatierung für eine Veranstaltung im großen Kalender. Denke daran, "
 "<code>li</code> Tags vor und nach der Veranstaltung anzugeben."
 
 # @ dbem
@@ -2532,7 +2532,7 @@ msgid ""
 "will get always see a list of events."
 msgstr ""
 "Normalerweise wird ein Link auf die Veranstaltung angezeigt, wenn ein Tag "
-"nur eine einzige Veranstaltung hat. Wenn Sie hier Ja wählen, erhalten Sie "
+"nur eine einzige Veranstaltung hat. Wenn Du hier Ja wählst, erhältst Du "
 "immer eine Liste mit den Veranstaltungen."
 
 # @ dbem
@@ -2743,7 +2743,7 @@ msgstr "Google Maps Integration aktivieren?"
 # @ dbem
 #: admin/em-options.php:1351
 msgid "Check this option to enable Goggle Map integration."
-msgstr "Aktivieren Sie diese Option, um Goggle Maps Integration zu aktivieren."
+msgstr "Aktiviere diese Option, um Goggle Maps Integration zu aktivieren."
 
 # @ dbem
 #: admin/em-options.php:1387
@@ -2805,8 +2805,8 @@ msgstr "Nicht verfügbar Tickets anzeigen?"
 #: admin/em-options.php:1487
 msgid "You can choose whether or not to show unavailable tickets to visitors."
 msgstr ""
-"Sie können wählen, ob Sie nicht verfügbare Tickets für Besucher anzeigen "
-"wollen oder nicht."
+"Du kannst wählen, ob Du nicht verfügbare Tickets für Besucher anzeigen "
+"willst oder nicht."
 
 # @ dbem
 #: admin/em-options.php:1388
@@ -2821,7 +2821,7 @@ msgid ""
 msgstr ""
 "Standardmäßig sind Tickets nicht mehr verfügbar, sobald es genügend "
 "BESTÄTIGTE Reservierungen gibt. Um auch Plätze für noch unbestätigte "
-"Reservierungen zu reservieren, wählen Sie Ja."
+"Reservierungen zu reservieren, wähle Ja."
 
 # @ dbem
 #: admin/em-options.php:1488
@@ -2835,8 +2835,8 @@ msgid ""
 "we can show available tickets if you have more than one ticket."
 msgstr ""
 "Wenn abgemeldet, wird der Benutzer aufgefordert, sich anzumelden. Jedoch "
-"können wir die verfügbaren Tickets anzeigen, wenn Sie mehr als ein Ticket "
-"haben."
+"können wir die verfügbaren Tickets anzeigen, wenn Du mehr als ein Ticket "
+"hast."
 
 # @ dbem
 #: admin/em-options.php:1390
@@ -2857,7 +2857,7 @@ msgstr ""
 # @ dbem
 #: admin/em-options.php:1386
 msgid "Allow guest bookings?"
-msgstr "Reservierungen von Gästen zulassen?"
+msgstr "Gastreservierungen zulassen?"
 
 # @ dbem
 #: admin/em-options.php:1386
@@ -2874,7 +2874,7 @@ msgstr ""
 # @ dbem
 #: admin/em-options.php:1391
 msgid "Allow double bookings?"
-msgstr "Reservierungen von Gästen zulassen?"
+msgstr "Doppelbuchungen zulassen?"
 
 # @ dbem
 #: admin/em-options.php:1391
@@ -2892,9 +2892,9 @@ msgid ""
 "Choose whether or not to display a login form in the booking form area to "
 "remind your members to log in before booking."
 msgstr ""
-"Wählen Sie, ob Sie ein Login-Formular neben dem Reservierungsformular "
-"angezeigt werden soll. Das Formular soll Mitglieder daran erinnern, sich "
-"anzumelden, bevor sie Reservierungen eintragen."
+"Wählen, ob ein Login-Formular neben dem Reservierungsformular angezeigt "
+"werden soll. Das Formular soll Mitglieder daran erinnern, sich anzumelden, "
+"bevor sie Reservierungen eintragen."
 
 # @ dbem
 #: admin/em-options.php:1434
@@ -2907,6 +2907,8 @@ msgid ""
 "When a booking is made by a user, a feedback message is shown depending on "
 "the result, which can be customized below."
 msgstr ""
+"Wenn eine Reservierung gemacht wird, wird eine Feedback Nachricht abhängig "
+"vom Ergebnis gezeigt, die hier angepasst werden kann."
 
 # @ dbem
 #: admin/em-options.php:1437
@@ -2916,17 +2918,17 @@ msgstr "Buchung abschicken"
 # @ dbem
 #: admin/em-options.php:1437
 msgid "When a booking is registered and confirmed."
-msgstr ""
+msgstr "When eine Reservierung durchgeführt und bestätigt ist."
 
 # @ dbem
 #: admin/em-options.php:1438
 msgid "Successful pending booking"
-msgstr "Sie haben %s unbestätigte Reservierung"
+msgstr "Du hast %s unbestätigte Reservierung"
 
 # @ dbem
 #: admin/em-options.php:1438
 msgid "When a booking is registered but pending."
-msgstr ""
+msgstr "Wenn eine Reservierung durchgeführt, aber unerledigt ist."
 
 # @ dbem
 #: admin/em-options.php:1439
@@ -2949,6 +2951,8 @@ msgid ""
 "When a booking cannot be made due to an error when filling the form. Below "
 "this, there will be a dynamic list of errors."
 msgstr ""
+"Wenn eine Reservierung aufgrund eines Fehlers beim Ausfüllen des Formulars "
+"nicht durchgeführt werden kann. Darunter gibt es eine dynamische Fehleliste."
 
 # @ dbem
 #: admin/em-options.php:1442
@@ -2958,7 +2962,7 @@ msgstr "Der Benutzer muss eingeloggt sein"
 # @ dbem
 #: admin/em-options.php:1442
 msgid "When a user must log in before making a booking."
-msgstr "Sie müssen sich anmelden, um eine Buchung vornehmen zu können."
+msgstr "Du musst Dich anmelden, um eine Buchung vornehmen zu können."
 
 # @ dbem
 #: admin/em-options.php:1443
@@ -2971,6 +2975,8 @@ msgid ""
 "If a booking is made and an email cannot be sent, this is added to the "
 "success message."
 msgstr ""
+"Wenn eine Reservierung durchgeführt wurde, aber keine Email versandt werden "
+"kann, wird dies zur Erfolgsmeldung hinzugefügt."
 
 # @ dbem
 #: admin/em-options.php:1444
@@ -2980,7 +2986,7 @@ msgstr "Bereichts gebucht"
 # @ dbem
 #: admin/em-options.php:1444
 msgid "If the user made a previous booking and cannot double-book."
-msgstr ""
+msgstr "Wenn ein Anwender eine unerlaubte Doppelreservierung vornimmt."
 
 # @ dbem
 #: admin/em-options.php:1445
@@ -2990,7 +2996,7 @@ msgstr "Keine Plätze gebucht"
 # @ dbem
 #: admin/em-options.php:1445
 msgid "If the user tries to make a booking without requesting any spaces."
-msgstr ""
+msgstr "Wenn der Anwender eine Buchung ohne Plätze vornimmt."
 
 # @ dbem
 #: admin/em-options.php:1537
@@ -3008,9 +3014,9 @@ msgid ""
 "If you would like every event booking confirmation email sent to an "
 "administrator write their email here (leave blank to not send an email)."
 msgstr ""
-"Wenn Sie möchten, dass jede Reservierungsbestätigung per E-Mail an einen "
-"Administrator geschickt werden soll, geben sie hier seine E-Mail-Adresse ein "
-"(leer lassen, um keine Emails zu verschicken)."
+"Wenn Du möchtest, dass jede Reservierungsbestätigung per E-Mail an einen "
+"Administrator geschickt werden soll, gib hier seine E-Mail-Adresse ein (leer "
+"lassen, um keine Emails zu verschicken)."
 
 # @ dbem
 #: admin/em-options.php:1543
@@ -3019,7 +3025,7 @@ msgid ""
 "someone books places. An email will be sent when a booking is first made "
 "(regardless if confirmed or pending)"
 msgstr ""
-"Aktivieren Sie diese Option, wenn Sie wollen, dass die Kontaktperson von der "
+"Aktiviere diese Option, wenn Du willst, dass die Kontaktperson von der "
 "Veranstaltung bei jeder Reservierung eine Email erhalten soll. Die Email "
 "wird bei der Reservierung geschickt (unabhängig davon ob bestätigt oder "
 "unbestätigt)."
@@ -3231,8 +3237,8 @@ msgid ""
 "SMTP authentication is often needed. If you use GMail, make sure to set this "
 "parameter to Yes"
 msgstr ""
-"SMTP-Authentifizierung falls erforderlich. Wenn Sie Google Mail verwenden, "
-"müssen sie diesen Parameter auf Ja setzen."
+"SMTP-Authentifizierung falls erforderlich. Wenn Du Google Mail verwendest, "
+"musst Du diesen Parameter auf Ja setzen."
 
 # @ dbem
 #: admin/em-options.php:1712
@@ -3240,8 +3246,8 @@ msgid ""
 "The SMTP host. Usually it corresponds to 'localhost'. If you use GMail, set "
 "this value to 'ssl://smtp.gmail.com:465'."
 msgstr ""
-"Der SMTP-Host. Normalerweise 'localhost'. Wenn Sie Google Mail verwenden, "
-"setzen Sie diesen Wert auf 'ssl://smtp.gmail.com:465'."
+"Der SMTP-Host. Normalerweise 'localhost'. Wenn Du Google Mail verwendest, "
+"setze diesen Wert auf 'ssl://smtp.gmail.com:465'."
 
 # @ dbem
 #: admin/em-options.php:1713
@@ -3264,8 +3270,8 @@ msgstr "SMTP Kennwort"
 #: admin/em-options.php:1714
 msgid "Insert the password to be used to access your SMTP server"
 msgstr ""
-"Geben Sie das Kennwort an, das verwendet werden soll, um auf Ihren SMTP-"
-"Server zuzugreifen."
+"Gib das Kennwort an, das verwendet werden soll, um auf Deinen SMTP-Server "
+"zuzugreifen."
 
 # @ dbem
 #: admin/em-options.php:1672
@@ -3321,7 +3327,7 @@ msgid ""
 "You can now give fine grained control with regards to what your users can do "
 "with events. Each user role can have perform different sets of actions."
 msgstr ""
-"Sie können genau einstellen, welche Benutzergruppe welche Funktionen ausüben "
+"Du kannst genau einstellen, welche Benutzergruppe welche Funktionen ausüben "
 "kann.  Jede Benutzerrolle kann eine unterschiedliche Menge von Aktionen "
 "ausführen."
 
@@ -3341,7 +3347,7 @@ msgstr "Benutzer können Reservierungen für ihre Veranstaltungen verwalten."
 # @ dbem
 #: admin/em-options.php:446
 msgid "Allow anonymous event submissions?"
-msgstr "Anonymes Einsenden von Veranstaltungen erlauben?"
+msgstr "Anonymes Einreichen von Veranstaltungen erlauben?"
 
 # @ dbem
 #: admin/em-options.php:446
@@ -3350,14 +3356,14 @@ msgid ""
 "use the new [event_form] shortcode or <code>em_event_form()</code> template "
 "tag with this enabled."
 msgstr ""
-"Möchten Sie, dass Benutzer Veranstaltungen anonym einreichen können? Wenn "
-"ja, verwenden Sie den [event_form]-Shortcode oder den <code> em_event_form "
-"() </code> Template-Tag und aktivieren Sie diese Option."
+"Möchtest Du, dass Benutzer Veranstaltungen anonym einreichen können? Wenn "
+"ja, verwende den [event_form]-Shortcode oder den <code> em_event_form () </"
+"code> Template-Tag und aktiviere diese Option."
 
 # @ dbem
 #: admin/em-options.php:447
 msgid "Guest Default User"
-msgstr "Gast Standard-User"
+msgstr "Standard Gast-Benutzer"
 
 # @ dbem
 #: admin/em-options.php:439 admin/em-options.php:448
@@ -3371,7 +3377,7 @@ msgid ""
 "can customize the success message they see here."
 msgstr ""
 "Anonyme Benutzer können ihre eingereichten Veranstaltungen nicht mehr "
-"bearbeiten, wenn sie diese eingereicht haben. Sie können die Erfolgsmeldung "
+"bearbeiten, wenn sie diese eingereicht haben. Du kannst die Erfolgsmeldung "
 "hier entsprechend gestalten."
 
 # @ dbem
@@ -3388,7 +3394,7 @@ msgstr "Veranstaltungen mit Reservierungsmöglichkeit"
 #: admin/em-bookings.php:96 admin/em-bookings.php:206
 #: admin/em-bookings.php:454 admin/em-bookings.php:509
 msgid "You do not have the rights to manage this event."
-msgstr "Sie haben nicht die Rechte, diese Veranstaltung zu verwalten."
+msgstr "Du hast nicht die Rechte, diese Veranstaltung zu verwalten."
 
 # @ dbem
 #: admin/em-bookings.php:108
@@ -3414,7 +3420,7 @@ msgstr "Plätze bestätigt"
 # @ dbem
 #: admin/em-bookings.php:158
 msgid "You do not have the rights to manage this ticket."
-msgstr "Sie haben nicht die Rechte, dieses Ticket zu verwalten."
+msgstr "Du hast nicht die Rechte, dieses Ticket zu verwalten."
 
 # @ dbem
 #: admin/em-bookings.php:168
@@ -3475,7 +3481,7 @@ msgstr "Reservierungsdetails"
 # @ dbem
 #: admin/em-bookings.php:368
 msgid "Modify Booking"
-msgstr "Meine Reservierungen"
+msgstr "Reservierung ändern"
 
 # @ dbem
 #: admin/em-bookings.php:410
@@ -3488,7 +3494,7 @@ msgid ""
 "You can add private notes below for internal reference that only event "
 "managers will see."
 msgstr ""
-"Sie können Notizen für interne Zwecke eintragen. Nur Manager der "
+"Du kannst Notizen für interne Zwecke eintragen. Nur Manager der "
 "Veranstaltung können diese Notizen sehen."
 
 # @ dbem
@@ -3520,6 +3526,10 @@ msgid ""
 "<a href='%s'>Settings Page</a>. <a href='%s' title='Don't show this advice "
 "again'>Dismiss</a></p>"
 msgstr ""
+"<p>Events Manager ist bereit! Es ist empfehlenswert den <a href='%s'>Getting "
+"Started</a> Guide auf Deiner Seite zu lesen und die <a href='%s'>Settings "
+"Page</a> zu studieren. <a href='%s' title='Diesen Hinweis nicht mehr "
+"anzeigen.'>Weg damit.</a></p>"
 
 # @ dbem
 #: em-functions.php:75
@@ -3642,11 +3652,11 @@ msgid ""
 "lists. Using the placeholders below, you can choose what information should "
 "be displayed."
 msgstr ""
-"Auf der <a href='%s'>Einstellungsseite</a> finden Sie verschiedene "
-"Textfelder, in denen Sie eintragen können, wie die Veranstaltung, der "
+"Auf der <a href='%s'>Einstellungsseite</a> findest Du verschiedene "
+"Textfelder, in denen Du eintragen kannst, wie die Veranstaltung, der "
 "Veranstaltungsort, die Liste der Veranstaltungen, oder die Liste der "
 "Veranstaltungsorte angezeigt werden sollen. Mit den folgenden Platzhaltern "
-"können Sie wählen, welche Informationen angezeigt werden sollen."
+"kannst Du wählen, welche Informationen angezeigt werden sollen."
 
 # @ dbem
 #: admin/em-admin.php:90 classes/em-people.php:35 events-manager.php:679
@@ -3723,8 +3733,7 @@ msgstr "Noch keine Antworten!"
 #, php-format
 msgid "No categories available, <a href=\"%s\">create one here first</a>"
 msgstr ""
-"Noch keine Kategorien vorhanden, <a href=\"%s\">erstellen Sie eine "
-"Kategorie</a>"
+"Noch keine Kategorien vorhanden, <a href=\"%s\">erstelle eine Kategorie</a>"
 
 # @ dbem
 #: templates/forms/event/featured-image-public.php:12
@@ -3744,9 +3753,9 @@ msgid ""
 "You don't have any custom attributes defined in any of your Events Manager "
 "template settings. Please add them the <a href='%s'>settings page</a>"
 msgstr ""
-"Sie haben noch keine benutzerdefinierten Attribute in Ihren Events Manager "
-"Template-Einstellungen definiert. Bitte fügen Sie diese auf der <a "
-"href='%s'>Einstellungs-Seite</a> ein."
+"Du hast noch keine benutzerdefinierten Attribute in Deinem Events Manager "
+"Template-Einstellungen definiert. Bitte füge diese auf der <a "
+"href='%s'>Einstellungen Seite</a> ein."
 
 # @ dbem
 #: templates/forms/event/attributes.php:50
@@ -3780,7 +3789,7 @@ msgid ""
 "Booking successful, pending confirmation (you will also receive an email "
 "once confirmed)."
 msgstr ""
-"Reservierung wurde erfolgreich gespeichert. Sie werden eine E-Mail erhalten, "
+"Reservierung wurde erfolgreich gespeichert. Du wirst eine E-Mail erhalten, "
 "sobald die Reservierung bestätigt wird."
 
 # @ dbem
@@ -3792,7 +3801,7 @@ msgstr "Reservierung erfolgreich."
 #: em-install.php:557
 msgid "You must log in or register to make a booking."
 msgstr ""
-"Sie müssen sich anmelden oder registrieren, um eine Reservierung vorzunehmen."
+"Du musst Dich anmelden oder registrieren, um eine Reservierung vorzunehmen."
 
 # @ dbem
 #: em-install.php:558
@@ -3802,9 +3811,8 @@ msgid ""
 "letting them know of this error."
 msgstr ""
 "Allerdings gab es einige Probleme bei der Übermittlung der Bestätigungs-E-"
-"Mails an Sie und/oder den Ansprechpartner der Veranstaltung. Bitte "
-"kontaktieren sie den Veranstalter direkt und teilen Sie ihm die Details zum "
-"Fehler mit."
+"Mails an Dich und/oder den Ansprechpartner der Veranstaltung. Bitte "
+"kontaktiere den Veranstalter direkt und teile ihm die Details zum Fehler mit."
 
 # @ dbem
 #: em-install.php:559
@@ -3817,8 +3825,8 @@ msgid ""
 "This email already exists in our system, please log in to register to "
 "proceed with your booking."
 msgstr ""
-"Diese E-Mail existiert bereits in unserem System. Bitte melden Sie sich an, "
-"um mit ihrer Reservierung fortzufahren."
+"Diese E-Mail existiert bereits in unserem System. Bitte melde Dich an, um "
+"mit Deiner Reservierung fortzufahren."
 
 # @ dbem
 #: em-install.php:561
@@ -3826,8 +3834,8 @@ msgid ""
 "A new user account has been created for you. Please check your email for "
 "access details."
 msgstr ""
-"Ein neues Benutzerkonto wurde für Sie erstellt. Die Zugangsdaten wurden per "
-"E-Mail an sie verschickt."
+"Ein neues Benutzerkonto wurde für Dich erstellt. Die Zugangsdaten wurden per "
+"E-Mail an Dich verschickt."
 
 # @ dbem
 #: em-install.php:562
@@ -3835,19 +3843,19 @@ msgid ""
 "There was a problem creating a user account, please contact a website "
 "administrator."
 msgstr ""
-"Es gab ein Problem beim Erstellen eines Benutzerkontos. Kontaktieren Sie "
-"bitte einen Website-Administrator."
+"Es gab ein Problem beim Erstellen eines Benutzerkontos. Kontaktiere bitte "
+"einen Website-Administrator."
 
 # @ dbem
 #: em-install.php:563
 msgid "You already have booked a seat at this event."
-msgstr "Sie haben bereits einen Platz bei dieser Veranstaltung reserviert."
+msgstr "Du hast bereits einen Platz bei dieser Veranstaltung reserviert."
 
 # @ dbem
 #: em-install.php:564
 msgid "You must request at least one space to book an event."
 msgstr ""
-"Sie müssen bei der Anfrage mindestens einen Platz anfordern, um die "
+"Du musst bei der Anfrage mindestens einen Platz anfordern, um die "
 "Veranstaltung zu reservieren."
 
 # @ dbem
@@ -3877,8 +3885,8 @@ msgid ""
 "You are in Events Manager debug mode. To turn debug mode off, go to the <a "
 "href=\"%s\">settings</a> page."
 msgstr ""
-"Sie befinden sich im Events Manager Debug-Modus. Um den Debug-Modus "
-"auszuschalten, gehen Sie auf die <a href=\"%s\">Einstellungen</a> vom Events-"
+"Du befindest Dich im Events Manager Debug-Modus. Um den Debug-Modus "
+"auszuschalten, gehe auf die <a href=\"%s\">Einstellungen</a> vom Events-"
 "Manager."
 
 # @ dbem
@@ -3902,32 +3910,32 @@ msgstr "Reservierung %s"
 #: events-manager.php:412 events-manager.php:420 events-manager.php:426
 #, php-format
 msgid "You do not have permission to publish %s"
-msgstr "Sie haben keine Berechtigung, %s zu veröffentlichen"
+msgstr "Du hast keine Berechtigung, %s zu veröffentlichen"
 
 # @ dbem
 #: events-manager.php:416 events-manager.php:424 events-manager.php:430
 #: events-manager.php:436
 #, php-format
 msgid "You do not have permission to edit %s"
-msgstr "Sie haben keine Berechtigung, um %s zu bearbeiten"
+msgstr "Du hast keine Berechtigung, um %s zu bearbeiten"
 
 # @ dbem
 #: events-manager.php:413 events-manager.php:421 events-manager.php:427
 #, php-format
 msgid "You do not have permission to delete others %s"
-msgstr "Sie haben keine Berechtigung um %s von anderen zu löschen"
+msgstr "Du hast keine Berechtigung um %s von anderen zu löschen"
 
 # @ dbem
 #: events-manager.php:415 events-manager.php:423 events-manager.php:429
 #, php-format
 msgid "You do not have permission to edit others %s"
-msgstr "Sie haben keine Berechtigung um %s von anderen zu bearbeiten"
+msgstr "Du hast keine Berechtigung um %s von anderen zu bearbeiten"
 
 # @ dbem
 #: events-manager.php:409
 #, php-format
 msgid "You do not have permission to manage others %s"
-msgstr "Sie haben keine Berechtigung um %s von anderen zu verwalten"
+msgstr "Du hast keine Berechtigung um %s von anderen zu verwalten"
 
 # @ dbem
 #: admin/em-options.php:1021 events-manager.php:409 events-manager.php:410
@@ -3939,13 +3947,13 @@ msgstr "Reservierungen"
 #: events-manager.php:435
 #, php-format
 msgid "You do not have permission to delete %s"
-msgstr "Sie haben keine Berechtigung, %s zu löschen"
+msgstr "Du hast keine Berechtigung, %s zu löschen"
 
 # @ dbem
 #: events-manager.php:410
 #, php-format
 msgid "You do not have permission to manage %s"
-msgstr "Sie haben keine Berechtigung, %s zu bearbeiten"
+msgstr "Du hast keine Berechtigung, %s zu bearbeiten"
 
 # @ dbem
 #: admin/em-options.php:571 admin/em-options.php:882 admin/em-options.php:1274
@@ -3980,7 +3988,7 @@ msgid ""
 "availalble under certain conditions, e.g. early bookings, group discounts, "
 "maximum bookings per ticket, etc."
 msgstr ""
-"Sie haben einen oder mehrere Tickets, die unter bestimmten Bedingungen "
+"Du hast einen oder mehrere Tickets, die unter bestimmten Bedingungen "
 "verfügbar sind, z. B. Frühbucher-, Gruppen-Rabatte, maximale Buchungen pro "
 "Ticket, oder Preiskategorien etc."
 
@@ -4013,7 +4021,7 @@ msgstr "Ticket-Name"
 # @ dbem
 #: admin/em-options.php:1389
 msgid "Can users cancel their booking?"
-msgstr "%s Benutzer haben Reservierungen storniert."
+msgstr "Benutzerstorno zulassen?"
 
 # @ dbem
 #: admin/em-options.php:1389
@@ -4021,6 +4029,7 @@ msgid ""
 "If enabled, users can cancel their bookings themselves from their bookings "
 "page."
 msgstr ""
+"Wenn aktiviert, können die Anwender ihre Reservierungen selbst stornieren."
 
 # @ dbem
 #: admin/em-options.php:1408
@@ -4047,6 +4056,8 @@ msgid ""
 "When displaying ticket prices and booking totals, include the tax "
 "automatically?"
 msgstr ""
+"Steuern automatisch anzeigen, wenn Ticketpreise und Reservierungssummen "
+"angezeigt werden?"
 
 # @ dbem
 #: admin/em-options.php:1495
@@ -4071,6 +4082,9 @@ msgid ""
 "account, if the user is not registered nor logged in and guest bookings are "
 "enabled, an account will be created for them."
 msgstr ""
+"Standardmäßig wird eine Reservierung mit einem Benutzerkonto verknüpft. Wenn "
+"ein Anwender weder registriert, noch angemeldet it und Gastbuchungen "
+"aktiviert sind, wird ein Benutzerkonto automatisch angelegt."
 
 # @ dbem
 #: admin/em-options.php:1509
@@ -4080,11 +4094,15 @@ msgid ""
 "and select a user, modifying these values will prevent older non-user "
 "bookings from displaying the correct information."
 msgstr ""
+"<strong>Warnung : </strong> Einige Funktionen für Anwender mit Benutzerkonto "
+"werden nicht verfügbar sein, z.B. Reservierungen ansehen. Wenn Du dies "
+"aktivierst und einen Benutzer auswählst, werden ältere Benutzer-lose "
+"Buchungen nicht mehr korrekt angezeigt, wenn Du diese Werte veränderst."
 
 # @ dbem
 #: admin/em-options.php:1512
 msgid "Enable No-User Booking Mode?"
-msgstr "Möchten sie Reservierungen aktivieren?"
+msgstr "Möchtest Du Reservierungen für nicht registrierte Benutzer aktivieren?"
 
 # @ dbem
 #: admin/em-options.php:1512
@@ -4108,6 +4126,9 @@ msgid ""
 "requiring event approval do not have the <code>publish_events</code> "
 "capability."
 msgstr ""
+"Wenn die Veranstaltung genehmigt wird, wir eine Email an den Veranstalter "
+"geschickt. Benutzer, die eine Veranstaltungs-Genehmigung erfordern, haben "
+"keine <code>puglish_events</code> Berechtigung."
 
 # @ dbem
 #: admin/em-options.php:1616
@@ -4157,13 +4178,12 @@ msgid ""
 "\">ignore this message</a>"
 msgstr ""
 "Uh Oh! Aus irgendeinem Grund konnte Wordpress keine Seite für "
-"Veranstaltungen erstellen (oder sie haben die Seite gerade gelöscht). Keine "
-"Sorge, alles, was Sie tun müssen, ist eine leere Seite mit einem beliebigen "
-"Namen zu erstellen. Dann wählen Sie diese neue Seite als Veranstaltungsseite "
+"Veranstaltungen erstellen (oder Du hast die Seite gerade gelöscht). Keine "
+"Sorge, alles, was Du tun musst, ist eine leere Seite mit einem beliebigen "
+"Namen zu erstellen. Dann wählst Du diese neue Seite als Veranstaltungsseite "
 "auf der <a href=\"%s\">Einstellungsseite</a> aus. Sorry für diesen "
-"zusätzlichen Schritt! Wenn Sie wissen, was Sie tun, können Sie dies "
-"absichtlich getan haben; in dem Fall <a href=\"%s\">ignorieren Sie diese "
-"Meldung</a>"
+"zusätzlichen Schritt! Wenn Du weißt, was Du tust, kannst Du dies absichtlich "
+"getan haben; in dem Fall <a href=\"%s\">ignoriere diese Meldung</a>"
 
 # @ dbem
 #: admin/em-admin.php:159
@@ -4172,6 +4192,8 @@ msgid ""
 "MultiSite options have moved <a href=\"%s\">here</a>. <a href=\"%s\">Dismiss "
 "message</a>"
 msgstr ""
+"MultiSite Optionen sind <a href=\"%s\">hierher</a> umgezogen. <a href=\"%s"
+"\">Ausblenden</a>"
 
 # @ dbem
 #: admin/em-admin.php:171
@@ -4181,6 +4203,9 @@ msgid ""
 "\">migrate your location and event images</a> in order for them to appear in "
 "your edit forms and media library. <a href=\"%s\">Dismiss message</a>"
 msgstr ""
+"Solange sie als Platzhalter erscheinen, musst Du <a href=\"%s\">die Orts- "
+"und Versanstaltungsbilder migrieren</a>, damit sie in Deinen Formularen und "
+"der Medienbibliothek erscheinen. <a href=\"%s\">Ausblenden</a>"
 
 # @ dbem
 #: admin/em-admin.php:220 admin/em-options.php:1895
@@ -4198,6 +4223,8 @@ msgid ""
 "To update your network blogs with the latest Events Manager automatically, "
 "click the update button below."
 msgstr ""
+"Um Events Manager automatisch zu aktualisieren, klicke den Aktualisieren "
+"Knopf unten."
 
 # @ dbem
 #: admin/em-ms-options.php:34
@@ -4208,7 +4235,7 @@ msgstr "aktualisiert"
 #: admin/em-ms-options.php:143 admin/em-options.php:327
 #: admin/em-options.php:1382
 msgid "General"
-msgstr "Allgemeine Optionen"
+msgstr "Allgemeine"
 
 # @ default
 #: admin/em-ms-options.php:164
@@ -4218,6 +4245,9 @@ msgid ""
 "that your main site can differentiate between its own %s and those belonging "
 "to other sites in your network."
 msgstr ""
+"%s, die zu anderen Unter-Sites gehören, bekommen einen extra Slug "
+"vorangestellt, so dass Deine Haupt-Site zwischen eigenen %s und denen Deiner "
+"anderen Sites im Netzwerk unterscheiden kann."
 
 # @ dbem
 #: admin/em-ms-options.php:165
@@ -4226,9 +4256,9 @@ msgid ""
 "When displaying global %s on the main site you have the option of users "
 "viewing the %s details on the main site or being directed to the sub-site."
 msgstr ""
-"Bei der Anzeige von global %s auf der Haupt-Website haben Sie die "
-"Möglichkeit, Nutzer beim Betrachten der %s Details zur Haupt-Website oder an "
-"die Unter-Website geleitet."
+"Bei der Anzeige von global %s auf der Haupt-Website hast Du die Möglichkeit, "
+"Nutzer beim Betrachten der %s Details zur Haupt-Website oder an die Unter-"
+"Website geleitet."
 
 # @ dbem
 #: admin/em-ms-options.php:166
@@ -4238,10 +4268,10 @@ msgid ""
 "%s by blog using shortcodes and template tags coupled with the <code>blog</"
 "code> attribute. Requires global tables to be turned on."
 msgstr ""
-"Zeigt standardmäßig %s von allen Sites im Netzwerk an. Sie können %s  pro "
-"Blog immer noch einschränken, wenn sie Shortcodes und Template-Tags mit dem "
-"<code> Blog </ code>-Attribut gekoppelt verwenden. Globale Tabellen müssen "
-"dafür eingeschaltet werden."
+"Zeigt standardmäßig %s von allen Sites im Netzwerk an. Du kannst %s  pro "
+"Blog immer noch einschränken, wenn Du die Shortcodes und Template-Tags mit "
+"dem <code> Blog </ code>-Attribut gekoppelt verwendest. Globale Tabellen "
+"müssen dafür eingeschaltet werden."
 
 # @ default
 #: admin/em-ms-options.php:167
@@ -4250,6 +4280,8 @@ msgid ""
 "You <strong>must</strong> have assigned a %s page in your <a href=\"%s"
 "\">main blog settings</a> for this to work."
 msgstr ""
+"Du <strong>musst</strong> eine %s Seite in Deinen <a href=\"%s\">Blog "
+"Settings</a> zugewiesen haben, damit das funktioniert."
 
 # @ dbem
 #: admin/em-ms-options.php:169 admin/em-ms-options.php:173
@@ -4288,6 +4320,9 @@ msgid ""
 "sub-sites will still be able to create locations, but the actual locations "
 "are created and reside in the main blog."
 msgstr ""
+"Wenn Du willst, dass alle Veranstaltungsorte zu Deinem Haupt-Blog gehören. "
+"Benutzer Deiner Sub-Sites werden Veranstaltungsorte anlegen können. Diese "
+"werden jedoch auf dem Haupt-Blog gespeichert."
 
 # @ dbem
 #: admin/em-ms-options.php:179
@@ -4301,6 +4336,8 @@ msgid ""
 "Settings have been reset back to default. Your events, locations and "
 "categories have not been modified."
 msgstr ""
+"Einstellungen sind auf Standardwerte zurückgesetzt worden. Deine "
+"Veranstaltungen, Orte und Kategorien wurden nicht geändert."
 
 # @ dbem
 #: admin/em-options.php:195 admin/em-options.php:199
@@ -4310,7 +4347,7 @@ msgstr "Events Manager"
 # @ dbem
 #: admin/em-options.php:196
 msgid "Are you sure you want to reset Events Manager?"
-msgstr "Sind Sie sicher, dass Sie Ihre Reservierung stornieren wollen?"
+msgstr "Bist Du sicher, dass Du Events Manager zurück setzen willst?"
 
 # @ dbem
 #: admin/em-options.php:197
@@ -4318,6 +4355,8 @@ msgid ""
 "All your settings, including email templates and template formats for Events "
 "Manager will be deleted."
 msgstr ""
+"Alle Deine Einstellungen, inklusive Email Vorlagen und Vorlagenformate für "
+"Events Manager werden gelöscht."
 
 # @ dbem
 #: admin/em-options.php:211
@@ -4327,7 +4366,7 @@ msgstr "Events Manager"
 # @ dbem
 #: admin/em-options.php:212
 msgid "Are you sure you want to uninstall Events Manager?"
-msgstr "Sind Sie sicher, dass Sie Ihre Reservierung stornieren wollen?"
+msgstr "Bist Du sicher, dass Du Events Manager deinstallieren willst?"
 
 # @ dbem
 #: admin/em-options.php:213
@@ -4335,6 +4374,8 @@ msgid ""
 "All your settings and events will be permanently deleted. This cannot be "
 "undone."
 msgstr ""
+"Alle Deine Einstellungen und Veranstaltungen werden unwiederbringlich "
+"gelöscht. Dies kann nicht rückgängig gemacht werden."
 
 # @ dbem
 #: admin/em-options.php:214
@@ -4343,6 +4384,8 @@ msgid ""
 "If you just want to deactivate the plugin, <a href=\"%s\">go to your plugins "
 "page</a>."
 msgstr ""
+"Wenn Du das Plugin nur deaktivieren willst, <a href=\"%s\">gehe zur Plugins "
+"Seite</a>."
 
 # @ dbem
 #: admin/em-options.php:216
@@ -4376,6 +4419,8 @@ msgid ""
 "Select yes to disable Events Manager from enabling thumbnails (some themes "
 "may already have this enabled, which we cannot be turned off here)."
 msgstr ""
+"Wähle Ja um Vorschaubilder für Events Manager zu deaktivieren. (Einige "
+"Themse erlauben die Deaktivierung hier nicht.)"
 
 # @ dbem
 #: admin/em-options.php:352 admin/em-options.php:396 admin/em-options.php:413
@@ -4396,7 +4441,7 @@ msgstr "Möchten sie Reservierungen aktivieren?"
 # @ dbem
 #: admin/em-options.php:358
 msgid "Select yes to enable the tag features"
-msgstr "Wählen Sie Ja, um die Veranstaltungen in Kategorien zu verwalten."
+msgstr "Wähle Ja, um die Veranstaltungen in Kategorien zu verwalten."
 
 # @ dbem
 #: admin/em-options.php:360
@@ -4409,6 +4454,8 @@ msgid ""
 "If an event does not have a category assigned when editing, this one will be "
 "assigned automatically."
 msgstr ""
+"Wenn einer Veranstaltung keine Kategorie zugeordnet wird, wird automatisch "
+"diese zugeordnet."
 
 # @ dbem
 #: admin/em-options.php:376 admin/em-options.php:405
@@ -4417,16 +4464,18 @@ msgid ""
 "specific values, users can add any kind of custom field name/value pair. "
 "Only available in the WordPress admin area."
 msgstr ""
+"Benutzerdefinierte Felder sind das gleiche wie Attribute, außer, dass man "
+"spezifische Werte nicht einschränken kann. "
 
 # @ dbem
 #: admin/em-options.php:400
 msgid "Enable locations?"
-msgstr "Möchten sie Reservierungen aktivieren?"
+msgstr "Möchtest Du Veranstaltungsorte aktivieren?"
 
 # @ dbem
 #: admin/em-options.php:402
 msgid "Require locations for events?"
-msgstr "Wie für Veranstaltungen."
+msgstr "Veranstaltung ohne Ort zulassen?"
 
 # @ dbem
 #: admin/em-options.php:402
@@ -4436,12 +4485,16 @@ msgid ""
 "{has_location}..{/has_location}</code> conditional placeholder to "
 "selectively display location information."
 msgstr ""
+"Die Einstellung Nein erlaubt Veranstaltungen ohne Veranstaltungsort. Du "
+"kannst <code>{no_location}...{/no_location}</code> oder <code>"
+"{has_location}..{/has_location}</code> verwenden, um ausgewählt "
+"Ortsinformationen anzuzeigen."
 
 # @ dbem
 #: admin/em-options.php:413 admin/em-options.php:1008
 #: admin/em-options.php:1802
 msgid "Other"
-msgstr "dritte"
+msgstr "Weitere"
 
 # @ dbem
 #: admin/em-options.php:556
@@ -4450,6 +4503,9 @@ msgid ""
 "or 'post date' information, which may not be desired. Usually, page "
 "templates contain less clutter."
 msgstr ""
+"Manche Themen zeigen möglicherweise unerwünscht zusätzlich Metainformationen "
+"auf Artikelseiten, wie z.B. 'posted by' oder 'post date'. Normalerweise "
+"enthalten Seiten Vorlagen weniger Wirrwarr."
 
 # @ dbem
 #: admin/em-options.php:557
@@ -4460,6 +4516,10 @@ msgid ""
 "code> <a href='#'>as shown on the wordpress codex</a>, and leave this set to "
 "Posts."
 msgstr ""
+"Manche Themes arbeiten nicht mit dieser Option. Ist dies der Fall (oder "
+"willst Du Deine eigenen Änderungen machen), kannst Du eine Datei namens "
+"<code>single-%s.php</code> erzeugen - <a href='#'>wie im Wordpress Codex "
+"beschrieben</a> - und diese Einstellung auf Artikel lassen."
 
 # @ dbem
 #: admin/em-options.php:561
@@ -4473,6 +4533,9 @@ msgid ""
 "and tags here. Be aware that you may want to set up redirects if you change "
 "your permalink structures to maintain SEO rankings."
 msgstr ""
+"Du kannst die Permalink Struktur Deiner Veranstaltungen, Orte, Kategorien "
+"und Tags hier ändern. Beachte, eventuell Redirects zu setzen, um Dein SEO "
+"Ranking zu erhalten."
 
 # @ dbem
 # @ default
@@ -4491,7 +4554,7 @@ msgstr "%s Seite"
 #: admin/em-options.php:587 admin/em-options.php:752
 #, php-format
 msgid "Display %s as"
-msgstr ""
+msgstr "Zeite %s als"
 
 # @ default
 #: admin/em-options.php:587 admin/em-options.php:752
@@ -4502,13 +4565,13 @@ msgstr "Beiträge"
 #: admin/em-options.php:588 admin/em-options.php:671 admin/em-options.php:753
 #: admin/em-options.php:828 admin/em-options.php:899 admin/em-options.php:980
 msgid "Override with Formats?"
-msgstr ""
+msgstr "Überschreibe mit Formaten?"
 
 # @ dbem
 #: admin/em-options.php:597 admin/em-options.php:763
 #, php-format
 msgid "%s List/Archives"
-msgstr ""
+msgstr "%s Liste/Archive"
 
 # @ dbem
 #: admin/em-options.php:603 admin/em-options.php:769 admin/em-options.php:888
@@ -4523,6 +4586,10 @@ msgid ""
 "do not select an events page, to display event lists you can enable event "
 "archives or use the appropriate shortcodes and/or template tags."
 msgstr ""
+"Wähle die Seite, die als Veranstaltungsseite benutzt wird. Wenn Du keine "
+"Veranstaltungsseite auswählst, kannst Du Veranstaltungsarchive aktivieren, "
+"oder den passenden Shortcode oder die Vorlagen Tags verwenden, um die "
+"Veranstaltungsliste anzuzeigen."
 
 # @ dbem
 #: admin/em-options.php:612
@@ -4535,19 +4602,19 @@ msgstr ""
 "Einige wordpress Themen halten sich nicht an die Vorgaben für die "
 "Generierung von Navigationsmenüs und dem automatischen rewrite der Titel. "
 "Wenn das rewriting zu Problemen führt, oder ihre Menüs auf der "
-"Veranstaltungsseite nicht richtig funktionieren, versuchen Sie diese "
-"Einstellung auf 'Ja' zu setzen und geben sie eine passende HTML-Formatierung "
-"für den Seitentitel ein."
+"Veranstaltungsseite nicht richtig funktionieren, versuche diese Einstellung "
+"auf 'Ja' zu setzen und gib eine passende HTML-Formatierung für den "
+"Seitentitel ein."
 
 # @ dbem
 #: admin/em-options.php:625 admin/em-options.php:783
 msgid "Enable Archives?"
-msgstr "Möchten sie Reservierungen aktivieren?"
+msgstr "Möchtest Du Archive aktivieren?"
 
 # @ dbem
 #: admin/em-options.php:625 admin/em-options.php:783
 msgid "Allow WordPress post-style archives."
-msgstr ""
+msgstr "Erlaube WordPress Archive im Artikel-Stil."
 
 # @ dbem
 #: admin/em-options.php:630
@@ -4578,7 +4645,7 @@ msgstr "Binde in die WordPress Suchen ein?"
 #: admin/em-options.php:673 admin/em-options.php:829
 #, php-format
 msgid "Allow %s to appear in the built-in search results."
-msgstr ""
+msgstr "Erlaube %s in den eingebauten Suchergebnissen aufzutauchen."
 
 # @ dbem
 #: admin/em-options.php:677 admin/em-options.php:833 admin/em-options.php:923
@@ -4589,7 +4656,7 @@ msgstr "Standard-Listenformat für %s "
 # @ dbem
 #: admin/em-options.php:678 admin/em-options.php:834 admin/em-options.php:924
 msgid "These can be overriden when using shortcode or template tags."
-msgstr ""
+msgstr "Dies kann mit Shortcode oder Vorlagen Tags überschrieben werden."
 
 # @ dbem
 #: admin/em-options.php:767 admin/em-options.php:886 admin/em-options.php:1017
@@ -4635,7 +4702,7 @@ msgstr "Gibt an, wie viele %s auf einer Liste standardmäßig angezeigt werden."
 #, php-format
 msgid "This option allows you to select which page to use as the %s page."
 msgstr ""
-"Mit dieser Option können Sie wählen, welche Seite als %s seite verwendet "
+"Mit dieser Option kannst Du wählen, welche Seite als %s seite verwendet "
 "werden soll."
 
 # @ dbem
@@ -4643,7 +4710,7 @@ msgstr ""
 msgid ""
 "Setting this to yes will make categories display as a page rather than an "
 "archive."
-msgstr ""
+msgstr "Wähle Ja hier um Kategorien als Seite statt als Archiv anzuzeigen."
 
 # @ dbem
 #: admin/em-options.php:980
@@ -4657,6 +4724,9 @@ msgid ""
 "admin area on whatever page you want on your website. Bear in mind that this "
 "is overriden by BuddyPress if activated."
 msgstr ""
+"Diese Seiten ermöglichen eine Veranstaltungsmanagement Oberfläche außerhalb "
+"des Admin Bereiches auf eine beliebigen Seite. Beachte, dass BuddyPress dies "
+"überschreibt."
 
 # @ dbem
 #: admin/em-options.php:370 admin/em-options.php:1019
@@ -4699,7 +4769,7 @@ msgstr "Veranstaltungssuche anzeigen?"
 # @ dbem
 #: admin/em-options.php:1132
 msgid "Text search label"
-msgstr ""
+msgstr "Textsuche Beschriftung"
 
 # @ dbem
 #: admin/em-options.php:1132
@@ -4709,7 +4779,7 @@ msgstr "Erscheint innerhalb der input Box."
 # @ dbem
 #: admin/em-options.php:1133
 msgid "Show date range?"
-msgstr ""
+msgstr "Zeige Datumsbereich?"
 
 # @ dbem
 #: admin/em-options.php:1134
@@ -4726,7 +4796,7 @@ msgstr "Kategorien"
 #: admin/em-options.php:1139 admin/em-options.php:1141
 #: admin/em-options.php:1143
 msgid "Appears as the first default search option."
-msgstr ""
+msgstr "Erscheint als erste Standardsuchoption."
 
 # @ dbem
 #: admin/em-options.php:1136
@@ -4775,6 +4845,8 @@ msgid ""
 "Date and Time formats follow the <a href=\"%s\">WordPress time formatting "
 "conventions</a>"
 msgstr ""
+"Datums- und Zeitangaben halten sich an die <a href=\"%s\">WordPress time "
+"formatting conventions</a>"
 
 # @ dbem
 #: admin/em-options.php:1156
@@ -4794,6 +4866,8 @@ msgid ""
 "For when start/end %s are present, this will seperate the two (include "
 "spaces here if necessary)."
 msgstr ""
+"Wenn Start/Ende %s vergeben sind, ist dies der Trenner zwischen den beiden "
+"(Leerzeichen einfügen, wenn notwendig)."
 
 # @ dbem
 #: admin/em-options.php:1158
@@ -4876,6 +4950,11 @@ msgid ""
 "information about the person is stored alongside the booking record rather "
 "than as a WordPress user."
 msgstr ""
+"Diese Option ermöglicht, Benutzerkonten zu deaktivieren und alle "
+"Reservierungen einem übergeordneten Benutzer zuzuordnen. Die persönlichen "
+"Informationen für jede Reservierung bleiben erhalten. Wenn dieser Modus "
+"aktiviert ist, werden zusätzliche Reservierungsinformationen über die Person "
+"im Reservierungsdatensatz gespeichert und nicht im WorPress Benutzer."
 
 # @ dbem
 #: admin/em-options.php:1518
@@ -4884,6 +4963,10 @@ msgid ""
 "be unaware of this and will never have access to those user details. This "
 "should be a subscriber user you do not use to log in with yourself."
 msgstr ""
+"Wähle einen übergeordneten Benutzer, dem Reservierungen zugeordnet werden. "
+"Reservierende Gäste werden dies nicht bemerken und keinen Zugriff auf "
+"Benutzerdetails haben. Der Benutzer sollte eine Abonenntenrolle haben und "
+"nicht zum Login verwendet werden."
 
 # @ dbem
 #: admin/em-options.php:1544
@@ -4891,7 +4974,7 @@ msgid ""
 "Check this option if you want to prevent the WordPress registration email "
 "from going out when a user anonymously books an event."
 msgstr ""
-"Aktivieren Sie diese Option, wenn Sie verhindern wollen, dass die Wordpress-"
+"Aktiviere diese Option, wenn Du verhindern willst, dass die Wordpress-"
 "Registrierungs-Mail verschickt wird, wenn ein User anonym eine Veranstaltung "
 "bucht."
 
@@ -4908,7 +4991,7 @@ msgstr "Administrator Email"
 # @ dbem
 #: admin/em-options.php:430
 msgid "Event Submission Forms"
-msgstr "Anonyme Einreichung von Veranstaltungen"
+msgstr "Veranstaltungen anonym einreichen"
 
 # @ dbem
 #: admin/em-options.php:434
@@ -4917,9 +5000,9 @@ msgid ""
 "You can allow users to publicly submit events on your blog by using the %s "
 "shortcode, and enabling anonymous submissions below."
 msgstr ""
-"Sie können Benutzern erlauben, in ihrem Blog Veranstaltungen vorzuschlagen, "
-"indem Sie den %s shortcode nutzen und das anonyme Einsenden von "
-"Veranstaltungen unten erlauben."
+"Du kannst Benutzern erlauben, in ihrem Blog Veranstaltungen vorzuschlagen, "
+"indem Du den %s shortcode nutzt und das anonyme Einreichen von "
+"Veranstaltungen unten erlaubst."
 
 # @ dbem
 #: admin/em-options.php:437
@@ -4945,16 +5028,20 @@ msgstr "Zeige das Formular nochmal an?"
 msgid ""
 "When a user submits their event, you can display a new event form again."
 msgstr ""
+"Wenn ein Benutzer eine Veranstaltung anlegt, kannst Du erneut ein "
+"Veranstaltungsformular anzeigen."
 
 # @ dbem
 #: admin/em-options.php:439
 msgid "Customize the message your user sees when they submitted their event."
 msgstr ""
+"Passe die Meldung an, die ein Benutzer sieht, nachdem seine Veranstaltung "
+"erstellt wurde."
 
 # @ dbem
 #: admin/em-options.php:443
 msgid "Anonymous event submissions"
-msgstr "Anonyme Einreichung von Veranstaltungen"
+msgstr "Veranstaltungen anonym einreichen"
 
 # @ dbem
 #: admin/em-options.php:447
@@ -4965,14 +5052,14 @@ msgid ""
 "Guests will have the same event permissions as this user when submitting."
 msgstr ""
 "Veranstaltungen benötigen einen Benutzer als Eigentümer. Damit "
-"Veranstaltungen anonym eingereicht werden können, müssen Sie hier einen "
-"Benutzer zuordnen. Wir empfehlen Ihnen, dafür einen Benutzer \"Anonym\" "
+"Veranstaltungen anonym eingereicht werden können, musst Du hier einen "
+"Benutzer zuordnen. Wir empfehlen Dir, dafür einen Benutzer \"Anonym\" "
 "einzurichten und ein sehr gutes Passwort zu verwenden."
 
 # @ dbem
 #: admin/em-options.php:1668
 msgid "Image Sizes"
-msgstr "Bilder Größe"
+msgstr "Größe der Bilder"
 
 # @ dbem
 #: admin/em-options.php:1705
@@ -5141,6 +5228,9 @@ msgid ""
 "the recurring event template. To make it an independent, <a href=\"%s"
 "\">detach it</a>."
 msgstr ""
+"Wenn Du diese Veranstaltung aktualisierst und speicherst könnte sie von der "
+"Vorlage Veranstaltungsreihe überschrieben werden. Um sie davon unabhängig zu "
+"machen, <a href=\"%s\">kopple sie ab</a>."
 
 # @ dbem
 #: classes/em-event-post-admin.php:43
@@ -5149,6 +5239,8 @@ msgid ""
 "To manage the whole set, <a href=\"%s\">edit the recurring event template</"
 "a>."
 msgstr ""
+"Um die ganze Reihe zu bearbeiten, <a href=\"%s\">bearbeite die Vorlage "
+"Veranstaltungsreihe</a>."
 
 # @ dbem
 #: classes/em-event-post-admin.php:84
@@ -5156,6 +5248,8 @@ msgid ""
 "Your event details are incorrect and recurrences cannot be created, please "
 "correct these errors first:"
 msgstr ""
+"Deine Veranstaltungsdetails sind inkorrekt und Wiederholungen können nicht "
+"angelegt werden. Bitte korrigiere erst diese Fehler:"
 
 # @ dbem
 #: classes/em-event-post-admin.php:86 classes/em-location-post-admin.php:59
@@ -5164,6 +5258,8 @@ msgid ""
 "Your %s details are incorrect and cannot be published, please correct these "
 "errors first:"
 msgstr ""
+"Deine %s Details sind inkorrekt und können nicht veröffentlicht werden. "
+"Bitte korrigiere erst diese Fehler: "
 
 # @ dbem
 #: classes/em-event-post-admin.php:198 classes/em-event-post-admin.php:369
@@ -5234,7 +5330,7 @@ msgid ""
 msgstr ""
 "Änderungen an dieser Veranstaltung führen dazu, dass alle Wiederholungen "
 "dieser Veranstaltung gelöscht und neu erstellt werden. Dabei werden alle "
-"Reservierungen gelöscht! Sie können die einzelnen Wiederholungen bearbeiten "
+"Reservierungen gelöscht! Du kannst die einzelnen Wiederholungen bearbeiten "
 "und diese von dieser <a href=\"%s\">Veranstaltung</a> lösen."
 
 # @ dbem
@@ -5248,7 +5344,7 @@ msgid ""
 "Since the event is repeated, you must specify an event end date greater than "
 "the start date."
 msgstr ""
-"Da die Veranstaltung sich wiederholt, müssen Sie einen Veranstaltungstermin "
+"Da die Veranstaltung sich wiederholt, musst Du einen Veranstaltungstermin "
 "eingeben."
 
 # @ dbem
@@ -5264,6 +5360,8 @@ msgid ""
 "It will not be displayed on the website listings, to correct this you must "
 "<a href=\"%s\">edit your location</a> directly."
 msgstr ""
+"Es wird nicht im Listing der Website angezeigt werden. Um dies zu "
+"korrigieren, musst Du <a href=\"%s\">Deinen Ort direkt editieren</a>."
 
 # @ dbem
 #: classes/em-event.php:675 classes/em-location.php:361
@@ -5272,6 +5370,8 @@ msgid ""
 "Something went wrong saving your %s to the index table. Please inform a site "
 "administrator about this."
 msgstr ""
+"Etwas ging schief beim Sichern von %s in die Index Tabelle. Bitte informiere "
+"den Administrator."
 
 # @ dbem
 #: classes/em-event.php:680 classes/em-event.php:695
@@ -5287,6 +5387,8 @@ msgid ""
 "Something went wrong updating your %s to the index table. Please inform a "
 "site administrator about this."
 msgstr ""
+"Etwas ging schief beim Aktualisieren von %s in der Index Tabelle. Bitte "
+"informiere den Administrator."
 
 # @ dbem
 #: admin/em-bookings.php:110
@@ -5312,7 +5414,7 @@ msgstr "%s konnte nicht gelöscht werden."
 # @ dbem
 #: classes/em-event.php:1761
 msgid "Event re-attached to recurrence."
-msgstr ""
+msgstr "Veranstaltung der Veranstaltungsreihe wieder hinzugefügt."
 
 # @ dbem
 #: classes/em-event.php:1764
@@ -5331,6 +5433,9 @@ msgid ""
 ">Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Please visit "
 "#_EDITEVENTURL to review this event for approval."
 msgstr ""
+"#_CONTACTNAME hat eine neue Veranstaltung hinzugefügt.<br/>Name: #_EVENTNAME "
+"<br/>Datumr: #_EVENTDATES <br/>Zeit: #_EVENTTIMES <br/>Bitte besuche "
+"#_EDITEVENTURL um diese Veranstaltung zu überprüfen und freizugeben."
 
 # @ dbem
 #: em-install.php:345
@@ -5343,11 +5448,13 @@ msgid ""
 "You have successfully submitted your event, which will be published pending "
 "approval."
 msgstr ""
+"Du hast erfolgreich eine Veranstaltung eingereicht, die nach Genehmigung "
+"veröffentlicht wird."
 
 # @ dbem
 #: em-install.php:356
 msgid "Submitted Event Awaiting Approval"
-msgstr ""
+msgstr "Eingereichte Veranstaltung wartet auf Genehmigung"
 
 # @ dbem
 #: em-install.php:412
@@ -5488,7 +5595,7 @@ msgstr "Trenne Veranstaltungskategorien mit Komma"
 # @ dbem
 #: em-posts.php:103
 msgid "Choose from most used event categories"
-msgstr ""
+msgstr "Wähle aus den meist verwendeten Veranstaltungskategorien"
 
 # @ dbem
 #: em-posts.php:138
@@ -5625,17 +5732,17 @@ msgstr "Veranstaltungsorte"
 # @ dbem
 #: em-template-tags.php:300
 msgid "You must log in to view and manage your events."
-msgstr "Sie müssen angemeldet sein, um ihre Reservierung zu stornieren."
+msgstr "Du musst angemeldet sein, um Deine Veranstaltungen zu verwalten."
 
 # @ dbem
 #: em-template-tags.php:405
 msgid "You must log in to view and manage your locations."
-msgstr "Sie müssen angemeldet sein, um ihre Reservierung zu stornieren."
+msgstr "Du musst angemeldet sein, um Deine Veranstaltungsorte zu verwalten."
 
 # @ dbem
 #: em-template-tags.php:423
 msgid "You must log in to view and manage your bookings."
-msgstr "Sie müssen angemeldet sein, um ihre Reservierung zu stornieren."
+msgstr "Du musst angemeldet sein, um Deine Reservierung zu verwalten."
 
 # @ dbem
 #: events-manager.php:335
@@ -5643,8 +5750,8 @@ msgid ""
 "Are you sure you want to detach this event? By doing so, this event will be "
 "independent of the recurring set of events."
 msgstr ""
-"Sind Sie sicher, dass Sie diese sich wiederholedne Veranstaltung verschieben "
-"wollen? Wenn Sie dies tun, verlieren Sie alle Reservierungsinformationen und "
+"Bist Du sicher, dass Du diese sich wiederholedne Veranstaltung verschieben "
+"willst? Wenn Du dies tun, verlierst Du alle Reservierungsinformationen und "
 "die alte wiederkehrenden Veranstaltung werden gelöscht."
 
 # @ dbem
@@ -5660,24 +5767,25 @@ msgstr "Alle Veranstaltungen werden in den Papierkorb verschoben."
 # @ dbem
 #: events-manager.php:337
 msgid "Are you sure you want to delete all recurrences of this event?"
-msgstr "Sind Sie sicher, dass Sie Ihre Reservierung stornieren wollen?"
+msgstr ""
+"Bist Du sicher, dass alle Wiederholungen dieser Veranstaltung löschen willst?"
 
 # @ dbem
 #: events-manager.php:417 events-manager.php:431
 #, php-format
 msgid "You cannot read private %s"
-msgstr "Sie können %s von anderen nicht sehen"
+msgstr "Du kannst %s von anderen nicht sehen"
 
 # @ dbem
 #: events-manager.php:432
 #, php-format
 msgid "You cannot view others %s"
-msgstr "Sie können %s von anderen nicht sehen"
+msgstr "Du kannst %s von anderen nicht sehen"
 
 # @ dbem
 #: events-manager.php:438
 msgid "You do not have permission to upload images"
-msgstr "Sie haben keine Berechtigung, %s zu bearbeiten"
+msgstr "Du hast keine Berechtigung, %s zu bearbeiten"
 
 # @ default
 #: templates/forms/event/attributes.php:51
@@ -5687,11 +5795,11 @@ msgid ""
 "a formatting option in the settings page. To remove any of these depreciated "
 "attributes, give it a blank value and save."
 msgstr ""
-"Wenn Sie irgendwelche Attribute hierunter sehen, bedeutet das, dass sie im "
-"Events Manager mehr mehr verwendet werden. Um sie wieder zu verwenden, "
-"müssen sie die Attribute wieder in den Formatierungsoptionen auf der "
-"Einstellungsseite einfügen. Um die veralteten Attribute zu löschen, geben "
-"sie einen leeren Wert ein und speichern Sie."
+"Wenn Du irgendwelche Attribute hierunter siehst, bedeutet das, dass sie im "
+"Events Manager mehr mehr verwendet werden. Um sie wieder zu verwenden, musst "
+"Du die Attribute wieder in den Formatierungsoptionen auf der "
+"Einstellungsseite einfügen. Um die veralteten Attribute zu löschen, gib "
+"einen leeren Wert ein und speichere sie."
 
 # @ dbem
 #: templates/forms/event/group.php:47
@@ -5788,6 +5896,9 @@ msgid ""
 "development versions. Only admins see this message, and it will go away when "
 "you disable this <a href=\"#pro-api\">here</a> in your settings."
 msgstr ""
+"Dev Mode aktiv: Freundlicher Hinweis, dass Du auf eine Entwicklerversion "
+"updatest. Nur Administratoren sehen diese Nachricht. Sie verschwindet, wenn "
+"Du <a href=\"#pro-api\">dies</a> in Deinen Einstellungen deaktivierst."
 
 # @ dbem
 #: admin/em-bookings.php:68
@@ -5818,7 +5929,7 @@ msgstr "Ändern"
 # @ dbem
 #: admin/em-bookings.php:269
 msgid "Resend Email"
-msgstr "Sende die Email nochmal"
+msgstr "Email erneut versenden"
 
 # @ dbem
 #: admin/em-bookings.php:283
@@ -5828,7 +5939,7 @@ msgstr "Sende die Email"
 # @ dbem
 #: admin/em-bookings.php:284 admin/em-bookings.php:373
 msgid "Submit Changes"
-msgstr "Schicke Änderungen ab"
+msgstr "Aktualisieren"
 
 # @ dbem
 #: admin/em-bookings.php:336
@@ -5852,6 +5963,8 @@ msgid ""
 "<strong>Notes:</strong> Ticket availability not taken into account (i.e. you "
 "can overbook). Emails are not resent automatically."
 msgstr ""
+"<strong>Hinweise:</strong> Ticketverfügbarkeit nicht berücksichtigt (d.h. Du "
+"kannst überbuchen). Emails werden nicht automatisch erneut versandt."
 
 # @ dbem
 #: admin/em-options.php:149 admin/em-options.php:159
@@ -5859,6 +5972,8 @@ msgid ""
 "If there are any new updates, you should now see them in your Plugins or "
 "Updates admin pages."
 msgstr ""
+"Wenn es neue Aktualisierungen gibt, solltest Du sie jetzt in Deiner Plugins "
+"oder Updates Admin Seite sehen."
 
 # @ dbem
 #: admin/em-options.php:159
@@ -5890,7 +6005,7 @@ msgstr "Email wurde nicht gesendet."
 #: admin/em-options.php:375 admin/em-options.php:404
 #, php-format
 msgid "Enable %s attributes?"
-msgstr "Erlaube %s Eigenschaften?"
+msgstr "Erlaube Attribute für %s?"
 
 # @ dbem
 #: admin/em-options.php:376 admin/em-options.php:405
@@ -5902,7 +6017,7 @@ msgstr "Erlaube %s benutzerdefinierte Felder?"
 #: admin/em-options.php:378 admin/em-options.php:407
 #, php-format
 msgid "%s Attributes"
-msgstr "%s Eigenschaften"
+msgstr "%s Attribute"
 
 # @ dbem
 #: admin/em-options.php:407
@@ -5914,6 +6029,11 @@ msgid ""
 "information about an event for other uses. <a href='%s'>More information on "
 "placeholders.</a>"
 msgstr ""
+"Du kannst hier Ortsattribute vergeben. Eine Zeile je Attribut <code>#_LATT"
+"{key}</code>. Sie werden nicht auf Orts-Seiten erscheinen, bevor Du sie in "
+"eine weitere Vorlage unten einfügst. Vielleicht willst Du aber "
+"Zusatzinformationen für eine Veranstaltung für andere Zwecke speichern. <a "
+"href='%s'>Weitere Informationen über Platzhalter.</a>"
 
 # @ dbem
 #: admin/em-options.php:566 admin/em-options.php:568 admin/em-options.php:571
@@ -5935,6 +6055,9 @@ msgid ""
 "can disable comments on each single %s. Note that %s with comments enabled "
 "will still be until you resave them."
 msgstr ""
+"Deaktiviere dies, wenn Du Kommentare komplett deaktiveiren willst. Du kannst "
+"sie auch einzeln auf jeder %s deaktivieren. Beachte, dass %s mit Kommentaren "
+"aktiviert bleiben, bis Du sie neu speicherst."
 
 # @ dbem
 #: admin/em-options.php:618 admin/em-options.php:776
@@ -5950,6 +6073,9 @@ msgid ""
 "enabled, should you visit your base slug url %s and you will see an post-"
 "formatted archive of previous %s"
 msgstr ""
+"%s individuelle Artikeltypen können Archive haben, genau wie normale "
+"WordPress Artikel. Wenn aktiviert, siehst Du unter Deinem Basis Slug URL %s "
+"ein nachformattiertes Archiv von älteren %s"
 
 # @ default
 #: admin/em-options.php:620
@@ -5960,6 +6086,10 @@ msgid ""
 "both at the same time, but you must ensure that your page and %s slugs are "
 "different."
 msgstr ""
+"Beachte, dass die Zuordnung einer %s Seite oben dieses Archive überschreibt, "
+"wenn die URLs kollidieren (dies ist die empfohlene Standardeinstellung). Du "
+"kannst beie gleichzeitig haben, musst aber sicherstellen, dass Deine Seite "
+"und %s Slugs sich unterscheiden."
 
 # @ default
 #: admin/em-options.php:778
@@ -5970,11 +6100,17 @@ msgid ""
 "plugin compatability). You can have both at the same time, but you must "
 "ensure that your page and %s slugs are different."
 msgstr ""
+"Beachte, dass die Zuordnung einer %s Seite oben dieses Archive überschreibt, "
+"wenn die URLs kollidieren (dies ist die empfohlene Standardeinstellung für "
+"maximale Plugin Kompatibilität). Du kannst beie gleichzeitig haben, musst "
+"aber sicherstellen, dass Deine Seite und %s Slugs sich unterscheiden."
 
 # @ dbem
 #: admin/em-options.php:918
 msgid "When listing events for a category, this order is applied."
 msgstr ""
+"Wenn Veranstaltungen für eine Kategorie gelistet werden, wird diese "
+"Reihenfolge angewandt."
 
 # @ dbem
 #: admin/em-options.php:933 classes/em-categories-taxonomy.php:19
@@ -6041,6 +6177,9 @@ msgid ""
 "you do not provide specified formats in other event lists, like in "
 "shortcodes."
 msgstr ""
+"Diese Formate werden auf Deiner Veranstaltungsseite verwendet. Dies wir "
+"ebenfalls verwendet, wenn Du keine eigenen Formate in anderen "
+"Veranstaltungslisten angibst (z.B. Shortcodes)."
 
 # @ dbem
 #: admin/em-options.php:1104 templates/forms/event/recurring-when.php:13
@@ -6051,12 +6190,14 @@ msgstr "Jährlich"
 # @ dbem
 #: admin/em-options.php:1105 admin/em-options.php:1106
 msgid "Events page grouping"
-msgstr ""
+msgstr "Gruppierung Veranstaltungsseite"
 
 # @ dbem
 #: admin/em-options.php:1106
 msgid "Choose how to format your group headings. Leave blank for defaults."
 msgstr ""
+"Wähle, wie die Gruppen-Überschriften formatiert werden. Leer lassen für "
+"Standardwerte."
 
 # @ dbem
 #: admin/em-options.php:1157
@@ -6072,6 +6213,10 @@ msgid ""
 "for a list of characters to use, visit the <a href=\"%s\">jQuery formatDate "
 "reference</a>"
 msgstr ""
+"Gleiches wie <em>Datumsformat</em>, aber verwendet für den Events Manager "
+"Datums-Auswähler. Hier wird ein geringfügig anderes Format verwenden. Eine "
+"Liste der verfügbaren Zeichen für die Codierung ist hier: <a href=\"%s"
+"\">jQuery formatDate reference</a>"
 
 # @ dbem
 #: admin/em-options.php:1158
@@ -6086,7 +6231,7 @@ msgstr "Trennzeichen bei der Zeit"
 # @ dbem
 #: admin/em-options.php:1161
 msgid "All Day Message"
-msgstr ""
+msgstr "Ganztagesnachricht"
 
 # @ dbem
 #: admin/em-options.php:1161
@@ -6094,11 +6239,13 @@ msgstr ""
 msgid ""
 "If an event lasts all day, this text will show if using the %s placeholder"
 msgstr ""
+"Wenn eine Veranstaltung den ganzen Tag dauert, wird dieser Text gezeigt, "
+"wenn der %s Platzhalter verwendet wird."
 
 # @ dbem
 #: admin/em-options.php:1162
 msgid "Use 24h Format?"
-msgstr ""
+msgstr "24h-Format verwenden?"
 
 # @ dbem
 #: admin/em-options.php:1162
@@ -6106,11 +6253,14 @@ msgid ""
 "When creating events, would you like your times to be shown in 24 hour "
 "format?"
 msgstr ""
+"Möchtest Du das 24-Stunden-Format verwenden, wenn Du Veranstaltungen "
+"erstellst?"
 
 # @ dbem
 #: admin/em-options.php:1174
 msgid "Link directly to event on day with single event?"
 msgstr ""
+"Verknüpfe direkt zu einer Veranstaltung am Tag mit einzelner Veranstaltung?"
 
 # @ dbem
 #: admin/em-options.php:1174
@@ -6118,37 +6268,41 @@ msgid ""
 "If a calendar day has only one event, you can force a direct link to the "
 "event (recommended to avoid duplicate content)."
 msgstr ""
+"Wenn ein Kalendertag nur eine Veranstaltung hat, kannst Du einen direkten "
+"Link zu dieser Veranstaltung setzen (empfohlen, um Duplikate zu vermeiden)."
 
 # @ dbem
 #: admin/em-options.php:1190
 msgid "Calendar Day Event List Settings"
-msgstr ""
+msgstr "Einstellungen Veranstaltungsliste Kalendertag"
 
 # @ dbem
 #: admin/em-options.php:1197
 msgid "Order by event name, then event start time"
-msgstr ""
+msgstr "ordne nach Veranstaltungsname, dann Startzeit"
 
 # @ dbem
 #: admin/em-options.php:1198
 msgid "Order by event start time, then event name"
-msgstr ""
+msgstr "Ordne nach Startzeit, dann Veranstaltungsname"
 
 # @ dbem
 #: admin/em-options.php:1229
 msgid "Calendar events/day limit"
-msgstr ""
+msgstr "Kalender Veranstaltungen/Tag Begrenzung"
 
 # @ dbem
 #: admin/em-options.php:1229
 msgid ""
 "Limits the number of events on each calendar day. Leave blank for no limit."
 msgstr ""
+"Begrenzt die Anzahl von Veranstaltungen pro Kalendertag. Leer lassen für "
+"keine Begrenzung."
 
 # @ dbem
 #: admin/em-options.php:1230
 msgid "More Events message"
-msgstr ""
+msgstr "Weitere Veranstaltungen Nachricht"
 
 # @ dbem
 #: admin/em-options.php:1230
@@ -6157,21 +6311,24 @@ msgid ""
 "are more events than the limit above, leave blank for no link as the day "
 "number is also a link."
 msgstr ""
+"Text zur Kalender Tagesseite, die alle Veranstaltungen für diesen Tag "
+"beinhaltet, wenn mehr Veranstaltungen existieren, als obige Begrenzung "
+"zuläßt. Leer lassen für keinen Link, da das Datum selber ein Link ist."
 
 # @ dbem
 #: admin/em-options.php:1405
 msgid "Thousands Separator"
-msgstr ""
+msgstr "Tausten Trenner"
 
 # @ dbem
 #: admin/em-options.php:1406
 msgid "Decimal Point"
-msgstr ""
+msgstr "Dezimalpunkt"
 
 # @ dbem
 #: admin/em-options.php:1407
 msgid "Currency Format"
-msgstr ""
+msgstr "Währungsformat"
 
 # @ dbem
 #: admin/em-options.php:1407
@@ -6179,11 +6336,13 @@ msgid ""
 "Choose how prices are displayed. <code>@</code> will be replaced by the "
 "currency symbol, and <code>#</code> will be replaced by the number."
 msgstr ""
+"Wähle, wie Preise angezeigt werden <code>@</code> wird durch das "
+"Währungssymbol ersetzte und <code>#</code> wird durch die Zahl ersetzt."
 
 # @ dbem
 #: admin/em-options.php:1417
 msgid "Customize Feedback Messages"
-msgstr ""
+msgstr "Angepasste Feedback Nachricht"
 
 # @ dbem
 #: admin/em-options.php:1419
@@ -6191,11 +6350,13 @@ msgid ""
 "Below you will find texts that will be displayed to users in various areas "
 "during the bookings process, particularly on booking forms."
 msgstr ""
+"Die unten stehenden Texte werden Benutzern während der Reservierung in "
+"unterschiedlichen Bereichen angezeigt, insbesondere auf Reservierungsseiten."
 
 # @ dbem
 #: admin/em-options.php:1421
 msgid "My Bookings messages"
-msgstr ""
+msgstr "Meine Reservierungen Nachrichten"
 
 # @ dbem
 #: admin/em-options.php:1423
@@ -6203,11 +6364,13 @@ msgid ""
 "When a user cancels their booking, this message will be displayed confirming "
 "the cancellation."
 msgstr ""
+"Wenn ein Benutzer seine Reservierung storniert, wird diese "
+"Bestätigungsnachricht angezeigt."
 
 # @ dbem
 #: admin/em-options.php:1424
 msgid "Booking Cancellation Warning"
-msgstr ""
+msgstr "Reservierungsstorno Warnung"
 
 # @ dbem
 #: admin/em-options.php:1424
@@ -6215,46 +6378,50 @@ msgid ""
 "When a user chooses to cancel a booking, this warning is displayed for them "
 "to confirm."
 msgstr ""
+"Wenn ein Benutzer seine Reservierung storniert, wird diese Warung angezeigt, "
+"die er bestätigigen muss."
 
 # @ dbem
 #: admin/em-options.php:1426
 msgid "Booking form texts/messages"
-msgstr ""
+msgstr "Reservierungsformular Texte/Nachrichten"
 
 # @ dbem
 #: admin/em-options.php:1428
 msgid "Bookings disabled"
-msgstr ""
+msgstr "Reservierungen deaktiviert"
 
 # @ dbem
 #: admin/em-options.php:1428
 msgid "An event with no bookings."
-msgstr ""
+msgstr "Eine Veranstaltung ohne Reservierungen."
 
 # @ dbem
 #: admin/em-options.php:1429
 msgid "Bookings closed"
-msgstr ""
+msgstr "Reservierungen geschlossen"
 
 # @ dbem
 #: admin/em-options.php:1429
 msgid "Bookings have closed (e.g. event has started)."
 msgstr ""
+"Reservierungsmöglichkeit wurde bereits geschlossen (z.B. Veranstaltung hat "
+"bereits begonnen)."
 
 # @ dbem
 #: admin/em-options.php:1430
 msgid "Fully booked"
-msgstr ""
+msgstr "Ausgebucht"
 
 # @ dbem
 #: admin/em-options.php:1430
 msgid "Event is fully booked."
-msgstr ""
+msgstr "Veranstaltung ist ausgebucht."
 
 # @ dbem
 #: admin/em-options.php:1431
 msgid "Already attending"
-msgstr ""
+msgstr "Bereits gebucht."
 
 # @ dbem
 #: admin/em-options.php:1431
@@ -6262,88 +6429,92 @@ msgid ""
 "If already attending and double bookings are disabled, this message will be "
 "displayed, followed by a link to the users booking page."
 msgstr ""
+"Wenn Bereits Gebucht und Doppelbuchungen deaktiviert sind, wird diese "
+"Nachricht angezeigt, gefolkt von einem Link zur Benutzer Buchungsseite."
 
 # @ dbem
 #: admin/em-options.php:1432
 msgid "Manage bookings link text"
-msgstr ""
+msgstr "Verwalte Reservierungen Link Text"
 
 # @ dbem
 #: admin/em-options.php:1432
 msgid "Link text used for link to user bookings."
-msgstr ""
+msgstr "Link Text für Link zur Benutzerbuchungsseite."
 
 # @ dbem
 #: admin/em-options.php:1441
 msgid "Email Exists"
-msgstr ""
+msgstr "Email Adresse existiert bereits"
 
 # @ dbem
 #: admin/em-options.php:1441
 msgid ""
 "When a guest tries to book using an email registered with a user account."
 msgstr ""
+"Wenn ein Gast mit einer Email Adresse zu reservieren versucht, die bereits "
+"einem Benutzerkonto zugeordnet ist."
 
 # @ dbem
 #: admin/em-options.php:1445 em-install.php:570
 msgid "Sold Out"
-msgstr ""
+msgstr "Ausverkauft"
 
 # @ dbem
 #: admin/em-options.php:1447
 msgid "Booking button feedback messages"
-msgstr ""
+msgstr "Reservierungsknopf Feedback Nachrichten"
 
 # @ dbem
 #: admin/em-options.php:1448
 #, php-format
 msgid "When the %s placeholder, the below texts will be used."
-msgstr ""
+msgstr "Bei Benutzung des %s Platzhalter, wird der u.a. Text verwendet."
 
 # @ dbem
 #: admin/em-options.php:1450
 msgid "User can book"
-msgstr ""
+msgstr "Benutzer kann Reservieren"
 
 # @ dbem
 #: admin/em-options.php:1451
 msgid "Booking in progress"
-msgstr ""
+msgstr "Reservierung in Bearbeitung"
 
 # @ dbem
 #: admin/em-options.php:1452
 msgid "Booking complete"
-msgstr ""
+msgstr "Reservierung durchgeführt"
 
 # @ dbem
 #: admin/em-options.php:1453
 msgid "Booking error"
-msgstr ""
+msgstr "Fehler bei der Reservierung"
 
 # @ dbem
 #: admin/em-options.php:1454
 msgid "Event fully booked"
-msgstr ""
+msgstr "Veranstaltung ausgebucht"
 
 # @ dbem
 #: admin/em-options.php:1456
 msgid "Cancelation in progress"
-msgstr ""
+msgstr "Storno in Bearbeitung"
 
 # @ dbem
 #: admin/em-options.php:1457
 msgid "Cancelation complete"
-msgstr ""
+msgstr "Storno durchgeführt"
 
 # @ dbem
 #: admin/em-options.php:1458
 msgid "Cancelation error"
-msgstr ""
+msgstr "Storno Fehler"
 
 # @ dbem
 #: admin/em-options.php:1472
 msgid "Submit button text"
-msgstr ""
+msgstr "Bestätigen Knopf Text"
 
 # @ dbem
 #: admin/em-options.php:1472
@@ -6352,11 +6523,13 @@ msgid ""
 "The text used by the submit button. To use an image instead, enter the full "
 "url starting with %s or %s."
 msgstr ""
+"Der Text für den Bestätigen Knopf. Um stattdessen ein Bild zu verwendent, "
+"trage die komplette URL ein, beginnend mit %s oder %s."
 
 # @ dbem
 #: admin/em-options.php:1541
 msgid "You can disable this email by leaving the subject blank."
-msgstr ""
+msgstr "Du kannst diese Email deaktivieren, indem Du den Betreff leer läßt."
 
 # @ dbem
 #: admin/em-options.php:1542
@@ -6364,11 +6537,13 @@ msgid ""
 "For multiple emails, seperate by commas (e.g. email1@test.com,email2@test."
 "com,etc.)"
 msgstr ""
+"Für multiple Emails, trenne durch Kommata (z.B. email1@test.com,email2@text."
+"com,...)"
 
 # @ dbem
 #: admin/em-options.php:1589
 msgid "Event Submission Templates"
-msgstr ""
+msgstr "Vorlage Veranstaltung einreichen "
 
 # @ dbem
 #: admin/em-options.php:1598
@@ -6393,22 +6568,22 @@ msgstr ""
 # @ dbem
 #: admin/em-options.php:1604
 msgid "Event resubmitted subject"
-msgstr ""
+msgstr "Veranstaltung erneut eingereicht Betreff"
 
 # @ dbem
 #: admin/em-options.php:1605
 msgid "Event resubmitted email"
-msgstr ""
+msgstr "Veranstaltung erneut eingereicht Email"
 
 # @ dbem
 #: admin/em-options.php:1621
 msgid "Event reapproved subject"
-msgstr ""
+msgstr "Veranstaltung erneut genehmigt Betreff"
 
 # @ dbem
 #: admin/em-options.php:1622
 msgid "Event reapproved email"
-msgstr ""
+msgstr "Veranstaltung erneut genehmigt Email"
 
 # @ dbem
 #: admin/em-options.php:1673
@@ -6418,7 +6593,7 @@ msgstr "Minimale Breite (px)"
 # @ dbem
 #: admin/em-options.php:1673
 msgid "The minimum allowed width for images uploades"
-msgstr ""
+msgstr "Die minimal erlaubte Breite für Bilder Uploads"
 
 # @ dbem
 #: admin/em-options.php:1675
@@ -6442,13 +6617,15 @@ msgstr ""
 # @ dbem
 #: admin/em-options.php:1696 admin/em-options.php:1747
 msgid "Test Email Settings"
-msgstr ""
+msgstr "Email Einstellungen testen"
 
 # @ dbem
 #: admin/em-options.php:1705
 msgid ""
 "Depending on server settings, some sending methods may ignore this settings."
 msgstr ""
+"Abhängig von den Server Einstellungen, können manche Sendemethoden diese "
+"Einstellungen ignorieren."
 
 # @ dbem
 #: admin/em-options.php:1746
@@ -6467,6 +6644,10 @@ msgid ""
 "you will not be able to set custom capabilities each blog. You can select no "
 "later and visit specific blog settings pages to add/remove capabilities."
 msgstr ""
+"Wenn auf Ja gestellt, sind die hier eingestellten Funktionen für alle Blogs "
+"in Deinem Netzwerk verbindlich und können nicht individuell geändert werden. "
+"Du kannst später auf Nein stellen und auf den unterschiedlichen Blogs "
+"Funktionen aktivieren und deaktivieren."
 
 # @ dbem
 #: admin/em-options.php:1883
@@ -6487,6 +6668,12 @@ msgid ""
 "we've made it easy for you. <strong>Warning:</strong> Development versions "
 "are not always fully tested before release, use wisely!"
 msgstr ""
+"Wir verbessern das System ständig, fügen Funktionen hinzu und lösen Probleme "
+"zwischen den Releases. Wir machen diese Änderungen inkrementell zwischen den "
+"regulären Updates und stellen Development Versionen zur Verfügung. Du kannst "
+"diese manuell herunterladen, aber wir haben das für Dich vereinfacht. "
+"<strong>Warnung:</strong> Development Versionen sind nicht immer komplett "
+"getestet! Setze sie auf eigene Gefahr ein."
 
 # @ dbem
 #: admin/em-options.php:1888
@@ -6499,6 +6686,8 @@ msgid ""
 "If enabled, the latest dev version will always be checked instead of the "
 "latest stable version of the plugin."
 msgstr ""
+"Wenn aktiviert, wird immer auf die letzte Dev Version des Plugins überprüft, "
+"statt auf die letzte stabile Version."
 
 # @ dbem
 #: admin/em-options.php:1890
@@ -6508,7 +6697,7 @@ msgstr "Erneutes Überprüfen auf Updates"
 # @ dbem
 #: admin/em-options.php:1890
 msgid "If you would like to check and see if there is a new stable update."
-msgstr ""
+msgstr "Wenn Du prüfen willst, ob es ein neue stabile Version gibt."
 
 # @ dbem
 #: admin/em-options.php:1891
@@ -6522,6 +6711,10 @@ msgid ""
 "force a dev version check by clicking the button below. If there is one "
 "available, it should appear in your plugin updates page as a regular update."
 msgstr ""
+"Wenn Du eine Dev Version nur einmalig herunterladen willst, kannst Du einen "
+"Dev Version Check erzwingen, indem Du auf den Knopf unten drückst. Wenn es "
+"eine gibt, sollte sie in Deiner Plugin Updates Seite als reguläres Update "
+"erscheinen."
 
 # @ dbem
 #: classes/em-bookings-table.php:55
@@ -6591,12 +6784,13 @@ msgstr "Aktionen"
 # @ dbem
 #: classes/em-bookings-table.php:257
 msgid "Bookings Table Settings"
-msgstr ""
+msgstr "Reservierungs Tabelle Einstellungen"
 
 # @ dbem
 #: classes/em-bookings-table.php:259
 msgid "Modify what information is displayed in this booking table."
 msgstr ""
+"Bearbeite, welche Informationen in der Reservierungstabelle angezeigt werden."
 
 # @ dbem
 #: classes/em-bookings-table.php:286 events-manager.php:312
@@ -6609,11 +6803,13 @@ msgid ""
 "Select the options below and export all the bookings you have currently "
 "filtered (all pages) into a CSV spreadsheet format."
 msgstr ""
+"Wähle aus den u.a. Optionen und exportiere alle Reservierungen, die Du "
+"gerade gefiltert hast (alle Seiten) in ein CSV Tabellen Format."
 
 # @ dbem
 #: classes/em-bookings-table.php:290
 msgid "Split bookings by ticket type"
-msgstr ""
+msgstr "Teile Reservierungen anhand Ticket Typ"
 
 # @ default
 #: classes/em-bookings-table.php:291
@@ -6621,6 +6817,8 @@ msgid ""
 "If your events have multiple tickets, enabling this will show a seperate row "
 "for each ticket within a booking."
 msgstr ""
+"Wenn Deine Veranstaltungen unterschiedliche Tickets hat, erhältst Du eine "
+"eigene Zeile für jedes Ticket einer Reservierung, wenn Du dies aktivierst."
 
 # @ dbem
 #: classes/em-bookings-table.php:372
@@ -6659,6 +6857,8 @@ msgid ""
 "This event was submitted by a guest. You will find their details in the "
 "<em>Anonymous Submitter Info</em> box"
 msgstr ""
+"Diese Veranstaltung wurde von einem Gast eingereicht. Du findest Detail in "
+"der <em>Info über anonyme Einreichung</em> Box"
 
 # @ dbem
 #: classes/em-event-posts-admin.php:103 classes/em-event-posts-admin.php:105
@@ -6673,17 +6873,17 @@ msgstr ""
 #: classes/em-event.php:473 classes/em-event.php:478 classes/em-event.php:481
 #, php-format
 msgid "%s is required."
-msgstr ""
+msgstr "%s wird benötigt."
 
 # @ dbem
 #: classes/em-event.php:478
 msgid "A valid email"
-msgstr ""
+msgstr "Eine gültige Email"
 
 # @ dbem
 #: classes/em-event.php:481
 msgid "Your name"
-msgstr ""
+msgstr "Dein Name"
 
 # @ default
 #: classes/em-event.php:500
@@ -6691,33 +6891,35 @@ msgid ""
 "For recurring events that end the following day, ensure you make your event "
 "last 1 or more days."
 msgstr ""
+"Stelle für Veranstaltungsreihen, die am Folgetag enden sicher, dass Deine "
+"Veranstaltung 1 Tag länger dauert."
 
 # @ dbem
 #: classes/em-event.php:2103
 msgid "every year"
-msgstr ""
+msgstr "jährlich"
 
 # @ dbem
 #: classes/em-event.php:2105
 #, php-format
 msgid "every %s years"
-msgstr ""
+msgstr "alle %s Jahre"
 
 # @ dbem
 #: classes/em-mailer.php:61
 msgid "Could not send email."
-msgstr ""
+msgstr "Email konnte nicht gesendet werden."
 
 # @ dbem
 #: classes/em-object.php:1244
 msgid "The image is too small! Minimum size allowed:"
-msgstr ""
+msgstr "Das Bild ist zu klein! Minimal erlaubte Größe:"
 
 # @ dbem
 #: em-actions.php:570
 #, php-format
 msgid "Exported booking on %s"
-msgstr ""
+msgstr "Reservierungen exportiert am %s"
 
 # @ dbem
 #: em-install.php:303
@@ -6727,6 +6929,10 @@ msgid ""
 "spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,"
 "<br/>Events Manager - http://wp-events-plugin.com"
 msgstr ""
+"#_BOOKINGNAME (#_BOOKINGEMAIL)wird an #_EVENTNAME am #_EVENTDATES teilnehmen "
+"und reserviert #_BOOKINGSPACES Platz/Plätze.<br/> Nun sind #_BOOKEDSPACES "
+"Plätze reserviert, #_AVAILABLESPACES sind noch verfügbar.<br/>Viele Grüße,"
+"<br/>Events Manager - http://wp-events-plugin.com"
 
 # @ dbem
 #: em-install.php:304
@@ -6736,6 +6942,11 @@ msgid ""
 "are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available."
 "<br/>Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com"
 msgstr ""
+"#_BOOKINGNAME (#_BOOKINGEMAIL) hat die Reservierung für #_EVENTNAME am "
+"#_EVENTDATES storniert. Die Reservierung lautete auf #_BOOKINGSPACES Platz/"
+"Plätze.<br/> Jetzt sind #_BOOKEDSPACES Plätze reserviert, #_AVAILABLESPACES "
+"sind noch verfügbar.<br/>Viele Grüße,<br/>Events Manager - http://wp-events-"
+"plugin.com"
 
 # @ dbem
 #: em-install.php:306
@@ -6793,11 +7004,16 @@ msgid ""
 "<br/>Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Please visit "
 "#_EDITEVENTURL to review this event for approval."
 msgstr ""
+"Eine bereits veröffentlichte Veranstaltung wurde durch #_CONTACTNAME "
+"geändert. Diese Veranstaltung wartet auf erneute Genehmigung und ist so "
+"lange unveröffnetlicht.<br/>Name : #_EVENTNAME <br/>Datum : #_EVENTDATES <br/"
+">Zeit : #_EVENTTIMES <br/>Bitte besuche #_EDITEVENTURL um diese "
+"Veranstaltung zu überprüfen und freizugeben."
 
 # @ dbem
 #: em-install.php:358
 msgid "Re-Submitted Event Awaiting Approval"
-msgstr ""
+msgstr "Erneut eingereichte Veranstaltung wartet auf Genehmigung"
 
 # @ dbem
 #: em-install.php:512
@@ -6807,7 +7023,7 @@ msgstr "mehr..."
 # @ dbem
 #: em-install.php:549
 msgid "You are currently attending this event."
-msgstr ""
+msgstr "Du hast für diese Veranstaltung reserviert."
 
 # @ dbem
 #: em-install.php:550
@@ -6859,6 +7075,9 @@ msgid ""
 "otherwise they'll never show. Go to Events > Settings > General to add "
 "attribute placeholders."
 msgstr ""
+"Um Attribute zu benutzen, musst Du einige in Deinen Vorlagen definieren, "
+"sonst werden sie nie angezeigt. Gehe zu Veranstaltungen > Einstellungen > "
+"Allgemein um Attributplatzhalter zu definieren."
 
 # @ dbem
 #: templates/forms/event/bookings.php:117
@@ -6871,11 +7090,14 @@ msgid ""
 "Individual tickets with remaining spaces will not be available if total "
 "booking spaces reach this limit. Leave blank for no limit."
 msgstr ""
+"Individuelle Tickets mit verbleibenden Plätzen werden nicht verfügbar sein, "
+"wenn die Gesamtzahl die Begrenzung erreicht hat. Leer lassen für keine "
+"Begrenzung."
 
 # @ dbem
 #: templates/forms/event/bookings.php:123
 msgid "Booking Cut-Off Date"
-msgstr ""
+msgstr "Reservierungsende-Datum"
 
 # @ dbem
 #: templates/forms/event/bookings.php:130
@@ -6884,6 +7106,9 @@ msgid ""
 "event, regardless of individual ticket settings above. Default value will be "
 "the event start date."
 msgstr ""
+"Dies ist das definitive Datum, nach dem keine Reservierungen für die "
+"Veranstaltungen mehr vorgenommen werden können, unabhängig von individuellen "
+"Ticket Einstellungen oben. Standardwert ist das Veranstaltungs-Startdatum."
 
 # @ dbem
 #: templates/forms/event/group.php:22
@@ -6897,7 +7122,7 @@ msgid ""
 "groups they are admins of."
 msgstr ""
 "Als Seitenadministrator kannst du alle Gruppenveranstaltungen sehen. "
-"Benutzer sind nur berechtigt Gruppen, bei denen Sie Administratoren sind, "
+"Benutzer sind nur berechtigt Gruppen, bei denen sie Administratoren sind, "
 "auszuwählen."
 
 # @ dbem
@@ -6929,6 +7154,9 @@ msgid ""
 "You don't have any custom attributes defined in any of your Locations "
 "Manager template settings. Please add them the <a href='%s'>settings page</a>"
 msgstr ""
+"Du hast in keinem Deiner Ortsmanager Vorlagen Einstellungen individuelle "
+"Attribute definiert. Bitte füge auf der <a href='%s'>Einstellungen Seite</a> "
+"welche hinzu."
 
 # @ default
 #: templates/forms/location/attributes.php:51
@@ -6938,6 +7166,11 @@ msgid ""
 "again to a formatting option in the settings page. To remove any of these "
 "depreciated attributes, give it a blank value and save."
 msgstr ""
+"Wenn Du Attribute hier siehst, hießt das, sie werden nicht in Ortsmanager "
+"Formaten verwendet. Um sie hinzu zu fügen, musst Du die individuellen "
+"Attribute wieder einer Formatierungsoption in der Einstellungen Seite "
+"hinzufügen. Um nicht benötigte Attribute zu entfernen, entferne den Wert und "
+"sichere."
 
 # @ dbem
 #: templates/forms/ticket-form.php:14
@@ -6968,6 +7201,9 @@ msgid ""
 "current version of Events Manager as new features have been added. Please go "
 "to the plugin website and download the latest update."
 msgstr ""
+"Es gibt eine neuere Version von Events Manager Pro, die für diese Version "
+"von Events Manager empfohlen wird, da neue Funktionen hinzugefügt wurden. "
+"Bitte gehe zur Plugin Webseite und lade das letzte Update herunter."
 
 # @ em-pro
 #: admin/em-admin.php:189
@@ -6977,6 +7213,10 @@ msgid ""
 "our extra <a href=\"%s\">Events Manager WPML Connector</a> plugin which "
 "helps the two work better together. <a href=\"%s\">Dismiss message</a>"
 msgstr ""
+"Es sieht so aus, als wäre WPML auf Deiner Site aktiviert. Wir empfehlen, "
+"dass Du auch unser separates <a href=\"%s\">Events Manager WPML Connector</"
+"a> Plugin installierst, das hilft, die Zusammenarbeit der beiden zu "
+"verbessern. <a href=\"%s\">Ausblenden.</a>"
 
 # @ dbem
 #: admin/em-admin.php:197
@@ -6988,6 +7228,11 @@ msgid ""
 "CONTENTS will be overwritten. If you want to change the way your events "
 "look, go to the <a href='%s'>settings</a> page. "
 msgstr ""
+"Diese Seite entspricht der <strong>Events Manager</strong> %s Seite. Der "
+"Inhalt wird durch Events Manager überschrieben. Wenn Du das Wort CONTENTS "
+"(exakt in Großbuchstaben) verwendest und anderer Text darum herum steht, "
+"wird nur CONTENTS überschrieben. Wenn Du anpassen willst, wie Deine "
+"Veranstaltung aussieht, gehe zur <a href='%s'>Einstellungen</a> Seite. "
 
 # @ dbem
 #: admin/em-bookings.php:290
@@ -6995,16 +7240,18 @@ msgid ""
 "<strong>Notes:</strong> Ticket availability not taken into account when "
 "approving new bookings (i.e. you can overbook)."
 msgstr ""
+"<strong>Hinweise:</strong> Ticketverfügbarkeit nicht berücksichtigt, wenn "
+"neue Reservierungen genehmigt werden (d.h. Du kannst überbuchen)."
 
 # @ dbem
 #: admin/em-bookings.php:469
 msgid "Delete User"
-msgstr ""
+msgstr "Benutzer löschen"
 
 # @ dbem
 #: admin/em-options.php:329
 msgid "Formatting"
-msgstr ""
+msgstr "Formatierung"
 
 # @ dbem
 #: admin/em-options.php:400
@@ -7013,27 +7260,32 @@ msgid ""
 "page, shortcodes and related placeholders from your <a href=\"#formats\" "
 "class=\"nav-tab-link\" rel=\"#em-menu-formats\">formats</a>."
 msgstr ""
+"Wenn Du Orte deaktivierst, denke daran, dass Du die Orts-Seite, Shortcodes "
+"und verknüpfte Platzhalter von Deiner <a href=\"#formats\" class=\"nav-tab-"
+"link\" rel=\"#em-menu-formats\">Formate Seite</a> löschst."
 
 # @ dbem
 #: admin/em-options.php:440
 msgid "Successfully Updated Message"
-msgstr ""
+msgstr "Erfolgsmeldung für Aktualisierung"
 
 # @ dbem
 #: admin/em-options.php:440
 msgid ""
 "Customize the message your user sees when they resubmit/update their event."
 msgstr ""
+"Passe die Nachricht an, die der Benutzer sieht, wenn er seine Veranstaltung "
+"aktualisiert."
 
 # @ dbem
 #: admin/em-options.php:458
 msgid "Performance Optimization"
-msgstr ""
+msgstr "Performance Optimierung"
 
 # @ dbem
 #: admin/em-options.php:458 admin/em-options.php:1883
 msgid "Advanced"
-msgstr ""
+msgstr "Fortgeschritten"
 
 # @ dbem
 #: admin/em-options.php:461
@@ -7042,6 +7294,9 @@ msgid ""
 "pages, use comma-seperated values e.g. 1,2,3. Entering 0 means EVERY page, "
 "-1 means the home page."
 msgstr ""
+"In die Boxen unten schreibst du die Seiten IDs. Verwende Komma-getrennte "
+"Werte für die multiplen Seiten, wie 1,2,3. Die Eingabe von 0 heißt JEDE "
+"Seite, -1 heißt die Home Page."
 
 # @ dbem
 #: admin/em-options.php:463
@@ -7051,11 +7306,16 @@ msgid ""
 "from being unnecessarily included on pages as well as reducing server loads "
 "where possible. This only applies to pages outside the admin area."
 msgstr ""
+"Diese Sektion erlaubt Dir Teile des Plugins zu konfigurieren, die die "
+"Performance Deiner Site erhöhen und Seitegeschwindigkeit erhöhen, indem "
+"vermieden wird, dass Zusatzdateien unnötig auf Seiten inkludiert werden und "
+"die Serverlast - wo möglich - reduziert wird. Dies gilt nur für Seiten "
+"außerhalb des Admin Bereiches."
 
 # @ dbem
 #: admin/em-options.php:464
 msgid "Warning!"
-msgstr ""
+msgstr "Warnung!"
 
 # @ dbem
 #: admin/em-options.php:464
@@ -7065,11 +7325,15 @@ msgid ""
 "will not work properly. For more information on how these options work see "
 "our <a href=\"%s\" target=\"_blank\">optimization recommendations</a>"
 msgstr ""
+"Dies ist für fortgeschrittene Benutzer. Du solltest genau wissen, was Du "
+"hier tust, oder Dinge werden nicht ordnungsgemäß funktionieren. Für weitere "
+"Informationen, wie diese Optionen arbeiten, siehe unsere <a href=\"%s\" "
+"target=\"_blank\">Optimierungsempfehlungen</a>."
 
 # @ dbem
 #: admin/em-options.php:467
 msgid "JavaScript Files"
-msgstr ""
+msgstr "JavaScript Dateien"
 
 # @ dbem
 #: admin/em-options.php:468
@@ -7081,11 +7345,16 @@ msgid ""
 "files needed to display your Event pages and will most likely speed up your "
 "overall website loading time."
 msgstr ""
+"Wenn Du es nicht schon benutzt, empfehlen wir das <a href=\"%s\" target="
+"\"_blank\">Use Google Libraries</a> Plugin, weil es ohne weitere "
+"Optimierungsoptionen unten bereits die Anzahl der notwendigen Dateien "
+"reduziert, die benötigt werden, um Deine Veranstaltungsseiten anzuzeigen und "
+"mit hoher Wahrscheinlichkeit Deine Website beschleunigen."
 
 # @ dbem
 #: admin/em-options.php:471
 msgid "Limit JS file loading?"
-msgstr ""
+msgstr "JS Datei laden begrenzen?"
 
 # @ dbem
 #: admin/em-options.php:471
@@ -7093,6 +7362,8 @@ msgid ""
 "Prevent unnecessary loading of JavaScript files on pages where they are not "
 "needed."
 msgstr ""
+"Vermeide unnötiges Laden von JavaScript Datein auf Seiten, wo sie nicht "
+"benötigt werden."
 
 # @ dbem
 #: admin/em-options.php:476
@@ -7103,11 +7374,16 @@ msgid ""
 "are options for you to include specific jQuery dependencies only on certain "
 "pages."
 msgstr ""
+"Neben Seiten generieren und inkludieren wir bestimmte jQuery Dateien. Wenn "
+"Du Widgets, Shortcode oder PHO nutzt, um bestimmte Teile anzuzeigen, musst "
+"Du uns vielleicht sagen, wo Du sie benutzt, damit sie zuverlässig arbeiten. "
+"Unten sind Deine Optionen, um spezifische jQuery Abhängigkeiten auf "
+"bestimmten Seiten zu inkludieren."
 
 # @ dbem
 #: admin/em-options.php:481
 msgid "General JS"
-msgstr ""
+msgstr "Allgemeines JS"
 
 # @ dbem
 #: admin/em-options.php:481
@@ -7116,11 +7392,14 @@ msgid ""
 "still needed for many items generated by EM using JavaScript such as "
 "Calendars, Maps and Booking Forms/Buttons"
 msgstr ""
+"Lädt unsere eigene JS Datei, wenn noch keine anderen Abhängigkeiten geladen "
+"sind, was immer noch für einige von EM generierten Teile notwendig ist, die "
+"JavaScript benutzen, z.B. Kalender, Karten, Reservierungsformulare/Knöpfe"
 
 # @ dbem
 #: admin/em-options.php:482
 msgid "Search Forms"
-msgstr ""
+msgstr "Suchformulare"
 
 # @ dbem
 #: admin/em-options.php:482
@@ -7128,11 +7407,13 @@ msgid ""
 "Include pages where you use shortcodes or widgets to display event search "
 "forms."
 msgstr ""
+"Inkludiere Seiten, auf denen Du Shortcodes oder Widgets benutzt, um "
+"Veranstaltungs-Suchformulare anzuzeigen."
 
 # @ dbem
 #: admin/em-options.php:483
 msgid "Event Edit and Submission Forms"
-msgstr ""
+msgstr "Veranstaltungs-Bearbeitungs- und -Einreichungsformulare"
 
 # @ dbem
 #: admin/em-options.php:483 admin/em-options.php:484
@@ -7140,21 +7421,23 @@ msgid ""
 "Include pages where you use shortcode or PHP to display event submission "
 "forms."
 msgstr ""
+"Inkludiere Seiten, in denen Du Shortcode oder PHP benutzt, um Veranstaltungs-"
+"Einreichungsformulare anzuzeigen."
 
 # @ dbem
 #: admin/em-options.php:484
 msgid "Booking Management Pages"
-msgstr ""
+msgstr "Reservierungsverwaltungs-Seiten"
 
 # @ dbem
 #: admin/em-options.php:488
 msgid "CSS File"
-msgstr ""
+msgstr "CSS Datei"
 
 # @ dbem
 #: admin/em-options.php:491
 msgid "Limit loading of our CSS files?"
-msgstr ""
+msgstr "Begrenze Laden unserer CSS Datei?"
 
 # @ dbem
 #: admin/em-options.php:491
@@ -7162,21 +7445,24 @@ msgid ""
 "Enabling this will prevent us from loading our CSS file on every page, and "
 "will only load on specific pages generated by Events Manager."
 msgstr ""
+"Dies zu Aktivieren verhindert das Laden unserer CSS Datei auf jeder Seite "
+"und wird sie nur auf spezifischen, durch Events Manager generierten Seiten "
+"laden."
 
 # @ dbem
 #: admin/em-options.php:498
 msgid "Include on"
-msgstr ""
+msgstr "Inkludieren"
 
 # @ dbem
 #: admin/em-options.php:498
 msgid "Our CSS file will only be INCLUDED on all of these pages."
-msgstr ""
+msgstr "Unsere CSS Datei will nur in all diesen Seiten INKLUDIERT werden."
 
 # @ dbem
 #: admin/em-options.php:499
 msgid "Exclude on"
-msgstr ""
+msgstr "Exkludieren"
 
 # @ dbem
 #: admin/em-options.php:499
@@ -7184,11 +7470,13 @@ msgid ""
 "Our CSS file will be EXCLUDED on all of these pages. Takes precedence over "
 "inclusion rules."
 msgstr ""
+"Unsere CSS Datei wird auf all diesen Seiten AUSGESCHLOSSEN sein. "
+"Überschreibt Includierungsregeln."
 
 # @ dbem
 #: admin/em-options.php:505
 msgid "Thumbnails"
-msgstr ""
+msgstr "Vorschaubilder"
 
 # @ dbem
 #: admin/em-options.php:506
@@ -7198,11 +7486,15 @@ msgid ""
 "can use the default WordPress thumbnail generator which is less resource "
 "intensive."
 msgstr ""
+"Standardmäßig verwenden wir TimThumb (an manchen Stellen immer noch), das "
+"mit unserem Plugin mitgeliefert wird, um alle Vorschaubilder zu erzeugen. "
+"Alternativ kannst Du den Standard WordPress Vorschaubilder Generator "
+"verwenden, der weniger Ressourcen benötigt."
 
 # @ dbem
 #: admin/em-options.php:509
 msgid "Use WordPress thumbnails?"
-msgstr ""
+msgstr "WordPress Vorschaubilder verwenden?"
 
 # @ dbem
 #: admin/em-options.php:509
@@ -7210,6 +7502,8 @@ msgid ""
 "Recommended you enable this, as it will speed up your site page loading "
 "times if displaying many thumbnails on your pages."
 msgstr ""
+"Empfohlen, dies zu aktivieren, da es das Laden Deiner Seite beschleunigt, "
+"wenn Du viele Vorschaubilder anzeigst."
 
 # @ default
 #: admin/em-options.php:558
@@ -7219,6 +7513,10 @@ msgid ""
 "Events Manager <a href='#formats' class='nav-tab-link' rel='#em-menu-"
 "formats'>Formating</a> tab above without having to edit your theme files."
 msgstr ""
+"Durch Verwendung von Formaten kannst Du steuern, wie Deine %s innerhalb "
+"Events Manager angezeigt werden. <a href='#formats' class='nav-tab-link' "
+"rel='#em-menu-formats'>Formatieren</a> Reiter oben verwenden, ohne die "
+"Themen Dateien bearbeiten zu müssen."
 
 # @ dbem
 #: admin/em-options.php:755
@@ -7227,6 +7525,8 @@ msgid ""
 "Controls how many events being held at a location are shown per page when "
 "using placeholders such as %s. Leave blank for no limit."
 msgstr ""
+"Steuert, wie viele Veranstaltungen am gleichen Ort pro Tag gezeigt werden "
+"unter Berücksichtigung von Platzhalten, wie %s. Leer lassen für unbegrenzt."
 
 # @ dbem
 #: admin/em-options.php:771
@@ -7236,6 +7536,10 @@ msgid ""
 "not select a %s page, to display lists you can enable archives or use the "
 "appropriate shortcodes and/or template tags."
 msgstr ""
+"Diese Option erlaubt Dir auszuwählen, welche Seite als %s Seite verwendet "
+"wird. Wenn Du keine %s Seite auswählst, kannst Du Archive aktivieren, um "
+"Listen anzuzeigen, oder die entsprechenden Shortcodes und/oder Vorlagen Tags "
+"verwenden."
 
 # @ dbem
 #: admin/em-options.php:966
@@ -7244,6 +7548,8 @@ msgid ""
 "Controls how many events belonging to a category are shown per page when "
 "using placeholders such as %s. Leave blank for no limit."
 msgstr ""
+"Steuert, wie viele Veranstaltungen einer Kategorie pro Seite gezeigt werden "
+"unter der Verwendung von Platzhalten wie %s. Leer lassen für unbegrenzt."
 
 # @ dbem
 #: admin/em-options.php:1105
@@ -7251,46 +7557,48 @@ msgid ""
 "If you choose a group by mode, your events page will display events in "
 "groups of your chosen time range."
 msgstr ""
+"Wenn Du einen Gruppieren nach Modus wählst wird Deine Veranstaltungsseite "
+"die Veranstaltungen in Gruppen gemäß Deines gewählten Zeitraums zeigen."
 
 # @ dbem
 #: admin/em-options.php:1126
 msgid "Search Form"
-msgstr ""
+msgstr "Suchformular"
 
 # @ dbem
 #: admin/em-options.php:1130
 msgid "Search button text"
-msgstr ""
+msgstr "Suchknopftext"
 
 # @ dbem
 #: admin/em-options.php:1177
 msgid "Small Calendar"
-msgstr ""
+msgstr "Kleiner Kalender"
 
 # @ dbem
 #: admin/em-options.php:1179
 msgid "Event titles"
-msgstr ""
+msgstr "Veranstaltungstitel"
 
 # @ dbem
 #: admin/em-options.php:1180
 msgid "Title separator"
-msgstr ""
+msgstr "Titeltrenner"
 
 # @ dbem
 #: admin/em-options.php:1181
 msgid "Abbreviated weekdays"
-msgstr ""
+msgstr "Abgekürzter Wochentag"
 
 # @ default
 #: admin/em-options.php:1181
 msgid "The calendar headings uses abbreviated weekdays"
-msgstr ""
+msgstr "Die Kalenderüberschriften benutzen abgekürzte Wochentage"
 
 # @ dbem
 #: admin/em-options.php:1182 admin/em-options.php:1188
 msgid "Initial lengths"
-msgstr ""
+msgstr "Initiale Längen"
 
 # @ dbem
 #: admin/em-options.php:1182 admin/em-options.php:1188
@@ -7298,21 +7606,23 @@ msgid ""
 "Shorten the calendar headings containing the days of the week, use 0 for the "
 "full name."
 msgstr ""
+"Kürze die Kalenderüberschriften, die die Wochentage enthalten. 0, um den "
+"vollen Namen anzuzeigen."
 
 # @ dbem
 #: admin/em-options.php:1184
 msgid "Full Calendar"
-msgstr ""
+msgstr "Voller Kalender"
 
 # @ dbem
 #: admin/em-options.php:1186
 msgid "Event format"
-msgstr ""
+msgstr "Veranstaltungsformat"
 
 # @ dbem
 #: admin/em-options.php:1187
 msgid "Abbreviated weekdays?"
-msgstr ""
+msgstr "Abgekürzter Wochentag?"
 
 # @ dbem
 #: admin/em-options.php:1187
@@ -7320,6 +7630,8 @@ msgid ""
 "Use abbreviations, e.g. Friday = Fri. Useful for certain languages where "
 "abbreviations differ from full names."
 msgstr ""
+"Benutze Abkürzungen, z.B: Freitag = Fri. Nützlich für bestimmte Sprachen, "
+"bei denen die Abkürzungen von den Langnamen abweichen."
 
 # @ dbem
 #: admin/em-options.php:1262
@@ -7328,6 +7640,8 @@ msgid ""
 "The format of the events the list inserted in the location page through the "
 "%s element."
 msgstr ""
+"Das nzuzeigende Veranstaltungsformat auf der Liste in der Ortsseite durch "
+"das %s Element."
 
 # @ dbem
 #: admin/em-options.php:1264 admin/em-options.php:1294
@@ -7336,6 +7650,8 @@ msgid ""
 "The message to be displayed in the list generated by %s when no events are "
 "available."
 msgstr ""
+"Die anzuzeigende Nachricht in der von %s generierten Liste, wenn keine "
+"Veranstaltungen verfügbar sind."
 
 # @ dbem
 #: admin/em-options.php:1292
@@ -7344,6 +7660,8 @@ msgid ""
 "The format of the events the list inserted in the category page through the "
 "%s element."
 msgstr ""
+"Das Anzeigevormat von Veranstaltungen auf der Liste in der Kategorienseite "
+"durch das %s Element."
 
 # @ dbem
 #: admin/em-options.php:1326
@@ -7353,7 +7671,7 @@ msgstr ""
 # @ dbem
 #: admin/em-options.php:1341
 msgid "Maps"
-msgstr ""
+msgstr "Karten"
 
 # @ dbem
 #: admin/em-options.php:1343
@@ -7362,11 +7680,14 @@ msgid ""
 "You can use Google Maps to show where your events are located. For more "
 "information on using maps, <a href=\"%s\">see our documentation</a>."
 msgstr ""
+"Du kannst Google Maps nutzen, um zu zeigen, wo Deine Veranstaltungen "
+"stattfinden. Für weitere Informationen bzgl. Karten <a href=\"%s\">sieh in "
+"der Dokumentation nach</a>."
 
 # @ dbem
 #: admin/em-options.php:1355
 msgid "Global Map Format"
-msgstr ""
+msgstr "Globales Kartenformat"
 
 # @ dbem
 #: admin/em-options.php:1356
@@ -7375,27 +7696,30 @@ msgid ""
 "If you use the %s <a href=\"%s\">shortcode</a>, you can display a map of all "
 "your locations and events, the settings below will be used."
 msgstr ""
+"Wenn Du %s <a href=\"%s\">shortcode</a> benutzt, wird eine Karte von all "
+"Deinen Orten und Veranstaltungen angezeigt. Die Einstellungen unten werden "
+"verwendet."
 
 # @ dbem
 #: admin/em-options.php:1359 admin/em-options.php:1366
 msgid "Location balloon format"
-msgstr ""
+msgstr "Kartenballonformat"
 
 # @ dbem
 #: admin/em-options.php:1359 admin/em-options.php:1366
 msgid ""
 "The format of of the text appearing in the balloon describing the location."
-msgstr ""
+msgstr "Das Textformat, das im Ballon der Ortsbeschreibung erscheint."
 
 # @ dbem
 #: admin/em-options.php:1359
 msgid "Event."
-msgstr ""
+msgstr "Veranstaltung."
 
 # @ dbem
 #: admin/em-options.php:1362
 msgid "Single Location/Event Map Format"
-msgstr ""
+msgstr "Einzelner Ort/Veranstaltungskartenformat"
 
 # @ dbem
 #: admin/em-options.php:1363
@@ -7405,16 +7729,21 @@ msgid ""
 "when displaying individual event and location information, the settings "
 "below will be used."
 msgstr ""
+"Wenn Du <code>#_LOCATIONMAP</code> benutzt, <a href=\"%s\">Platzhalter</a> "
+"benutzt, wenn eine individuelle Veranstaltung und Ortsinformation angezeigt "
+"wird, greifen die Einstellungen unten."
 
 # @ dbem
 #: admin/em-options.php:1543
 msgid "Email event owner?"
-msgstr ""
+msgstr "Den Veranstalter anmailen?"
 
 # @ dbem
 #: admin/em-options.php:1593
 msgid "Event submission notifications will be sent to emails added here."
 msgstr ""
+"Benachrichtigung über eingereichte Veranstaltungen werden an die hier "
+"genannten Email Adressen versandt."
 
 # @ dbem
 #: admin/em-options.php:1593
@@ -7422,6 +7751,8 @@ msgid ""
 "If left blank, no emails will be sent. Seperate emails with commas for more "
 "than one email."
 msgstr ""
+"Wenn leer, werden keine Emails versandt. Gib mehrere Email Adressen durch "
+"Komma getrennt ein."
 
 # @ dbem
 #: admin/em-options.php:1596
@@ -7429,23 +7760,25 @@ msgid ""
 "An email will be sent to your administrator emails when an event is "
 "submitted and pending approval."
 msgstr ""
+"Wenn eine Veranstaltung eingereicht wurde, wird eine Email an die "
+"Administrator Email Adressen zur Genehmigung versandt."
 
 # @ dbem
 #: admin/em-options.php:1598 admin/em-options.php:1604
 #: admin/em-options.php:1610 admin/em-options.php:1616
 #: admin/em-options.php:1621
 msgid "If left blank, this email will not be sent."
-msgstr ""
+msgstr "Wenn leer, wird diese Email nicht versandt."
 
 # @ dbem
 #: admin/em-options.php:1601
 msgid "Event Re-Submitted"
-msgstr ""
+msgstr "Veranstaltung erneut eingereicht"
 
 # @ dbem
 #: admin/em-options.php:1607
 msgid "Event Published"
-msgstr ""
+msgstr "Veranstaltung veröffentlicht"
 
 # @ dbem
 #: admin/em-options.php:1608
@@ -7453,21 +7786,23 @@ msgid ""
 "An email will be sent to an administrator of your choice when an event is "
 "published by users who are not administrators."
 msgstr ""
+"Wenn eine Veranstaltung durch Nicht-Administratoren veröffentlicht wird, "
+"wird eine Email zu einem Administrator Deiner Wahl versandt."
 
 # @ dbem
 #: admin/em-options.php:1610
 msgid "Event published subject"
-msgstr ""
+msgstr "Veranstaltung veröffentlicht Betreff"
 
 # @ dbem
 #: admin/em-options.php:1611
 msgid "Event published email"
-msgstr ""
+msgstr "Veranstaltung veröffentlicht Email"
 
 # @ dbem
 #: admin/em-options.php:1706
 msgid "Add br tags to HTML emails?"
-msgstr ""
+msgstr "br Tags zu HTML Emails hinzufügen?"
 
 # @ dbem
 #: admin/em-options.php:1706
@@ -7475,36 +7810,40 @@ msgid ""
 "If HTML emails are enabled, br tags will automatically be added for new "
 "lines."
 msgstr ""
+"Wenn HTML Emails aktiviert sind, werden automatisch br Tags für "
+"Zeilenumbrüche hinzugefügt."
 
 # @ dbem
 #: classes/em-bookings-table.php:89
 msgid "Booking Comment"
-msgstr ""
+msgstr "Reservierungskommentar"
 
 # @ dbem
 #: classes/em-bookings-table.php:262
 msgid "Columns to show"
-msgstr ""
+msgstr "Anzuzeigende Spalten"
 
 # @ dbem
 #: classes/em-bookings-table.php:263
 msgid "Drag items to or from the left column to add or remove them."
 msgstr ""
+"Felder von oder zur linken Spalte ziehen, um sie hinzuzufügen oder zu "
+"entfernen."
 
 # @ dbem
 #: classes/em-bookings-table.php:295
 msgid "Columns to export"
-msgstr ""
+msgstr "Zu exportierende Spalten"
 
 # @ dbem
 #: em-functions.php:555
 msgid "If translations are left blank, the default value will be used."
-msgstr ""
+msgstr "Wenn Übersetzungen leer, wird der Standardwert benutzt."
 
 # @ dbem
 #: em-functions.php:602
 msgid "If left blank, the default value will be used."
-msgstr ""
+msgstr "Wenn leer, wird der Standardwert benutzt."
 
 # @ dbem
 #: em-install.php:305
@@ -7514,6 +7853,9 @@ msgid ""
 ">Where : #_LOCATIONNAME - #_LOCATIONFULLLINE<br/>Yours faithfully,<br/"
 ">#_CONTACTNAME"
 msgstr ""
+"Liebe/r #_BOOKINGNAME, <br/>Du hast erfolgreich #_BOOKINGSPACES Platz/Plätze "
+"für #_EVENTNAME reserviert.<br/>Wann : #_EVENTDATES @ #_EVENTTIMES<br/>Wo : "
+"#_LOCATIONNAME - #_LOCATIONFULLLINE<br/>Viele Grüße,<br/>#_CONTACTNAME"
 
 # @ dbem
 #: em-install.php:312
@@ -7522,6 +7864,10 @@ msgid ""
 ">Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Edit this event - "
 "#_EDITEVENTURL <br/> View this event - #_EVENTURL"
 msgstr ""
+"#_CONTACTNAME hat eine neue Veranstaltung veröffentlicht.<br/>Name : "
+"#_EVENTNAME <br/>Datum : #_EVENTDATES <br/>Zeit : #_EVENTTIMES <br/>Diese "
+"Veranstaltung bearbeiten - #_EDITEVENTURL <br/> Diese Veranstaltung anzeigen "
+"- #_EVENTURL"
 
 # @ dbem
 #: em-install.php:350
@@ -7529,31 +7875,33 @@ msgid ""
 "You have successfully updated your event, which will be republished pending "
 "approval."
 msgstr ""
+"Du hast erfolgreich eine Veanstaltung aktualisiert, die nach ausstehender "
+"Genehmigung veröffentlicht wird."
 
 # @ dbem
 #: em-install.php:360
 msgid "Published Event"
-msgstr ""
+msgstr "Veröffentlichte Veranstaltung"
 
 # @ dbem
 #: em-install.php:455
 msgid "No events in this category"
-msgstr ""
+msgstr "Keine Veranstaltungen in dieser Kategorie"
 
 # @ dbem
 #: templates/forms/event-editor.php:79
 msgid "HTML allowed."
-msgstr ""
+msgstr "HTML erlaubt."
 
 # @ dbem
 #: templates/forms/ticket-form.php:43 templates/forms/tickets-form.php:26
 msgid "Members Only?"
-msgstr ""
+msgstr "Nur Mitglieder?"
 
 # @ dbem
 #: templates/forms/ticket-form.php:47 templates/forms/tickets-form.php:27
 msgid "Required?"
-msgstr ""
+msgstr "Benötigt?"
 
 # @ default
 #: templates/forms/ticket-form.php:49 templates/forms/tickets-form.php:27
@@ -7561,3 +7909,5 @@ msgid ""
 "If checked every booking must select one or the minimum number of this "
 "ticket."
 msgstr ""
+"Wenn angehakt, muss für jede Reservierung mindestens ein oder die minimale "
+"Anzahl Tickets ausgewählt werden."

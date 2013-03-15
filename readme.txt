@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.6.4 (dev) =
+= 5.3.6.5 (dev) =
 * fixed extra paragraphs being added to #_EVENTNOTES
 * fixed location 'no events' message format not using header/footer formats
 * updated Finnish and POT files
@@ -135,6 +135,21 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added option for no-user registration with registered emails
 * added #_CATEGORYNEXTEVENT, added formatting options for location/category next event placeholders
 * improved event, location and category timthumb thumbnails so they accept 0 as a width/height to prevent cropping
+* added ical scope option
+* fixed category placeholders not being replaced in alphabetical order (so #_CATEGORYNEXTEVENT cannot overwrite #_CATEGORYNEXTEVENTS)
+* added #_TAGNEXTEVENT and formatting options
+* fixed problem with pagination not highlighting first page number when doing searches
+* changed maps js to close other infowindows for locations map when marker is clicked
+* added locations search attribute
+* fixed autoembed and embed shortcode support for event/category/location placeholders for descriptions
+* fixed duplicates triggering 'published' actions on duplications such as tweeting via WP to Twitter
+* fixed author not being changed on quick edit
+* fixed conflicts with various plugins which add custom registration validation (e.g. SI Captcha, Theme My Login, etc.)
+* fixed bug where #_LATT fields not appearing in public location editor if event attributes aren't enabled
+* added booking links to edit event booking stats meta box even if no bookings made
+* added em_bookings_filtered and em_locations_autocomplete_selected jQuery events
+* fixed links pointing to admin on public booking admin tables after pagination clicks or multiple ajax calls
+* updated German translation
 
 = 5.3.6.1 =
 * fixed some XSS vulnerabilites in the booking form/admin areas

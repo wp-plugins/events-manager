@@ -109,7 +109,7 @@ class EM_Event_Post_Admin{
 						if( $EM_Event->is_published() ){ $EM_Event->set_status(0, true); } //no publishing and editing... security threat
 					}
 					//now update the db
-					$wpdb->query("UPDATE ".EM_EVENTS_TABLE." SET event_name='{$EM_Event->event_name}', event_slug='{$EM_Event->event_slug}', event_status={$event_status}, event_private={$EM_Event->event_private} WHERE event_id='{$EM_Event->event_id}'");
+					$wpdb->query("UPDATE ".EM_EVENTS_TABLE." SET event_name='{$EM_Event->event_name}', event_owner='{$EM_Event->event_owner}', event_slug='{$EM_Event->event_slug}', event_status={$event_status}, event_private={$EM_Event->event_private} WHERE event_id='{$EM_Event->event_id}'");
 					if( $EM_Event->is_recurring() &&  $EM_Event->is_published()){
 						//recurrences are (re)saved only if event is published
 						$EM_Event->save_events();

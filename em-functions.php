@@ -34,7 +34,7 @@ function em_paginate($link, $total, $limit, $page=1, $pagesToShow=10){
 		    }
 		//Loop each page and create a link or just a bold number if its the current page
 		    for ($i = $startPage ; $i < $startPage+$pagesToShow && $i <= $maxPages ; $i++){
-	            if($i == $page){
+	            if($i == $page || (empty($page) && $startPage == $i)) {
 	                $string .= ' <strong><span class="page-numbers current">'.$i.'</span></strong>';
 	            }elseif($i=='1'){
 	                $string .= ' <a class="page-numbers" href="'.$base_link.$base_querystring.'" title="'.$i.'">'.$i.'</a> ';
@@ -403,10 +403,9 @@ function em_register_new_user( $user_data ) {
 
 	do_action( 'register_post', $sanitized_user_login, $user_email, $errors );
 
-	ob_start(); //prevent any errors going out here, e.g. with RPR
-	$errors = apply_filters( 'registration_errors', $errors, $sanitized_user_login, $user_email );
-	ob_clean();
-
+	//custom registration filter to prevent things like SI Captcha and other plugins of this kind interfering with EM
+	$errors = apply_filters( 'em_registration_errors', $errors, $sanitized_user_login, $user_email );
+	
 	if ( $errors->get_error_code() ) return $errors;
 
 	if(empty($user_data['user_pass'])){

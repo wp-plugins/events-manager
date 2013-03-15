@@ -340,6 +340,7 @@ jQuery(document).ready( function($){
 				//recreate overlays
 				$('#em-bookings-table-export input[name=scope]').val(root.find('select[name=scope]').val());
 				$('#em-bookings-table-export input[name=status]').val(root.find('select[name=status]').val());
+				jQuery(document).triggerHandler('em_bookings_filtered', [data, root, el]);
 			});
 			return false;
 		});
@@ -554,6 +555,7 @@ jQuery(document).ready( function($){
 				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
 				jQuery('#em-location-data input#location-name').css('background-color','#fff');
 				jQuery('#em-location-reset').show();
+				jQuery(document).triggerHandler('em_locations_autocomplete_selected', [event, ui]);
 				return false;
 			}
 		}).data( "autocomplete" )._renderItem = function( ul, item ) {
@@ -702,6 +704,8 @@ var em_ajaxify = function(url){
  * MAP FUNCTIONS
  */
 var maps = {};
+var maps_markers = {};
+var infowindow;
 //Load single maps (each map is treated as a seperate map.
 function em_maps() {
 	//Find all the maps on this page
@@ -719,13 +723,13 @@ function em_maps() {
 		    position: em_LatLng,
 		    map: maps[map_id]
 		});
-		var infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
+		infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
 		infowindow.open(maps[map_id],marker);
 		maps[map_id].panBy(40,-70);
 		
 		//JS Hook for handling map after instantiation
 		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
-		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker]);
+		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker, map_id]);
 	});
 	jQuery('.em-locations-map').each( function(index){
 		var el = jQuery(this);
@@ -737,6 +741,7 @@ function em_maps() {
 				    mapTypeId: google.maps.MapTypeId.ROADMAP
 				  };
 				  maps[map_id] = new google.maps.Map(document.getElementById("em-locations-map-"+map_id), myOptions);
+				  maps_markers[map_id] = [];
 				  
 				  var minLatLngArr = [0,0];
 				  var maxLatLngArr = [0,0];
@@ -750,6 +755,7 @@ function em_maps() {
 						    position: location, 
 						    map: maps[map_id]
 						});
+						maps_markers[map_id].push(marker);
 						marker.setTitle(data[i].location_name);
 						var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
 						em_map_infobox(marker, myContent, maps[map_id]);
@@ -766,8 +772,9 @@ function em_maps() {
 				  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
 				  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
 				  maps[map_id].fitBounds(bounds);
+				  
 				//Call a hook if exists
-				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id]], data);
+				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id], data, map_id]);
 			}else{
 				el.children().first().html('No locations found');
 			}
@@ -802,7 +809,7 @@ function em_maps() {
     			jQuery('#em-map').hide();
     			jQuery('#em-map-404').show();
 			}
-		}
+		};
 		
 		//Add listeners for changes to address
 		var get_map_by_id = function(id){
@@ -826,8 +833,8 @@ function em_maps() {
 					}
 				});
 			}
-		}
-		jQuery('#location-select-id, input#location-id').change( function(){get_map_by_id(jQuery(this).val())} );
+		};
+		jQuery('#location-select-id, input#location-id').change( function(){get_map_by_id(jQuery(this).val());} );
 		jQuery('#location-name, #location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
 			//build address
 			var addresses = [ jQuery('#location-address').val(), jQuery('#location-town').val(), jQuery('#location-state').val(), jQuery('#location-postcode').val() ];
@@ -871,7 +878,7 @@ function em_maps() {
 			    map: map,
 			    draggable: true
 			});
-			var infoWindow = new google.maps.InfoWindow({
+			infoWindow = new google.maps.InfoWindow({
 			    content: ''
 			});
 			var geocoder = new google.maps.Geocoder();
@@ -896,9 +903,11 @@ function em_maps() {
 }
   
 function em_map_infobox(marker, message, map) {
-  var infowindow = new google.maps.InfoWindow({ content: message });
+  var iw = new google.maps.InfoWindow({ content: message });
   google.maps.event.addListener(marker, 'click', function() {
-    infowindow.open(map,marker);
+	if( infowindow ) infowindow.close();
+	infowindow = iw;
+    iw.open(map,marker);
   });
 }
 

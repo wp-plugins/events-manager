@@ -53,7 +53,7 @@ if(!is_admin()) echo $EM_Notices;
 	</div>
 	
 			
-	<?php if(get_option('dbem_attributes_enabled')){ em_locate_template('forms/location/attributes-public.php',true); } ?>
+	<?php if(get_option('dbem_location_attributes_enabled')){ em_locate_template('forms/location/attributes-public.php',true); } ?>
 				
 	<?php if( $EM_Location->can_manage('upload_event_images','upload_event_images') ): ?>
 	<h4><?php _e ( 'Location Image', 'dbem' ); ?></h4>

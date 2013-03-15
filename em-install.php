@@ -464,7 +464,7 @@ function em_add_options() {
 		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
 		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
-		'dbem_category_no_events_message' => __('No events in this category', 'dbem'),
+		'dbem_category_no_events_message' => '<li>'.__('No events in this category', 'dbem').'</li>',
 		'dbem_category_event_list_item_header_format' => '<ul>',
 		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_category_event_list_item_footer_format' => '</ul>',
@@ -474,10 +474,12 @@ function em_add_options() {
 		//Tag Formatting
 		'dbem_tag_page_title_format' => '#_TAGNAME',
 		'dbem_tag_page_format' => '<h3>Upcoming Events</h3>#_TAGNEXTEVENTS',
-		'dbem_tag_no_events_message' => __('<li>No events in this tag</li>', 'dbem'),
+		'dbem_tag_no_events_message' => '<li>'.__('No events with this tag', 'dbem').'</li>',
 		'dbem_tag_event_list_item_header_format' => '<ul>',
 		'dbem_tag_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
 		'dbem_tag_event_list_item_footer_format' => '</ul>',
+		'dbem_tag_event_single_format' => '#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES',
+		'dbem_tag_no_event_message' => __('No events with this tag', 'dbem'),
 		//RSS Stuff
 		'dbem_rss_limit' => 10,
 		'dbem_rss_scope' => 'future',
@@ -728,6 +730,8 @@ function em_add_options() {
 	    update_option('dbem_category_no_event_message',get_option('dbem_category_event_list_item_header_format').get_option('dbem_category_no_events_message').get_option('dbem_category_event_list_item_footer_format'));
 	    update_option('dbem_location_event_single_format',get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_event_list_item_format').get_option('dbem_location_event_list_item_footer_format'));
 	    update_option('dbem_location_no_event_message',get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_no_events_message').get_option('dbem_location_event_list_item_footer_format'));
+	    update_option('dbem_tag_event_single_format',get_option('dbem_tag_event_list_item_header_format').get_option('dbem_tag_event_list_item_format').get_option('dbem_tag_event_list_item_footer_format'));
+	    update_option('dbem_tag_no_event_message',get_option('dbem_tag_event_list_item_header_format').get_option('dbem_tag_no_events_message').get_option('dbem_tag_event_list_item_footer_format'));
 	}
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless

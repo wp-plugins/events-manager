@@ -66,6 +66,16 @@ class EM_Person extends WP_User{
 		return apply_filters('em_person_get_events', $events);
 	}
 	
+	function get_bookings_url(){
+		if( get_option('dbem_edit_bookings_page') && (!is_admin() || !empty($_REQUEST['is_public'])) ){
+			$my_bookings_page = get_permalink(get_option('dbem_edit_bookings_page'));
+			$bookings_link = em_add_get_params($my_bookings_page, array('person_id'=>$this->ID, 'event_id'=>null, 'ticket_id'=>null, 'booking_id'=>null), false);
+		}else{
+			$bookings_link = EM_ADMIN_URL. "&page=events-manager-bookings&person_id=".$this->ID;
+		}
+		return apply_filters('em_person_get_bookings_url', $bookings_link, $this);
+	}
+	
 	function display_summary(){
 		ob_start();
 		$no_user = get_option('dbem_bookings_registration_disable') && $this->ID == get_option('dbem_bookings_registration_user');
@@ -76,9 +86,9 @@ class EM_Person extends WP_User{
 				<td style="padding-left:10px; vertical-align: top;">
 					<table>
 						<?php if( $no_user ): ?>
-						<tr><th><?php _e('Name','dbem'); ?> : </th><th><?php echo $this->get_name() ?></th></tr>
+						<tr><th><?php _e('Name','dbem'); ?> : </th><th><?php echo $this->get_name(); ?></th></tr>
 						<?php else: ?>
-						<tr><th><?php _e('Name','dbem'); ?> : </th><th><a href="<?php echo EM_ADMIN_URL ?>&amp;page=events-manager-bookings&amp;person_id=<?php echo $this->ID; ?>"><?php echo $this->get_name() ?></a></th></tr>
+						<tr><th><?php _e('Name','dbem'); ?> : </th><th><a href="<?php echo $this->get_bookings_url(); ?>"><?php echo $this->get_name(); ?></a></th></tr>
 						<?php endif; ?>
 						<tr><th><?php _e('Email','dbem'); ?> : </th><td><?php echo $this->user_email; ?></td></tr>
 						<tr><th><?php _e('Phone','dbem'); ?> : </th><td><?php echo $this->phone; ?></td></tr>

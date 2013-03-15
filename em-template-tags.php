@@ -260,7 +260,7 @@ function em_events_admin($args = array()){
 			em_event_form();
 		}else{
 			//template $args for different views
-		    $args_views['pending'] = array('status'=>'all', 'owner' =>get_current_user_id(), 'scope' => 'all');
+		    $args_views['pending'] = array('status'=>0, 'owner' =>get_current_user_id(), 'scope' => 'all');
 		    $args_views['draft'] = array('status'=>null, 'owner' =>get_current_user_id(), 'scope' => 'all');
 		    $args_views['past'] = array('status'=>'all', 'owner' =>get_current_user_id(), 'scope' => 'past');
 		    $args_views['future'] = array('status'=>'1', 'owner' =>get_current_user_id(), 'scope' => 'future');

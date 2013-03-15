@@ -559,10 +559,14 @@ class EM_Event extends EM_Object{
 		$post_array['post_title'] = $this->event_name;
 		$post_array['post_content'] = $this->post_content;
 		//decide on post status
-		if( count($this->errors) == 0 ){
-			$post_array['post_status'] = ( $this->can_manage('publish_events','publish_events') ) ? 'publish':'pending';
+		if( empty($this->force_status) ){
+			if( count($this->errors) == 0 ){
+				$post_array['post_status'] = ( $this->can_manage('publish_events','publish_events') ) ? 'publish':'pending';
+			}else{
+				$post_array['post_status'] = 'draft';
+			}
 		}else{
-			$post_array['post_status'] = 'draft';
+		    $post_array['post_status'] = $this->force_status;
 		}
 		//anonymous submission only
 		if( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') && empty($this->event_id) ){
@@ -754,6 +758,7 @@ class EM_Event extends EM_Object{
 			}
 			do_action('em_event_duplicate_pre', $EM_Event);
 			$EM_Event->duplicated = true;
+			$EM_Event->force_status = 'draft';
 			if( $EM_Event->save() ){
 				$EM_Event->feedback_message = sprintf(__("%s successfully duplicated.", 'dbem'), __('Event','dbem'));
 			 	//other non-EM post meta inc. featured image
@@ -762,7 +767,7 @@ class EM_Event extends EM_Object{
 				$event_meta_inserts = array();
 			 	//Get custom fields and post meta - adapted from $this->load_post_meta()
 			 	foreach($event_meta as $event_meta_key => $event_meta_vals){
-			 		if($event_meta_key[0] == '_'){
+			 		if($event_meta_key[0] == '_' && is_array($event_meta_vals)){
 			 		    $field_name = substr($event_meta_key, 1);
 			 			if($field_name != 'event_attributes' && !array_key_exists($field_name, $this->fields) && !in_array($field_name, array('edit_last', 'edit_lock', 'event_owner_name','event_owner_anonymous','event_owner_email')) ){
 				 			foreach($event_meta_vals as $event_meta_val){
@@ -776,7 +781,6 @@ class EM_Event extends EM_Object{
 			 		$wpdb->query('INSERT INTO '.$wpdb->postmeta." (post_id, meta_key, meta_value) VALUES ".implode(', ', $event_meta_inserts));
 			 	}
 			 	//set event to draft status
-				$EM_Event->set_status(null,true);
 				return apply_filters('em_event_duplicate', $EM_Event, $this);
 			}
 		}
@@ -989,6 +993,7 @@ class EM_Event extends EM_Object{
 		}else{
 			return new EM_Bookings();
 		}
+		//TODO for some reason this returned instance doesn't modify the original, e.g. try $this->get_bookings()->add($EM_Booking) and see how $this->bookings->feedback_message doesn't change
 		return apply_filters('em_event_get_bookings', $this->bookings, $this);
 	}
 	
@@ -1057,7 +1062,7 @@ class EM_Event extends EM_Object{
 			$my_bookings_page = get_permalink(get_option('dbem_edit_bookings_page'));
 			$bookings_link = em_add_get_params($my_bookings_page, array('event_id'=>$this->event_id), false);
 		}else{
-			if( $this->blog_id != get_current_blog_id() ){
+			if( is_multisite() && $this->blog_id != get_current_blog_id() ){
 				$bookings_link = get_admin_url($this->blog_id, 'edit.php?post_type='.EM_POST_TYPE_EVENT."&page=events-manager-bookings&event_id=".$this->event_id);
 			}else{
 				$bookings_link = EM_ADMIN_URL. "&page=events-manager-bookings&event_id=".$this->event_id;
@@ -2151,7 +2156,7 @@ function em_event_output_placeholder($result,$event,$placeholder,$target='html')
 	  	}else{ //html
 			$result = apply_filters('dbem_notes', $result);
 		}
-	}elseif( in_array($placeholder, array("#_NAME",'#_LOCATION','#_TOWN','#_ADDRESS','#_LOCATIONNAME',"#_EVENTNAME","#_LOCATIONNAME")) ){
+	}elseif( in_array($placeholder, array("#_NAME",'#_LOCATION','#_TOWN','#_ADDRESS','#_LOCATIONNAME',"#_EVENTNAME","#_LOCATIONNAME",'#_CATEGORY')) ){
 		if ($target == "rss"){
 			$result = apply_filters('dbem_general_rss', $result);
 	  	}elseif ($target == "ical"){    
@@ -2185,6 +2190,11 @@ add_filter('dbem_general_rss', 'esc_html', 8);
 // Notes map filters
 add_filter('dbem_notes_map', 'convert_chars', 8);
 add_filter('dbem_notes_map', 'js_escape');
+//embeds support if using placeholders
+if ( is_object($GLOBALS['wp_embed']) ){
+	add_filter( 'dbem_notes', array( $GLOBALS['wp_embed'], 'run_shortcode' ), 8 );
+	add_filter( 'dbem_notes', array( $GLOBALS['wp_embed'], 'autoembed' ), 8 );
+}
 
 /**
  * This function replaces the default gallery shortcode, so it can check if this is a recurring event recurrence and pass on the parent post id as the default post. 

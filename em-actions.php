@@ -255,8 +255,8 @@ function em_init_actions() {
 				if( $post_validation ){
 				    //register the user - or not depending - according to the booking
 				    $registration = em_booking_add_registration($EM_Booking);
-					
-					if( $registration && $EM_Event->get_bookings()->add($EM_Booking) ){
+					$EM_Bookings = $EM_Event->get_bookings();
+					if( $registration && $EM_Bookings->add($EM_Booking) ){
 					    if( is_user_logged_in() && is_multisite() && !is_user_member_of_blog(get_current_user_id(), get_current_blog_id()) ){
 					        add_user_to_blog(get_current_blog_id(), get_current_user_id(), get_option('default_role'));
 					    }
@@ -269,8 +269,8 @@ function em_init_actions() {
 						    $EM_Notices->add_error( $EM_Booking->get_errors() );
 							$feedback = $EM_Booking->feedback_message;
 						}else{
-						    $EM_Notices->add_error( $EM_Event->get_bookings()->get_errors() );
-							$feedback = $EM_Event->get_bookings()->feedback_message;
+						    $EM_Notices->add_error( $EM_Bookings->get_errors() );
+							$feedback = $EM_Bookings->feedback_message;
 						}				
 					}
 					global $em_temp_user_data; $em_temp_user_data = false; //delete registered user temp info (if exists)
@@ -362,6 +362,12 @@ function em_init_actions() {
 					echo '<span style="color:red">'.$feedback.'</span>';
 				}	
 				die();
+			}else{
+			    if( $result ){
+			        $EM_Notices->add_confirm($feedback);
+			    }else{
+			        $EM_Notices->add_error($feedback);
+			    }
 			}
 		}elseif( $_REQUEST['action'] == 'booking_save' ){
 			em_verify_nonce('booking_save_'.$EM_Booking->booking_id);

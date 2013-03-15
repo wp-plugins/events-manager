@@ -498,7 +498,7 @@ function em_bookings_person(){
   			<a href="<?php echo admin_url('user-edit.php?user_id='.$EM_Person->ID); ?>" class="button add-new-h2"><?php _e('Edit User','dbem') ?></a>
   			<?php endif; ?>
   			<?php if( current_user_can('delete_users') ) : ?>
-  			<a href="<?php echo wp_nonce_url( "users.php?action=delete&amp;user=$EM_Person->ID", 'bulk-users' ); ?>" class="button add-new-h2"><?php _e('Delete User','dbem') ?></a>
+  			<a href="<?php echo wp_nonce_url( admin_url("users.php?action=delete&amp;user=$EM_Person->ID"), 'bulk-users' ); ?>" class="button add-new-h2"><?php _e('Delete User','dbem') ?></a>
   			<?php endif; ?>
   		</h2>
   		<?php if( !is_admin() ) echo $EM_Notices; ?>

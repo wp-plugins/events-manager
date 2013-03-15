@@ -88,6 +88,7 @@ class EM_Tag extends EM_Object {
 		}
 		$tag_string = $format;		 
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+	 	$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$match = true;
 			$replace = '';
@@ -129,12 +130,22 @@ class EM_Tag extends EM_Object {
 						$replace = get_option('dbem_tag_no_events_message','</ul>');
 					}
 					break;
+				case '#_TAGNEXTEVENT':
+					$events = EM_Events::get( array('tag'=>$this->term_id, 'scope'=>'future', 'limit'=>1, 'orderby'=>'event_start_date,event_start_time') );
+					$replace = get_option('dbem_tag_no_event_message');
+					foreach($events as $EM_Event){
+						$replace = $EM_Event->output(get_option('dbem_tag_event_single_format'));
+					}
+					break;
 				default:
 					$replace = $full_result;
 					break;
 			}
-			$replace = apply_filters('em_tag_output_placeholder', $replace, $this, $full_result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
-			$tag_string = str_replace($full_result, $replace , $tag_string );
+			$replaces[$full_result] = apply_filters('em_tag_output_placeholder', $replace, $this, $full_result, $target);
+		}
+		krsort($replaces);
+		foreach($replaces as $full_result => $replacement){
+			$tag_string = str_replace($full_result, $replacement , $tag_string );
 		}
 		return apply_filters('em_tag_output', $tag_string, $this, $format, $target);	
 	}

@@ -272,7 +272,7 @@ class EM_Events extends EM_Object implements Iterator {
 	function build_sql_conditions( $args = array() ){
 		$conditions = parent::build_sql_conditions($args);
 		if( !empty($args['search']) ){
-			$like_search = array('event_name',EM_EVENTS_TABLE.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_country');
+			$like_search = array('event_name',EM_EVENTS_TABLE.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_country','location_region');
 			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
 		}
 		if( array_key_exists('status',$args) && is_numeric($args['status']) ){

@@ -192,6 +192,11 @@ class EM_Locations extends EM_Object implements Iterator {
 		$locations_table = EM_LOCATIONS_TABLE;
 		
 		$conditions = parent::build_sql_conditions($args);
+		//search locations
+		if( !empty($args['search']) ){
+			$like_search = array($locations_table.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_region','location_country');
+			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
+		}
 		//eventful locations
 		if( true == $args['eventful'] ){
 			$conditions['eventful'] = "{$events_table}.event_id IS NOT NULL";

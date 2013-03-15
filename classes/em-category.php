@@ -127,6 +127,7 @@ class EM_Category extends EM_Object {
 		}
 		$category_string = $format;		 
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+	 	$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$replace = '';
 			$full_result = $placeholders[0][$key];
@@ -218,11 +219,12 @@ class EM_Category extends EM_Object {
 					$replace = $full_result;
 					break;
 			}
-			$replace = apply_filters('em_category_output_placeholder', $replace, $this, $full_result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
-			$category_string = str_replace($full_result, $replace , $category_string );
+			$replaces[$full_result] = apply_filters('em_category_output_placeholder', $replace, $this, $full_result, $target);
 		}
-		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
-		$category_string = str_replace('#_CATEGORY', apply_filters($name_filter, $this->name) , $category_string ); //Depreciated
+		krsort($replaces);
+		foreach($replaces as $full_result => $replacement){
+			$category_string = str_replace($full_result, $replacement , $category_string );
+		}
 		return apply_filters('em_category_output', $category_string, $this, $format, $target);	
 	}
 	
