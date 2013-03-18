@@ -47,8 +47,8 @@ function em_get_events_list_shortcode($atts, $format='') {
 	$atts = (array) $atts;
 	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
 	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
-	$atts['page'] = ( !empty($atts['page']) && is_numeric($atts['page']) )? $atts['page'] : 1;
-	$atts['page'] = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : $atts['page'];
+	$pno = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : 1;
+	$atts['page'] = ( !empty($atts['page']) && is_numeric($atts['page']) )? $atts['page'] : $pno;
 	return EM_Events::output( $atts );
 }
 add_shortcode ( 'events_list', 'em_get_events_list_shortcode' );

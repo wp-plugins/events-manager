@@ -363,13 +363,16 @@ class EM_Location extends EM_Object {
 			$this->location_status = (count($this->errors) == 0) ? $this->location_status:null; //set status at this point, it's either the current status, or if validation fails, null
 			//Save to em_locations table
 			$location_array = $this->to_array(true);
-			if( $this->post_status == 'private' ) $location_array['location_private'] = 1;
 			unset($location_array['location_id']);
+			//decide whether or not event is private at this point
+			$location_array['location_private'] = ( $this->post_status == 'private' ) ? 1:0;
+			//check if event truly exists, meaning the event_id is actually a valid location id
 			if( !empty($this->location_id) ){
 				$loc_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$this->location_id}") == $this->post_id;
 			}else{
 				$loc_truly_exists = false;
 			}
+			//save all the meta
 			if( empty($this->location_id) || !$loc_truly_exists ){
 				$this->previous_status = 0; //for sure this was previously status 0
 				if ( !$wpdb->insert(EM_LOCATIONS_TABLE, $location_array) ){

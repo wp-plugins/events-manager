@@ -808,13 +808,21 @@ function em_admin_options_page() {
 				<div  class="postbox " id="em-opt-categories-pages" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo __('Event Categories','dbem'); ?></span></h3>
 				<div class="inside">
+					<p>
+						<?php echo sprintf(__('%s are a <a href="%s" target="_blank">WordPress custom taxonomy</a>.','dbem'), __('Event Categories','dbem'), 'http://codex.wordpress.org/Taxonomies');?>
+						<?php echo sprintf(__('%s can be displayed just like normal WordPress custom taxonomies in an archive-style format, however Events Manager by default allows you to completely change the standard look of these archives and use our own <a href="%s">custom formatting</a> methods.','dbem'), __('Event Categories','dbem'), EM_ADMIN_URL .'&amp;page=events-manager-help#event-placeholders'); ?>
+					</p>
+					<p>
+						<?php echo sprintf(__('Due to how we change how this custom taxonomy is displayed when overriding with formats it is strongly advised that you assign a %s page below, which increases comatability with various plugins and themes.','dbem'), __('categories','dbem')); ?>
+						<?php sprintf(__('<a href="%s">See some more information</a> on how %s work when overriding with formats.','dbem'), '#', __('categories','dbem')); //not ready yet, but make translatable ?>
+					</p>
 	            	<table class="form-table">
 					<tr>
 						<td><?php echo sprintf(__( '%s page', 'dbem' ),__('Categories','dbem')); ?></td>
 						<td>
 							<?php wp_dropdown_pages(array('name'=>'dbem_categories_page','selected'=>get_option('dbem_categories_page'), 'show_option_none'=>sprintf(__('[No %s Page]', 'dbem'),__('Categories','dbem')) )); ?>
 							<br />
-							<em><?php echo sprintf(__( 'This option allows you to select which page to use as the %s page.','dbem' ),__('categories','dbem'),__('categories','dbem')); ?></em>
+							<em><?php echo sprintf(__( 'This option allows you to select which page to use as the %s page.','dbem' ),__('categories','dbem')); ?></em>
 						</td>
 					</tr>
 					<tr>
@@ -902,7 +910,28 @@ function em_admin_options_page() {
 				<div  class="postbox " id="em-opt-tags-pages" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo __('Event Tags','dbem'); ?></span></h3>
 				<div class="inside">
-		            	<table class="form-table">
+					<p>
+						<?php echo sprintf(__('%s are a <a href="%s" target="_blank">WordPress custom taxonomy</a>.','dbem'), __('Event Tags','dbem'), 'http://codex.wordpress.org/Taxonomies');?>
+						<?php echo sprintf(__('%s can be displayed just like normal WordPress custom taxonomies in an archive-style format, however Events Manager by default allows you to completely change the standard look of these archives and use our own <a href="%s">custom formatting</a> methods.','dbem'), __('Event Tags','dbem'), EM_ADMIN_URL .'&amp;page=events-manager-help#event-placeholders'); ?>
+					</p>
+					<p>
+						<?php echo sprintf(__('Due to how we change how this custom taxonomy is displayed when overriding with formats it is strongly advised that you assign a %s page below, which increases comatability with various plugins and themes.','dbem'), __('tags','dbem')); ?>
+						<?php sprintf(__('<a href="%s">See some more information</a> on how %s work when overriding with formats.','dbem'), '#', __('tags','dbem')); //not ready yet, but make translatable ?>
+					</p>
+		            <table class="form-table">
+						<tr>
+							<td><?php echo sprintf(__( '%s page', 'dbem' ),__('Tags','dbem')); ?></td>
+							<td>
+								<?php wp_dropdown_pages(array('name'=>'dbem_tags_page','selected'=>get_option('dbem_tags_page'), 'show_option_none'=>sprintf(__('[No %s Page]', 'dbem'),__('Tags','dbem')) )); ?>
+								<br />
+								<em><?php echo sprintf(__( 'This option allows you to select which page to use as the %s page.','dbem' ),__('tags','dbem'),__('tags','dbem')); ?></em>
+							</td>
+						</tr>
+						<tr>
+							<td colspan="2">
+								<h4><?php echo _e('General settings','dbem'); ?></h4>
+							</td>
+						</tr>
 						<?php
 						em_options_radio_binary ( __( 'Override with Formats?', 'dbem' ), 'dbem_cp_tags_formats', sprintf($format_override_tip,__('tags','dbem')));
 						?>
@@ -924,9 +953,55 @@ function em_admin_options_page() {
 									<?php endforeach; ?>
 								</select>
 							</td>
+					   	</tr>	
+						<tr>
+							<td colspan="2">
+								<h4><?php echo sprintf(__('Default %s list options','dbem'), __('tag','dbem')); ?></h4>
+								<p><?php _e('These can be overriden when using shortcode or template tags.','dbem'); ?></p>
+							</td>
+						</tr>			
+						<tr valign="top" id='dbem_tags_default_orderby_row'>
+					   		<th scope="row"><?php _e('Default list ordering','dbem'); ?></th>
+					   		<td>   
+								<select name="dbem_tags_default_orderby" >
+									<?php 
+										$orderby_options = apply_filters('em_settings_tags_default_orderby_ddm', array(
+											'id' => sprintf(__('Order by %s','dbem'),__('ID','dbem')),
+											'count' => sprintf(__('Order by %s','dbem'),__('Count','dbem')),
+											'name' => sprintf(__('Order by %s','dbem'),__('Name','dbem')),
+											'slug' => sprintf(__('Order by %s','dbem'),__('Slug','dbem')),
+											'term_group' => sprintf(__('Order by %s','dbem'),'term_group'),
+										)); 
+									?>
+									<?php foreach($orderby_options as $key => $value) : ?>
+					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_tags_default_orderby')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo $value; ?>
+					 				</option>
+									<?php endforeach; ?>
+								</select> 
+								<select name="dbem_tags_default_order" >
+									<?php 
+									$ascending = __('Ascending','dbem');
+									$descending = __('Descending','dbem');
+									$order_options = apply_filters('em_settings_tags_default_order_ddm', array(
+										'ASC' => __('Ascending','dbem'),
+										'DESC' => __('Descending','dbem')
+									)); 
+									?>
+									<?php foreach( $order_options as $key => $value) : ?>   
+					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_tags_default_order')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo $value; ?>
+					 				</option>
+									<?php endforeach; ?>
+								</select>
+								<br /><?php echo __('When listing tags, this order is applied.', 'dbem'); ?>
+							</td>
 					   	</tr>
-				   		<?php echo $save_button; ?>
-		            	</table>					    
+						<?php
+						em_options_input_text ( __( 'List Limits', 'dbem' ), 'dbem_tags_default_limit', sprintf(__( "This will control how many %s are shown on one list by default.", 'dbem' ),__('tags','dbem')) );
+						em_options_input_text ( __( 'Event List Limits', 'dbem' ), 'dbem_tag_event_list_limit', sprintf(__( "Controls how many events belonging to a tag are shown per page when using placeholders such as %s. Leave blank for no limit.", 'dbem' ), '<code>#_TAGNEXTEVENTS</code>') );
+				   		echo $save_button; ?>
+		            </table>					    
 				</div> <!-- . inside --> 
 				</div> <!-- .postbox -->
 				<?php endif; ?>

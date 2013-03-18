@@ -555,6 +555,7 @@ jQuery(document).ready( function($){
 				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
 				jQuery('#em-location-data input#location-name').css('background-color','#fff');
 				jQuery('#em-location-reset').show();
+				jQuery('#em-location-search-tip').hide();
 				jQuery(document).triggerHandler('em_locations_autocomplete_selected', [event, ui]);
 				return false;
 			}
@@ -568,6 +569,7 @@ jQuery(document).ready( function($){
 			jQuery('#em-location-data option:selected').removeAttr('selected');
 			jQuery('input#location-id').val('');
 			jQuery('#em-location-reset').hide();
+			jQuery('#em-location-search-tip').show();
 			jQuery('#em-map').hide();
 			jQuery('#em-map-404').show();
 			if(typeof(marker) !== 'undefined'){
@@ -581,6 +583,7 @@ jQuery(document).ready( function($){
 			jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
 			jQuery('#em-location-data input#location-name').css('background-color','#fff');
 			jQuery('#em-location-reset').show();
+			jQuery('#em-location-search-tip').hide();
 		}
 	}
 	

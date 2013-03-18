@@ -458,12 +458,14 @@ function em_add_options() {
 		'dbem_categories_default_limit' => 10,
 		'dbem_categories_default_orderby' => 'name',
 		'dbem_categories_default_order' =>  'ASC',
+		//Categories Page Formatting
+		'dbem_categories_list_item_format_header' => '<ul class="em-categories-list">',
+		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
+		'dbem_categories_list_item_format_footer' => '</ul>',
+		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
 		//Category Formatting
 		'dbem_category_page_title_format' => '#_CATEGORYNAME',
 		'dbem_category_page_format' => '#_CATEGORYNOTES<h3>Upcoming Events</h3>#_CATEGORYNEXTEVENTS',
-		'dbem_categories_page_title' => __('Event','dbem')." ".__('Categories','dbem'),
-		'dbem_categories_list_item_format' => '<li>#_CATEGORYLINK</li>',
-		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
 		'dbem_category_no_events_message' => '<li>'.__('No events in this category', 'dbem').'</li>',
 		'dbem_category_event_list_item_header_format' => '<ul>',
 		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
@@ -471,7 +473,16 @@ function em_add_options() {
 		'dbem_category_event_list_limit' => 20,
 		'dbem_category_event_single_format' => '#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES',
 		'dbem_category_no_event_message' => __('No events in this category', 'dbem'),
-		//Tag Formatting
+		//Tags page options
+		'dbem_tags_default_limit' => 10,
+		'dbem_tags_default_orderby' => 'name',
+		'dbem_tags_default_order' =>  'ASC',
+		//Tags Page Formatting
+		'dbem_tags_list_item_format_header' => '<ul class="em-tags-list">',
+		'dbem_tags_list_item_format' => '<li>#_TAGLINK</li>',
+		'dbem_tags_list_item_format_footer' => '</ul>',
+		'dbem_no_tags_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Tags','dbem')),
+		//Tag Page Formatting
 		'dbem_tag_page_title_format' => '#_TAGNAME',
 		'dbem_tag_page_format' => '<h3>Upcoming Events</h3>#_TAGNEXTEVENTS',
 		'dbem_tag_no_events_message' => '<li>'.__('No events with this tag', 'dbem').'</li>',
@@ -480,6 +491,7 @@ function em_add_options() {
 		'dbem_tag_event_list_item_footer_format' => '</ul>',
 		'dbem_tag_event_single_format' => '#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES',
 		'dbem_tag_no_event_message' => __('No events with this tag', 'dbem'),
+		'dbem_tag_event_list_limit' => 20,
 		//RSS Stuff
 		'dbem_rss_limit' => 10,
 		'dbem_rss_scope' => 'future',
@@ -846,6 +858,18 @@ function em_create_events_page(){
 			);
 			$cat_id = wp_insert_post($post_data, false);
 	   		update_option('dbem_categories_page', $cat_id);
+	   		//Now Tags Page
+	   		$post_data = array(
+				'post_status' => 'publish',
+	   			'post_parent' => $post_id,
+				'post_type' => 'page',
+				'ping_status' => get_option('default_ping_status'),
+				'post_content' => 'CONTENTS',
+				'post_excerpt' => '',
+				'post_title' => __('Tags','dbem')
+			);
+			$tag_id = wp_insert_post($post_data, false);
+	   		update_option('dbem_tags_page', $tag_id);
 		   	//Now Bookings Page
 		   	$post_data = array(
 				'post_status' => 'publish',

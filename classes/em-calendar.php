@@ -11,7 +11,8 @@ class EM_Calendar extends EM_Object {
 	 	
 		$calendar_array = array();
 		$calendar_array['cells'] = array();
-	 	
+
+		$args = apply_filters('em_calendar_get_args', $args);
 		$original_args = $args;
 		$args = self::get_default_search($args);
 		$full = $args['full']; //For ZDE, don't delete pls

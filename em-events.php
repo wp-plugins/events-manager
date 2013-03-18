@@ -14,6 +14,7 @@ function em_content($page_content) {
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$categories_page_id = get_option( 'dbem_categories_page' );
+	$tags_page_id = get_option( 'dbem_tags_page' );
 	$edit_events_page_id = get_option( 'dbem_edit_events_page' );
 	$edit_locations_page_id = get_option( 'dbem_edit_locations_page' );
 	$edit_bookings_page_id = get_option( 'dbem_edit_bookings_page' );
@@ -23,7 +24,7 @@ function em_content($page_content) {
 		'owner' => false,
 		'pagination' => 1
 	);
-	if( in_array($post->ID, array($events_page_id, $locations_page_id, $categories_page_id, $edit_bookings_page_id, $edit_events_page_id, $edit_locations_page_id, $my_bookings_page_id)) ){
+	if( in_array($post->ID, array($events_page_id, $locations_page_id, $categories_page_id, $edit_bookings_page_id, $edit_events_page_id, $edit_locations_page_id, $my_bookings_page_id, $tags_page_id)) ){
 		$content = apply_filters('em_content_pre', '', $page_content);
 		if( empty($content) ){
 			ob_start();
@@ -64,9 +65,9 @@ function em_content($page_content) {
 					em_locate_template('templates/locations-list.php',true, array('args'=>$args));
 				}
 			}elseif( $post->ID == $categories_page_id && $categories_page_id != 0 ){
-				$args['orderby'] = get_option('dbem_categories_default_orderby');
-				$args['order'] = get_option('dbem_categories_default_order');
 				em_locate_template('templates/categories-list.php',true, array('args'=>$args));
+			}elseif( $post->ID == $tags_page_id && $tags_page_id != 0 ){
+				em_locate_template('templates/tags-list.php',true, array('args'=>$args));
 			}elseif( $post->ID == $edit_events_page_id && $edit_events_page_id != 0 ){
 				em_events_admin();
 			}elseif( $post->ID == $edit_locations_page_id && $edit_locations_page_id != 0 ){

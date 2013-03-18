@@ -661,8 +661,11 @@ class EM_Event extends EM_Object{
 			//Save to em_event table
 			$event_array = $this->to_array(true);
 			unset($event_array['event_id']);
-			if( $this->post_status == 'private' ) $event_array['event_private'] = 1;
-			$event_array['event_attributes'] = serialize($this->event_attributes); //might as well
+			//decide whether or not event is private at this point
+			$event_array['event_private'] = ( $this->post_status == 'private' ) ? 1:0;
+			//save event_attributes just in case
+			$event_array['event_attributes'] = serialize($this->event_attributes);
+			//check if event truly exists, meaning the event_id is actually a valid event id
 			if( !empty($this->event_id) ){
 				$blog_condition = '';
 				if( EM_MS_GLOBAL ){
@@ -676,6 +679,7 @@ class EM_Event extends EM_Object{
 			}else{
 				$event_truly_exists = false;
 			}
+			//save all the meta
 			if( empty($this->event_id) || !$event_truly_exists ){
 				$this->previous_status = 0; //for sure this was previously status 0
 				$this->event_date_created = current_time('mysql');

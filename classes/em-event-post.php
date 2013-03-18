@@ -266,7 +266,8 @@ class EM_Event_Post {
 					//date must be only today
 					$query[] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '=');
 				}else{
-					$query[] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '<=' );
+					$tomorrow = strtotime(date('Y-m-d',$time+60*60*24));
+					$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '<' );
 					$query[] = array( 'key' => '_end_ts', 'value' => $today, 'compare' => '>=' );
 				}
 			}elseif ($scope == "tomorrow"){
@@ -275,7 +276,8 @@ class EM_Event_Post {
 					//date must be only tomorrow
 					$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '=');
 				}else{
-					$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '<=' );
+					$after_tomorrow = $tomorrow + 60*60*24;
+					$query[] = array( 'key' => '_start_ts', 'value' => $after_tomorrow, 'compare' => '<' );
 					$query[] = array( 'key' => '_end_ts', 'value' => $tomorrow, 'compare' => '>=' );
 				}
 			}elseif ($scope == "month"){

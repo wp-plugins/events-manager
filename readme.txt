@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.6.5 (dev) =
+= 5.3.6.6 (dev) =
 * fixed extra paragraphs being added to #_EVENTNOTES
 * fixed location 'no events' message format not using header/footer formats
 * updated Finnish and POT files
@@ -150,6 +150,19 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added em_bookings_filtered and em_locations_autocomplete_selected jQuery events
 * fixed links pointing to admin on public booking admin tables after pagination clicks or multiple ajax calls
 * updated German translation
+* added em_calendar_get_args filter
+* improved EM_Category::has() - now also checks category name too
+* removed redundant functions in EM_Category
+* improved default ordering of events in categories page applied to EM_Category::get_default_search() rather than just category pages,
+* improved category taxonomy when overriding with formats when using an assigned categories page (particularly breadcrumbs)
+* added specific tweaks for Yoast WP SEO plugin for breadcrumbs when using an assigned categories page
+* added a tags page and template
+* created EM_Tags class - very similar to EM_Categories
+* fixed lack of pagination on tag placeholders showing related events 
+* fixed private locations turned public not appearing in public listings
+* fixed today/tomorrow scope not working properly in wp-admin
+* fixed pagination variables overriding shortcodes with fixed page attribute
+* improved - minor adjustment to location autocomplete ui tip text behaviour
 
 = 5.3.6.1 =
 * fixed some XSS vulnerabilites in the booking form/admin areas

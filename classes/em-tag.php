@@ -118,14 +118,16 @@ class EM_Tag extends EM_Object {
 					//forget it ever happened? :/
 					if ($result == '#_TAGPASTEVENTS'){ $scope = 'past'; }
 					elseif ( $result == '#_TAGNEXTEVENTS' ){ $scope = 'future'; }
-					else{ $scope = 'all'; }					
-					$events = EM_Events::get( array('tag'=>$this->term_id, 'scope'=>$scope) );
-					if ( count($events) > 0 ){
-						$replace .= get_option('dbem_tag_event_list_item_header_format','<ul>');
-						foreach($events as $EM_Event){
-							$replace .= $EM_Event->output(get_option('dbem_tag_event_list_item_format'));
-						}
-						$replace .= get_option('dbem_tag_event_list_item_footer_format');
+					else{ $scope = 'all'; }
+					$events_count = EM_Events::count( array('tag'=>$this->term_id, 'scope'=>$scope) );
+					if ( $events_count > 0 ){
+					    $args = array('tag'=>$this->term_id, 'scope'=>$scope, 'pagination'=>1);
+					    $args['format_header'] = get_option('dbem_tag_event_list_item_header_format');
+					    $args['format_footer'] = get_option('dbem_tag_event_list_item_footer_format');
+					    $args['format'] = get_option('dbem_tag_event_list_item_format');
+						$args['limit'] = get_option('dbem_tag_event_list_limit');
+						$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : 1;
+					    $replace = EM_Events::output($args);
 					} else {
 						$replace = get_option('dbem_tag_no_events_message','</ul>');
 					}
