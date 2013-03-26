@@ -32,7 +32,7 @@ class EM_Locations_Widget extends WP_Widget {
     	echo $args['before_widget'];
     	if( !empty($instance['title']) ){
 		    echo $args['before_title'];
-		    echo $instance['title'];
+		    echo apply_filters('widget_title',$instance['title'], $instance, $this->id_base);
 		    echo $args['after_title'];
     	}
 	    

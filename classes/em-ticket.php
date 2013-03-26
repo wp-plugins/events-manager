@@ -49,9 +49,9 @@ class EM_Ticket extends EM_Object{
 	 */
 	function EM_Ticket( $ticket_data = false ){
 		$this->ticket_name = __('Standard Ticket','dbem');
+		$ticket = array();
 		if( $ticket_data !== false ){
 			//Load ticket data
-			$ticket = array();
 			if( is_array($ticket_data) ){
 				$ticket = $ticket_data;
 			}elseif( is_numeric($ticket_data) ){

@@ -65,27 +65,13 @@ function em_ms_admin_options_page() {
 	$categories_placeholder_tip = " ". sprintf(__('This accepts %s placeholders.','dbem'), $categories_placeholders);
 	$bookings_placeholder_tip = " ". sprintf(__('This accepts %s, %s and %s placeholders.','dbem'), $bookings_placeholders, $events_placeholders, $locations_placeholders);
 	
+	global $save_button;
 	$save_button = '<tr><th>&nbsp;</th><td><p class="submit" style="margin:0px; padding:0px; text-align:right;"><input type="submit" id="dbem_options_submit" name="Submit" value="'. __( 'Save Changes', 'dbem') .' ('. __('All','dbem') .')" /></p></ts></td></tr>';
 	//Do some multisite checking here for reuse
 	?>	
+	<script type="text/javascript" charset="utf-8"><?php include(EM_DIR.'/includes/js/admin-settings.js'); ?></script>
 	<script type="text/javascript" charset="utf-8">
 		jQuery(document).ready(function($){
-			var close_text = '<?php _e('Collapse All','dbem'); ?>';
-			var open_text = '<?php _e('Expand All','dbem'); ?>';
-			var open_close = $('<a href="#" style="display:block; float:right; clear:right; margin:10px;">'+open_text+'</a>');
-			$('#em-options-title').before(open_close);
-			open_close.click( function(e){
-				e.preventDefault();
-				if($(this).text() == close_text){
-					$(".postbox").addClass('closed');
-					$(this).text(open_text);
-				}else{
-					$(".postbox").removeClass('closed');
-					$(this).text(close_text);
-				} 
-			});
-			$(".postbox > h3").click(function(){ $(this).parent().toggleClass('closed'); });
-			$(".postbox").addClass('closed');
 			//MS Mode selection hiders 
 			$('input[name="dbem_ms_global_table"]').change(function(){ //global
 				if( $('input:radio[name="dbem_ms_global_table"]:checked').val() == 1 ){
@@ -151,7 +137,7 @@ function em_ms_admin_options_page() {
 			<div id="">
 		  
 		  	<div class="em-menu-general em-menu-group">
-				<div  class="postbox " >
+				<div  class="postbox " id="em-opt-ms-options" >
 					<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Multi Site Options', 'dbem' ); ?></span></h3>
 					<div class="inside">
 			            <table class="form-table">
