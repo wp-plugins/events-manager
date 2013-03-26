@@ -901,6 +901,7 @@ function em_maps() {
 			}else{
 				refresh_map_location();
 			}
+			jQuery(document).triggerHandler('em_map_loaded', [map, infowindow, marker]);
 		}
 	}
 }

@@ -1,3 +1,4 @@
+div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80); z-index:9999999999; }
 /* Warnings */
 	.em-warning { margin:10px 0px; padding:10px; color:#333; border-radius:3px; }
 	.em-warning p { margin:10px 0px !important; padding:0px; color:#333 }
@@ -111,7 +112,6 @@
 	table.fullcalendar { border-collapse: collapse; }
 	table.fullcalendar td { text-align: left; width: 50px; height: 50px; border: 1px solid #888; }
 	div.em-calendar-wrapper { position:relative; }
-	div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80); z-index:9999999999; }
 /*
 Maps - if the info balloons don't look right on your site, chances are it's a CSS issue. 
 Google is VERY sensitive to CSS rules for the infowindows, making it hard to accommodate every theme in WP. 

@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 5.3.6.1
+Stable tag: 5.3.7
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,10 +98,10 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.6.6 (dev) =
+= 5.3.7 =
 * fixed extra paragraphs being added to #_EVENTNOTES
 * fixed location 'no events' message format not using header/footer formats
-* updated Finnish and POT files
+* updated Finnish, German and POT files
 * added customizable event and location page templates
 * improved em_options_select() now can create optgroup groups if an array value is supplied
 * fixed clashes with JetPack Tiled Galleries
@@ -127,7 +127,6 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed wp_em_events post_content not being updated if description is removed
 * added wp_title filter to widgets
 * fixed incorrect number of events per day shown in full calendar according to settings
-* updated Finnish, thanks to Jan-Erik Finlander and his team!
 * fixed the_title usage to check the post id supplied in second parameter
 * changed/fixed action where rules are rewritten on settings changes causing 404s for CPTs created in theme functions.php file
 * fixed bug with W3TC repeating first no-user booking name for all others in admin table views
@@ -163,6 +162,8 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed today/tomorrow scope not working properly in wp-admin
 * fixed pagination variables overriding shortcodes with fixed page attribute
 * improved - minor adjustment to location autocomplete ui tip text behaviour
+* added em_map_loaded js trigger for location admin map
+* updated German
 
 = 5.3.6.1 =
 * fixed some XSS vulnerabilites in the booking form/admin areas

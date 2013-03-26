@@ -543,6 +543,9 @@ function em_init_actions() {
 			}
 		}elseif( $_REQUEST['action'] == 'search_events' && get_option('dbem_events_page_search') && defined('DOING_AJAX') ){
 			$args = EM_Events::get_post_search();
+			if( empty($args['scope']) ){
+			    $args['scope'] = get_option('dbem_events_page_scope');
+			}
 			$args['owner'] = false;
 			ob_start();
 			em_locate_template('templates/events-list.php', true, array('args'=>$args)); //if successful, this template overrides the settings and defaults, including search

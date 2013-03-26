@@ -3,7 +3,7 @@
  * Events Edit Page
  */
 class EM_Event_Post_Admin{
-	function init(){
+	public static function init(){
 		global $pagenow;
 		if($pagenow == 'post.php' || $pagenow == 'post-new.php' ){ //only needed if editing post
 			add_action('admin_head', array('EM_Event_Post_Admin','admin_head'));
@@ -22,14 +22,14 @@ class EM_Event_Post_Admin{
 		add_action('post_updated_messages',array('EM_Event_Post_Admin','admin_notices_filter'),1,1);
 	}
 
-	function admin_head(){
+	public static function admin_head(){
 		global $post, $EM_Event;
 		if( !empty($post) && $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post->ID, 'post_id');
 		}
 	}
 	
-	function admin_notices(){
+	public static function admin_notices(){
 		//When editing
 		global $post, $EM_Event, $pagenow;
 		if( $pagenow == 'post.php' && ($post->post_type == EM_POST_TYPE_EVENT || $post->post_type == 'event-recurring') ){
@@ -51,7 +51,7 @@ class EM_Event_Post_Admin{
 		}
 	}
 	
-	function admin_notices_filter($messages){
+	public static function admin_notices_filter($messages){
 		//When editing
 		global $post, $EM_Notices;
 		if( $post->post_type == EM_POST_TYPE_EVENT || $post->post_type == 'event-recurring' ){
@@ -62,7 +62,7 @@ class EM_Event_Post_Admin{
 		return $messages;
 	}
 	
-	function save_post($post_id){
+	public static function save_post($post_id){
 		global $wpdb, $EM_Event, $EM_Location, $EM_Notices;
 		$post_type = get_post_type($post_id);
 		$is_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
@@ -130,7 +130,7 @@ class EM_Event_Post_Admin{
 	 * Publish the location if the event has just been approved and the location is pending. We assume an editor published the event and approves the location too.
 	 * @param EM_Event $EM_Event
 	 */
-	function maybe_publish_location($EM_Event){
+	public static function maybe_publish_location($EM_Event){
 		//do a dirty update for location too if it's not published
 		if( $EM_Event->is_published() && !empty($EM_Event->location_id) ){
 			$EM_Location = $EM_Event->get_location();
@@ -141,14 +141,14 @@ class EM_Event_Post_Admin{
 		}
 	}
 
-	function before_delete_post($post_id){
+	public static function before_delete_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_EVENT){
 			$EM_Event = em_get_event($post_id,'post_id');
 			$EM_Event->delete_meta();
 		}
 	}
 	
-	function trashed_post($post_id){
+	public static function trashed_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_EVENT){
 			global $EM_Notices;
 			$EM_Event = em_get_event($post_id,'post_id');
@@ -157,14 +157,14 @@ class EM_Event_Post_Admin{
 		}
 	}
 	
-	function untrash_post($post_id){
+	public static function untrash_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_EVENT){
 			//set a constant so we know this event doesn't need 'saving'
 			if(!defined('UNTRASHING_'.$post_id)) define('UNTRASHING_'.$post_id, true);
 		}
 	}
 	
-	function untrashed_post($post_id){
+	public static function untrashed_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_EVENT){
 			global $EM_Notices;
 			$EM_Event = em_get_event($post_id,'post_id');			
@@ -173,7 +173,7 @@ class EM_Event_Post_Admin{
 		}
 	}
 	
-	function meta_boxes(){
+	public static function meta_boxes(){
 		global $EM_Event;
 		if( !empty($EM_Event->event_owner_anonymous) ){
 			add_meta_box('em-event-anonymous', __('Anonymous Submitter Info','dbem'), array('EM_Event_Post_Admin','meta_box_anonymous'),EM_POST_TYPE_EVENT, 'side','high');
@@ -199,12 +199,12 @@ class EM_Event_Post_Admin{
 		}
 	}
 	
-	function meta_box_metadump(){
+	public static function meta_box_metadump(){
 		global $post,$EM_Event;
 		echo "<pre>"; print_r($EM_Event); echo "</pre>";
 	}
 	
-	function meta_box_anonymous(){
+	public static function meta_box_anonymous(){
 		global $EM_Event;
 		?>
 		<div class='updated'><p><?php _e('This event was submitted by a guest. You will find their details in the <em>Anonymous Submitter Info</em> box','dbem')?></p></div>
@@ -213,34 +213,34 @@ class EM_Event_Post_Admin{
 		<?php
 	}
 	
-	function meta_box_date(){
+	public static function meta_box_date(){
 		//create meta box check of date nonce
 		?><input type="hidden" name="_emnonce" value="<?php echo wp_create_nonce('edit_event'); ?>" /><?php
 		em_locate_template('forms/event/when.php', true);
 	}
 	
-	function meta_box_bookings_stats(){
+	public static function meta_box_bookings_stats(){
 		em_locate_template('forms/event/booking-stats.php',true);
 	}
 
-	function meta_box_bookings(){
+	public static function meta_box_bookings(){
 		em_locate_template('forms/event/bookings.php', true);
 		add_action('admin_footer',array('EM_Event_Post_Admin','meta_box_bookings_overlay'));
 	}
 	
-	function meta_box_bookings_overlay(){
+	public static function meta_box_bookings_overlay(){
 		em_locate_template('forms/tickets-form.php', true); //put here as it can't be in the add event form
 	}
 	
-	function meta_box_attributes(){
+	public static function meta_box_attributes(){
 		em_locate_template('forms/event/attributes.php',true);
 	}
 	
-	function meta_box_location(){
+	public static function meta_box_location(){
 		em_locate_template('forms/event/location.php',true);
 	}
 	
-	function meta_box_ms_categories(){
+	public static function meta_box_ms_categories(){
 		global $EM_Event;
 		$categories = EM_Categories::get(array('orderby'=>'category_name','hide_empty'=>false));
 		?>
@@ -263,7 +263,7 @@ add_action('admin_init',array('EM_Event_Post_Admin','init'));
  * Recurring Events
  */
 class EM_Event_Recurring_Post_Admin{
-	function init(){
+	public static function init(){
 		global $pagenow;
 		if($pagenow == 'post.php' || $pagenow == 'post-new.php' ){ //only needed if editing post
 			add_action('admin_head', array('EM_Event_Recurring_Post_Admin','admin_head'));
@@ -281,7 +281,7 @@ class EM_Event_Recurring_Post_Admin{
 		add_action('post_updated_messages',array('EM_Event_Post_Admin','admin_notices_filter'),1,1); //shared with posts
 	}
 	
-	function admin_head(){
+	public static function admin_head(){
 		global $post, $EM_Event;
 		if( !empty($post) && $post->post_type == 'event-recurring' ){
 			$EM_Event = em_get_event($post->ID, 'post_id');
@@ -298,7 +298,7 @@ class EM_Event_Recurring_Post_Admin{
 		}
 	}
 
-	function before_delete_post($post_id){
+	public static function before_delete_post($post_id){
 		if(get_post_type($post_id) == 'event-recurring'){
 			$EM_Event = em_get_event($post_id,'post_id');
 			//now delete recurrences
@@ -314,7 +314,7 @@ class EM_Event_Recurring_Post_Admin{
 		}
 	}
 	
-	function trashed_post($post_id){
+	public static function trashed_post($post_id){
 		if(get_post_type($post_id) == 'event-recurring'){
 			global $EM_Notices, $wpdb;
 			$EM_Event = em_get_event($post_id,'post_id');
@@ -331,7 +331,7 @@ class EM_Event_Recurring_Post_Admin{
 		}
 	}
 	
-	function untrash_post($post_id){
+	public static function untrash_post($post_id){
 		if(get_post_type($post_id) == 'event-recurring'){
 			global $wpdb;
 			//set a constant so we know this event doesn't need 'saving'
@@ -347,7 +347,7 @@ class EM_Event_Recurring_Post_Admin{
 		}
 	}
 	
-	function untrashed_post($post_id){
+	public static function untrashed_post($post_id){
 		if(get_post_type($post_id) == 'event-recurring'){
 			global $EM_Notices,$EM_Event;
 			$EM_Event->set_status(1);
@@ -355,7 +355,7 @@ class EM_Event_Recurring_Post_Admin{
 		}
 	}
 	
-	function meta_boxes(){
+	public static function meta_boxes(){
 		add_meta_box('em-event-recurring', __('Recurrences','dbem'), array('EM_Event_Recurring_Post_Admin','meta_box_recurrence'),'event-recurring', 'normal','high');
 		//add_meta_box('em-event-meta', 'Event Meta (debugging only)', array('EM_Event_Post_Admin','meta_box_metadump'),'event-recurring', 'normal','high');
 		add_meta_box('em-event-where', __('Where','dbem'), array('EM_Event_Post_Admin','meta_box_location'),'event-recurring', 'normal','high');
@@ -370,7 +370,7 @@ class EM_Event_Recurring_Post_Admin{
 		}
 	}
 	
-	function meta_box_recurrence(){
+	public static function meta_box_recurrence(){
 		em_locate_template('forms/event/recurring-when.php', true);
 	}
 }

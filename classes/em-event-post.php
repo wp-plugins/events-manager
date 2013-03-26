@@ -262,21 +262,21 @@ class EM_Event_Post {
 				}
 			}elseif ($scope == "today"){
 				$today = strtotime(date('Y-m-d', $time));
+				$tomorrow = strtotime(date('Y-m-d',$time+60*60*24));
 				if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
 					//date must be only today
-					$query[] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '=');
+					$query[] = array( 'key' => '_start_ts', 'value' => array($today, $tomorrow), 'compare' => 'BETWEEN');
 				}else{
-					$tomorrow = strtotime(date('Y-m-d',$time+60*60*24));
 					$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '<' );
 					$query[] = array( 'key' => '_end_ts', 'value' => $today, 'compare' => '>=' );
 				}
 			}elseif ($scope == "tomorrow"){
 				$tomorrow = strtotime(date('Y-m-d',$time+60*60*24));
+				$after_tomorrow = $tomorrow + 60*60*24;
 				if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
 					//date must be only tomorrow
-					$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '=');
+					$query[] = array( 'key' => '_start_ts', 'value' => array($tomorrow, $after_tomorrow), 'compare' => 'BETWEEN');
 				}else{
-					$after_tomorrow = $tomorrow + 60*60*24;
 					$query[] = array( 'key' => '_start_ts', 'value' => $after_tomorrow, 'compare' => '<' );
 					$query[] = array( 'key' => '_end_ts', 'value' => $tomorrow, 'compare' => '>=' );
 				}
