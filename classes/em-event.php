@@ -287,7 +287,7 @@ class EM_Event extends EM_Object{
 					$field_name = substr($event_meta_key, 1);
 					if($event_meta_key[0] != '_'){
 						$this->event_attributes[$event_meta_key] = ( count($event_meta_val) > 1 ) ? $event_meta_val:$event_meta_val[0];					
-					}elseif( !in_array($field_name, $this->post_fields) ){
+					}elseif( is_string($field_name) && !in_array($field_name, $this->post_fields) ){
 						if( array_key_exists($field_name, $this->fields) ){
 							$this->$field_name = $event_meta_val[0];
 						}elseif( in_array($field_name, array('event_owner_name','event_owner_anonymous','event_owner_email')) ){
@@ -1361,7 +1361,7 @@ class EM_Event extends EM_Object{
 					if( !$this->event_all_day ){
 						$time_format = ( get_option('dbem_time_format') ) ? get_option('dbem_time_format'):get_option('time_format');
 						if($this->event_start_time != $this->event_end_time ){
-							$replace = date_i18n($time_format, $this->start). get_option('dbem_times_seperator') . date_i18n($time_format, $this->end);
+							$replace = date_i18n($time_format, $this->start). get_option('dbem_times_separator') . date_i18n($time_format, $this->end);
 						}else{
 							$replace = date_i18n($time_format, $this->start);
 						}
@@ -1373,7 +1373,7 @@ class EM_Event extends EM_Object{
 					//get format of time to show
 					$date_format = ( get_option('dbem_date_format') ) ? get_option('dbem_date_format'):get_option('date_format');
 					if( $this->event_start_date != $this->event_end_date){
-						$replace = date_i18n($date_format, $this->start). get_option('dbem_dates_seperator') . date_i18n($date_format, $this->end);
+						$replace = date_i18n($date_format, $this->start). get_option('dbem_dates_separator') . date_i18n($date_format, $this->end);
 					}else{
 						$replace = date_i18n($date_format, $this->start);
 					}
@@ -1425,7 +1425,7 @@ class EM_Event extends EM_Object{
 					//get the range of prices
 					$min = false;
 					$max = 0;
-					if( $this->get_bookings()->is_open() || $show_all_ticket_prices ){
+					if( $this->get_bookings()->is_open() || !empty($show_all_ticket_prices) ){
 						foreach( $this->get_tickets()->tickets as $EM_Ticket ){
 							/* @var $EM_Ticket EM_Ticket */
 							if( $EM_Ticket->is_available() || get_option('dbem_bookings_tickets_show_unavailable') || !empty($show_all_ticket_prices) ){

@@ -31,9 +31,9 @@ class EM_ML{
 				//Date/Time
 				'dbem_date_format',
 				'dbem_date_format_js',
-				'dbem_dates_Separator',
+				'dbem_dates_separator',
 				'dbem_time_format',
-				'dbem_times_Separator',
+				'dbem_times_separator',
 				'dbem_event_all_day_message',
 				//Calendar
 				'dbem_small_calendar_event_title_format',

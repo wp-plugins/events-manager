@@ -245,7 +245,8 @@ function em_get_page_type(){
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$categories_page_id = get_option( 'dbem_categories_page' );
-	if ( !empty($events_page_id) && $post->ID == $events_page_id ) {
+	$has_post = is_object($post);
+	if ( !empty($events_page_id) && $has_post && $post->ID == $events_page_id ) {
 		if ( $wp_query->get('calendar_day') ) {
 			return "calendar_day";
 		}elseif ( $wp_query->get('bookings_page') ) {
@@ -260,17 +261,17 @@ function em_get_page_type(){
 			return "my_bookings";
 		}
 	}
-	if( is_single() && $post->post_type == EM_POST_TYPE_EVENT  ){
+	if( is_single() && $has_post && $post->post_type == EM_POST_TYPE_EVENT  ){
 		return 'event';
 	}
-	if( (!empty($locations_page_id) && $post->ID == $locations_page_id) || (!is_single() && $wp_query->query_vars['post_type'] == EM_POST_TYPE_LOCATION) ){
+	if( (!empty($locations_page_id) && $has_post && $post->ID == $locations_page_id) || (!is_single() && $wp_query->query_vars['post_type'] == EM_POST_TYPE_LOCATION) ){
 		return is_object($EM_Location) ? "location":"locations";
 	}elseif( is_single() && $post->post_type == EM_POST_TYPE_LOCATION ){
 		return 'location';
 	}
-	if( (!empty($categories_page_id) && $post->ID == $categories_page_id) ){
+	if( (!empty($categories_page_id) && $has_post && $post->ID == $categories_page_id) ){
 		return "categories";
-	}elseif( is_tax(EM_TAXONOMY_CATEGORY) || !empty($wp_query->em_category_id) || ($post->ID == get_option('dbem_categories_page') && !empty($em_category_id)) ){
+	}elseif( is_tax(EM_TAXONOMY_CATEGORY) || !empty($wp_query->em_category_id) || ($has_post && $post->ID == get_option('dbem_categories_page') && !empty($em_category_id)) ){
 		return "category";
 	}elseif( is_tax(EM_TAXONOMY_TAG) || !empty($wp_query->em_tag_id) || !empty($em_tag_id) ){
 		return "tag";

@@ -329,8 +329,8 @@ function em_add_options() {
 		'dbem_time_format' => get_option('time_format'),
 		'dbem_date_format' => 'd/m/Y',
 		'dbem_date_format_js' => 'dd/mm/yy',
-		'dbem_dates_seperator' => ' - ',
-		'dbem_times_seperator' => ' - ',
+		'dbem_dates_separator' => ' - ',
+		'dbem_times_separator' => ' - ',
 		//defaults
 		'dbem_default_category'=>0,
 		'dbem_default_location'=>0,
@@ -744,6 +744,14 @@ function em_add_options() {
 	    update_option('dbem_location_no_event_message',get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_no_events_message').get_option('dbem_location_event_list_item_footer_format'));
 	    update_option('dbem_tag_event_single_format',get_option('dbem_tag_event_list_item_header_format').get_option('dbem_tag_event_list_item_format').get_option('dbem_tag_event_list_item_footer_format'));
 	    update_option('dbem_tag_no_event_message',get_option('dbem_tag_event_list_item_header_format').get_option('dbem_tag_no_events_message').get_option('dbem_tag_event_list_item_footer_format'));
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.38 ){
+	    update_option('dbem_dates_separator', get_option('dbem_dates_Seperator', get_option('dbem_dates_seperator',' - ')));
+	    update_option('dbem_times_separator', get_option('dbem_times_Seperator', get_option('dbem_times_seperator',' - ')));
+	    delete_option('dbem_dates_Seperator');
+	    delete_option('dbem_times_Seperator');
+	    delete_option('dbem_dates_seperator');
+	    delete_option('dbem_times_seperator');
 	}
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless

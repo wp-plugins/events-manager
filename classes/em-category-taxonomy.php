@@ -13,7 +13,7 @@ class EM_Category_Taxonomy{
 	 * @return string
 	 */
 	function template($template){
-		global $wp_query, $EM_Category, $em_category_id;
+		global $wp_query, $EM_Category, $em_category_id, $post;
 		if( is_tax(EM_TAXONOMY_CATEGORY) && get_option('dbem_cp_categories_formats', true) ){
 			$EM_Category = em_get_category($wp_query->queried_object->term_id);
 			if( get_option('dbem_categories_page') ){
@@ -23,6 +23,9 @@ class EM_Category_Taxonomy{
 				if( !function_exists('yoast_breadcrumb') ){ //not needed by WP SEO Breadcrumbs
 					$wp_query->post->post_parent = $wp_query->posts[0]->post_parent = $wp_query->queried_object->post_parent = $EM_Category->output(get_option('dbem_categories_page'));
 				}
+				$wp_query->queried_object = $wp_query->post;
+				$wp_query->queried_object_id = $wp_query->post->ID;
+				$post = $wp_query->post;
 			}else{
 			    //we don't have a categories page, so we create a fake page
 			    $wp_query->posts = array();
@@ -141,9 +144,9 @@ class EM_Walker_CategoryMultiselect extends Walker {
 			$output .= ' selected="selected"';
 		$output .= '>';
 		$output .= $pad.$cat_name;
-		if ( $args['show_count'] )
+		if ( !empty($args['show_count']) )
 			$output .= '&nbsp;&nbsp;('. $category->count .')';
-		if ( $args['show_last_update'] ) {
+		if ( !empty($args['show_last_update']) ) {
 			$format = 'Y-m-d';
 			$output .= '&nbsp;&nbsp;' . gmdate($format, $category->last_update_timestamp);
 		}

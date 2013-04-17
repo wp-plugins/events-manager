@@ -60,7 +60,8 @@
 					</tr>
 				</thead>
 				<tbody>
-					<?php 
+					<?php
+					$rowno = 0;
 					foreach ( $EM_Events as $event ) {
 						/* @var $event EM_Event */
 						$rowno++;

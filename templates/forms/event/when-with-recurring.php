@@ -37,7 +37,7 @@ $admin_recurring = is_admin() && $EM_Event->is_recurring();
 				?>
 			</select>
 			<?php _e ( 'every', 'dbem' )?>
-			<input id="recurrence-interval" name='recurrence_interval' size='2' value='<?php echo $EM_Event->interval ; ?>' />
+			<input id="recurrence-interval" name='recurrence_interval' size='2' value='<?php echo $EM_Event->recurrence_interval ; ?>' />
 			<span class='interval-desc' id="interval-daily-singular"><?php _e ( 'day', 'dbem' )?></span>
 			<span class='interval-desc' id="interval-daily-plural"><?php _e ( 'days', 'dbem' ) ?></span>
 			<span class='interval-desc' id="interval-weekly-singular"><?php _e ( 'week on', 'dbem'); ?></span>

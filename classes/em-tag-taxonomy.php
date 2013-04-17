@@ -13,7 +13,7 @@ class EM_Tag_Taxonomy{
 	 * @return string
 	 */
 	function template($template){
-		global $wp_query, $EM_Tag, $em_tag_id;
+		global $wp_query, $EM_Tag, $em_tag_id, $post;
 		if( is_tax(EM_TAXONOMY_TAG) && get_option('dbem_cp_tags_formats', true)){
 			$EM_Tag = em_get_tag($wp_query->queried_object->term_id);
 			if( get_option('dbem_tags_page') ){
@@ -23,6 +23,9 @@ class EM_Tag_Taxonomy{
 				if( !function_exists('yoast_breadcrumb') ){ //not needed by WP SEO Breadcrumbs
 					$wp_query->post->post_parent = $wp_query->posts[0]->post_parent = $wp_query->queried_object->post_parent = $EM_Tag->output(get_option('dbem_tags_page'));
 				}
+				$wp_query->queried_object = $wp_query->post;
+				$wp_query->queried_object_id = $wp_query->post->ID;
+				$post = $wp_query->post;
 			}else{
 				$wp_query->em_tag_id = $em_tag_id = $EM_Tag->term_id; //we assign $em_tag_id just in case other themes/plugins do something out of the ordinary to WP_Query
 				$wp_query->posts = array();
@@ -53,11 +56,13 @@ class EM_Tag_Taxonomy{
 	}
 	
 	function the_content($content){
-		global $wp_query, $EM_Tag;
-		$EM_Tag = new EM_Tag($wp_query->queried_object);
-		ob_start();
-		em_locate_template('templates/tag-single.php',true);
-		return ob_get_clean();	
+		global $wp_query, $EM_Tag, $post, $em_tag_id;
+		if( !empty($wp_query->em_tag_id) || ($post->ID == get_option('dbem_tags_page') && !empty($em_tag_id)) ){
+			$EM_Tag = empty($wp_query->em_tag_id) ? em_get_tag($em_tag_id):em_get_tag($wp_query->em_tag_id);
+			ob_start();
+			em_locate_template('templates/tag-single.php',true);
+			return ob_get_clean();
+		}
 	}
 	
 	function parse_query(){
