@@ -1,3 +1,4 @@
+div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80); z-index:9999999999; }
 /* Warnings */
 	.em-warning { margin:10px 0px; padding:10px; color:#333; border-radius:3px; }
 	.em-warning p { margin:10px 0px !important; padding:0px; color:#333 }
@@ -11,12 +12,12 @@
 	.em-booking-form  { position:relative; clear:left; }
 	.em-booking-form-details  { padding:10px; width:360px; float:left; }  
 	.em-booking-form-details input.input, .em-booking-form-details textarea { width:250px; }
-	.em-booking-form-details p { clear:left; }
-	.em-booking-form-details label { display:block; float:left; }
-	.em-booking-form-details span.input-group input { margin-left:-20px; }
-	.em-booking-form-details span.input-group { display:block; margin-left:120px; }
-	.em-booking-form-details .em-booking-submit { width:auto; }	
+	.em-booking-form p { clear:left; }
+	.em-booking-form label { display:block; float:left; }
+	.em-booking-form span.input-group input { margin-left:-20px; }
+	.em-booking-form span.input-group { display:block; margin-left:120px; }
 	.em-booking-form label  { display:inline-block; width:100px; }	
+	.em-booking-form-details .em-booking-submit { width:auto; }	
 	/* Tickets */
 		.em-tickets { margin-bottom:20px; }
 	/* Message Errors */
@@ -111,7 +112,6 @@
 	table.fullcalendar { border-collapse: collapse; }
 	table.fullcalendar td { text-align: left; width: 50px; height: 50px; border: 1px solid #888; }
 	div.em-calendar-wrapper { position:relative; }
-	div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80); z-index:9999999999; }
 /*
 Maps - if the info balloons don't look right on your site, chances are it's a CSS issue. 
 Google is VERY sensitive to CSS rules for the infowindows, making it hard to accommodate every theme in WP. 

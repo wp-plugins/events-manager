@@ -62,8 +62,9 @@ $required = "<i>*</i>";
 			<td>
 				<input id='location-id' name='location_id' type='hidden' value='<?php echo $EM_Location->location_id; ?>' size='15' />
 				<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Location->location_name, ENT_QUOTES); ?>" /><?php echo $required; ?>													
-				<br /><em><?php _e ( 'Create a location or start typing to search a previously created location.', 'dbem' )?></em>
-				<p id="em-location-reset" style="display:none;"><em><?php _e('You cannot edit saved locations here.', 'dbem'); ?> <a href="#"><?php _e('Reset this form to create a location.', 'dbem')?></a></em></p>
+				<br />
+				<em id="em-location-search-tip"><?php _e( 'Create a location or start typing to search a previously created location.', 'dbem' )?></em>
+				<em id="em-location-reset" style="display:none;"><?php _e('You cannot edit saved locations here.', 'dbem'); ?> <a href="#"><?php _e('Reset this form to create a location or search again.', 'dbem')?></a></em>
 			</td>
  		</tr>
 		<tr>
