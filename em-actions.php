@@ -390,9 +390,13 @@ function em_init_actions() {
 				if ( $EM_Booking->set_status($_REQUEST['booking_status'], false, true) ){
 					if( !empty($_REQUEST['send_email']) ){
 						if( $EM_Booking->email(false) ){
-							$EM_Booking->feedback_message .= " ".__('Mail Sent.','dbem');
+						    if( $EM_Booking->mails_sent > 0 ) {
+						        $EM_Booking->feedback_message .= " ".__('Email Sent.','dbem');
+						    }else{
+						        $EM_Booking->feedback_message .= " "._x('No emails to send for this booking.', 'bookings', 'dbem');
+						    }
 						}else{
-							$EM_Booking->feedback_message .= ' <span style="color:red">'.__('ERROR : Mail Not Sent.','dbem').'</span>';
+							$EM_Booking->feedback_message .= ' <span style="color:red">'.__('ERROR : Email Not Sent.','dbem').'</span>';
 						}
 					}
 					$EM_Notices->add_confirm( $EM_Booking->feedback_message, true );
@@ -409,13 +413,17 @@ function em_init_actions() {
 			em_verify_nonce('booking_resend_email_'.$EM_Booking->booking_id);
 			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') ){
 				if( $EM_Booking->email(false, true) ){
-					$EM_Notices->add_confirm( __('Mail Sent.','dbem'), true );
+				    if( $EM_Booking->mails_sent > 0 ) {
+				        $EM_Notices->add_confirm( __('Email Sent.','dbem'), true );
+				    }else{
+				        $EM_Notices->add_confirm( _x('No emails to send for this booking.', 'bookings', 'dbem'), true );
+				    }
 					$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
 					wp_redirect( $redirect );
 					exit();
 				}else{
 					$result = false;
-					$EM_Notices->add_error( __('ERROR : Mail Not Sent.','dbem') );			
+					$EM_Notices->add_error( __('ERROR : Email Not Sent.','dbem') );			
 					$feedback = $EM_Booking->feedback_message;
 				}	
 			}

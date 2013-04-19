@@ -49,12 +49,21 @@ class EM_Booking extends EM_Object{
 		'booking_meta' => array('name'=>'meta','type'=>'%s')
 	);
 	//Other Vars
-	var $notes; //loaded from em_meta table in construct
+	/**
+	 * array of notes by admins on this booking. loaded from em_meta table in construct
+	 * @var array
+	 */
+	var $notes;
 	var $timestamp;
 	var $person;
 	var $required_fields = array('booking_id', 'event_id', 'person_id', 'booking_spaces');
 	var $feedback_message = "";
 	var $errors = array();
+	/**
+	 * when using EM_Booking::email_send(), this number is updated with sent emails
+	 * @var int
+	 */
+	var $mails_sent = 0;
 	/**
 	 * Contains an array of custom fields for a booking. This is loaded from em_meta, where the booking_custom name contains arrays of data.
 	 * @var array
@@ -575,11 +584,11 @@ class EM_Booking extends EM_Object{
 			$this->feedback_message = sprintf(__('Booking %s.','dbem'), $action_string);
 			if( $email ){
 				if( $this->email() ){
-					$this->feedback_message .= " ".__('Mail Sent.','dbem');
+					$this->feedback_message .= " ".__('Email Sent.','dbem');
 				}elseif( $this->previous_status == 0 ){
 					//extra errors may be logged by email() in EM_Object
-					$this->feedback_message .= ' <span style="color:red">'.__('ERROR : Mail Not Sent.','dbem').'</span>';
-					$this->add_error(__('ERROR : Mail Not Sent.','dbem'));
+					$this->feedback_message .= ' <span style="color:red">'.__('ERROR : Email Not Sent.','dbem').'</span>';
+					$this->add_error(__('ERROR : Email Not Sent.','dbem'));
 				}
 			}
 		}else{
@@ -727,6 +736,7 @@ class EM_Booking extends EM_Object{
 	function email( $email_admin = true, $force_resend = false ){
 		global $EM_Mailer;
 		$result = true;
+		$this->mails_sent = 0;
 		
 		//FIXME ticket logic needed
 		$EM_Event = $this->get_event(); //We NEED event details here.
@@ -745,6 +755,8 @@ class EM_Booking extends EM_Object{
 				//Send to the person booking
 				if( !$this->email_send( $msg['user']['subject'], $msg['user']['body'], $this->get_person()->user_email) ){
 					$result = false;
+				}else{
+					$this->mails_sent++;
 				}
 			}
 			
@@ -759,6 +771,8 @@ class EM_Booking extends EM_Object{
 						if( !$this->email_send( $msg['admin']['subject'], $msg['admin']['body'], $EM_Event->get_contact()->user_email) && current_user_can('list_users')){
 							$this->errors[] = __('Confirmation email could not be sent to contact person. Registrant should have gotten their email (only admin see this warning).','dbem');
 							$result = false;
+						}else{
+							$this->mails_sent++;
 						}
 					}
 					//email admin
@@ -769,6 +783,8 @@ class EM_Booking extends EM_Object{
 						if( !$this->email_send( $msg['admin']['subject'], $msg['admin']['body'], $admin_emails) ){
 							$this->errors[] = __('Confirmation email could not be sent to admin. Registrant should have gotten their email (only admin see this warning).','dbem');
 							$result = false;
+						}else{
+							$this->mails_sent++;
 						}
 					}
 				}

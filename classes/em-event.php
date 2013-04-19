@@ -1172,7 +1172,7 @@ class EM_Event extends EM_Object{
 			$event_string = str_replace($result, $attString ,$event_string );
 		}
 	 	//First let's do some conditional placeholder removals
-	 	for ($i = 0 ; $i < get_option('dbem_conditional_recursions',1); $i++){ //you can add nested recursions by modifying this setting in your wp_options table
+	 	for ($i = 0 ; $i < EM_CONDITIONAL_RECURSIONS; $i++){ //you can add nested recursions by modifying this setting in your wp_options table
 			preg_match_all('/\{([a-zA-Z0-9_]+)\}(.+?)\{\/\1\}/s', $event_string, $conditionals);
 			if( count($conditionals[0]) > 0 ){
 				//Check if the language we want exists, if not we take the first language there

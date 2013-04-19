@@ -98,6 +98,13 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.3.8.1 (dev) =
+* fixed XSS vulnerability in search form field
+* fixed php warnings in events-list.php
+* 'mail sent' messages not shown if no mails actually sent without errors, changed wording of 'mail' to 'email'
+* updated French and German languages
+* added links to category page on #_EVENTCATEGORYIMAGES images
+
 = 5.3.8 =
 * fixed timthumb issues due to new local fetching modification and bad file inclusion path
 * fixed time/date separators in settings page not being used
