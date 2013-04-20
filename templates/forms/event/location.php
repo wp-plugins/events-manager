@@ -54,14 +54,16 @@ $required = "<i>*</i>";
 			if( $EM_Event->location_id !== 0 ){
 				$EM_Location = $EM_Event->get_location();
 			}elseif(get_option('dbem_default_location') > 0){
-				$EM_Location = new EM_Location(get_option('dbem_default_location'));
+				$EM_Location = em_get_location(get_option('dbem_default_location'));
+			}else{
+				$EM_Location = new EM_Location();
 			}
 		?>
 		<tr>
 			<th><?php _e ( 'Location Name:', 'dbem' )?></th>
 			<td>
 				<input id='location-id' name='location_id' type='hidden' value='<?php echo $EM_Location->location_id; ?>' size='15' />
-				<input id="location-name" type="text" name="location_name" value="<?php echo htmlspecialchars($EM_Location->location_name, ENT_QUOTES); ?>" /><?php echo $required; ?>													
+				<input id="location-name" type="text" name="location_name" value="<?php echo esc_attr($EM_Location->location_name, ENT_QUOTES); ?>" /><?php echo $required; ?>													
 				<br />
 				<em id="em-location-search-tip"><?php _e( 'Create a location or start typing to search a previously created location.', 'dbem' )?></em>
 				<em id="em-location-reset" style="display:none;"><?php _e('You cannot edit saved locations here.', 'dbem'); ?> <a href="#"><?php _e('Reset this form to create a location or search again.', 'dbem')?></a></em>
@@ -70,31 +72,31 @@ $required = "<i>*</i>";
 		<tr>
 			<th><?php _e ( 'Address:', 'dbem' )?>&nbsp;</th>
 			<td>
-				<input id="location-address" type="text" name="location_address" value="<?php echo htmlspecialchars($EM_Location->location_address, ENT_QUOTES); ; ?>" /><?php echo $required; ?>
+				<input id="location-address" type="text" name="location_address" value="<?php echo esc_attr($EM_Location->location_address, ENT_QUOTES); ; ?>" /><?php echo $required; ?>
 			</td>
 		</tr>
 		<tr>
 			<th><?php _e ( 'City/Town:', 'dbem' )?>&nbsp;</th>
 			<td>
-				<input id="location-town" type="text" name="location_town" value="<?php echo htmlspecialchars($EM_Location->location_town, ENT_QUOTES); ?>" /><?php echo $required; ?>
+				<input id="location-town" type="text" name="location_town" value="<?php echo esc_attr($EM_Location->location_town, ENT_QUOTES); ?>" /><?php echo $required; ?>
 			</td>
 		</tr>
 		<tr>
 			<th><?php _e ( 'State/County:', 'dbem' )?>&nbsp;</th>
 			<td>
-				<input id="location-state" type="text" name="location_state" value="<?php echo htmlspecialchars($EM_Location->location_state, ENT_QUOTES); ?>" />
+				<input id="location-state" type="text" name="location_state" value="<?php echo esc_attr($EM_Location->location_state, ENT_QUOTES); ?>" />
 			</td>
 		</tr>
 		<tr>
 			<th><?php _e ( 'Postcode:', 'dbem' )?>&nbsp;</th>
 			<td>
-				<input id="location-postcode" type="text" name="location_postcode" value="<?php echo htmlspecialchars($EM_Location->location_postcode, ENT_QUOTES); ?>" />
+				<input id="location-postcode" type="text" name="location_postcode" value="<?php echo esc_attr($EM_Location->location_postcode, ENT_QUOTES); ?>" />
 			</td>
 		</tr>
 		<tr>
 			<th><?php _e ( 'Region:', 'dbem' )?>&nbsp;</th>
 			<td>
-				<input id="location-region" type="text" name="location_region" value="<?php echo htmlspecialchars($EM_Location->location_region, ENT_QUOTES); ?>" />
+				<input id="location-region" type="text" name="location_region" value="<?php echo esc_attr($EM_Location->location_region, ENT_QUOTES); ?>" />
 			</td>
 		</tr>
 		<tr>

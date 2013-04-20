@@ -27,7 +27,7 @@ if(!is_admin()) echo $EM_Notices;
 		<?php _e ( 'Location Name', 'dbem' ); ?>
 	</h4>
 	<div class="inside">
-		<input name='location_name' id='location-name' type='text' value='<?php echo htmlspecialchars($EM_Location->location_name, ENT_QUOTES); ?>' size='40'  />
+		<input name='location_name' id='location-name' type='text' value='<?php echo esc_attr($EM_Location->location_name, ENT_QUOTES); ?>' size='40'  />
 		<br />
 		<?php _e('The name of the location', 'dbem') ?>
 	</div>
@@ -65,7 +65,7 @@ if(!is_admin()) echo $EM_Notices;
 	<?php do_action('em_front_location_form_footer'); ?>
 	
 	<?php if( !empty($_REQUEST['redirect_to']) ): ?>
-	<input type="hidden" name="redirect_to" value="<?php echo $_REQUEST['redirect_to']; ?>" />
+	<input type="hidden" name="redirect_to" value="<?php echo esc_attr($_REQUEST['redirect_to']); ?>" />
 	<?php endif; ?>
 	<p class='submit'><input type='submit' class='button-primary' name='submit' value='<?php _e('Update location', 'dbem') ?>' /></p>
 </form>

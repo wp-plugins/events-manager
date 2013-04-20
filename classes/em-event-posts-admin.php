@@ -82,7 +82,7 @@ class EM_Event_Posts_Admin{
 			}
             if( !empty($_REQUEST['author']) ){
             	?>
-            	<input type="hidden" name="author" value="<?php echo $_REQUEST['author'] ?>" />
+            	<input type="hidden" name="author" value="<?php echo esc_attr($_REQUEST['author']); ?>" />
             	<?php            	
             }
 		}

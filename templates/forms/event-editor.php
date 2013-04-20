@@ -42,7 +42,7 @@ if( !empty($_REQUEST['success']) ){
 		<?php endif; ?>
 		<h4 class="event-form-name"><?php _e ( 'Event Name', 'dbem' ); ?></h4>
 		<div class="inside event-form-name">
-			<input type="text" name="event_name" id="event-name" value="<?php echo htmlspecialchars($EM_Event->event_name,ENT_QUOTES); ?>" /><?php echo $required; ?>
+			<input type="text" name="event_name" id="event-name" value="<?php echo esc_attr($EM_Event->event_name,ENT_QUOTES); ?>" /><?php echo $required; ?>
 			<br />
 			<?php _e ( 'The event name. Example: Birthday party', 'dbem' )?>
 			<?php em_locate_template('forms/event/group.php',true); ?>
@@ -110,7 +110,7 @@ if( !empty($_REQUEST['success']) ){
 	<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('wpnonce_event_save'); ?>" />
 	<input type="hidden" name="action" value="event_save" />
 	<?php if( !empty($_REQUEST['redirect_to']) ): ?>
-	<input type="hidden" name="redirect_to" value="<?php echo $_REQUEST['redirect_to']; ?>" />
+	<input type="hidden" name="redirect_to" value="<?php echo esc_attr($_REQUEST['redirect_to']); ?>" />
 	<?php endif; ?>
 </form>
 <?php

@@ -23,7 +23,7 @@ $has_depreciated = false;
 			<?php endforeach; ?>
 		</select>
 		<?php else: ?>
-		<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Location->location_attributes) ? htmlspecialchars($EM_Location->location_attributes[$name], ENT_QUOTES):''; ?>" />
+		<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Location->location_attributes) ? esc_attr($EM_Location->location_attributes[$name], ENT_QUOTES):''; ?>" />
 		<?php endif; ?>
 	</div>
 	<?php endforeach; ?>
