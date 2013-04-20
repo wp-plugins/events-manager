@@ -15,20 +15,19 @@ if( is_object($EM_Location) && !$EM_Location->can_manage('edit_locations','edit_
 	$EM_Location = new EM_Location();
 }
 $required = "<i>(".__('required','dbem').")</i>";
-echo $EM_Notices;
+if(!is_admin()) echo $EM_Notices;
 ?>
 <form enctype='multipart/form-data' id='location-form' method='post' action=''>
 	<input type='hidden' name='action' value='location_save' />
 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('location_save'); ?>' />
 	<input type='hidden' name='location_id' value='<?php echo $EM_Location->location_id ?>'/>
  	
-	<?php global $EM_Notices; echo $EM_Notices; ?>
 	<?php do_action('em_front_location_form_header'); ?>
 	<h4>
 		<?php _e ( 'Location Name', 'dbem' ); ?>
 	</h4>
 	<div class="inside">
-		<input name='location_name' id='location-name' type='text' value='<?php echo htmlspecialchars($EM_Location->location_name, ENT_QUOTES); ?>' size='40'  />
+		<input name='location_name' id='location-name' type='text' value='<?php echo esc_attr($EM_Location->location_name, ENT_QUOTES); ?>' size='40'  />
 		<br />
 		<?php _e('The name of the location', 'dbem') ?>
 	</div>
@@ -54,7 +53,7 @@ echo $EM_Notices;
 	</div>
 	
 			
-	<?php if(get_option('dbem_attributes_enabled')){ em_locate_template('forms/location/attributes-public.php',true); } ?>
+	<?php if(get_option('dbem_location_attributes_enabled')){ em_locate_template('forms/location/attributes-public.php',true); } ?>
 				
 	<?php if( $EM_Location->can_manage('upload_event_images','upload_event_images') ): ?>
 	<h4><?php _e ( 'Location Image', 'dbem' ); ?></h4>
@@ -66,7 +65,7 @@ echo $EM_Notices;
 	<?php do_action('em_front_location_form_footer'); ?>
 	
 	<?php if( !empty($_REQUEST['redirect_to']) ): ?>
-	<input type="hidden" name="redirect_to" value="<?php echo $_REQUEST['redirect_to']; ?>" />
+	<input type="hidden" name="redirect_to" value="<?php echo esc_attr($_REQUEST['redirect_to']); ?>" />
 	<?php endif; ?>
 	<p class='submit'><input type='submit' class='button-primary' name='submit' value='<?php _e('Update location', 'dbem') ?>' /></p>
 </form>

@@ -1,6 +1,6 @@
 var em_booking_doing_ajax = false;
 $('#em-booking-form').addClass('em-booking-form'); //backward compatability
-$('.em-booking-form').submit( function(e){
+$(document).on('submit', '.em-booking-form', function(e){
 	e.preventDefault();
 	var em_booking_form = $(this);
 	$.ajax({
@@ -43,11 +43,12 @@ $('.em-booking-form').submit( function(e){
 				$(document).trigger('em_booking_error', [response]);
 			}
 		    $('html, body').animate({ scrollTop: em_booking_form.parent().offset().top - 30 }); //sends user back to top of form
+			em_booking_doing_ajax = false;
 			//run extra actions after showing the message here
 			if( response.gateway != null ){
 				$(document).trigger('em_booking_gateway_add_'+response.gateway, [response]);
 			}
-			if( !response.result && typeof Recaptcha != 'undefined'){
+			if( !response.result && typeof Recaptcha != 'undefined' && typeof RecaptchaState != 'undefined'){
 				Recaptcha.reload();
 			}
 			$(document).trigger('em_booking_complete', [response]);

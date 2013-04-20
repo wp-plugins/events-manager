@@ -7,7 +7,7 @@ if( $count_cats > 0 ){
 	<ul class="event-categories-images">
 		<?php foreach($EM_Event->get_categories() as $EM_Category): /* @var $EM_Category EM_Category */ ?>
 			<?php if( $EM_Category->get_image_url() != '' ): ?>
-			<li><?php echo $EM_Category->output("#_CATEGORYIMAGE"); $one_image = true; ?></li>
+			<li><?php echo $EM_Category->output('<a href="#_CATEGORYURL" title="#_CATEGORYNAME">#_CATEGORYIMAGE</a>'); $one_image = true; ?></li>
 			<?php endif; ?>
 		<?php endforeach; ?>
 		<?php if (!$one_image): ?>

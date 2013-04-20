@@ -24,7 +24,7 @@ function em_event_submission_emails($result, $EM_Event){
 				}
 	       		if( $EM_Event->event_owner == "" ) return true;
 	        	$EM_Event->email_send( $subject, $body, $EM_Event->get_contact()->user_email);
-		    }elseif( !$EM_Event->get_status() && get_option('dbem_event_submitted_email_admin') != '' ){
+		    }elseif( $EM_Event->get_status() === 0 && get_option('dbem_event_submitted_email_admin') != '' && empty($EM_Event->duplicated)){
 				$approvals_count = get_post_meta($EM_Event->post_id,'_event_approvals_count', true);
 				$approvals_count = $approvals_count > 0 ? $approvals_count:0;
 				update_post_meta($EM_Event->post_id, '_event_approvals_count', $approvals_count+1);
@@ -40,7 +40,7 @@ function em_event_submission_emails($result, $EM_Event){
 				//Send email to admins
 				$EM_Event->email_send( $subject,$message, $admin_emails);
 			}
-		}elseif( !current_user_can('activate_plugins') ){
+		}elseif( !current_user_can('list_users') ){
 		    if( $EM_Event->is_published() && !$EM_Event->previous_status ){
 	        	$admin_emails = explode(',', str_replace(' ', '', get_option('dbem_event_submitted_email_admin'))); //admin emails are in an array, single or multiple
 	        	if( empty($admin_emails) ) return true;
