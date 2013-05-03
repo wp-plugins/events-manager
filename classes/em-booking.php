@@ -33,10 +33,12 @@ class EM_Booking extends EM_Object{
 	var $booking_id;
 	var $event_id;
 	var $person_id;
-	var $booking_price;
+	var $booking_price = null;
 	var $booking_spaces;
 	var $booking_comment;
 	var $booking_status = false;
+	var $booking_tax_rate = null;
+	var $booking_taxes = null;
 	var $booking_meta = array();
 	var $fields = array(
 		'booking_id' => array('name'=>'id','type'=>'%d'),
@@ -46,6 +48,8 @@ class EM_Booking extends EM_Object{
 		'booking_spaces' => array('name'=>'spaces','type'=>'%d'),
 		'booking_comment' => array('name'=>'comment','type'=>'%s'),
 		'booking_status' => array('name'=>'status','type'=>'%d'),
+		'booking_tax_rate' => array('name'=>'tax_rate','type'=>'%f','null'=>1),
+		'booking_taxes' => array('name'=>'taxes','type'=>'%f','null'=>1),
 		'booking_meta' => array('name'=>'meta','type'=>'%s')
 	);
 	//Other Vars
@@ -132,7 +136,13 @@ class EM_Booking extends EM_Object{
 			4 => __('Awaiting Online Payment','dbem'),
 			5 => __('Awaiting Payment','dbem')
 		);
-		$this->compat_keys();
+		$this->compat_keys(); //depricating in 6.0
+		//do some legacy checking here for bookings made prior to 5.4, due to how taxes are calculated
+		$this->get_tax_rate();
+		if( !empty($this->legacy_tax_rate) ){
+			//reset booking_price, it'll be recalculated later (if you're using this property directly, don't, use $this->get_price())
+	    	$this->booking_price = $this->booking_taxes = null;
+		}
 		do_action('em_booking', $this, $booking_data);
 	}
 	
@@ -160,15 +170,16 @@ class EM_Booking extends EM_Object{
 		$table = EM_BOOKINGS_TABLE;
 		do_action('em_booking_save_pre',$this);
 		if( $this->can_manage() ){
+			//update prices, spaces, person_id
+			$this->get_spaces(true);
+			$this->calculate_price();
 			$this->person_id = (empty($this->person_id)) ? $this->get_person()->ID : $this->person_id;			
 			//Step 1. Save the booking
 			$data = $this->to_array();
 			$data['booking_meta'] = serialize($data['booking_meta']);
+			//update or save
 			if($this->booking_id != ''){
 				$update = true;
-				//update price and spaces
-				$this->get_spaces(true);
-				$this->get_price(true);
 				$where = array( 'booking_id' => $this->booking_id );  
 				$result = $wpdb->update($table, $data, $where, $this->get_types($data));
 				$result = ($result !== false);
@@ -261,10 +272,17 @@ class EM_Booking extends EM_Object{
 				}
 			}
 			$this->booking_comment = (!empty($_REQUEST['booking_comment'])) ? wp_kses_data(stripslashes($_REQUEST['booking_comment'])):'';
+			//allow editing of tax rate
+			if( !empty($this->booking_id) && $this->can_manage() ){ 
+			    $this->booking_tax_rate = (!empty($_REQUEST['booking_tax_rate']) && is_numeric($_REQUEST['booking_tax_rate'])) ? $_REQUEST['booking_tax_rate']:$this->booking_tax_rate; 
+			}
+			//recalculate spaces/price
 			$this->get_spaces(true);
-			$this->get_price(true, false, false);
+			$this->calculate_price();
+			//get person
 			$this->get_person();
-			$this->compat_keys();
+			//re-run compatiblity keys function
+			$this->compat_keys(); //depricating in 6.0
 		}
 		return apply_filters('em_booking_get_post',count($this->errors) == 0,$this);
 	}
@@ -314,34 +332,215 @@ class EM_Booking extends EM_Object{
 		return apply_filters('em_booking_get_spaces',$this->booking_spaces,$this);
 	}
 	
+	/* Price Calculations */
+	
 	/**
-	 * Gets the total price for this whole booking. Seting $force_reset to true will recheck spaces, even if previously done so.
-	 * @param boolean $force_refresh
+	 * Gets the total price for this whole booking, including any discounts, taxes, and any other additional items. In other words, what the person has to pay or has supposedly paid.
+	 * This price shouldn't change once established, unless there's any alteration to the booking itself that'd affect the price, such as a change in ticket numbers, discount, etc.
 	 * @param boolean $format
-	 * @param boolean $add_tax
-	 * @return float
+	 * @return double|string
 	 */
-	function get_price( $force_refresh=false, $format=false, $add_tax='x' ){
-		if($force_refresh || $this->booking_price == 0 || $add_tax !== 'x' || get_option('dbem_bookings_tax_auto_add')){
-			$this->booking_price = $this->get_tickets_bookings()->get_price($force_refresh, false, $add_tax);
-			$this->booking_price = apply_filters('em_booking_get_price', $this->booking_price, $this, $add_tax);
+	function get_price( $format = false, $format_depricated = null ){
+	    if( $format_depricated !== null ) $format = $format_depricated; //support for old parameters, will be depricated soon
+	    //recalculate price here only if price is not actually set
+		if( $this->booking_price === null ){
+		    $this->calculate_price();
+			apply_filters('em_booking_get_price', $this->booking_price, $this);
 		}
+		//return booking_price, formatted or not
 		if($format){
-			return em_get_currency_formatted($this->booking_price);
+			return $this->format_price($this->booking_price);
 		}
 		return $this->booking_price;
 	}
 	
-	function get_price_taxes( $format=false ){
-	    $taxes = 0;
-	    if( $this->has_taxes() ){
-			$taxes = apply_filters('em_booking_get_price_taxes', $this->get_price(false,false,false) * (get_option('dbem_bookings_tax')/100) );
-		    if( $format ){
-		        return em_get_currency_formatted($taxes);
-		    }
-	    }
-	    return $taxes;
+	/**
+	 * Total of tickets without taxes, discounts or any other modification. No filter given here for that very reason!
+	 * @param boolean $format
+	 * @return double|string
+	 */
+	function get_price_base( $format = false ){
+	    $price = $this->get_tickets_bookings()->get_price();
+		if($format){
+			return $this->format_price($price);
+		}
+	    return $price;
 	}
+	
+	function get_price_pre_taxes( $format = false ){
+	    $price = $base_price = $this->get_price_base();
+	    //apply pre-tax discounts
+	    $price -= $this->get_price_discounts_amount('pre', $price);
+	    if( $price < 0 ){ $price = 0; } //no negative prices
+	    //return amount of taxes applied, formatted or not
+	    if( $format ) return $this->format_price($price);
+	    return $price;
+	}
+	
+	/**
+	 * Gets price AFTER taxes and post-tax discounts have also been added
+	 * @param boolean $format
+	 * @return double|string
+	 */
+	function get_price_post_taxes( $format = false ){
+	    //get price before taxes
+	    $price = $this->get_price_pre_taxes();
+	    //add taxes to price
+	    if( $this->get_tax_rate() > 0 ){
+	        $this->booking_taxes = round($price * ($this->get_tax_rate()/100), 2); //calculate and save tax amount
+		    $price += $this->booking_taxes; //add taxes
+		    $this->taxes_applied = true;
+	    }
+	    //apply post-tax discounts
+	    $price -= $this->get_price_discounts_amount('post', $price);
+	    if( $price < 0 ){ $price = 0; } //no negative prices
+	    //return amount of taxes applied, formatted or not
+	    if( $format ) return $this->format_price($price);
+	    return $price;
+	}
+	
+	/**
+	 * Get amount of taxes applied to this booking price.
+	 * @param boolean $format
+	 * @return double|string
+	 */
+	function get_price_taxes( $format=false ){
+	    if( $this->booking_taxes !== null ){
+	        $this->booking_taxes; //taxes already calculated
+	    }else{
+	        $this->calculate_price(); //recalculate price and taxes
+	    }
+		//return amount of taxes applied, formatted or not
+	    if( $format ){
+	        return $this->format_price($this->booking_taxes);
+	    }
+	    return $this->booking_taxes;
+	}
+	
+	function get_price_discount(){
+	    
+	}
+	
+	/**
+	 * Calculates (or recalculates) the price of this booking including taxes, discounts etc., saves it to the booking_price property and writes to relevant properties booking_meta variables
+	 * @return double
+	 */
+	function calculate_price(){
+	    //reset price and taxes calculations
+	    $this->booking_price = $this->booking_taxes = null;
+	    //get post-tax price and save it to booking_price
+	    $this->booking_price = $this->get_price_post_taxes();
+	    return apply_filters('em_booking_calculate_price', $this->booking_price, $this);
+	}
+	
+	/* 
+	 * Gets tax rate of booking
+	 * @see EM_Object::get_tax_rate()
+	 * @return double
+	 */
+	function get_tax_rate(){
+	    if( $this->booking_tax_rate === null ){
+	        //booking not saved or tax never defined
+	        if( !empty($this->booking_id) && get_option('dbem_legacy_bookings_tax', 'x') !== 'x'){ //even if 0 if defined as tax rate we still use it, delete the option entirely to stop
+	            //no tax applied yet to an existing booking, or tax possibly applied (but handled seperately in EM_Tickets_Bookings but in legacy < v5.4
+	            //sort out MultiSite nuances
+	            if( EM_MS_GLOBAL && $this->get_event()->blog_id != get_current_blog_id() ){
+	            	//MultiSite AND Global tables enabled AND this event belongs to another blog - get settings for blog that published the event
+					$this->booking_tax_rate = get_blog_option($this->get_event()->blog_id, 'dbem_legacy_bookings_tax');
+	            }else{
+	            	//get booking from current site, whether or not we're in MultiSite
+	            	$this->booking_tax_rate = get_option('dbem_legacy_bookings_tax');
+	            }
+	            $this->legacy_tax_rate = true;
+	        }else{
+	            //first time we're applying tax rate
+	            $this->booking_tax_rate = parent::get_tax_rate();
+	        }
+	    }
+	    return $this->booking_tax_rate;
+	}
+	
+	/**
+	 * Returns an array of discounts to be applied to a booking. Here is an example of an array item that is expected:
+	 * array('name' => 'Name of Discount', 'type'=>'% or #', 'amount'=> 0.00, 'desc' => 'Comments about discount', 'tax'=>'pre/post', 'data' => 'any info for hooks to use' );
+	 * About the array keys:
+	 * type - $ means a fixed amount of discount, % means a percentage off the base price
+	 * amount - if type is a percentage, it is written as a number from 0-100, e.g. 10 = 10%
+	 * tax - 'pre' means discount is applied before tax, 'post' means after tax
+	 * data - any data to be stored that can be used by actions/filters
+	 * @return array
+	 */
+	function get_price_discounts(){
+	    $discounts = array();
+	    if( !empty($this->booking_meta['discounts']) && is_array($this->booking_meta['discounts']) ){
+	        $discounts = $this->booking_meta['discounts'];
+	    }
+		return apply_filters('em_booking_get_price_discounts', $discounts, $this);
+	}
+	
+	function get_price_discounts_amount( $pre_or_post = 'pre', $price = false ){
+	    $discounts = $this->get_price_discounts_summary($pre_or_post, $price);
+	    $discount_amount = 0;
+	    foreach($discounts as $discount){
+	        $discount_amount += $discount['amount_discounted'];
+	    }
+	    return $discount_amount;
+	}
+
+	function get_price_discounts_summary( $pre_or_post = 'pre', $price = false ){
+		$discounts=  $this->get_price_discounts();
+		$discount_summary = array();
+		if( !$price ){
+			$price = $this->get_price_base();
+			if( $pre_or_post == 'post' ) $price = $this->get_price_pre_taxes() + $this->get_price_taxes();
+		}
+		foreach($discounts as $discount){
+			$discount_amount = 0;
+			if( !empty($discount['amount']) ){
+				if( !empty($discount['tax']) && $discount['tax'] == $pre_or_post ){
+					if( !empty($discount['type']) ){
+						$discount_summary_item = array('name' => $discount['name'], 'desc' => $discount['desc'], 'discount'=>'0', 'amount_discounted'=>0);
+						if( $discount['type'] == '%' ){ //discount by percentage
+						    $discount_summary_item['amount_discounted'] = round($price * ($discount['amount']/100),2);
+						    $discount_summary_item['amount'] = $this->format_price($discount_summary_item['amount_discounted']);
+						    $discount_summary_item['discount'] = number_format($discount['amount'],2).'%';
+							$discount_summary[] = $discount_summary_item;
+						}elseif( $discount['type'] == '#' ){ //discount by amount
+						    $discount_summary_item['amount_discounted'] = round($discount['amount'],2);
+						    $discount_summary_item['amount'] = $this->format_price($discount_summary_item['amount_discounted']);
+						    $discount_summary_item['discount'] = $this->format_price($discount['amount']);
+							$discount_summary[] = $discount_summary_item;
+						}
+					}
+				}
+			}
+		}
+		return $discount_summary;
+	}
+	
+	/**
+	 * When generating totals at the bottom of a booking, this creates a useful array for displaying the summary in a meaningful way. 
+	 */
+	function get_price_summary_array(){
+	    $summary = array();
+	    //get base price of bookings
+	    $summary['total_base'] = $this->get_price_base();
+	    //get discounts
+	    //apply pre-tax discounts
+	    $summary['discounts_pre_tax'] = $this->get_price_discounts_summary('pre');
+	    //add taxes to price
+		$summary['taxes'] = array('rate'=> 0, 'amount'=> 0);
+	    if( $this->get_price_taxes() > 0 ){
+		    $summary['taxes'] = array('rate'=> number_format($this->get_tax_rate(),2).'%', 'amount'=> $this->get_price_taxes(true));
+	    }
+	    //apply post-tax discounts
+	    $summary['discounts_post_tax'] = $this->get_price_discounts_summary('post');
+	    //final price
+	    $summary['total'] =  $this->get_price(true);
+	    return $summary;
+	}
+	
+	/* Get Objects linked to booking */
 	
 	/**
 	 * Gets the event this booking belongs to and saves a refernece in the event property
@@ -356,7 +555,7 @@ class EM_Booking extends EM_Object{
 		}else{
 			$this->event = new EM_Event($this->event_id, 'event_id');
 		}
-		return apply_filters('em_booking_get_event',$this->event);
+		return apply_filters('em_booking_get_event',$this->event, $this);
 	}
 	
 	/**
@@ -634,8 +833,8 @@ class EM_Booking extends EM_Object{
 			$my_bookings_page = get_permalink(get_option('dbem_edit_bookings_page'));
 			$bookings_link = em_add_get_params($my_bookings_page, array('event_id'=>$this->event_id, 'booking_id'=>'booking_id'), false);
 		}else{
-			if( $this->blog_id != get_current_blog_id() ){
-				$bookings_link = get_admin_url($this->blog_id, 'edit.php?post_type='.EM_POST_TYPE_EVENT."&page=events-manager-bookings&event_id=".$this->event_id."&booking_id=".$this->booking_id);
+			if( $this->get_event()->blog_id != get_current_blog_id() ){
+				$bookings_link = get_admin_url($this->get_event()->blog_id, 'edit.php?post_type='.EM_POST_TYPE_EVENT."&page=events-manager-bookings&event_id=".$this->event_id."&booking_id=".$this->booking_id);
 			}else{
 				$bookings_link = EM_ADMIN_URL. "&page=events-manager-bookings&event_id=".$this->event_id."&booking_id=".$this->booking_id;
 			}
@@ -645,7 +844,7 @@ class EM_Booking extends EM_Object{
 	
 	function output($format, $target="html") {
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([^}]+)})?/", $format, $placeholders);
-		foreach( $this->get_tickets() as $EM_Ticket){ break; } //Get first ticket for single ticket placeholders
+		foreach( $this->get_tickets() as $EM_Ticket){ /* @var $EM_Ticket EM_Ticket */ break; } //Get first ticket for single ticket placeholders
 		$output_string = $format;
 		$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
@@ -677,17 +876,17 @@ class EM_Booking extends EM_Object{
 				case '#_BOOKINGCOMMENT':
 					$replace = $this->booking_comment;
 					break;
-				case '#_BOOKINGPRICEWITHTAX':
-					$replace = em_get_currency_formatted($this->get_price(false,false,true));
+					$replace = $this->get_price(true); //if there's tax, it'll be added here
 					break;
 				case '#_BOOKINGPRICEWITHOUTTAX':
-					$replace = em_get_currency_formatted($this->get_price(false,false,false));
+					$replace = $this->format_price($this->get_price() - $this->get_price_taxes());
 					break;
 				case '#_BOOKINGPRICETAX':
-					$replace = em_get_currency_formatted($this->get_price(false,false,false)*(get_option('dbem_bookings_tax')/100));
+					$replace = $this->get_price_taxes(true);
 					break;
+				case '#_BOOKINGPRICEWITHTAX':
 				case '#_BOOKINGPRICE':
-					$replace = em_get_currency_formatted($this->get_price());
+					$replace = $this->get_price(true);
 					break;
 				case '#_BOOKINGTICKETNAME':
 					$replace = $EM_Ticket->name;
@@ -696,16 +895,16 @@ class EM_Booking extends EM_Object{
 					$replace = $EM_Ticket->description;
 					break;
 				case '#_BOOKINGTICKETPRICEWITHTAX':
-					$replace = em_get_currency_formatted($EM_Ticket->get_price(false,true));
+					$replace = $this->format_price( $EM_Ticket->get_price_without_tax() * (1+$this->get_tax_rate()/100) );
 					break;
 				case '#_BOOKINGTICKETPRICEWITHOUTTAX':
-					$replace = em_get_currency_formatted($EM_Ticket->get_price(false,false));
+					$replace = $EM_Ticket->get_price_without_tax(true);
 					break;
 				case '#_BOOKINGTICKETTAX':
-					$replace = em_get_currency_formatted($EM_Ticket->get_price(false,false)*(get_option('dbem_bookings_tax')/100));
+					$replace = $this->format_price( $EM_Ticket->get_price_without_tax() * ($this->get_tax_rate()/100) );
 					break;
 				case '#_BOOKINGTICKETPRICE':
-					$replace = em_get_currency_formatted($EM_Ticket->get_price());
+					$replace = $EM_Ticket->get_price(true);
 					break;
 				case '#_BOOKINGTICKETS':
 					ob_start();

@@ -144,6 +144,7 @@ class EM_Event_Post_Admin{
 	public static function before_delete_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_EVENT){
 			$EM_Event = em_get_event($post_id,'post_id');
+			do_action('em_event_delete_pre ',$EM_Event);
 			$EM_Event->delete_meta();
 		}
 	}
@@ -301,6 +302,7 @@ class EM_Event_Recurring_Post_Admin{
 	public static function before_delete_post($post_id){
 		if(get_post_type($post_id) == 'event-recurring'){
 			$EM_Event = em_get_event($post_id,'post_id');
+			do_action('em_event_delete_pre ',$EM_Event);
 			//now delete recurrences
 			$events_array = EM_Events::get( array('recurrence'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'all' ) );
 			foreach($events_array as $event){

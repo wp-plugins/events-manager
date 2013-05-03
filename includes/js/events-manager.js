@@ -318,11 +318,11 @@ jQuery(document).ready( function($){
 			//Sortables
 			$( ".em-bookings-cols-sortable" ).sortable({
 				connectWith: ".em-bookings-cols-sortable",
-				over: function(event, ui) {
-					if( ui.item.hasClass('ui-state-highlight') ){
-						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);							
-					}else{
+				update: function(event, ui) {
+					if( ui.item.parents('ul#em-bookings-cols-active').length > 0 ){							
 						ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
+					}else{
+						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);
 					}
 				}
 			}).disableSelection();
@@ -382,7 +382,8 @@ jQuery(document).ready( function($){
 	}
 	
 	//Manual Booking
-	$('a.em-booking-button').click(function(){
+	$('a.em-booking-button').click(function(e){
+		e.preventDefault();
 		var button = $(this);
 		if( button.text() != EM.bb_booked && $(this).text() != EM.bb_booking){
 			button.text(EM.bb_booking);
@@ -406,8 +407,10 @@ jQuery(document).ready( function($){
 				error : function(){ button.text(EM.bb_error); }
 			});
 		}
+		return false;
 	});	
-	$('a.em-cancel-button').click(function(){
+	$('a.em-cancel-button').click(function(e){
+		e.preventDefault();
 		var button = $(this);
 		if( button.text() != EM.bb_cancelled && button.text() != EM.bb_canceling){
 			button.text(EM.bb_canceling);
@@ -430,6 +433,7 @@ jQuery(document).ready( function($){
 				error : function(){ button.text(EM.bb_cancel_error); }
 			});
 		}
+		return false;
 	});  
 
 	//Datepicker
@@ -552,8 +556,7 @@ jQuery(document).ready( function($){
 				}else{
 					jQuery('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
 				}
-				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-				jQuery('#em-location-data input#location-name').css('background-color','#fff');
+				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
 				jQuery('#em-location-reset').show();
 				jQuery('#em-location-search-tip').hide();
 				jQuery(document).triggerHandler('em_locations_autocomplete_selected', [event, ui]);
@@ -563,8 +566,8 @@ jQuery(document).ready( function($){
 			html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
 			return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
 		};
-		jQuery('#em-location-reset').click( function(){
-			jQuery('#em-location-data input').css('background-color','#fff').val('');
+		jQuery('#em-location-reset a').click( function(){
+			jQuery('#em-location-data input').css('background-color','#fff').val('').removeAttr('readonly');
 			jQuery('#em-location-data select').css('background-color','#fff');
 			jQuery('#em-location-data option:selected').removeAttr('selected');
 			jQuery('input#location-id').val('');
@@ -580,8 +583,7 @@ jQuery(document).ready( function($){
 			return false;
 		});
 		if( jQuery('input#location-id').val() != '0' && jQuery('input#location-id').val() != '' ){
-			jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-			jQuery('#em-location-data input#location-name').css('background-color','#fff');
+			jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
 			jQuery('#em-location-reset').show();
 			jQuery('#em-location-search-tip').hide();
 		}

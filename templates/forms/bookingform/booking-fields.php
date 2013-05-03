@@ -20,7 +20,7 @@
 		<label for='user_email'><?php _e('E-mail','dbem') ?></label> 
 		<input type="text" name="user_email" id="user_email" class="input" value="<?php if(!empty($_REQUEST['user_email'])) echo esc_attr($_REQUEST['user_email']); ?>"  />
 	</p>
-	<?php do_action('register_form'); //careful if making an add-on, this will only be used if you're not using custom booking forms ?>					
+	<?php do_action('em_register_form'); //careful if making an add-on, this will only be used if you're not using custom booking forms ?>					
 <?php endif; ?>		
 <p>
 	<label for='booking_comment'><?php _e('Comment', 'dbem') ?></label>

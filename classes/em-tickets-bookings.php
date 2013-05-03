@@ -59,7 +59,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	function save(){
 		global $wpdb;
 		do_action('em_tickets_bookings_save_pre',$this);
-		foreach( $this->tickets_bookings as $EM_Ticket_Booking ){
+		foreach( $this->tickets_bookings as $EM_Ticket_Booking ){ /* @var $EM_Ticket_Booking EM_Ticket_Booking */
 			$result = $EM_Ticket_Booking->save();
 			if(!$result){
 				$this->errors = array_merge($this->errors, $EM_Ticket_Booking->get_errors());
@@ -83,16 +83,17 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 		//Does the ticket we want to book have enough spaeces? 
 		if ( $override || $EM_Ticket_Booking->get_ticket()->get_available_spaces() >= $EM_Ticket_Booking->get_spaces() ) {  
 			$ticket_booking_key = $this->has_ticket($EM_Ticket_Booking->ticket_id);
+			$this->price = 0; //so price calculations are reset
 			if( $ticket_booking_key !== false && is_object($this->tickets_bookings[$EM_Ticket_Booking->ticket_id]) ){
-				//previously booked ticket, so let's just replace it
+				//previously booked ticket, so let's just reset spaces/prices and replace it
 				$this->tickets_bookings[$EM_Ticket_Booking->ticket_id]->ticket_booking_spaces = $EM_Ticket_Booking->get_spaces();
-				$this->tickets_bookings[$EM_Ticket_Booking->ticket_id]->get_price(true);
+				$this->tickets_bookings[$EM_Ticket_Booking->ticket_id]->ticket_booking_price = $EM_Ticket_Booking->get_price();
 				return apply_filters('em_tickets_bookings_add',true,$this);
 			}elseif( $EM_Ticket_Booking->get_spaces() > 0 ){
 				//new ticket in booking
 				$this->tickets_bookings[$EM_Ticket_Booking->ticket_id] = $EM_Ticket_Booking;
 				$this->get_spaces(true);
-				$this->get_price(true);
+				$this->get_price();
 				return apply_filters('em_tickets_bookings_add',true,$this);
 			}
 		} else {
@@ -201,19 +202,19 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	
 	/**
 	 * Gets the total price for this whole booking by adding up subtotals of booked tickets. Seting $force_reset to true will recheck spaces, even if previously done so.
-	 * @param boolean $force_refresh
+	 * @param boolean $format
 	 * @return float
 	 */
-	function get_price( $force_refresh=false, $format = false, $add_tax = 'x' ){
-		if( $force_refresh || $this->price == 0 || $add_tax !== 'x' || get_option('dbem_bookings_tax_auto_add') ){
+	function get_price( $format = false ){
+		if( $this->price == 0 ){
 			$price = 0;
 			foreach($this->tickets_bookings as $EM_Ticket_Booking){
-				$price += $EM_Ticket_Booking->get_price($force_refresh, false, $add_tax);
+				$price += $EM_Ticket_Booking->get_price();
 			}
-			$this->price = apply_filters('em_tickets_bookings_get_price', $price, $this, $add_tax);
+			$this->price = apply_filters('em_tickets_bookings_get_price', $price, $this);
 		}
 		if($format){
-			return em_get_currency_formatted($this->price);
+			return $this->format_price($this->price);
 		}
 		return $this->price;
 	}

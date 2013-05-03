@@ -201,8 +201,8 @@ function em_create_locations_table() {
 		location_postcode VARCHAR( 10 ) NULL DEFAULT NULL,
 		location_region VARCHAR( 200 ) NULL DEFAULT NULL,
 		location_country CHAR( 2 ) NULL DEFAULT NULL,
-		location_latitude float NULL DEFAULT NULL,
-		location_longitude float NULL DEFAULT NULL,
+		location_latitude FLOAT( 10, 6 ) NULL DEFAULT NULL,
+		location_longitude FLOAT( 10, 6 ) NULL DEFAULT NULL,
 		post_content longtext NULL DEFAULT NULL,
 		location_status int(1) NULL DEFAULT NULL,
 		location_private bool NOT NULL DEFAULT 0,
@@ -248,6 +248,8 @@ function em_create_bookings_table() {
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		booking_status bool NOT NULL DEFAULT 1,
  		booking_price decimal(10,2) unsigned NOT NULL DEFAULT 0,
+ 		booking_tax_rate decimal(5,2) NULL DEFAULT NULL,
+ 		booking_taxes decimal(10,2) NULL DEFAULT NULL,
 		booking_meta LONGTEXT NULL,
 		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -309,7 +311,7 @@ function em_add_options() {
 	global $wp_locale;
 	$decimal_point = !empty($wp_locale->number_format['decimal_point']) ? $wp_locale->number_format['decimal_point']:'.';
 	$thousands_sep = !empty($wp_locale->number_format['thousands_sep']) ? $wp_locale->number_format['thousands_sep']:',';
-	$email_footer = __('<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com','dbem');
+	$email_footer = '<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com';
 	$contact_person_email_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_EVENTNAME on #_EVENTDATES. He wants to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com",'dbem').$email_footer;
 	$contact_person_email_cancelled_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) cancelled his booking at #_EVENTNAME on #_EVENTDATES. He wanted to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com",'dbem').$email_footer;
 	$respondent_email_body_localizable = __("Dear #_BOOKINGNAME, <br/>You have successfully reserved #_BOOKINGSPACES space/spaces for #_EVENTNAME.<br/>When : #_EVENTDATES @ #_EVENTTIMES<br/>Where : #_LOCATIONNAME - #_LOCATIONFULLLINE<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').$email_footer;
@@ -752,6 +754,12 @@ function em_add_options() {
 	    delete_option('dbem_times_Seperator');
 	    delete_option('dbem_dates_seperator');
 	    delete_option('dbem_times_seperator');
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.4 ){
+	    //tax rates now saved at booking level, so that alterations to tax rates don't change previous booking prices
+	    //any past bookings that don't get updated will adhere to these two values when calculating prices
+	    update_option('dbem_legacy_bookings_tax_auto_add', get_option('dbem_bookings_tax_auto_add'));
+	    update_option('dbem_legacy_bookings_tax', get_option('dbem_bookings_tax'));
 	}
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless

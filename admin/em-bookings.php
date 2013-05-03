@@ -332,7 +332,7 @@ function em_bookings_single(){
 									</tr>
 									</thead>
 									<tbody>
-										<?php foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking): ?>
+										<?php foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking): /* @var $EM_Ticket_Booking EM_Ticket_Booking */ ?>
 										<tr>
 											<td class="ticket-type"><a class="row-title" href="<?php echo em_add_get_params($EM_Event->get_bookings_url(), array('ticket_id'=>$EM_Ticket_Booking->ticket_id)); ?>"><?php echo $EM_Ticket_Booking->get_ticket()->ticket_name ?></a></td>
 											<td>
@@ -347,7 +347,7 @@ function em_bookings_single(){
 										?>
 										<?php endforeach; ?>
 										<?php if( count($shown_tickets) < count($EM_Event->get_bookings()->get_tickets()->tickets)): ?><tr>
-											<?php foreach($EM_Event->get_bookings()->get_tickets()->tickets as $EM_Ticket): ?>
+											<?php foreach($EM_Event->get_bookings()->get_tickets()->tickets as $EM_Ticket): /* @var $EM_Ticket EM_Ticket */ ?>
 												<?php if( !in_array($EM_Ticket->ticket_id, $shown_tickets) ): ?>
 												<tr>
 													<td class="ticket-type"><a class="row-title" href="<?php echo em_add_get_params($EM_Event->get_bookings_url(), array('ticket_id'=>$EM_Ticket->ticket_id)); ?>"><?php echo $EM_Ticket->ticket_name ?></a></td>
@@ -363,24 +363,49 @@ function em_bookings_single(){
 										<?php endif; ?>
 									</tbody>
 									<tfoot>
-										<?php do_action('em_bookings_admin_ticket_totals_header'); ?>
+										<?php 
+											do_action('em_bookings_admin_ticket_totals_header');
+											$price_summary = $EM_Booking->get_price_summary_array();
+											//we should now have an array of information including base price, taxes and post/pre tax discounts
+										?>
 										<tr>
-											<th><?php _e('Total Price','dbem'); ?></th>
+											<th><?php _e('Price','dbem'); ?></th>
 											<th><?php echo sprintf(__('%d Spaces','dbem'), $EM_Booking->get_spaces()); ?></th>
-											<th><?php echo $EM_Booking->get_price(true, true); ?></th>
+											<th><?php echo $EM_Booking->get_price_base(true); ?></th>
 										</tr>
-										<?php if( !get_option('dbem_bookings_tax_auto_add') && is_numeric(get_option('dbem_bookings_tax')) && get_option('dbem_bookings_tax') > 0  ): ?>
+										<?php if( count($price_summary['discounts_pre_tax']) > 0 ): ?>
+											<?php foreach( $price_summary['discounts_pre_tax'] as $discount_summary ): ?>
+											<tr>
+												<th><?php echo $discount_summary['name']; ?></th>
+												<th><?php echo $discount_summary['discount']; ?></th>
+												<th>- <?php echo $discount_summary['amount']; ?></th>
+											</tr>
+											<?php endforeach; ?>
+										<?php endif; ?>
+										<?php if( !empty($price_summary['taxes']['amount'])  ): ?>
 										<tr>
 											<th><?php _e('Tax','dbem'); ?></th>
-											<th><?php echo get_option('dbem_bookings_tax') ?>%</th>
-											<th><?php echo em_get_currency_formatted($EM_Booking->get_price() * (get_option('dbem_bookings_tax')/100),2); ?></th>
-										</tr>
-										<tr>
-											<th><?php _e('Total Price (inc. tax)','dbem'); ?></th>
-											<th>&nbsp;</th>
-											<th><?php echo $EM_Booking->get_price(false, true, true); ?></th>
+											<th>
+												<span class="em-booking-single-info"><?php echo $price_summary['taxes']['rate'] ?></span>
+												<div class="em-booking-single-edit"><input name="booking_tax_rate" value="<?php echo esc_attr($EM_Booking->get_tax_rate()); ?>">%</div>
+											</th>
+											<th><?php echo $price_summary['taxes']['amount']; ?></th>
 										</tr>
 										<?php endif; ?>
+										<?php if( count($price_summary['discounts_post_tax']) > 0 ): ?>
+											<?php foreach( $price_summary['discounts_post_tax'] as $discount_summary ): ?>
+											<tr>
+												<th><?php echo $discount_summary['name']; ?></th>
+												<th><?php echo $discount_summary['discount']; ?></th>
+												<th>- <?php echo $discount_summary['amount']; ?></th>
+											</tr>
+											<?php endforeach; ?>
+										<?php endif; ?>
+										<tr>
+											<th><?php _e('Total Price','dbem'); ?></th>
+											<th>&nbsp;</th>
+											<th><?php echo $price_summary['total']; ?></th>
+										</tr>
 										<?php do_action('em_bookings_admin_ticket_totals_footer'); ?>
 									</tfoot>
 								</table>

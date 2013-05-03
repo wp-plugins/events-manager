@@ -98,6 +98,22 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.3.9.3 (dev) =
+* fixed drag/drop in bookings admin not always recognizing the change
+* improved location search and reset ui logic
+* fixed precision of long/lat values in database
+* fixed taxonomy filtering bug in admin area
+* added possibility to override timthumb via wp-contant/em-timthumb-config.php
+* fixed some php warnings
+* updated French, Russian, Czech translations and POT file
+* changed templates/tables/events.php to use $EM_Event instead of $event
+* fixed #_BOOKINGBUTTON JS jumps when clicked
+* revamped pricing calculations to account for taxes applied at time of booking (see http://em.cm/v5-4)
+* added a standardized discounts system pra/post tax
+* fixed EM overriden pages showing despite password-protection
+* fixed some settings typos
+* fixed month scope filter skipping last day of month events in admin events list area
+
 = 5.3.9 =
 * fixed XSS vulnerability in search form field
 * fixed php warnings in events-list.php

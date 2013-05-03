@@ -551,7 +551,7 @@ function em_admin_options_page() {
 						<td colspan="2">
 							<h4><?php echo sprintf(__('WordPress %s Archives','dbem'), __('Event','dbem')); ?></h4>
 							<p><?php echo sprintf(__('%s custom post types can have archives, just like normal WordPress posts. If enabled, should you visit your base slug url %s and you will see an post-formatted archive of previous %s'), __('Event','dbem'), '<code>'.home_url().'/'.get_option('dbem_cp_events_slug',EM_POST_TYPE_EVENT_SLUG).'/</code>', __('events','dbem')); ?></p>
-							<p><?php echo sprintf(__('Note that assigning a %s page above will override this archive if the URLs collide (which is the default settings, and is recommended). You can have both at the same time, but you must ensure that your page and %s slugs are different.'), __('events','dbem'), __('event','dbem')); ?></p>
+							<p><?php echo sprintf(__('Note that assigning a %s page above will override this archive if the URLs collide (which is the default setting, and is recommended for maximum plugin compatibility). You can have both at the same time, but you must ensure that your page and %s slugs are different.'), __('events','dbem'), __('event','dbem')); ?></p>
 						</td>
 					</tr>
 					<tbody class="em-event-archive-options">
@@ -701,8 +701,8 @@ function em_admin_options_page() {
 					<tr>
 						<td colspan="2">
 							<h4><?php echo sprintf(__('WordPress %s Archives','dbem'), __('Location','dbem')); ?></h4>
-							<p><?php echo sprintf(__('%s custom post types can have archives, just like normal WordPress posts. If enabled, should you visit your base slug url %s and you will see an post-formatted archive of previous %s'), __('Location','dbem'), '<code>'.home_url().'/'.get_option('dbem_cp_events_slug',EM_POST_TYPE_EVENT_SLUG).'/</code>', __('locations','dbem')); ?></p>
-							<p><?php echo sprintf(__('Note that assigning a %s page above will override this archive if the URLs collide (which is the default settings, and is recommended for maximum plugin compatability). You can have both at the same time, but you must ensure that your page and %s slugs are different.'), __('locations','dbem'), __('location','dbem')); ?></p>
+							<p><?php echo sprintf(__('%s custom post types can have archives, just like normal WordPress posts. If enabled, should you visit your base slug url %s and you will see an post-formatted archive of previous %s'), __('Location','dbem'), '<code>'.home_url().'/'.get_option('dbem_cp_events_slug',EM_POST_TYPE_LOCATION_SLUG).'/</code>', __('locations','dbem')); ?></p>
+							<p><?php echo sprintf(__('Note that assigning a %s page above will override this archive if the URLs collide (which is the default settings, and is recommended for maximum plugin compatibility). You can have both at the same time, but you must ensure that your page and %s slugs are different.'), __('locations','dbem'), __('location','dbem')); ?></p>
 						</td>
 					</tr>
 					<tbody class="em-location-archive-options">

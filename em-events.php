@@ -24,7 +24,7 @@ function em_content($page_content) {
 		'owner' => false,
 		'pagination' => 1
 	);
-	if( in_array($post->ID, array($events_page_id, $locations_page_id, $categories_page_id, $edit_bookings_page_id, $edit_events_page_id, $edit_locations_page_id, $my_bookings_page_id, $tags_page_id)) ){
+	if( !post_password_required() && in_array($post->ID, array($events_page_id, $locations_page_id, $categories_page_id, $edit_bookings_page_id, $edit_events_page_id, $edit_locations_page_id, $my_bookings_page_id, $tags_page_id)) ){
 		$content = apply_filters('em_content_pre', '', $page_content);
 		if( empty($content) ){
 			ob_start();

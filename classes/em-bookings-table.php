@@ -546,7 +546,7 @@ class EM_Bookings_Table{
 				if($this->show_tickets && !empty($EM_Ticket)){ 
 					$cols[] = em_get_currency_formatted(apply_filters('em_bookings_table_row_booking_price_ticket', $EM_Ticket_Booking->get_price(false,false, true), $EM_Booking, true));
 				}else{
-					$cols[] = $EM_Booking->get_price(false,true,true);
+					$cols[] = $EM_Booking->get_price(true);
 				}
 			}elseif($col == 'booking_status'){
 				$cols[] = $EM_Booking->get_status(true);

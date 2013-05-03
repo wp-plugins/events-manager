@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Events Manager package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2013-04-18 12:24+0100\n"
+"PO-Revision-Date: 2013-04-26 14:12+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -5489,7 +5489,7 @@ msgstr "[%s] Nouvelle inscription"
 
 #: em-functions.php:472
 msgid "[%s] Your username and password"
-msgstr "[%s] Vos idenficiant & mot de passe"
+msgstr "[%s] Vos nom d'utilisateur et mot de passe"
 
 #: em-functions.php:530
 msgid "If translations are left blank, the default value will be used."

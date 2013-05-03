@@ -1,6 +1,6 @@
 <?php
 	//TODO Simplify panel for events, use form flags to detect certain actions (e.g. submitted, etc)
-	global $wpdb, $bp, $EM_Event, $EM_Notices;
+	global $wpdb, $bp, $EM_Notices;
 	/* @var $args array */
 	/* @var $EM_Events array */
 	/* @var events_count int */
@@ -62,54 +62,54 @@
 				<tbody>
 					<?php
 					$rowno = 0;
-					foreach ( $EM_Events as $event ) {
-						/* @var $event EM_Event */
+					foreach ( $EM_Events as $EM_Event ) {
+						/* @var $EM_Event EM_Event */
 						$rowno++;
 						$class = ($rowno % 2) ? 'alternate' : '';
 						// FIXME set to american						
-						$localised_start_date = date_i18n(get_option('dbem_date_format'), $event->start);
-						$localised_end_date = date_i18n(get_option('dbem_date_format'), $event->end);
+						$localised_start_date = date_i18n(get_option('dbem_date_format'), $EM_Event->start);
+						$localised_end_date = date_i18n(get_option('dbem_date_format'), $EM_Event->end);
 						$style = "";
 						$today = current_time('timestamp');
-						$location_summary = "<b>" . $event->get_location()->location_name . "</b><br/>" . $event->get_location()->location_address . " - " . $event->get_location()->location_town;
+						$location_summary = "<b>" . $EM_Event->get_location()->location_name . "</b><br/>" . $EM_Event->get_location()->location_address . " - " . $EM_Event->get_location()->location_town;
 						
-						if ($event->start < $today && $event->end < $today){						
+						if ($EM_Event->start < $today && $EM_Event->end < $today){						
 							$class .= " past";
 						}
 						//Check pending approval events
-						if ( !$event->status ){
+						if ( !$EM_Event->get_status() ){
 							$class .= " pending";
 						}					
 						?>
-						<tr class="event <?php echo trim($class); ?>" <?php echo $style; ?> id="event_<?php echo $event->event_id ?>">
+						<tr class="event <?php echo trim($class); ?>" <?php echo $style; ?> id="event_<?php echo $EM_Event->event_id ?>">
 							<?php /*
 							<td>
-								<input type='checkbox' class='row-selector' value='<?php echo $event->event_id; ?>' name='events[]' />
+								<input type='checkbox' class='row-selector' value='<?php echo $EM_Event->event_id; ?>' name='events[]' />
 							</td>
 							*/ ?>
 							<td>
 								<strong>
-									<a class="row-title" href="<?php echo esc_url($event->get_edit_url()); ?>"><?php echo esc_html($event->name); ?></a>
+									<a class="row-title" href="<?php echo esc_url($EM_Event->get_edit_url()); ?>"><?php echo esc_html($EM_Event->event_name); ?></a>
 								</strong>
 								<?php 
-								if( get_option('dbem_rsvp_enabled') == 1 && $event->rsvp == 1 ){
+								if( get_option('dbem_rsvp_enabled') == 1 && $EM_Event->event_rsvp == 1 ){
 									?>
 									<br/>
-									<a href="<?php echo esc_url($event->get_bookings_url()); ?>"><?php echo __("Bookings",'dbem'); ?></a> &ndash;
-									<?php _e("Booked",'dbem'); ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces(); ?>
+									<a href="<?php echo esc_url($EM_Event->get_bookings_url()); ?>"><?php echo __("Bookings",'dbem'); ?></a> &ndash;
+									<?php _e("Booked",'dbem'); ?>: <?php echo $EM_Event->get_bookings()->get_booked_spaces()."/".$EM_Event->get_spaces(); ?>
 									<?php if( get_option('dbem_bookings_approval') == 1 ): ?>
-										| <?php _e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
+										| <?php _e("Pending",'dbem') ?>: <?php echo $EM_Event->get_bookings()->get_pending_spaces(); ?>
 									<?php endif;
 								}
 								?>
 								<div class="row-actions">
 									<?php if( current_user_can('delete_events')) : ?>
-									<span class="trash"><a href="<?php echo esc_url(add_query_arg(array('action'=>'event_delete', 'event_id'=>$event->event_id, '_wpnonce'=> wp_create_nonce('event_delete_'.$event->event_id)))); ?>" class="em-event-delete"><?php _e('Delete','dbem'); ?></a></span>
+									<span class="trash"><a href="<?php echo esc_url(add_query_arg(array('action'=>'event_delete', 'event_id'=>$EM_Event->event_id, '_wpnonce'=> wp_create_nonce('event_delete_'.$EM_Event->event_id)))); ?>" class="em-event-delete"><?php _e('Delete','dbem'); ?></a></span>
 									<?php endif; ?>
 								</div>
 							</td>
 							<td>
-								<a href="<?php echo esc_url(add_query_arg(array('action'=>'event_duplicate', 'event_id'=>$event->event_id, '_wpnonce'=> wp_create_nonce('event_duplicate_'.$event->event_id)))); ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
+								<a href="<?php echo esc_url(add_query_arg(array('action'=>'event_duplicate', 'event_id'=>$EM_Event->event_id, '_wpnonce'=> wp_create_nonce('event_duplicate_'.$EM_Event->event_id)))); ?>" title="<?php _e ( 'Duplicate this event', 'dbem' ); ?>">
 									<strong>+</strong>
 								</a>
 							</td>
@@ -122,8 +122,8 @@
 								<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
 								<br />
 								<?php
-									if(!$event->event_all_day){
-										echo date_i18n(get_option('time_format'), $event->start) . " - " . date_i18n(get_option('time_format'), $event->end);
+									if(!$EM_Event->event_all_day){
+										echo date_i18n(get_option('time_format'), $EM_Event->start) . " - " . date_i18n(get_option('time_format'), $EM_Event->end);
 									}else{
 										echo get_option('dbem_event_all_day_message');
 									}
@@ -131,14 +131,14 @@
 							</td>
 							<td>
 								<?php 
-								if ( $event->is_recurrence() ) {
+								if ( $EM_Event->is_recurrence() ) {
 									$recurrence_delete_confirm = __('WARNING! You will delete ALL recurrences of this event, including booking history associated with any event in this recurrence. To keep booking information, go to the relevant single event and save it to detach it from this recurrence series.','dbem');
 									?>
 									<strong>
-									<?php echo $event->get_recurrence_description(); ?> <br />
-									<a href="<?php echo esc_url($event->get_edit_reschedule_url()); ?>"><?php _e ( 'Edit Recurring Events', 'dbem' ); ?></a>
+									<?php echo $EM_Event->get_recurrence_description(); ?> <br />
+									<a href="<?php echo esc_url($EM_Event->get_edit_reschedule_url()); ?>"><?php _e ( 'Edit Recurring Events', 'dbem' ); ?></a>
 									<?php if( current_user_can('delete_events')) : ?>
-									<span class="trash"><a href="<?php echo esc_url(add_query_arg(array('action'=>'event_delete', 'event_id'=>$event->recurrence_id, '_wpnonce'=> wp_create_nonce('event_delete_'.$event->recurrence_id)))); ?>" class="em-event-rec-delete" onclick ="if( !confirm('<?php echo $recurrence_delete_confirm; ?>') ){ return false; }"><?php _e('Delete','dbem'); ?></a></span>
+									<span class="trash"><a href="<?php echo esc_url(add_query_arg(array('action'=>'event_delete', 'event_id'=>$EM_Event->recurrence_id, '_wpnonce'=> wp_create_nonce('event_delete_'.$EM_Event->recurrence_id)))); ?>" class="em-event-rec-delete" onclick ="if( !confirm('<?php echo $recurrence_delete_confirm; ?>') ){ return false; }"><?php _e('Delete','dbem'); ?></a></span>
 									<?php endif; ?>										
 									</strong>
 									<?php

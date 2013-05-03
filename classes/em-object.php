@@ -1255,15 +1255,15 @@ class EM_Object {
 	/*
 	 * END IMAGE UPlOAD FUNCTIONS
 	 */
-	
+
+
 	/**
-	 * 
-	 * @return boolean
+	 * Formats a price according to settings and currency
+	 * @param double $price
+	 * @return string
 	 */
-	function has_taxes(){
-	    //TODO make all functions use this to check tax availability (using extended object for function access)
-	    //TODO override this function in e.g. events to allow custom tax values
-	    return !get_option('dbem_bookings_tax_auto_add') && is_numeric(get_option('dbem_bookings_tax')) && $this->get_tax_rate() > 0;
+	function format_price( $price ){
+		return em_get_currency_formatted( $price );
 	}
 	
 	function get_tax_rate(){

@@ -124,24 +124,46 @@ class EM_Ticket_Booking extends EM_Object{
 	}
 	
 	/**
-	 * Gets the total price for this whole booking. Seting $force_reset to true will recheck spaces, even if previously done so.
-	 * @param boolean $force_refresh
-	 * @return float
+	 * Gets the total price for these tickets. If $format is set to true, the value returned is a price string with currency formatting.
+	 * @param boolean $format
+	 * @return double|string
 	 */
-	function get_price( $force_refresh=false, $format = false, $add_tax = 'x' ){
-		if( $force_refresh || $this->ticket_booking_price == 0 || $add_tax !== 'x' || get_option('dbem_bookings_tax_auto_add') ){
+	function get_price( $format = false ){
+		if( $this->ticket_booking_price == 0 ){
 			//get the ticket, calculate price on spaces
-			$this->ticket_booking_price = round($this->get_ticket()->get_price(false, $add_tax) * $this->ticket_booking_spaces, 2);
-			$this->ticket_booking_price = apply_filters('em_ticket_booking_get_price', $this->ticket_booking_price, $this, $add_tax);
+			$this->ticket_booking_price = round($this->get_ticket()->get_price_without_tax() * $this->ticket_booking_spaces, 2);
+			$this->ticket_booking_price = apply_filters('em_ticket_booking_get_price', $this->ticket_booking_price, $this);
 		}
+		$price = $this->ticket_booking_price;
+		//do some legacy checking here for bookings made prior to 5.4, due to how taxes are calculated
+		if( $this->ticket_booking_id > 0 ){
+		    $EM_Booking = $this->get_booking();
+		    if( !empty($EM_Booking->legacy_tax_rate) ){
+		        //check multisite nuances
+		        if( EM_MS_GLOBAL && $EM_Booking->get_event()->blog_id != get_current_blog_id() ){
+		            //MultiSite AND Global tables enabled - get settings for blog that published the event  
+		            $tax_auto_add = get_blog_option($EM_Booking->get_event()->blog_id, 'dbem_legacy_bookings_tax_auto_add');
+		        }else{
+		            //get booking from current site, whether or not we're in MultiSite
+		            $tax_auto_add = get_option('dbem_legacy_bookings_tax_auto_add');
+		        }
+		        if( $tax_auto_add && $EM_Booking->get_tax_rate() > 0 ){
+				    //this booking never had a tax rate fixed to it (i.e. prior to v5.4), and according to legacy settings, taxes were applied to this price
+				    //we now calculate price of ticket bookings without taxes, so remove the tax
+				    $price = $this->ticket_booking_price / (1 + $EM_Booking->get_tax_rate()/100 );
+		        }
+		    }
+		}
+		//return price formatted or not
 		if($format){
-			return em_get_currency_formatted($this->ticket_booking_price);
+			return $this->format_price($price);
 		}
-		return $this->ticket_booking_price;
+		return $price;
 	}
 	
 	/**
-	 * Smart event locator, saves a database read if possible. 
+	 * Smart booking locator, saves a database read if possible.
+	 * @return EM_Booking 
 	 */
 	function get_booking(){
 		global $EM_Booking;
