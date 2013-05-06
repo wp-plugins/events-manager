@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.3.9.3 (dev) =
+= 5.4 =
 * fixed drag/drop in bookings admin not always recognizing the change
 * improved location search and reset ui logic
 * fixed precision of long/lat values in database
