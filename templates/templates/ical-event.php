@@ -1,41 +1,27 @@
 <?php
 /* @var $EM_Event EM_Event */
 global $EM_Event;
-//timezone
-$tz = date_default_timezone_get(); // get current PHP timezone
-//correct event start/end timestamps in correct timezone
-date_default_timezone_set( get_option('timezone_string')); // set the PHP timezone to match WordPress
-$EM_Event->start = strtotime($EM_Event->event_start_date." ".$EM_Event->event_start_time);
-$EM_Event->end = strtotime($EM_Event->event_end_date." ".$EM_Event->event_end_time);
-date_default_timezone_set( 'UTC'); // set the PHP timezone to UTC, we already calculated event dates
-
-//send headers
-header('Content-type: text/calendar; charset=utf-8');
-header('Content-Disposition: inline; filename="'.$EM_Event->event_slug.'.ics"');
 		
 $description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_description_format' ) ) );
-$blog_desc = ent2ncr(convert_chars(strip_tags(get_bloginfo()))) . " - " . __('Calendar','dbem');
 			
-echo "BEGIN:VCALENDAR
+$output = "BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//wp-events-plugin.com//".EM_VERSION."//EN";
+PRODID:-//wp-events-plugin.com//".EM_VERSION."//EN"."\n";
+echo preg_replace("/([^\r])\n/", "$1\r\n", $output);
 
-	/* @var $EM_Event EM_Event */
+	//calculate the times along with timezone offsets
 	if($EM_Event->event_all_day){
 		$dateStart	= ';VALUE=DATE:'.date('Ymd',$EM_Event->start); //all day
 		$dateEnd	= ';VALUE=DATE:'.date('Ymd',$EM_Event->end + 86400); //add one day
 	}else{
-		$dateStart	= ':'.date('Ymd\THis\Z',$EM_Event->start);
-		$dateEnd = ':'.date('Ymd\THis\Z',$EM_Event->end);
+		$dateStart	= ':'.get_gmt_from_date(date('Y-m-d H:i:s', $EM_Event->start), 'Ymd\THis\Z');
+		$dateEnd = ':'.get_gmt_from_date(date('Y-m-d H:i:s', $EM_Event->end), 'Ymd\THis\Z');
 	}
 	if( !empty($EM_Event->event_date_modified) && $EM_Event->event_date_modified != '0000-00-00 00:00:00' ){
-		$dateModified = date('Ymd\THis\Z', strtotime($EM_Event->event_date_modified));
+		$dateModified =  get_gmt_from_date($EM_Event->event_date_modified, 'Ymd\THis\Z');
 	}else{
-	    $dateModified = date('Ymd\THis\Z', strtotime($EM_Event->post_modified));
+	    $dateModified = get_gmt_from_date($EM_Event->post_modified, 'Ymd\THis\Z');
 	}
-
-	//correct event start/end timestamps in correct timezone
-	date_default_timezone_set( get_option('timezone_string')); // set the PHP timezone to match WordPress
 	
 	//Formats
 	$description = $EM_Event->output($description_format,'ical');
@@ -53,7 +39,7 @@ PRODID:-//wp-events-plugin.com//".EM_VERSION."//EN";
 		$locations[] = $EM_Category->name;
 	}
 	
-echo "
+$output = "
 BEGIN:VEVENT
 DTSTART{$dateStart}
 DTEND{$dateEnd}
@@ -61,7 +47,6 @@ DTSTAMP:{$dateModified}
 SUMMARY:{$description}
 LOCATION:{$location}
 URL:{$EM_Event->output('#_EVENTURL')}
-END:VEVENT";
-echo "
+END:VEVENT
 END:VCALENDAR";
-date_default_timezone_set($tz); // set the PHP timezone back the way it was
+echo preg_replace("/([^\r])\n/", "$1\r\n", $output);

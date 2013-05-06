@@ -14,6 +14,7 @@ function em_content($page_content) {
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$categories_page_id = get_option( 'dbem_categories_page' );
+	$tags_page_id = get_option( 'dbem_tags_page' );
 	$edit_events_page_id = get_option( 'dbem_edit_events_page' );
 	$edit_locations_page_id = get_option( 'dbem_edit_locations_page' );
 	$edit_bookings_page_id = get_option( 'dbem_edit_bookings_page' );
@@ -23,7 +24,7 @@ function em_content($page_content) {
 		'owner' => false,
 		'pagination' => 1
 	);
-	if( in_array($post->ID, array($events_page_id, $locations_page_id, $categories_page_id, $edit_bookings_page_id, $edit_events_page_id, $edit_locations_page_id, $my_bookings_page_id)) ){
+	if( !post_password_required() && in_array($post->ID, array($events_page_id, $locations_page_id, $categories_page_id, $edit_bookings_page_id, $edit_events_page_id, $edit_locations_page_id, $my_bookings_page_id, $tags_page_id)) ){
 		$content = apply_filters('em_content_pre', '', $page_content);
 		if( empty($content) ){
 			ob_start();
@@ -46,9 +47,11 @@ function em_content($page_content) {
 						em_locate_template('templates/events-calendar.php',true, array('args'=>$args));
 					}else{
 						//Intercept search request, if defined
-						$args['scope'] = get_option('dbem_events_page_scope');
 						if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'search_events' ){
 							$args = EM_Events::get_post_search( array_merge($args, $_REQUEST) );
+						}
+						if( empty($args['scope']) ){
+						    $args['scope'] = get_option('dbem_events_page_scope');
 						}
 						em_locate_template('templates/events-list.php', true, array('args'=>$args));
 					}
@@ -62,9 +65,9 @@ function em_content($page_content) {
 					em_locate_template('templates/locations-list.php',true, array('args'=>$args));
 				}
 			}elseif( $post->ID == $categories_page_id && $categories_page_id != 0 ){
-				$args['orderby'] = get_option('dbem_categories_default_orderby');
-				$args['order'] = get_option('dbem_categories_default_order');
 				em_locate_template('templates/categories-list.php',true, array('args'=>$args));
+			}elseif( $post->ID == $tags_page_id && $tags_page_id != 0 ){
+				em_locate_template('templates/tags-list.php',true, array('args'=>$args));
 			}elseif( $post->ID == $edit_events_page_id && $edit_events_page_id != 0 ){
 				em_events_admin();
 			}elseif( $post->ID == $edit_locations_page_id && $edit_locations_page_id != 0 ){
@@ -98,9 +101,11 @@ add_filter('the_content', 'em_content');
  * @param $data
  * @return string
  */
-function em_content_page_title($original_content) {
+function em_content_page_title($original_content, $id = null) {
 	global $EM_Event, $EM_Location, $EM_Category, $wp_query, $post;
 	if( empty($post) ) return $original_content; //fix for any other plugins calling the_content outside the loop
+	if ($id && $id !== $post->ID) return $original_content;
+	
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$edit_events_page_id = get_option( 'dbem_edit_events_page' );
@@ -147,8 +152,8 @@ function em_content_page_title($original_content) {
 					$content = $original_content;
 				}
 			}elseif( $post->ID == $edit_events_page_id ){
-				if( !empty($_REQUEST['action']) && $_REQUEST['action'] = 'edit' ){			
-					if( is_object($EM_Event) ){
+				if( !empty($_REQUEST['action']) && $_REQUEST['action'] = 'edit' ){
+					if( is_object($EM_Event) && $EM_Event->event_id){					
 						if($EM_Event->is_recurring()){
 							$content = __( "Reschedule Events", 'dbem' )." '{$EM_Event->event_name}'";
 						}else{
@@ -192,6 +197,7 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	// Determines position of the separator and direction of the breadcrumb
 	$new_title = em_content_page_title($title);
 	if( $new_title != $title ){
+	    if( $sep == '' ) $sep = '  ';
 		$title_array = explode( $sep, $title );
 		foreach($title_array as $title_item_key => $title_item){ if(trim($title_item) == ''){ unset($title_array[$title_item_key]); } } //remove blanks
 		$title_array[] = $new_title;
@@ -201,6 +207,7 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 		}else{
 		    $title_array[] = '';
 		}
+	    if( $sep == '  ' ) $sep = '';
 		$title = implode( " $sep ", $title_array );
 	}
 	return $title;
@@ -212,7 +219,7 @@ add_filter ( 'wp_title', 'em_content_wp_title',100,3 ); //override other plugin 
  * @param string $data
  * @return string
  */
-function em_wp_the_title($data){
+function em_wp_the_title($data, $id = null){
 	global $post, $wp_query, $EM_Location;
 	if( empty($post) ) return $data; //fix for any other plugins calling the_content outside the loop
 	//because we're only editing the main title of the page here, we make sure we're in the main query
@@ -224,21 +231,22 @@ function em_wp_the_title($data){
 	    $edit_bookings_page_id = get_option( 'dbem_edit_bookings_page' );
 		if( is_main_query() && !empty($post->ID) && in_array($post->ID, array($events_page_id, $locations_page_id, $edit_events_page_id, $edit_locations_page_id, $edit_bookings_page_id)) ){
 			if ( $wp_query->in_the_loop ) {
-				return apply_filters('em_wp_the_title', em_content_page_title($data)) ;
+				return apply_filters('em_wp_the_title', em_content_page_title($data, $id)) ;
 			}
 		}
 	}
 	return $data;
 }
-add_filter ( 'the_title', 'em_wp_the_title',10,1 );
+add_filter ( 'the_title', 'em_wp_the_title',10, 2 );
 
 
 function em_get_page_type(){
-	global $EM_Location, $EM_Category, $EM_Event, $wp_query, $post;	
+	global $EM_Location, $EM_Category, $EM_Event, $wp_query, $post, $em_category_id, $em_tag_id;
 	$events_page_id = get_option ( 'dbem_events_page' );
 	$locations_page_id = get_option( 'dbem_locations_page' );
 	$categories_page_id = get_option( 'dbem_categories_page' );
-	if ( !empty($events_page_id) && $post->ID == $events_page_id ) {
+	$has_post = is_object($post);
+	if ( !empty($events_page_id) && $has_post && $post->ID == $events_page_id ) {
 		if ( $wp_query->get('calendar_day') ) {
 			return "calendar_day";
 		}elseif ( $wp_query->get('bookings_page') ) {
@@ -253,18 +261,20 @@ function em_get_page_type(){
 			return "my_bookings";
 		}
 	}
-	if( is_single() && $post->post_type == EM_POST_TYPE_EVENT  ){
+	if( is_single() && $has_post && $post->post_type == EM_POST_TYPE_EVENT  ){
 		return 'event';
 	}
-	if( (!empty($locations_page_id) && $post->ID == $locations_page_id) || (!is_single() && $wp_query->query_vars['post_type'] == EM_POST_TYPE_LOCATION) ){
+	if( (!empty($locations_page_id) && $has_post && $post->ID == $locations_page_id) || (!is_single() && $wp_query->query_vars['post_type'] == EM_POST_TYPE_LOCATION) ){
 		return is_object($EM_Location) ? "location":"locations";
 	}elseif( is_single() && $post->post_type == EM_POST_TYPE_LOCATION ){
 		return 'location';
 	}
-	if( (!empty($categories_page_id) && $post->ID == $categories_page_id) ){
-		return "categories";		
-	}elseif( !empty($wp_query->tax_query->queries[0]['taxonomy']) &&  $wp_query->tax_query->queries[0]['taxonomy'] == EM_TAXONOMY_CATEGORY ){
+	if( (!empty($categories_page_id) && $has_post && $post->ID == $categories_page_id) ){
+		return "categories";
+	}elseif( is_tax(EM_TAXONOMY_CATEGORY) || !empty($wp_query->em_category_id) || ($has_post && $post->ID == get_option('dbem_categories_page') && !empty($em_category_id)) ){
 		return "category";
+	}elseif( is_tax(EM_TAXONOMY_TAG) || !empty($wp_query->em_tag_id) || !empty($em_tag_id) ){
+		return "tag";
 	}
 }
 ?>
