@@ -490,7 +490,7 @@ class EM_Booking extends EM_Object{
 	function get_price_discounts_summary( $pre_or_post = 'pre', $price = false ){
 		$discounts=  $this->get_price_discounts();
 		$discount_summary = array();
-		if( !$price ){
+		if( $price === false ){
 			$price = $this->get_price_base();
 			if( $pre_or_post == 'post' ) $price = $this->get_price_pre_taxes() + $this->get_price_taxes();
 		}
