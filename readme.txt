@@ -98,6 +98,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.4.1.1 (dev) =
+* fixed sortable collumns not working on export bookings function
+
 = 5.4.1 =
 * fixed EM crash when legacy tax rate is 0 and free events are booked
 * updated German and Russian

@@ -319,7 +319,7 @@ jQuery(document).ready( function($){
 			$( ".em-bookings-cols-sortable" ).sortable({
 				connectWith: ".em-bookings-cols-sortable",
 				update: function(event, ui) {
-					if( ui.item.parents('ul#em-bookings-cols-active').length > 0 ){							
+					if( ui.item.parents('ul#em-bookings-cols-active, ul#em-bookings-export-cols-active').length > 0 ){							
 						ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
 					}else{
 						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);

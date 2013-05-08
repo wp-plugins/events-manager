@@ -287,7 +287,7 @@ class EM_Ticket extends EM_Object{
 				}
 			}
 		}
-		return apply_filters('em_ticket_get_available_spaces', $spaces, $this);
+		return apply_filters('em_ticket_get_booked_spaces', $spaces, $this);
 	}
 	
 	/**
@@ -427,7 +427,7 @@ class EM_Ticket extends EM_Object{
 				$value = $this->$property;
 				break;
 		}
-		return apply_filters('em_ticket_output_property',$value,$this);
+		return apply_filters('em_ticket_output_property',$value,$this, $property);
 	}
 }
 ?>
