@@ -65,7 +65,8 @@ class EM_Events extends EM_Object implements Iterator {
 		
 		//Get ordering instructions
 		$EM_Event = new EM_Event();
-		$orderby = self::build_sql_orderby($args, array_keys($EM_Event->fields), get_option('dbem_events_default_order'));
+		$EM_Location = new EM_Location();
+		$orderby = self::build_sql_orderby($args, array_keys(array_merge($EM_Event->fields, $EM_Location->fields)), get_option('dbem_events_default_order'));
 		//Now, build orderby sql
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
 		
@@ -142,7 +143,9 @@ class EM_Events extends EM_Object implements Iterator {
 		}else{
 			$events = $array;
 		}
+		$event_ids = array();
 		foreach ($events as $EM_Event){
+		    $event_ids[] = $EM_Event->event_id;
 			$results[] = $EM_Event->delete();
 		}
 		//TODO add better error feedback on events delete fails
@@ -177,7 +180,7 @@ class EM_Events extends EM_Object implements Iterator {
 			$events_count = count($events);
 		}else{
 			//Firstly, let's check for a limit/offset here, because if there is we need to remove it and manually do this
-			$args = apply_filters('em_events_output_args', self::get_default_search($args) );
+			$args = apply_filters('em_events_output_args', $args );
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
 			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:$page;
@@ -249,7 +252,7 @@ class EM_Events extends EM_Object implements Iterator {
 				if($post_value != ',' ){
 					$args[$post_key] = $post_value;
 				}elseif( $post_value == ',' && $post_key == 'scope' ){
-					$args['scope'] = get_option('dbem_events_page_scope');
+					unset($args['scope']);
 				}
 			}
 		}
@@ -269,12 +272,14 @@ class EM_Events extends EM_Object implements Iterator {
 	function build_sql_conditions( $args = array() ){
 		$conditions = parent::build_sql_conditions($args);
 		if( !empty($args['search']) ){
-			$like_search = array('event_name',EM_EVENTS_TABLE.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_country');
+			$like_search = array('event_name',EM_EVENTS_TABLE.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_country','location_region');
 			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
 		}
 		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
 			$null = ($args['status'] == 0) ? ' OR `event_status` = 0':'';
 			$conditions['status'] = "(`event_status`={$args['status']}{$null} )";
+		}elseif( array_key_exists('status',$args) && $args['status'] === null ){
+		    $conditions['status'] = "(`event_status` IS NULL )"; //by default, we don't ever show deleted items
 		}elseif( empty($args['status']) || $args['status'] != 'all'){
 			$conditions['status'] = "(`event_status` IS NOT NULL )"; //by default, we don't ever show deleted items
 		}

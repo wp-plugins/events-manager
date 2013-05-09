@@ -90,6 +90,7 @@ class EM_Locations extends EM_Object implements Iterator {
 		
 		if( EM_MS_GLOBAL ){
 			foreach ( $results as $location ){
+			    if( empty($location['blog_id']) ) $location['blog_id'] = get_current_site()->blog_id;
 				$locations[] = em_get_location($location['post_id'], $location['blog_id']);
 			}
 		}else{
@@ -165,9 +166,12 @@ class EM_Locations extends EM_Object implements Iterator {
 	}
 	
 	function delete( $args = array() ){
-		if( !is_object(current($args)) && get_class((current($args))) != 'EM_Location' ){
+	    $locations = array();
+		if( !is_object(current($args)) ){
+		    //we've been given an array or search arguments to find the relevant locations to delete
 			$locations = self::get($args);
-		}else{
+		}elseif( get_class(current($args)) == 'EM_Location' ){
+		    //we're deleting an array of locations
 			$locations = $args;
 		}
 		$results = array();
@@ -188,6 +192,11 @@ class EM_Locations extends EM_Object implements Iterator {
 		$locations_table = EM_LOCATIONS_TABLE;
 		
 		$conditions = parent::build_sql_conditions($args);
+		//search locations
+		if( !empty($args['search']) ){
+			$like_search = array($locations_table.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_region','location_country');
+			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
+		}
 		//eventful locations
 		if( true == $args['eventful'] ){
 			$conditions['eventful'] = "{$events_table}.event_id IS NOT NULL";
@@ -267,14 +276,9 @@ class EM_Locations extends EM_Object implements Iterator {
 			'private_only' => false,
 			'post_id' => false
 		);
-		if( EM_MS_GLOBAL && !is_admin() ){
-		    if( get_site_option('dbem_ms_mainblog_locations') ){
-		        $array['blog'] = get_current_site()->blog_id;
-		    }else{
-				if( empty($array['blog']) && is_main_site() && get_site_option('dbem_ms_global_locations') ){
-				    $array['blog'] = false;
-				}		        
-		    }
+		if( EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations') ){
+		    //when searching in MS Global mode with all locations being stored on the main blog, blog_id becomes redundant as locations are stored in one blog table set
+		    $array['blog'] = false;
 		}
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );

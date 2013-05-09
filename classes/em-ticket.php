@@ -49,9 +49,9 @@ class EM_Ticket extends EM_Object{
 	 */
 	function EM_Ticket( $ticket_data = false ){
 		$this->ticket_name = __('Standard Ticket','dbem');
+		$ticket = array();
 		if( $ticket_data !== false ){
 			//Load ticket data
-			$ticket = array();
 			if( is_array($ticket_data) ){
 				$ticket = $ticket_data;
 			}elseif( is_numeric($ticket_data) ){
@@ -198,22 +198,40 @@ class EM_Ticket extends EM_Object{
 	}
 	
 	/**
-	 * Gets the total price for this ticket.
+	 * Gets the total price for this ticket, includes tax if settings dictates that tax is added to ticket price. 
+	 * Use $this->ticket_price or $this->get_price_without_tax() if you definitely don't want tax included. 
+	 * @param boolean $format
 	 * @return float
 	 */
-	function get_price($format = false, $add_tax = 'x' ){
+	function get_price($format = false){
 		$price = $this->ticket_price;
-		if( is_numeric(get_option('dbem_bookings_tax')) && get_option('dbem_bookings_tax') > 0 ){
-			//tax could be added here
-			if( $add_tax === true || ($add_tax !== false && get_option('dbem_bookings_tax_auto_add')) ){
-				$price = round($price * (1 + get_option('dbem_bookings_tax')/100),2);
-			}
+		if( get_option('dbem_bookings_tax_auto_add') ){
+			$price = $this->get_price_with_tax();
 		}
 		$price = apply_filters('em_ticket_get_price',$price,$this);
 		if($format){
-			return em_get_currency_formatted($price);
+			return $this->format_price($price);
 		}
 		return $price;
+	}
+	
+	/**
+	 * Calculates how much the individual ticket costs with applicable event/site taxes included.
+	 * @param boolean $format
+	 */
+	function get_price_with_tax( $format = false ){
+	    $price = round($this->get_price_without_tax() * (1 + get_option('dbem_bookings_tax')/100),2);
+	    if( $format ) return $price;
+	    return $price; 
+	}
+	
+	/**
+	 * Calculates how much the individual ticket costs with taxes excluded.
+	 * @param boolean $format
+	 */
+	function get_price_without_tax( $format = false ){
+	    if( $format ) return $this->format_price($this->ticket_price);
+	    return $this->ticket_price; 
 	}
 	
 	/**
@@ -269,7 +287,7 @@ class EM_Ticket extends EM_Object{
 				}
 			}
 		}
-		return apply_filters('em_ticket_get_available_spaces', $spaces, $this);
+		return apply_filters('em_ticket_get_booked_spaces', $spaces, $this);
 	}
 	
 	/**
@@ -409,7 +427,7 @@ class EM_Ticket extends EM_Object{
 				$value = $this->$property;
 				break;
 		}
-		return apply_filters('em_ticket_output_property',$value,$this);
+		return apply_filters('em_ticket_output_property',$value,$this, $property);
 	}
 }
 ?>

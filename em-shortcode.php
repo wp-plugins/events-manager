@@ -47,8 +47,8 @@ function em_get_events_list_shortcode($atts, $format='') {
 	$atts = (array) $atts;
 	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
 	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
-	$atts['page'] = ( !empty($atts['page']) && is_numeric($atts['page']) )? $atts['page'] : 1;
-	$atts['page'] = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : $atts['page'];
+	$pno = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : 1;
+	$atts['page'] = ( !empty($atts['page']) && is_numeric($atts['page']) )? $atts['page'] : $pno;
 	return EM_Events::output( $atts );
 }
 add_shortcode ( 'events_list', 'em_get_events_list_shortcode' );
@@ -59,24 +59,27 @@ add_shortcode ( 'events_list', 'em_get_events_list_shortcode' );
  * @return string
  */
 function em_get_event_shortcode($atts, $format='') {
+    global $EM_Event, $post;
+    $the_event = is_object($EM_Event) ? clone($EM_Event):null; //save global temporarily
 	$atts = (array) $atts;
 	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
 	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
 	if( !empty($atts['event']) && is_numeric($atts['event']) ){
 		$EM_Event = em_get_event($atts['event']);
-		return ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
+		$return = ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
 	}elseif( !empty($atts['post_id']) && is_numeric($atts['post_id']) ){
 		$EM_Event = em_get_event($atts['post_id'], 'post_id');
-		return ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
+		$return = ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
 	}
 	//no specific event or post id supplied, check globals
-	global $EM_Event, $post;
 	if( !empty($EM_Event) ){
-	    return ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
+	    $return = ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
 	}elseif( $post->post_type == EM_POST_TYPE_EVENT ){
 	    $EM_Event = em_get_event($post->ID, 'post_id');
-	    return ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
+	    $return = ( !empty($atts['format']) ) ? $EM_Event->output($atts['format']) : $EM_Event->output_single();
 	}
+    $EM_Event = is_object($the_event) ? $the_event:$EM_Event; //reset global
+    return $return;
 }
 add_shortcode ( 'event', 'em_get_event_shortcode' );
 

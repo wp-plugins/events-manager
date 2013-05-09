@@ -7,9 +7,9 @@
  */
 function em_get_location($id = false, $search_by = 'location_id') {
 	if( is_object($id) && get_class($id) == 'EM_Location' ){
-		return $id;
+		return apply_filters('em_get_location', $id);
 	}else{
-		return new EM_Location($id,$search_by);
+		return apply_filters('em_get_location', new EM_Location($id,$search_by));
 	}
 }
 /**
@@ -112,7 +112,10 @@ class EM_Location extends EM_Object {
 				//search by location_id, get post_id and blog_id (if in ms mode) and load the post
 				$results = $wpdb->get_row($wpdb->prepare("SELECT post_id, blog_id FROM ".EM_LOCATIONS_TABLE." WHERE location_id=%d",$id), ARRAY_A);
 				if( !empty($results['post_id']) ){
-					if( is_multisite() && is_numeric($results['blog_id']) ){
+					if( is_multisite() ){
+					    if( empty($results['blog_id']) || (EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations')) ){
+							$results['blog_id'] = get_current_site()->blog_id;					        
+					    }
 						$location_post = get_blog_post($results['blog_id'], $results['post_id']);
 						$search_by = $results['blog_id'];
 					}else{
@@ -121,7 +124,11 @@ class EM_Location extends EM_Object {
 				}
 			}else{
 				if(!$is_post){
-					if( is_numeric($search_by) && is_multisite() ){
+				    if( EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations') ){
+				        //blog_id will always be the main blog id if global locations are restricted only to the main blog
+				        $search_by = get_current_site()->blog_id;
+				    }
+				    if( is_numeric($search_by) && is_multisite() ){
 						//we've been given a blog_id, so we're searching for a post id
 						$location_post = get_blog_post($search_by, $id);
 					}else{
@@ -186,7 +193,7 @@ class EM_Location extends EM_Object {
 	function get_post($validate = true){
 	    global $allowedtags;
 		do_action('em_location_get_post_pre', $this);
-		$this->location_name = ( !empty($_POST['location_name']) ) ? wp_kses_data( stripslashes($_POST['location_name'])):'';
+		$this->location_name = ( !empty($_POST['location_name']) ) ? htmlspecialchars_decode(wp_kses_data(htmlspecialchars_decode(stripslashes($_POST['location_name'])))):'';
 		$this->post_content = ( !empty($_POST['content']) ) ? wp_kses( stripslashes($_POST['content']), $allowedtags):'';
 		$this->get_post_meta(false);
 		$result = $validate ? $this->validate():true; //validate both post and meta, otherwise return true
@@ -209,10 +216,6 @@ class EM_Location extends EM_Object {
 		$this->location_country = ( !empty($_POST['location_country']) ) ? wp_kses(stripslashes($_POST['location_country']), array()):'';
 		$this->location_latitude = ( !empty($_POST['location_latitude']) && is_numeric($_POST['location_latitude']) ) ? $_POST['location_latitude']:'';
 		$this->location_longitude = ( !empty($_POST['location_longitude']) && is_numeric($_POST['location_longitude']) ) ? $_POST['location_longitude']:'';
-		//Set Blog ID
-		if( is_multisite() && empty($this->blog_id) ){
-			$this->blog_id = get_current_blog_id();
-		}
 		//Sort out event attributes - note that custom post meta now also gets inserted here automatically (and is overwritten by these attributes)
 		if(get_option('dbem_location_attributes_enabled')){
 			global $allowedtags;
@@ -267,6 +270,7 @@ class EM_Location extends EM_Object {
 	function save(){
 		global $wpdb, $current_user, $blog_id;
 		//TODO shuffle filters into right place
+		if( get_site_option('dbem_ms_mainblog_locations') ){ $this->ms_global_switch(); }
 		if( !$this->can_manage('edit_locations', 'edit_others_locations') && !( get_option('dbem_events_anonymous_submissions') && empty($this->location_id)) ){
 			return apply_filters('em_location_save', false, $this);
 		}
@@ -276,8 +280,12 @@ class EM_Location extends EM_Object {
 		//Deal with updates to a location
 		if( !empty($this->post_id) ){
 			//get the full array of post data so we don't overwrite anything.
-			if( !empty($this->blog_id) && is_multisite() ){
-				$post_array = (array) get_blog_post($this->blog_id, $this->post_id);
+			if( EM_MS_GLOBAL ){
+			    if( !empty($this->blog_id) ){
+					$post_array = (array) get_blog_post($this->blog_id, $this->post_id);
+			    }else{
+			        $post_array = (array) get_blog_post(get_current_site()->blog_id, $this->post_id);
+			    }
 			}else{
 				$post_array = (array) get_post($this->post_id);
 			}
@@ -291,10 +299,11 @@ class EM_Location extends EM_Object {
 			if( EM_MS_GLOBAL && !is_main_site() && get_site_option('dbem_ms_mainblog_locations') ){
 				//if in global ms mode and user is a valid role to publish on their blog, then we will publish the location on the main blog
 				restore_current_blog();
-				$switch_back = true;
-			}
-			$post_array['post_status'] = $this->can_manage('publish_locations') ? 'publish':'pending';
-			if(!empty($switch_back) && get_site_option('dbem_ms_mainblog_locations') ) EM_Object::ms_global_switch(); //switch 'back' to main blog
+				$post_array['post_status'] = $this->can_manage('publish_locations') ? 'publish':'pending'; 
+				EM_Object::ms_global_switch(); //switch 'back' to main blog
+			}else{
+			    $post_array['post_status'] = $this->can_manage('publish_locations') ? 'publish':'pending';
+			} 
 		}else{
 			$post_array['post_status'] = 'draft';
 		}
@@ -325,6 +334,7 @@ class EM_Location extends EM_Object {
 			//location not saved, add an error
 			$this->add_error($post_id->get_error_message());
 		}
+		if( get_site_option('dbem_ms_mainblog_locations') ){ $this->ms_global_switch_back(); }
 		return apply_filters('em_location_save', $post_save && $meta_save && $image_save, $this);
 	}
 	
@@ -333,7 +343,12 @@ class EM_Location extends EM_Object {
 		global $wpdb, $current_user;
 		if( $this->can_manage('edit_locations','edit_others_locations') || ( get_option('dbem_events_anonymous_submissions') && empty($this->location_id)) ){
 			do_action('em_location_save_meta_pre', $this);
-			$data = $this->to_array();
+			//Set Blog ID if in multisite mode
+			if( EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations') ){
+			    $this->blog_id = get_current_site()->blog_id; //global locations restricted to main blog must have main site id
+			}elseif( is_multisite() && empty($this->blog_id) ){
+				$this->blog_id = get_current_blog_id();
+			}
 			//Update Post Meta
 			foreach( array_keys($this->fields) as $key ){
 				if( !in_array($key, $this->post_fields) ){
@@ -348,13 +363,16 @@ class EM_Location extends EM_Object {
 			$this->location_status = (count($this->errors) == 0) ? $this->location_status:null; //set status at this point, it's either the current status, or if validation fails, null
 			//Save to em_locations table
 			$location_array = $this->to_array(true);
-			if( $this->post_status == 'private' ) $location_array['location_private'] = 1;
 			unset($location_array['location_id']);
+			//decide whether or not event is private at this point
+			$location_array['location_private'] = ( $this->post_status == 'private' ) ? 1:0;
+			//check if event truly exists, meaning the event_id is actually a valid location id
 			if( !empty($this->location_id) ){
 				$loc_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$this->location_id}") == $this->post_id;
 			}else{
 				$loc_truly_exists = false;
 			}
+			//save all the meta
 			if( empty($this->location_id) || !$loc_truly_exists ){
 				$this->previous_status = 0; //for sure this was previously status 0
 				if ( !$wpdb->insert(EM_LOCATIONS_TABLE, $location_array) ){
@@ -491,7 +509,15 @@ class EM_Location extends EM_Object {
 		if( $this->location_id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
 			$user_to_check = get_option('dbem_events_anonymous_user');
 		}
-		return apply_filters('em_location_can_manage', parent::can_manage($owner_capability, $admin_capability, $user_to_check), $this, $owner_capability, $admin_capability, $user_to_check);
+		if( $admin_capability && EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations') ){
+			//if in global mode with locations restricted to main blog, we check capabilities against the main blog
+		    $this->ms_global_switch();
+		    $return = parent::can_manage($owner_capability, $admin_capability, $user_to_check);
+		    $this->ms_global_switch_back();
+		}else{
+		    $return = parent::can_manage($owner_capability, $admin_capability, $user_to_check);
+		}
+		return apply_filters('em_location_can_manage', $return, $this, $owner_capability, $admin_capability, $user_to_check);
 	}
 	
 	function get_permalink(){	
@@ -530,7 +556,7 @@ class EM_Location extends EM_Object {
 						$link = em_add_get_params(get_blog_permalink(get_option('dbem_edit_locations_page')), array('action'=>'edit','location_id'=>$this->location_id), false);
 					}
 			        if( empty($link) && !is_main_site() ){
-			        	$link = get_admin_url($current_blog->blog_id, "edit.php?post_type=event&page=locations&action=edit&location_id={$this->location_id}");
+			            $link = get_admin_url($current_blog->blog_id, "edit.php?post_type=event&page=locations&action=edit&location_id={$this->location_id}");
 			        }elseif( empty($link) && is_main_site() ){
 			            $link = get_admin_url($current_site->blog_id, "post.php?post={$this->post_id}&action=edit");
 			        }
@@ -565,7 +591,7 @@ class EM_Location extends EM_Object {
 	function output($format, $target="html") {
 		$location_string = $format;
 	 	//First let's do some conditional placeholder removals
-	 	for ($i = 0 ; $i < get_option('dbem_conditional_recursions',1); $i++){ //you can add nested recursions by modifying this setting in your wp_options table
+	 	for ($i = 0 ; $i < EM_CONDITIONAL_RECURSIONS; $i++){ //you can add nested recursions by modifying this setting in your wp_options table
 			preg_match_all('/\{([a-zA-Z0-9_]+)\}(.+?)\{\/\1\}/s', $location_string, $conditionals);
 			if( count($conditionals[0]) > 0 ){
 				//Check if the language we want exists, if not we take the first language there
@@ -617,16 +643,16 @@ class EM_Location extends EM_Object {
 				case '#_LOCATIONPOSTID':
 					$replace = $this->post_id;
 					break;
-				case '#_NAME': //Depreciated
-				case '#_LOCATION': //Depreciated
+				case '#_NAME': //Depricated
+				case '#_LOCATION': //Depricated
 				case '#_LOCATIONNAME':
 					$replace = $this->location_name;
 					break;
-				case '#_ADDRESS': //Depreciated
+				case '#_ADDRESS': //Depricated
 				case '#_LOCATIONADDRESS': 
 					$replace = $this->location_address;
 					break;
-				case '#_TOWN': //Depreciated
+				case '#_TOWN': //Depricated
 				case '#_LOCATIONTOWN':
 					$replace = $this->location_town;
 					break;
@@ -656,14 +682,20 @@ class EM_Location extends EM_Object {
 					$replace .= empty($this->location_postcode) ? '':'<br />'.$this->location_postcode;
 					$replace .= empty($this->location_region) ? '':'<br />'.$this->location_region;
 					break;
-				case '#_MAP': //Depreciated
+				case '#_MAP': //Depricated
 				case '#_LOCATIONMAP':
 					ob_start();
 					$template = em_locate_template('placeholders/locationmap.php', true, array('EM_Location'=>$this));
 					$replace = ob_get_clean();	
 					break;
-				case '#_DESCRIPTION':  //Depreciated
-				case '#_EXCERPT': //Depreciated
+				case '#_LOCATIONLONGITUDE':
+					$replace = $this->location_longitude;
+					break;
+				case '#_LOCATIONLATITUDE':
+					$replace = $this->location_latitude;
+					break;
+				case '#_DESCRIPTION':  //Depricated
+				case '#_EXCERPT': //Depricated
 				case '#_LOCATIONNOTES':
 				case '#_LOCATIONEXCERPT':	
 					$replace = $this->post_content;
@@ -688,14 +720,27 @@ class EM_Location extends EM_Object {
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
 								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
-									global $blog_id;
-									if ( is_multisite() && $blog_id > 0) {
-										$imageParts = explode('/blogs.dir/', $image_url);
-										if (isset($imageParts[1])) {
-											$image_url = network_site_url('/wp-content/blogs.dir/'. $blog_id. '/' . $imageParts[1]);
+								    if( get_option('dbem_disable_timthumb') ){
+									    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
+									        //location belongs to another blog, so switch blog then call the default wp fucntion
+									        switch_to_blog($this->blog_id);
+								    		$replace = get_the_post_thumbnail($this->ID, $image_size);
+								    		restore_current_blog();
+									    }else{
+									    	$replace = get_the_post_thumbnail($this->ID, $image_size);
+									    }
+								    }else{
+										global $blog_id;
+										if ( is_multisite() && $blog_id > 0) {
+											$imageParts = explode('/blogs.dir/', $image_url);
+											if (isset($imageParts[1])) {
+												$image_url = network_site_url('/wp-content/blogs.dir/'. $blog_id. '/' . $imageParts[1]);
+											}
 										}
-									}
-									$replace = "<img src='".esc_url(em_get_thumbnail_url($image_url, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->location_name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
+										$width = ($image_size[0]) ? 'width="'.esc_attr($image_size[0]).'"':'';
+										$height = ($image_size[1]) ? 'height="'.esc_attr($image_size[1]).'"':'';
+									    $replace = "<img src='".esc_url(em_get_thumbnail_url($image_url, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->location_name)."' $width $height />";
+								    }
 								}else{
 									$replace = "<img src='".$image_url."' alt='".esc_attr($this->location_name)."'/>";
 								}
@@ -705,7 +750,7 @@ class EM_Location extends EM_Object {
 					break;
 				case '#_LOCATIONURL':
 				case '#_LOCATIONLINK':
-				case '#_LOCATIONPAGEURL': //Depreciated
+				case '#_LOCATIONPAGEURL': //Depricated
 					$link = esc_url($this->get_permalink());
 					$replace = ($result == '#_LOCATIONURL' || $result == '#_LOCATIONPAGEURL') ? $link : '<a href="'.$link.'" title="'.esc_attr($this->location_name).'">'.esc_html($this->location_name).'</a>';
 					break;
@@ -716,11 +761,11 @@ class EM_Location extends EM_Object {
 						$replace = ($result == '#_LOCATIONEDITURL') ? $link : '<a href="'.$link.'" title="'.esc_attr($this->location_name).'">'.esc_html(sprintf(__('Edit Location','dbem'))).'</a>';
 				    }
 					break;
-				case '#_PASTEVENTS': //Depreciated
+				case '#_PASTEVENTS': //Depricated
 				case '#_LOCATIONPASTEVENTS':
-				case '#_NEXTEVENTS': //Depreciated
+				case '#_NEXTEVENTS': //Depricated
 				case '#_LOCATIONNEXTEVENTS':
-				case '#_ALLEVENTS': //Depreciated
+				case '#_ALLEVENTS': //Depricated
 				case '#_LOCATIONALLEVENTS':
 					//TODO: add limit to lists of events
 					//convert depreciated placeholders for compatability
@@ -731,22 +776,24 @@ class EM_Location extends EM_Object {
 					if ( $result == '#_LOCATIONPASTEVENTS'){ $scope = 'past'; }
 					elseif ( $result == '#_LOCATIONNEXTEVENTS' ){ $scope = 'future'; }
 					else{ $scope = 'all'; }
-					$events = EM_Events::get( array('location'=>$this->location_id, 'scope'=>$scope) );
-					if ( count($events) > 0 ){
-						$replace .= get_option('dbem_location_event_list_item_header_format');
-						foreach($events as $event){
-							$replace .= $event->output(get_option('dbem_location_event_list_item_format'));
-						}
-						$replace .= get_option('dbem_location_event_list_item_footer_format');
+					$events_count = EM_Events::count( array('location'=>$this->location_id, 'scope'=>$scope) );
+					if ( $events_count > 0 ){
+					    $args = array('location'=>$this->location_id, 'scope'=>$scope, 'pagination'=>1);
+					    $args['format_header'] = get_option('dbem_location_event_list_item_header_format');
+					    $args['format_footer'] = get_option('dbem_location_event_list_item_footer_format');
+					    $args['format'] = get_option('dbem_location_event_list_item_format');
+						$args['limit'] = get_option('dbem_location_event_list_limit');
+						$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : 1;
+					    $replace = EM_Events::output($args);
 					} else {
-						$replace = get_option('dbem_location_no_events_message');
+						$replace = get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_no_events_message').get_option('dbem_location_event_list_item_footer_format');
 					}
 					break;
 				case '#_LOCATIONNEXTEVENT':
 					$events = EM_Events::get( array('location'=>$this->location_id, 'scope'=>'future', 'limit'=>1, 'orderby'=>'event_start_date,event_start_time') );
-					$replace = get_option('dbem_location_no_events_message');
+					$replace = get_option('dbem_location_no_event_message');
 					foreach($events as $EM_Event){
-						$replace = $EM_Event->output('#_EVENTLINK');
+						$replace = $EM_Event->output(get_option('dbem_location_event_single_format'));
 					}
 					break;
 				default:
