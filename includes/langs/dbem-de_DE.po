@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Events Manager package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2013-05-07 21:30+0100\n"
+"PO-Revision-Date: 2013-05-10 17:44+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -5653,7 +5653,7 @@ msgstr "Veröffentlichte Veranstaltung"
 
 #: em-install.php:424
 msgid "All Day"
-msgstr "alle %s"
+msgstr "Alle Ganztägig"
 
 #: em-install.php:425 em-install.php:431 em-install.php:467 em-install.php:486
 msgid "No %s"
@@ -6533,7 +6533,7 @@ msgstr "Veranstaltungs-Format"
 #: templates/forms/event/when-with-recurring.php:28
 #: templates/forms/event/when.php:20
 msgid "All day"
-msgstr "alle %s"
+msgstr "alle ganztägig"
 
 #: templates/forms/event/recurring-when.php:63
 #: templates/forms/event/when-with-recurring.php:69

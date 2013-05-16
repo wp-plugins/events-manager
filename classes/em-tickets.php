@@ -132,10 +132,12 @@ class EM_Tickets extends EM_Object implements Iterator{
 		if( !empty($_POST['em_tickets']) && is_array($_POST['em_tickets']) ){
 			//get all ticket data and create objects
 			global $allowedposttags;
-			foreach($_POST['em_tickets'] as $ticket_data){
-				$EM_Ticket = new EM_Ticket();
-				$EM_Ticket->get_post($ticket_data);
-				$this->tickets[] = $EM_Ticket;
+			foreach($_POST['em_tickets'] as $row => $ticket_data){
+			    if( $row > 0 ){
+					$EM_Ticket = new EM_Ticket();
+					$EM_Ticket->get_post($ticket_data);
+					$this->tickets[] = $EM_Ticket;
+			    }
 			}
 		}else{
 			//we create a blank standard ticket

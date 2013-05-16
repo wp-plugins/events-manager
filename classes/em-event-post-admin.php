@@ -109,7 +109,9 @@ class EM_Event_Post_Admin{
 						if( $EM_Event->is_published() ){ $EM_Event->set_status(0, true); } //no publishing and editing... security threat
 					}
 					//now update the db
-					$wpdb->query("UPDATE ".EM_EVENTS_TABLE." SET event_name='{$EM_Event->event_name}', event_owner='{$EM_Event->event_owner}', event_slug='{$EM_Event->event_slug}', event_status={$event_status}, event_private={$EM_Event->event_private} WHERE event_id='{$EM_Event->event_id}'");
+					$where_array = array($EM_Event->event_name, $EM_Event->event_owner, $EM_Event->event_slug, $EM_Event->event_private, $EM_Event->event_id);
+					$sql = $wpdb->prepare("UPDATE ".EM_EVENTS_TABLE." SET event_name=%s, event_owner=%d, event_slug=%s, event_status={$event_status}, event_private=%d WHERE event_id=%d", $where_array);
+					$wpdb->query($sql);
 					if( $EM_Event->is_recurring() &&  $EM_Event->is_published()){
 						//recurrences are (re)saved only if event is published
 						$EM_Event->save_events();
@@ -153,7 +155,7 @@ class EM_Event_Post_Admin{
 		if(get_post_type($post_id) == EM_POST_TYPE_EVENT){
 			global $EM_Notices;
 			$EM_Event = em_get_event($post_id,'post_id');
-			$EM_Event->set_status(null);
+			$EM_Event->set_status(-1);
 			$EM_Notices->remove_all(); //no validation/notices needed
 		}
 	}
@@ -167,9 +169,9 @@ class EM_Event_Post_Admin{
 	
 	public static function untrashed_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_EVENT){
-			global $EM_Notices;
-			$EM_Event = em_get_event($post_id,'post_id');			
-			$EM_Event->set_status(1);
+			global $EM_Notices, $EM_Event;
+			$EM_Event = new EM_Event($post_id, 'post_id'); //get a refreshed $EM_Event because otherwise statuses don't get updated by WP
+			$EM_Event->set_status( $EM_Event->get_status() );
 			$EM_Notices->remove_all(); //no validation/notices needed
 		}
 	}

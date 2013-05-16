@@ -19,6 +19,7 @@ class EM_Mailer {
 	function send($subject="no title",$body="No message specified", $receiver='', $attachments = array() ) {
 		//TODO add an EM_Error global object, for this sort of error reporting. (@marcus like StatusNotice)
 		global $smtpsettings, $phpmailer, $cformsSettings;
+		$subject = html_entity_decode(wp_kses_data($subject)); //decode entities, but run kses first just in case users use placeholders containing html
 		if( is_array($receiver) ){
 			$receiver_emails = array();
 			foreach($receiver as $receiver_email){

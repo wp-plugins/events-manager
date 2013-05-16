@@ -473,12 +473,12 @@ function em_init_actions() {
 			$conds = array();
 			if( !empty($_REQUEST['country']) ){
 				$conds[] = $wpdb->prepare("(location_country = '%s' OR location_country IS NULL )", $_REQUEST['country']);
+				if( !empty($_REQUEST['region']) ){
+					$conds[] = $wpdb->prepare("( location_region = '%s' )", $_REQUEST['region']);
+				}
+				$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
+				$results = $wpdb->get_col("SELECT DISTINCT location_state FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' $cond ORDER BY location_state");
 			}
-			if( !empty($_REQUEST['region']) ){
-				$conds[] = $wpdb->prepare("( location_region = '%s' OR location_region IS NULL )", $_REQUEST['region']);
-			}
-			$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
-			$results = $wpdb->get_col("SELECT DISTINCT location_state FROM " . EM_LOCATIONS_TABLE ." WHERE location_state IS NOT NULL AND location_state != '' $cond ORDER BY location_state");
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
 				ob_start();
@@ -501,15 +501,15 @@ function em_init_actions() {
 			$conds = array();
 			if( !empty($_REQUEST['country']) ){
 				$conds[] = $wpdb->prepare("(location_country = '%s' OR location_country IS NULL )", $_REQUEST['country']);
+				if( !empty($_REQUEST['region']) ){
+					$conds[] = $wpdb->prepare("( location_region = '%s' )", $_REQUEST['region']);
+				}
+				if( !empty($_REQUEST['state']) ){
+					$conds[] = $wpdb->prepare("(location_state = '%s' )", $_REQUEST['state']);
+				}
+				$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
+				$results = $wpdb->get_col("SELECT DISTINCT location_town FROM " . EM_LOCATIONS_TABLE ." WHERE location_town IS NOT NULL AND location_town != '' $cond  ORDER BY location_town");
 			}
-			if( !empty($_REQUEST['region']) ){
-				$conds[] = $wpdb->prepare("( location_region = '%s' OR location_region IS NULL )", $_REQUEST['region']);
-			}
-			if( !empty($_REQUEST['state']) ){
-				$conds[] = $wpdb->prepare("(location_state = '%s' OR location_state IS NULL )", $_REQUEST['state']);
-			}
-			$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
-			$results = $wpdb->get_col("SELECT DISTINCT location_town FROM " . EM_LOCATIONS_TABLE ." WHERE location_town IS NOT NULL AND location_town != '' $cond  ORDER BY location_town");
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
 				ob_start();
@@ -528,11 +528,12 @@ function em_init_actions() {
 			}
 		}
 		if( $_REQUEST['action'] == 'search_regions' ){
+			$results = array();
 			if( !empty($_REQUEST['country']) ){
-				$conds[] = $wpdb->prepare("(location_country = '%s' OR location_country IS NULL )", $_REQUEST['country']);
+				$conds[] = $wpdb->prepare("(location_country = '%s' )", $_REQUEST['country']);
+				$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
+				$results = $wpdb->get_results("SELECT DISTINCT location_region AS value FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != '' $cond  ORDER BY location_region");
 			}
-			$cond = (count($conds) > 0) ? "AND ".implode(' AND ', $conds):'';
-			$results = $wpdb->get_results("SELECT DISTINCT location_region AS value FROM " . EM_LOCATIONS_TABLE ." WHERE location_region IS NOT NULL AND location_region != '' $cond  ORDER BY location_region");
 			if( $_REQUEST['return_html'] ) {
 				//quick shortcut for quick html form manipulation
 				ob_start();

@@ -28,7 +28,7 @@
 				//send headers
 				header('Content-type: text/calendar; charset=utf-8');
 				header('Content-Disposition: inline; filename="'.$EM_Event->event_slug.'.ics"');
-				em_locate_template('templates/ical-event.php', true);
+				em_locate_template('templates/ical.php', true);
 				exit();
 			}
 		}

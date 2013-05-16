@@ -226,11 +226,19 @@ class EM_Locations extends EM_Object implements Iterator {
 		    }
 		}
 		//status
-		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
-			$null = ($args['status'] == 0) ? ' OR `location_status` = 0':'';
-			$conditions['status'] = "(`location_status`={$args['status']}{$null} )";
-		}else{
-			$conditions['status'] = "(`location_status` IS NOT NULL)";
+		$conditions['status'] = "(`location_status` >= 0)"; //pending and published if status is not explicitly defined (Default is 1)
+		if( array_key_exists('status',$args) ){ 
+		    if( is_numeric($args['status']) ){
+				$conditions['status'] = "(`location_status`={$args['status']} )"; //trash (-1), pending, (0) or published (1)
+			}elseif( $args['status'] == 'pending' ){
+			    $conditions['status'] = "(`location_status`=0)"; //pending
+			}elseif( $args['status'] == 'publish' ){
+			    $conditions['status'] = "(`location_status`=1)"; //published
+		    }elseif( $args['status'] === null || $args['status'] == 'draft' ){
+			    $conditions['status'] = "(`location_status` IS NULL )"; //show draft items
+			}elseif( $args['status'] == 'trash' ){
+			    $conditions['status'] = "(`location_status` = -1 )"; //show trashed items
+			}
 		}
 		//private locations
 		if( empty($args['private']) ){

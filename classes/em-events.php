@@ -78,19 +78,19 @@ class EM_Events extends EM_Object implements Iterator {
 			$selectors = ( $count ) ?  'COUNT(*)':$events_table.'.post_id';
 		}
 		
-		$sql = "
+		$sql = apply_filters('em_events_get_sql',"
 			SELECT $selectors FROM $events_table
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
 			$orderby_sql
 			$limit $offset
-		";
+		", $args);
 
 		//If we're only counting results, return the number of results
 		if( $count ){
 			return apply_filters('em_events_get_count', $wpdb->get_var($sql), $args);		
 		}
-		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
+		$results = $wpdb->get_results( $sql, ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){
@@ -275,13 +275,19 @@ class EM_Events extends EM_Object implements Iterator {
 			$like_search = array('event_name',EM_EVENTS_TABLE.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_country','location_region');
 			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
 		}
-		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
-			$null = ($args['status'] == 0) ? ' OR `event_status` = 0':'';
-			$conditions['status'] = "(`event_status`={$args['status']}{$null} )";
-		}elseif( array_key_exists('status',$args) && $args['status'] === null ){
-		    $conditions['status'] = "(`event_status` IS NULL )"; //by default, we don't ever show deleted items
-		}elseif( empty($args['status']) || $args['status'] != 'all'){
-			$conditions['status'] = "(`event_status` IS NOT NULL )"; //by default, we don't ever show deleted items
+		$conditions['status'] = "(`event_status` >= 0 )"; //shows pending & published if not defined
+		if( array_key_exists('status',$args) ){
+			if( is_numeric($args['status']) ){
+				$conditions['status'] = "(`event_status`={$args['status']})"; //pending or published
+			}elseif( $args['status'] == 'pending' ){
+			    $conditions['status'] = "(`event_status`=0)"; //pending
+			}elseif( $args['status'] == 'publish' ){
+			    $conditions['status'] = "(`event_status`=1)"; //published
+			}elseif( $args['status'] === null || $args['status'] == 'draft' ){
+			    $conditions['status'] = "(`event_status` IS NULL )"; //show draft items
+			}elseif( $args['status'] == 'trash' ){
+			    $conditions['status'] = "(`event_status` = -1 )"; //show trashed items
+			}
 		}
 		//private events
 		if( empty($args['private']) ){

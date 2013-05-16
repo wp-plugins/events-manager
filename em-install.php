@@ -26,10 +26,7 @@ function em_install() {
 		 		delete_option('em_ms_global_install'); //in case for some reason the user changed global settings
 		 	}else{
 		 		update_option('em_ms_global_install',1); //in case for some reason the user changes global settings in the future
-		 	}
-			em_set_capabilities();
-			em_add_options();
-	
+		 	}	
 			//New install, or Migrate?
 			if( $old_version < 5 && !empty($old_version) ){
 				update_option('dbem_upgrade_throttle', time()+300);
@@ -39,8 +36,11 @@ function em_install() {
 			}elseif( empty($old_version) ){
 				em_create_events_page();
 				update_option('dbem_hello_to_user',1);
-			}
-			//Upate Version
+			}			
+			//set caps and options
+			em_set_capabilities();
+			em_add_options();			
+			//Update Version
 		  	update_option('dbem_version', EM_VERSION);
 			delete_option('dbem_upgrade_throttle');
 			delete_option('dbem_upgrade_throttle_time');
@@ -325,7 +325,15 @@ function em_add_options() {
 	$event_published_email_body = str_replace('#_EDITEVENTURL', admin_url().'post.php?action=edit&post=#_EVENTPOSTID', $event_published_email_body);
 	$event_resubmitted_email_body = __("A previously published event has been modified by #_CONTACTNAME, and this event is now unpublished and pending your approval.<br/>Name : #_EVENTNAME <br/>Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Please visit #_EDITEVENTURL to review this event for approval.",'dbem').$email_footer;
 	$event_resubmitted_email_body = str_replace('#_EDITEVENTURL', admin_url().'post.php?action=edit&post=#_EVENTPOSTID', $event_resubmitted_email_body);
-
+	//registration email content
+	$blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES);
+	$booking_registration_email_subject = sprintf(__('[%s] Your username and password', 'dbem'), $blogname);
+	$booking_registration_email_body = sprintf(__('You have successfully created an account at %s', 'dbem'), $blogname).
+		'<br/>'.sprintf(__('You can log into our site here : %s', 'dbem'), get_bloginfo('wpurl').'/wp-login.php').
+		'<br/>'.__('Username', 'dbem').' : %username%'.
+		'<br/>'.__('Password', 'dbem').' : %password%'.
+		'<br/>'.sprintf(__('To view your bookings, please visit %s after logging in.', 'dbem'), em_get_my_bookings_url());
+	//all the options
 	$dbem_options = array(
 		//time formats
 		'dbem_time_format' => get_option('time_format'),
@@ -506,6 +514,8 @@ function em_add_options() {
 		'dbem_ical_limit' => 0,
 		'dbem_ical_scope' => "future",
 		'dbem_ical_description_format' => "#_EVENTNAME - #_LOCATIONNAME - #_EVENTDATES - #_EVENTTIMES",
+		'dbem_ical_real_description_format' => "#_EVENTEXCERPT",
+		'dbem_ical_location_format' => "#_LOCATION",
 		//Google Maps
 		'dbem_gmap_is_active'=> 1,
 		'dbem_location_baloon_format' =>  "<strong>#_LOCATIONNAME</strong><br/>#_LOCATIONADDRESS - #_LOCATIONTOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>",
@@ -527,11 +537,13 @@ function em_add_options() {
 		'dbem_image_max_size' => 204800,
 		//Calendar Options
 		'dbem_list_date_title' => __('Events', 'dbem').' - #j #M #y',
+		'dbem_full_calendar_month_format' => 'M Y',
 		'dbem_full_calendar_event_format' => '<li>#_EVENTLINK</li>',
 		'dbem_full_calendar_long_events' => '0',
 		'dbem_full_calendar_initials_length' => 0,
 		'dbem_full_calendar_abbreviated_weekdays' => true,
 		'dbem_display_calendar_day_single_yes' => 1,
+		'dbem_small_calendar_month_format' => 'M Y',
 		'dbem_small_calendar_event_title_format' => "#_EVENTNAME",
 		'dbem_small_calendar_event_title_separator' => ", ",
 		'dbem_small_calendar_initials_length' => 1,
@@ -619,6 +631,9 @@ function em_add_options() {
 			'dbem_bookings_email_confirmed_body' => str_replace("<br/>", "\n\r", $respondent_email_body_localizable),
 			'dbem_bookings_email_cancelled_subject' => __('Booking Cancelled','dbem'),
 			'dbem_bookings_email_cancelled_body' => str_replace("<br/>", "\n\r", $respondent_email_cancelled_body_localizable),
+			//Registration Email
+			'dbem_bookings_email_registration_subject' => $booking_registration_email_subject,
+			'dbem_bookings_email_registration_body' => str_replace("<br/>", "\n\r", $booking_registration_email_body),
 			//Ticket Specific Options
 			'dbem_bookings_tickets_orderby' => 'ticket_price DESC, ticket_name ASC',
 			'dbem_bookings_tickets_priority' => 0,
@@ -761,6 +776,13 @@ function em_add_options() {
 	    update_option('dbem_legacy_bookings_tax_auto_add', get_option('dbem_bookings_tax_auto_add'));
 	    update_option('dbem_legacy_bookings_tax', get_option('dbem_bookings_tax'));
 	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.413 ){
+	    //copy registration email content into new setting
+	    ob_start();
+	    em_locate_template('emails/new-user.php',true);
+	    update_option('dbem_bookings_email_registration_body', ob_get_clean());
+	}
+	//set time localization for first time depending on current settings
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless
 		$locale_code = substr ( get_locale(), 0, 2 );

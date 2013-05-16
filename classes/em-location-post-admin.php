@@ -70,8 +70,10 @@ class EM_Location_Post_Admin{
 				$loc_truly_exists = $wpdb->get_var('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$EM_Location->location_id}") == $EM_Location->location_id;
 				if(empty($EM_Location->location_id) || !$loc_truly_exists){ $EM_Location->save_meta(); }
 				//continue
-				$location_status = ($EM_Location->is_published()) ? 1:0;
-				$wpdb->query("UPDATE ".EM_LOCATIONS_TABLE." SET location_name='{$EM_Location->location_name}', location_slug='{$EM_Location->location_slug}', location_private='{$EM_Location->location_private}',location_status={$location_status} WHERE location_id='{$EM_Location->location_id}'");
+				$location_status = $EM_Location->get_status(true);
+				$where_array = array($EM_Location->location_name, $EM_Location->location_slug, $EM_Location->location_private, $EM_Location->location_id);
+				$sql = $wpdb->prepare("UPDATE ".EM_LOCATIONS_TABLE." SET location_name=%s, location_slug=%s, location_private=%d, location_status={$location_status} WHERE location_id=%d", $where_array);
+				$wpdb->query($sql);
 				apply_filters('em_location_save', true , $EM_Location);
 			}
 		}
@@ -88,7 +90,7 @@ class EM_Location_Post_Admin{
 		if(get_post_type($post_id) == EM_POST_TYPE_LOCATION){
 			global $EM_Notices;
 			$EM_Location = em_get_location($post_id,'post_id');
-			$EM_Location->set_status(null);
+			$EM_Location->set_status(-1);
 			$EM_Notices->remove_all(); //no validation/notices needed
 		}
 	}
@@ -103,8 +105,8 @@ class EM_Location_Post_Admin{
 	function untrashed_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_LOCATION){
 			global $EM_Notices;
-			$EM_Location = em_get_location($post_id,'post_id');
-			$EM_Location->set_status(1);
+			$EM_Location = new EM_Location($post_id,'post_id');
+			$EM_Location->set_status($EM_Location->get_status());
 			$EM_Notices->remove_all(); //no validation/notices needed
 		}
 	}

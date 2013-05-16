@@ -232,6 +232,7 @@ class EM_Event extends EM_Object{
 			if($search_by == 'event_id' && !$is_post ){
 				//search by event_id, get post_id and blog_id (if in ms mode) and load the post
 				$results = $wpdb->get_row($wpdb->prepare("SELECT post_id, blog_id FROM ".EM_EVENTS_TABLE." WHERE event_id=%d",$id), ARRAY_A);
+				if( !empty($results['post_id']) ){ $this->post_id = $results['post_id']; }
 				if( is_multisite() && (is_numeric($results['blog_id']) || $results['blog_id']=='' ) ){
 				    if( $results['blog_id']=='' )  $results['blog_id'] = get_current_site()->blog_id;
 					$event_post = get_blog_post($results['blog_id'], $results['post_id']);
@@ -252,6 +253,7 @@ class EM_Event extends EM_Object{
 				}else{
 					$event_post = $id;
 				}
+				$this->post_id = !empty($id->ID) ? $id->ID : $id;
 			}
 			$this->load_postdata($event_post, $search_by);
 		}
@@ -317,6 +319,15 @@ class EM_Event extends EM_Object{
 			}
 			$this->get_status();
 			$this->compat_keys();
+		}elseif( !empty($this->post_id) ){
+			//we have an orphan... show it, so that we can at least remove it on the front-end
+			global $wpdb;
+		    $event_array = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".EM_EVENTS_TABLE." WHERE post_id=%d",$this->post_id), ARRAY_A);
+		    if( is_array($event_array) ){
+				$this->orphaned_event = true;
+				$this->post_id = $this->ID = $event_array['post_id'] = null; //reset post_id because it doesn't really exist
+				$this->to_object($event_array);
+		    }
 		}
 	}
 	
@@ -668,14 +679,19 @@ class EM_Event extends EM_Object{
 			//check if event truly exists, meaning the event_id is actually a valid event id
 			if( !empty($this->event_id) ){
 				$blog_condition = '';
-				if( EM_MS_GLOBAL ){
-				    if( is_main_site() ){
-				        $blog_condition = " AND (blog_id='".get_current_blog_id()."' OR blog_id IS NULL)";
-				    }else{
-						$blog_condition = " AND blog_id='".get_current_blog_id()."' ";
-				    }
+				if( !empty($this->orphaned_event ) && !empty($this->post_id) ){
+				    //we're dealing with an orphaned event in wp_em_events table, so we want to update the post_id and give it a post parent 
+				    $event_truly_exists = true;
+				}else{
+					if( EM_MS_GLOBAL ){
+					    if( is_main_site() ){
+					        $blog_condition = " AND (blog_id='".get_current_blog_id()."' OR blog_id IS NULL)";
+					    }else{
+							$blog_condition = " AND blog_id='".get_current_blog_id()."' ";
+					    }
+					}
+					$event_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}".$blog_condition) == $this->post_id;
 				}
-				$event_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$this->event_id}".$blog_condition) == $this->post_id;
 			}else{
 				$event_truly_exists = false;
 			}
@@ -701,10 +717,7 @@ class EM_Event extends EM_Object{
 					$this->add_error( sprintf(__('Something went wrong updating your %s to the index table. Please inform a site administrator about this.','dbem'),__('event','dbem')));			
 				}else{
 					//Also set the status here if status != previous status
-					if( $this->previous_status != $this->get_status()){
-						$status_value = $this->get_status(true);
-						$wpdb->query('UPDATE '.EM_EVENTS_TABLE." SET event_status=$status_value WHERE event_id=".$this->event_id);
-					}
+					if( $this->previous_status != $this->get_status() ) $this->set_status($this->get_status());
 					$this->feedback_message = sprintf(__('Successfully saved %s','dbem'),__('Event','dbem'));
 				}		
 			}
@@ -797,7 +810,6 @@ class EM_Event extends EM_Object{
 	 * @return boolean
 	 */
 	function delete($force_delete = false){ //atm wp seems to force cp deletions anyway
-		global $wpdb;
 		if( $this->can_manage('delete_events', 'delete_others_events') ){
 		    if( !is_admin() ){
 				include_once('em-event-post-admin.php');
@@ -812,12 +824,21 @@ class EM_Event extends EM_Object{
 				$result = wp_delete_post($this->post_id,$force_delete);
 			}else{
 				$result = wp_trash_post($this->post_id);
+				if( !$result && $this->post_status == 'trash' ){
+				    //we're probably dealing with a trashed post already, but the event_status is null from < v5.4.1
+				    $this->set_status(-1);
+				    $result = true;
+				}
+			}
+			if( !$result && !empty($this->orphaned_event) ){
+			    //this is an orphaned event, so the wp delete posts would have never worked, so we just delete the row in our events table
+			    $this->delete_meta();
 			}
 		}else{
 			$result = false;
 		}
 		//print_r($result); echo "|"; print_r($result_meta); die('DELETING');
-		return apply_filters('em_event_delete', $result !== false, $this);
+		return apply_filters('em_event_delete', $result != false, $this);
 	}
 	
 	function delete_meta(){
@@ -883,17 +904,23 @@ class EM_Event extends EM_Object{
 			if($set_post_status){
 				//if the post is trash, don't untrash it!
 				$wpdb->update( $wpdb->posts, array( 'post_status' => 'draft' ), array( 'ID' => $this->post_id ) );
-				$this->post_status = 'draft'; 
 			}
+			$this->post_status = 'draft'; //set post status in this instance
+		}elseif( $status == -1 ){ //trashed post
+			$set_status = -1;
+			if($set_post_status){
+				$wpdb->update( $wpdb->posts, array( 'post_status' => $this->post_status ), array( 'ID' => $this->post_id ) );
+			}
+			$this->post_status = 'trash'; //set post status in this instance
 		}else{
 			$set_status = $status ? 1:0;
 			if($set_post_status){
 				if($this->post_status == 'pending'){
 					$this->post_name = sanitize_title($this->post_title);
 				}
-				$this->post_status = $set_status ? 'publish':'pending';
 				$wpdb->update( $wpdb->posts, array( 'post_status' => $this->post_status, 'post_name' => $this->post_name ), array( 'ID' => $this->post_id ) );
-			}		
+			}	
+			$this->post_status = $set_status ? 'publish':'pending';	
 		}
 		$this->previous_status = $this->get_previous_status();
 		$result = $wpdb->query("UPDATE ".EM_EVENTS_TABLE." SET event_status=$set_status, event_slug='{$this->post_name}' WHERE event_id=".$this->event_id);
@@ -918,6 +945,10 @@ class EM_Event extends EM_Object{
 			case 'pending':
 				$this->event_private = 0;
 				$this->event_status = $status = 0;
+				break;
+			case 'trash':
+				$this->event_private = 0;
+				$this->event_status = $status = -1;
 				break;
 			default: //draft or unknown
 				$this->event_private = 0;
@@ -1231,10 +1262,18 @@ class EM_Event extends EM_Object{
 						$show_condition = $this->event_start_date == $this->event_end_date;
 					}elseif ($condition == 'is_past'){
 						//if event is past
-						$show_condition = $this->start <= current_time('timestamp');
+						if( get_option('dbem_events_current_are_past') ){
+						    $show_condition = $this->start <= current_time('timestamp');
+						}else{
+						    $show_condition = $this->end <= current_time('timestamp');
+						}
 					}elseif ($condition == 'is_future'){
 						//if event is upcoming
 						$show_condition = $this->start > current_time('timestamp');
+					}elseif ($condition == 'is_current'){
+						//if event is upcoming
+						$ts = current_time('timestamp');
+						$show_condition = $this->start <= $ts && $this->end >= $ts;
 					}elseif ($condition == 'is_recurrence'){
 						//if event is a recurrence
 						$show_condition = $this->is_recurrence();
@@ -1274,7 +1313,7 @@ class EM_Event extends EM_Object{
 			}
 	 	}
 		//Now let's check out the placeholders.
-	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9_,]+)})?/", $format, $placeholders);
+	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([^}]+)})?/", $format, $placeholders);
 	 	$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$match = true;
@@ -1301,8 +1340,24 @@ class EM_Event extends EM_Object{
 						if( !empty($this->post_excerpt) ){
 							$replace = $this->post_excerpt;
 						}else{
-							$matches = explode('<!--more', $this->post_content);
-							$replace = $matches[0];
+						    $excerpt_length = 55;
+							$excerpt_more = apply_filters('em_excerpt_more', ' ' . '[...]');
+						    if( !empty($placeholders[3][$key]) ){
+						        $trim = true;
+						        $ph_args = explode(',', $placeholders[3][$key]);
+						        if( is_numeric($ph_args[0]) ) $excerpt_length = $ph_args[0];
+						        if( !empty($ph_args[1]) ) $excerpt_more = $ph_args[1];
+						    }
+							if ( preg_match('/<!--more(.*?)?-->/', $replace, $matches) ) {
+								$content = explode($matches[0], $replace, 2);
+								$replace = force_balance_tags($content[0]);
+							}
+							if( !empty($trim) ){
+							    //shorten content by supplied number - copied from wp_trim_excerpt
+							    $replace = strip_shortcodes( $replace );
+							    $replace = str_replace(']]>', ']]&gt;', $replace);
+							    $replace = wp_trim_words( $replace, $excerpt_length, $excerpt_more );
+							}
 						}
 					}
 					break;
@@ -1684,6 +1739,18 @@ class EM_Event extends EM_Object{
 			foreach($desc_replace as $full_result => $replacement){
 				$event_string = str_replace($full_result, $replacement , $event_string );
 			}
+		}
+		
+		//do some specific formatting
+		//TODO apply this sort of formatting to any output() function
+		if( $target == 'ical' ){
+		    //strip html and escape characters
+		    $event_string = str_replace('\\','\\\\',strip_tags($event_string));
+		    $event_string = str_replace(';','\;',$event_string);
+		    $event_string = str_replace(',','\,',$event_string);
+		    //remove and define line breaks in ical format
+		    $event_string = str_replace("\r\n",'\n',$event_string);
+		    $event_string = str_replace("\n",'\n',$event_string);
 		}
 		
 		return apply_filters('em_event_output', $event_string, $this, $format, $target);
@@ -2188,6 +2255,13 @@ add_filter('dbem_notes', 'convert_chars');
 add_filter('dbem_notes', 'wpautop');
 add_filter('dbem_notes', 'prepend_attachment');
 add_filter('dbem_notes', 'do_shortcode');
+// filters for the notes field in html (corresponding to those of  "the _content")
+add_filter('dbem_notes_excerpt', 'wptexturize');
+add_filter('dbem_notes_excerpt', 'convert_smilies');
+add_filter('dbem_notes_excerpt', 'convert_chars');
+add_filter('dbem_notes_excerpt', 'wpautop');
+add_filter('dbem_notes_excerpt', 'prepend_attachment');
+add_filter('dbem_notes_excerpt', 'do_shortcode');
 // RSS content filter
 add_filter('dbem_notes_rss', 'convert_chars', 8);
 add_filter('dbem_general_rss', 'esc_html', 8);

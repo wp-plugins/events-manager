@@ -1,3 +1,6 @@
+<?php
+//DEPRICATED! This template is now on Settings > Emails > Registration Email Templates. 
+?>
 You have successfully created an account at <?php bloginfo(); ?>.
 
 You can log into our site <?php echo get_bloginfo('wpurl').'/wp-login.php'; ?>.

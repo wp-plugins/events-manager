@@ -98,6 +98,41 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.4.1.2 (dev) =
+* improved the handling of orphaned events and locations, they now show information and can be deleted front-end
+* fixed deleting of drafts on front-end,
+* fixed display/deleting of trashed events and locations on front-end
+* changed status of trashed events and locations to -1 (old trashed events may still show up front-end)
+* added escaping to search input field in front-end events admin,
+* front-end events admin search form now works in all event statuses
+* added draft/pending/publish as possible values to event/location status search attribute,
+* took out unnecessary update of post_name in EM_Event::set_status()
+* fixed untranslated dates when showing post meta
+* updated German and Russian translations
+* changed recurrence form to say 'each event SPANS x days' instead of LASTS
+* changed SQL statement to use of EM_Event::set_status() in EM_Event::save()
+* location shortcode and functions can now search status by text name (trash/pending/publish/draft)
+* fixed em_bookings_get_tickets filter being applied in wrong function instead of em_bookings_get_available_tickets
+* fixed email subjects showing escaped entities
+* fixed events with members only tickets showing bookings closed to guests
+* added option to show member-only tickets to guests
+* modified booking form and tickets list templates to acheive the above two changes
+* fixed invalid username characters such as + in emails causing registration errors
+* fixed tickets admin JS where deleting default ticket prevents new ticket being added without page reload
+* added #_BOOKINGSUMMARY placeholder
+* added registration email templates to settings page
+* added location and description format options to ical settings,
+* added description of event to ical feed,
+* merged single event ical template ical-event.php (now depricated) with main ical.php feed
+* fixed is_past conditional not considering if current events are set to be past events,
+* added is_current conditional placeholder
+* improved excerpt handling by balancing html tags when more tag is used
+* added word limiting options to #_EVENTEXCERPT and #_LOCATIONEXCERPT,
+* added formatting filters to excerpt (applicable when not using word limiting)
+* improved/refined search form AJAX to include state/region/town lists if country is defined as well as omitting null values
+* added month formatting option in settings page for calendars
+* moved em_events_get_sql filter above/before count function executes sql
+
 = 5.4.1.1 =
 * fixed sortable collumns not working on export bookings function
 

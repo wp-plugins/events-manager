@@ -128,9 +128,9 @@ class EM_Event_Post {
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post);
 			if ( '' == $d ){
-				$the_date = date(get_option('date_format'), $EM_Event->start);
+				$the_date = date_i18n(get_option('date_format'), $EM_Event->start);
 			}else{
-				$the_date = date($d, $EM_Event->start);
+				$the_date = date_i18n($d, $EM_Event->start);
 			}
 		}
 		return $the_date;
@@ -141,9 +141,9 @@ class EM_Event_Post {
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post);
 			if ( '' == $f ){
-				$the_time = date(get_option('time_format'), $EM_Event->start);
+				$the_time = date_i18n(get_option('time_format'), $EM_Event->start);
 			}else{
-				$the_time = date($f, $EM_Event->start);
+				$the_time = date_i18n($f, $EM_Event->start);
 			}
 		}
 		return $the_time;

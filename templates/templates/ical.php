@@ -1,18 +1,25 @@
 <?php
-$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_description_format' ) ) );
+//define and clean up formats for display
+$summary_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_description_format' ) ) );
+$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_real_description_format') ) );
+$location_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_location_format' ) ) );
 
 //get first round of events to show, we'll start adding more via the while loop
-if( !empty($_REQUEST['event_id']) ){
-	$EM_Events = array(em_get_event($_REQUEST['event_id']));
+global $EM_Event;
+if( !empty($EM_Event) && get_class($EM_Event) == 'EM_Event' ){
+    $ical_limit = 1; //only showing one event
+	$EM_Events = array($EM_Event);
 }else{
-	$args = apply_filters('em_calendar_template_args',array('limit'=>'50', 'page'=>'1', 'owner'=>false, 'orderby'=>'event_start_date', 'scope' => get_option('dbem_ical_scope') ));
+    $ical_limit = get_option('dbem_ical_limit');
+    $page_limit = $ical_limit > 50 ? 50:$ical_limit;
+	$args = apply_filters('em_calendar_template_args',array('limit'=>$page_limit, 'page'=>'1', 'owner'=>false, 'orderby'=>'event_start_date', 'scope' => get_option('dbem_ical_scope') ));
 	$EM_Events = EM_Events::get( $args );
 }
 
 //calendar header
 $output = "BEGIN:VCALENDAR
 VERSION:2.0
-PRODID:-//wp-events-plugin.com//".EM_VERSION."//EN"."\n";
+PRODID:-//wp-events-plugin.com//".EM_VERSION."//EN";
 echo preg_replace("/([^\r])\n/", "$1\r\n", $output);
 
 //loop through events
@@ -36,20 +43,11 @@ while ( count($EM_Events) > 0 ){
 		}
 		
 		//formats
+		$summary = $EM_Event->output($summary_format,'ical');
 		$description = $EM_Event->output($description_format,'ical');
-		$description = str_replace("\\","\\\\",strip_tags($description));
-		$description = str_replace(';','\;',$description);
-		$description = str_replace(',','\,',$description);
+		$location = $EM_Event->output($location_format, 'ical');
 		
-		$location = $EM_Event->output('#_LOCATION', 'ical');
-		$location = str_replace("\\","\\\\",strip_tags($location));
-		$location = str_replace(';','\;',$location);
-		$location = str_replace(',','\,',$location);
-		
-		$locations = array();
-		foreach($EM_Event->get_categories() as $EM_Category){
-			$locations[] = $EM_Category->name;
-		}
+		//create a UID
 		$UID = sprintf( '%04x%04x-%04x-%04x-%04x-%04x%04x%04x',
 	        // 32 bits for "time_low"
 	        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ),
@@ -65,20 +63,29 @@ while ( count($EM_Events) > 0 ){
 	        // 48 bits for "node"
 	        mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff ), mt_rand( 0, 0xffff )
 	    );
+		
+//output ical item		
 $output = "
 BEGIN:VEVENT
 UID:{$UID}
 DTSTART{$dateStart}
 DTEND{$dateEnd}
 DTSTAMP:{$dateModified}
-SUMMARY:{$description}
+SUMMARY:{$summary}";
+if( $description ){
+    $output .= "
+DESCRIPTION:{$description}";
+}
+$output .= "
 LOCATION:{$location}
-URL:{$EM_Event->output('#_EVENTURL')}
+URL:{$EM_Event->get_permalink()}
 END:VEVENT";
+
+		//clean up new lines, rinse and repeat
 		echo preg_replace("/([^\r])\n/", "$1\r\n", $output);
 		$count++;
 	}
-	if( !empty($_REQUEST['event_id']) || (get_option('dbem_ical_limit') != 0 && $count > get_option('dbem_ical_limit')) ){ 
+	if( $ical_limit != 0 && $count >= $ical_limit ){ 
 	    //we've reached our limit, or showing one event only
 	    break;
 	}else{

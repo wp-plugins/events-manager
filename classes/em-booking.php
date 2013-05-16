@@ -911,6 +911,11 @@ class EM_Booking extends EM_Object{
 					em_locate_template('emails/bookingtickets.php', true, array('EM_Booking'=>$this));
 					$replace = ob_get_clean();
 					break;
+				case '#_BOOKINGSUMMARY':
+					ob_start();
+					em_locate_template('emails/bookingsummary.php', true, array('EM_Booking'=>$this));
+					$replace = ob_get_clean();
+					break;
 				default:
 					$replace = $full_result;
 					break;

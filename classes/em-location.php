@@ -112,6 +112,7 @@ class EM_Location extends EM_Object {
 				//search by location_id, get post_id and blog_id (if in ms mode) and load the post
 				$results = $wpdb->get_row($wpdb->prepare("SELECT post_id, blog_id FROM ".EM_LOCATIONS_TABLE." WHERE location_id=%d",$id), ARRAY_A);
 				if( !empty($results['post_id']) ){
+				    $this->post_id = $results['post_id'];
 					if( is_multisite() ){
 					    if( empty($results['blog_id']) || (EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations')) ){
 							$results['blog_id'] = get_current_site()->blog_id;					        
@@ -138,6 +139,7 @@ class EM_Location extends EM_Object {
 				}else{
 					$location_post = $id;
 				}
+				$this->post_id = !empty($id->ID) ? $id->ID : $id;
 			}
 			$this->load_postdata($location_post, $search_by);
 		}
@@ -182,6 +184,15 @@ class EM_Location extends EM_Object {
 			}
 			$this->previous_status = $this->location_status; //so we know about updates
 			$this->get_status();
+		}elseif( !empty($this->post_id) ){
+			//we have an orphan... show it, so that we can at least remove it on the front-end
+			global $wpdb;
+		    $location_array = $wpdb->get_row($wpdb->prepare("SELECT * FROM ".EM_LOCATIONS_TABLE." WHERE post_id=%d",$this->post_id), ARRAY_A);
+		    if( is_array($location_array) ){
+				$this->orphaned_location = true;
+				$this->post_id = $this->ID = $event_array['post_id'] = null; //reset post_id because it doesn't really exist
+				$this->to_object($location_array);
+		    }
 		}
 	}
 	
@@ -366,9 +377,14 @@ class EM_Location extends EM_Object {
 			unset($location_array['location_id']);
 			//decide whether or not event is private at this point
 			$location_array['location_private'] = ( $this->post_status == 'private' ) ? 1:0;
-			//check if event truly exists, meaning the event_id is actually a valid location id
+			//check if location truly exists, meaning the location_id is actually a valid location id
 			if( !empty($this->location_id) ){
-				$loc_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$this->location_id}") == $this->post_id;
+			    if( !empty($this->orphaned_location) && !empty($this->post_id) ){
+			    	//we're dealing with an orphaned event in wp_em_locations table, so we want to update the post_id and give it a post parent
+			    	$loc_truly_exists = true;
+			    }else{
+					$loc_truly_exists = $wpdb->get_var('SELECT post_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$this->location_id}") == $this->post_id;
+			    }
 			}else{
 				$loc_truly_exists = false;
 			}
@@ -389,6 +405,8 @@ class EM_Location extends EM_Object {
 					$this->add_error( sprintf(__('Something went wrong updating your %s to the index table. Please inform a site administrator about this.','dbem'),__('location','dbem')));			
 				}else{
 					$this->feedback_message = sprintf(__('Successfully saved %s','dbem'),__('Location','dbem'));
+					//Also set the status here if status != previous status
+					if( $this->previous_status != $this->get_status() ) $this->set_status($this->get_status());
 				}
 			}
 		}else{
@@ -398,17 +416,33 @@ class EM_Location extends EM_Object {
 		return apply_filters('em_location_save_meta', count($this->errors) == 0, $this);
 	}
 	
-	function delete($force_delete = true){ //atm wp seems to force cp deletions anyway
-		global $wpdb;
+	function delete($force_delete = false){
 		$result = false;
 		if( $this->can_manage('delete_locations','delete_others_locations') ){
+		    if( !is_admin() ){
+				include_once('em-location-post-admin.php');
+				if( !defined('EM_LOCATION_DELETE_INCLUDE') ){
+					EM_Location_Post_Admin::init();
+					define('EM_LOCATION_DELETE_INCLUDE',true);
+				}
+		    }
 			do_action('em_location_delete_pre', $this);
-			$result = wp_delete_post($this->post_id,$force_delete); //the post class will take care of the meta
 			if( $force_delete ){
-				$result_meta = $this->delete_meta();
+				$result = wp_delete_post($this->post_id,$force_delete);
+			}else{
+				$result = wp_trash_post($this->post_id);
+				if( !$result && $this->post_status == 'trash' && $this->location_status != -1 ){
+				    //we're probably dealing with a trashed post already, which will return a false with wp_trash_post, but the location_status is null from < v5.4.1 so refresh it
+				    $this->set_status(-1);
+				    $result = true;
+				}
+			}
+			if( !$result && !empty($this->orphaned_location) ){
+			    //this is an orphaned event, so the wp delete posts would have never worked, so we just delete the row in our locations table
+			    $result = $this->delete_meta();
 			}
 		}
-		return apply_filters('em_location_delete', $result !== false && $result_meta, $this);
+		return apply_filters('em_location_delete', $result != false, $this);
 	}
 	
 	function delete_meta(){
@@ -436,22 +470,27 @@ class EM_Location extends EM_Object {
 		if($status === null){ 
 			$set_status='NULL'; 
 			if($set_post_status){
-				//if the post is trash, don't untrash it!
 				$wpdb->update( $wpdb->posts, array( 'post_status' => 'draft' ), array( 'ID' => $this->post_id ) );
-				$this->post_status = 'draft';
 			} 
+			$this->post_status = 'draft';
+		}elseif( $status == -1 ){ //trashed post
+			$set_status = -1;
+			if($set_post_status){
+				$wpdb->update( $wpdb->posts, array( 'post_status' => 'trash' ), array( 'ID' => $this->post_id ) );
+			}
+			$this->post_status = 'trash'; //set post status in this instance
 		}else{
 			$set_status = $status ? 1:0;
 			if($set_post_status){
 				if($this->post_status == 'pending'){
 					$this->post_name = sanitize_title($this->post_title);
 				}
-				$this->post_status = $set_status ? 'publish':'pending';
 				$wpdb->update( $wpdb->posts, array( 'post_status' => $this->post_status, 'post_name' => $this->post_name ), array( 'ID' => $this->post_id ) );
 			}
+			$this->post_status = $set_status ? 'publish':'pending';
 		}
 		$this->previous_status = $wpdb->get_var('SELECT location_status FROM '.EM_LOCATIONS_TABLE.' WHERE location_id='.$this->location_id); //get status from db, not post_status, as posts get saved quickly
-		$result = $wpdb->query("UPDATE ".EM_LOCATIONS_TABLE." SET location_status=$set_status, location_slug='{$this->post_name}' WHERE location_id={$this->location_id}");
+		$result = $wpdb->query("UPDATE ".EM_LOCATIONS_TABLE." SET location_status=$set_status WHERE location_id={$this->location_id}");
 		$this->get_status();
 		return apply_filters('em_location_set_status', $result !== false, $status, $this);
 	}	
@@ -469,6 +508,10 @@ class EM_Location extends EM_Object {
 			case 'pending':
 				$this->location_private = 0;
 				$this->location_status = $status = 0;
+				break;
+			case 'trash':
+				$this->location_private = 0;
+				$this->location_status = $status = -1;
 				break;
 			default: //draft or unknown
 				$this->location_private = 0;
@@ -631,7 +674,7 @@ class EM_Location extends EM_Object {
 			$attString = apply_filters('em_location_output_placeholder', $attString, $this, $result, $target);
 			$location_string = str_replace($result, $attString ,$location_string );
 		}
-	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([^}]+)})?/", $format, $placeholders);
 	 	$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$replace = '';
@@ -703,8 +746,24 @@ class EM_Location extends EM_Object {
 						if( !empty($this->post_excerpt) ){
 							$replace = $this->post_excerpt;
 						}else{
-							$matches = explode('<!--more', $this->post_content);
-							$replace = $matches[0];
+						    $excerpt_length = 55;
+							$excerpt_more = apply_filters('em_excerpt_more', ' ' . '[...]');
+						    if( !empty($placeholders[3][$key]) ){
+						        $trim = true;
+						        $ph_args = explode(',', $placeholders[3][$key]);
+						        if( is_numeric($ph_args[0]) ) $excerpt_length = $ph_args[0];
+						        if( !empty($ph_args[1]) ) $excerpt_more = $ph_args[1];
+						    }
+							if ( preg_match('/<!--more(.*?)?-->/', $replace, $matches) ) {
+								$content = explode($matches[0], $replace, 2);
+								$replace = force_balance_tags($content[0]);
+							}
+							if( !empty($trim) ){
+							    //shorten content by supplied number - copied from wp_trim_excerpt
+							    $replace = strip_shortcodes( $replace );
+							    $replace = str_replace(']]>', ']]&gt;', $replace);
+							    $replace = wp_trim_words( $replace, $excerpt_length, $excerpt_more );
+							}
 						}
 					}
 					break;

@@ -45,11 +45,12 @@ global $EM_Event, $post;
 			<tbody id="em-tickets-body">
 				<?php
 					global $allowedposttags;
-					$count = 1;
+					array_unshift($EM_Tickets->tickets, new EM_Ticket()); //prepend template ticket for JS
+					$count = 0;
 					foreach( $EM_Tickets->tickets as $EM_Ticket){
 						/* @var $EM_Ticket EM_Ticket */
 						?>
-						<tr valign="top" id="em-tickets-row-<?php echo $count ?>" class="em-tickets-row">
+						<tr valign="top" id="em-tickets-row-<?php echo $count ?>" class="em-tickets-row" <?php if( $count == 0 ) echo 'style="display:none;"' ?>>
 							<td class="ticket-status"><span class="<?php echo ($EM_Ticket->is_available()) ? 'ticket_on':'ticket_off'; ?>"></span></td>													
 							<td class="ticket-name"><span class="ticket_name"><?php if($EM_Ticket->ticket_members) echo '* ';?><?php echo wp_kses_data($EM_Ticket->ticket_name); ?></span><br /><span class="ticket_description"><?php echo wp_kses($EM_Ticket->ticket_description,$allowedposttags); ?></span></td>
 							<td class="ticket-price">
@@ -106,13 +107,16 @@ global $EM_Event, $post;
 						<?php
 						$count++;
 					}
-					if( !empty($delete_temp_ticket) ){
-						array_pop($EM_Tickets->tickets);
-					}
+					array_shift($EM_Tickets->tickets);
 				?>
 			</tbody>
 		</table>
-	<?php } ?>
+	<?php 
+	}
+	if( !empty($delete_temp_ticket) ){
+		array_pop($EM_Tickets->tickets);
+	}
+	?>
 	<p>
 		<label><strong><?php _e('Total Spaces','dbem'); ?></strong></label>
 		<input type="text" name="event_spaces" value="<?php if( $EM_Event->event_spaces > 0 ){ echo $EM_Event->event_spaces; } ?>" /><br />

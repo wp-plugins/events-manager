@@ -318,9 +318,9 @@ function em_booking_add_registration( $EM_Booking ){
     if( (!is_user_logged_in() || defined('EM_FORCE_REGISTRATION')) && get_option('dbem_bookings_anonymous') && !get_option('dbem_bookings_registration_disable') ){
     	//find random username - less options for user, less things go wrong
     	$username_root = explode('@', wp_kses_data($_REQUEST['user_email']));
-    	$username_rand = $username_root[0];
+    	$username_root = $username_rand = sanitize_user($username_root[0], true);
     	while( username_exists($username_rand) ) {
-    		$username_rand = $username_root[0].rand(1,1000);
+    		$username_rand = $username_root.rand(1,1000);
     	}
     	$_REQUEST['dbem_phone'] = (!empty($_REQUEST['dbem_phone'])) ? wp_kses_data($_REQUEST['dbem_phone']):''; //fix to prevent warnings
     	$_REQUEST['user_name'] = (!empty($_REQUEST['user_name'])) ? wp_kses_data($_REQUEST['user_name']):''; //fix to prevent warnings
@@ -462,14 +462,10 @@ function em_new_user_notification() {
 	if ( empty($plaintext_pass) )
 		return;
 
-	//
-	ob_start();
-	em_locate_template('emails/new-user.php', true);
-	$message = ob_get_clean();
-	$message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), $message);
-	
+	//send email to user
+	$message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), get_option('dbem_bookings_email_registration_body'));
 	global $EM_Mailer;
-	return $EM_Mailer->send(sprintf(__('[%s] Your username and password', 'dbem'), $blogname), $message, $user_email);
+	return $EM_Mailer->send(get_option('dbem_bookings_email_registration_subject'), $message, $user_email);
 }
 
 /*
