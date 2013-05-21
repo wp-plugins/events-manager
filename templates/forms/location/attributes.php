@@ -31,7 +31,7 @@ $has_depreciated = false;
 								<?php endforeach; ?>
 							</select>
 							<?php else: ?>
-							<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Location->location_attributes) ? htmlspecialchars($EM_Location->location_attributes[$name], ENT_QUOTES):''; ?>" />
+							<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Location->location_attributes) ? esc_attr($EM_Location->location_attributes[$name], ENT_QUOTES):''; ?>" />
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -66,7 +66,7 @@ $has_depreciated = false;
 							<tr valign="top" id="em_attribute_<?php echo $count ?>">
 								<td scope="row"><?php echo $name ?></td>
 								<td>
-									<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo htmlspecialchars($value, ENT_QUOTES); ?>" />
+									<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo esc_attr($value, ENT_QUOTES); ?>" />
 								</td>
 							</tr>
 							<?php

@@ -90,6 +90,7 @@ class EM_Locations extends EM_Object implements Iterator {
 		
 		if( EM_MS_GLOBAL ){
 			foreach ( $results as $location ){
+			    if( empty($location['blog_id']) ) $location['blog_id'] = get_current_site()->blog_id;
 				$locations[] = em_get_location($location['post_id'], $location['blog_id']);
 			}
 		}else{
@@ -165,9 +166,12 @@ class EM_Locations extends EM_Object implements Iterator {
 	}
 	
 	function delete( $args = array() ){
-		if( !is_object(current($args)) && get_class((current($args))) != 'EM_Location' ){
+	    $locations = array();
+		if( !is_object(current($args)) ){
+		    //we've been given an array or search arguments to find the relevant locations to delete
 			$locations = self::get($args);
-		}else{
+		}elseif( get_class(current($args)) == 'EM_Location' ){
+		    //we're deleting an array of locations
 			$locations = $args;
 		}
 		$results = array();
@@ -183,11 +187,17 @@ class EM_Locations extends EM_Object implements Iterator {
 	 * @return array
 	 */
 	function build_sql_conditions( $args = array(), $count=false ){
+	    self::$context = EM_POST_TYPE_LOCATION;
 		global $wpdb;
 		$events_table = EM_EVENTS_TABLE;
 		$locations_table = EM_LOCATIONS_TABLE;
 		
 		$conditions = parent::build_sql_conditions($args);
+		//search locations
+		if( !empty($args['search']) ){
+			$like_search = array($locations_table.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_region','location_country');
+			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
+		}
 		//eventful locations
 		if( true == $args['eventful'] ){
 			$conditions['eventful'] = "{$events_table}.event_id IS NOT NULL";
@@ -217,11 +227,19 @@ class EM_Locations extends EM_Object implements Iterator {
 		    }
 		}
 		//status
-		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
-			$null = ($args['status'] == 0) ? ' OR `location_status` = 0':'';
-			$conditions['status'] = "(`location_status`={$args['status']}{$null} )";
-		}else{
-			$conditions['status'] = "(`location_status` IS NOT NULL)";
+		$conditions['status'] = "(`location_status` >= 0)"; //pending and published if status is not explicitly defined (Default is 1)
+		if( array_key_exists('status',$args) ){ 
+		    if( is_numeric($args['status']) ){
+				$conditions['status'] = "(`location_status`={$args['status']} )"; //trash (-1), pending, (0) or published (1)
+			}elseif( $args['status'] == 'pending' ){
+			    $conditions['status'] = "(`location_status`=0)"; //pending
+			}elseif( $args['status'] == 'publish' ){
+			    $conditions['status'] = "(`location_status`=1)"; //published
+		    }elseif( $args['status'] === null || $args['status'] == 'draft' ){
+			    $conditions['status'] = "(`location_status` IS NULL )"; //show draft items
+			}elseif( $args['status'] == 'trash' ){
+			    $conditions['status'] = "(`location_status` = -1 )"; //show trashed items
+			}
 		}
 		//private locations
 		if( empty($args['private']) ){
@@ -244,6 +262,7 @@ class EM_Locations extends EM_Object implements Iterator {
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
 	 */
 	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+	    self::$context = EM_POST_TYPE_LOCATION;
 		return apply_filters( 'em_locations_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order')), $args, $accepted_fields, $default_order );
 	}
 	
@@ -252,6 +271,7 @@ class EM_Locations extends EM_Object implements Iterator {
 	 * @see wp-content/plugins/events-manager/classes/EM_Object::get_default_search()
 	 */
 	function get_default_search($array = array()){
+	    self::$context = EM_POST_TYPE_LOCATION;
 		$defaults = array(
 			'eventful' => false, //Locations that have an event (scope will also play a part here
 			'eventless' => false, //Locations WITHOUT events, eventful takes precedence
@@ -267,14 +287,9 @@ class EM_Locations extends EM_Object implements Iterator {
 			'private_only' => false,
 			'post_id' => false
 		);
-		if( EM_MS_GLOBAL && !is_admin() ){
-		    if( get_site_option('dbem_ms_mainblog_locations') ){
-		        $array['blog'] = get_current_site()->blog_id;
-		    }else{
-				if( empty($array['blog']) && is_main_site() && get_site_option('dbem_ms_global_locations') ){
-				    $array['blog'] = false;
-				}		        
-		    }
+		if( EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations') ){
+		    //when searching in MS Global mode with all locations being stored on the main blog, blog_id becomes redundant as locations are stored in one blog table set
+		    $array['blog'] = false;
 		}
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );

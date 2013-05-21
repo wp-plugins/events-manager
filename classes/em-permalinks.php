@@ -16,7 +16,7 @@ if( !class_exists('EM_Permalinks') ){
 		function init(){
 			add_filter('pre_update_option_dbem_events_page', array('EM_Permalinks','option_update'));
 			if( get_option('dbem_flush_needed') ){
-				add_filter('init', array('EM_Permalinks','flush'));
+				add_filter('wp_loaded', array('EM_Permalinks','flush')); //flush after init, in case there are themes adding cpts etc.
 			}
 			add_filter('rewrite_rules_array',array('EM_Permalinks','rewrite_rules_array'));
 			add_filter('query_vars',array('EM_Permalinks','query_vars'));
@@ -254,7 +254,7 @@ if( !class_exists('EM_Permalinks') ){
  */
 function em_get_my_bookings_url(){
 	global $bp, $wp_rewrite;
-	if( is_object($bp) ){
+	if( !empty($bp->events->link) ){
 		//get member url
 		return $bp->events->link.'attending/';
 	}elseif( get_option('dbem_my_bookings_page') ){
