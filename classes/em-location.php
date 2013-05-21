@@ -725,10 +725,16 @@ class EM_Location extends EM_Object {
 					$replace .= empty($this->location_postcode) ? '':'<br />'.$this->location_postcode;
 					$replace .= empty($this->location_region) ? '':'<br />'.$this->location_region;
 					break;
-				case '#_MAP': //Depricated
+				case '#_MAP': //Depricated (but will remain)
 				case '#_LOCATIONMAP':
 					ob_start();
-					$template = em_locate_template('placeholders/locationmap.php', true, array('EM_Location'=>$this));
+					$args = array();
+				    if( !empty($placeholders[3][$key]) ){
+				        $dimensions = explode(',', $placeholders[3][$key]);
+				        if(!empty($dimensions[0])) $args['width'] = $dimensions[0];
+				        if(!empty($dimensions[1])) $args['height'] = $dimensions[1];
+				    }
+					$template = em_locate_template('placeholders/locationmap.php', true, array('args'=>$args,'EM_Location'=>$this));
 					$replace = ob_get_clean();	
 					break;
 				case '#_LOCATIONLONGITUDE':

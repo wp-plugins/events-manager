@@ -869,6 +869,15 @@ class EM_Booking extends EM_Object{
 				case '#_BOOKINGSPACES':
 					$replace = $this->get_spaces();
 					break;
+				case '#_BOOKINGDATE':
+					$replace = ( $this->timestamp ) ? date_i18n(get_option('dbem_date_format'), $this->timestamp):'n/a';
+					break;
+				case '#_BOOKINGTIME':
+					$replace = ( $this->timestamp ) ? date_i18n(get_option('dbem_time_format'), $this->timestamp):'n/a';
+					break;
+				case '#_BOOKINGDATETIME':
+					$replace = ( $this->timestamp ) ? date_i18n(get_option('dbem_date_format').' '.get_option('dbem_time_format'), $this->timestamp):'n/a';
+					break;
 				case '#_BOOKINGLISTURL':
 					$replace = em_get_my_bookings_url();
 					break;

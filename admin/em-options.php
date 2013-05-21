@@ -1391,6 +1391,8 @@ function em_admin_options_page() {
 								<?php _e ( 'No' ); ?> <input name="dbem_gmap_is_active" type="radio" value="0" <?php echo ($gmap_is_active) ? '':"checked='checked'"; ?> /><br />
 								<em><?php _e ( 'Check this option to enable Goggle Map integration.', 'dbem' )?></em>
 							</td>
+							<?php em_options_input_text(__('Default map width','dbem'), 'dbem_map_default_width', sprintf(__('Can be in form of pixels or a percentage such as %s or %s.', 'dbem'), '<code>100%</code>', '<code>100px</code>')); ?>
+							<?php em_options_input_text(__('Default map height','dbem'), 'dbem_map_default_height', sprintf(__('Can be in form of pixels or a percentage such as %s or %s.', 'dbem'), '<code>100%</code>', '<code>100px</code>')); ?>
 						</tr>
 						<tr><td colspan="2">
 							<strong><?php _e('Global Map Format','dbem'); ?></strong>

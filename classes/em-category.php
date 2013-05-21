@@ -52,6 +52,9 @@ class EM_Category extends EM_Object {
 				$category = $category_data;
 			}elseif( !is_numeric($category_data) ){
 				$category = get_term_by('slug', $category_data, EM_TAXONOMY_CATEGORY);
+				if( !$category ){
+					$category = get_term_by('name', $category_data, EM_TAXONOMY_CATEGORY);				    
+				}
 			}else{		
 				$category = get_term_by('id', $category_data, EM_TAXONOMY_CATEGORY);
 			}

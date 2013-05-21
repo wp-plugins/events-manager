@@ -10,6 +10,9 @@ class EM_Object {
 	var $errors = array();
 	var $mime_types = array(1 => 'gif', 2 => 'jpg', 3 => 'png');
 	
+	private static $taxonomies_array; //see self::get_taxonomies()
+	protected static $context = 'event'; //this should be overriden to the db table name for deciding on ambiguous fields to look up 
+	
 	/**
 	 * Takes the array and provides a clean array of search parameters, along with details
 	 * @param array $defaults
@@ -58,9 +61,19 @@ class EM_Object {
 			if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
 		
 			//Clean all id lists
-			$array = self::clean_id_atts($array, array('location', 'event', 'category', 'post_id'));
-			if( !empty($array['tag']) && !is_array($array['tag']) && strstr($array['tag'],',') !== false ){ //accepts numbers or words
-				$array['tag'] = explode(',',$array['tag']);
+			$array = self::clean_id_atts($array, array('location', 'event', 'post_id'));
+			
+			//Clean taxonomies
+			$taxonomies = self::get_taxonomies();
+			foreach( $taxonomies as $item => $item_data ){ //tags and cats turned into an array regardless
+			    if( !empty($array[$item]) && !is_array($array[$item]) ){
+					if( strstr($array[$item],',') !== false ){ //accepts numbers or words
+						$array[$item] = explode(',',$array[$item]);
+						foreach($array[$item] as $k=>$v) $array[$item][$k] = trim($v);
+					}else{
+					    $array[$item] = array(trim($array[$item]));
+					}
+			    }
 			}
 			
 			//OrderBy - can be a comma-seperated array of field names to order by (field names of object, not db)
@@ -72,7 +85,7 @@ class EM_Object {
 			//TODO validate search query array
 			//Clean the supplied array, so we only have allowed keys
 			foreach( array_keys($array) as $key){
-				if( !array_key_exists($key, $defaults) ) unset($array[$key]);		
+				if( !array_key_exists($key, $defaults) && !array_key_exists($key, $taxonomies) ) unset($array[$key]);		
 			}
 			//return clean array
 			$defaults = array_merge ( $defaults, $array ); //No point using WP's cleaning function, we're doing it already.
@@ -133,6 +146,9 @@ class EM_Object {
 		}else{
 			$defaults['page'] = ($defaults['limit'] > 0 ) ? floor($defaults['offset']/$defaults['limit']) + 1 : 1;
 		}
+		//reset the context
+		self::$context = EM_POST_TYPE_EVENT;
+		//return values
 		return apply_filters('em_object_get_default_search', $defaults, $array, $super_defaults);
 	}
 	
@@ -153,8 +169,8 @@ class EM_Object {
 		$recurring = $args['recurring'];
 		$recurrence = $args['recurrence'];
 		$recurrences = $args['recurrences'];
-		$category = $args['category'];
-		$tag = $args['tag'];
+		$category = $args['category'];// - not used anymore, accesses the $args directly
+		$tag = $args['tag'];// - not used anymore, accesses the $args directly
 		$location = $args['location'];
 		$bookings = $args['rsvp'];
 		$bookings = !empty($args['bookings']) ? $args['bookings']:$bookings;
@@ -337,96 +353,73 @@ class EM_Object {
 		if( !empty($args['region']) ){
 			$conditions['region'] = "location_region='".$args['region']."'";
 		}
-		//Add conditions for category selection
-		//Filter by category, can be id or comma seperated ids
-		$not = '';
-		if ( !empty($category) && is_numeric($category) ){
-			$not = ( $category < 0 ) ? "NOT":'';
-			//get the term id directly
-			$term = new EM_Category(absint($category));
-			if( !empty($term->term_id) ){
-				if( EM_MS_GLOBAL ){
-					$conditions['category'] = " ".EM_EVENTS_TABLE.".event_id $not IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value={$term->term_id} AND meta_key='event-category' ) ";
-				}else{
-					$conditions['category'] = " ".EM_EVENTS_TABLE.".post_id $not IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id={$term->term_taxonomy_id} ) ";
-				}
-			}elseif( $category > 0 ){
-			    $conditions = array('category'=>'2=1'); //force a false
-			}
-		}elseif( self::array_is_numeric($category) ){
-			$term_ids = array();
-			$term_not_ids = array();
-			if( EM_MS_GLOBAL ){
-			    //we're directly looking for category ids from within the em_meta table
-				foreach($category as $category_id){
-					if( $category_id > 0 ){
-						$term_ids[] = $category_id;
+		
+		//START TAXONOMY FILTERS - can be id, slug, name or comma seperated ids/slugs/names, if negative or prepended with a - then considered a negative filter
+		$taxonomies = self::get_taxonomies();
+		foreach($taxonomies as $tax_name => $tax_data){
+			if( !empty($args[$tax_name]) && is_array($args[$tax_name]) ){
+			    if( !empty($tax_data['ms']) ) self::ms_global_switch(); //if in ms global mode, switch here rather than on each EM_Category instance
+				//build array of term ids and negative ids from supplied argument
+				$term_ids = array();
+				$term_not_ids = array();
+				foreach($args[$tax_name] as $tax_id){
+				    $tax_id_clean = preg_replace('/^-/', '', $tax_id);
+					if( !is_numeric($tax_id_clean) ){
+						$term = get_term_by('slug', $tax_id_clean, $tax_data['name']);
+						if( empty($term) ){
+							$term = get_term_by('name', $tax_id_clean, $tax_data['name']);
+						}
 					}else{
-						$term_not_ids[] = absint($category_id);
+						$term = get_term_by('id', $tax_id_clean, $tax_data['name']);
 					}
-				}
-				$cat_conds = array();
-				if( count($term_ids) > 0 ){
-					$cat_conds[] = EM_EVENTS_TABLE.".event_id IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_key='event-category' )";
-				}
-				if( count($term_not_ids) > 0 ){
-					$cat_conds[] = EM_EVENTS_TABLE.".event_id NOT IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_not_ids).") AND meta_key='event-category' )";			
-				}
-				if( count($cat_conds) > 0 ){
-					$conditions['category'] = '('. implode(' AND ', $cat_conds) .')';
-				}
-			}else{
-			    //normal taxonomy filtering
-				foreach($category as $category_id){
-					$term = new EM_Category(absint($category_id));
 					if( !empty($term->term_taxonomy_id) ){
-						if( $category_id > 0 ){
+						if( !preg_match('/^-/', $tax_id) ){
 							$term_ids[] = $term->term_taxonomy_id;
 						}else{
 							$term_not_ids[] = $term->term_taxonomy_id;
 						}
 					}
 				}
+			    if( !empty($tax_data['ms']) ) self::ms_global_switch_back(); //switch back if ms global mode
+				//create sql conditions
 				if( count($term_ids) > 0 || count($term_not_ids) > 0 ){
-					$cat_conds = array();
-					if( count($term_ids) > 0 ){
-						$cat_conds[] = EM_EVENTS_TABLE.".post_id IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") )";
+				    //figure out context - what table/field to search
+				    $post_context = EM_EVENTS_TABLE.".post_id";
+				    $ms_context = EM_EVENTS_TABLE.".event_id";
+				    if( !empty($tax_data['context']) && self::$context == EM_POST_TYPE_LOCATION && in_array( self::$context, $tax_data['context']) ){
+				        //context can be either locations or events, since those are the only two CPTs we deal with
+					    $post_context = EM_LOCATIONS_TABLE.".post_id";
+					    $ms_context = EM_LOCATIONS_TABLE.".event_id";
+				    }
+				    //build conditions
+					$tax_conds = array();
+					if( EM_MS_GLOBAL && !empty($tax_data['ms']) ){ //by default only applies to categories
+					    //we're directly looking for tax ids from within the em_meta table
+						if( count($term_ids) > 0 ){
+							$tax_conds[] = "$ms_context IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_key='{$tax_data['ms']}' )";
+						}
+						if( count($term_not_ids) > 0 ){
+							$tax_conds[] = "$ms_context NOT IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_not_ids).") AND meta_key='{$tax_data['ms']}' )";			
+						} 
+					}else{
+				    	//normal taxonomy filtering
+						if( count($term_ids) > 0 ){
+							$tax_conds[] = "$post_context IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") )";
+						}
+						if( count($term_not_ids) > 0 ){
+							$tax_conds[] = "$post_context NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_not_ids).") )";			
+						}
 					}
-					if( count($term_not_ids) > 0 ){
-						$cat_conds[] = EM_EVENTS_TABLE.".post_id NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_not_ids).") )";			
-					}
-					if( count($cat_conds) > 0 ){
-						$conditions['category'] = '('. implode(' AND ', $cat_conds) .')';
+					if( count($tax_conds) > 0 ){
+						$conditions[$tax_name] = '('. implode(' AND ', $tax_conds) .')';
 					}
 				}else{
-				    $conditions = array('tag'=>'2=1'); //force a false
+				    $conditions = array('taxonomy'=>'2=1'); //force a false, supplied taxonomies don't exist
+				    break; //no point continuing this loop
 				}
-			}
-		}		
-		//Add conditions for tags
-		//Filter by tag, can be id or comma seperated ids
-		if ( !empty($tag) && !is_array($tag) ){
-			//get the term id directly
-			$term = new EM_Tag($tag);
-			if( !empty($term->term_id) ){
-				$conditions['tag'] = " ".EM_EVENTS_TABLE.".post_id IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id={$term->term_taxonomy_id} ) ";
-			}else{
-			    $conditions = array('tag'=>'2=1'); //force a false
-			}
-		}elseif( is_array($tag) ){
-			$term_ids = array();
-			foreach($tag as $tag_id){
-				$term = new EM_Tag($tag_id);
-				if( !empty($term->term_id) ){
-					$term_ids[] = $term->term_taxonomy_id;
-				}
-			}
-			if( count($term_ids) > 0 ){
-				$conditions['tag'] = " ".EM_EVENTS_TABLE.".post_id IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") ) ";
-			}else{
-			    $conditions = array('tag'=>'2=1'); //force a false
 			}
 		}
+		//END TAXONOMY FILTERS
 	
 		//If we want rsvped items, we usually check the event
 		if( $bookings == 1 ){
@@ -438,7 +431,43 @@ class EM_Object {
 		}elseif( $owner == 'me' && is_user_logged_in() ){
 			$conditions['owner'] = 'event_owner='.get_current_user_id();
 		}
+		//reset the context
+		self::$context = EM_POST_TYPE_EVENT;
+		//return values
 		return apply_filters('em_object_build_sql_conditions', $conditions);
+	}
+	
+	public static function get_taxonomies(){
+	    if( empty(self::$taxonomies_array) ){
+	        //default taxonomies
+	        $taxonomies_array = array(
+        		'category' => array( 'name' => EM_TAXONOMY_CATEGORY, 'ms' => 'event-category', 'context'=> array() ),
+        		'tag' => array( 'name'=> EM_TAXONOMY_TAG, 'context'=> array() )
+	        );
+	        //get additional taxonomies associated with locations and events and set context for default taxonomies
+	        foreach( get_taxonomies(array(),'objects') as $tax_name => $tax){
+                $event_tax = in_array(EM_POST_TYPE_EVENT, $tax->object_type);
+                $loc_tax = in_array(EM_POST_TYPE_LOCATION, $tax->object_type);
+	            if( $tax_name == EM_TAXONOMY_CATEGORY || $tax_name == EM_TAXONOMY_TAG ){
+	                $tax_name = $tax_name == EM_TAXONOMY_CATEGORY ? 'category':'tag';
+                    if( $event_tax ) $taxonomies_array[$tax_name]['context'][] = EM_POST_TYPE_EVENT;
+                    if( $loc_tax ) $taxonomies_array[$tax_name]['context'][] = EM_POST_TYPE_LOCATION;
+	            }else{
+	                $tax_name = str_replace('-','_',$tax_name);
+					$prefix = !array_key_exists($tax_name, $taxonomies_array) ? '':'post_';
+	                if( is_array($tax->object_type) ){
+	                    if( $event_tax || $loc_tax ){
+		                    $taxonomies_array[$prefix.$tax_name] = array('name'=>$tax_name, 'context'=>array() );
+	                    }
+	                    if( $event_tax ) $taxonomies_array[$prefix.$tax_name]['context'][] = EM_POST_TYPE_EVENT;
+	                    if( $loc_tax ) $taxonomies_array[$prefix.$tax_name]['context'][] = EM_POST_TYPE_LOCATION;
+	                }	                
+	            }
+	        }
+	        //users can add even more to this if needed, e.g. MS compatability
+	        self::$taxonomies_array = apply_filters('em_object_taxonomies', $taxonomies_array);
+	    }
+	    return self::$taxonomies_array;
 	}
 	
 	/**

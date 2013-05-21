@@ -604,6 +604,7 @@ function em_init_actions() {
 		$file_name = !empty($EM_Event->event_slug) ? $EM_Event->event_slug:get_bloginfo();
 		header("Content-Disposition: Attachment; filename=".sanitize_title($file_name)."-bookings-export.csv");
 		do_action('em_csv_header_output');
+		echo "\xEF\xBB\xBF"; // UTF-8 for MS Excel (a little hacky... but does the job)
 		if( !defined('EM_CSV_DISABLE_HEADERS') || !EM_CSV_DISABLE_HEADERS ){
 			if( !empty($_REQUEST['event_id']) ){
 				echo __('Event','dbem') . ' : ' . $EM_Event->event_name .  "\n";

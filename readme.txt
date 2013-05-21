@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.4.1.2 (dev) =
+= 5.4.2 =
 * improved the handling of orphaned events and locations, they now show information and can be deleted front-end
 * fixed deleting of drafts on front-end,
 * fixed display/deleting of trashed events and locations on front-end
@@ -116,14 +116,14 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed email subjects showing escaped entities
 * fixed events with members only tickets showing bookings closed to guests
 * added option to show member-only tickets to guests
-* modified booking form and tickets list templates to acheive the above two changes
+* modified booking form and tickets list templates to achieve the above two changes
 * fixed invalid username characters such as + in emails causing registration errors
 * fixed tickets admin JS where deleting default ticket prevents new ticket being added without page reload
 * added #_BOOKINGSUMMARY placeholder
 * added registration email templates to settings page
 * added location and description format options to ical settings,
 * added description of event to ical feed,
-* merged single event ical template ical-event.php (now depricated) with main ical.php feed
+* merged single event ical template ical-event.php (now deprecated) with main ical.php feed
 * fixed is_past conditional not considering if current events are set to be past events,
 * added is_current conditional placeholder
 * improved excerpt handling by balancing html tags when more tag is used
@@ -132,6 +132,14 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * improved/refined search form AJAX to include state/region/town lists if country is defined as well as omitting null values
 * added month formatting option in settings page for calendars
 * moved em_events_get_sql filter above/before count function executes sql
+* added #_BOOKINGDATE #_BOOKINGTIME and #_BOOKINGDATETIME placeholders
+* improved EM_Category object - now can be created with slug or name
+* improved taxonomy search arguments, now capable of automatically searching any taxonomy registered with events or locations
+* updated POT file and German language
+* added EM_Walker_Category class and hierarchical category checkboxes in event admin MS Global subsites
+* modified JS (minor) - checks EM.ui_css is set before loading jQuery UI CSS
+* improved Google Maps - now capable of being responsive via placeholders, shortcode and settings page
+* added excel 'hack' to support UTF-8 characters
 
 = 5.4.1.1 =
 * fixed sortable collumns not working on export bookings function

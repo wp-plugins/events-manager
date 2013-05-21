@@ -67,6 +67,8 @@ table.events-table .category { color:#888; }
 		#em-location-data table.em-location-data { width:50%; float:left; border:none; }
 		#em-location-data .em-location-map-container, #em-location-data .em-location-map-404, #em-location-data .em-location-map-content { width: 400px; height: 300px; float:left; }
 		#em-location-data .em-location-map-404 { vertical-align:middle; text-align: center; }
+	/* MS Global Categories */
+		.ms-global-categories { line-height:1.8em; }
 	/*Bookings */
 		#event-rsvp-box { margin:10px; }
 		/*Tickets*/

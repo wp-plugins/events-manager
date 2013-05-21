@@ -245,19 +245,22 @@ class EM_Event_Post_Admin{
 	
 	public static function meta_box_ms_categories(){
 		global $EM_Event;
-		$categories = EM_Categories::get(array('orderby'=>'category_name','hide_empty'=>false));
+		EM_Object::ms_global_switch();
+		$categories = EM_Categories::get(array('hide_empty'=>false));
 		?>
 		<?php if( count($categories) > 0 ): ?>
-			<p>
-				<?php foreach( $categories as $EM_Category ):?>
-				<label><input type="checkbox" name="event_categories[]" value="<?php echo $EM_Category->id; ?>" <?php if($EM_Event->get_categories()->has($EM_Category->id)) echo 'checked="checked"'; ?> /> <?php echo $EM_Category->name ?></label><br />			
-				<?php endforeach; ?>
+			<p class="ms-global-categories">
+			 <?php $selected = $EM_Event->get_categories()->get_ids(); ?>
+			 <?php $walker = new EM_Walker_Category(); ?>
+			 <?php $args_em = array( 'hide_empty' => 0, 'name' => 'event_categories[]', 'hierarchical' => true, 'id' => EM_TAXONOMY_CATEGORY, 'taxonomy' => EM_TAXONOMY_CATEGORY, 'selected' => $selected, 'walker'=> $walker); ?>
+			 <?php echo walk_category_dropdown_tree($categories, 0, $args_em); ?>
 			</p>
 		<?php else: ?>
 			<p><?php sprintf(__('No categories available, <a href="%s">create one here first</a>','dbem'), get_bloginfo('wpurl').'/wp-admin/admin.php?page=events-manager-categories'); ?></p>
 		<?php endif; ?>
 		<!-- END Categories -->
 		<?php
+		EM_Object::ms_global_switch_back();
 	}
 }
 add_action('admin_init',array('EM_Event_Post_Admin','init'));

@@ -270,6 +270,7 @@ class EM_Events extends EM_Object implements Iterator {
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */
 	function build_sql_conditions( $args = array() ){
+	    self::$context = EM_POST_TYPE_EVENT;
 		$conditions = parent::build_sql_conditions($args);
 		if( !empty($args['search']) ){
 			$like_search = array('event_name',EM_EVENTS_TABLE.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_country','location_region');
@@ -335,6 +336,7 @@ class EM_Events extends EM_Object implements Iterator {
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
 	 */
 	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+	    self::$context = EM_POST_TYPE_EVENT;
 		return apply_filters( 'em_events_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order')), $args, $accepted_fields, $default_order );
 	}
 	
@@ -345,6 +347,7 @@ class EM_Events extends EM_Object implements Iterator {
 	 * @uses EM_Object#get_default_search()
 	 */
 	function get_default_search( $array = array() ){
+	    self::$context = EM_POST_TYPE_EVENT;
 		$defaults = array(
 			'orderby' => get_option('dbem_events_default_orderby'),
 			'order' => get_option('dbem_events_default_order'),

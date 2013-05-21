@@ -462,7 +462,7 @@ jQuery(document).ready( function($){
 		}
 		em_setup_datepicker('body');
 	}
-	if( load_ui_css ){
+	if( load_ui_css && EM.ui_css ){
 		var script = document.createElement("link");
 		script.id = 'jquery-ui-css';
 		script.rel = "stylesheet";
