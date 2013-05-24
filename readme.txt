@@ -98,6 +98,12 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.4.2.1 (dev) =
+* minor JS mod for some rare IE9 conflicts by moving global load_ui_css variable into jQuery.ready()
+* fixed booking form showing tickets twice
+* fixed issues with placeholders not converting if immediately preceded by a conditional opening/closing tag
+* fixed overriden emails/new-user.php templates not being respected anymore since this was added to settings
+ 
 = 5.4.2 =
 * improved the handling of orphaned events and locations, they now show information and can be deleted front-end
 * fixed deleting of drafts on front-end,

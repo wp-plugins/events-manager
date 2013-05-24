@@ -1,5 +1,5 @@
-var load_ui_css = false; //load jquery ui css?
 jQuery(document).ready( function($){
+	var load_ui_css = false; //load jquery ui css?
 	/* Time Entry */
 	$('#start-time').each(function(i, el){
 		$(el).addClass('em-time-input em-time-start').next('#end-time').addClass('em-time-input em-time-end').parent().addClass('em-time-range');

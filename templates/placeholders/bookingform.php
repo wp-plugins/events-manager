@@ -56,6 +56,7 @@ if( !$is_open && !is_user_logged_in() && $EM_Event->get_bookings()->is_open(true
 						//If logged out, can be allowed to see this in settings witout the register form 
 						em_locate_template('forms/bookingform/tickets-list.php',true, array('EM_Event'=>$EM_Event));
 						do_action('em_booking_form_after_tickets', $EM_Event); //do not delete
+						$show_tickets = false;
 					}
 				?>
 				<?php if( $can_book ): ?>

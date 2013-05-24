@@ -660,7 +660,7 @@ class EM_Location extends EM_Object {
 			}
 	 	}
 		//This is for the custom attributes
-		preg_match_all('/#_LATT\{([^}]+)\}(\{([^}]+)\})?/', $format, $results);
+		preg_match_all('/#_LATT\{([^}]+)\}(\{([^}]+)\})?/', $location_string, $results);
 		foreach($results[0] as $resultKey => $result) {
 			//Strip string of placeholder and just leave the reference
 			$attRef = substr( substr($result, 0, strpos($result, '}')), 7 );
@@ -674,7 +674,7 @@ class EM_Location extends EM_Object {
 			$attString = apply_filters('em_location_output_placeholder', $attString, $this, $result, $target);
 			$location_string = str_replace($result, $attString ,$location_string );
 		}
-	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([^}]+)})?/", $format, $placeholders);
+	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([^}]+)})?/", $location_string, $placeholders);
 	 	$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$replace = '';

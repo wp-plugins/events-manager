@@ -463,7 +463,13 @@ function em_new_user_notification() {
 		return;
 
 	//send email to user
-	$message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), get_option('dbem_bookings_email_registration_body'));
+	$message = get_option('dbem_bookings_email_registration_body');
+	if( em_locate_template('emails/new-user.php') ){
+		ob_start();
+		em_locate_template('emails/new-user.php', true);
+		$message = ob_get_clean();
+	}
+    $message  = str_replace(array('%password%','%username%'), array($plaintext_pass, $user_login), $message);
 	global $EM_Mailer;
 	return $EM_Mailer->send(get_option('dbem_bookings_email_registration_subject'), $message, $user_email);
 }

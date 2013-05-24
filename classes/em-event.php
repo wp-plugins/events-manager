@@ -1185,7 +1185,7 @@ class EM_Event extends EM_Object{
 			$event_string = str_replace($result,$replace,$event_string );
 		}
 		//This is for the custom attributes
-		preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $format, $results);
+		preg_match_all('/#_ATT\{([^}]+)\}(\{([^}]+)\})?/', $event_string, $results);
 		$attributes = em_get_attributes();
 		foreach($results[0] as $resultKey => $result) {
 			//Strip string of placeholder and just leave the reference
@@ -1313,7 +1313,7 @@ class EM_Event extends EM_Object{
 			}
 	 	}
 		//Now let's check out the placeholders.
-	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([^}]+)})?/", $format, $placeholders);
+	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([^}]+)})?/", $event_string, $placeholders);
 	 	$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$match = true;
