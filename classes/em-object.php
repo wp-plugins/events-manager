@@ -31,7 +31,7 @@ class EM_Object {
 			'format' => '', 
 			'category' => 0,
 			'tag' => 0,
-			'location' => 0,
+			'location' => false,
 			'event' => false, 
 			'offset'=>0,
 			'page'=>1,//basically, if greater than 0, calculates offset at end
@@ -304,6 +304,8 @@ class EM_Object {
 		//Filter by Location - can be object, array, or id
 		if ( is_numeric($location) && $location > 0 ) { //Location ID takes precedence
 			$conditions['location'] = " {$locations_table}.location_id = $location";
+		}elseif ( $location === 0 ) { //only helpful is searching events
+			$conditions['location'] = " {$events_table}.location_id = $location OR {$events_table}.location_id IS NULL";
 		}elseif ( self::array_is_numeric($location) ){
 			$conditions['location'] = "( {$locations_table}.location_id = " . implode(" OR {$locations_table}.location_id = ", $location) .' )';
 		}elseif ( is_object($location) && get_class($location)=='EM_Location' ){ //Now we deal with objects
@@ -360,8 +362,8 @@ class EM_Object {
 			if( !empty($args[$tax_name]) && is_array($args[$tax_name]) ){
 			    if( !empty($tax_data['ms']) ) self::ms_global_switch(); //if in ms global mode, switch here rather than on each EM_Category instance
 				//build array of term ids and negative ids from supplied argument
-				$term_ids = array();
-				$term_not_ids = array();
+				$term_tax_ids = $term_ids = array();
+				$term_tax_not_ids = $term_not_ids = array();
 				foreach($args[$tax_name] as $tax_id){
 				    $tax_id_clean = preg_replace('/^-/', '', $tax_id);
 					if( !is_numeric($tax_id_clean) ){
@@ -374,15 +376,17 @@ class EM_Object {
 					}
 					if( !empty($term->term_taxonomy_id) ){
 						if( !preg_match('/^-/', $tax_id) ){
-							$term_ids[] = $term->term_taxonomy_id;
+							$term_tax_ids[] = $term->term_taxonomy_id;
+							if( EM_MS_GLOBAL && !empty($tax_data['ms']) ) $term_ids[] = $term->term_id;
 						}else{
-							$term_not_ids[] = $term->term_taxonomy_id;
+							$term_tax_not_ids[] = $term->term_taxonomy_id;
+							if( EM_MS_GLOBAL && !empty($tax_data['ms']) ) $term_not_ids[] = $term->term_id;
 						}
 					}
 				}
 			    if( !empty($tax_data['ms']) ) self::ms_global_switch_back(); //switch back if ms global mode
 				//create sql conditions
-				if( count($term_ids) > 0 || count($term_not_ids) > 0 ){
+				if( count($term_tax_ids) > 0 || count($term_tax_not_ids) > 0 ){
 				    //figure out context - what table/field to search
 				    $post_context = EM_EVENTS_TABLE.".post_id";
 				    $ms_context = EM_EVENTS_TABLE.".event_id";
@@ -403,11 +407,11 @@ class EM_Object {
 						} 
 					}else{
 				    	//normal taxonomy filtering
-						if( count($term_ids) > 0 ){
-							$tax_conds[] = "$post_context IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_ids).") )";
+						if( count($term_tax_ids) > 0 ){
+							$tax_conds[] = "$post_context IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_tax_ids).") )";
 						}
-						if( count($term_not_ids) > 0 ){
-							$tax_conds[] = "$post_context NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_not_ids).") )";			
+						if( count($term_tax_not_ids) > 0 ){
+							$tax_conds[] = "$post_context NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_tax_not_ids).") )";			
 						}
 					}
 					if( count($tax_conds) > 0 ){

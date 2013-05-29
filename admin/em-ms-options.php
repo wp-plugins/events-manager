@@ -164,7 +164,7 @@ function em_ms_admin_options_page() {
 							<?php
 							em_options_radio_binary ( sprintf(__( 'Display global %s on main blog?', 'dbem'), __('locations','dbem')), 'dbem_ms_global_locations', sprintf($global_post_tip, __('locations','dbem'), __('locations','dbem')) );
 							em_options_radio_binary ( sprintf(__( 'Link sub-site %s directly to sub-site?', 'dbem'), __('locations','dbem')), 'dbem_ms_global_locations_links', sprintf($global_link_tip, __('locations','dbem'), __('location','dbem')).sprintf($global_link_tip2, __('location','dbem'), $options_page_link) );
-							em_options_input_text ( sprintf(__( 'Global %s slug', 'dbem' ),__('event','dbem')), 'dbem_ms_locations_slug', sprintf($global_slug_tip, __('Locations','dbem'), __('locations','dbem')).__('Example:','dbem').'<code>http://yoursite.com/locations/<strong>location</strong>/subsite-location-slug/', EM_LOCATION_SLUG );
+							em_options_input_text ( sprintf(__( 'Global %s slug', 'dbem' ),__('location','dbem')), 'dbem_ms_locations_slug', sprintf($global_slug_tip, __('Locations','dbem'), __('locations','dbem')).__('Example:','dbem').'<code>http://yoursite.com/locations/<strong>location</strong>/subsite-location-slug/', EM_LOCATION_SLUG );
 							?>
 							</tbody>
 							<?php echo $save_button; ?>

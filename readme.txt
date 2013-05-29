@@ -98,12 +98,20 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.4.2.1 (dev) =
+= 5.4.2.2 (dev) =
 * minor JS mod for some rare IE9 conflicts by moving global load_ui_css variable into jQuery.ready()
 * fixed booking form showing tickets twice
 * fixed issues with placeholders not converting if immediately preceded by a conditional opening/closing tag
 * fixed overriden emails/new-user.php templates not being respected anymore since this was added to settings
- 
+* fixed timepicker compatibility with jQuery 1.9.1
+* fixed google maps js being loaded if previously loaded by another plugin
+* fixed translation domain missing for some text in settings page
+* fixed ical infinite loop problem when limit is 0
+* fixed MS Global Tables bug when filtering by categories for sub-site events
+* added RSS events limit option
+* removed location page title format option from settings if not in MS Global mode
+* modified location search attribute for events with no locations
+
 = 5.4.2 =
 * improved the handling of orphaned events and locations, they now show information and can be deleted front-end
 * fixed deleting of drafts on front-end,

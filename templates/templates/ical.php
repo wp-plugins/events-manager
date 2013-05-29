@@ -11,7 +11,7 @@ if( !empty($EM_Event) && get_class($EM_Event) == 'EM_Event' ){
 	$EM_Events = array($EM_Event);
 }else{
     $ical_limit = get_option('dbem_ical_limit');
-    $page_limit = $ical_limit > 50 ? 50:$ical_limit;
+    $page_limit = $ical_limit > 50 || !$ical_limit ? 50:$ical_limit; //set a limit of 50 to output at a time, unless overall limit is lower
 	$args = apply_filters('em_calendar_template_args',array('limit'=>$page_limit, 'page'=>'1', 'owner'=>false, 'orderby'=>'event_start_date', 'scope' => get_option('dbem_ical_scope') ));
 	$EM_Events = EM_Events::get( $args );
 }
@@ -27,7 +27,7 @@ $count = 0;
 while ( count($EM_Events) > 0 ){
 	foreach ( $EM_Events as $EM_Event ) {
 		/* @var $EM_Event EM_Event */
-	    if( get_option('dbem_ical_limit') != 0 && $count > get_option('dbem_ical_limit') ) break; //we've reached our maximum
+	    if( $ical_limit != 0 && $count > $ical_limit ) break; //we've reached our maximum
 	    //calculate the times along with timezone offsets
 		if($EM_Event->event_all_day){
 			$dateStart	= ';VALUE=DATE:'.date('Ymd',$EM_Event->start); //all day
@@ -92,7 +92,7 @@ END:VEVENT";
 	    //get next page of results
 	    $args['page']++;
 		$EM_Events = EM_Events::get( $args );
-	}	
+	}
 }
 
 //calendar footer

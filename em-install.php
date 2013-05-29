@@ -503,7 +503,7 @@ function em_add_options() {
 		'dbem_tag_no_event_message' => __('No events with this tag', 'dbem'),
 		'dbem_tag_event_list_limit' => 20,
 		//RSS Stuff
-		'dbem_rss_limit' => 10,
+		'dbem_rss_limit' => 0,
 		'dbem_rss_scope' => 'future',
 		'dbem_rss_main_title' => get_bloginfo('title')." - ".__('Events', 'dbem'),
 		'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events', 'dbem'),
@@ -783,6 +783,10 @@ function em_add_options() {
 	    ob_start();
 	    em_locate_template('emails/new-user.php',true);
 	    update_option('dbem_bookings_email_registration_body', ob_get_clean());
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.422 ){
+	    //copy registration email content into new setting
+	    update_option('dbem_rss_limit',0);
 	}
 	//set time localization for first time depending on current settings
 	if( get_option('dbem_time_24h','not set') == 'not set'){
