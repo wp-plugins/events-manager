@@ -527,7 +527,7 @@ jQuery(document).ready( function($){
 
 	/* Load any maps */	
 	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
-		if (typeof google !== 'object' && typeof google.maps !== 'object'){ 
+		if ( typeof google !== 'object' || typeof google.maps !== 'object' ){ 
 			var script = document.createElement("script");
 			script.type = "text/javascript";
 			script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.8&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
