@@ -1,5 +1,5 @@
-var load_ui_css = false; //load jquery ui css?
 jQuery(document).ready( function($){
+	var load_ui_css = false; //load jquery ui css?
 	/* Time Entry */
 	$('#start-time').each(function(i, el){
 		$(el).addClass('em-time-input em-time-start').next('#end-time').addClass('em-time-input em-time-end').parent().addClass('em-time-range');
@@ -318,11 +318,11 @@ jQuery(document).ready( function($){
 			//Sortables
 			$( ".em-bookings-cols-sortable" ).sortable({
 				connectWith: ".em-bookings-cols-sortable",
-				over: function(event, ui) {
-					if( ui.item.hasClass('ui-state-highlight') ){
-						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);							
-					}else{
+				update: function(event, ui) {
+					if( ui.item.parents('ul#em-bookings-cols-active, ul#em-bookings-export-cols-active').length > 0 ){							
 						ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
+					}else{
+						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);
 					}
 				}
 			}).disableSelection();
@@ -340,6 +340,7 @@ jQuery(document).ready( function($){
 				//recreate overlays
 				$('#em-bookings-table-export input[name=scope]').val(root.find('select[name=scope]').val());
 				$('#em-bookings-table-export input[name=status]').val(root.find('select[name=status]').val());
+				jQuery(document).triggerHandler('em_bookings_filtered', [data, root, el]);
 			});
 			return false;
 		});
@@ -381,7 +382,8 @@ jQuery(document).ready( function($){
 	}
 	
 	//Manual Booking
-	$('a.em-booking-button').click(function(){
+	$('a.em-booking-button').click(function(e){
+		e.preventDefault();
 		var button = $(this);
 		if( button.text() != EM.bb_booked && $(this).text() != EM.bb_booking){
 			button.text(EM.bb_booking);
@@ -405,8 +407,10 @@ jQuery(document).ready( function($){
 				error : function(){ button.text(EM.bb_error); }
 			});
 		}
+		return false;
 	});	
-	$('a.em-cancel-button').click(function(){
+	$('a.em-cancel-button').click(function(e){
+		e.preventDefault();
 		var button = $(this);
 		if( button.text() != EM.bb_cancelled && button.text() != EM.bb_canceling){
 			button.text(EM.bb_canceling);
@@ -429,6 +433,7 @@ jQuery(document).ready( function($){
 				error : function(){ button.text(EM.bb_cancel_error); }
 			});
 		}
+		return false;
 	});  
 
 	//Datepicker
@@ -457,7 +462,7 @@ jQuery(document).ready( function($){
 		}
 		em_setup_datepicker('body');
 	}
-	if( load_ui_css ){
+	if( load_ui_css && EM.ui_css ){
 		var script = document.createElement("link");
 		script.id = 'jquery-ui-css';
 		script.rel = "stylesheet";
@@ -522,10 +527,14 @@ jQuery(document).ready( function($){
 
 	/* Load any maps */	
 	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
-		var script = document.createElement("script");
-		script.type = "text/javascript";
-		script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.8&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
-		document.body.appendChild(script);
+		if ( typeof google !== 'object' || typeof google.maps !== 'object' ){ 
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.8&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
+			document.body.appendChild(script);
+		}else{
+			em_maps();
+		}
 	}
 	
 	//Finally, add autocomplete here
@@ -551,21 +560,23 @@ jQuery(document).ready( function($){
 				}else{
 					jQuery('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
 				}
-				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-				jQuery('#em-location-data input#location-name').css('background-color','#fff');
+				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
 				jQuery('#em-location-reset').show();
+				jQuery('#em-location-search-tip').hide();
+				jQuery(document).triggerHandler('em_locations_autocomplete_selected', [event, ui]);
 				return false;
 			}
 		}).data( "autocomplete" )._renderItem = function( ul, item ) {
 			html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
 			return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
 		};
-		jQuery('#em-location-reset').click( function(){
-			jQuery('#em-location-data input').css('background-color','#fff').val('');
+		jQuery('#em-location-reset a').click( function(){
+			jQuery('#em-location-data input').css('background-color','#fff').val('').removeAttr('readonly');
 			jQuery('#em-location-data select').css('background-color','#fff');
 			jQuery('#em-location-data option:selected').removeAttr('selected');
 			jQuery('input#location-id').val('');
 			jQuery('#em-location-reset').hide();
+			jQuery('#em-location-search-tip').show();
 			jQuery('#em-map').hide();
 			jQuery('#em-map-404').show();
 			if(typeof(marker) !== 'undefined'){
@@ -576,9 +587,9 @@ jQuery(document).ready( function($){
 			return false;
 		});
 		if( jQuery('input#location-id').val() != '0' && jQuery('input#location-id').val() != '' ){
-			jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-			jQuery('#em-location-data input#location-name').css('background-color','#fff');
+			jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
 			jQuery('#em-location-reset').show();
+			jQuery('#em-location-search-tip').hide();
 		}
 	}
 	
@@ -702,6 +713,8 @@ var em_ajaxify = function(url){
  * MAP FUNCTIONS
  */
 var maps = {};
+var maps_markers = {};
+var infowindow;
 //Load single maps (each map is treated as a seperate map.
 function em_maps() {
 	//Find all the maps on this page
@@ -719,13 +732,13 @@ function em_maps() {
 		    position: em_LatLng,
 		    map: maps[map_id]
 		});
-		var infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
+		infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
 		infowindow.open(maps[map_id],marker);
 		maps[map_id].panBy(40,-70);
 		
 		//JS Hook for handling map after instantiation
 		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
-		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker]);
+		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker, map_id]);
 	});
 	jQuery('.em-locations-map').each( function(index){
 		var el = jQuery(this);
@@ -737,6 +750,7 @@ function em_maps() {
 				    mapTypeId: google.maps.MapTypeId.ROADMAP
 				  };
 				  maps[map_id] = new google.maps.Map(document.getElementById("em-locations-map-"+map_id), myOptions);
+				  maps_markers[map_id] = [];
 				  
 				  var minLatLngArr = [0,0];
 				  var maxLatLngArr = [0,0];
@@ -750,6 +764,7 @@ function em_maps() {
 						    position: location, 
 						    map: maps[map_id]
 						});
+						maps_markers[map_id].push(marker);
 						marker.setTitle(data[i].location_name);
 						var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
 						em_map_infobox(marker, myContent, maps[map_id]);
@@ -766,8 +781,9 @@ function em_maps() {
 				  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
 				  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
 				  maps[map_id].fitBounds(bounds);
+				  
 				//Call a hook if exists
-				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id]]);
+				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id], data, map_id]);
 			}else{
 				el.children().first().html('No locations found');
 			}
@@ -802,7 +818,7 @@ function em_maps() {
     			jQuery('#em-map').hide();
     			jQuery('#em-map-404').show();
 			}
-		}
+		};
 		
 		//Add listeners for changes to address
 		var get_map_by_id = function(id){
@@ -826,9 +842,9 @@ function em_maps() {
 					}
 				});
 			}
-		}
-		jQuery('#location-select-id, input#location-id').change( function(){get_map_by_id(jQuery(this).val())} );
-		jQuery('#location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
+		};
+		jQuery('#location-select-id, input#location-id').change( function(){get_map_by_id(jQuery(this).val());} );
+		jQuery('#location-name, #location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
 			//build address
 			var addresses = [ jQuery('#location-address').val(), jQuery('#location-town').val(), jQuery('#location-state').val(), jQuery('#location-postcode').val() ];
 			var address = '';
@@ -837,6 +853,11 @@ function em_maps() {
 					address = ( address == '' ) ? address+val:address+', '+val;
 				}
 			});
+			if( address == '' ){ //in case only name is entered, no address
+				jQuery('#em-map').hide();
+				jQuery('#em-map-404').show();
+				return false;
+			}
 			//do country last, as it's using the text version
 			if( jQuery('#location-country option:selected').val() != 0 ){
 				address = ( address == '' ) ? address+jQuery('#location-country option:selected').text():address+', '+jQuery('#location-country option:selected').text();
@@ -866,7 +887,7 @@ function em_maps() {
 			    map: map,
 			    draggable: true
 			});
-			var infoWindow = new google.maps.InfoWindow({
+			infoWindow = new google.maps.InfoWindow({
 			    content: ''
 			});
 			var geocoder = new google.maps.Geocoder();
@@ -886,16 +907,19 @@ function em_maps() {
 			}else{
 				refresh_map_location();
 			}
+			jQuery(document).triggerHandler('em_map_loaded', [map, infowindow, marker]);
 		}
 	}
 }
   
 function em_map_infobox(marker, message, map) {
-  var infowindow = new google.maps.InfoWindow({ content: message });
+  var iw = new google.maps.InfoWindow({ content: message });
   google.maps.event.addListener(marker, 'click', function() {
-    infowindow.open(map,marker);
+	if( infowindow ) infowindow.close();
+	infowindow = iw;
+    iw.open(map,marker);
   });
 }
 
 /* jQuery timePicker - http://labs.perifer.se/timedatepicker/ @ http://github.com/perifer/timePicker commit 100644 */
- (function(a){function g(a){a.setFullYear(2001),a.setMonth(0),a.setDate(0);return a}function f(a,b){if(a){var c=a.split(b.separator),d=parseFloat(c[0]),e=parseFloat(c[1]);b.show24Hours||(d===12&&a.indexOf("AM")!==-1?d=0:d!==12&&a.indexOf("PM")!==-1&&(d+=12));var f=new Date(0,0,0,d,e,0);return g(f)}return null}function e(a,b){return typeof a=="object"?g(a):f(a,b)}function d(a){return(a<10?"0":"")+a}function c(a,b){var c=a.getHours(),e=b.show24Hours?c:(c+11)%12+1,f=a.getMinutes();return d(e)+b.separator+d(f)+(b.show24Hours?"":c<12?" AM":" PM")}function b(b,c,d,e){b.value=a(c).text(),a(b).change(),a.browser.msie||b.focus(),d.hide()}a.fn.timePicker=function(b){var c=a.extend({},a.fn.timePicker.defaults,b);return this.each(function(){a.timePicker(this,c)})},a.timePicker=function(b,c){var d=a(b)[0];return d.timePicker||(d.timePicker=new jQuery._timePicker(d,c))},a.timePicker.version="0.3",a._timePicker=function(d,h){var i=!1,j=!1,k=e(h.startTime,h),l=e(h.endTime,h),m="selected",n="li."+m;a(d).attr("autocomplete","OFF");var o=[],p=new Date(k);while(p<=l)o[o.length]=c(p,h),p=new Date(p.setMinutes(p.getMinutes()+h.step));var q=a('<div class="time-picker'+(h.show24Hours?"":" time-picker-12hours")+'"></div>'),r=a("<ul></ul>");for(var s=0;s<o.length;s++)r.append("<li>"+o[s]+"</li>");q.append(r),q.appendTo("body").hide(),q.mouseover(function(){i=!0}).mouseout(function(){i=!1}),a("li",r).mouseover(function(){j||(a(n,q).removeClass(m),a(this).addClass(m))}).mousedown(function(){i=!0}).click(function(){b(d,this,q,h),i=!1});var t=function(){if(q.is(":visible"))return!1;a("li",q).removeClass(m);var b=a(d).offset();q.css({top:b.top+d.offsetHeight,left:b.left}),q.show();var e=d.value?f(d.value,h):k,i=k.getHours()*60+k.getMinutes(),j=e.getHours()*60+e.getMinutes()-i,n=Math.round(j/h.step),o=g(new Date(0,0,0,0,n*h.step+i,0));o=k<o&&o<=l?o:k;var p=a("li:contains("+c(o,h)+")",q);p.length&&(p.addClass(m),q[0].scrollTop=p[0].offsetTop);return!0};a(d).focus(t).click(t),a(d).blur(function(){i||q.hide()});var u=a.browser.opera||a.browser.mozilla?"keypress":"keydown";a(d)[u](function(c){var e;j=!0;var f=q[0].scrollTop;switch(c.keyCode){case 38:if(t())return!1;e=a(n,r);var g=e.prev().addClass(m)[0];g?(e.removeClass(m),g.offsetTop<f&&(q[0].scrollTop=f-g.offsetHeight)):(e.removeClass(m),g=a("li:last",r).addClass(m)[0],q[0].scrollTop=g.offsetTop-g.offsetHeight);return!1;case 40:if(t())return!1;e=a(n,r);var i=e.next().addClass(m)[0];i?(e.removeClass(m),i.offsetTop+i.offsetHeight>f+q[0].offsetHeight&&(q[0].scrollTop=f+i.offsetHeight)):(e.removeClass(m),i=a("li:first",r).addClass(m)[0],q[0].scrollTop=0);return!1;case 13:if(q.is(":visible")){var k=a(n,r)[0];b(d,k,q,h)}return!1;case 27:q.hide();return!1}return!0}),a(d).keyup(function(a){j=!1}),this.getTime=function(){return f(d.value,h)},this.setTime=function(b){d.value=c(e(b,h),h),a(d).change()}},a.fn.timePicker.defaults={step:30,startTime:new Date(0,0,0,0,0,0),endTime:new Date(0,0,0,23,30,0),separator:":",show24Hours:!0}})(jQuery)
+(function(e){function t(t,n,r,i){t.value=e(n).text();e(t).change();if(!navigator.userAgent.match(/msie/i)){t.focus()}r.hide()}function n(e,t){var n=e.getHours();var i=t.show24Hours?n:(n+11)%12+1;var s=e.getMinutes();return r(i)+t.separator+r(s)+(t.show24Hours?"":n<12?" AM":" PM")}function r(e){return(e<10?"0":"")+e}function i(e,t){return typeof e=="object"?o(e):s(e,t)}function s(e,t){if(e){var n=e.split(t.separator);var r=parseFloat(n[0]);var i=parseFloat(n[1]);if(!t.show24Hours){if(r===12&&e.indexOf("AM")!==-1){r=0}else if(r!==12&&e.indexOf("PM")!==-1){r+=12}}var s=new Date(0,0,0,r,i,0);return o(s)}return null}function o(e){e.setFullYear(2001);e.setMonth(0);e.setDate(0);return e}e.fn.timePicker=function(t){var n=e.extend({},e.fn.timePicker.defaults,t);return this.each(function(){e.timePicker(this,n)})};e.timePicker=function(t,n){var r=e(t)[0];return r.timePicker||(r.timePicker=new jQuery._timePicker(r,n))};e.timePicker.version="0.3";e._timePicker=function(r,u){var a=false;var f=false;var l=i(u.startTime,u);var c=i(u.endTime,u);var h="selected";var p="li."+h;e(r).attr("autocomplete","OFF");var d=[];var v=new Date(l);while(v<=c){d[d.length]=n(v,u);v=new Date(v.setMinutes(v.getMinutes()+u.step))}var m=e('<div class="time-picker'+(u.show24Hours?"":" time-picker-12hours")+'"></div>');var g=e("<ul></ul>");for(var y=0;y<d.length;y++){g.append("<li>"+d[y]+"</li>")}m.append(g);m.appendTo("body").hide();m.mouseover(function(){a=true}).mouseout(function(){a=false});e("li",g).mouseover(function(){if(!f){e(p,m).removeClass(h);e(this).addClass(h)}}).mousedown(function(){a=true}).click(function(){t(r,this,m,u);a=false});var b=function(){if(m.is(":visible")){return false}e("li",m).removeClass(h);var t=e(r).offset();m.css({top:t.top+r.offsetHeight,left:t.left});m.show();var i=r.value?s(r.value,u):l;var a=l.getHours()*60+l.getMinutes();var f=i.getHours()*60+i.getMinutes()-a;var p=Math.round(f/u.step);var d=o(new Date(0,0,0,0,p*u.step+a,0));d=l<d&&d<=c?d:l;var v=e("li:contains("+n(d,u)+")",m);if(v.length){v.addClass(h);m[0].scrollTop=v[0].offsetTop}return true};e(r).focus(b).click(b);e(r).blur(function(){if(!a){m.hide()}});e(r)["keydown"](function(n){var i;f=true;var s=m[0].scrollTop;switch(n.keyCode){case 38:if(b()){return false}i=e(p,g);var o=i.prev().addClass(h)[0];if(o){i.removeClass(h);if(o.offsetTop<s){m[0].scrollTop=s-o.offsetHeight}}else{i.removeClass(h);o=e("li:last",g).addClass(h)[0];m[0].scrollTop=o.offsetTop-o.offsetHeight}return false;break;case 40:if(b()){return false}i=e(p,g);var a=i.next().addClass(h)[0];if(a){i.removeClass(h);if(a.offsetTop+a.offsetHeight>s+m[0].offsetHeight){m[0].scrollTop=s+a.offsetHeight}}else{i.removeClass(h);a=e("li:first",g).addClass(h)[0];m[0].scrollTop=0}return false;break;case 13:if(m.is(":visible")){var l=e(p,g)[0];t(r,l,m,u)}return false;break;case 27:m.hide();return false;break}return true});e(r).keyup(function(e){f=false});this.getTime=function(){return s(r.value,u)};this.setTime=function(t){r.value=n(i(t,u),u);e(r).change()}};e.fn.timePicker.defaults={step:30,startTime:new Date(0,0,0,0,0,0),endTime:new Date(0,0,0,23,30,0),separator:":",show24Hours:true}})(jQuery)

@@ -14,7 +14,7 @@
 	<thead>
 		<tr>
 			<td><a class="em-calnav em-calnav-prev" href="<?php echo $calendar['links']['previous_url']; ?>" rel="nofollow">&lt;&lt;</a></td>
-			<td class="month_name" colspan="5"><?php echo ucfirst(date_i18n('M Y', $calendar['month_start'])); ?></td>
+			<td class="month_name" colspan="5"><?php echo ucfirst(date_i18n(get_option('dbem_small_calendar_month_format'), $calendar['month_start'])); ?></td>
 			<td><a class="em-calnav em-calnav-next" href="<?php echo $calendar['links']['next_url']; ?>" rel="nofollow">&gt;&gt;</a></td>
 		</tr>
 	</thead>

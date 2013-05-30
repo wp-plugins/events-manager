@@ -31,9 +31,9 @@ if( $events_count > 0 ){
 		//do some custom pagination (if needed/requested)
 		if( !empty($args['limit']) && $events_count > $args['limit'] ){
 			//Show the pagination links (unless there's less than $limit events), note that we set em_search instead of search to prevent conflicts
-			$search_args = array_merge(EM_Events::get_post_search(), array('pno'=>'%PAGE%','action'=>'search_events','search'=>null, 'em_search'=>$args['search'])); 
+			$search_args = array_merge(EM_Events::get_post_search(), array('pno'=>'%PAGE%','action'=>'search_events','search'=>null)); 
 			$page_link_template = em_add_get_params($_SERVER['REQUEST_URI'], $search_args, false); //don't html encode, so em_paginate does its thing
-			echo apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $events_count, $args['limit'], $args['pno']), $page_link_template, $events_count, $args['limit'], $args['pno']);
+			echo apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $events_count, $args['limit'], $args['page']), $page_link_template, $events_count, $args['limit'], $args['page']);
 		}
 	}else{
 	    if(get_option('dbem_event_list_groupby') ){
