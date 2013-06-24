@@ -390,8 +390,8 @@ function em_add_options() {
 		'dbem_event_list_item_format_header' => '<table cellpadding="0" cellspacing="0" class="events-table" >
     <thead>
         <tr>
-			<th class="event-time" width="150">Date/Time</th>
-			<th class="event-description" width="*">Event</th>
+			<th class="event-time" width="150">'.__('Date/Time','dbem').'</th>
+			<th class="event-description" width="*">'.__('Event','dbem').'</th>
 		</tr>
    	</thead>
     <tbody>',
@@ -409,17 +409,17 @@ function em_add_options() {
 		'dbem_display_calendar_in_events_page' => 0,
 		'dbem_single_event_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_LOCATIONMAP</div>
 <p>
-	<strong>Date/Time</strong><br/>
+	<strong>'.__('Date/Time','dbem').'</strong><br/>
 	Date(s) - #_EVENTDATES<br /><i>#_EVENTTIMES</i>
 </p>
 {has_location}
 <p>
-	<strong>Location</strong><br/>
+	<strong>'.__('Location','dbem').'</strong><br/>
 	#_LOCATIONLINK
 </p>
 {/has_location}
 <p>
-	<strong>Category(ies)</strong>
+	<strong>'.__('Categories','dbem').'</strong>
 	#_CATEGORIES
 </p>
 <br style="clear:both" />
@@ -444,7 +444,7 @@ function em_add_options() {
 		'dbem_location_page_title_format' => '#_LOCATIONNAME',
 		'dbem_single_location_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_LOCATIONMAP</div>
 <p>
-	<strong>Address</strong><br/>
+	<strong>'.__('Address','dbem').'</strong><br/>
 	#_LOCATIONADDRESS<br/>
 	#_LOCATIONTOWN<br/>
 	#_LOCATIONSTATE<br/>
@@ -455,7 +455,7 @@ function em_add_options() {
 <br style="clear:both" />
 #_LOCATIONNOTES
 
-<h3>Upcoming Events</h3>
+<h3>'.__('Upcoming Events','dbem').'</h3>
 <p>#_LOCATIONNEXTEVENTS</p>',
 		'dbem_location_no_events_message' => '<li>'.__('No events in this location', 'dbem').'</li>',
 		'dbem_location_event_list_item_header_format' => "<ul>",

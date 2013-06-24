@@ -3,7 +3,7 @@ function em_ms_upgrade( $blog_id ){
 	?>
 	<div class="wrap">		
 		<div id='icon-options-general' class='icon32'><br /></div>
-		<h2><?php _e('Update Network'); ?></h2>
+		<h2><?php _e('Update Network','dbem'); ?></h2>
 		<?php
 		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'upgrade' && check_admin_referer('em_ms_ugrade_'.get_current_user_id()) ){
 			global $current_site,$wpdb;
@@ -28,7 +28,7 @@ function em_ms_upgrade( $blog_id ){
 		}else{
 			?>
 			 <form action="" method="post">
-			 	<p><?php _e('To update your network blogs with the latest Events Manager automatically, click the update button below.'); ?></p>
+			 	<p><?php _e('To update your network blogs with the latest Events Manager automatically, click the update button below.','dbem'); ?></p>
 			 	<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('em_ms_ugrade_'.get_current_user_id()); ?>" />
 			 	<input type="hidden" name="action" value="upgrade" />
 			 	<input type="submit" value="<?php _e('Update','dbem'); ?>" />
@@ -147,10 +147,10 @@ function em_ms_admin_options_page() {
 							<tbody class="em-global-options">
 							<?php
 							global $current_site;
-							$global_slug_tip = __('%s belonging to other sub-sites will have an extra slug preppended to it so that your main site can differentiate between its own %s and those belonging to other sites in your network.');
+							$global_slug_tip = __('%s belonging to other sub-sites will have an extra slug preppended to it so that your main site can differentiate between its own %s and those belonging to other sites in your network.','dbem');
 							$global_link_tip = __( 'When displaying global %s on the main site you have the option of users viewing the %s details on the main site or being directed to the sub-site.','dbem' );
 							$global_post_tip = __( 'Displays %s from all sites on the network by default. You can still restrict %s by blog using shortcodes and template tags coupled with the <code>blog</code> attribute. Requires global tables to be turned on.','dbem');
-							$global_link_tip2 = __('You <strong>must</strong> have assigned a %s page in your <a href="%s">main blog settings</a> for this to work.');
+							$global_link_tip2 = __('You <strong>must</strong> have assigned a %s page in your <a href="%s">main blog settings</a> for this to work.','dbem');
 							$options_page_link = get_admin_url($current_site->blog_id, 'edit.php?post_type=event&page=events-manager-options#pages');
 							?><tr><td><strong><?php echo sprintf(__('%s Options','dbem'),__('Event','dbem')); ?></strong></td></tr><?php
 							em_options_radio_binary ( sprintf(__( 'Display global events on main blog?', 'dbem'), __('events','dbem')), 'dbem_ms_global_events', sprintf($global_post_tip, __('events','dbem'), __('events','dbem')) );

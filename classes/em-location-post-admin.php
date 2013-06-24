@@ -70,6 +70,7 @@ class EM_Location_Post_Admin{
 				$loc_truly_exists = $wpdb->get_var('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$EM_Location->location_id}") == $EM_Location->location_id;
 				if(empty($EM_Location->location_id) || !$loc_truly_exists){ $EM_Location->save_meta(); }
 				//continue
+				$EM_Location->get_previous_status(); //before we save anything
 				$location_status = $EM_Location->get_status(true);
 				$where_array = array($EM_Location->location_name, $EM_Location->location_slug, $EM_Location->location_private, $EM_Location->location_id);
 				$sql = $wpdb->prepare("UPDATE ".EM_LOCATIONS_TABLE." SET location_name=%s, location_slug=%s, location_private=%d, location_status={$location_status} WHERE location_id=%d", $where_array);

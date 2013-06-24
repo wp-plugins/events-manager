@@ -200,7 +200,7 @@ class EM_Locations extends EM_Object implements Iterator {
 		}
 		//eventful locations
 		if( true == $args['eventful'] ){
-			$conditions['eventful'] = "{$events_table}.event_id IS NOT NULL";
+			$conditions['eventful'] = "{$events_table}.event_id IS NOT NULL AND event_status=1";
 		}elseif( true == $args['eventless'] ){
 			$conditions['eventless'] = "{$events_table}.event_id IS NULL";
 		}

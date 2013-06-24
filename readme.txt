@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.5.1
-Stable tag: 5.4.3
+Stable tag: 5.4.4
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,6 +98,29 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.4.4 =
+* updated Spanish, Polish and POT translations
+* fixed search attribute owner so 'me' will show no events to guest users
+* added optional $email_attendee parameter to EM_Booking::email() function
+* updated lightness css theme to support jQuery UI 1.10.x (used in WP 3.6)
+* fixed JS errors related to jQuery 1.10.x (used in WP 3.6)
+* moved em_template_my_bookings_footer action so only called if logged in,
+* fixed event_date_created not being saved in events table
+* fixed "Email Sent" message showing up if no emails sent,
+* added em_booking_admin_emails filter
+* added bookings table default ordering by date of booking
+* fixed CSS for event editor location fields and maps not appearing on same row
+* fixed links on MS subsites in global mode to other blogs being incorrect if direct linking disabled
+* fixed eventful locations search showing trashed/pending locations
+* fixed problems with previous_status flags in event and location objects
+* fixed problems with approval email notifications not going out
+* added responsive resizing for location google maps
+* fixed read_others_locations not being enforced to location dropdown on event editor
+* fixed bookings cut-off time not being saved on all-day events
+* fixed php warning on category page
+* fixed some words within formats not being translated on first install
+* fixed various missing translation domains from gettext functions
+
 = 5.4.3 =
 * minor JS mod for some rare IE9 conflicts by moving global load_ui_css variable into jQuery.ready()
 * fixed booking form showing tickets twice

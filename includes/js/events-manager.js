@@ -530,7 +530,7 @@ jQuery(document).ready( function($){
 		if ( typeof google !== 'object' || typeof google.maps !== 'object' ){ 
 			var script = document.createElement("script");
 			script.type = "text/javascript";
-			script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.8&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
+			script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.12&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
 			document.body.appendChild(script);
 		}else{
 			em_maps();
@@ -566,7 +566,7 @@ jQuery(document).ready( function($){
 				jQuery(document).triggerHandler('em_locations_autocomplete_selected', [event, ui]);
 				return false;
 			}
-		}).data( "autocomplete" )._renderItem = function( ul, item ) {
+		}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
 			html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
 			return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
 		};
@@ -728,17 +728,23 @@ function em_maps() {
 		    mapTypeId: google.maps.MapTypeId.ROADMAP,
 		    mapTypeControl: false
 		});
-		var marker = new google.maps.Marker({
+		maps_markers[map_id] = new google.maps.Marker({
 		    position: em_LatLng,
 		    map: maps[map_id]
 		});
 		infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
-		infowindow.open(maps[map_id],marker);
+		infowindow.open(maps[map_id],maps_markers[map_id]);
 		maps[map_id].panBy(40,-70);
 		
 		//JS Hook for handling map after instantiation
 		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
-		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker, map_id]);
+		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, maps_markers[map_id], map_id]);
+		//map resize listener
+		jQuery(window).on('resize', function(e) {
+			google.maps.event.trigger(maps[map_id], "resize");
+			maps[map_id].setCenter(maps_markers[map_id].getPosition());
+			maps[map_id].panBy(40,-70);
+		});
 	});
 	jQuery('.em-locations-map').each( function(index){
 		var el = jQuery(this);
@@ -786,11 +792,13 @@ function em_maps() {
 				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id], data, map_id]);
 			}else{
 				el.children().first().html('No locations found');
+				jQuery(document).triggerHandler('em_maps_locations_hook_not_found', [el]);
 			}
 		});
 	});
 	//Location stuff - only needed if inputs for location exist
 	if( jQuery('select#location-select-id, input#location-address').length > 0 ){
+		var map, marker;
 		//load map info
 		var refresh_map_location = function(){
 			var location_latitude = jQuery('#location-latitude').val();
@@ -836,6 +844,7 @@ function em_maps() {
 						infoWindow.setContent( '<div id="location-balloon-content">'+ data.location_balloon +'</div>');
 						infoWindow.open(map, marker);
 						google.maps.event.trigger(map, 'resize');
+						jQuery(document).triggerHandler('em_maps_location_hook', [map, infowindow, marker, 0]);
 					}else{
 						jQuery('#em-map').hide();
 						jQuery('#em-map-404').show();
@@ -876,7 +885,7 @@ function em_maps() {
 		//Load map
 		if(jQuery('#em-map').length > 0){
 			var em_LatLng = new google.maps.LatLng(0, 0);
-			var map = new google.maps.Map( document.getElementById('em-map'), {
+			map = new google.maps.Map( document.getElementById('em-map'), {
 			    zoom: 14,
 			    center: em_LatLng,
 			    mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -909,6 +918,12 @@ function em_maps() {
 			}
 			jQuery(document).triggerHandler('em_map_loaded', [map, infowindow, marker]);
 		}
+		//map resize listener
+		jQuery(window).on('resize', function(e) {
+			google.maps.event.trigger(map, "resize");
+			map.setCenter(marker.getPosition());
+			map.panBy(40,-55);
+		});
 	}
 }
   

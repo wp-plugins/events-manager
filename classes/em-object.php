@@ -434,6 +434,8 @@ class EM_Object {
 			$conditions['owner'] = 'event_owner='.$owner;
 		}elseif( $owner == 'me' && is_user_logged_in() ){
 			$conditions['owner'] = 'event_owner='.get_current_user_id();
+		}elseif( $owner == 'me' && !is_user_logged_in() ){
+		    $conditions = array('owner'=>'1=2'); //no events to be shown
 		}
 		//reset the context
 		self::$context = EM_POST_TYPE_EVENT;

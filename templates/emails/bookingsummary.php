@@ -22,11 +22,11 @@ Price: <?php echo $EM_Ticket_Booking->get_price(true); ?>
 $price_summary = $EM_Booking->get_price_summary_array();
 //we should now have an array of information including base price, taxes and post/pre tax discounts
 ?>
-<?php _e('Sub Total','em-pro'); ?> : <?php echo $EM_Booking->get_price_base(true); ?>
+<?php _e('Sub Total','dbem'); ?> : <?php echo $EM_Booking->get_price_base(true); ?>
 
 <?php if( count($price_summary['discounts_pre_tax']) > 0 ): ?>
 
-<?php _e('Discounts Before Taxes','em-pro'); ?>
+<?php _e('Discounts Before Taxes','dbem'); ?>
 
 <?php foreach( $price_summary['discounts_pre_tax'] as $discount_summary ): ?>
 (<?php echo $discount_summary['name']; ?>) : -<?php echo $discount_summary['amount']; ?>
@@ -35,12 +35,12 @@ $price_summary = $EM_Booking->get_price_summary_array();
 
 <?php endif; ?>
 <?php if( !empty($price_summary['taxes']['amount'])  ): ?>
-<?php _e('Taxes','em-pro'); ?> ( <?php echo $price_summary['taxes']['rate']; ?> ) : <?php echo $price_summary['taxes']['amount']; ?>
+<?php _e('Taxes','dbem'); ?> ( <?php echo $price_summary['taxes']['rate']; ?> ) : <?php echo $price_summary['taxes']['amount']; ?>
 <?php endif; ?>
 
 <?php if( count($price_summary['discounts_post_tax']) > 0 ): ?>
 
-<?php _e('Discounts (After Taxes)','em-pro'); ?>
+<?php _e('Discounts (After Taxes)','dbem'); ?>
 
 <?php foreach( $price_summary['discounts_post_tax'] as $discount_summary ): ?>
 <?php echo $discount_summary['name']; ?> : -<?php echo $discount_summary['amount']; ?>

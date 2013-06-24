@@ -527,7 +527,7 @@ jQuery(document).ready( function($){
 
 	/* Load any maps */	
 	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
-		if ( typeof google !== 'object' || typeof google.maps !== 'object'){ 
+		if ( typeof google !== 'object' || typeof google.maps !== 'object' ){ 
 			var script = document.createElement("script");
 			script.type = "text/javascript";
 			script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.8&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
@@ -566,7 +566,7 @@ jQuery(document).ready( function($){
 				jQuery(document).triggerHandler('em_locations_autocomplete_selected', [event, ui]);
 				return false;
 			}
-		}).data( "autocomplete" )._renderItem = function( ul, item ) {
+		}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
 			html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
 			return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
 		};

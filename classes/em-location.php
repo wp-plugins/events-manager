@@ -65,7 +65,7 @@ class EM_Location extends EM_Object {
 	 * @access protected
 	 * @var mixed
 	 */
-	var $previous_status = 0;
+	var $previous_status = false;
 	
 	/* Post Variables - copied out of post object for easy IDE reference */
 	var $ID;
@@ -182,7 +182,6 @@ class EM_Location extends EM_Object {
 			foreach( $location_post as $key => $value ){ //merge the post data into location object
 				$this->$key = $value;
 			}
-			$this->previous_status = $this->location_status; //so we know about updates
 			$this->get_status();
 		}elseif( !empty($this->post_id) ){
 			//we have an orphan... show it, so that we can at least remove it on the front-end
@@ -400,7 +399,7 @@ class EM_Location extends EM_Object {
 					$this->feedback_message = sprintf(__('Successfully saved %s','dbem'),__('Location','dbem'));
 				}	
 			}else{
-				$this->previous_status = $wpdb->get_var('SELECT location_status FROM '.EM_LOCATIONS_TABLE.' WHERE location_id='.$this->location_id); //get status from db, not post_status
+				$this->get_previous_status();
 				if ( $wpdb->update(EM_LOCATIONS_TABLE, $location_array, array('location_id'=>$this->location_id)) === false ){
 					$this->add_error( sprintf(__('Something went wrong updating your %s to the index table. Please inform a site administrator about this.','dbem'),__('location','dbem')));			
 				}else{
@@ -521,7 +520,15 @@ class EM_Location extends EM_Object {
 		}
 		return $status;
 	}
-
+	
+	function get_previous_status( $force = false ){
+		global $wpdb;
+		if( $this->previous_status === false || $force ){
+			$this->previous_status = $wpdb->get_var('SELECT location_status FROM '.EM_LOCATIONS_TABLE.' WHERE location_id='.$this->location_id); //get status from db, not post_status
+		}
+		return $this->previous_status;
+	}
+	
 	function load_similar($criteria){
 		global $wpdb;
 		if( !empty($criteria['location_name']) && !empty($criteria['location_name']) && !empty($criteria['location_name']) ){

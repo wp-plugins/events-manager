@@ -166,15 +166,15 @@ class EM_Event_Post {
 					$thelist .= "\n\t<li>";
 					switch ( strtolower( $parents ) ) {
 						case 'multiple':
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a></li>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a></li>';
 							break;
 						case 'single':
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>';
 							$thelist .= $category->name.'</a></li>';
 							break;
 						case '':
 						default:
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a></li>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a></li>';
 					}
 				}
 				$thelist .= '</ul>';
@@ -185,15 +185,15 @@ class EM_Event_Post {
 						$thelist .= $separator;
 					switch ( strtolower( $parents ) ) {
 						case 'multiple':
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a>';
 							break;
 						case 'single':
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>';
 							$thelist .= "$category->name</a>";
 							break;
 						case '':
 						default:
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a>';
 					}
 					++$i;
 				}

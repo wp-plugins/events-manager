@@ -61,8 +61,10 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 		#wp-em-editor-content-wrap table { margin-bottom:0px; }
 	/* Location form */
 		#event-form table.em-location-data td, #event-form table.em-location-data th { vertical-align:top; border:none; }
+		#event-form table.em-location-data select { width:100%; }
 		#event-form table.em-location-data { width:50%; float:left; border:none; }
-		#event-form .em-location-map-container, #event-form .em-location-map-404, #event-form .em-location-map-content { width: 400px; height: 300px; float:left; }
+		#event-form .em-location-map-container { width: 50%; height: 300px; float:left; }
+		#event-form .em-location-map-404, #event-form .em-location-map-content { width:100%; height:100%; }
 		#event-form .em-location-map-404 { vertical-align:middle; text-align: center; }
 /* Booking Admin */
 	/* Generic Table Info */

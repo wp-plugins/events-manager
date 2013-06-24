@@ -176,7 +176,7 @@ function em_admin_warnings() {
 		if( !empty($_REQUEST['page']) && 'events-manager-options' == $_REQUEST['page'] && get_option('dbem_pro_dev_updates') == 1 ){
 			?>
 			<div id="message" class="updated">
-				<p><?php echo sprintf(__('Dev Mode active: Just a friendly reminder that you are updating to development versions. Only admins see this message, and it will go away when you disable this <a href="#pro-api">here</a> in your settings.','em-pro'),'<code>define(\'EMP_DEV_UPDATES\',true);</code>'); ?></p>
+				<p><?php echo sprintf(__('Dev Mode active: Just a friendly reminder that you are updating to development versions. Only admins see this message, and it will go away when you disable this <a href="#pro-api">here</a> in your settings.','dbem'),'<code>define(\'EMP_DEV_UPDATES\',true);</code>'); ?></p>
 			</div>
 			<?php
 		}
@@ -186,7 +186,7 @@ function em_admin_warnings() {
 			}else{
 				?>
 				<div id="message" class="updated">
-					<p><?php echo sprintf(__('It looks like you have WPML enabled on your site. We advise you also install our extra <a href="%s">Events Manager WPML Connector</a> plugin which helps the two work better together. <a href="%s">Dismiss message</a>','em-pro'),'http://wordpress.org/extend/plugins/events-manager-wpml/', add_query_arg(array('disable_em_wpml_warning'=>1))); ?></p>
+					<p><?php echo sprintf(__('It looks like you have WPML enabled on your site. We advise you also install our extra <a href="%s">Events Manager WPML Connector</a> plugin which helps the two work better together. <a href="%s">Dismiss message</a>','dbem'),'http://wordpress.org/extend/plugins/events-manager-wpml/', add_query_arg(array('disable_em_wpml_warning'=>1))); ?></p>
 				</div>
 				<?php
 			}

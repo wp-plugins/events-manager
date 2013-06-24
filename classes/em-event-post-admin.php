@@ -103,6 +103,7 @@ class EM_Event_Post_Admin{
 					$event_truly_exists = $wpdb->get_var('SELECT event_id FROM '.EM_EVENTS_TABLE." WHERE event_id={$EM_Event->event_id}") == $EM_Event->event_id;
 					if(empty($EM_Event->event_id) || !$event_truly_exists){ $EM_Event->save_meta(); }
 					//we can save the status now
+					$EM_Event->get_previous_status(); //before we save anything
 					$event_status = $EM_Event->get_status(true);
 					//if this is just published, we need to email the user about the publication, or send to pending mode again for review
 					if( (!$EM_Event->is_recurring() && !current_user_can('publish_events')) || ($EM_Event->is_recurring() && !current_user_can('publish_recurring_events')) ){

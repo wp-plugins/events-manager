@@ -11,7 +11,7 @@ function em_event_submission_emails($result, $EM_Event){
 		$cant_publish_recurring_event = $EM_Event->is_recurring() && !user_can($EM_Event->get_contact()->ID, 'publish_recurring_events'); 
 		$output_type = get_option('dbem_smtp_html') ? 'html':'email';
 		if( $cant_publish_event || $cant_publish_recurring_event ){
-		    if( $EM_Event->is_published() && !$EM_Event->previous_status ){
+		    if( $EM_Event->is_published() && !$EM_Event->get_previous_status() ){
 		        //only send email to users that can't publish events themselves and that were previously unpublished
 				$approvals_count = get_post_meta($EM_Event->post_id,'_event_approvals_count', true);
 				$approvals_count = $approvals_count > 0 ? $approvals_count:0;
@@ -41,7 +41,7 @@ function em_event_submission_emails($result, $EM_Event){
 				$EM_Event->email_send( $subject,$message, $admin_emails);
 			}
 		}elseif( !current_user_can('list_users') ){
-		    if( $EM_Event->is_published() && !$EM_Event->previous_status ){
+		    if( $EM_Event->is_published() && !$EM_Event->get_previous_status() ){
 	        	$admin_emails = explode(',', str_replace(' ', '', get_option('dbem_event_submitted_email_admin'))); //admin emails are in an array, single or multiple
 	        	if( empty($admin_emails) ) return true;
 	        	$subject = $EM_Event->output(get_option('dbem_event_published_email_subject'), 'raw');
