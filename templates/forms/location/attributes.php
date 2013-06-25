@@ -31,7 +31,7 @@ $has_depreciated = false;
 								<?php endforeach; ?>
 							</select>
 							<?php else: ?>
-							<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Location->location_attributes) ? htmlspecialchars($EM_Location->location_attributes[$name], ENT_QUOTES):''; ?>" />
+							<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Location->location_attributes) ? esc_attr($EM_Location->location_attributes[$name], ENT_QUOTES):''; ?>" />
 							<?php endif; ?>
 						</td>
 					</tr>
@@ -48,7 +48,7 @@ $has_depreciated = false;
 		</table>
 		<?php if( count(array_diff(array_keys($EM_Location->location_attributes), $attributes['names'])) > 0 ): ?>
 		<p><strong><?php _e('Depreciated Attributes', 'dbem')?></strong></p>
-		<p><em><?php _e("If you see any attributes under here, that means they're not used in Locations Manager formats. To add them, you need to add the custom attribute again to a formatting option in the settings page. To remove any of these depreciated attributes, give it a blank value and save.") ?></em></p>
+		<p><em><?php _e("If you see any attributes under here, that means they're not used in Locations Manager formats. To add them, you need to add the custom attribute again to a formatting option in the settings page. To remove any of these depreciated attributes, give it a blank value and save.",'dbem') ?></em></p>
 		<table class="form-table">
 			<thead>
 				<tr valign="top">
@@ -66,7 +66,7 @@ $has_depreciated = false;
 							<tr valign="top" id="em_attribute_<?php echo $count ?>">
 								<td scope="row"><?php echo $name ?></td>
 								<td>
-									<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo htmlspecialchars($value, ENT_QUOTES); ?>" />
+									<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo esc_attr($value, ENT_QUOTES); ?>" />
 								</td>
 							</tr>
 							<?php

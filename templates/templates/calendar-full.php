@@ -17,7 +17,7 @@ $col_max = count($calendar['row_headers']); //each time this collumn number is r
 	<thead>
 		<tr>
 			<td><a class="em-calnav full-link em-calnav-prev" href="<?php echo $calendar['links']['previous_url']; ?>">&lt;&lt;</a></td>
-			<td class="month_name" colspan="5"><?php echo ucfirst(date_i18n('M Y', $calendar['month_start'])); ?></td>
+			<td class="month_name" colspan="5"><?php echo ucfirst(date_i18n(get_option('dbem_full_calendar_month_format'), $calendar['month_start'])); ?></td>
 			<td><a class="em-calnav full-link em-calnav-next" href="<?php echo $calendar['links']['next_url']; ?>">&gt;&gt;</a></td>
 		</tr>
 	</thead>
@@ -44,14 +44,14 @@ $col_max = count($calendar['row_headers']); //each time this collumn number is r
 							foreach($cell_data['events'] as $cell_event){
 								$cell_events[] = $cell_event;
 								$count++;
-								if($count > get_option('dbem_display_calendar_events_limit')) break;
+								if($count >= get_option('dbem_display_calendar_events_limit')) break;
 							}
 						}else{
 							$cell_events = $cell_data['events'];
 						}
 						?>
 						<?php echo EM_Events::output($cell_events,array('format'=>get_option('dbem_full_calendar_event_format'))); ?>
-						<?php if( count($cell_events) > get_option('dbem_display_calendar_events_limit',3) && get_option('dbem_display_calendar_events_limit_msg') != '' ): ?>
+						<?php if( count($cell_events) >= get_option('dbem_display_calendar_events_limit',3) && get_option('dbem_display_calendar_events_limit_msg') != '' ): ?>
 						<li><a href="<?php echo esc_url($cell_data['link']); ?>"><?php echo get_option('dbem_display_calendar_events_limit_msg'); ?></a></li>
 						<?php endif; ?>
 					</ul>

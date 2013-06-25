@@ -29,6 +29,8 @@ add_action('admin_init','em_admin_actions_bookings',100);
  */
 function em_bookings_page(){
 	//First any actions take priority
+	do_action('em_bookings_admin_page');
+	if( !empty($_REQUEST['_wpnonce']) ){ $_REQUEST['_wpnonce'] = $_GET['_wpnonce'] = $_POST['_wpnonce'] = esc_attr($_REQUEST['_wpnonce']); } //XSS fix just in case here too
 	if( !empty($_REQUEST['action']) && substr($_REQUEST['action'],0,7) != 'booking' ){ //actions not starting with booking_
 		do_action('em_bookings_'.$_REQUEST['action']);
 	}elseif( !empty($_REQUEST['booking_id']) ){
@@ -198,7 +200,7 @@ function em_bookings_ticket(){
  * Shows a single booking for a single person. 
  */
 function em_bookings_single(){
-	global $EM_Booking, $EM_Notices;
+	global $EM_Booking, $EM_Notices; /* @var $EM_Booking EM_Booking */
 	//check that user can access this page
 	if( is_object($EM_Booking) && !$EM_Booking->can_manage() ){
 		?>
@@ -245,7 +247,38 @@ function em_bookings_single(){
 							<?php _e ( 'Personal Details', 'dbem' ); ?>
 						</h3>
 						<div class="inside">
-							<?php echo $EM_Booking->get_person()->display_summary(); ?>
+							<?php $no_user = get_option('dbem_bookings_registration_disable') && $EM_Booking->get_person()->ID == get_option('dbem_bookings_registration_user'); ?>
+							<div class="em-booking-person-details">
+								<?php echo $EM_Booking->get_person()->display_summary(); ?>
+								<?php if( $no_user ): ?>
+								<input type="button" id="em-booking-person-modify" value="<?php esc_attr_e('Edit Details','dbem'); ?>" />
+								<?php endif; ?>
+							</div>
+							<?php if( $no_user ): ?>
+							<form action="" method="post" class="em-booking-person-form">
+								<div class="em-booking-person-editor" style="display:none;">
+									<?php echo $EM_Booking->get_person_editor(); ?>
+								 	<input type='hidden' name='action' value='booking_modify_person'/>
+								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
+								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
+								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_modify_person_'.$EM_Booking->booking_id); ?>'/>
+									<input type="submit" class="em-booking-person-modify-submit" id="em-booking-person-modify-submit" value="<?php _e('Submit Changes', 'dbem'); ?>" />
+									<input type="button" id="em-booking-person-modify-cancel" value="<?php esc_attr_e('Cancel','dbem'); ?>" />
+								</div>
+							</form>	
+							<script type="text/javascript">
+								jQuery(document).ready( function($){
+									$('#em-booking-person-modify').click(function(){
+										$('.em-booking-person-details').hide();
+										$('.em-booking-person-editor').show();
+									});
+									$('#em-booking-person-modify-cancel').click(function(){
+										$('.em-booking-person-details').show();
+										$('.em-booking-person-editor').hide();
+									});
+								});
+							</script>				
+							<?php endif; ?>
 							<?php do_action('em_bookings_admin_booking_person', $EM_Booking); ?>
 						</div>
 					</div> 	
@@ -299,7 +332,7 @@ function em_bookings_single(){
 									</tr>
 									</thead>
 									<tbody>
-										<?php foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking): ?>
+										<?php foreach($EM_Booking->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking): /* @var $EM_Ticket_Booking EM_Ticket_Booking */ ?>
 										<tr>
 											<td class="ticket-type"><a class="row-title" href="<?php echo em_add_get_params($EM_Event->get_bookings_url(), array('ticket_id'=>$EM_Ticket_Booking->ticket_id)); ?>"><?php echo $EM_Ticket_Booking->get_ticket()->ticket_name ?></a></td>
 											<td>
@@ -314,7 +347,7 @@ function em_bookings_single(){
 										?>
 										<?php endforeach; ?>
 										<?php if( count($shown_tickets) < count($EM_Event->get_bookings()->get_tickets()->tickets)): ?><tr>
-											<?php foreach($EM_Event->get_bookings()->get_tickets()->tickets as $EM_Ticket): ?>
+											<?php foreach($EM_Event->get_bookings()->get_tickets()->tickets as $EM_Ticket): /* @var $EM_Ticket EM_Ticket */ ?>
 												<?php if( !in_array($EM_Ticket->ticket_id, $shown_tickets) ): ?>
 												<tr>
 													<td class="ticket-type"><a class="row-title" href="<?php echo em_add_get_params($EM_Event->get_bookings_url(), array('ticket_id'=>$EM_Ticket->ticket_id)); ?>"><?php echo $EM_Ticket->ticket_name ?></a></td>
@@ -330,24 +363,49 @@ function em_bookings_single(){
 										<?php endif; ?>
 									</tbody>
 									<tfoot>
-										<?php do_action('em_bookings_admin_ticket_totals_header'); ?>
+										<?php 
+											do_action('em_bookings_admin_ticket_totals_header');
+											$price_summary = $EM_Booking->get_price_summary_array();
+											//we should now have an array of information including base price, taxes and post/pre tax discounts
+										?>
 										<tr>
-											<th><?php _e('Total Price','dbem'); ?></th>
+											<th><?php _e('Price','dbem'); ?></th>
 											<th><?php echo sprintf(__('%d Spaces','dbem'), $EM_Booking->get_spaces()); ?></th>
-											<th><?php echo $EM_Booking->get_price(true, true); ?></th>
+											<th><?php echo $EM_Booking->get_price_base(true); ?></th>
 										</tr>
-										<?php if( !get_option('dbem_bookings_tax_auto_add') && is_numeric(get_option('dbem_bookings_tax')) && get_option('dbem_bookings_tax') > 0  ): ?>
+										<?php if( count($price_summary['discounts_pre_tax']) > 0 ): ?>
+											<?php foreach( $price_summary['discounts_pre_tax'] as $discount_summary ): ?>
+											<tr>
+												<th><?php echo $discount_summary['name']; ?></th>
+												<th><?php echo $discount_summary['discount']; ?></th>
+												<th>- <?php echo $discount_summary['amount']; ?></th>
+											</tr>
+											<?php endforeach; ?>
+										<?php endif; ?>
+										<?php if( !empty($price_summary['taxes']['amount'])  ): ?>
 										<tr>
 											<th><?php _e('Tax','dbem'); ?></th>
-											<th><?php echo get_option('dbem_bookings_tax') ?>%</th>
-											<th><?php echo em_get_currency_formatted($EM_Booking->get_price() * (get_option('dbem_bookings_tax')/100),2); ?></th>
-										</tr>
-										<tr>
-											<th><?php _e('Total Price (inc. tax)','dbem'); ?></th>
-											<th>&nbsp;</th>
-											<th><?php echo $EM_Booking->get_price(false, true, true); ?></th>
+											<th>
+												<span class="em-booking-single-info"><?php echo $price_summary['taxes']['rate'] ?></span>
+												<div class="em-booking-single-edit"><input name="booking_tax_rate" value="<?php echo esc_attr($EM_Booking->get_tax_rate()); ?>">%</div>
+											</th>
+											<th><?php echo $price_summary['taxes']['amount']; ?></th>
 										</tr>
 										<?php endif; ?>
+										<?php if( count($price_summary['discounts_post_tax']) > 0 ): ?>
+											<?php foreach( $price_summary['discounts_post_tax'] as $discount_summary ): ?>
+											<tr>
+												<th><?php echo $discount_summary['name']; ?></th>
+												<th><?php echo $discount_summary['discount']; ?></th>
+												<th>- <?php echo $discount_summary['amount']; ?></th>
+											</tr>
+											<?php endforeach; ?>
+										<?php endif; ?>
+										<tr>
+											<th><?php _e('Total Price','dbem'); ?></th>
+											<th>&nbsp;</th>
+											<th><?php echo $price_summary['total']; ?></th>
+										</tr>
 										<?php do_action('em_bookings_admin_ticket_totals_footer'); ?>
 									</tfoot>
 								</table>
@@ -465,7 +523,7 @@ function em_bookings_person(){
   			<a href="<?php echo admin_url('user-edit.php?user_id='.$EM_Person->ID); ?>" class="button add-new-h2"><?php _e('Edit User','dbem') ?></a>
   			<?php endif; ?>
   			<?php if( current_user_can('delete_users') ) : ?>
-  			<a href="<?php echo wp_nonce_url( "users.php?action=delete&amp;user=$EM_Person->ID", 'bulk-users' ); ?>" class="button add-new-h2"><?php _e('Delete User','dbem') ?></a>
+  			<a href="<?php echo wp_nonce_url( admin_url("users.php?action=delete&amp;user=$EM_Person->ID"), 'bulk-users' ); ?>" class="button add-new-h2"><?php _e('Delete User','dbem') ?></a>
   			<?php endif; ?>
   		</h2>
   		<?php if( !is_admin() ) echo $EM_Notices; ?>

@@ -6,38 +6,33 @@
  */
 ?>
 <div class="em-events-search">
-	<?php 
-	global $em_localized_js;
-	$s_default = get_option('dbem_search_form_text_label');	
-	$s = !empty($_REQUEST['em_search']) ? $_REQUEST['em_search']:$s_default;
-	if( !isset($_REQUEST['country']) ){
-		$country = get_option('dbem_location_default_country');
-	}elseif( !empty($_REQUEST['country']) ){
-		$country = $_REQUEST['country'];
-	}
-	//convert scope to an array in event of pagination
-	if(!empty($_REQUEST['scope']) && !is_array($_REQUEST['scope'])){ $_REQUEST['scope'] = explode(',',$_REQUEST['scope']); }
-	//get the events page to display search results
-	?>
 	<form action="<?php echo EM_URI; ?>" method="post" class="em-events-search-form">
 		<?php do_action('em_template_events_search_form_header'); ?>
 		
 		<?php if( get_option('dbem_search_form_text') ): ?>
 		<!-- START General Search -->
-		<?php /* This general search will find matches within event_name, event_notes, and the location_name, address, town, state and country. */ ?>
+		<?php 
+			/* This general search will find matches within event_name, event_notes, and the location_name, address, town, state and country. */
+			$s_default = esc_attr(get_option('dbem_search_form_text_label'));
+			$s = !empty($_REQUEST['em_search']) ? esc_attr($_REQUEST['em_search']):$s_default;
+		?>
 		<input type="text" name="em_search" class="em-events-search-text" value="<?php echo $s; ?>" onfocus="if(this.value=='<?php echo $s_default; ?>')this.value=''" onblur="if(this.value=='')this.value='<?php echo $s_default; ?>'" />
 		<!-- END General Search -->
 		<?php endif; ?>
 		
 		<?php if( get_option('dbem_search_form_dates') ): ?>
 		<!-- START Date Search -->
+		<?php
+			//convert scope to an array in event of pagination
+			if(!empty($_REQUEST['scope']) && !is_array($_REQUEST['scope'])){ $_REQUEST['scope'] = explode(',',$_REQUEST['scope']); }
+		?>
 		<span class="em-events-search-dates em-date-range">
 			<?php _e('between','dbem'); ?>:
 			<input type="text" class="em-date-input-loc em-date-start" />
-			<input type="hidden" class="em-date-input" name="scope[0]" value="<?php if( !empty($_REQUEST['scope'][0]) ) echo $_REQUEST['scope'][0]; ?>" />
+			<input type="hidden" class="em-date-input" name="scope[0]" value="<?php if( !empty($_REQUEST['scope'][0]) ) echo esc_attr($_REQUEST['scope'][0]); ?>" />
 			<?php _e('and','dbem'); ?>
 			<input type="text" class="em-date-input-loc em-date-end" />
-			<input type="hidden" class="em-date-input" name="scope[1]" value="<?php if( !empty($_REQUEST['scope'][1]) ) echo $_REQUEST['scope'][1]; ?>" />
+			<input type="hidden" class="em-date-input" name="scope[1]" value="<?php if( !empty($_REQUEST['scope'][1]) ) echo esc_attr($_REQUEST['scope'][1]); ?>" />
 		</span>
 		<!-- END Date Search -->
 		<?php endif; ?>
@@ -47,24 +42,38 @@
 			<?php 
 				$selected = !empty($_REQUEST['category']) ? $_REQUEST['category'] : 0;
 				EM_Object::ms_global_switch(); //in case in global tables mode of MultiSite, grabs main site categories, if not using MS Global, nothing happens
-				wp_dropdown_categories(array( 'hide_empty' => 0, 'name' => 'category', 'hierarchical' => true, 'taxonomy' => EM_TAXONOMY_CATEGORY, 'selected' => $selected, 'show_option_none' => get_option('dbem_search_form_categories_label'), 'class'=>'em-events-search-category'));
+				wp_dropdown_categories(array( 'hide_empty' => 0, 'orderby' =>'name', 'name' => 'category', 'hierarchical' => true, 'taxonomy' => EM_TAXONOMY_CATEGORY, 'selected' => $selected, 'show_option_none' => get_option('dbem_search_form_categories_label'), 'class'=>'em-events-search-category'));
 				EM_Object::ms_global_switch_back(); //if switched above, switch back
 			?>
 		<!-- END Category Search -->
 		<?php endif; ?>
 		
+		<?php 
+		//figure out if we have a default country or one submitted via search
+		if( !isset($_REQUEST['country']) ){
+			$country = get_option('dbem_location_default_country');
+		}elseif( !empty($_REQUEST['country']) ){
+			$country = $_REQUEST['country'];
+		}
+		?>
 		<?php if( get_option('dbem_search_form_countries') ): ?>
 		<!-- START Country Search -->
 		<select name="country" class="em-events-search-country">
-			<option value=''><?php echo get_option('dbem_search_form_countries_label'); ?></option>
+			<option value=''><?php echo esc_html(get_option('dbem_search_form_countries_label')); ?></option>
 			<?php 
 			//get the counties from locations table
 			global $wpdb;
 			$countries = em_get_countries();
 			$em_countries = $wpdb->get_results("SELECT DISTINCT location_country FROM ".EM_LOCATIONS_TABLE." WHERE location_country IS NOT NULL AND location_country != '' AND location_status=1 ORDER BY location_country ASC", ARRAY_N);
-			foreach($em_countries as $em_country): 
+			$ddm_countries = array();
+			foreach($em_countries as $em_country){
+				$ddm_countries[$em_country[0]] = $countries[$em_country[0]];
+			}
+			asort($ddm_countries);
+			foreach( $ddm_countries as $country_code => $country_name ):
+			//we're not using esc_ functions here because values are hard-coded within em_get_countries() 
 			?>
-			 <option value="<?php echo $em_country[0]; ?>" <?php echo (!empty($country) && $country == $em_country[0]) ? 'selected="selected"':''; ?>><?php echo $countries[$em_country[0]]; ?></option>
+			<option value="<?php echo $country_code; ?>" <?php echo (!empty($country) && $country == $country_code) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
 			<?php endforeach; ?>
 		</select>
 		<!-- END Country Search -->	
@@ -81,7 +90,7 @@
 				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region FROM ".EM_LOCATIONS_TABLE." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s AND location_status=1 ORDER BY location_region", $country), ARRAY_N);
 				foreach($em_states as $state){
 					?>
-					 <option <?php echo (!empty($_REQUEST['region']) && $_REQUEST['region'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
+					 <option <?php echo (!empty($_REQUEST['region']) && $_REQUEST['region'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo esc_html($state[0]); ?></option>
 					<?php 
 				}
 			}
@@ -102,7 +111,7 @@
 				$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_state FROM ".EM_LOCATIONS_TABLE." WHERE location_state IS NOT NULL AND location_state != '' AND location_country=%s $cond AND location_status=1 ORDER BY location_state", $country), ARRAY_N);
 				foreach($em_states as $state){
 					?>
-					 <option <?php echo (!empty($_REQUEST['state']) && $_REQUEST['state'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo $state[0]; ?></option>
+					 <option <?php echo (!empty($_REQUEST['state']) && $_REQUEST['state'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo esc_html($state[0]); ?></option>
 					<?php 
 				}
 			}
@@ -124,7 +133,7 @@
 				$em_towns = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_town FROM ".EM_LOCATIONS_TABLE." WHERE location_town IS NOT NULL AND location_town != '' AND location_country=%s $cond AND location_status=1 ORDER BY location_town", $country), ARRAY_N);
 				foreach($em_towns as $town){
 					?>
-					 <option <?php echo (!empty($_REQUEST['town']) && $_REQUEST['town'] == $town[0]) ? 'selected="selected"':''; ?>><?php echo $town[0]; ?></option>
+					 <option <?php echo (!empty($_REQUEST['town']) && $_REQUEST['town'] == $town[0]) ? 'selected="selected"':''; ?>><?php echo esc_html($town[0]); ?></option>
 					<?php 
 				}
 			}
@@ -136,6 +145,6 @@
 		<?php do_action('em_template_events_search_form_ddm'); //depreciated, don't hook, use the one below ?>
 		<?php do_action('em_template_events_search_form_footer'); ?>
 		<input type="hidden" name="action" value="search_events" />
-		<input type="submit" value="<?php echo get_option('dbem_serach_form_submit','Search'); ?>" class="em-events-search-submit" />		
+		<input type="submit" value="<?php echo esc_attr(get_option('dbem_serach_form_submit','Search')); ?>" class="em-events-search-submit" />		
 	</form>	
 </div>

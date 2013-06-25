@@ -65,7 +65,8 @@ class EM_Events extends EM_Object implements Iterator {
 		
 		//Get ordering instructions
 		$EM_Event = new EM_Event();
-		$orderby = self::build_sql_orderby($args, array_keys($EM_Event->fields), get_option('dbem_events_default_order'));
+		$EM_Location = new EM_Location();
+		$orderby = self::build_sql_orderby($args, array_keys(array_merge($EM_Event->fields, $EM_Location->fields)), get_option('dbem_events_default_order'));
 		//Now, build orderby sql
 		$orderby_sql = ( count($orderby) > 0 ) ? 'ORDER BY '. implode(', ', $orderby) : '';
 		
@@ -77,19 +78,19 @@ class EM_Events extends EM_Object implements Iterator {
 			$selectors = ( $count ) ?  'COUNT(*)':$events_table.'.post_id';
 		}
 		
-		$sql = "
+		$sql = apply_filters('em_events_get_sql',"
 			SELECT $selectors FROM $events_table
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
 			$orderby_sql
 			$limit $offset
-		";
+		", $args);
 
 		//If we're only counting results, return the number of results
 		if( $count ){
 			return apply_filters('em_events_get_count', $wpdb->get_var($sql), $args);		
 		}
-		$results = $wpdb->get_results( apply_filters('em_events_get_sql',$sql, $args), ARRAY_A);
+		$results = $wpdb->get_results( $sql, ARRAY_A);
 
 		//If we want results directly in an array, why not have a shortcut here?
 		if( $args['array'] == true ){
@@ -142,7 +143,9 @@ class EM_Events extends EM_Object implements Iterator {
 		}else{
 			$events = $array;
 		}
+		$event_ids = array();
 		foreach ($events as $EM_Event){
+		    $event_ids[] = $EM_Event->event_id;
 			$results[] = $EM_Event->delete();
 		}
 		//TODO add better error feedback on events delete fails
@@ -177,7 +180,7 @@ class EM_Events extends EM_Object implements Iterator {
 			$events_count = count($events);
 		}else{
 			//Firstly, let's check for a limit/offset here, because if there is we need to remove it and manually do this
-			$args = apply_filters('em_events_output_args', self::get_default_search($args) );
+			$args = apply_filters('em_events_output_args', $args );
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
 			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:$page;
@@ -249,7 +252,7 @@ class EM_Events extends EM_Object implements Iterator {
 				if($post_value != ',' ){
 					$args[$post_key] = $post_value;
 				}elseif( $post_value == ',' && $post_key == 'scope' ){
-					$args['scope'] = get_option('dbem_events_page_scope');
+					unset($args['scope']);
 				}
 			}
 		}
@@ -267,16 +270,25 @@ class EM_Events extends EM_Object implements Iterator {
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */
 	function build_sql_conditions( $args = array() ){
+	    self::$context = EM_POST_TYPE_EVENT;
 		$conditions = parent::build_sql_conditions($args);
 		if( !empty($args['search']) ){
-			$like_search = array('event_name',EM_EVENTS_TABLE.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_country');
+			$like_search = array('event_name',EM_EVENTS_TABLE.'.post_content','location_name','location_address','location_town','location_postcode','location_state','location_country','location_region');
 			$conditions['search'] = "(".implode(" LIKE '%{$args['search']}%' OR ", $like_search). "  LIKE '%{$args['search']}%')";
 		}
-		if( array_key_exists('status',$args) && is_numeric($args['status']) ){
-			$null = ($args['status'] == 0) ? ' OR `event_status` = 0':'';
-			$conditions['status'] = "(`event_status`={$args['status']}{$null} )";
-		}elseif( empty($args['status']) || $args['status'] != 'all'){
-			$conditions['status'] = "(`event_status` IS NOT NULL )"; //by default, we don't ever show deleted items
+		$conditions['status'] = "(`event_status` >= 0 )"; //shows pending & published if not defined
+		if( array_key_exists('status',$args) ){
+			if( is_numeric($args['status']) ){
+				$conditions['status'] = "(`event_status`={$args['status']})"; //pending or published
+			}elseif( $args['status'] == 'pending' ){
+			    $conditions['status'] = "(`event_status`=0)"; //pending
+			}elseif( $args['status'] == 'publish' ){
+			    $conditions['status'] = "(`event_status`=1)"; //published
+			}elseif( $args['status'] === null || $args['status'] == 'draft' ){
+			    $conditions['status'] = "(`event_status` IS NULL )"; //show draft items
+			}elseif( $args['status'] == 'trash' ){
+			    $conditions['status'] = "(`event_status` = -1 )"; //show trashed items
+			}
 		}
 		//private events
 		if( empty($args['private']) ){
@@ -324,6 +336,7 @@ class EM_Events extends EM_Object implements Iterator {
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
 	 */
 	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+	    self::$context = EM_POST_TYPE_EVENT;
 		return apply_filters( 'em_events_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order')), $args, $accepted_fields, $default_order );
 	}
 	
@@ -334,6 +347,7 @@ class EM_Events extends EM_Object implements Iterator {
 	 * @uses EM_Object#get_default_search()
 	 */
 	function get_default_search( $array = array() ){
+	    self::$context = EM_POST_TYPE_EVENT;
 		$defaults = array(
 			'orderby' => get_option('dbem_events_default_orderby'),
 			'order' => get_option('dbem_events_default_order'),
