@@ -121,6 +121,10 @@ class EM_Tags extends EM_Object implements Iterator{
 	public static function output( $args ){
 		global $EM_Tag;
 		$EM_Tag_old = $EM_Tag; //When looping, we can replace EM_Tag global with the current event in the loop
+		//get page number if passed on by request (still needs pagination enabled to have effect)
+		if( !array_key_exists('page',$args) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
+			$page = $args['page'] = $_REQUEST['pno'];
+		}
 		//Can be either an array for the get search or an array of EM_Tag objects
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Tag' ){
 			$func_args = func_get_args();
@@ -135,10 +139,11 @@ class EM_Tags extends EM_Object implements Iterator{
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
 			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
-			$args['limit'] = false;
-			$args['offset'] = false;
-			$args['page'] = false;
+			$args['limit'] = $args['offset'] = $args['page'] = false; //we count overall tags here
 			$tags = self::get( $args );
+			$args['limit'] = $limit;
+			$args['offset'] = $offset;
+			$args['page'] = $page;
 		}
 		//What format shall we output this to, or use default
 		$format = ( $args['format'] == '' ) ? get_option( 'dbem_tags_list_item_format' ) : $args['format'] ;
@@ -166,10 +171,7 @@ class EM_Tags extends EM_Object implements Iterator{
 			}
 			//Pagination (if needed/requested)
 			if( !empty($args['pagination']) && !empty($limit) && $tags_count >= $limit ){
-				//Show the pagination links (unless there's less than 10 events, or the custom limit)
-				$page_link_template = preg_replace('/(&|\?)pno=\d+/i','',$_SERVER['REQUEST_URI']);
-				$page_link_template = em_add_get_params($page_link_template, array('pno'=>'%PAGE%'), false); //don't html encode, so em_paginate does its thing
-				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $tags_count, $limit, $page), $page_link_template, $tags_count, $limit, $page);
+				$output .= apply_filters('em_tags_output_pagination', self::get_pagination_links($args, $tags_count, 'search_tags', self::get_default_search()), '', $tags_count, $limit, $page);
 			}
 		} else {
 			$output = get_option ( 'dbem_no_tags_message' );

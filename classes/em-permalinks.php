@@ -10,7 +10,7 @@ if( !class_exists('EM_Permalinks') ){
 			'category_id', 'category_slug',
 			'ticket_id',
 			'calendar_day',
-			'rss', 'ical', 'bookings_page','event_categories','event_locations'
+			'rss', 'ical','event_categories','event_locations'
 		);
 		
 		function init(){

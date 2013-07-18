@@ -12,6 +12,8 @@ class EM_Ticket extends EM_Object{
 	var $ticket_max;
 	var $ticket_spaces = 10;
 	var $ticket_members = false;
+	var $ticket_members_roles = array();
+	var $ticket_guests = false;
 	var $ticket_required = false;
 	var $fields = array(
 		'ticket_id' => array('name'=>'id','type'=>'%d'),
@@ -25,6 +27,8 @@ class EM_Ticket extends EM_Object{
 		'ticket_max' => array('name'=>'max','type'=>'%s','null'=>1),
 		'ticket_spaces' => array('name'=>'spaces','type'=>'%s','null'=>1),
 		'ticket_members' => array('name'=>'members','type'=>'%d','null'=>1),
+		'ticket_members_roles' => array('name'=>'members_roles','type'=>'%s','null'=>1),
+		'ticket_guests' => array('name'=>'guests','type'=>'%d','null'=>1),
 		'ticket_required' => array('name'=>'required','type'=>'%d','null'=>1)
 	);
 	//Other Vars
@@ -62,6 +66,8 @@ class EM_Ticket extends EM_Object{
 			}
 			//Save into the object
 			$this->to_object($ticket);
+			$this->ticket_members_roles = maybe_unserialize($this->ticket_members_roles);
+			if( !is_array($this->ticket_members_roles) ) $this->ticket_members_roles = array();
 			$this->start_timestamp = (!empty($ticket['ticket_start'])) ? strtotime($ticket['ticket_start']):false;
 			$this->end_timestamp = (!empty($ticket['ticket_end'])) ? strtotime($ticket['ticket_end']):false;
 		}
@@ -94,14 +100,15 @@ class EM_Ticket extends EM_Object{
 		if($this->validate() && $this->can_manage() ){			
 			//Now we save the ticket
 			$data = $this->to_array(true); //add the true to remove the nulls
+			$data['ticket_members_roles'] = serialize($data['ticket_members_roles']);
 			if($this->ticket_id != ''){
 				//since currently wpdb calls don't accept null, let's build the sql ourselves.
 				$set_array = array();
 				foreach( $this->fields as $field_name => $field ){
-					if( empty($this->$field['name']) && $field['null'] ){
+					if( empty( $data[$field_name]) && $field['null'] ){
 						$set_array[] = "{$field_name}=NULL";
 					}else{
-						$set_array[] = "{$field_name}='".$wpdb->escape($this->$field['name'])."'";						
+						$set_array[] = "{$field_name}='".$wpdb->escape($data[$field_name])."'";						
 					}
 				}
 				$sql = "UPDATE $table SET ".implode(', ', $set_array)." WHERE ticket_id={$this->ticket_id}";
@@ -142,15 +149,30 @@ class EM_Ticket extends EM_Object{
 		$this->event_id = ( !empty($post['event_id']) ) ? $post['event_id']:'';
 		$this->ticket_name = ( !empty($post['ticket_name']) ) ? wp_kses_data(stripslashes($post['ticket_name'])):'';
 		$this->ticket_description = ( !empty($post['ticket_description']) ) ? wp_kses(stripslashes($post['ticket_description']), $allowedposttags):'';
+		//spaces and limits
+		$this->ticket_min = ( !empty($post['ticket_min']) ) ? $post['ticket_min']:'';
+		$this->ticket_max = ( !empty($post['ticket_max']) ) ? $post['ticket_max']:'';
+		$this->ticket_spaces = ( !empty($post['ticket_spaces']) && is_numeric($post['ticket_spaces']) ) ? $post['ticket_spaces']:10;
+		//Sort out date/time limits
 		$this->ticket_price = ( !empty($post['ticket_price']) ) ? $post['ticket_price']:'';
 		$this->ticket_start = ( !empty($post['ticket_start']) ) ? $post['ticket_start']:'';
 		$this->ticket_end = ( !empty($post['ticket_end']) ) ? $post['ticket_end']:'';
+		if( !empty($post['ticket_start_time']) ) $this->ticket_start .= ' '. $this->sanitize_time($post['ticket_start_time']);
+		if( !empty($post['ticket_end_time']) ) $this->ticket_end .= ' '. $this->sanitize_time($post['ticket_end_time']);
 		$this->start_timestamp = ( !empty($post['ticket_start']) ) ? strtotime($post['ticket_start']):'';
 		$this->end_timestamp = ( !empty($post['ticket_end']) ) ? strtotime($post['ticket_end']):'';
-		$this->ticket_min = ( !empty($post['ticket_min']) ) ? $post['ticket_min']:'';
-		$this->ticket_max = ( !empty($post['ticket_max']) ) ? $post['ticket_max']:'';
-		$this->ticket_spaces = ( !empty($post['ticket_spaces']) ) ? $post['ticket_spaces']:10;
-		$this->ticket_members = ( !empty($post['ticket_members']) ) ? 1:0;
+		//sort out user availability restrictions
+		$this->ticket_members = ( !empty($post['ticket_type']) && $post['ticket_type'] == 'members' ) ? 1:0;
+		$this->ticket_guests = ( !empty($post['ticket_type']) && $post['ticket_type'] == 'guests' ) ? 1:0;
+		$this->ticket_members_roles = array();
+		if( $this->ticket_members && !empty($post['ticket_members_roles']) && is_array($post['ticket_members_roles']) ){
+			$WP_Roles = new WP_Roles();
+			foreach($WP_Roles->roles as $role => $role_data ){
+				if( in_array($role, $post['ticket_members_roles']) ){
+					$this->ticket_members_roles[] = $role;
+				}
+			}
+		}
 		$this->ticket_required = ( !empty($post['ticket_required']) ) ? 1:0;
 		$this->compat_keys();
 		do_action('em_ticket_get_post', $this);
@@ -180,21 +202,54 @@ class EM_Ticket extends EM_Object{
 		return apply_filters('em_ticket_validate', count($this->errors) == 0, $this );
 	}
 	
-	function is_available( $include_members_only = false ){
+	function is_available( $include_members_only = false, $include_guests_only = false ){
 		$timestamp = current_time('timestamp');
+		if( isset($this->is_available) ) return $this->is_available;
+		$is_available = false;
 		$EM_Event = $this->get_event();
 		$available_spaces = $this->get_available_spaces();
 		$condition_1 = (empty($this->ticket_start) || $this->start_timestamp <= $timestamp);
 		$condition_2 = $this->end_timestamp + 86400 >= $timestamp || empty($this->ticket_end);
 		$condition_3 = $EM_Event->start > $timestamp || strtotime($EM_Event->event_rsvp_date. ' '. $EM_Event->event_rsvp_time) > $timestamp;
 		$condition_4 = !$this->ticket_members || ($this->ticket_members && is_user_logged_in()) || $include_members_only;
-		if( $condition_1 && $condition_2 && $condition_3 && $condition_4 ){
-			//Time Constraints met, now quantities
-			if( $available_spaces > 0 && ($available_spaces >= $this->ticket_min || empty($this->ticket_min)) ){
-				return apply_filters('em_ticket_is_available',true,$this);
+		$condition_5 = true;
+		if( $this->ticket_members && !empty($this->ticket_members_roles) ){
+			//check if user has the right role to use this ticket
+			$condition_5 = false;
+			if( is_user_logged_in() ){
+				$user = wp_get_current_user();
+				if( count(array_intersect($user->roles, $this->ticket_members_roles)) > 0 ){
+					$condition_5 = true;
+				}
 			}
 		}
-		return apply_filters('em_ticket_is_available',false,$this);
+		$condition_6 = !$this->ticket_guests || ($this->ticket_guests && !is_user_logged_in()) || $include_guests_only;
+		if( $condition_1 && $condition_2 && $condition_3 && $condition_4 && $condition_5 && $condition_6 ){
+			//Time Constraints met, now quantities
+			if( $available_spaces > 0 && ($available_spaces >= $this->ticket_min || empty($this->ticket_min)) ){
+				$is_available = true;
+			}
+		}
+		return apply_filters('em_ticket_is_available', $is_available, $this);
+	}
+	
+	/**
+	 * Returns whether or not this ticket should be displayed based on availability and other ticket properties and general settings
+	 * @return boolean
+	 */
+	function is_displayable(){
+		$return = false;
+		if( $this->is_available() ){
+			$return = true;
+		}else{
+			if( get_option('dbem_bookings_tickets_show_unavailable') ){
+				$return =  true;
+				if( $this->ticket_members && !get_option('dbem_bookings_tickets_show_member_tickets') ){
+					$return = false;
+				}
+			}
+		}
+		return apply_filters('em_ticket_is_displayable', $return, $this);;
 	}
 	
 	/**
@@ -388,6 +443,7 @@ class EM_Ticket extends EM_Object{
 				<?php 
 					$min = ($this->ticket_min > 0) ? $this->ticket_min:1;
 					$max = ($this->ticket_max > 0) ? $this->ticket_max:get_option('dbem_bookings_form_max');
+					if( $this->get_event()->event_rsvp_spaces > 0 && $this->get_event()->event_rsvp_spaces < $max ) $max = $this->get_event()->event_rsvp_spaces;
 				?>
 				<?php if($zero_value && !$this->is_required()) : ?><option>0</option><?php endif; ?>
 				<?php for( $i=$min; $i<=$available_spaces && $i<=$max; $i++ ): ?>

@@ -84,7 +84,7 @@
 				<?php else: ?>
 					<?php _e('You do not have any bookings.', 'dbem'); ?>
 				<?php endif; ?>
-			<?php if( !empty($bookings_nav) && $EM_Bookings >= $limit ) : ?>
+			<?php if( !empty($bookings_nav) && $bookings_count >= $limit ) : ?>
 			<div class='tablenav'>
 				<?php echo $bookings_nav; ?>
 				<div class="clear"></div>

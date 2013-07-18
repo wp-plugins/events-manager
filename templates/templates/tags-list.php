@@ -7,13 +7,11 @@
  * 
  * $args - the args passed onto EM_Locations::output()
  * 
- */ 
-$args = apply_filters('em_content_tags_args', $args);
-$tags = EM_Tags::get( $args );	
-$args['limit'] = get_option('dbem_tags_default_limit');
-$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : 1;			
-if( count($tags) > 0 ){
-	echo EM_Tags::output( $tags, $args );
-}else{
-	echo get_option ( 'dbem_no_tags_message' );
-}
+ */
+$args = apply_filters('em_content_tags_args', $args); 
+
+if( get_option('dbem_css_taglist') ) echo "<div class='css-tags-list'>";
+
+echo EM_Tags::output( $args );
+
+if( get_option('dbem_css_taglist') ) echo "</div>";

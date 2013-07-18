@@ -3,53 +3,17 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 #location_info td { vertical-align:top; text-align:left; }
 #location_info th { vertical-align:top; text-align:left; padding:5px 10px 0 0; }
 
-p.warning {
-	border: 2px solid #FD0000;
-	background: #FF7146;
-	color: #fff;
-	font-weight: bold;
-	padding: 5px;
-}
-.debug{
-	color: green;
-	background: #B7F98C;
-	margin: 15px;
-	padding: 10px;
-	border: 1px solid #629948;
-}
-.switch-tab {
-	background: #aaa;
-	width: 100px;
-	float: right;
-	text-align: center;
-	margin: 3px 1px 0 5px;
-	padding: 2px;
-}
-.switch-tab a {
-	color: #fff;
-	text-decoration: none;
-}
-.switch-tab a:hover {
-	color: #D54E21;
-	
-} 
-#events-pagination {
-	text-align: center; 
-	
-}
-#events-pagination a {
-	margin: 0 20px 0 20px;
-	text-decoration: none;
-	width: 80px;
-	padding: 3px 0; 
-	background: #FAF4B7;
-	border: 1px solid #ccc;
-	border-top: none;
-} 
-#new-event {
-	float: left;
- 
-}
+p.warning {	border: 2px solid #FD0000; background: #FF7146; color: #fff; font-weight: bold; padding: 5px; }
+.debug{ color: green; background: #B7F98C; margin: 15px; padding: 10px; border: 1px solid #629948; }
+
+.switch-tab { background: #aaa; width: 100px; float: right; text-align: center; margin: 3px 1px 0 5px; padding: 2px; }
+.switch-tab a { color: #fff; text-decoration: none; }
+.switch-tab a:hover { color: #D54E21; } 
+
+#events-pagination { text-align: center; }
+#events-pagination a { margin: 0 20px 0 20px; text-decoration: none; width: 80px; padding: 3px 0; background: #FAF4B7; border: 1px solid #ccc; border-top: none;} 
+#new-event { float: left; }
+
 div#icon-events{ background:url('../images/calendar-32.png') no-repeat center; }
 div#icon-bookings{ background:url('../images/bookings-32.png') no-repeat center; }
 
@@ -71,24 +35,24 @@ table.events-table .category { color:#888; }
 		.ms-global-categories { line-height:1.8em; }
 	/*Bookings */
 		#event-rsvp-box { margin:10px; }
+		#event-rsvp-options h4 { font-size:14px; }
+		#event-rsvp-options label { font-weight:bold; }
 		/*Tickets*/
 			.em-tickets-row .ticket-status span.ticket_on { display:block; width:10px; height:10px; background:green; }
 			.em-tickets-row .ticket-status span.ticket_off { display:block; width:10px; height:10px; background:red; }
 			.em-tickets-row .ticket-status span.ticket_new { display:block; width:10px; height:10px; background:grey; }
-			#event-tickets th { width:auto; }
-			#event-tickets th.ticket-status { width:20px; }
-			/* Overlay Form */
-			#em-tickets-form input[type=text] { width:97%; padding:2px; color:#666; }
-			#em-tickets-form #wp-submit { display:block; clear:both; }
-			/*Inline Form */
-			.em-ticket-form { padding:0px 10px; margin-bottom:10px; width:400px; }
-			.em-ticket-form label { display:inline-block; min-width:70px; padding-right:10px; }
-			.em-ticket-form div { clear:both; margin:5px 0px;}
-			.em-ticket-form input.name { width:300px; }
-			.em-ticket-form .space-limits input { width:40px; }
-			.em-ticket-form .date-limits input { width:100px; }
-			.em-ticket-form div.description { margin-top:9px;}
-			.em-ticket-form textarea { width:100%; margin-top:7px; }
+			#em-tickets-form th { width:auto; }
+			#em-tickets-form th.ticket-status { width:20px; }
+			/* Ticket Forms */
+				.em-ticket-form .ticket-options { margin-top:10px; }
+				.em-ticket-form > div > div, #em-tickets-form .ticket-dates > div { clear:both; padding-top:4px; }
+				.em-ticket-form label { display:block; float:left; min-width:105px; padding-right:5px; }
+				#em-tickets-form .ticket-name input, #em-tickets-form .ticket-description textarea { width:50%} 
+				#em-tickets-form .em-ticket-form-actions { clear:both; }
+				#em-tickets-form .ticket-spaces input, #em-tickets-form .ticket-price input { width:80px; }
+ 				#em-tickets-form .ticket-dates input.em-date-input-loc { width:90px; }
+ 				#em-tickets-form .ticket-required input, #em-tickets-form .ticket-roles input { width:auto; }
+ 				#em-tickets-form .ticket-roles div { margin-left:110px; }
 
 /* Booking Form */
 	.em-booking { margin:15px 0px 10px 0px; position:relative; }

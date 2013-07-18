@@ -1,11 +1,12 @@
 <?php  
 /* 
  * This is where the booking form is generated.
- * For non-advanced users, It's not recommended you edit this form directly if avoidable, as you can change booking form settings in various less obtrusive and upgrade-safe ways:
+ * For non-advanced users, It's SERIOUSLY NOT recommended you edit this form directly if avoidable, as you can change booking form settings in various less obtrusive and upgrade-safe ways:
  * - check your booking form options panel in the Booking Options tab in your settings.
  * - use CSS or jQuery to change the look of your booking forms
  * - edit the files in the forms/bookingform folder individually instead of this file, to make it more upgrade-safe
- * - hook into WP action/filters below to modify/generate information 
+ * - hook into WP action/filters below to modify/generate information
+ * Again, even if you're an advanced user, consider NOT editing this form and using other methods instead.
  */
 
 /* @var $EM_Event EM_Event */   
@@ -24,7 +25,7 @@ if( !$is_open && !is_user_logged_in() && $EM_Event->get_bookings()->is_open(true
 	$show_tickets = false;
 }
 ?>
-<div id="em-booking" class="em-booking">
+<div id="em-booking" class="em-booking <?php if( get_option('dbem_css_rsvp') ) echo 'css-booking'; ?>">
 	<?php 
 		// We are firstly checking if the user has already booked a ticket at this event, if so offer a link to view their bookings.
 		$EM_Booking = $EM_Event->get_bookings()->has_booking();

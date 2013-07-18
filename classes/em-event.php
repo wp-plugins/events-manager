@@ -52,6 +52,7 @@ class EM_Event extends EM_Object{
 	var $event_rsvp;
 	var $event_rsvp_date;
 	var $event_rsvp_time = "00:00:00";
+	var $event_rsvp_spaces;
 	var $event_spaces;
 	var $location_id;
 	var $recurrence_id;
@@ -95,6 +96,7 @@ class EM_Event extends EM_Object{
 		'event_rsvp' => array( 'name'=>'rsvp', 'type'=>'%d', 'null'=>true ), //has a default, so can be null/excluded
 		'event_rsvp_date' => array( 'name'=>'rsvp_date', 'type'=>'%s', 'null'=>true ),
 		'event_rsvp_time' => array( 'name'=>'rsvp_time', 'type'=>'%s', 'null'=>true ),
+		'event_rsvp_spaces' => array( 'name'=>'rsvp_spaces', 'type'=>'%d', 'null'=>true ),
 		'event_spaces' => array( 'name'=>'spaces', 'type'=>'%d', 'null'=>true),
 		'location_id' => array( 'name'=>'location_id', 'type'=>'%d', 'null'=>true ),
 		'recurrence_id' => array( 'name'=>'recurrence_id', 'type'=>'%d', 'null'=>true ),
@@ -423,6 +425,7 @@ class EM_Event extends EM_Object{
 				if( empty($this->event_rsvp_date) ){ $this->event_rsvp_time = '00:00:00'; }
 			}
 			$this->event_spaces = ( isset($_POST['event_spaces']) ) ? absint($_POST['event_spaces']):0;
+			$this->event_rsvp_spaces = ( isset($_POST['event_rsvp_spaces']) ) ? absint($_POST['event_rsvp_spaces']):0;
 		}else{
 			$this->event_rsvp = 0;
 			$this->event_rsvp_time = '00:00:00';
@@ -1241,11 +1244,17 @@ class EM_Event extends EM_Object{
 						//not logged in
 						$show_condition = !is_user_logged_in();
 					}elseif ($condition == 'has_spaces'){
-						//is it an all day event
+						//there are still empty spaces
 						$show_condition = $this->event_rsvp && $this->get_bookings()->get_available_spaces() > 0;
 					}elseif ($condition == 'fully_booked'){
-						//is it an all day event
+						//event is fully booked
 						$show_condition = $this->event_rsvp && $this->get_bookings()->get_available_spaces() <= 0;
+					}elseif ($condition == 'bookings_open'){
+						//bookings are still open
+						$show_condition = $this->event_rsvp && $this->get_bookings()->is_open();
+					}elseif ($condition == 'bookings_closed'){
+						//bookings are still closed
+						$show_condition = $this->event_rsvp && !$this->get_bookings()->is_open();
 					}elseif ($condition == 'is_free' || $condition == 'is_free_now'){
 						//is it a free day event, if _now then free right now
 						$show_condition = !$this->event_rsvp || $this->is_free( $condition == 'is_free_now' );

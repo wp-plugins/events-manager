@@ -114,6 +114,7 @@ function em_create_events_table() {
 		event_rsvp bool NOT NULL DEFAULT 0,
 		event_rsvp_date date NULL DEFAULT NULL,
 		event_rsvp_time time NULL DEFAULT NULL,
+		event_rsvp_spaces int(5) NULL DEFAULT NULL,
 		event_spaces int(5) NULL DEFAULT 0,
 		event_private bool NOT NULL DEFAULT 0,
 		location_id bigint(20) unsigned NULL DEFAULT NULL,
@@ -278,6 +279,8 @@ function em_create_tickets_table() {
 		ticket_max INT( 10 ) NULL ,
 		ticket_spaces INT NULL ,
 		ticket_members INT( 1 ) NULL ,
+		ticket_members_roles LONGTEXT NULL,
+		ticket_guests INT( 1 ) NULL ,
 		ticket_required INT( 1 ) NULL ,
 		PRIMARY KEY  (ticket_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -350,19 +353,35 @@ function em_add_options() {
 		'dbem_events_default_limit' => 10,
 		//Event Search Options
 		'dbem_serach_form_submit' => __('Search','dbem'),
+		'dbem_search_form_advanced' => 1,
+		'dbem_search_form_advanced_hidden' => 1,
+		'dbem_search_form_advanced_show' => __('Show Advanced Search','dbem'),
+		'dbem_search_form_advanced_hide' => __('Hide Advanced Search','dbem'),
 		'dbem_search_form_text' => 1,
 		'dbem_search_form_text_label' => __('Search','dbem'),
+		'dbem_search_form_geo' => 1,
+		'dbem_search_form_geo_label' => __('Near...','dbem'),
 		'dbem_search_form_dates' => 1,
+		'dbem_search_form_dates_label' => __('Dates','dbem'),
+		'dbem_search_form_dates_separator' => __('and','dbem'),
 		'dbem_search_form_categories' => 1,
 		'dbem_search_form_categories_label' => __('All Categories','dbem'),
+		'dbem_search_form_category_label' => __('Category','dbem'),
 		'dbem_search_form_countries' => 1,
 		'dbem_search_form_countries_label' => __('All Countries','dbem'),
+		'dbem_search_form_country_label' => __('Country','dbem'),
 		'dbem_search_form_regions' => 1,
 		'dbem_search_form_regions_label' => __('All Regions','dbem'),
+		'dbem_search_form_region_label' => __('Region','dbem'),
 		'dbem_search_form_states' => 1,
 		'dbem_search_form_states_label' => __('All States','dbem'),
+		'dbem_search_form_state_label' => __('State/County','dbem'),
 		'dbem_search_form_towns' => 0,
 		'dbem_search_form_towns_label' => __('All Cities/Towns','dbem'),
+		'dbem_search_form_town_label' => __('City/Town','dbem'),
+		//GeoCoding
+		'dbem_geo' => 1,
+		'dbem_geonames_username' => '',
 		//Event Form and Anon Submissions
 		'dbem_events_form_editor' => 1,
 		'dbem_events_form_reshow' => 1,
@@ -386,7 +405,7 @@ function em_add_options() {
 		//Event Formatting
 		'dbem_events_page_title' => __('Events','dbem'),
 		'dbem_events_page_scope' => 'future',
-		'dbem_events_page_search' => 1,
+		'dbem_events_page_search_form' => 1,
 		'dbem_event_list_item_format_header' => '<table cellpadding="0" cellspacing="0" class="events-table" >
     <thead>
         <tr>
@@ -436,6 +455,7 @@ function em_add_options() {
 		'dbem_locations_default_order' => 'ASC',
 		'dbem_locations_default_limit' => 10,
 		'dbem_locations_page_title' => __('Event','dbem')." ".__('Locations','dbem'),
+		'dbem_locations_page_search_form' => 1,
 		'dbem_no_locations_message' => sprintf(__( 'No %s', 'dbem' ),__('Locations','dbem')),
 		'dbem_location_default_country' => 'US',
 		'dbem_location_list_item_format_header' => '<ul class="em-locations-list">',
@@ -607,6 +627,7 @@ function em_add_options() {
 			'dbem_booking_feedback_reg_error' => __('There was a problem creating a user account, please contact a website administrator.','dbem'),
 			'dbem_booking_feedback_already_booked' => __('You already have booked a seat at this event.','dbem'),
 			'dbem_booking_feedback_min_space' => __('You must request at least one space to book an event.','dbem'),
+			'dbem_booking_feedback_spaces_limit' => __('You cannot book more than %d spaces for this event.','dbem'),
 			//button messages
 			'dbem_booking_button_msg_book' => __('Book Now', 'dbem'),
 			'dbem_booking_button_msg_booking' => __('Booking...','dbem'),
@@ -652,6 +673,15 @@ function em_add_options() {
 		'dbem_bp_events_list_format' => '<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES<ul><li>#_LOCATIONLINK - #_LOCATIONADDRESS, #_LOCATIONTOWN</li></ul></li>',
 		'dbem_bp_events_list_format_footer' => '</ul>',
 		'dbem_bp_events_list_none_format' => '<p class="em-events-list">'.__('No Events','dbem').'</p>',
+		//custom CSS options for public pages
+		'dbem_css_editors' => 1,
+		'dbem_css_rsvp' => 1, //my bookings page
+		'dbem_css_rsvpadmin' => 1, //my event bookings page
+		'dbem_css_evlist' => 1,
+		'dbem_css_search' => 1,
+		'dbem_css_loclist' => 1,
+		'dbem_css_catlist' => 1,
+		'dbem_css_taglist' => 1,
 		/*
 		 * Custom Post Options - set up to mimick old EM settings and install with minimal setup for most users
 		 */
@@ -787,6 +817,24 @@ function em_add_options() {
 	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.422 ){
 	    //copy registration email content into new setting
 	    update_option('dbem_rss_limit',0);
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.4425 ){
+	    //copy registration email content into new setting
+	    update_option('dbem_css_editors',0);
+	    update_option('dbem_css_rsvp',0);
+	    update_option('dbem_css_evlist',0);
+	    update_option('dbem_css_loclist',0);
+	    update_option('dbem_css_rsvpadmin',0);
+	    update_option('dbem_css_catlist',0);
+	    update_option('dbem_css_taglist',0);
+	    if( locate_template('plugins/events-manager/templates/events-search.php') ){
+	    	update_option('dbem_css_search', 0);
+	    	update_option('dbem_search_form_hide_advanced',0);
+	    }
+	    update_option('dbem_events_page_search_form',get_option('dbem_events_page_search'));
+	    update_option('dbem_search_form_dates_separator',get_option('dbem_dates_separator'));
+	    delete_option('dbem_events_page_search'); //avoids the double search form on overriden templates
+	    update_option('dbem_locations_page_search_form',0); //upgrades shouldn't get extra surprises  
 	}
 	//set time localization for first time depending on current settings
 	if( get_option('dbem_time_24h','not set') == 'not set'){

@@ -4,25 +4,7 @@
  * Use this class to query and manipulate sets of events. If dealing with more than one event, you probably want to use this class in some way.
  *
  */
-class EM_Events extends EM_Object implements Iterator {
-	/**
-	 * Array of EM_Event objects
-	 * @var array EM_Event
-	 */
-	var $events = array();
-	
-	function EM_Events( $args = array() ){
-		if( is_array($args) ){
-			if( is_object(current($args)) && get_class(current($args)) == 'EM_Event' ){
-				$this->events = $args;
-			}else{
-				$this->events = EM_Events::get($args);
-			}
-		}else{
-			$this->events = EM_Events::get();
-		}
-		do_action('em_events',$this);
-	}
+class EM_Events extends EM_Object {
 	
 	/**
 	 * Returns an array of EM_Events that match the given specs in the argument, or returns a list of future evetnts in future 
@@ -72,7 +54,13 @@ class EM_Events extends EM_Object implements Iterator {
 		
 		//Create the SQL statement and execute
 		
-		if( EM_MS_GLOBAL ){
+		if( !$count && $args['array'] ){
+			$selectors_array = array();
+			foreach( array_keys($EM_Event->fields) as $field_selector){
+				$selectors_array[] = $events_table.'.'.$field_selector;
+			}
+			$selectors = implode(',', $selectors_array);
+		}elseif( EM_MS_GLOBAL ){
 			$selectors = ( $count ) ?  'COUNT(*)':$events_table.'.post_id, '.$events_table.'.blog_id';
 		}else{
 			$selectors = ( $count ) ?  'COUNT(*)':$events_table.'.post_id';
@@ -163,12 +151,11 @@ class EM_Events extends EM_Object implements Iterator {
 	function output( $args ){
 		global $EM_Event;
 		$EM_Event_old = $EM_Event; //When looping, we can replace EM_Event global with the current event in the loop
-		//Can be either an array for the get search or an array of EM_Event objects
-		$func_args = func_get_args();
-		$page = 1; //default
+		//get page number if passed on by request (still needs pagination enabled to have effect)
 		if( !array_key_exists('page',$args) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
 			$page = $args['page'] = $_REQUEST['pno'];
 		}
+		//Can be either an array for the get search or an array of EM_Event objects
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Event' ){
 			$func_args = func_get_args();
 			$events = $func_args[0];
@@ -176,14 +163,14 @@ class EM_Events extends EM_Object implements Iterator {
 			$args = apply_filters('em_events_output_args', self::get_default_search($args), $events);
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
-			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:$page;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
 			$events_count = count($events);
 		}else{
 			//Firstly, let's check for a limit/offset here, because if there is we need to remove it and manually do this
-			$args = apply_filters('em_events_output_args', $args );
+			$args = apply_filters('em_events_output_args', self::get_default_search($args));
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
-			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:$page;
+			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
 			$args_count = $args;
 			$args_count['limit'] = false;
 			$args_count['offset'] = false;
@@ -211,10 +198,7 @@ class EM_Events extends EM_Object implements Iterator {
 			$output = $format_header .  $output . $format_footer;
 			//Pagination (if needed/requested)
 			if( !empty($args['pagination']) && !empty($limit) && $events_count > $limit ){
-				//Show the pagination links (unless there's less than $limit events)
-				$page_link_template = preg_replace('/(&|\?)pno=\d+/i','',$_SERVER['REQUEST_URI']);
-				$page_link_template = em_add_get_params($page_link_template, array('pno'=>'%PAGE%'), false); //don't html encode, so em_paginate does its thing;
-				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $events_count, $limit, $page), $page_link_template, $events_count, $limit, $page);
+				$output .= apply_filters('em_events_output_pagination', self::get_pagination_links($args, $events_count, 'search_events', self::get_default_search()), '', $events_count, $limit, $page);
 			}
 		} else {
 			$output = get_option ( 'dbem_no_events_message' );
@@ -224,6 +208,99 @@ class EM_Events extends EM_Object implements Iterator {
 		$EM_Event = $EM_Event_old;
 		$output = apply_filters('em_events_output', $output, $events, $args);
 		return $output;		
+	}
+	
+	/**
+	 * Generate a grouped list of events by year, month, week or day.
+	 * @since 5.4.4.2
+	 * @param array $args
+	 * @return string
+	 */
+	function output_grouped( $args = array() ){
+		//Reset some args to include pagination for if pagination is requested.
+		$args['limit'] = !empty($args['limit']) && is_numeric($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
+		$args['page'] = (!empty($args['page']) && is_numeric($args['page']) )? $args['page'] : 1;
+		$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : $args['page'];
+		$args['offset'] = ($args['page']-1) * $args['limit'];
+		$args['orderby'] = 'event_start_date,event_start_time,event_name'; // must override this to display events in right cronology.
+
+		$args['mode'] = !empty($args['mode']) ? $args['mode'] : get_option('dbem_event_list_groupby');
+		$args['date_format'] = !empty($args['date_format']) ? $args['date_format'] :  get_option('dbem_event_list_groupby_format');
+		//Reset some vars for counting events and displaying set arrays of events
+		$atts = (array) $args;
+		$atts['pagination'] = false;
+		$atts['limit'] = false;
+		$atts['page'] = false;
+		$atts['offset'] = false;
+		//decide what form of dates to show
+		$events_count = self::count($atts);
+		ob_start();
+		if( $events_count > 0 ){
+			$EM_Events = self::get($args);
+			switch ( $args['mode'] ){
+				case 'yearly':
+					//go through the events and put them into a monthly array
+					$format = (!empty($args['date_format'])) ? $args['date_format']:'Y';
+					$events_dates = array();
+					foreach($EM_Events as $EM_Event){
+						$events_dates[date_i18n($format,$EM_Event->start)][] = $EM_Event;
+					}
+					foreach ($events_dates as $year => $events){
+						echo '<h2>'.$year.'</h2>';
+						echo self::output($events, $atts);
+					}
+					break;
+				case 'monthly':
+					//go through the events and put them into a monthly array
+					$format = (!empty($args['date_format'])) ? $args['date_format']:'M Y';
+					$events_dates = array();
+					foreach($EM_Events as $EM_Event){
+						$events_dates[date_i18n($format, $EM_Event->start)][] = $EM_Event;
+					}
+					foreach ($events_dates as $month => $events){
+						echo '<h2>'.$month.'</h2>';
+						echo self::output($events, $atts);
+					}
+					break;
+				case 'weekly':
+					$format = (!empty($args['date_format'])) ? $args['date_format']:get_option('date_format');
+					$events_dates = array();
+					foreach($EM_Events as $EM_Event){
+			   			$start_of_week = get_option('start_of_week');
+						$day_of_week = date('w',$EM_Event->start);
+						$day_of_week = date('w',$EM_Event->start);
+						$offset = $day_of_week - $start_of_week;
+						if($offset<0){ $offset += 7; }
+						$offset = $offset * 60*60*24; //days in seconds
+						$start_day = strtotime($EM_Event->start_date);
+						$events_dates[$start_day - $offset][] = $EM_Event;
+					}
+					foreach ($events_dates as $event_day_ts => $events){
+						echo '<h2>'.date_i18n($format,$event_day_ts).' - '.date_i18n($format,$event_day_ts+(60*60*24*6)).'</h2>';
+						echo self::output($events, $atts);
+					}
+					break;
+				default: //daily
+					//go through the events and put them into a daily array
+					$format = (!empty($args['date_format'])) ? $args['date_format']:get_option('date_format');
+					$events_dates = array();
+					foreach($EM_Events as $EM_Event){
+						$events_dates[strtotime($EM_Event->start_date)][] = $EM_Event;
+					}
+					foreach ($events_dates as $event_day_ts => $events){
+						echo '<h2>'.date_i18n($format,$event_day_ts).'</h2>';
+						echo self::output($events, $atts);
+					}
+					break;
+			}
+			if( !empty($args['limit']) && $events_count > $args['limit'] && (!empty($args['pagination']) || !isset($args['pagination'])) ){
+				//Show the pagination links (unless there's less than $limit events)
+				echo apply_filters('em_events_output_pagination', self::get_pagination_links($args, $events_count, 'search_events_grouped', self::get_default_search()), '', $events_count, $args['limit'], $args['page']);
+			}
+		}else{
+			echo get_option ( 'dbem_no_events_message' );
+		}
+		return ob_get_clean();
 	}
 	
 	function can_manage($event_ids){
@@ -240,30 +317,8 @@ class EM_Events extends EM_Object implements Iterator {
 		return apply_filters('em_events_can_manage', false, $event_ids);
 	}
 	
-	function get_post_search($args = array(), $filter = false){
-		if( !empty($_REQUEST['em_search']) && empty($args['search']) ) $_REQUEST['search'] = $_REQUEST['em_search'];
-		if( !empty($_REQUEST['category']) && $_REQUEST['category'] == -1  ) $_REQUEST['category'] = $args['category'] = 0;
-		$accepted_searches = apply_filters('em_accepted_searches', array('scope','search','category','country','state','region','town'), $args);
-		foreach($_REQUEST as $post_key => $post_value){
-			if( in_array($post_key, $accepted_searches) && !empty($post_value) ){
-				if(is_array($post_value)){
-					$post_value = implode(',',$post_value);
-				}
-				if($post_value != ',' ){
-					$args[$post_key] = $post_value;
-				}elseif( $post_value == ',' && $post_key == 'scope' ){
-					unset($args['scope']);
-				}
-			}
-		}
-		if( $filter ){
-			foreach($args as $arg_key => $arg_value){
-				if( !in_array($arg_key, $accepted_searches) ){
-					unset($args[$arg_key]);
-				}
-			}
-		}
-		return apply_filters('em_events_get_post_search', $args);
+	public static function get_post_search($args = array(), $filter = false){
+		return apply_filters('em_events_get_post_search', parent::get_post_search($args, $filter));
 	}
 
 	/* Overrides EM_Object method to apply a filter to result
@@ -306,7 +361,7 @@ class EM_Events extends EM_Object implements Iterator {
 		    }else{
 		        if( !is_array($args['blog']) && preg_match('/^([\-0-9],?)+$/', $args['blog']) ){
 		            $conditions['blog'] = "(".EM_EVENTS_TABLE.".blog_id IN ({$args['blog']}) )";
-			    }elseif( is_array($args['blog']) && $this->array_is_numeric($args['blog']) ){
+			    }elseif( is_array($args['blog']) && self::array_is_numeric($args['blog']) ){
 			        $conditions['blog'] = "(".EM_EVENTS_TABLE.".blog_id IN (".implode(',',$args['blog']).") )";
 			    }
 		    }
@@ -378,31 +433,5 @@ class EM_Events extends EM_Object implements Iterator {
 		}
 		return apply_filters('em_events_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
-
-	//TODO Implement object and interators for handling groups of events.
-    public function rewind(){
-        reset($this->events);
-    }
-  
-    public function current(){
-        $var = current($this->events);
-        return $var;
-    }
-  
-    public function key(){
-        $var = key($this->events);
-        return $var;
-    }
-  
-    public function next(){
-        $var = next($this->events);
-        return $var;
-    }
-  
-    public function valid(){
-        $key = key($this->events);
-        $var = ($key !== NULL && $key !== FALSE);
-        return $var;
-    }
 }
 ?>

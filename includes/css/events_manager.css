@@ -1,4 +1,5 @@
-div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80); z-index:9999999999; }
+div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF url(../images/loading.gif) 50% 50% no-repeat; left:0px; top:0px; opacity:0.8; filter:alpha(opacity=80); z-index:99998; }
+.em-search-ajax { position:relative; }
 /* Warnings */
 	.em-warning { margin:10px 0px; padding:10px; color:#333; border-radius:3px; }
 	.em-warning p { margin:10px 0px !important; padding:0px; color:#333 }
@@ -6,7 +7,67 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 	.em-warning-confirms { background-color:#f1fff0; border:1px solid #a8d144; }
 	a.em-button { float:right; padding:5px 10px; margin:5px; background:#EEE; color:#333; border:1px solid #CCC; border-radius:3px; display:inline-block; text-decoration:none; }
 	a.em-button:hover { text-decoration:none; }	
-
+	
+/* Search Form */
+	.em-search div { display:inline; }
+	.em-search label { display:none; }
+	.em-search .hidden { display:none !important; }
+	/* Custom Search CSS */
+		div.css-search { width:100%; margin-bottom:20px; }	
+		div.em-search.css-search label { display:inline; } 
+		div.em-search.css-search div { display:block; }
+		div.css-search input, div.css-search select, div.css-search option, div.css-search div, div.css-search span, div.css-search button { 
+			width:auto; height:auto; margin:0; padding:0; float:none; display:auto; font-size:14px; /* reset everything */
+		}
+		div.css-search input, div.css-search select { padding:5px; }
+		div.css-search { background:#fff; border:1px solid #dedede; border-radius:3px; padding:5px; min-height:40px; position:relative; -moz-border-radius:3px; -webkit-border-radius:3px; }	
+		/* Main Search */
+			div.css-search.has-advanced div.em-search-main { padding-bottom:8px; border-bottom:1px solid #dedede; }
+			div.css-search div.em-search-main div { display:inline; }
+			div.css-search div.em-search-field { padding:5px 0px; }
+			div.css-search input.em-search-text, div.css-search input.em-search-geo { width:90%; font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
+			div.css-search.has-search-geo.has-search-term input.em-search-text, div.css-search.has-search-geo.has-search-term input.em-search-geo { width:40%; }
+			div.css-search div.em-search-geo { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-geo.png) 0px 3px no-repeat; }
+			div.css-search div.em-search-text { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-mag-ico.png) 0px 4px no-repeat; }						
+			/* Main Search Button */
+			div.css-search div.em-search-main button.em-search-submit {
+				position:absolute;
+				top: 5px; right: 5px;
+				-moz-box-shadow: 0px 0px 0px 0px #ffffff;
+				-webkit-box-shadow: 0px 0px 0px 0px #ffffff;
+				box-shadow: 0px 0px 0px 0px #ffffff;
+				background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #b7d282), color-stop(1, #8eb56d) );
+				background:-moz-linear-gradient( center top, #b7d282 5%, #8eb56d 100% );
+				filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#b7d282', endColorstr='#8eb56d');
+				background-color:#b7d282;
+				-moz-border-radius:6px;
+				-webkit-border-radius:6px;
+				border-radius:6px;
+				border:1px solid #dcdcdc;
+				display:inline-block;
+				color:#ffffff;
+				font-weight:bold;
+				padding:8px 10px;
+				text-decoration:none;
+				text-shadow:1px 1px 0px #c7c5c7;
+			}
+			div.css-search div.em-search-main button.em-search-submit:hover {
+				background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C4DB99), color-stop(1, #A4C48A) );
+				background:-moz-linear-gradient( center top, #C4DB99 5%, #A4C48A 100% );
+				filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#C4DB99', endColorstr='#8eb56d');
+				background-color:#A4C48A;
+			}
+			div.css-search div.em-search-main button.em-search-submit img { border:none; padding:0; margin:0; box-shadow:none; border-radius:0; }				
+		/* Advanced Search */
+			div.css-search div.em-search-location, div.em-search-location-meta { margin:0px; padding: 0px; }
+			div.css-search div.em-search-advanced, div.css-search div.em-search-options { padding:5px 8px; }
+			div.css-search div.em-search-advanced > div { clear:both; }
+			div.css-search div.em-search-advanced label { display:block; float:left; min-width:100px; }
+			div.css-search div.em-search-advanced .em-search-submit { margin:10px 0px; }
+			div.css-search.no-search-main div.em-search-advanced.visible div { display:inline; clear:none; }
+			div.css-search.no-search-main div.em-search-advanced.visible label { display:none; }
+			div.css-search div.em-search-options { text-align:right; }
+	
 /* Booking Form */
 	.em-booking { margin:15px 0px 10px 0px; position:relative; }
 	.em-booking-form  { position:relative; clear:left; }
@@ -40,23 +101,24 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 		#event-form .event-extra-details { margin-top:20px; }
 		#event-form .event-extra-details select { vertical-align:top; }
 	/*Tickets*/
-		.em-tickets-row .ticket-status span.ticket_on { display:block; width:10px; height:10px; background:green; }
-		.em-tickets-row .ticket-status span.ticket_off { display:block; width:10px; height:10px; background:red; }
-		.em-tickets-row .ticket-status span.ticket_new { display:block; width:10px; height:10px; background:grey; }
-		#event-tickets th { width:auto; }
-		#event-tickets th.ticket-status { width:20px; }
-		/* Overlay Form */
-			#em-tickets-form input[type=text] { width:97%; padding:2px; color:#666; }
-			#em-tickets-form #wp-submit { display:block; clear:both; }		
-		/*Inline Form */
-			.em-ticket-form { padding:0px 10px; margin-bottom:10px; width:400px; }
-			.em-ticket-form label { display:inline-block; min-width:70px; padding-right:10px; }
-			.em-ticket-form div { clear:both; margin:5px 0px;}
-			.em-ticket-form input.name { width:300px; }
-			.em-ticket-form .space-limits input { width:40px; }
-			.em-ticket-form .date-limits input { width:100px; }
-			.em-ticket-form div.description { margin-top:9px;}
-			.em-ticket-form textarea { width:100%; margin-top:7px; }
+		#event-rsvp-box { margin:10px; }
+		#event-rsvp-options label { font-weight:bold; }
+		/*Tickets*/
+			.em-tickets-row .ticket-status span.ticket_on { display:block; width:10px; height:10px; background:green; }
+			.em-tickets-row .ticket-status span.ticket_off { display:block; width:10px; height:10px; background:red; }
+			.em-tickets-row .ticket-status span.ticket_new { display:block; width:10px; height:10px; background:grey; }
+			#em-tickets-form th { width:auto; }
+			#em-tickets-form th.ticket-status { width:20px; }
+			/* Ticket Forms */
+				.em-ticket-form .ticket-options { margin-top:10px; }
+				.em-ticket-form > div > div, #em-tickets-form .ticket-dates > div { clear:both; padding-top:4px; }
+				.em-ticket-form label { display:block; float:left; min-width:105px; padding-right:5px; }
+				#em-tickets-form .ticket-name input, #em-tickets-form .ticket-description textarea { width:50%} 
+				#em-tickets-form .em-ticket-form-actions { clear:both; }
+				#em-tickets-form .ticket-spaces input, #em-tickets-form .ticket-price input { width:80px; }
+ 				#em-tickets-form .ticket-dates input.em-date-input-loc { width:90px; }
+ 				#em-tickets-form .ticket-required input, #em-tickets-form .ticket-roles input { width:auto; }
+ 				#em-tickets-form .ticket-roles div { margin-left:110px; }
 	/* The editor */
 		#wp-em-editor-content-wrap table { margin-bottom:0px; }
 	/* Location form */

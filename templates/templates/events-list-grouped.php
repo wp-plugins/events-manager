@@ -12,6 +12,6 @@ $args = apply_filters('em_content_events_args', $args);
 
 if( get_option('dbem_css_evlist') ) echo "<div class='css-events-list'>";
 
-echo EM_Events::output( $args );
-
+echo EM_Events::output_grouped($args); //note we're grabbing the content, not em_get_events_list_grouped function
+    
 if( get_option('dbem_css_evlist') ) echo "</div>";

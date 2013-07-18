@@ -29,8 +29,17 @@ add_shortcode('events_gcal', 'em_get_gcal_shortcode');
  * @return string
  */
 function em_get_locations_map_shortcode($args){
-	$args['width'] = ( !empty($args['width']) ) ? $args['width']:450;
-	$args['height'] = ( !empty($args['height']) ) ? $args['height']:300;
+	$args['em_ajax'] = true;
+	$args['query'] = 'GlobalMapData';
+    //get dimensions with px or % added in
+	$width = (!empty($args['width'])) ? $args['width']:get_option('dbem_map_default_width','400px');
+	$width = preg_match('/(px)|%/', $width) ? $width:$width.'px';
+	$height = (!empty($args['height'])) ? $args['height']:get_option('dbem_map_default_height','300px');
+	$height = preg_match('/(px)|%/', $height) ? $height:$height.'px';
+	$args['width'] = $width;
+	$args['height'] = $height;
+	//assign random number for element id reference
+	$args['random_id'] = substr(md5(rand().rand()),0,5);
 	ob_start();
 	em_locate_template('templates/map-global.php',true, array('args'=>$args)); 
 	return ob_get_clean();
@@ -40,16 +49,28 @@ add_shortcode('locations-map', 'em_get_locations_map_shortcode'); //Depreciate t
 
 /**
  * Shows a list of events according to given specifications. Accepts any event query attribute.
- * @param array $atts
+ * @param array $args
  * @return string
  */
-function em_get_events_list_shortcode($atts, $format='') {
-	$atts = (array) $atts;
-	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
-	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
-	$pno = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : 1;
-	$atts['page'] = ( !empty($atts['page']) && is_numeric($atts['page']) )? $atts['page'] : $pno;
-	return EM_Events::output( $atts );
+function em_get_events_list_shortcode($args, $format='') {
+	$args = (array) $args;
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
+	$args['format'] = ($format != '' || empty($args['format'])) ? $format : $args['format']; 
+	$args['format'] = html_entity_decode($args['format']); //shortcode doesn't accept html
+	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
+	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
+		ob_start();
+		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
+		em_locate_template('templates/events-list.php', true, array('args'=>$args));
+		if( !empty($args['ajax']) ) echo "</div>"; //close AJAX wrapper
+		$return = ob_get_clean();
+	}else{
+		$args['ajax'] = false;
+		$pno = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : 1;
+		$args['page'] = ( !empty($args['page']) && is_numeric($args['page']) )? $args['page'] : $pno;
+		$return = EM_Events::output( $args );
+	}
+	return $return;
 }
 add_shortcode ( 'events_list', 'em_get_events_list_shortcode' );
 
@@ -86,15 +107,25 @@ add_shortcode ( 'event', 'em_get_event_shortcode' );
 /**
  * Returns list of locations according to given specifications. Accepts any location query attribute.
  */
-function em_get_locations_list_shortcode( $atts, $format='' ) {
-	$atts = (array) $atts;
-	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
-	$atts['format'] = html_entity_decode($atts['format']); //shorcode doesn't accept html
-	$atts['page'] = ( !empty($atts['page']) && is_numeric($atts['page']) )? $atts['page'] : 1;
-	$atts['page'] = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : $atts['page'];
-	$args['orderby'] = !empty($args['orderby']) ? $args['orderby'] : get_option('dbem_locations_default_orderby');
-	$args['order'] = !empty($args['order']) ? $args['order'] : get_option('dbem_locations_default_order');
-	return EM_Locations::output( $atts );
+function em_get_locations_list_shortcode( $args, $format='' ) {
+	$args = (array) $args;
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
+	$args['format'] = ($format != '' || empty($args['format'])) ? $format : $args['format']; 
+	$args['format'] = html_entity_decode($args['format']); //shorcode doesn't accept html
+	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_locations_default_limit');
+	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
+		ob_start();
+		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
+		em_locate_template('templates/locations-list.php', true, array('args'=>$args));
+		if( !empty($args['ajax']) ) echo "</div>"; //close AJAX wrapper
+		$return = ob_get_clean();
+	}else{
+		$args['ajax'] = false;
+		$args['page'] = ( !empty($args['page']) && is_numeric($args['page']) )? $args['page'] : 1;
+		$args['page'] = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : $args['page'];
+		$return = EM_Locations::output( $args );
+	}
+	return $return;
 }
 add_shortcode('locations_list', 'em_get_locations_list_shortcode');
 
@@ -127,11 +158,26 @@ add_shortcode ( 'location', 'em_get_location_shortcode' );
 
 function em_get_categories_shortcode($args, $format=''){
 	$args = (array) $args;
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
 	$args['format'] = ($format != '' || empty($args['format'])) ? $format : $args['format']; 
 	$args['format'] = html_entity_decode($args['format']); //shorcode doesn't accept html
 	$args['orderby'] = !empty($args['orderby']) ? $args['orderby'] : get_option('dbem_categories_default_orderby');
 	$args['order'] = !empty($args['order']) ? $args['order'] : get_option('dbem_categories_default_order');
-	return EM_Categories::output($args);
+	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_categories_default_limit');
+	$args['pagination'] = !empty($args['pagination']) ? $args['pagination'] : 1;
+	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
+		ob_start();
+		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
+		em_locate_template('templates/categories-list.php', true, array('args'=>$args));
+		if( !empty($args['ajax']) ) echo "</div>"; //close AJAX wrapper
+		$return = ob_get_clean();
+	}else{
+		$args['ajax'] = false;
+		$args['page'] = ( !empty($args['page']) && is_numeric($args['page']) )? $args['page'] : 1;
+		$args['page'] = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : $args['page'];
+		$return = EM_Categories::output($args);
+	}
+	return $return;
 }
 add_shortcode ( 'categories_list', 'em_get_categories_shortcode' );
 
@@ -234,6 +280,18 @@ function em_get_event_search_form_shortcode( $args = array() ){
 add_shortcode ( 'event_search_form', 'em_get_event_search_form_shortcode');
 
 /**
+ * Creates a form to search locations with
+ * @param array $atts
+ * @return string
+ */
+function em_get_location_search_form_shortcode( $args = array() ){
+	$search_args = em_get_search_form_defaults();
+	$args = array_merge($search_args, (array) $args);
+	return em_get_location_search_form( $args );
+}
+add_shortcode ( 'location_search_form', 'em_get_location_search_form_shortcode');
+
+/**
  * Creates a grouped list of events by year, month, week or day
  * @since 4.213
  * @param array $args
@@ -241,8 +299,32 @@ add_shortcode ( 'event_search_form', 'em_get_event_search_form_shortcode');
  * @return string
  */
 function em_get_events_list_grouped_shortcode($args = array(), $format = ''){
+	$args = (array) $args;
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
 	$args['format'] = ($format != '' || empty($args['format'])) ? $format : $args['format']; 
-	$args['format'] = html_entity_decode($args['format']); //shorcode doesn't accept html
-	return em_get_events_list_grouped($args);
+	$args['format'] = html_entity_decode($args['format']); //shortcode doesn't accept html
+	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
+		ob_start();
+		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
+		em_locate_template('templates/events-list-grouped.php', true, array('args'=>$args));
+		if( !empty($args['ajax']) ) echo "</div>"; //close AJAX wrapper
+		$return = ob_get_clean();
+	}else{
+		$args['ajax'] = false;
+		$pno = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : 1;
+		$args['page'] = ( !empty($args['page']) && is_numeric($args['page']) )? $args['page'] : $pno;
+		$return = EM_Events::output_grouped( $args );
+	}
+	return $return;
 }
 add_shortcode ( 'events_list_grouped', 'em_get_events_list_grouped_shortcode' );
+
+/**
+ * Shows the list of bookings the user has made. Whilst maybe useful to some, the preferred way is to create a page and assign it as a my bookings page in your settings > pages > other pages section
+ * @param array $atts
+ * @return string
+ */
+function em_get_my_bookings_shortcode(){
+	return em_my_bookings();
+}
+add_shortcode ( 'my_bookings', 'em_get_my_bookings_shortcode');

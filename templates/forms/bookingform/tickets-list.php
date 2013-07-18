@@ -19,7 +19,7 @@ $collumns = $EM_Tickets->get_ticket_collumns(); //array of collumn type => title
 		<?php endforeach; ?>
 	</tr>
 	<?php foreach( $EM_Tickets->tickets as $EM_Ticket ): /* @var $EM_Ticket EM_Ticket */ ?>
-		<?php if( $EM_Ticket->is_available() || (get_option('dbem_bookings_tickets_show_unavailable') && (!$EM_Ticket->ticket_members || get_option('dbem_bookings_tickets_show_member_tickets'))) ): ?>
+		<?php if( $EM_Ticket->is_displayable() ): ?>
 			<?php do_action('em_booking_form_tickets_loop_header', $EM_Ticket); //do not delete ?>
 			<tr class="em-ticket" id="em-ticket-<?php echo $EM_Ticket->ticket_id; ?>">
 				<?php foreach( $collumns as $type => $name ): ?>

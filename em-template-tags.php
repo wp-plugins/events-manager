@@ -17,11 +17,23 @@
  */
 function em_get_events( $args = array() ){
 	if ( is_string($args) && strpos ( $args, "=" )) {
-		// allows the use of arguments without breaking the legacy code
-		$defaults = EM_Events::get_default_search();		
-		$args = wp_parse_args ( $args, $defaults );
+		// allows the use of arguments without breaking the legacy code	
+		$args = wp_parse_args ( $args, array() );
+	}else{
+		$args = (array) $args;
 	}
-	return EM_Events::output( $args );
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
+	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
+	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
+		ob_start();
+		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
+		em_locate_template('templates/events-list.php', true, array('args'=>$args));
+		if( !empty($args['ajax']) ) echo "</div>"; //close AJAX wrapper
+		$return = ob_get_clean();
+	}else{
+		$return = EM_Events::output( $args );
+	}
+	return $return;
 }
 /**
  * Prints out a list of events, takes same arguments as em_get_events.
@@ -36,12 +48,25 @@ function em_events( $args = array() ){ echo em_get_events($args); }
  * @return string
  */
 function em_get_locations( $args = array() ){
-	if (strpos ( $args, "=" )) {
-		// allows the use of arguments without breaking the legacy code
-		$defaults = EM_Locations::get_default_search();		
-		$args = wp_parse_args ( $args, $defaults );
+	if ( is_string($args) && strpos ( $args, "=" )) {
+		// allows the use of arguments without breaking the legacy code	
+		$args = wp_parse_args ( $args, array() );
+	}else{
+		$args = (array) $args;
 	}
-	return EM_Locations::output( $args );
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
+	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_locations_default_limit');
+	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
+		ob_start();
+		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
+		em_locate_template('templates/locations-list.php', true, array('args'=>$args));
+		if( !empty($args['ajax']) ) echo "</div>"; //close AJAX wrapper
+		$return = ob_get_clean();
+	}else{
+		//no ajax allowed with custom on-the-fly formats
+		$return = EM_Locations::output( $args );
+	}
+	return $return;
 }
 /**
  * Prints out a list of locations, takes same arguments as em_get_locations.
@@ -71,93 +96,31 @@ function em_get_calendar( $args = array() ){
 function em_calendar( $args = array() ){ echo em_get_calendar($args); }
 
 
-
 /**
  * Generate a grouped list of events by year, month, week or day.
  * @since 4.213
  * @param array $args
  * @return string
  */
-function em_get_events_list_grouped($args){
-	//Reset some args to include pagination for if pagination is requested.
-	$args['limit'] = (!empty($args['limit']) && is_numeric($args['limit']) )? $args['limit'] : false;
-	$args['page'] = (!empty($args['page']) && is_numeric($args['page']) )? $args['page'] : 1;
-	$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : $args['page'];
-	$args['offset'] = ($args['page']-1) * $args['limit'];
-	$args['orderby'] = 'event_start_date,event_start_time,event_name'; // must override this to display events in right cronology.
-	//Reset some vars for counting events and displaying set arrays of events
-	$atts = (array) $args;
-	$atts['pagination'] = false;
-	$atts['limit'] = false;
-	$atts['page'] = false;
-	$atts['offset'] = false;
-	//decide what form of dates to show
-	$EM_Events = EM_Events::get($args);
-	$events_count = EM_Events::count($atts);
-	ob_start();
-	switch ( $args['mode'] ){
-		case 'yearly':
-			//go through the events and put them into a monthly array
-			$format = (!empty($args['date_format'])) ? $args['date_format']:'Y';
-			$events_dates = array();
-			foreach($EM_Events as $EM_Event){
-				$events_dates[date_i18n($format,$EM_Event->start)][] = $EM_Event;
-			}
-			foreach ($events_dates as $year => $events){
-				echo '<h2>'.$year.'</h2>';
-				echo EM_Events::output($events, $atts);
-			}
-			break;
-		case 'monthly':
-			//go through the events and put them into a monthly array
-			$format = (!empty($args['date_format'])) ? $args['date_format']:'M Y';
-			$events_dates = array();
-			foreach($EM_Events as $EM_Event){
-				$events_dates[date_i18n($format, $EM_Event->start)][] = $EM_Event;
-			}
-			foreach ($events_dates as $month => $events){
-				echo '<h2>'.$month.'</h2>';
-				echo EM_Events::output($events, $atts);
-			}
-			break;
-		case 'weekly':
-			$format = (!empty($args['date_format'])) ? $args['date_format']:get_option('date_format');
-			$events_dates = array();
-			foreach($EM_Events as $EM_Event){
-	   			$start_of_week = get_option('start_of_week');
-				$day_of_week = date('w',$EM_Event->start);
-				$day_of_week = date('w',$EM_Event->start);
-				$offset = $day_of_week - $start_of_week;
-				if($offset<0){ $offset += 7; }
-				$offset = $offset * 60*60*24; //days in seconds
-				$start_day = strtotime($EM_Event->start_date);
-				$events_dates[$start_day - $offset][] = $EM_Event;
-			}
-			foreach ($events_dates as $event_day_ts => $events){
-				echo '<h2>'.date_i18n($format,$event_day_ts).' - '.date_i18n($format,$event_day_ts+(60*60*24*6)).'</h2>';
-				echo EM_Events::output($events, $atts);
-			}
-			break;
-		default: //daily
-			//go through the events and put them into a daily array
-			$format = (!empty($args['date_format'])) ? $args['date_format']:get_option('date_format');
-			$events_dates = array();
-			foreach($EM_Events as $EM_Event){
-				$events_dates[strtotime($EM_Event->start_date)][] = $EM_Event;
-			}
-			foreach ($events_dates as $event_day_ts => $events){
-				echo '<h2>'.date_i18n($format,$event_day_ts).'</h2>';
-				echo EM_Events::output($events, $atts);
-			}
-			break;
+function em_get_events_list_grouped( $args = array() ){
+	if ( is_string($args) && strpos ( $args, "=" )) {
+		// allows the use of arguments without breaking the legacy code	
+		$args = wp_parse_args ( $args, array() );
+	}else{
+		$args = (array) $args;
 	}
-	if( !empty($args['limit']) && $events_count > $args['limit'] && (!empty($args['pagination']) || !isset($args['pagination'])) ){
-		//Show the pagination links (unless there's less than $limit events)
-		$page_link_template = add_query_arg(array('pno'=>'%PAGE%'));
-		echo em_paginate( $page_link_template, $events_count, $args['limit'], $args['page']);
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
+	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
+		ob_start();
+		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
+		em_locate_template('templates/events-grouped.php', true, array('args'=>$args));
+		if( !empty($args['ajax']) ) echo "</div>"; //close AJAX wrapper
+		$return = ob_get_clean();
+	}else{
+		$return = EM_Events::output_grouped( $args );
 	}
-	return ob_get_clean();
 }
+
 /**
  * Print a grouped list of events by year, month, week or day.
  * @since 4.213
@@ -165,7 +128,7 @@ function em_get_events_list_grouped($args){
  * @param string $format
  * @return string
  */
-function em_events_list_grouped($args, $format=''){ echo em_get_events_list_grouped($args, $format); }
+function em_events_list_grouped( $args = array() ){ echo em_get_events_list_grouped($args); }
 
 /**
  * Creates an html link to the events page.
@@ -213,6 +176,7 @@ function em_rss_link($text = "RSS"){ echo em_get_rss_link($text); }
  */
 function em_event_form($args = array()){
 	global $EM_Event;
+	if( get_option('dbem_css_editors') ) echo '<div class="css-event-form">';
 	if( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') && em_locate_template('forms/event-editor-guest.php') ){
 		em_locate_template('forms/event-editor-guest.php',true, array('args'=>$args));
 	}else{
@@ -224,7 +188,7 @@ function em_event_form($args = array()){
 			//Give a default location & category
 			$default_cat = get_option('dbem_default_category');
 			$default_loc = get_option('dbem_default_location');
-			if( is_numeric($default_cat) && $default_cat > 0 && !empty($EM_Event->get_categories->categories) ){
+			if( is_numeric($default_cat) && $default_cat > 0 && !empty($EM_Event->get_categories()->categories) ){
 				$EM_Category = new EM_Category($default_cat);
 				$EM_Event->get_categories()->categories[] = $EM_Category;
 			}
@@ -235,6 +199,7 @@ function em_event_form($args = array()){
 		}
 		em_locate_template('forms/event-editor.php',true, array('args'=>$args));
 	}
+	if( get_option('dbem_css_editors') ) echo '</div>';
 }
 /**
  * Retreives the event submission form for guests and members.
@@ -259,6 +224,7 @@ function em_events_admin($args = array()){
 			}
 			em_event_form();
 		}else{
+			if( get_option('dbem_css_editors') ) echo '<div class="css-events-admin">';
 			//template $args for different views
 		    $args_views['pending'] = array('status'=>0, 'owner' =>get_current_user_id(), 'scope' => 'all');
 		    $args_views['draft'] = array('status'=>null, 'owner' =>get_current_user_id(), 'scope' => 'all');
@@ -309,10 +275,13 @@ function em_events_admin($args = array()){
 				'show_add_new' => true
 			));
 		}
+		if( get_option('dbem_css_editors') ) echo '</div>';
 	}elseif( !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
 		em_event_form($args);
 	}else{
-		echo apply_filters('em_event_submission_login', __("You must log in to view and manage your events.",'dbem'));
+		if( get_option('dbem_css_editors') ) echo '<div class="css-events-admin">';
+		echo '<div class="css-events-admin-login">'. apply_filters('em_event_submission_login', __("You must log in to view and manage your events.",'dbem')) . '</div>';
+		if( get_option('dbem_css_editors') ) echo '</div>';
 	}
 }
 /**
@@ -330,6 +299,9 @@ function em_get_events_admin( $args = array() ){
  * @param array $args
  */
 function em_event_search_form($args = array()){
+	$search_args = em_get_search_form_defaults();
+	$args = array_merge($search_args, $args);
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
 	em_locate_template('templates/events-search.php',true, array('args'=>$args));
 }
 /**
@@ -349,8 +321,10 @@ function em_get_event_search_form( $args = array() ){
  */
 function em_location_form($args = array()){
 	global $EM_Location;
+	if( get_option('dbem_css_editors') ) echo '<div class="css-location-form">';
 	$EM_Location = ( is_object($EM_Location) && get_class($EM_Location) == 'EM_Location') ? $EM_Location : new EM_Location();
 	em_locate_template('forms/location-editor.php',true);
+	if( get_option('dbem_css_editors') ) echo '</div>';
 }
 /**
  * Retreives the location submission form for guests and members.
@@ -375,6 +349,7 @@ function em_locations_admin($args = array()){
 			}
 			em_location_form();
 		}else{
+			if( get_option('dbem_css_editors') ) echo '<div class="css-locations-admin">';
 			$limit = ( !empty($_REQUEST['limit']) ) ? $_REQUEST['limit'] : 20;//Default limit
 			$page = ( !empty($_REQUEST['pno']) ) ? $_REQUEST['pno']:1;
 			$offset = ( $page > 1 ) ? ($page-1)*$limit : 0;
@@ -413,8 +388,11 @@ function em_locations_admin($args = array()){
 				'show_add_new' => true
 			));
 		}
+		if( get_option('dbem_css_editors') ) echo '</div>';
 	}else{
-		echo __("You must log in to view and manage your locations.",'dbem');
+		if( get_option('dbem_css_editors') ) echo '<div class="css-locations-admin">';
+		echo '<div class="css-locations-admin-login">'. __("You must log in to view and manage your locations.",'dbem') .'</div>';
+		if( get_option('dbem_css_editors') ) echo '</div>';
 	}
 }
 /**
@@ -427,13 +405,44 @@ function em_get_locations_admin( $args = array() ){
 	return ob_get_clean();
 }
 
+/**
+ * Outputs the location search form.
+ * @param array $args
+ */
+function em_location_search_form($args = array()){
+	$search_args = em_get_search_form_defaults();
+	$args = array_merge($search_args, $args);
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
+	em_locate_template('templates/locations-search.php',true, array('args'=>$args));
+}
+/**
+ * Retreives the event search form.
+ * @param array $args
+ */
+function em_get_location_search_form( $args = array() ){
+	ob_start();
+	em_location_search_form($args);
+	return ob_get_clean();
+}
+
 //Bookings Pages
 function em_bookings_admin(){
+	if( get_option('dbem_css_rsvpadmin') ) echo '<div class="css-bookings-admin">';
 	if( is_user_logged_in() && current_user_can('manage_bookings') ){
-		em_locate_template('buddypress/my-bookings.php', true);
+		global $wpdb, $current_user, $EM_Notices;
+		include_once(EM_DIR.'/admin/em-bookings.php');
+		include_once(EM_DIR.'/admin/em-admin.php');
+		include_once(EM_DIR.'/admin/bookings/em-cancelled.php');
+		include_once(EM_DIR.'/admin/bookings/em-confirmed.php');
+		include_once(EM_DIR.'/admin/bookings/em-events.php');
+		include_once(EM_DIR.'/admin/bookings/em-pending.php');
+		include_once(EM_DIR.'/admin/bookings/em-person.php');
+		include_once(EM_DIR.'/admin/bookings/em-rejected.php');
+		em_bookings_page();
 	}else{
-		echo __("You must log in to view and manage your bookings.",'dbem');
+		echo '<div class="css-bookings-admin-login">'. __("You must log in to view and manage your bookings.",'dbem') .'</div>';
 	}
+	if( get_option('dbem_css_rsvpadmin') ) echo '</div>';
 }
 function em_get_bookings_admin(){
 	ob_start();
@@ -442,7 +451,9 @@ function em_get_bookings_admin(){
 }
 
 function em_my_bookings(){
+	if( get_option('dbem_css_rsvp') ) echo '<div class="css-my-bookings">';
 	em_locate_template('templates/my-bookings.php', true);
+	if( get_option('dbem_css_rsvp') ) echo '</div>';
 }
 function em_get_my_bookings(){
 	ob_start();

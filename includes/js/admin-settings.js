@@ -91,4 +91,10 @@ jQuery(document).ready(function($){
 	$('.em-translatable').click(function(){
 		$(this).nextAll('.em-ml-options').toggle();
 	});
+	//radio triggers
+	$('input.em-trigger').change(function(e){
+		var el = $(this);
+		el.val() == '1' ? $(el.attr('data-trigger')).show():$(el.attr('data-trigger')).hide();
+	});
+	$('input.em-trigger:checked').trigger('change');
 });

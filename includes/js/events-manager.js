@@ -18,76 +18,122 @@ jQuery(document).ready( function($){
 	} );
 
 	//Events Search
-	$('.em-events-search-form select[name=country]').change( function(){
-		$('.em-events-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
-		$('.em-events-search select[name=region]').html('<option value="">'+EM.txt_loading+'</option>');
-		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+	$(document).on('click change', '.em-toggle', function(e){
+		e.preventDefault();
+		//show or hide advanced tickets, hidden by default
+		var el = $(this);
+		var rel = el.attr('rel').split(':');
+		if( el.hasClass('show') ){
+			if( rel.length > 1 ){ el.closest(rel[1]).find(rel[0]).slideUp(); }
+			else{ $(rel[0]).slideUp(); }
+			el.find('.show').show();
+			el.find('.hide').hide();
+			el.addClass('hide').removeClass('show');
+		}else{
+			if( rel.length > 1 ){ el.closest(rel[1]).find(rel[0]).slideDown(); }
+			else{ $(rel[0]).slideDown(); }
+			el.find('.show').hide();
+			el.find('.hide').show();
+			el.addClass('show').removeClass('hide');
+		}
+		
+	});
+	$('.em-search-form select[name=country]').change( function(){
+		var el = $(this);
+		if( el.val() != '' ){
+			el.closest('.em-search-location').find('.em-search-location-meta').slideDown();
+		}else{
+			el.closest('.em-search-location').find('.em-search-location-meta').slideUp();
+		}
+		$('.em-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
+		$('.em-search select[name=region]').html('<option value="">'+EM.txt_loading+'</option>');
+		$('.em-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
 		var data = {
 			action : 'search_states',
-			country : $(this).val(),
+			country : el.val(),
 			return_html : true
 		};
-		$('.em-events-search select[name=state]').load( EM.ajaxurl, data );
+		$('.em-search select[name=state]').load( EM.ajaxurl, data );
 		data.action = 'search_regions';
-		$('.em-events-search select[name=region]').load( EM.ajaxurl, data );
+		$('.em-search select[name=region]').load( EM.ajaxurl, data );
 		data.action = 'search_towns';
-		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+		$('.em-search select[name=town]').load( EM.ajaxurl, data );
 	});
 
-	$('.em-events-search-form select[name=region]').change( function(){
-		$('.em-events-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
-		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+	$('.em-search-form select[name=region]').change( function(){
+		$('.em-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
+		$('.em-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
 		var data = {
 			action : 'search_states',
 			region : $(this).val(),
-			country : $('.em-events-search-form select[name=country]').val(),
+			country : $('.em-search-form select[name=country]').val(),
 			return_html : true
 		};
-		$('.em-events-search select[name=state]').load( EM.ajaxurl, data );
+		$('.em-search select[name=state]').load( EM.ajaxurl, data );
 		data.action = 'search_towns';
-		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+		$('.em-search select[name=town]').load( EM.ajaxurl, data );
 	});
 
-	$('.em-events-search-form select[name=state]').change( function(){
-		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+	$('.em-search-form select[name=state]').change( function(){
+		$('.em-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
 		var data = {
 			action : 'search_towns',
 			state : $(this).val(),
-			region : $('.em-events-search-form select[name=region]').val(),
-			country : $('.em-events-search-form select[name=country]').val(),
+			region : $('.em-search-form select[name=region]').val(),
+			country : $('.em-search-form select[name=country]').val(),
 			return_html : true
 		};
-		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+		$('.em-search select[name=town]').load( EM.ajaxurl, data );
 	});
 	
 	//in order for this to work, you need the above classes to be present in your templates
-	$(document).delegate('.em-events-search-form', 'submit', function(e){
-    	if( this.search && this.search.value== EM.txt_search ){ this.search.value = ''; }
-    	if( this.em_search && this.em_search.value== EM.txt_search){ this.em_search.value = ''; }
-    	if( $('#em-wrapper .em-events-search-ajax').length == 1 ){
-    		e.preventDefault();
-			$('.em-events-search-form :submit').val(EM.txt_searching);
+	$(document).delegate('.em-search-form', 'submit', function(e){
+		form = $(this);
+    	if( this.em_search && this.em_search.value == EM.txt_search){ this.em_search.value = ''; }
+    	var results_wrapper = form.closest('.em-search-wrapper').find('.em-search-ajax');
+    	if( results_wrapper.length == 0 ) results_wrapper = $('.em-search-ajax');
+    	if( results_wrapper.length > 0 ){
+    		results_wrapper.append('<div class="loading" id="em-loading"></div>');
+    		var submitButton = form.find(':submit');
+    		submitButton.data('buttonText', submitButton.val()).val(EM.txt_searching);
+    		var img = submitButton.children('img');
+    		if( img.length > 0 ) img.attr('src', img.attr('src').replace('search-mag.png', 'search-loading.gif'));
 			$.ajax( EM.ajaxurl, {
+				type : 'POST',
 	    		dataType : 'html',
-	    		data : $(this).serialize(),
-			    success : function(responseText) {
-					$('.em-events-search-form :submit').val(EM.txt_search);
-					$('#em-wrapper .em-events-search-ajax').replaceWith(responseText);
+	    		data : form.serialize(),
+			    success : function(responseText){
+			    	submitButton.val(submitButton.data('buttonText'));
+			    	if( img.length > 0 ) img.attr('src', img.attr('src').replace('search-loading.gif', 'search-mag.png'));
+		    		results_wrapper.replaceWith(responseText);
+		        	if( form.find('input[name=em_search]').val() == '' ){ form.find('input[name=em_search]').val(EM.txt_search); }
 			    }
 	    	});
+    		e.preventDefault();
 			return false;
-    	} 
+    	}
 	});
-	if( $('#em-wrapper .em-events-search-ajax').length > 0 ){
-		$(document).delegate('#em-wrapper .em-events-search-ajax a.page-numbers', 'click', function(e){
+	if( $('.em-search-ajax').length > 0 ){
+		$(document).delegate('.em-search-ajax a.page-numbers', 'click', function(e){
+			var a = $(this);
+			var data = a.closest('.em-pagination').attr('data-em-ajax');
+			var wrapper = a.closest('.em-search-ajax');
+		    var qvars = a.attr('href').split('?');
+		    var vars = qvars[1];
+		    //add data-em-ajax att if it exists
+		    if( data != '' ){
+		    	vars = vars != '' ? vars+'&'+data : data;
+		    }
+		    wrapper.append('<div class="loading" id="em-loading"></div>');
+		    $.ajax( EM.ajaxurl, {
+				type : 'POST',
+	    		dataType : 'html',
+	    		data : vars,
+			    success : function(responseText) {
+			    	wrapper.replaceWith(responseText);
+			    }
+	    	});
 			e.preventDefault();
-			var pageNo = $(this).attr('title');
-			if( $('.em-events-search-form input[name="page"]').length > 0 ){
-				$('.em-events-search-form input[name="page"]').val(pageNo);
-			}else{
-				$('.em-events-search-form').append('<input type="hidden" name="page" value="'+pageNo+'" />');
-			}
-			$('.em-events-search-form').trigger('submit');
 			return false;
 		});
 	}
@@ -105,125 +151,140 @@ jQuery(document).ready( function($){
 			td.load( url );
 			return false;
 		});
-	//Tickets
+	//Tickets & Bookings
 	if( $("#em-tickets-form").length > 0 ){
-		load_ui_css = true;
-		//Dialog/Overlay
-		$("#em-tickets-form").dialog({
-			modal : true,
-			autoOpen: false,
-			minWidth: 350,
-			height: 'auto',
-			buttons: [{
-				text: EM.tickets_save,
-				click: function(e){
-					e.preventDefault();
-					//Submitting ticket (Add/Edit)
-					$('#em-tickets-intro').remove();
-					//first we get the template to insert this to
-					if( $('#em-tickets-form form input[name=prev_slot]').val() ){
-						//grab slot and populate
-						var slot = $('#'+$('#em-tickets-form form input[name=prev_slot]').val());
-						var rowNo = slot.attr('id').replace('em-tickets-row-','');
-						var edit = true;
-					}else{
-						//create copy of template slot, insert so ready for population
-						var rowNo = $('#em-tickets-body').children('tr').length+1;
-						var slot = $('#em-tickets-body tr').first().clone().attr('id','em-tickets-row-'+ rowNo).appendTo($('#em-tickets-body'));
-						var edit = false;
-						slot.show();
-					}
-					var postData = {};
-					var is_checked = false;
-					$.each($('#em-tickets-form form *[name]'), function(index,el){
-						el = $(el);
-						if( el.attr('type') == 'checkbox' ){
-							is_checked = el.is(':checked') ? 1:0;
-							slot.find('input.'+el.attr('name')).attr({
-								'value' : is_checked,
-								'name' : 'em_tickets['+rowNo+']['+el.attr('name')+']'
-							});
-						}else{
-							slot.find('input.'+el.attr('name')).attr({
-								'value' : el.attr('value'),
-								'name' : 'em_tickets['+rowNo+']['+el.attr('name')+']'
-							});
-						}
-						if( el.attr('name') == 'ticket_start_pub'){
-							slot.find('span.ticket_start').text(el.attr('value'));
-						}else if( el.attr('name') == 'ticket_end_pub' ){
-							slot.find('span.ticket_end').text(el.attr('value'));
-						}else if( el.attr('name') == 'ticket_members' ){
-							if( el.is(':checked') ){
-								slot.find('span.ticket_name').prepend('* ');
-							}
-						}else{
-							slot.find('span.'+el.attr('name')).text(el.attr('value'));
-						}
-					});
-					//allow for others to hook into this
-					$(document).triggerHandler('em_maps_tickets_edit', [slot, rowNo, edit]);
-					//sort out dates and localization masking
-					var start_pub = $("#em-tickets-form input[name=ticket_start_pub]").val();
-					var end_pub = $("#em-tickets-form input[name=ticket_end_pub]").val();
-					$('#em-tickets-form *[name]').attr('value','').removeAttr('checked');
-					$('#em-tickets-form .close').trigger('click');
-					$(this).dialog('close');
+		//Enable/Disable Bookings
+		$('#event-rsvp').click( function(event){
+			if( !this.checked ){
+				confirmation = confirm(EM.disable_bookings_warning);
+				if( confirmation == false ){
+					event.preventDefault();
+				}else{
+					$('#event-rsvp-options').hide();
 				}
-			}]
+			}else{
+				$('#event-rsvp-options').fadeIn();
+			}
 		});
-		$("#em-tickets-add").click(function(e){ e.preventDefault(); $('#em-tickets-form *[name]').attr('value','').removeAttr('checked'); $("#em-tickets-form").dialog('open'); });
+		if($('input#event-rsvp').attr("checked")) {
+			$("div#rsvp-data").fadeIn();
+		} else {
+			$("div#rsvp-data").hide();
+		}
+		//Ticket(s) UI
+		var reset_ticket_forms = function(){
+			$('#em-tickets-form table tbody tr.em-tickets-row').show();
+			$('#em-tickets-form table tbody tr.em-tickets-row-form').hide();
+		};
+		//Add a new ticket
+		$("#em-tickets-add").click(function(e){ 
+			e.preventDefault();
+			reset_ticket_forms();
+			//create copy of template slot, insert so ready for population
+			var tickets = $('#em-tickets-form table tbody');
+			var rowNo = tickets.length+1;
+			var slot = tickets.first().clone(true).attr('id','em-ticket-'+ rowNo).appendTo($('#em-tickets-form table'));
+			//change the index of the form element names
+			slot.find('*[name]').each( function(index,el){
+				el = $(el);
+				el.attr('name', el.attr('name').replace('em_tickets[0]','em_tickets['+rowNo+']'));
+			});
+			//show ticket and switch to editor
+			slot.show().find('.ticket-actions-edit').trigger('click');
+			//refresh datepicker and values
+			slot.find('.em-date-input-loc').datepicker('destroy').removeAttr('id'); //clear all datepickers
+			slot.find('.em-time-range input.em-time-end, .em-time-range input.em-time-start').unbind(['click','focus','change']); //clear all timepickers - consequently, also other click/blur/change events, recreate the further down
+			em_setup_datepicker(slot);
+			em_setup_timepicker(slot);
+		    $('html, body').animate({ scrollTop: slot.offset().top - 30 }); //sends user to form
+		});
 		//Edit a Ticket
 		$(document).delegate('.ticket-actions-edit', 'click', function(e){
-			//trigger click
 			e.preventDefault();
-			$('#em-tickets-add').trigger('click');
-			//populate form
-			var rowId = $(this).parents('tr').first().attr('id');
-			$('#em-tickets-form *[name]').attr('value','').removeAttr('checked');
-			$.each( $('#'+rowId+' *[name]'), function(index,el){
-				var el = $(el);
-				var selector = el.attr('class');
-				var input_field = $('#em-tickets-form *[name='+selector+']');
-				if( input_field.attr('type') == 'checkbox' ){
-					if( el.val() == 1 ){ input_field.attr('checked','checked'); }
-					else{ input_field.removeAttr('checked'); }
-				}else{
-					input_field.attr('value',el.attr('value'));	
-				}
-			});
-			$("#em-tickets-form input[name=prev_slot]").attr('value',rowId); //save the current slot number
-			//refresh datepicker and values
-			$("#em-tickets-form .em-date-input-loc").datepicker('refresh');
-			$('#em-tickets-form input.em-date-input-loc').each(function(i,el){
-				el = $(el);
-				date_value = el.next('.em-date-input').val();
-				if( date_value != '' ){
-					date_formatted = $.datepicker.formatDate( EM.dateFormat, $.datepicker.parseDate('yy-mm-dd', date_value) );
-					el.val(date_formatted);
-				}
-			});
+			reset_ticket_forms();
+			var tbody = $(this).closest('tbody');
+			tbody.find('tr.em-tickets-row').hide();
+			tbody.find('tr.em-tickets-row-form').fadeIn();
 			return false;
-		});	
+		});
+		$(document).delegate('.ticket-actions-edited', 'click', function(e){
+			e.preventDefault();
+			var tbody = $(this).closest('tbody');
+			var rowNo = tbody.attr('id').replace('em-ticket-','');
+			tbody.find('.em-tickets-row').fadeIn();
+			tbody.find('.em-tickets-row-form').hide();
+			tbody.find('*[name]').each(function(index,el){
+				el = $(el);
+				if( el.attr('name') == 'ticket_start_pub'){
+					tbody.find('span.ticket_start').text(el.attr('value'));
+				}else if( el.attr('name') == 'ticket_end_pub' ){
+					tbody.find('span.ticket_end').text(el.attr('value'));
+				}else if( el.attr('name') == 'em_tickets['+rowNo+'][ticket_type]' ){
+					if( el.find(':selected').val() == 'members' ){
+						tbody.find('span.ticket_name').prepend('* ');
+					}
+				}else{
+					tbody.find('.'+el.attr('name').replace('em_tickets['+rowNo+'][','').replace(']','')).text(el.attr('value'));
+				}
+			});
+			//allow for others to hook into this
+			$(document).triggerHandler('em_maps_tickets_edit', [tbody, rowNo, true]);
+		    $('html, body').animate({ scrollTop: tbody.parent().offset().top - 30 }); //sends user back to top of form
+			return false;
+		});
+		$(document).delegate('.em-ticket-form select.ticket_type','change', function(e){
+			//check if ticket is for all users or members, if members, show roles to limit the ticket to
+			var el = $(this);
+			if( el.find('option:selected').val() == 'members' ){
+				el.closest('.em-ticket-form').find('.ticket-roles').fadeIn();
+			}else{
+				el.closest('.em-ticket-form').find('.ticket-roles').hide();
+			}
+		});
+		$(document).delegate('.em-ticket-form .ticket-options-advanced','click', function(e){
+			//show or hide advanced tickets, hidden by default
+			e.preventDefault();
+			var el = $(this);
+			if( el.hasClass('show') ){
+				el.closest('.em-ticket-form').find('.em-ticket-form-advanced').fadeIn();
+				el.find('.show').hide();
+				el.find('.hide').show();
+			}else{
+				el.closest('.em-ticket-form').find('.em-ticket-form-advanced').hide();
+				el.find('.show').show();
+				el.find('.hide').hide();
+			}
+			el.toggleClass('show').toggleClass('hide');
+		});
+		$('.em-ticket-form').each( function(){
+			//check whether to show advanced options or not by default for each ticket
+			var show_advanced = false;
+			var el = $(this); 
+			el.find('.em-ticket-form-advanced input[type="text"]').each(function(){ if(this.value != '') show_advanced = true; });
+			if( el.find('.em-ticket-form-advanced input[type="checkbox"]:checked').length > 0 ){ show_advanced = true; }
+			el.find('.em-ticket-form-advanced option:selected').each(function(){ if(this.value != '') show_advanced = true; });
+			if( show_advanced ) el.find('.ticket-options-advanced').trigger('click');
+		});
 		//Delete a ticket
 		$(document).delegate('.ticket-actions-delete', 'click', function(e){
 			e.preventDefault();
 			var el = $(this);
-			var rowId = $(this).parents('tr').first().attr('id');
-			if( $('#'+rowId+' input.ticket_id').attr('value') == '' ){
-				//not saved to db yet, so just remove
-				$('#'+rowId).remove();
-			}else{
+			var tbody = el.closest('tbody');
+			console.log(tbody.find('input.ticket_id').val());
+			if( tbody.find('input.ticket_id').val() > 0 ){
 				//only will happen if no bookings made
 				el.text('Deleting...');	
-				$.getJSON( $(this).attr('href'), {'em_ajax_action':'delete_ticket', 'id':$('#'+rowId+' input.ticket_id').attr('value')}, function(data){
+				$.getJSON( $(this).attr('href'), {'em_ajax_action':'delete_ticket', 'id':tbody.find('input.ticket_id').val()}, function(data){
 					if(data.result){
-						$('#'+rowId).remove();
+						tbody.remove();
 					}else{
 						el.text('Delete');
 						alert(data.error);
 					}
 				});
+			}else{
+				//not saved to db yet, so just remove
+				tbody.remove();
 			}
 			return false;
 		});
@@ -442,33 +503,9 @@ jQuery(document).ready( function($){
 			$.datepicker.setDefaults(EM.locale_data);
 		}
 		load_ui_css = true;
-		
-		//initialize legacy start/end dates, makes the following code compatible
-		if( $('#em-date-start').length > 0 ){
-			$('#em-date-start').addClass('em-date-input').parent().addClass('em-date-range');
-			$("#em-date-start-loc").addClass('em-date-input-loc em-date-start');
-			$('#em-date-end').addClass('em-date-input');
-			$("#em-date-end-loc").addClass('em-date-input-loc em-date-end');
-		}
-		if( $(".em-ticket-form, #em-tickets-form").length > 0 ){
-			$(".em-ticket-form, #em-tickets-form .start").addClass('em-date-input').parent().addClass('em-date-single');
-			$(".em-ticket-form, #em-tickets-form .start-loc").addClass('em-date-input-loc').each(
-				function(i,el){ $(el).prev('.start').insertAfter(el); 
-			}); //reverse elements for comapatability
-			$(".em-ticket-form, #em-tickets-form .end").addClass('em-date-input').parent().addClass('em-date-single');
-			$(".em-ticket-form, #em-tickets-form .end-loc").addClass('em-date-input-loc').each(
-				function(i,el){ $(el).prev('.end').insertAfter(el);
-			}); //reverse elements for comapatability
-		}
 		em_setup_datepicker('body');
 	}
-	if( load_ui_css && EM.ui_css ){
-		var script = document.createElement("link");
-		script.id = 'jquery-ui-css';
-		script.rel = "stylesheet";
-		script.href = EM.ui_css;
-		document.body.appendChild(script);
-	}
+	if( load_ui_css ) em_load_jquery_css();
 	
 	//previously in em-admin.php
 	function updateIntervalDescriptor () { 
@@ -530,7 +567,8 @@ jQuery(document).ready( function($){
 		if ( typeof google !== 'object' || typeof google.maps !== 'object' ){ 
 			var script = document.createElement("script");
 			script.type = "text/javascript";
-			script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.12&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
+			var proto = (EM.is_ssl) ? 'https:' : 'http:';
+			script.src = proto + '//maps.google.com/maps/api/js?v=3.12&sensor=false&callback=em_maps';
 			document.body.appendChild(script);
 		}else{
 			em_maps();
@@ -595,13 +633,22 @@ jQuery(document).ready( function($){
 	
 });
 
+function em_load_jquery_css(){
+	if( EM.ui_css && jQuery('script#jquery-ui-css').length == 0 ){
+		var script = document.createElement("link");
+		script.id = 'jquery-ui-css';
+		script.rel = "stylesheet";
+		script.href = EM.ui_css;
+		document.body.appendChild(script);
+	}
+}
+
 function em_setup_datepicker(wrap){	
 	wrap = jQuery(wrap);
 	//default picker vals
-	var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay };
-	if( EM.dateFormat != ''){
-		datepicker_vals.dateFormat = EM.dateFormat;
-	}
+	var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay, yearRange:'-100:+10' };
+	if( EM.dateFormat ) datepicker_vals.dateFormat = EM.dateFormat;
+	if( EM.yearRange ) datepicker_vals.yearRange = EM.yearRange;
 	jQuery(document).triggerHandler('em_datepicker', datepicker_vals);
 	
 	//apply datepickers

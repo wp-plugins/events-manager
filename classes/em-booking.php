@@ -317,6 +317,11 @@ class EM_Booking extends EM_Object{
 		    $result = false;
 		    $this->add_error(get_option('dbem_booking_feedback_full'));
 		}
+		//can we book this amount of spaces at once?
+		if( $this->get_event()->event_rsvp_spaces > 0 && $this->get_spaces() > $this->get_event()->event_rsvp_spaces ){
+		    $result = false;
+		    $this->add_error( sprintf(get_option('dbem_booking_feedback_spaces_limit'), $this->get_event()->event_rsvp_spaces));			
+		}
 		return apply_filters('em_booking_validate',$result,$this);
 	}
 	

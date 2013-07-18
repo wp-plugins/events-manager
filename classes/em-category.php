@@ -200,7 +200,7 @@ class EM_Category extends EM_Object {
 					else{ $scope = 'all'; }					
 					$events_count = EM_Events::count( array('category'=>$this->term_id, 'scope'=>$scope) );
 					if ( $events_count > 0 ){
-					    $args = array('category'=>$this->term_id, 'scope'=>$scope, 'pagination'=>1);
+					    $args = array('category'=>$this->term_id, 'scope'=>$scope, 'pagination'=>1, 'ajax'=>0);
 					    $args['format_header'] = get_option('dbem_category_event_list_item_header_format');
 					    $args['format_footer'] = get_option('dbem_category_event_list_item_footer_format');
 					    $args['format'] = get_option('dbem_category_event_list_item_format');

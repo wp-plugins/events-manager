@@ -1,7 +1,7 @@
 <?php
 /*
 Plugin Name: Events Manager
-Version: 5.4.4
+Version: 5.4.4.2
 Plugin URI: http://wp-events-plugin.com
 Description: Event registration and booking management for WordPress. Recurring events, locations, google maps, rss, ical, booking registration and more!
 Author: Marcus Sykes
@@ -27,10 +27,16 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 // Setting constants
-define('EM_VERSION', 5.44); //self expanatory
+define('EM_VERSION', 5.4425); //self expanatory
 define('EM_PRO_MIN_VERSION', 2.221); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
+define('EM_DIR_URI', trailingslashit(plugins_url('',__FILE__))); //an absolute path to this directory
 define('EM_SLUG', plugin_basename( __FILE__ )); //for updates
+
+//temporarily disable AJAX by default, future updates will eventually have this turned on as we work out some kinks
+if( !defined('EM_AJAX') ){
+	define( 'EM_AJAX', get_option('dbem_events_page_ajax', (defined('EM_AJAX_SEARCH') && EM_AJAX_SEARCH)) );
+}
 
 if( !defined('EM_CONDITIONAL_RECURSIONS') ) define('EM_CONDITIONAL_RECURSIONS', get_option('dbem_conditional_recursions', 1)); //allows for conditional recursios to be nested
 
@@ -209,7 +215,8 @@ class EM_Scripts_and_Styles {
 			$obj_id = $obj->ID;
 		}
 		
-	    //Decide whether or not to include certain JS files and dependencies
+	    //Decide whether or not to include certain JS files and dependenciesç
+	    $script_deps = array();
         if( get_option('dbem_js_limit') ){
             //determine what script dependencies to include, and which to not include
             if( is_page($pages) ){
@@ -219,11 +226,13 @@ class EM_Scripts_and_Styles {
                 //events page only needs datepickers
                 $script_deps['jquery-ui-core'] = 'jquery-ui-core';
                 $script_deps['jquery-ui-datepicker'] = 'jquery-ui-datepicker';
-	            }
+                if( get_option('dbem_search_form_geo') ){
+                	$script_deps['jquery-ui-autocomplete'] = 'jquery-ui-autocomplete';
+                }
+            }
             if( (!empty($pages['edit-events']) && is_page($pages['edit-events'])) || get_option('dbem_js_limit_events_form') === '0' || in_array($obj_id, explode(',', get_option('dbem_js_limit_events_form'))) ){
                 //submit/edit event pages require
                 $script_deps['jquery-ui-core'] = 'jquery-ui-core';
-                $script_deps['jquery-ui-dialog'] = 'jquery-ui-dialog';
                 $script_deps['jquery-ui-datepicker'] = 'jquery-ui-datepicker';
 	            if( !get_option('dbem_use_select_for_locations') ){
 					$script_deps['jquery-ui-autocomplete'] = 'jquery-ui-autocomplete';
@@ -260,7 +269,7 @@ class EM_Scripts_and_Styles {
         }            			
         $script_deps = apply_filters('em_public_script_deps', $script_deps);
         if( !empty($script_deps) ){ //given we depend on jQuery, there must be at least a jQuery dep for our file to be loaded
-			wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array_values($script_deps)); //jQuery will load as dependency
+			wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array_values($script_deps), EM_VERSION); //jQuery will load as dependency
 			self::localize_script();
     		do_action('em_enqueue_scripts');
         }
@@ -276,19 +285,19 @@ class EM_Scripts_and_Styles {
 				$exclude = true;
 			}
 			if( !empty($include) && empty($exclude) ){
-			    wp_enqueue_style('events-manager', plugins_url('includes/css/events_manager.css',__FILE__)); //main css
+			    wp_enqueue_style('events-manager', plugins_url('includes/css/events_manager.css',__FILE__), array(), EM_VERSION); //main css
 	    		do_action('em_enqueue_styles');
 			}
 		}else{
-			wp_enqueue_style('events-manager', plugins_url('includes/css/events_manager.css',__FILE__)); //main css
+			wp_enqueue_style('events-manager', plugins_url('includes/css/events_manager.css',__FILE__), array(), EM_VERSION); //main css
 	    	do_action('em_enqueue_styles');
 		}
 	}
 	
 	function admin_enqueue(){
 	    do_action('em_enqueue_admin_scripts');
-		wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete','jquery-ui-dialog'));
-		wp_enqueue_style('events-manager-admin', plugins_url('includes/css/events_manager_admin.css',__FILE__));
+		wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete','jquery-ui-dialog'), EM_VERSION);
+		wp_enqueue_style('events-manager-admin', plugins_url('includes/css/events_manager_admin.css',__FILE__), array(), EM_VERSION);
 		self::localize_script();
 	}
 

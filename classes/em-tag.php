@@ -121,7 +121,7 @@ class EM_Tag extends EM_Object {
 					else{ $scope = 'all'; }
 					$events_count = EM_Events::count( array('tag'=>$this->term_id, 'scope'=>$scope) );
 					if ( $events_count > 0 ){
-					    $args = array('tag'=>$this->term_id, 'scope'=>$scope, 'pagination'=>1);
+					    $args = array('tag'=>$this->term_id, 'scope'=>$scope, 'pagination'=>1, 'ajax'=>0);
 					    $args['format_header'] = get_option('dbem_tag_event_list_item_header_format');
 					    $args['format_footer'] = get_option('dbem_tag_event_list_item_footer_format');
 					    $args['format'] = get_option('dbem_tag_event_list_item_format');
@@ -129,7 +129,7 @@ class EM_Tag extends EM_Object {
 						$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : 1;
 					    $replace = EM_Events::output($args);
 					} else {
-						$replace = get_option('dbem_tag_no_events_message','</ul>');
+						$replace = get_option('dbem_tag_no_events_message');
 					}
 					break;
 				case '#_TAGNEXTEVENT':

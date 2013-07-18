@@ -850,7 +850,7 @@ class EM_Location extends EM_Object {
 					else{ $scope = 'all'; }
 					$events_count = EM_Events::count( array('location'=>$this->location_id, 'scope'=>$scope) );
 					if ( $events_count > 0 ){
-					    $args = array('location'=>$this->location_id, 'scope'=>$scope, 'pagination'=>1);
+					    $args = array('location'=>$this->location_id, 'scope'=>$scope, 'pagination'=>1, 'ajax'=>0);
 					    $args['format_header'] = get_option('dbem_location_event_list_item_header_format');
 					    $args['format_footer'] = get_option('dbem_location_event_list_item_footer_format');
 					    $args['format'] = get_option('dbem_location_event_list_item_format');

@@ -19,6 +19,7 @@ class EM_Calendar extends EM_Object {
 		$month = $args['month']; 
 		$year = $args['year'];
 		$long_events = $args['long_events'];
+		$limit = $args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_display_calendar_events_limit'); //limit arg will be used per day and not for events search
 		
 		$week_starts_on_sunday = get_option('dbem_week_starts_sunday');
 	   	$start_of_week = get_option('start_of_week');
@@ -182,60 +183,82 @@ class EM_Calendar extends EM_Object {
 				$i ++;
 			}
 			$week_count++;
-		} 
-		
-			// query the database for events in this time span
-		if ($month == 1) {
-			$month_pre=12;
-			$month_post=2;
-			$year_pre=$year-1;
-			$year_post=$year;
-		} elseif($month == 12) {
-			$month_pre=11;
-			$month_post=1;
-			$year_pre=$year;
-			$year_post=$year+1;
-		} else {
-			$month_pre=$month-1;
-			$month_post=$month+1;
-			$year_pre=$year;
-			$year_post=$year;
 		}
-		$args['year'] = array($year_pre, $year_post);
-		$args['month'] = array($month_pre, $month_post);
-		$events = EM_Events::get($args);
+		
+		//query the database for events in this time span with 7 days before and after this month to account for these cells in the calendar
+		$scope_datetime_start = new DateTime("{$year}-{$month}-1");
+		$scope_datetime_end = new DateTime($scope_datetime_start->format('Y-m-t'));
+		$scope_datetime_start->modify('-7 days');
+		$scope_datetime_end->modify('+7 days');
+		//we have two methods here, one for high-volume event sites i.e. many thousands of events per month, and another for thousands or less per month.
+		$args['array'] = true; //we're getting an array first to avoid extra queries during object creation
+		unset($args['month']);
+		unset($args['year']);
+		unset($args['limit']); //limits in the events search won't help
+		if( defined('EM_CALENDAR_OPT') && EM_CALENDAR_OPT ){
+			//here we loop through each day, query that specific date, and then compile a list of event objects
+			//in this mode the count will never be accurate, we're grabing at most (31 + 14 days) * (limit + 1) events to reduce memory loads
+			$args['limit'] = $limit + 1;
+			$scope_datetime_loop = $scope_datetime_start->format('U');
+			$events = array();
+			while( $scope_datetime_loop <= $scope_datetime_end->format('U') ){
+				$args['scope'] = date('Y-m-d', $scope_datetime_loop);
+				$events = array_merge($events, EM_Events::get($args));
+				$scope_datetime_loop += (86400); //add a day
+			}
+		}else{
+			//just load all the events for this time-range
+			$args['scope'] = array( $scope_datetime_start->format('Y-m-d'), $scope_datetime_end->format('Y-m-d'));
+			$events = EM_Events::get($args);
+		}
+		//back to what it was
+		$args['month'] = $month; 
+		$args['year'] = $year;
+		$args['limit'] = $limit; 
 	
 		$event_format = get_option('dbem_full_calendar_event_format'); 
 		$event_title_format = get_option('dbem_small_calendar_event_title_format');
 		$event_title_separator_format = get_option('dbem_small_calendar_event_title_separator');
 		
 		$eventful_days= array();
+		$eventful_days_count = array();
 		if($events){
 			//Go through the events and slot them into the right d-m index
 			foreach($events as $event) {
 				$event = apply_filters('em_calendar_output_loop_start', $event);
 				if( $long_events ){
 					//If $long_events is set then show a date as eventful if there is an multi-day event which runs during that day
-					$event_start_date = strtotime($event->start_date);
-					$event_end_date = mktime(0,0,0,$month_post,date('t', $event_start_date),$year_post );
-					if( $event_end_date == '' ) $event_end_date = $event_start_date;
-					while( $event_start_date <= $event->end ){
-						//Ensure date is within event dates, if so add to eventful days array
-						$event_eventful_date = date('Y-m-d', $event_start_date);
-						if( array_key_exists($event_eventful_date, $eventful_days) && is_array($eventful_days[$event_eventful_date]) ){
-							$eventful_days[$event_eventful_date][] = $event; 
-						} else {
-							$eventful_days[$event_eventful_date] = array($event);  
+					$event_start_ts = strtotime($event['event_start_date']);
+					$event_end_ts = strtotime($event['event_end_date']);
+					$event_end_ts = $event_end_ts > $scope_datetime_end->format('U') ? $scope_datetime_end->format('U') : $event_end_ts;
+					while( $event_start_ts <= $event_end_ts ){ //we loop until the last day of our time-range, not the end date of the event, which could be in a year
+						//Ensure date is within event dates and also within the limits of events to show per day, if so add to eventful days array
+						$event_eventful_date = $event['event_start_date'];
+						if( empty($eventful_days_count[$event_eventful_date]) || !$limit || $eventful_days_count[$event_eventful_date] < $limit ){
+							//now we know this is an event that'll be used, convert it to an object
+							$EM_Event = EM_MS_GLOBAL ? em_get_event($event['post_id'], $event['blog_id']) : $EM_Event = em_get_event($event['post_id'], 'post_id');
+							if( !empty($eventful_days[$event_eventful_date]) && is_array($eventful_days[$event_eventful_date]) ){
+								$eventful_days[$event_eventful_date][] = $EM_Event; 
+							} else {
+								$eventful_days[$event_eventful_date] = array($EM_Event);
+							}
 						}
-						$event_start_date += (86400); //add a day		
+						//count events for that day
+						$eventful_days_count[$event_eventful_date] = empty($eventful_days_count[$event_eventful_date]) ? 1 : $eventful_days_count[$event_eventful_date]+1;
+						$event_start_ts += (86400); //add a day
 					}
 				}else{
 					//Only show events on the day that they start
-					if( isset($eventful_days[$event->event_start_date]) && is_array($eventful_days[$event->event_start_date]) ){
-						$eventful_days[$event->event_start_date][] = $event; 
-					} else {
-						$eventful_days[$event->event_start_date] = array($event);  
+					if( empty($eventful_days_count[$event['event_start_date']]) || !$limit || $eventful_days_count[$event['event_start_date']] < $limit ){
+						$EM_Event = EM_MS_GLOBAL ? em_get_event($event['post_id'], $event['blog_id']) : em_get_event($event['post_id'], 'post_id');
+						if( isset($eventful_days[$event['event_start_date']]) && is_array($eventful_days[$event['event_start_date']]) ){
+							$eventful_days[$event['event_start_date']][] = $EM_Event; 
+						} else {
+							$eventful_days[$event['event_start_date']] = array($EM_Event);  
+						}
 					}
+					//count events for that day
+					$eventful_days_count[$event['event_start_date']] = empty($eventful_days_count[$event['event_start_date']]) ? 1 : $eventful_days_count[$event['event_start_date']]+1;
 				}
 			}
 		}
@@ -246,13 +269,13 @@ class EM_Calendar extends EM_Object {
 				//Get link title for this date
 				$events_titles = array();
 				foreach($events as $event) {
-					if( !get_option('dbem_display_calendar_events_limit') || count($events_titles) < get_option('dbem_display_calendar_events_limit') ){
+					if( !$limit || count($events_titles) < $limit ){
 						$events_titles[] = $event->output($event_title_format);
 					}else{
 						$events_titles[] = get_option('dbem_display_calendar_events_limit_msg');
 						break;
 					}
-				}   
+				}
 				$calendar_array['cells'][$day_key]['link_title'] = implode( $event_title_separator_format, $events_titles);
 							
 				//Get the link to this calendar day
@@ -285,6 +308,7 @@ class EM_Calendar extends EM_Object {
 					}
 				}
 				//Add events to array
+				$calendar_array['cells'][$day_key]['events_count'] = $eventful_days_count[$day_key];
 				$calendar_array['cells'][$day_key]['events'] = $events;
 			}
 		}
@@ -293,6 +317,7 @@ class EM_Calendar extends EM_Object {
 	
 	function output($args = array(), $wrapper = true) {
 		//Let month and year REQUEST override for non-JS users
+		$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_display_calendar_events_limit'); //limit arg will be used per day and not for events search
 		if( !empty($_REQUEST['mo']) || !empty($args['mo']) ){
 			$args['month'] = ($_REQUEST['mo']) ? $_REQUEST['mo']:$args['mo'];	
 		}

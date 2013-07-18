@@ -27,7 +27,7 @@ if( !empty($_REQUEST['success']) ){
 	<div class="wrap">
 		<?php do_action('em_front_event_form_header'); ?>
 		<?php if(get_option('dbem_events_anonymous_submissions') && !is_user_logged_in()): ?>
-			<h4 class="event-form-submitter"><?php _e ( 'Your Details', 'dbem' ); ?></h4>
+			<h3 class="event-form-submitter"><?php _e ( 'Your Details', 'dbem' ); ?></h3>
 			<div class="inside event-form-submitter">
 				<p>
 					<label><?php _e('Name', 'dbem'); ?></label>
@@ -40,7 +40,7 @@ if( !empty($_REQUEST['success']) ){
 				<?php do_action('em_font_event_form_guest'); ?>
 			</div>
 		<?php endif; ?>
-		<h4 class="event-form-name"><?php _e ( 'Event Name', 'dbem' ); ?></h4>
+		<h3 class="event-form-name"><?php _e ( 'Event Name', 'dbem' ); ?></h3>
 		<div class="inside event-form-name">
 			<input type="text" name="event_name" id="event-name" value="<?php echo esc_attr($EM_Event->event_name,ENT_QUOTES); ?>" /><?php echo $required; ?>
 			<br />
@@ -48,7 +48,7 @@ if( !empty($_REQUEST['success']) ){
 			<?php em_locate_template('forms/event/group.php',true); ?>
 		</div>
 					
-		<h4 class="event-form-when"><?php _e ( 'When', 'dbem' ); ?></h4>
+		<h3 class="event-form-when"><?php _e ( 'When', 'dbem' ); ?></h3>
 		<div class="inside event-form-when">
 		<?php 
 			if( empty($EM_Event->event_id) && $EM_Event->can_manage('edit_recurring_events','edit_others_recurring_events') && get_option('dbem_recurrence_enabled') ){
@@ -62,13 +62,13 @@ if( !empty($_REQUEST['success']) ){
 		</div>
 
 		<?php if( get_option('dbem_locations_enabled') ): ?>
-		<h4 class="event-form-where"><?php _e ( 'Where', 'dbem' ); ?></h4>
+		<h3 class="event-form-where"><?php _e ( 'Where', 'dbem' ); ?></h3>
 		<div class="inside event-form-where">
 		<?php em_locate_template('forms/event/location.php',true); ?>
 		</div>
 		<?php endif; ?>
 		
-		<h4 class="event-form-details"><?php _e ( 'Details', 'dbem' ); ?></h4>
+		<h3 class="event-form-details"><?php _e ( 'Details', 'dbem' ); ?></h3>
 		<div class="inside event-form-details">
 			<div class="event-editor">
 				<?php if( get_option('dbem_events_form_editor') && function_exists('wp_editor') ): ?>
@@ -86,7 +86,7 @@ if( !empty($_REQUEST['success']) ){
 		</div>
 		
 		<?php if( $EM_Event->can_manage('upload_event_images','upload_event_images') ): ?>
-		<h4><?php _e ( 'Event Image', 'dbem' ); ?></h4>
+		<h3><?php _e ( 'Event Image', 'dbem' ); ?></h3>
 		<div class="inside event-form-image">
 			<?php em_locate_template('forms/event/featured-image-public.php',true); ?>
 		</div>
@@ -94,7 +94,7 @@ if( !empty($_REQUEST['success']) ){
 		
 		<?php if( get_option('dbem_rsvp_enabled') && $EM_Event->can_manage('manage_bookings','manage_others_bookings') ) : ?>
 		<!-- START Bookings -->
-		<h4><?php _e('Bookings/Registration','dbem'); ?></h4>
+		<h3><?php _e('Bookings/Registration','dbem'); ?></h3>
 		<div class="inside event-form-bookings">				
 			<?php em_locate_template('forms/event/bookings.php',true); ?>
 		</div>
@@ -113,8 +113,3 @@ if( !empty($_REQUEST['success']) ){
 	<input type="hidden" name="redirect_to" value="<?php echo esc_attr($_REQUEST['redirect_to']); ?>" />
 	<?php endif; ?>
 </form>
-<?php
-if( get_option('dbem_rsvp_enabled') && !(get_option('dbem_bookings_tickets_single') && count($EM_Tickets->tickets) == 1) ){ 
-	em_locate_template('forms/tickets-form.php', true); //put here as it can't be in the add event form
-} 
-?>
