@@ -206,11 +206,7 @@ class EM_Event_Post {
 	function parse_query(){
 	    global $wp_query;
 		//Search Query Filtering
-		if( !is_admin() ){
-			if( !empty($wp_query->query_vars['s']) && !get_option('dbem_cp_events_search_results') ){
-				$wp_query->query_vars['post_type'] = array_diff( get_post_types(array('exclude_from_search' => false)), array(EM_POST_TYPE_EVENT));
-			}
-		}else{
+		if( is_admin() ){
 		    if( !empty($wp_query->query_vars[EM_TAXONOMY_CATEGORY]) && is_numeric($wp_query->query_vars[EM_TAXONOMY_CATEGORY]) ){
 		        //sorts out filtering admin-side as it searches by id
 		        $term = get_term_by('id', $wp_query->query_vars[EM_TAXONOMY_CATEGORY], EM_TAXONOMY_CATEGORY);

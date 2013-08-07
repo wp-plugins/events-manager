@@ -1,6 +1,6 @@
 <?php
 global $EM_Event;
-$required = "<i>*</i>";
+$required = apply_filters('em_required_html','<i>*</i>');
 ?>
 <?php if( !get_option('dbem_require_location') && !get_option('dbem_use_select_for_locations') ): ?>
 <div>
@@ -21,14 +21,14 @@ $required = "<i>*</i>";
 	</script>
 </div>
 <?php endif; ?>
-<div id="em-location-data">
+<div id="em-location-data" class="em-location-data">
 	<div id="location_coordinates" style='display: none;'>
 		<input id='location-latitude' name='location_latitude' type='text' value='<?php echo $EM_Event->get_location()->location_latitude; ?>' size='15' />
 		<input id='location-longitude' name='location_longitude' type='text' value='<?php echo $EM_Event->get_location()->location_longitude; ?>' size='15' />
 	</div>
 	<?php if( get_option('dbem_use_select_for_locations') || !$EM_Event->can_manage('edit_locations','edit_others_locations') ) : ?> 
 	<table class="em-location-data">
-		<tr>
+		<tr class="em-location-data-select">
 			<th><?php _e('Location:','dbem') ?> </th>
 			<td> 
 				<select name="location_id" id='location-select-id' size="1">  
@@ -61,7 +61,7 @@ $required = "<i>*</i>";
 				$EM_Location = new EM_Location();
 			}
 		?>
-		<tr>
+		<tr class="em-location-data-name">
 			<th><?php _e ( 'Location Name:', 'dbem' )?></th>
 			<td>
 				<input id='location-id' name='location_id' type='hidden' value='<?php echo $EM_Location->location_id; ?>' size='15' />
@@ -71,37 +71,37 @@ $required = "<i>*</i>";
 				<em id="em-location-reset" style="display:none;"><?php _e('You cannot edit saved locations here.', 'dbem'); ?> <a href="#"><?php _e('Reset this form to create a location or search again.', 'dbem')?></a></em>
 			</td>
  		</tr>
-		<tr>
+		<tr class="em-location-data-address">
 			<th><?php _e ( 'Address:', 'dbem' )?>&nbsp;</th>
 			<td>
 				<input id="location-address" type="text" name="location_address" value="<?php echo esc_attr($EM_Location->location_address, ENT_QUOTES); ; ?>" /><?php echo $required; ?>
 			</td>
 		</tr>
-		<tr>
+		<tr class="em-location-data-town">
 			<th><?php _e ( 'City/Town:', 'dbem' )?>&nbsp;</th>
 			<td>
 				<input id="location-town" type="text" name="location_town" value="<?php echo esc_attr($EM_Location->location_town, ENT_QUOTES); ?>" /><?php echo $required; ?>
 			</td>
 		</tr>
-		<tr>
+		<tr class="em-location-data-state">
 			<th><?php _e ( 'State/County:', 'dbem' )?>&nbsp;</th>
 			<td>
 				<input id="location-state" type="text" name="location_state" value="<?php echo esc_attr($EM_Location->location_state, ENT_QUOTES); ?>" />
 			</td>
 		</tr>
-		<tr>
+		<tr class="em-location-data-postcode">
 			<th><?php _e ( 'Postcode:', 'dbem' )?>&nbsp;</th>
 			<td>
 				<input id="location-postcode" type="text" name="location_postcode" value="<?php echo esc_attr($EM_Location->location_postcode, ENT_QUOTES); ?>" />
 			</td>
 		</tr>
-		<tr>
+		<tr class="em-location-data-region">
 			<th><?php _e ( 'Region:', 'dbem' )?>&nbsp;</th>
 			<td>
 				<input id="location-region" type="text" name="location_region" value="<?php echo esc_attr($EM_Location->location_region, ENT_QUOTES); ?>" />
 			</td>
 		</tr>
-		<tr>
+		<tr class="em-location-data-country">
 			<th><?php _e ( 'Country:', 'dbem' )?>&nbsp;</th>
 			<td>
 				<select id="location-country" name="location_country">
@@ -114,13 +114,6 @@ $required = "<i>*</i>";
 		</tr>
 	</table>
 	<?php endif; ?>
-	<?php if ( get_option( 'dbem_gmap_is_active' ) ) : ?>
-	<div class="em-location-map-container">
-		<div id='em-map-404'  class="em-location-map-404">
-			<p><em><?php _e ( 'Location not found', 'dbem' ); ?></em></p>
-		</div>
-		<div id='em-map' class="em-location-map-content" style='display: none;'></div>
-	</div>
-	<?php endif; ?>
+	<?php if ( get_option( 'dbem_gmap_is_active' ) ) em_locate_template('forms/map-container.php',true); ?>
 	<br style="clear:both;" />
 </div>

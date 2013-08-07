@@ -557,8 +557,8 @@ class EM_Bookings extends EM_Object implements Iterator{
 	
 	static function enqueue_js(){
         if( !defined('EM_BOOKING_JS_LOADED') ){ //request loading of JS file in footer of page load
-        	add_action('wp_footer','EM_Bookings::em_booking_js_footer');
-        	add_action('admin_footer','EM_Bookings::em_booking_js_footer');
+        	add_action('wp_footer','EM_Bookings::em_booking_js_footer', 20);
+        	add_action('admin_footer','EM_Bookings::em_booking_js_footer', 20);
         	define('EM_BOOKING_JS_LOADED',true);
         }
 	}

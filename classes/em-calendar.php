@@ -167,7 +167,7 @@ class EM_Calendar extends EM_Object {
 		foreach ( $weeks as $week ) {
 			foreach ( $week as $d ) {
 				$date = date('Y-m-d', $d);
-				$calendar_array['cells'][$date] = array('date'=>$d); //set it up so we have the exact array of dates to be filled
+				$calendar_array['cells'][$date] = array('date'=>$d, 'events'=>array(), 'events_count'=>0); //set it up so we have the exact array of dates to be filled
 				if ($i < $offset_count) { //if it is PREVIOUS month
 					$calendar_array['cells'][$date]['type'] = 'pre';
 				}
@@ -195,6 +195,8 @@ class EM_Calendar extends EM_Object {
 		unset($args['month']);
 		unset($args['year']);
 		unset($args['limit']); //limits in the events search won't help
+		$args['orderby'] = 'event_start_date';
+		$args['order'] = 'ASC';
 		if( defined('EM_CALENDAR_OPT') && EM_CALENDAR_OPT ){
 			//here we loop through each day, query that specific date, and then compile a list of event objects
 			//in this mode the count will never be accurate, we're grabing at most (31 + 14 days) * (limit + 1) events to reduce memory loads
@@ -233,7 +235,7 @@ class EM_Calendar extends EM_Object {
 					$event_end_ts = $event_end_ts > $scope_datetime_end->format('U') ? $scope_datetime_end->format('U') : $event_end_ts;
 					while( $event_start_ts <= $event_end_ts ){ //we loop until the last day of our time-range, not the end date of the event, which could be in a year
 						//Ensure date is within event dates and also within the limits of events to show per day, if so add to eventful days array
-						$event_eventful_date = $event['event_start_date'];
+						$event_eventful_date = date('Y-m-d', $event_start_ts);
 						if( empty($eventful_days_count[$event_eventful_date]) || !$limit || $eventful_days_count[$event_eventful_date] < $limit ){
 							//now we know this is an event that'll be used, convert it to an object
 							$EM_Event = EM_MS_GLOBAL ? em_get_event($event['post_id'], $event['blog_id']) : $EM_Event = em_get_event($event['post_id'], 'post_id');

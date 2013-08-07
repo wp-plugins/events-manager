@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.4.4.2 =
+= 5.4.4.3 (dev version) =
 * fixed different versions of http/https maps js libraries being called
 * performance improvements calendar queries and generation, speeding up calendars with many events per month
 * added Reunion to countries list
@@ -132,7 +132,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * changed EM_Events and EM_Locations into 'static'-only classes (function scoping will follow eventually)
 * changed scopes of EM_Object::get_post_search and EM_Object::get_pagination_links to static
 * added near, near_unit and near_distance search arguments for coordinate-based searches
-* added geographical searching with GeoNames
+* added geographical searching and Google places autocomplete service
 * added more search form options to settings page
 * removed page number and list number definitions from within list templates
 * modified various templates, detailed below:
@@ -147,6 +147,35 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * removed search form inclusion on templates/events-list.php and is now included seperately
 * added wrapper class to templates/events-list.php layout for future styling
 * moved grouped events out of events-list.php into events-list-grouped.php template
+* fixed/added sanitization to EM_Ticket::get_post to prevent potential xss,
+* fixed/added escaping to booking form template
+* fixed recurrences not updating category in main site of MS Global installs
+* fixed overriding the_content for valid items in a loop when on tag and category pages
+* removed global $EM_Location from locations admin list template
+* fixed the em_maps_location_hook js hook not being triggered event/location admin pages
+* fixed php warning when creating events with no location info
+* fixed some untranslated text
+* added parsing of placeholders on single event and location page titles (useful in SEO plugins)
+* lowered priority of wp_footer js to 20 (from 10)
+* moved WP FullCalendar integration code into EM (and loaded only if needed)
+* updated Swedish, German and French language files
+* added Chinese Simplified (Taiwan) 
+* updated POT file
+* simplified inclusion of event post type in search results
+* set priority of save_post for events/locations to 1
+* added preemptive validation during wp_insert_post_data which immediately makes it a draft before any saving is done
+* fixed php warning in bookings admin table
+* added per-event tax rate function and corresponding em_event_get_tax_rate filter
+* improved map loading JS and now can be used in ajax searches
+* changed templates/map-global.php - moved coordinates div into container div
+* added js em_maps_loaded and em_ajax_search events
+* updated jQuery - changed instances of .attr('checked') to .prop('checked') or .is(':checked')
+* changed location forms to have consistent id and class structure (id to be depricated)
+* changed CSS for location forms to uses classes not ids
+* added templates/forms/map-container.php
+* changed location form templates to call a seperate/single map template
+* fixed inconsistencies with set_status functions in EM_Events and EM_Location objects
+* added deregistration of em script on BP messages page to avoid autocompleter clashes
 
 = 5.4.4 =
 * updated Spanish, Polish and POT translations

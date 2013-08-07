@@ -16,7 +16,7 @@
 		foreach( $ddm_countries as $country_code => $country_name ):
 		//we're not using esc_ functions here because values are hard-coded within em_get_countries() 
 		?>
-		<option value="<?php echo $country_code; ?>" <?php echo (!empty($_REQUEST['country']) && $_REQUEST['country'] == $country_code) ? 'selected="selected"':''; ?>><?php echo $country_name; ?></option>
+		<option value="<?php echo $country_code; ?>"<?php echo (!empty($_REQUEST['country']) && $_REQUEST['country'] == $country_code) ? ' selected="selected"':''; ?>><?php echo $country_name; ?></option>
 		<?php endforeach; ?>
 	</select>
 </div>

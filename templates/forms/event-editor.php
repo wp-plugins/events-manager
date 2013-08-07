@@ -15,7 +15,7 @@ if( is_object($EM_Event) && !$EM_Event->can_manage('edit_events','edit_others_ev
 }elseif( !is_object($EM_Event) ){
 	$EM_Event = new EM_Event();
 }
-$required = '*';
+$required = apply_filters('em_required_html','<i>*</i>');
 
 echo $EM_Notices;
 //Success notice

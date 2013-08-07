@@ -637,9 +637,6 @@ class EM_Event extends EM_Object{
 					global $EM_Notices;
 					if( !empty($this->get_location()->location_id) ){
 						$EM_Notices->add_error( __('There were some errors saving your location.','dbem').' '.sprintf(__('It will not be displayed on the website listings, to correct this you must <a href="%s">edit your location</a> directly.'),$this->get_location()->output('#_LOCATIONEDITURL')), true);
-					}else{
-						$this->get_location()->set_status(null);
-						$EM_Notices->add_error( __('There were some errors saving your location.','dbem'), true);
 					}
 				}
 				if( !empty($this->location->location_id) ){ //only case we don't use get_location(), since it will fail as location has an id, whereas location_id isn't set in this object
@@ -913,16 +910,17 @@ class EM_Event extends EM_Object{
 			$this->post_status = 'trash'; //set post status in this instance
 		}else{
 			$set_status = $status ? 1:0;
+			$post_status = $set_status ? 'publish':'pending';
 			if($set_post_status){
-				if($this->post_status == 'pending'){
+				if($this->post_status == 'pending' && empty($this->post_name)){
 					$this->post_name = sanitize_title($this->post_title);
 				}
-				$wpdb->update( $wpdb->posts, array( 'post_status' => $this->post_status, 'post_name' => $this->post_name ), array( 'ID' => $this->post_id ) );
-			}	
-			$this->post_status = $set_status ? 'publish':'pending';	
+				$wpdb->update( $wpdb->posts, array( 'post_status' => $post_status, 'post_name' => $this->post_name ), array( 'ID' => $this->post_id ) );
+			}
+			$this->post_status = $post_status;
 		}
 		$this->get_previous_status();
-		$result = $wpdb->query("UPDATE ".EM_EVENTS_TABLE." SET event_status=$set_status, event_slug='{$this->post_name}' WHERE event_id=".$this->event_id);
+		$result = $wpdb->query( $wpdb->prepare("UPDATE ".EM_EVENTS_TABLE." SET event_status=$set_status, event_slug=%s WHERE event_id=%d", array($this->post_name, $this->event_id)) );
 		$this->get_status(); //reload status
 		return apply_filters('em_event_set_status', $result !== false, $status, $this);
 	}
@@ -1041,6 +1039,16 @@ class EM_Event extends EM_Object{
 	 */
 	function get_tickets( $force_reload = false ){
 		return $this->get_bookings($force_reload)->get_tickets();
+	}
+	
+	/*
+	 * Provides the tax rate for this event.
+	 * Currently a site-wide default, but this hook allows easy overriding of tax rates for specific events.
+	 * @uses apply_filters() on 'em_event_get_tax_rate' before returning value
+	 * @uses EM_Object::get_tax_rate()
+	 */
+	function get_tax_rate(){
+		return apply_filters('em_event_get_tax_rate', parent::get_tax_rate(), $this);
 	}
 	
 	/**
@@ -1941,7 +1949,7 @@ class EM_Event extends EM_Object{
 		 		}
 				$tax_slugs_count = count($tags);
 			 	foreach($post_ids as $post_id){
-					if( $cat_slugs_count > 0 && !EM_MS_GLOBAL ){
+					if( $cat_slugs_count > 0 && (!EM_MS_GLOBAL || is_main_site()) ){
 						wp_set_object_terms($post_id, $cat_slugs, EM_TAXONOMY_CATEGORY);
 					}
 					if( $tax_slugs_count > 0 ){

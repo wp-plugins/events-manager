@@ -14,7 +14,6 @@ if( is_object($EM_Location) && !$EM_Location->can_manage('edit_locations','edit_
 }elseif( !is_object($EM_Location) ){
 	$EM_Location = new EM_Location();
 }
-$required = "<i>(".__('required','dbem').")</i>";
 if(!is_admin()) echo $EM_Notices;
 ?>
 <form enctype='multipart/form-data' id='location-form' method='post' action='<?php echo add_query_arg(array('success'=>null)); ?>'>

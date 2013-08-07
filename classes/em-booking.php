@@ -459,7 +459,7 @@ class EM_Booking extends EM_Object{
 	            $this->legacy_tax_rate = true;
 	        }else{
 	            //first time we're applying tax rate
-	            $this->booking_tax_rate = parent::get_tax_rate();
+	            $this->booking_tax_rate = $this->get_event()->get_tax_rate();
 	        }
 	    }
 	    return $this->booking_tax_rate;

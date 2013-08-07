@@ -315,8 +315,16 @@ function bp_em_enqueue_scripts( ){
 	    add_filter('option_dbem_js_limit', create_function('$args','return false;'));
 	    add_filter('option_dbem_css_limit', create_function('$args','return false;'));
 	}
+	
 }
 add_action('wp_enqueue_scripts','bp_em_enqueue_scripts',1);
+
+function bp_em_messages_js_compat() {
+	if(bp_is_messages_compose_screen()){
+		wp_deregister_script( 'events-manager' );
+	}
+}
+add_action( 'wp_print_scripts', 'bp_em_messages_js_compat', 100 );
 
 /**
  * Delete events when you delete a user.

@@ -8,7 +8,8 @@ class EM_Location_Post_Admin{
 		//Meta Boxes
 		add_action('add_meta_boxes', array('EM_Location_Post_Admin','meta_boxes'));
 		//Save/Edit actions
-		add_action('save_post',array('EM_Location_Post_Admin','save_post'));
+		add_filter('wp_insert_post_data',array('EM_Location_Post_Admin','wp_insert_post_data'),100,2); //validate post meta before saving is done
+		add_action('save_post',array('EM_Location_Post_Admin','save_post'),1,1); //set to 1 so metadata gets saved ASAP
 		add_action('before_delete_post',array('EM_Location_Post_Admin','before_delete_post'),10,1);
 		add_action('trashed_post',array('EM_Location_Post_Admin','trashed_post'),10,1);
 		add_action('untrash_post',array('EM_Location_Post_Admin','untrash_post'),10,1);
@@ -43,6 +44,37 @@ class EM_Location_Post_Admin{
 		return $messages;
 	}
 	
+	/**
+	 * Hooks in just before a post is saves and does a quick post meta validation. 
+	 * This prevents the location from being temporarily published and firing hooks that indicate this before we come in on save_post and properly save data.
+	 * @param array $data
+	 * @param array $postarr
+	 * @return array
+	 */
+	public static function wp_insert_post_data( $data, $postarr ){
+		global $wpdb, $EM_Event, $EM_Location, $EM_Notices;
+		$post_type = $data['post_type'];
+		$post_ID = !empty($postarr['ID']) ? $postarr['ID'] : false;
+		$is_post_type = $post_type == EM_POST_TYPE_LOCATION;
+		$saving_status = !in_array($data['post_status'], array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
+		$untrashing = $post_ID && defined('UNTRASHING_'.$post_ID);
+		if( !$untrashing && $is_post_type && $saving_status ){
+			if( !empty($_REQUEST['_emnonce']) && wp_verify_nonce($_REQUEST['_emnonce'], 'edit_location') ){ 
+				//this is only run if we know form data was submitted, hence the nonce
+				$EM_Location = em_get_location();
+				//Handle Errors by making post draft
+				$get_meta = $EM_Location->get_post_meta();
+				$validate_meta = $EM_Location->validate_meta();
+				if( !$get_meta || !$validate_meta ) $data['post_status'] = 'draft';
+			}
+		}
+		return $data;
+	}
+	
+	/**
+	 * Once the post is saved, saves EM meta data
+	 * @param int $post_id
+	 */
 	function save_post($post_id){
 		global $wpdb, $EM_Location, $EM_Notices;
 		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');

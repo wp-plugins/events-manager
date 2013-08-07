@@ -536,7 +536,7 @@ class EM_Bookings_Table{
 				if( $csv ){
 					$cols[] = $EM_Booking->get_event()->event_name;
 				}else{
-					$cols[] = '<a href="'.$EM_Booking->get_event()->get_bookings_url().'">'. $this->events[$EM_Booking->event_id]->name .'</a>';
+					$cols[] = '<a href="'.$EM_Booking->get_event()->get_bookings_url().'">'. $EM_Booking->get_event()->event_name .'</a>';
 				}
 			}elseif($col == 'event_date'){
 				$cols[] = $EM_Booking->get_event()->output('#_EVENTDATES');

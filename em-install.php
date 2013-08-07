@@ -379,9 +379,11 @@ function em_add_options() {
 		'dbem_search_form_towns' => 0,
 		'dbem_search_form_towns_label' => __('All Cities/Towns','dbem'),
 		'dbem_search_form_town_label' => __('City/Town','dbem'),
+		/*
 		//GeoCoding
 		'dbem_geo' => 1,
 		'dbem_geonames_username' => '',
+		*/
 		//Event Form and Anon Submissions
 		'dbem_events_form_editor' => 1,
 		'dbem_events_form_reshow' => 1,
@@ -495,7 +497,7 @@ function em_add_options() {
 		'dbem_no_categories_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Categories','dbem')),
 		//Category Formatting
 		'dbem_category_page_title_format' => '#_CATEGORYNAME',
-		'dbem_category_page_format' => '#_CATEGORYNOTES<h3>Upcoming Events</h3>#_CATEGORYNEXTEVENTS',
+		'dbem_category_page_format' => '#_CATEGORYNOTES<h3>'.__('Upcoming Events','dbem').'</h3>#_CATEGORYNEXTEVENTS',
 		'dbem_category_no_events_message' => '<li>'.__('No events in this category', 'dbem').'</li>',
 		'dbem_category_event_list_item_header_format' => '<ul>',
 		'dbem_category_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
@@ -514,7 +516,7 @@ function em_add_options() {
 		'dbem_no_tags_message' =>  sprintf(__( 'No %s', 'dbem' ),__('Tags','dbem')),
 		//Tag Page Formatting
 		'dbem_tag_page_title_format' => '#_TAGNAME',
-		'dbem_tag_page_format' => '<h3>Upcoming Events</h3>#_TAGNEXTEVENTS',
+		'dbem_tag_page_format' => '<h3>'.__('Upcoming Events','dbem').'</h3>#_TAGNEXTEVENTS',
 		'dbem_tag_no_events_message' => '<li>'.__('No events with this tag', 'dbem').'</li>',
 		'dbem_tag_event_list_item_header_format' => '<ul>',
 		'dbem_tag_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
@@ -540,7 +542,7 @@ function em_add_options() {
 		'dbem_gmap_is_active'=> 1,
 		'dbem_map_default_width'=> '400px', //eventually will use %
 		'dbem_map_default_height'=> '300px',
-		'dbem_location_baloon_format' =>  "<strong>#_LOCATIONNAME</strong><br/>#_LOCATIONADDRESS - #_LOCATIONTOWN<br/><a href='#_LOCATIONPAGEURL'>Details</a>",
+		'dbem_location_baloon_format' => '<strong>#_LOCATIONNAME</strong><br/>#_LOCATIONADDRESS - #_LOCATIONTOWN<br/><a href="#_LOCATIONPAGEURL">'.__('Events', 'dbem').'</a>',
 		'dbem_map_text_format' => '<strong>#_LOCATIONNAME</strong><p>#_LOCATIONADDRESS</p><p>#_LOCATIONTOWN</p>',
 		//Email Config
 		'dbem_email_disable_registration' => 0,

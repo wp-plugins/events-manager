@@ -12,7 +12,7 @@
 			$em_towns = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_town FROM ".EM_LOCATIONS_TABLE." WHERE location_town IS NOT NULL AND location_town != '' AND location_country=%s $cond AND location_status=1 ORDER BY location_town", $_REQUEST['country']), ARRAY_N);
 			foreach($em_towns as $town){
 				?>
-				 <option <?php echo (!empty($_REQUEST['town']) && $_REQUEST['town'] == $town[0]) ? 'selected="selected"':''; ?>><?php echo esc_html($town[0]); ?></option>
+				 <option<?php echo (!empty($_REQUEST['town']) && $_REQUEST['town'] == $town[0]) ? ' selected="selected"':''; ?>><?php echo esc_html($town[0]); ?></option>
 				<?php 
 			}
 		}

@@ -27,7 +27,7 @@ class EM_Ticket extends EM_Object{
 		'ticket_max' => array('name'=>'max','type'=>'%s','null'=>1),
 		'ticket_spaces' => array('name'=>'spaces','type'=>'%s','null'=>1),
 		'ticket_members' => array('name'=>'members','type'=>'%d','null'=>1),
-		'ticket_members_roles' => array('name'=>'members_roles','type'=>'%s','null'=>1),
+		'ticket_members_roles' => array('name'=>'ticket_members_roles','type'=>'%s','null'=>1),
 		'ticket_guests' => array('name'=>'guests','type'=>'%d','null'=>1),
 		'ticket_required' => array('name'=>'required','type'=>'%d','null'=>1)
 	);
@@ -100,7 +100,7 @@ class EM_Ticket extends EM_Object{
 		if($this->validate() && $this->can_manage() ){			
 			//Now we save the ticket
 			$data = $this->to_array(true); //add the true to remove the nulls
-			$data['ticket_members_roles'] = serialize($data['ticket_members_roles']);
+			if( !empty($data['ticket_members_roles']) ) $data['ticket_members_roles'] = serialize($data['ticket_members_roles']);
 			if($this->ticket_id != ''){
 				//since currently wpdb calls don't accept null, let's build the sql ourselves.
 				$set_array = array();
@@ -145,20 +145,20 @@ class EM_Ticket extends EM_Object{
 		    $post = $_REQUEST;
 		}
 		do_action('em_location_get_post_pre', $this, $post);
-		$this->ticket_id = ( !empty($post['ticket_id']) ) ? $post['ticket_id']:'';
-		$this->event_id = ( !empty($post['event_id']) ) ? $post['event_id']:'';
+		$this->ticket_id = ( !empty($post['ticket_id']) && is_numeric($post['ticket_id']) ) ? $post['ticket_id']:'';
+		$this->event_id = ( !empty($post['event_id']) && is_numeric($post['event_id']) ) ? $post['event_id']:'';
 		$this->ticket_name = ( !empty($post['ticket_name']) ) ? wp_kses_data(stripslashes($post['ticket_name'])):'';
 		$this->ticket_description = ( !empty($post['ticket_description']) ) ? wp_kses(stripslashes($post['ticket_description']), $allowedposttags):'';
 		//spaces and limits
-		$this->ticket_min = ( !empty($post['ticket_min']) ) ? $post['ticket_min']:'';
-		$this->ticket_max = ( !empty($post['ticket_max']) ) ? $post['ticket_max']:'';
+		$this->ticket_min = ( !empty($post['ticket_min']) && is_numeric($post['ticket_min']) ) ? $post['ticket_min']:'';
+		$this->ticket_max = ( !empty($post['ticket_max']) && is_numeric($post['ticket_max']) ) ? $post['ticket_max']:'';
 		$this->ticket_spaces = ( !empty($post['ticket_spaces']) && is_numeric($post['ticket_spaces']) ) ? $post['ticket_spaces']:10;
 		//Sort out date/time limits
-		$this->ticket_price = ( !empty($post['ticket_price']) ) ? $post['ticket_price']:'';
-		$this->ticket_start = ( !empty($post['ticket_start']) ) ? $post['ticket_start']:'';
-		$this->ticket_end = ( !empty($post['ticket_end']) ) ? $post['ticket_end']:'';
-		if( !empty($post['ticket_start_time']) ) $this->ticket_start .= ' '. $this->sanitize_time($post['ticket_start_time']);
-		if( !empty($post['ticket_end_time']) ) $this->ticket_end .= ' '. $this->sanitize_time($post['ticket_end_time']);
+		$this->ticket_price = ( !empty($post['ticket_price']) ) ? wp_kses_data($post['ticket_price']):'';
+		$this->ticket_start = ( !empty($post['ticket_start']) ) ? wp_kses_data($post['ticket_start']):'';
+		$this->ticket_end = ( !empty($post['ticket_end']) ) ? wp_kses_data($post['ticket_end']):'';
+		if( !empty($post['ticket_start_time']) && !empty($this->ticket_start) ) $this->ticket_start .= ' '. $this->sanitize_time($post['ticket_start_time']);
+		if( !empty($post['ticket_end_time']) && !empty($this->ticket_end) ) $this->ticket_end .= ' '. $this->sanitize_time($post['ticket_end_time']);
 		$this->start_timestamp = ( !empty($post['ticket_start']) ) ? strtotime($post['ticket_start']):'';
 		$this->end_timestamp = ( !empty($post['ticket_end']) ) ? strtotime($post['ticket_end']):'';
 		//sort out user availability restrictions
@@ -275,7 +275,7 @@ class EM_Ticket extends EM_Object{
 	 * @param boolean $format
 	 */
 	function get_price_with_tax( $format = false ){
-	    $price = round($this->get_price_without_tax() * (1 + get_option('dbem_bookings_tax')/100),2);
+	    $price = round($this->get_price_without_tax() * (1 + $this->get_event()->get_tax_rate()/100),2);
 	    if( $format ) return $price;
 	    return $price; 
 	}

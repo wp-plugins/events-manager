@@ -57,12 +57,15 @@ class EM_Tag_Taxonomy{
 	
 	function the_content($content){
 		global $wp_query, $EM_Tag, $post, $em_tag_id;
-		if( !empty($wp_query->em_tag_id) || ($post->ID == get_option('dbem_tags_page') && !empty($em_tag_id)) ){
+		$is_tags_page = $post->ID == get_option('dbem_tags_page');
+		$tag_flag = (!empty($wp_query->em_tag_id) || !empty($em_tag_id));
+		if( ($is_tags_page && $tag_flag) || (empty($post->ID) && $tag_flag) ){
 			$EM_Tag = empty($wp_query->em_tag_id) ? em_get_tag($em_tag_id):em_get_tag($wp_query->em_tag_id);
 			ob_start();
 			em_locate_template('templates/tag-single.php',true);
 			return ob_get_clean();
 		}
+		return $content;
 	}
 	
 	function parse_query(){

@@ -13,7 +13,8 @@ class EM_Event_Post_Admin{
 			add_action('admin_notices',array('EM_Event_Post_Admin','admin_notices'));
 		}
 		//Save/Edit actions
-		add_action('save_post',array('EM_Event_Post_Admin','save_post'),10,1);
+		add_filter('wp_insert_post_data',array('EM_Event_Post_Admin','wp_insert_post_data'),100,2); //validate post meta before saving is done
+		add_action('save_post',array('EM_Event_Post_Admin','save_post'),1,1); //set to 1 so metadata gets saved ASAP
 		add_action('before_delete_post',array('EM_Event_Post_Admin','before_delete_post'),10,1);
 		add_action('trashed_post',array('EM_Event_Post_Admin','trashed_post'),10,1);
 		add_action('untrash_post',array('EM_Event_Post_Admin','untrash_post'),10,1);
@@ -60,6 +61,26 @@ class EM_Event_Post_Admin{
 			}
 		}
 		return $messages;
+	}
+	
+	public static function wp_insert_post_data( $data, $postarr ){
+		global $wpdb, $EM_Event, $EM_Location, $EM_Notices;
+		$post_type = $data['post_type'];
+		$post_ID = !empty($postarr['ID']) ? $postarr['ID'] : false;
+		$is_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
+		$saving_status = !in_array($data['post_status'], array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
+		$untrashing = $post_ID && defined('UNTRASHING_'.$post_ID);
+		if( !$untrashing && $is_post_type && $saving_status ){
+			if( !empty($_REQUEST['_emnonce']) && wp_verify_nonce($_REQUEST['_emnonce'], 'edit_event') ){ 
+				//this is only run if we know form data was submitted, hence the nonce
+				$EM_Event = em_get_event();
+				//Handle Errors by making post draft
+				$get_meta = $EM_Event->get_post_meta();
+				$validate_meta = $EM_Event->validate_meta();
+				if( !$get_meta || !$validate_meta ) $data['post_status'] = 'draft';
+			}
+		}
+		return $data;
 	}
 	
 	public static function save_post($post_id){

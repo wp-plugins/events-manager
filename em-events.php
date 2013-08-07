@@ -164,7 +164,7 @@ function em_content_page_title($original_content, $id = null) {
 						$event = array_shift($events);
 						$content =  $event->output( get_option('dbem_event_page_title_format') );
 					}
-				}elseif ( EM_MS_GLOBAL && is_object($EM_Event) && get_option('dbem_ms_global_events_links') ) {
+				}elseif ( EM_MS_GLOBAL && is_object($EM_Event) && !get_option('dbem_ms_global_events_links') ) {
 					// single event page
 					$content =  $EM_Event->output ( get_option ( 'dbem_event_page_title_format' ) );
 				}
@@ -206,6 +206,17 @@ function em_content_page_title($original_content, $id = null) {
 function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	global $EM_Location, $post;
 	if( empty($post) ) return $title; //fix for any other plugins calling the_content outside the loop
+	//single event and location page titles get parsed for formats
+	if( is_single() && !empty($post->post_type) ){
+		if( $post->post_type == EM_POST_TYPE_EVENT ){
+			$EM_Event = em_get_event($post);
+			return $EM_Event->output($title);
+		}elseif( $post->post_type == EM_POST_TYPE_LOCATION ){
+			$EM_Location = em_get_location($post);
+			return $EM_Location->output($title);
+		}
+	}
+	//we only rewrite titles on events and locations pages since they are 'special'
 	$pages = array( get_option('dbem_events_page'), get_option( 'dbem_locations_page' ) );
 	if( !empty($post->ID) && !in_array($post->ID,$pages) ){ return $title; }
 	// Determines position of the separator and direction of the breadcrumb
@@ -227,6 +238,7 @@ function em_content_wp_title($title, $sep = '', $seplocation = ''){
 	return $title;
 }
 add_filter ( 'wp_title', 'em_content_wp_title',100,3 ); //override other plugin SEO due to way EM works.
+add_filter( 'wpseo_title', 'em_content_wp_title', 100, 3 ); //WP SEO friendly
 
 /**
  * Makes sure we're in "THE Loop", which is determinied by a flag set when the_post() (start) is first called, and when have_posts() (end) returns false.
@@ -234,7 +246,7 @@ add_filter ( 'wp_title', 'em_content_wp_title',100,3 ); //override other plugin 
  * @return string
  */
 function em_wp_the_title($data, $id = null){
-	global $post, $wp_query, $EM_Location;
+	global $post, $wp_query, $EM_Location, $EM_Event;
 	if( empty($post) ) return $data; //fix for any other plugins calling the_content outside the loop
 	//because we're only editing the main title of the page here, we make sure we're in the main query
 	if( is_main_query() ){
@@ -246,6 +258,14 @@ function em_wp_the_title($data, $id = null){
 		if( is_main_query() && !empty($post->ID) && in_array($post->ID, array($events_page_id, $locations_page_id, $edit_events_page_id, $edit_locations_page_id, $edit_bookings_page_id)) ){
 			if ( $wp_query->in_the_loop ) {
 				return apply_filters('em_wp_the_title', em_content_page_title($data, $id)) ;
+			}
+		}elseif( is_main_query() && is_single() && !empty($post->post_type) ){
+			if( $post->post_type == EM_POST_TYPE_EVENT ){
+				$EM_Event = em_get_event($post);
+				return apply_filters('em_wp_the_title', $EM_Event->output($data)) ;
+			}elseif( $post->post_type == EM_POST_TYPE_LOCATION ){
+				$EM_Location = em_get_location($post);
+				return apply_filters('em_wp_the_title', $EM_Location->output($data)) ;
 			}
 		}
 	}

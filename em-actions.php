@@ -688,6 +688,8 @@ add_action('wp_ajax_search_tags','em_ajax_search_and_pagination');
 add_action('wp_ajax_nopriv_search_cats','em_ajax_search_and_pagination');
 add_action('wp_ajax_search_cats','em_ajax_search_and_pagination');
 
+/*
+Added in dev 5.4.4.2 but may delete in favour of Google autocomplete service
 function em_ajax_geocoding_search(){
 	//GeoNames
 	if( !empty($_REQUEST['q']) && get_option('dbem_geonames_username') ){
@@ -713,4 +715,5 @@ function em_ajax_geocoding_search(){
 }
 add_action('wp_ajax_nopriv_geocoding_search','em_ajax_geocoding_search');
 add_action('wp_ajax_geocoding_search','em_ajax_geocoding_search');
+*/
 ?>

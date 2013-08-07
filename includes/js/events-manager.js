@@ -18,7 +18,7 @@ jQuery(document).ready( function($){
 	} );
 
 	//Events Search
-	$(document).on('click change', '.em-toggle', function(e){
+	$(document).delegate('.em-toggle', 'click change', function(e){
 		e.preventDefault();
 		//show or hide advanced tickets, hidden by default
 		var el = $(this);
@@ -88,25 +88,30 @@ jQuery(document).ready( function($){
 	
 	//in order for this to work, you need the above classes to be present in your templates
 	$(document).delegate('.em-search-form', 'submit', function(e){
-		form = $(this);
+		var form = $(this);
     	if( this.em_search && this.em_search.value == EM.txt_search){ this.em_search.value = ''; }
     	var results_wrapper = form.closest('.em-search-wrapper').find('.em-search-ajax');
     	if( results_wrapper.length == 0 ) results_wrapper = $('.em-search-ajax');
     	if( results_wrapper.length > 0 ){
     		results_wrapper.append('<div class="loading" id="em-loading"></div>');
-    		var submitButton = form.find(':submit');
+    		var submitButton = form.find('.em-search-submit');
     		submitButton.data('buttonText', submitButton.val()).val(EM.txt_searching);
     		var img = submitButton.children('img');
     		if( img.length > 0 ) img.attr('src', img.attr('src').replace('search-mag.png', 'search-loading.gif'));
-			$.ajax( EM.ajaxurl, {
+    		var vars = form.serialize();
+    		$.ajax( EM.ajaxurl, {
 				type : 'POST',
 	    		dataType : 'html',
-	    		data : form.serialize(),
+	    		data : vars,
 			    success : function(responseText){
 			    	submitButton.val(submitButton.data('buttonText'));
 			    	if( img.length > 0 ) img.attr('src', img.attr('src').replace('search-loading.gif', 'search-mag.png'));
 		    		results_wrapper.replaceWith(responseText);
 		        	if( form.find('input[name=em_search]').val() == '' ){ form.find('input[name=em_search]').val(EM.txt_search); }
+		        	//reload results_wrapper
+		        	results_wrapper = form.closest('.em-search-wrapper').find('.em-search-ajax');
+		        	if( results_wrapper.length == 0 ) results_wrapper = $('.em-search-ajax');
+			    	jQuery(document).triggerHandler('em_search_ajax', [vars, results_wrapper, e]); //ajax has loaded new results
 			    }
 	    	});
     		e.preventDefault();
@@ -118,6 +123,7 @@ jQuery(document).ready( function($){
 			var a = $(this);
 			var data = a.closest('.em-pagination').attr('data-em-ajax');
 			var wrapper = a.closest('.em-search-ajax');
+			var wrapper_parent = wrapper.parent();
 		    var qvars = a.attr('href').split('?');
 		    var vars = qvars[1];
 		    //add data-em-ajax att if it exists
@@ -131,6 +137,8 @@ jQuery(document).ready( function($){
 	    		data : vars,
 			    success : function(responseText) {
 			    	wrapper.replaceWith(responseText);
+			    	wrapper = wrapper_parent.find('.em-search-ajax');
+			    	jQuery(document).triggerHandler('em_search_ajax', [vars, wrapper, e]); //ajax has loaded new results
 			    }
 	    	});
 			e.preventDefault();
@@ -166,7 +174,7 @@ jQuery(document).ready( function($){
 				$('#event-rsvp-options').fadeIn();
 			}
 		});
-		if($('input#event-rsvp').attr("checked")) {
+		if($('input#event-rsvp').is(":checked")) {
 			$("div#rsvp-data").fadeIn();
 		} else {
 			$("div#rsvp-data").hide();
@@ -193,7 +201,7 @@ jQuery(document).ready( function($){
 			slot.show().find('.ticket-actions-edit').trigger('click');
 			//refresh datepicker and values
 			slot.find('.em-date-input-loc').datepicker('destroy').removeAttr('id'); //clear all datepickers
-			slot.find('.em-time-range input.em-time-end, .em-time-range input.em-time-start').unbind(['click','focus','change']); //clear all timepickers - consequently, also other click/blur/change events, recreate the further down
+			slot.find('.em-time-input').unbind().each(function(index, el){ this.timePicker = false; }); //clear all timepickers - consequently, also other click/blur/change events, recreate the further down
 			em_setup_datepicker(slot);
 			em_setup_timepicker(slot);
 		    $('html, body').animate({ scrollTop: slot.offset().top - 30 }); //sends user to form
@@ -521,7 +529,7 @@ jQuery(document).ready( function($){
 		$('p#'+ $('select#recurrence-frequency').val() + "-selector").show();
 	}
 	function updateShowHideRecurrence () {
-		if( $('input#event-recurrence').attr("checked")) {
+		if( $('input#event-recurrence').is(":checked")) {
 			$("#event_recurrence_pattern").fadeIn();
 			$("#event-date-explanation").hide();
 			$("#recurrence-dates-explanation").show();
@@ -544,11 +552,11 @@ jQuery(document).ready( function($){
 	
 	$('#em-wrapper input.select-all').change(function(){
 	 	if($(this).is(':checked')){
-			$('input.row-selector').attr('checked', true);
-			$('input.select-all').attr('checked', true);
+			$('input.row-selector').prop('checked', true);
+			$('input.select-all').prop('checked', true);
 	 	}else{
-			$('input.row-selector').attr('checked', false);
-			$('input.select-all').attr('checked', false);
+			$('input.row-selector').prop('checked', false);
+			$('input.select-all').prop('checked', false);
 		}
 	}); 
 	
@@ -563,22 +571,14 @@ jQuery(document).ready( function($){
 	$('select#recurrence-frequency').change(updateIntervalSelectors);
 
 	/* Load any maps */	
-	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
-		if ( typeof google !== 'object' || typeof google.maps !== 'object' ){ 
-			var script = document.createElement("script");
-			script.type = "text/javascript";
-			var proto = (EM.is_ssl) ? 'https:' : 'http:';
-			script.src = proto + '//maps.google.com/maps/api/js?v=3.12&sensor=false&callback=em_maps';
-			document.body.appendChild(script);
-		}else{
-			em_maps();
-		}
+	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 || $('.em-search-geo').length > 0 ){
+		em_maps_load();
 	}
 	
 	//Finally, add autocomplete here
 	//Autocomplete
-	if( jQuery( "#em-location-data input#location-name" ).length > 0 ){
-		jQuery( "#em-location-data input#location-name" ).autocomplete({
+	if( jQuery( "div.em-location-data input#location-name" ).length > 0 ){
+		jQuery( "div.em-location-data input#location-name" ).autocomplete({
 			source: EM.locationajaxurl,
 			minLength: 2,
 			focus: function( event, ui ){
@@ -598,7 +598,7 @@ jQuery(document).ready( function($){
 				}else{
 					jQuery('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
 				}
-				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
+				jQuery('div.em-location-data input, div.em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
 				jQuery('#em-location-reset').show();
 				jQuery('#em-location-search-tip').hide();
 				jQuery(document).triggerHandler('em_locations_autocomplete_selected', [event, ui]);
@@ -609,9 +609,9 @@ jQuery(document).ready( function($){
 			return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
 		};
 		jQuery('#em-location-reset a').click( function(){
-			jQuery('#em-location-data input').css('background-color','#fff').val('').removeAttr('readonly');
-			jQuery('#em-location-data select').css('background-color','#fff');
-			jQuery('#em-location-data option:selected').removeAttr('selected');
+			jQuery('div.em-location-data input').css('background-color','#fff').val('').removeAttr('readonly');
+			jQuery('div.em-location-data select').css('background-color','#fff');
+			jQuery('div.em-location-data option:selected').removeAttr('selected');
 			jQuery('input#location-id').val('');
 			jQuery('#em-location-reset').hide();
 			jQuery('#em-location-search-tip').show();
@@ -625,7 +625,7 @@ jQuery(document).ready( function($){
 			return false;
 		});
 		if( jQuery('input#location-id').val() != '0' && jQuery('input#location-id').val() != '' ){
-			jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
+			jQuery('div.em-location-data input, div.em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
 			jQuery('#em-location-reset').show();
 			jQuery('#em-location-search-tip').hide();
 		}
@@ -759,90 +759,123 @@ var em_ajaxify = function(url){
 /*
  * MAP FUNCTIONS
  */
+var em_maps_loaded = false;
 var maps = {};
 var maps_markers = {};
 var infowindow;
-//Load single maps (each map is treated as a seperate map.
-function em_maps() {
-	//Find all the maps on this page
-	jQuery('.em-location-map').each( function(index){
-		el = jQuery(this);
-		var map_id = el.attr('id').replace('em-location-map-','');
-		em_LatLng = new google.maps.LatLng( jQuery('#em-location-map-coords-'+map_id+' .lat').text(), jQuery('#em-location-map-coords-'+map_id+' .lng').text());
-		maps[map_id] = new google.maps.Map( document.getElementById('em-location-map-'+map_id), {
-		    zoom: 14,
-		    center: em_LatLng,
-		    mapTypeId: google.maps.MapTypeId.ROADMAP,
-		    mapTypeControl: false
-		});
-		maps_markers[map_id] = new google.maps.Marker({
-		    position: em_LatLng,
-		    map: maps[map_id]
-		});
-		infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
-		infowindow.open(maps[map_id],maps_markers[map_id]);
-		maps[map_id].panBy(40,-70);
-		
-		//JS Hook for handling map after instantiation
-		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
-		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, maps_markers[map_id], map_id]);
-		//map resize listener
-		jQuery(window).on('resize', function(e) {
-			google.maps.event.trigger(maps[map_id], "resize");
-			maps[map_id].setCenter(maps_markers[map_id].getPosition());
-			maps[map_id].panBy(40,-70);
-		});
-	});
-	jQuery('.em-locations-map').each( function(index){
-		var el = jQuery(this);
-		var map_id = el.attr('id').replace('em-locations-map-','');
-		var em_data = jQuery.parseJSON( jQuery('#em-locations-map-coords-'+map_id).text() );
-		jQuery.getJSON(document.URL, em_data , function(data){
-			if(data.length > 0){
-				  var myOptions = {
-				    mapTypeId: google.maps.MapTypeId.ROADMAP
-				  };
-				  maps[map_id] = new google.maps.Map(document.getElementById("em-locations-map-"+map_id), myOptions);
-				  maps_markers[map_id] = [];
-				  
-				  var minLatLngArr = [0,0];
-				  var maxLatLngArr = [0,0];
-				  
-				  for (var i = 0; i < data.length; i++) {
-					  if( !(data[i].location_latitude == 0 && data[i].location_longitude == 0) ){
-						var latitude = parseFloat( data[i].location_latitude );
-						var longitude = parseFloat( data[i].location_longitude );
-						var location = new google.maps.LatLng( latitude, longitude );
-						var marker = new google.maps.Marker({
-						    position: location, 
-						    map: maps[map_id]
-						});
-						maps_markers[map_id].push(marker);
-						marker.setTitle(data[i].location_name);
-						var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
-						em_map_infobox(marker, myContent, maps[map_id]);
-						
-						//Get min and max long/lats
-						minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
-						minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
-						maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
-						maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];
-					  }
-				  }
-				  // Zoom in to the bounds
-				  var minLatLng = new google.maps.LatLng(minLatLngArr[0],minLatLngArr[1]);
-				  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
-				  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
-				  maps[map_id].fitBounds(bounds);
-				  
-				//Call a hook if exists
-				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id], data, map_id]);
-			}else{
-				el.children().first().html('No locations found');
-				jQuery(document).triggerHandler('em_maps_locations_hook_not_found', [el]);
+//loads maps script if not already loaded and executes EM maps script
+function em_maps_load(){
+	if( !em_maps_loaded ){
+		if ( jQuery('script#google-maps').length == 0 && ( typeof google !== 'object' || typeof google.maps !== 'object' ) ){ 
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.id = "google-maps";
+			var proto = (EM.is_ssl) ? 'https:' : 'http:';
+			script.src = proto + '//maps.google.com/maps/api/js?v=3.12&sensor=false&libraries=places&callback=em_maps';
+			document.body.appendChild(script);
+		}else if( typeof google === 'object' && typeof google.maps === 'object' && !em_maps_loaded ){
+			if( !em_maps_loaded ){
+				google.maps.event.addListenerOnce(map, 'idle', function(){ if( !em_maps_loaded ) em_maps(); });
 			}
-		});
+		}else if( jQuery('script#google-maps').length > 0 ){
+			jQuery(window).load(function(){ if( !em_maps_loaded ) em_maps(); }); //google isn't loaded so wait for page to load resources
+		}
+	}
+}
+//re-usable function to load global location maps
+function em_maps_load_locations(el){
+	var el = jQuery(el);
+	var map_id = el.attr('id').replace('em-locations-map-','');
+	var em_data = jQuery.parseJSON( el.nextAll('.em-locations-map-coords').first().text() );
+	if( em_data == null ){
+		var em_data = jQuery.parseJSON( jQuery('#em-locations-map-coords-'+map_id).text() );
+	}
+	jQuery.getJSON(document.URL, em_data , function(data){
+		if(data.length > 0){
+			  var myOptions = {
+			    mapTypeId: google.maps.MapTypeId.ROADMAP
+			  };
+			  maps[map_id] = new google.maps.Map(el[0], myOptions);
+			  maps_markers[map_id] = [];
+			  
+			  var minLatLngArr = [0,0];
+			  var maxLatLngArr = [0,0];
+			  
+			  for (var i = 0; i < data.length; i++) {
+				  if( !(data[i].location_latitude == 0 && data[i].location_longitude == 0) ){
+					var latitude = parseFloat( data[i].location_latitude );
+					var longitude = parseFloat( data[i].location_longitude );
+					var location = new google.maps.LatLng( latitude, longitude );
+					var marker = new google.maps.Marker({
+					    position: location, 
+					    map: maps[map_id]
+					});
+					maps_markers[map_id].push(marker);
+					marker.setTitle(data[i].location_name);
+					var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
+					em_map_infobox(marker, myContent, maps[map_id]);
+					
+					//Get min and max long/lats
+					minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
+					minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
+					maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
+					maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];
+				  }
+			  }
+			  // Zoom in to the bounds
+			  var minLatLng = new google.maps.LatLng(minLatLngArr[0],minLatLngArr[1]);
+			  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
+			  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
+			  maps[map_id].fitBounds(bounds);
+			  
+			//Call a hook if exists
+			jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id], data, map_id]);
+		}else{
+			el.children().first().html('No locations found');
+			jQuery(document).triggerHandler('em_maps_locations_hook_not_found', [el]);
+		}
 	});
+}
+function em_maps_load_location(el){
+	el = jQuery(el);
+	var map_id = el.attr('id').replace('em-location-map-','');
+	em_LatLng = new google.maps.LatLng( jQuery('#em-location-map-coords-'+map_id+' .lat').text(), jQuery('#em-location-map-coords-'+map_id+' .lng').text());
+	maps[map_id] = new google.maps.Map( document.getElementById('em-location-map-'+map_id), {
+	    zoom: 14,
+	    center: em_LatLng,
+	    mapTypeId: google.maps.MapTypeId.ROADMAP,
+	    mapTypeControl: false
+	});
+	maps_markers[map_id] = new google.maps.Marker({
+	    position: em_LatLng,
+	    map: maps[map_id]
+	});
+	infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
+	infowindow.open(maps[map_id],maps_markers[map_id]);
+	maps[map_id].panBy(40,-70);
+	
+	//JS Hook for handling map after instantiation
+	//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
+	jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, maps_markers[map_id], map_id]);
+	//map resize listener
+	jQuery(window).on('resize', function(e) {
+		google.maps.event.trigger(maps[map_id], "resize");
+		maps[map_id].setCenter(maps_markers[map_id].getPosition());
+		maps[map_id].panBy(40,-70);
+	});
+}
+jQuery(document).bind('em_search_ajax', function(e, vars, wrapper){
+	if( em_maps_loaded ){
+		wrapper.find('.em-location-map').each( function(index, el){ em_maps_load_location(el); } );
+		wrapper.find('.em-locations-map').each( function(index, el){ em_maps_load_locations(el); });
+	}
+});
+//Load single maps (each map is treated as a seperate map).
+function em_maps() {
+	//Find all the maps on this page and load them
+	jQuery('.em-location-map').each( function(index, el){ em_maps_load_location(el); } );	
+	jQuery('.em-locations-map').each( function(index, el){ em_maps_load_locations(el); } );
+	
 	//Location stuff - only needed if inputs for location exist
 	if( jQuery('select#location-select-id, input#location-address').length > 0 ){
 		var map, marker;
@@ -869,6 +902,7 @@ function em_maps() {
 					'</div>'
 				);
 				infoWindow.open(map, marker);
+				jQuery(document).triggerHandler('em_maps_location_hook', [map, infowindow, marker, 0]);
 			} else {
     			jQuery('#em-map').hide();
     			jQuery('#em-map-404').show();
@@ -972,6 +1006,8 @@ function em_maps() {
 			map.panBy(40,-55);
 		});
 	}
+	em_maps_loaded = true; //maps have been loaded
+	jQuery(document).triggerHandler('em_maps_loaded');
 }
   
 function em_map_infobox(marker, message, map) {

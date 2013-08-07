@@ -18,31 +18,31 @@ global $EM_Event, $post, $allowedposttags, $EM_Ticket, $col_count;
 	}
 	if( get_option('dbem_bookings_tickets_single') && count($EM_Tickets->tickets) == 1 ){
 		?>
-		<h4><?php _e('Ticket Options','dbem'); ?></h4>
+		<h4><?php esc_html_e('Ticket Options','dbem'); ?></h4>
 		<?php
 		$col_count = 1;	
 		$EM_Ticket = $EM_Tickets->get_first();				
 		include( em_locate_template('forms/ticket-form.php') ); //in future we'll be accessing forms/event/bookings-ticket-form.php directly
 	}else{
 		?>
-		<h4><?php _e('Tickets','dbem'); ?></h4>
-		<p><em><?php _e('You can have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?> <?php _e('Basic HTML is allowed in ticket labels and descriptions.','dbem'); ?></em></p>					
+		<h4><?php esc_html_e('Tickets','dbem'); ?></h4>
+		<p><em><?php esc_html_e('You can have single or multiple tickets, where certain tickets become availalble under certain conditions, e.g. early bookings, group discounts, maximum bookings per ticket, etc.', 'dbem'); ?> <?php esc_html_e('Basic HTML is allowed in ticket labels and descriptions.','dbem'); ?></em></p>					
 		<table class="form-table">
 			<thead>
 				<tr valign="top">
-					<th colspan="2"><?php _e('Ticket Name','dbem'); ?></th>
-					<th><?php _e('Price','dbem'); ?></th>
-					<th><?php _e('Min/Max','dbem'); ?></th>
-					<th><?php _e('Start/End','dbem'); ?></th>
-					<th><?php _e('Avail. Spaces','dbem'); ?></th>
-					<th><?php _e('Booked Spaces','dbem'); ?></th>
+					<th colspan="2"><?php esc_html_e('Ticket Name','dbem'); ?></th>
+					<th><?php esc_html_e('Price','dbem'); ?></th>
+					<th><?php esc_html_e('Min/Max','dbem'); ?></th>
+					<th><?php esc_html_e('Start/End','dbem'); ?></th>
+					<th><?php esc_html_e('Avail. Spaces','dbem'); ?></th>
+					<th><?php esc_html_e('Booked Spaces','dbem'); ?></th>
 					<th>&nbsp;</th>
 				</tr>
 			</thead>    
 			<tfoot>
 				<tr valign="top">
 					<td colspan="8">
-						<a href="#" id="em-tickets-add"><?php _e('Add new ticket','dbem'); ?></a>
+						<a href="#" id="em-tickets-add"><?php esc_html_e('Add new ticket','dbem'); ?></a>
 					</td>
 				</tr>
 			</tfoot>
@@ -61,22 +61,22 @@ global $EM_Event, $post, $allowedposttags, $EM_Ticket, $col_count;
 								<span class="ticket_name"><?php if($EM_Ticket->ticket_members) echo '* ';?><?php echo wp_kses_data($EM_Ticket->ticket_name); ?></span>
 								<div class="ticket_description"><?php echo wp_kses($EM_Ticket->ticket_description,$allowedposttags); ?></div>
 								<div class="ticket-actions">
-									<a href="#" class="ticket-actions-edit"><?php _e('Edit','dbem'); ?></a> 
+									<a href="#" class="ticket-actions-edit"><?php esc_html_e('Edit','dbem'); ?></a> 
 									<?php if( count($EM_Ticket->get_bookings()->bookings) == 0 ): ?>
-									| <a href="<?php bloginfo('wpurl'); ?>/wp-load.php" class="ticket-actions-delete"><?php _e('Delete','dbem'); ?></a>
+									| <a href="<?php bloginfo('wpurl'); ?>/wp-load.php" class="ticket-actions-delete"><?php esc_html_e('Delete','dbem'); ?></a>
 									<?php else: ?>
-									| <a href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&ticket_id=<?php echo $EM_Ticket->ticket_id ?>"><?php _e('View Bookings','dbem'); ?></a>
+									| <a href="<?php echo EM_ADMIN_URL; ?>&amp;page=events-manager-bookings&ticket_id=<?php echo $EM_Ticket->ticket_id ?>"><?php esc_html_e('View Bookings','dbem'); ?></a>
 									<?php endif; ?>
 								</div>
 							</td>
 							<td class="ticket-price">
-								<span class="ticket_price"><?php echo ($EM_Ticket->ticket_price) ? $EM_Ticket->ticket_price : __('Free','dbem'); ?></span>
+								<span class="ticket_price"><?php echo ($EM_Ticket->ticket_price) ? esc_html($EM_Ticket->ticket_price) : esc_html__('Free','dbem'); ?></span>
 							</td>
 							<td class="ticket-limit">
 								<span class="ticket_min">
-									<?php  echo ( !empty($EM_Ticket->ticket_min) ) ? $EM_Ticket->ticket_min:'-'; ?>
+									<?php  echo ( !empty($EM_Ticket->ticket_min) ) ? esc_html($EM_Ticket->ticket_min):'-'; ?>
 								</span> / 
-								<span class="ticket_max"><?php echo ( !empty($EM_Ticket->ticket_max) ) ? $EM_Ticket->ticket_max:'-'; ?></span>
+								<span class="ticket_max"><?php echo ( !empty($EM_Ticket->ticket_max) ) ? esc_html($EM_Ticket->ticket_max):'-'; ?></span>
 							</td>
 							<td class="ticket-time">
 								<span class="ticket_start"><?php echo ( !empty($EM_Ticket->ticket_start) ) ? date(get_option('dbem_date_format'), $EM_Ticket->start_timestamp):''; ?></span>
@@ -98,7 +98,7 @@ global $EM_Event, $post, $allowedposttags, $EM_Ticket, $col_count;
 							<td colspan="<?php echo apply_filters('em_event_edit_ticket_td_colspan', 7); ?>">
 								<?php include( em_locate_template('forms/event/bookings-ticket-form.php')); ?>
 								<div class="em-ticket-form-actions">
-								<button type="button" class="ticket-actions-edited"><?php _e('Close Ticket Editor','dbem')?></button>
+								<button type="button" class="ticket-actions-edited"><?php esc_html_e('Close Ticket Editor','dbem')?></button>
 								</div>
 							</td>
 						</tr>
@@ -115,27 +115,27 @@ global $EM_Event, $post, $allowedposttags, $EM_Ticket, $col_count;
 	</div>
 	<div id="em-booking-options">
 	<?php if( !get_option('dbem_bookings_tickets_single') || count($EM_Ticket->get_event()->get_tickets()->tickets) > 1 ): ?>
-	<h4><?php _e('Event Options','dbem'); ?></h4>
+	<h4><?php esc_html_e('Event Options','dbem'); ?></h4>
 	<p>
-		<label><?php _e('Total Spaces','dbem'); ?></label>
+		<label><?php esc_html_e('Total Spaces','dbem'); ?></label>
 		<input type="text" name="event_spaces" value="<?php if( $EM_Event->event_spaces > 0 ){ echo $EM_Event->event_spaces; } ?>" /><br />
-		<em><?php _e('Individual tickets with remaining spaces will not be available if total booking spaces reach this limit. Leave blank for no limit.','dbem'); ?></em>
+		<em><?php esc_html_e('Individual tickets with remaining spaces will not be available if total booking spaces reach this limit. Leave blank for no limit.','dbem'); ?></em>
 	</p>
 	<p>
-		<label><?php _e('Maximum Spaces Per Booking','dbem'); ?></label>
+		<label><?php esc_html_e('Maximum Spaces Per Booking','dbem'); ?></label>
 		<input type="text" name="event_rsvp_spaces" value="<?php if( $EM_Event->event_rsvp_spaces > 0 ){ echo $EM_Event->event_rsvp_spaces; } ?>" /><br />
-		<em><?php _e('If set, the total number of spaces for a single booking to this event cannot exceed this amount.','dbem'); ?><?php _e('Leave blank for no limit.','dbem'); ?></em>
+		<em><?php esc_html_e('If set, the total number of spaces for a single booking to this event cannot exceed this amount.','dbem'); ?><?php esc_html_e('Leave blank for no limit.','dbem'); ?></em>
 	</p>
 	<?php if( !$EM_Event->is_recurring() ): ?>
 	<p>
-		<label><?php _e('Booking Cut-Off Date','dbem'); ?></label>
+		<label><?php esc_html_e('Booking Cut-Off Date','dbem'); ?></label>
 		<span class="em-date-single">
 			<input id="em-bookings-date-loc" class="em-date-input-loc" type="text" />
 			<input id="em-bookings-date" class="em-date-input" type="hidden" name="event_rsvp_date" value="<?php echo $EM_Event->event_rsvp_date; ?>" />
 		</span>
 		<input type="text" name="event_rsvp_time" class="em-time-input" maxlength="8" size="8" value="<?php echo date( em_get_hour_format(), $EM_Event->rsvp_end ); ?>">
 		<br />
-		<em><?php _e('This is the definite date after which bookings will be closed for this event, regardless of individual ticket settings above. Default value will be the event start date.','dbem'); ?></em>
+		<em><?php esc_html_e('This is the definite date after which bookings will be closed for this event, regardless of individual ticket settings above. Default value will be the event start date.','dbem'); ?></em>
 	</p>
 	<?php endif; ?>
 	<?php endif; ?>

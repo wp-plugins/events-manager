@@ -23,8 +23,11 @@
 			if( !empty($args['search_geo']) ) em_locate_template('templates/search/geo.php',true);
 			?>
 			<?php if( !empty($args['css']) ) : //show the button here if we're using the default styling, if you still want to use this and use custom CSS, then you have to override our rules ?>
-			<button type="submit" value="<?php echo !empty($args['search_button']) ? esc_attr($args['search_button']) : esc_attr_e('Search','dbem'); ?>" class="em-search-submit loading">
+			<button type="submit" class="em-search-submit loading">
+				<?php //before you ask, this hack is necessary thanks to stupid IE7 ?>
+				<!--[if IE 7]><span><![endif]-->
 				<img src="<?php echo EM_DIR_URI; ?>includes/images/search-mag.png" />
+				<!--[if IE 7]></span><![endif]-->
 			</button>
 			<?php endif; ?>
 		</div>

@@ -10,7 +10,7 @@
 			$em_states = $wpdb->get_results($wpdb->prepare("SELECT DISTINCT location_region FROM ".EM_LOCATIONS_TABLE." WHERE location_region IS NOT NULL AND location_region != '' AND location_country=%s AND location_status=1 ORDER BY location_region", $_REQUEST['country']), ARRAY_N);
 			foreach($em_states as $state){
 				?>
-				 <option <?php echo (!empty($_REQUEST['region']) && $_REQUEST['region'] == $state[0]) ? 'selected="selected"':''; ?>><?php echo esc_html($state[0]); ?></option>
+				 <option<?php echo (!empty($_REQUEST['region']) && $_REQUEST['region'] == $state[0]) ? ' selected="selected"':''; ?>><?php echo esc_html($state[0]); ?></option>
 				<?php 
 			}
 		}

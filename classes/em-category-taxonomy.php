@@ -57,7 +57,9 @@ class EM_Category_Taxonomy{
 	
 	function the_content($content){
 		global $wp_query, $EM_Category, $post, $em_category_id;
-		if( !empty($wp_query->em_category_id) || ($post->ID == get_option('dbem_categories_page') && !empty($em_category_id)) ){
+		$is_categories_page = $post->ID == get_option('dbem_categories_page');
+		$category_flag = (!empty($wp_query->em_category_id) || !empty($em_category_id));
+		if( ($is_categories_page && $category_flag) || (empty($post->ID) && $category_flag) ){
 			$EM_Category = empty($wp_query->em_category_id) ? em_get_category($em_category_id):em_get_category($wp_query->em_category_id);
 			ob_start();
 			em_locate_template('templates/category-single.php',true);

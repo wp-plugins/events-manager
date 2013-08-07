@@ -13,7 +13,7 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 	.em-search label { display:none; }
 	.em-search .hidden { display:none !important; }
 	/* Custom Search CSS */
-		div.css-search { width:100%; margin-bottom:20px; }	
+		div.css-search { margin-bottom:20px; }	
 		div.em-search.css-search label { display:inline; } 
 		div.em-search.css-search div { display:block; }
 		div.css-search input, div.css-search select, div.css-search option, div.css-search div, div.css-search span, div.css-search button { 
@@ -25,39 +25,48 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 			div.css-search.has-advanced div.em-search-main { padding-bottom:8px; border-bottom:1px solid #dedede; }
 			div.css-search div.em-search-main div { display:inline; }
 			div.css-search div.em-search-field { padding:5px 0px; }
-			div.css-search input.em-search-text, div.css-search input.em-search-geo { width:90%; font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
-			div.css-search.has-search-geo.has-search-term input.em-search-text, div.css-search.has-search-geo.has-search-term input.em-search-geo { width:40%; }
+			div.css-search input.em-search-text, div.css-search input.em-search-geo { width:90%; font-size:16px; line-height:16px; padding:8px; border:none; outline:none !important; color:#666; text-overflow: ellipsis; }
 			div.css-search div.em-search-geo { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-geo.png) 0px 3px no-repeat; }
-			div.css-search div.em-search-text { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-mag-ico.png) 0px 4px no-repeat; }						
+			div.css-search div.em-search-text { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-mag-ico.png) 0px 4px no-repeat; }	
+			/* Geo field specifics */
+				div.css-search input.em-search-geo::-webkit-input-placeholder { /* WebKit browsers */ font-size:16px; line-height:16px; padding:3px 0px; border:none; outline:none; color:#666; }
+				div.css-search input.em-search-geo:-moz-placeholder { /* Mozilla Firefox 4 to 18 */ font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
+				div.css-search input.em-search-geo::-moz-placeholder { /* Mozilla Firefox 19+ */ font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
+				div.css-search input.em-search-geo:-ms-input-placeholder { /* Internet Explorer 10+ */ font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
+				div.css-search.has-search-geo.has-search-term input.em-search-text, div.css-search.has-search-geo.has-search-term input.em-search-geo { width:40%; }
+				.pac-container .pac-item { padding:4px 4px !important; }
 			/* Main Search Button */
-			div.css-search div.em-search-main button.em-search-submit {
-				position:absolute;
-				top: 5px; right: 5px;
-				-moz-box-shadow: 0px 0px 0px 0px #ffffff;
-				-webkit-box-shadow: 0px 0px 0px 0px #ffffff;
-				box-shadow: 0px 0px 0px 0px #ffffff;
-				background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #b7d282), color-stop(1, #8eb56d) );
-				background:-moz-linear-gradient( center top, #b7d282 5%, #8eb56d 100% );
-				filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#b7d282', endColorstr='#8eb56d');
-				background-color:#b7d282;
-				-moz-border-radius:6px;
-				-webkit-border-radius:6px;
-				border-radius:6px;
-				border:1px solid #dcdcdc;
-				display:inline-block;
-				color:#ffffff;
-				font-weight:bold;
-				padding:8px 10px;
-				text-decoration:none;
-				text-shadow:1px 1px 0px #c7c5c7;
-			}
-			div.css-search div.em-search-main button.em-search-submit:hover {
-				background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C4DB99), color-stop(1, #A4C48A) );
-				background:-moz-linear-gradient( center top, #C4DB99 5%, #A4C48A 100% );
-				filter:progid:DXImageTransform.Microsoft.gradient(startColorstr='#C4DB99', endColorstr='#8eb56d');
-				background-color:#A4C48A;
-			}
-			div.css-search div.em-search-main button.em-search-submit img { border:none; padding:0; margin:0; box-shadow:none; border-radius:0; }				
+				div.css-search div.em-search-main .em-search-submit {
+					position:absolute;
+					top: 5px; right: 5px;
+					-moz-box-shadow: 0px 0px 0px 0px #ffffff;
+					-webkit-box-shadow: 0px 0px 0px 0px #ffffff;
+					box-shadow: 0px 0px 0px 0px #ffffff;
+					background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #b7d282), color-stop(1, #8eb56d) );
+					background:-moz-linear-gradient( center top, #b7d282 5%, #8eb56d 100% );
+					background-color:#b7d282;
+					-moz-border-radius:6px;
+					-webkit-border-radius:6px;
+					border-radius:6px;
+					border:1px solid #dcdcdc;
+					display:inline-block;
+					color:#ffffff;
+					font-weight:bold;
+					padding:8px 10px;
+					text-decoration:none;
+					text-shadow:1px 1px 0px #c7c5c7;
+					line-height:16px;
+				}
+				div.css-search div.em-search-main .em-search-submit:hover {
+					background:-webkit-gradient( linear, left top, left bottom, color-stop(0.05, #C4DB99), color-stop(1, #A4C48A) );
+					background:-moz-linear-gradient( center top, #C4DB99 5%, #A4C48A 100% );
+					background:-ms-linear-gradient(top, #C4DB99, #A4C48A);
+					background:-o-linear-gradient(top, #C4DB99, #A4C48A);
+					background:linear-gradient(top, #C4DB99, #A4C48A);
+					background-color:#A4C48A;
+				}
+				div.css-search div.em-search-main .em-search-submit img { border:none; padding:0; margin:0; box-shadow:none; border-radius:0; background:none; }
+				/* IE7 Hack */ div.css-search div.em-search-main button.em-search-submit span { display:block; width:16px; height:16px; background:url('../images/search-mag.png') 0px 0px no-repeat; }			
 		/* Advanced Search */
 			div.css-search div.em-search-location, div.em-search-location-meta { margin:0px; padding: 0px; }
 			div.css-search div.em-search-advanced, div.css-search div.em-search-options { padding:5px 8px; }
@@ -155,14 +164,13 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 /* Printable stuff */
 	body#printable { font-family: Gill Sans, Helvetica, Arial, sans-serif; text-align: center; }  
 	body#printable #container { margin: 0 auto; width: 780px; text-align: left; }
-	table#bookings-table { width: 600px; border-spacing: 0px; }
-	table#bookings-table td { padding: 5px 0; }
-	table#bookings-table td.spaces-number { text-align: right; padding-right: 20px; }
-	table#bookings-table th { text-align: left; margin-left: 5px; }   
-	table#bookings-table tr#booked-spaces td{ border-top: 2px solid #999; }
-	table#bookings-table td.total-label { text-align: right; }                                  
-	table#bookings-table tr#booked-spaces td.spaces-number, table#bookings-table tr#available-spaces td.spaces-number { font-weight: bold; }
-	table#em-location-data th { text-align: right; width: 50px; }
+	body#printable table#bookings-table { width: 600px; border-spacing: 0px; }
+	body#printable table#bookings-table td { padding: 5px 0; }
+	body#printable table#bookings-table td.spaces-number { text-align: right; padding-right: 20px; }
+	body#printable table#bookings-table th { text-align: left; margin-left: 5px; }   
+	body#printable table#bookings-table tr#booked-spaces td{ border-top: 2px solid #999; }
+	body#printable table#bookings-table td.total-label { text-align: right; }                                  
+	body#printable table#bookings-table tr#booked-spaces td.spaces-number, table#bookings-table tr#available-spaces td.spaces-number { font-weight: bold; }
 
 /* Calendar Styles */
 	table.em-calendar td { padding: 2px 4px; text-align: center; }

@@ -381,6 +381,7 @@ function em_admin_options_page() {
 
 				<?php do_action('em_options_page_footer'); ?>
 				
+				<?php /* 
 				<div  class="postbox" id="em-opt-geo" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Geo APIs', 'dbem' ); ?> <em>(Beta)</em></span></h3>
 				<div class="inside">
@@ -401,6 +402,7 @@ function em_admin_options_page() {
 					<table class="form-table"><?php echo $save_button; ?></table>
 				</div> <!-- . inside --> 
 				</div> <!-- .postbox -->
+				*/ ?>
 				
 				<div  class="postbox" id="em-opt-performance-optimization" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Performance Optimization', 'dbem' ); ?> (<?php _e('Advanced','dbem'); ?>)</span></h3>
@@ -1060,7 +1062,7 @@ function em_admin_options_page() {
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php echo sprintf(__('%s Pages','dbem'),__('Other','dbem')); ?></span></h3>
 				<div class="inside">
 	            	<table class="form-table">
-	            	<tr><td colspan="2"><?php _e('These pages allow you to provide an event management interface outside the admin area on whatever page you want on your website. Bear in mind that this is overriden by BuddyPress if activated.'); ?></td></tr>
+	            	<tr><td colspan="2"><?php _e('These pages allow you to provide an event management interface outside the admin area on whatever page you want on your website. Bear in mind that this is overriden by BuddyPress if activated.', 'dbem'); ?></td></tr>
 					<?php
 					$other_pages_tip = 'Using the %s shortcode, you can allow users to manage %s outside the admin area.';
 					?>
@@ -1174,8 +1176,8 @@ function em_admin_options_page() {
 						?>
 					 	<tr><td><strong><?php echo sprintf(__('Single %s Page','dbem'),__('Event','dbem')); ?></strong></td></tr>
 					 	<?php
-						if( EM_MS_GLOBAL && get_option('dbem_ms_global_events_links') ){
-						 	em_options_input_text ( __( 'Single event page title format', 'dbem' ), 'dbem_event_page_title_format', __( 'The format of a single event page title.', 'dbem' ).$events_placeholder_tip );
+						if( EM_MS_GLOBAL && !get_option('dbem_ms_global_events_links') ){
+						 	em_options_input_text ( __( 'Single event page title format', 'dbem' ), 'dbem_event_page_title_format', __( 'The format of a single event page title.', 'dbem' ).' '.__( 'This is only used when showing events from other blogs.', 'dbem' ).$events_placeholder_tip );
 						}
 						em_options_textarea ( __( 'Default single event format', 'dbem' ), 'dbem_single_event_format', __( 'The format of a single event page.', 'dbem' ).$events_placeholder_tip );
 						echo $save_button;
@@ -1537,7 +1539,7 @@ function em_admin_options_page() {
 					<table class='form-table'> 
 						<?php 
 						em_options_radio_binary ( __( 'Allow guest bookings?', 'dbem' ), 'dbem_bookings_anonymous', __( 'If enabled, guest visitors can supply an email address and a user account will automatically be created for them along with their booking. They will be also be able to log back in with that newly created account.', 'dbem' ) );
-						em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ) );
+						em_options_radio_binary ( __( 'Approval Required?', 'dbem' ), 'dbem_bookings_approval', __( 'Bookings will not be confirmed until the event administrator approves it.', 'dbem' ).' '.__( 'This setting is overriden by individual payment gateways.', 'dbem' ));
 						em_options_radio_binary ( __( 'Reserved unconfirmed spaces?', 'dbem' ), 'dbem_bookings_approval_reserved', __( 'By default, event spaces become unavailable once there are enough CONFIRMED bookings. To reserve spaces even if unnapproved, choose yes.', 'dbem' ) );
 						em_options_radio_binary ( __( 'Can users cancel their booking?', 'dbem' ), 'dbem_bookings_user_cancellation', __( 'If enabled, users can cancel their bookings themselves from their bookings page.', 'dbem' ) );
 						em_options_radio_binary ( __( 'Allow overbooking when approving?', 'dbem' ), 'dbem_bookings_approval_overbooking', __( 'If you get a lot of pending bookings and you decide to allow more bookings than spaces allow, setting this to yes will allow you to override the event space limit when manually approving.', 'dbem' ) );
