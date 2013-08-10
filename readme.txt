@@ -3,7 +3,7 @@ Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
-Tested up to: 3.5.1
+Tested up to: 3.6
 Stable tag: 5.4.4
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
@@ -98,6 +98,85 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.4.4.3 (dev version) =
+* fixed different versions of http/https maps js libraries being called
+* performance improvements calendar queries and generation, speeding up calendars with many events per month
+* added Reunion to countries list
+* added more meaningful text to settings page to clarify booking pages
+* added link to profile page to avoid confusion with admin test emails
+* fixed php warning in my bookings page bottom pagination
+* changed booking ticket editor forms and removed the jQuery UI Dialog in favour of inline forms
+* added guest-only ticket option 
+* added member role restriction options to tickets 
+* changed jQuery datepicker to have a -100 +10 year range
+* added numeric check to ticket spaces during get_post
+* added public class flags for event/location/booking admin and my bookings pages,
+* consolidated generation of all "my bookings" pages to go via em-template-tags.php functions
+* removed my bookings page being generated via events page if no page defined (you should now define a page or use the shortcode)
+* changed all listing shortcdodes and template tags to use relevant list template if no specific format supplied
+* improved event list/search ajax JS
+* added AJAX capabilities to search forms and event/location/category/tag lists with pagination
+* added data attribute support for pagination links when AJAX is enabled
+* revamped the search form styling and structure
+* added location page search form and shortcode/template tags
+* fixed pagination bug when searching events/locations with text
+* fixed EM_Mailer fatal error bug
+* fixed strpos() warning on em_get_locations
+* improved efficiency of grouped events list
+* added bookings_open and bookings_closed conditional event placeholders
+* added CSS flags to templates for future-stying possibilities to event/location pages and lists, tag lists, category lists, booking forms and front-end admin areas
+* changed search form and pagination AJAX php to use wp_ajax_ actions
+* moved pagination functionality into extendable EM_Object::get_pagination_links for use in *::output() functions
+* moved EM_Events::get_post_search() into EM_Object::get_post_search() to allow sharing with other objects using search forms 
+* moved display code for em_get_events_list_grouped function contents into EM_Events::output_grouped()
+* changed EM_Events and EM_Locations into 'static'-only classes (function scoping will follow eventually)
+* changed scopes of EM_Object::get_post_search and EM_Object::get_pagination_links to static
+* added near, near_unit and near_distance search arguments for coordinate-based searches
+* added geographical searching and Google places autocomplete service
+* added more search form options to settings page
+* removed page number and list number definitions from within list templates
+* modified various templates, detailed below:
+* changed booking ticket template by unifying forms/ticket-form(s).php into forms/event/bookings-ticket-form.php 
+* changed forms/bookingform/tickets-list.php to account for displaying guest and role-restricted tickets
+* removed inline JS from forms/event/bookings.php template
+* removed inclusion of forms/tickets-form.php from forms/event-editor.php
+* added inline js from forms/event-editor.php to JS file
+* moved em-tickets-form div ID to cover just tickets and event-rsvp-options covers the rest, 
+* unbolded labels and made headings h4 in bookings section of forms/event/bookings.php
+* changed h4 to h3 in event-editor.php and location-editor.php templates
+* removed search form inclusion on templates/events-list.php and is now included seperately
+* added wrapper class to templates/events-list.php layout for future styling
+* moved grouped events out of events-list.php into events-list-grouped.php template
+* fixed/added sanitization to EM_Ticket::get_post to prevent potential xss,
+* fixed/added escaping to booking form template
+* fixed recurrences not updating category in main site of MS Global installs
+* fixed overriding the_content for valid items in a loop when on tag and category pages
+* removed global $EM_Location from locations admin list template
+* fixed the em_maps_location_hook js hook not being triggered event/location admin pages
+* fixed php warning when creating events with no location info
+* fixed some untranslated text
+* added parsing of placeholders on single event and location page titles (useful in SEO plugins)
+* lowered priority of wp_footer js to 20 (from 10)
+* moved WP FullCalendar integration code into EM (and loaded only if needed)
+* updated Swedish, German and French language files
+* added Chinese Simplified (Taiwan) 
+* updated POT file
+* simplified inclusion of event post type in search results
+* set priority of save_post for events/locations to 1
+* added preemptive validation during wp_insert_post_data which immediately makes it a draft before any saving is done
+* fixed php warning in bookings admin table
+* added per-event tax rate function and corresponding em_event_get_tax_rate filter
+* improved map loading JS and now can be used in ajax searches
+* changed templates/map-global.php - moved coordinates div into container div
+* added js em_maps_loaded and em_ajax_search events
+* updated jQuery - changed instances of .attr('checked') to .prop('checked') or .is(':checked')
+* changed location forms to have consistent id and class structure (id to be depricated)
+* changed CSS for location forms to uses classes not ids
+* added templates/forms/map-container.php
+* changed location form templates to call a seperate/single map template
+* fixed inconsistencies with set_status functions in EM_Events and EM_Location objects
+* added deregistration of em script on BP messages page to avoid autocompleter clashes
+
 = 5.4.4 =
 * updated Spanish, Polish and POT translations
 * fixed search attribute owner so 'me' will show no events to guest users
