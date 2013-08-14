@@ -231,7 +231,7 @@ class EM_Booking extends EM_Object{
 		$conds = array(); 
 		foreach($search as $key => $value) {
 			if( array_key_exists($key, $this->fields) ){
-				$value = $wpdb->escape($value);
+				$value = esc_sql($value);
 				$conds[] = "`$key`='$value'";
 			} 
 		}

@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 5.4.4
+Stable tag: 5.5
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,9 +98,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.4.4.3 (dev version) =
+= 5.5 =
 * fixed different versions of http/https maps js libraries being called
-* performance improvements calendar queries and generation, speeding up calendars with many events per month
+* added performance improvements to calendar queries and generation, speeding up calendars with many events per month
 * added Reunion to countries list
 * added more meaningful text to settings page to clarify booking pages
 * added link to profile page to avoid confusion with admin test emails
@@ -111,7 +111,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * changed jQuery datepicker to have a -100 +10 year range
 * added numeric check to ticket spaces during get_post
 * added public class flags for event/location/booking admin and my bookings pages,
-* consolidated generation of all "my bookings" pages to go via em-template-tags.php functions
+* changed - consolidated generation of all "my bookings" pages to go via em-template-tags.php functions
 * removed my bookings page being generated via events page if no page defined (you should now define a page or use the shortcode)
 * changed all listing shortcdodes and template tags to use relevant list template if no specific format supplied
 * improved event list/search ajax JS
@@ -144,7 +144,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * moved em-tickets-form div ID to cover just tickets and event-rsvp-options covers the rest, 
 * unbolded labels and made headings h4 in bookings section of forms/event/bookings.php
 * changed h4 to h3 in event-editor.php and location-editor.php templates
-* removed search form inclusion on templates/events-list.php and is now included seperately
+* removed search form inclusion on templates/events-list.php and is now included separately
 * added wrapper class to templates/events-list.php layout for future styling
 * moved grouped events out of events-list.php into events-list-grouped.php template
 * fixed/added sanitization to EM_Ticket::get_post to prevent potential xss,
@@ -161,8 +161,8 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * updated Swedish, German and French language files
 * added Chinese Simplified (Taiwan) 
 * updated POT file
-* simplified inclusion of event post type in search results
-* set priority of save_post for events/locations to 1
+* changed - simplified inclusion of event post type in search results
+* changed - set priority of save_post for events/locations to 1
 * added preemptive validation during wp_insert_post_data which immediately makes it a draft before any saving is done
 * fixed php warning in bookings admin table
 * added per-event tax rate function and corresponding em_event_get_tax_rate filter
@@ -176,6 +176,11 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * changed location form templates to call a seperate/single map template
 * fixed inconsistencies with set_status functions in EM_Events and EM_Location objects
 * added deregistration of em script on BP messages page to avoid autocompleter clashes
+* fixed WPDB::escape() usage and replaced with esc_sql()
+* fixed duplicating events not copying excerpt and tags
+* fixed capabilities not being saved for bbPress 2.2+ roles
+* fixed featured image on event/location submission - now only showing delete checkbox if image exists
+* changed #_ATTENDEESPENDINGLIST so it includes any booking statuses that reserve a space
 
 = 5.4.4 =
 * updated Spanish, Polish and POT translations

@@ -108,7 +108,7 @@ class EM_Ticket extends EM_Object{
 					if( empty( $data[$field_name]) && $field['null'] ){
 						$set_array[] = "{$field_name}=NULL";
 					}else{
-						$set_array[] = "{$field_name}='".$wpdb->escape($data[$field_name])."'";						
+						$set_array[] = "{$field_name}='".esc_sql($data[$field_name])."'";						
 					}
 				}
 				$sql = "UPDATE $table SET ".implode(', ', $set_array)." WHERE ticket_id={$this->ticket_id}";

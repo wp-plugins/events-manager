@@ -3,7 +3,7 @@ global $EM_Event;
 $required = apply_filters('em_required_html','<i>*</i>');
 ?>
 <?php if( !get_option('dbem_require_location') && !get_option('dbem_use_select_for_locations') ): ?>
-<div>
+<div class="em-location-data-nolocation">
 	<p>
 		<input type="checkbox" name="no_location" id="no-location" value="1" <?php if( !empty($EM_Event->event_id) && ($EM_Event->location_id === '0' || $EM_Event->location_id === 0) ) echo 'checked="checked"'; ?>>
 		<?php _e('This event does not have a physical location.','dbem'); ?>

@@ -7,8 +7,7 @@
  * @return string
  */
 function em_get_calendar_shortcode($atts) { 
-	$atts = (array) $atts;
-	return EM_Calendar::output($atts);
+	return EM_Calendar::output( (array) $atts );
 }
 add_shortcode('events_calendar', 'em_get_calendar_shortcode');
 
@@ -265,7 +264,7 @@ add_shortcode ( 'events_rss_url', 'em_get_rss_url_shortcode');
  * @return string
  */
 function em_get_event_form_shortcode( $args = array() ){
-	return em_get_event_form( $args );
+	return em_get_event_form( (array) $args );
 }
 add_shortcode ( 'event_form', 'em_get_event_form_shortcode');
 
@@ -275,7 +274,7 @@ add_shortcode ( 'event_form', 'em_get_event_form_shortcode');
  * @return string
  */
 function em_get_event_search_form_shortcode( $args = array() ){
-	return em_get_event_search_form( $args );
+	return em_get_event_search_form( (array) $args );
 }
 add_shortcode ( 'event_search_form', 'em_get_event_search_form_shortcode');
 
@@ -285,9 +284,7 @@ add_shortcode ( 'event_search_form', 'em_get_event_search_form_shortcode');
  * @return string
  */
 function em_get_location_search_form_shortcode( $args = array() ){
-	$search_args = em_get_search_form_defaults();
-	$args = array_merge($search_args, (array) $args);
-	return em_get_location_search_form( $args );
+	return em_get_location_search_form( (array) $args );
 }
 add_shortcode ( 'location_search_form', 'em_get_location_search_form_shortcode');
 
