@@ -13,12 +13,21 @@ class EM_Event_Post {
 			add_filter('the_content', array('EM_Event_Post','the_content'));
 			add_filter('the_excerpt_rss', array('EM_Event_Post','the_excerpt_rss'));
 			//display as page template?
-			if( get_option('dbem_cp_events_template_page') ){
+			if( get_option('dbem_cp_events_template') ){
 				add_filter('single_template',array('EM_Event_Post','single_template'));
 			}
+			//add classes to body and post_class()
+			if( get_option('dbem_cp_events_post_class') != '' ){
+			    add_filter('post_class', array('EM_Event_Post','post_class'), 10, 3);
+			}
+			if( get_option('dbem_cp_events_body_class') != '' ){
+			    add_filter('body_class', array('EM_Event_Post','body_class'), 10, 3);
+			}
 			//Override post template tags
-			add_filter('the_date',array('EM_Event_Post','the_date'));
+			add_filter('the_date',array('EM_Event_Post','the_date'),10,2);
 			add_filter('get_the_date',array('EM_Event_Post','the_date'),10,2);
+			add_filter('the_time',array('EM_Event_Post','the_time'),10,2);
+			add_filter('get_the_time',array('EM_Event_Post','the_time'),10,2);
 			add_filter('the_category',array('EM_Event_Post','the_category'),10,3);
 		}
 		add_action('parse_query', array('EM_Event_Post','parse_query'));
@@ -44,9 +53,37 @@ class EM_Event_Post {
 	function single_template($template){
 		global $post;
 		if( !locate_template('single-'.EM_POST_TYPE_EVENT.'.php') && $post->post_type == EM_POST_TYPE_EVENT ){
-			$template = locate_template(array('page.php','index.php'),false);
+			//do we have a default template to choose for events?
+			if( get_option('dbem_cp_events_template') == 'page' ){
+				$post_templates = array('page.php','index.php');
+			}else{
+			    $post_templates = array(get_option('dbem_cp_events_template'));
+			}
+			if( !empty($post_templates) ){
+			    $post_template = locate_template($post_templates,false);
+			    if( !empty($post_template) ) $template = $post_template;
+			}
 		}
 		return $template;
+	}
+	
+	function post_class( $classes, $class, $post_id ){
+	    $post = get_post($post_id);
+	    if( $post->post_type == EM_POST_TYPE_EVENT ){
+	        foreach( explode(' ', get_option('dbem_cp_events_post_class')) as $class ){
+	            $classes[] = esc_attr($class);
+	        }
+	    }
+	    return $classes;
+	}
+	
+	function body_class( $classes ){
+	    if( em_is_event_page() ){
+	        foreach( explode(' ', get_option('dbem_cp_events_body_class')) as $class ){
+	            $classes[] = esc_attr($class);
+	        }
+	    }
+	    return $classes;
 	}
 	
 	function the_excerpt_rss( $content ){
@@ -75,7 +112,7 @@ class EM_Event_Post {
 					ob_start();
 					em_locate_template('templates/event-single.php',true);
 					$content = ob_get_clean();
-				}else{
+				}elseif( !post_password_required() ){
 					$EM_Event = em_get_event($post);
 					if( $EM_Event->event_rsvp ){
 					    $content .= $EM_Event->output('<h2>Bookings</h2>#_BOOKINGFORM');
@@ -91,12 +128,25 @@ class EM_Event_Post {
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post);
 			if ( '' == $d ){
-				$the_date = date(get_option('date_format'), $EM_Event->start);
+				$the_date = date_i18n(get_option('date_format'), $EM_Event->start);
 			}else{
-				$the_date = date($d, $EM_Event->start);
+				$the_date = date_i18n($d, $EM_Event->start);
 			}
 		}
 		return $the_date;
+	}
+	
+	function the_time( $the_time, $f = '' ){
+		global $post;
+		if( $post->post_type == EM_POST_TYPE_EVENT ){
+			$EM_Event = em_get_event($post);
+			if ( '' == $f ){
+				$the_time = date_i18n(get_option('time_format'), $EM_Event->start);
+			}else{
+				$the_time = date_i18n($f, $EM_Event->start);
+			}
+		}
+		return $the_time;
 	}
 	
 	function the_category( $thelist, $separator = '', $parents='' ){
@@ -116,15 +166,15 @@ class EM_Event_Post {
 					$thelist .= "\n\t<li>";
 					switch ( strtolower( $parents ) ) {
 						case 'multiple':
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a></li>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a></li>';
 							break;
 						case 'single':
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>';
 							$thelist .= $category->name.'</a></li>';
 							break;
 						case '':
 						default:
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a></li>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a></li>';
 					}
 				}
 				$thelist .= '</ul>';
@@ -135,15 +185,15 @@ class EM_Event_Post {
 						$thelist .= $separator;
 					switch ( strtolower( $parents ) ) {
 						case 'multiple':
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a>';
 							break;
 						case 'single':
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>';
 							$thelist .= "$category->name</a>";
 							break;
 						case '':
 						default:
-							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s" ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a>';
+							$thelist .= '<a href="' . $category->get_url() . '" title="' . esc_attr( sprintf( __( "View all posts in %s", 'dbem' ), $category->name ) ) . '" ' . $rel . '>' . $category->name.'</a>';
 					}
 					++$i;
 				}
@@ -156,15 +206,11 @@ class EM_Event_Post {
 	function parse_query(){
 	    global $wp_query;
 		//Search Query Filtering
-		if( !is_admin() ){
-			if( !empty($wp_query->query_vars['s']) && !get_option('dbem_cp_events_search_results') ){
-				$wp_query->query_vars['post_type'] = array_diff( get_post_types(array('exclude_from_search' => false)), array(EM_POST_TYPE_EVENT));
-			}
-		}else{
+		if( is_admin() ){
 		    if( !empty($wp_query->query_vars[EM_TAXONOMY_CATEGORY]) && is_numeric($wp_query->query_vars[EM_TAXONOMY_CATEGORY]) ){
 		        //sorts out filtering admin-side as it searches by id
 		        $term = get_term_by('id', $wp_query->query_vars[EM_TAXONOMY_CATEGORY], EM_TAXONOMY_CATEGORY);
-		        $wp_query->query_vars[EM_TAXONOMY_CATEGORY] = ( $term !== false && !is_wp_error($term) )? $term->name:0;
+		        $wp_query->query_vars[EM_TAXONOMY_CATEGORY] = ( $term !== false && !is_wp_error($term) )? $term->slug:0;
 		    }
 		}
 		//Scoping
@@ -177,7 +223,7 @@ class EM_Event_Post {
 				if( !empty($wp_query->query_vars['calendar_day']) ) $wp_query->query_vars['scope'] = $wp_query->query_vars['calendar_day'];
 				if( empty($wp_query->query_vars['scope']) ){
 					if( is_archive() ){
-						$scope = $wp_query->query_vars['scope'] = get_option('dbem_events_page_scope');
+						$scope = $wp_query->query_vars['scope'] = get_option('dbem_events_archive_scope');
 					}else{
 						$scope = $wp_query->query_vars['scope'] = 'all'; //otherwise we'll get 404s for past events
 					}
@@ -212,25 +258,27 @@ class EM_Event_Post {
 				}
 			}elseif ($scope == "today"){
 				$today = strtotime(date('Y-m-d', $time));
+				$tomorrow = strtotime(date('Y-m-d',$time+60*60*24));
 				if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
 					//date must be only today
-					$query[] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '=');
+					$query[] = array( 'key' => '_start_ts', 'value' => array($today, $tomorrow), 'compare' => 'BETWEEN');
 				}else{
-					$query[] = array( 'key' => '_start_ts', 'value' => $today, 'compare' => '<=' );
+					$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '<' );
 					$query[] = array( 'key' => '_end_ts', 'value' => $today, 'compare' => '>=' );
 				}
 			}elseif ($scope == "tomorrow"){
 				$tomorrow = strtotime(date('Y-m-d',$time+60*60*24));
+				$after_tomorrow = $tomorrow + 60*60*24;
 				if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
 					//date must be only tomorrow
-					$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '=');
+					$query[] = array( 'key' => '_start_ts', 'value' => array($tomorrow, $after_tomorrow), 'compare' => 'BETWEEN');
 				}else{
-					$query[] = array( 'key' => '_start_ts', 'value' => $tomorrow, 'compare' => '<=' );
+					$query[] = array( 'key' => '_start_ts', 'value' => $after_tomorrow, 'compare' => '<' );
 					$query[] = array( 'key' => '_end_ts', 'value' => $tomorrow, 'compare' => '>=' );
 				}
 			}elseif ($scope == "month"){
 				$start_month = strtotime(date('Y-m-d',$time));
-				$end_month = strtotime(date('Y-m-t',$time));
+				$end_month = strtotime(date('Y-m-t',$time)) + 86399;
 				if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
 					$query[] = array( 'key' => '_start_ts', 'value' => array($start_month,$end_month), 'type' => 'numeric', 'compare' => 'BETWEEN');
 				}else{
@@ -240,7 +288,7 @@ class EM_Event_Post {
 			}elseif ($scope == "next-month"){
 				$start_month_timestamp = strtotime('+1 month', $time); //get the end of this month + 1 day
 				$start_month = strtotime(date('Y-m-1',$start_month_timestamp));
-				$end_month = strtotime(date('Y-m-t',$start_month_timestamp));
+				$end_month = strtotime(date('Y-m-t',$start_month_timestamp)) + 86399;
 				if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
 					$query[] = array( 'key' => '_start_ts', 'value' => array($start_month,$end_month), 'type' => 'numeric', 'compare' => 'BETWEEN');
 				}else{
@@ -250,7 +298,7 @@ class EM_Event_Post {
 			}elseif( preg_match('/(\d\d?)\-months/',$scope,$matches) ){ // next x months means this month (what's left of it), plus the following x months until the end of that month.
 				$months_to_add = $matches[1];
 				$start_month = strtotime(date('Y-m-d',$time));
-				$end_month = strtotime(date('Y-m-t',strtotime("+$months_to_add month", $time)));
+				$end_month = strtotime(date('Y-m-t',strtotime("+$months_to_add month", $time))) + 86399;
 				if( get_option('dbem_events_current_are_past') && $wp_query->query_vars['post_type'] != 'event-recurring' ){
 					$query[] = array( 'key' => '_start_ts', 'value' => array($start_month,$end_month), 'type' => 'numeric', 'compare' => 'BETWEEN');
 				}else{

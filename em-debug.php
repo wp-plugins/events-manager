@@ -41,6 +41,6 @@ if( get_option('dbem_debug') && !empty($_REQUEST['page']) && $_REQUEST['page'] !
 	}
 }
 if( is_admin() && get_option('dbem_debug')){
-	function em_debug_notification(){ ?><div class="error"><p><strong><?php echo sprintf(__('You are in Events Manager debug mode. To turn debug mode off, go to the <a href="%s">settings</a> page.'), em_add_get_params($_SERVER['REQUEST_URI'], array('dbem_debug_off'=>1))) ?></strong></p></div><?php }
+	function em_debug_notification(){ ?><div class="error"><p><strong><?php echo sprintf(__('You are in Events Manager debug mode. To turn debug mode off, go to the <a href="%s">settings</a> page.','dbem'), em_add_get_params($_SERVER['REQUEST_URI'], array('dbem_debug_off'=>1))) ?></strong></p></div><?php }
 	add_action ( 'admin_notices', 'em_debug_notification' );
 }

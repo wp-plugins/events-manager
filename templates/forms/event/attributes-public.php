@@ -24,7 +24,7 @@ $has_depreciated = false;
 		</select>
 		<?php else: ?>
 		<?php $default_value = (!empty($attributes['values'][$name][0])) ? $attributes['values'][$name][0]:''; ?>
-		<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Event->event_attributes) ? htmlspecialchars($EM_Event->event_attributes[$name], ENT_QUOTES):''; ?>" value="<?php echo $default_value; ?>" />
+		<input type="text" name="em_attributes[<?php echo $name ?>]" value="<?php echo array_key_exists($name, $EM_Event->event_attributes) ? esc_attr($EM_Event->event_attributes[$name], ENT_QUOTES):''; ?>" value="<?php echo $default_value; ?>" />
 		<?php endif; ?>
 	</div>
 	<?php endforeach; ?>

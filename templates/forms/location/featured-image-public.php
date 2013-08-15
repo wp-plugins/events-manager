@@ -14,4 +14,6 @@ global $EM_Location;
 <br /><br />
 <label for='location_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='location-image' name='location_image' id='location_image' type='file' size='40' />
 <br />
+<?php if ($EM_Location->get_image_url() != '') : ?>
 <label for='location_image_delete'><?php _e('Delete Image?', 'dbem') ?></label> <input id='location-image-delete' name='location_image_delete' id='location_image_delete' type='checkbox' value='1' />
+<?php endif; ?>

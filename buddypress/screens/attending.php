@@ -25,5 +25,5 @@ function bp_em_attending() {
 
 	function bp_em_attending_content() {
 		//We can use the same template as the public user interface for non bp sites
-		em_locate_template('templates/my-bookings.php',true);
+		em_my_bookings();
 	}
