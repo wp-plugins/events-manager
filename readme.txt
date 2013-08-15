@@ -170,7 +170,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * changed templates/map-global.php - moved coordinates div into container div
 * added js em_maps_loaded and em_ajax_search events
 * updated jQuery - changed instances of .attr('checked') to .prop('checked') or .is(':checked')
-* changed location forms to have consistent id and class structure (id to be depricated)
+* changed location forms to have consistent id and class structure (id to be deprecated)
 * changed CSS for location forms to uses classes not ids
 * added templates/forms/map-container.php
 * changed location form templates to call a seperate/single map template
