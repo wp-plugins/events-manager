@@ -232,7 +232,7 @@ jQuery(document).ready( function($){
 						tbody.find('span.ticket_name').prepend('* ');
 					}
 				}else{
-					tbody.find('.'+el.attr('name').replace('em_tickets['+rowNo+'][','').replace(']','')).text(el.attr('value'));
+					tbody.find('.'+el.attr('name').replace('em_tickets['+rowNo+'][','').replace(']','').replace('[]','')).text(el.attr('value'));
 				}
 			});
 			//allow for others to hook into this
@@ -774,9 +774,7 @@ function em_maps_load(){
 			script.src = proto + '//maps.google.com/maps/api/js?v=3.12&sensor=false&libraries=places&callback=em_maps';
 			document.body.appendChild(script);
 		}else if( typeof google === 'object' && typeof google.maps === 'object' && !em_maps_loaded ){
-			if( !em_maps_loaded ){
-				google.maps.event.addListenerOnce(map, 'idle', function(){ if( !em_maps_loaded ) em_maps(); });
-			}
+			em_maps();
 		}else if( jQuery('script#google-maps').length > 0 ){
 			jQuery(window).load(function(){ if( !em_maps_loaded ) em_maps(); }); //google isn't loaded so wait for page to load resources
 		}

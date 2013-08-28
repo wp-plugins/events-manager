@@ -14,7 +14,7 @@ EM.geo_placeholder = '<?php echo esc_attr(get_option('dbem_search_form_geo_label
 EM.geo_alert_guess = '<?php esc_attr_e('We are going to use %s for searching.','dbem'); ?> \n\n <?php esc_attr_e('If this is incorrect, click cancel and try a more specific address.','dbem') ?>';
 <?php
 //include seperately, which allows you to just modify the html or completely override the JS
-include('geo.js');
+em_locate_template('templates/search/geo.js',true);
 ?>
 </script>
 <!-- END General Search -->

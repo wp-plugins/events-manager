@@ -4,24 +4,21 @@
  * Initiallizes EM stuff by overriding some shortcodes, filters and actions in the WP FullCalendar plugin
  * Admin functions are located in admin/wpfc-admin.php
  */
-function wpfc_em_init(){
-	//overrides the ajax calls for event data
-    if( defined('DOING_AJAX') && DOING_AJAX && !empty($_REQUEST['type']) && $_REQUEST['type'] == 'event' ){ //only needed during ajax requests anyway
-		remove_action('wp_ajax_WP_FullCalendar', array('WP_FullCalendar','ajax'));
-		remove_action('wp_ajax_nopriv_WP_FullCalendar', array('WP_FullCalendar','ajax'));
-		add_action('wp_ajax_WP_FullCalendar', 'wpfc_em_ajax');
-		add_action('wp_ajax_nopriv_WP_FullCalendar', 'wpfc_em_ajax');
-    }
-	//overrides some EM stuff with FullCalendar depending on some extra settings
-	if ( get_option('dbem_emfc_override_shortcode') ){
-		remove_shortcode('events_calendar');
-		add_shortcode('events_calendar', array('WP_FullCalendar','calendar'));
-	}
-	if( get_option('dbem_emfc_override_calendar') ){
-		add_filter ('em_content_pre', 'wpfc_em_content',10,2);
-	}
+//overrides the ajax calls for event data
+if( defined('DOING_AJAX') && DOING_AJAX && !empty($_REQUEST['type']) && $_REQUEST['type'] == 'event' ){ //only needed during ajax requests anyway
+	remove_action('wp_ajax_WP_FullCalendar', array('WP_FullCalendar','ajax'));
+	remove_action('wp_ajax_nopriv_WP_FullCalendar', array('WP_FullCalendar','ajax'));
+	add_action('wp_ajax_WP_FullCalendar', 'wpfc_em_ajax');
+	add_action('wp_ajax_nopriv_WP_FullCalendar', 'wpfc_em_ajax');
 }
-add_action('init','wpfc_em_init');
+//overrides some EM stuff with FullCalendar depending on some extra settings
+if ( get_option('dbem_emfc_override_shortcode') ){
+	remove_shortcode('events_calendar');
+	add_shortcode('events_calendar', array('WP_FullCalendar','calendar'));
+}
+if( get_option('dbem_emfc_override_calendar') ){
+	add_filter ('em_content_pre', 'wpfc_em_content',10,2);
+}
 
 /**
  * Replaces the event page with the FullCalendar if requested in settings

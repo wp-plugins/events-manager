@@ -195,8 +195,6 @@ class EM_Calendar extends EM_Object {
 		unset($args['month']);
 		unset($args['year']);
 		unset($args['limit']); //limits in the events search won't help
-		$args['orderby'] = 'event_start_date';
-		$args['order'] = 'ASC';
 		if( defined('EM_CALENDAR_OPT') && EM_CALENDAR_OPT ){
 			//here we loop through each day, query that specific date, and then compile a list of event objects
 			//in this mode the count will never be accurate, we're grabing at most (31 + 14 days) * (limit + 1) events to reduce memory loads
@@ -205,7 +203,9 @@ class EM_Calendar extends EM_Object {
 			$events = array();
 			while( $scope_datetime_loop <= $scope_datetime_end->format('U') ){
 				$args['scope'] = date('Y-m-d', $scope_datetime_loop);
-				$events = array_merge($events, EM_Events::get($args));
+				foreach( EM_Events::get($args) as $event ){
+					$events[$event['event_id']] = $event;
+				}
 				$scope_datetime_loop += (86400); //add a day
 			}
 		}else{
@@ -239,11 +239,13 @@ class EM_Calendar extends EM_Object {
 						if( empty($eventful_days_count[$event_eventful_date]) || !$limit || $eventful_days_count[$event_eventful_date] < $limit ){
 							//now we know this is an event that'll be used, convert it to an object
 							$EM_Event = EM_MS_GLOBAL ? em_get_event($event['post_id'], $event['blog_id']) : $EM_Event = em_get_event($event['post_id'], 'post_id');
-							if( !empty($eventful_days[$event_eventful_date]) && is_array($eventful_days[$event_eventful_date]) ){
-								$eventful_days[$event_eventful_date][] = $EM_Event; 
-							} else {
-								$eventful_days[$event_eventful_date] = array($EM_Event);
+							if( empty($eventful_days[$event_eventful_date]) || !is_array($eventful_days[$event_eventful_date]) ) $eventful_days[$event_eventful_date] = array();
+							//add event to array with a corresponding timestamp for sorting of times including long and all-day events
+							$event_ts_marker = ($EM_Event->event_all_day) ? 0 : strtotime($event_eventful_date.' '.$EM_Event->event_start_time);
+							while( !empty($eventful_days[$event_eventful_date][$event_ts_marker]) ){
+								$event_ts_marker++; //add a second
 							}
+							$eventful_days[$event_eventful_date][$event_ts_marker] = $EM_Event;
 						}
 						//count events for that day
 						$eventful_days_count[$event_eventful_date] = empty($eventful_days_count[$event_eventful_date]) ? 1 : $eventful_days_count[$event_eventful_date]+1;
@@ -251,13 +253,16 @@ class EM_Calendar extends EM_Object {
 					}
 				}else{
 					//Only show events on the day that they start
-					if( empty($eventful_days_count[$event['event_start_date']]) || !$limit || $eventful_days_count[$event['event_start_date']] < $limit ){
+					$event_eventful_date = $event['event_start_date'];
+					if( empty($eventful_days_count[$event_eventful_date]) || !$limit || $eventful_days_count[$event_eventful_date] < $limit ){
 						$EM_Event = EM_MS_GLOBAL ? em_get_event($event['post_id'], $event['blog_id']) : em_get_event($event['post_id'], 'post_id');
-						if( isset($eventful_days[$event['event_start_date']]) && is_array($eventful_days[$event['event_start_date']]) ){
-							$eventful_days[$event['event_start_date']][] = $EM_Event; 
-						} else {
-							$eventful_days[$event['event_start_date']] = array($EM_Event);  
+						if( empty($eventful_days[$event_eventful_date]) || !is_array($eventful_days[$event_eventful_date]) ) $eventful_days[$event_eventful_date] = array();
+						//add event to array with a corresponding timestamp for sorting of times including long and all-day events
+						$event_ts_marker = ($EM_Event->event_all_day) ? 0 : $EM_Event->start;
+						while( !empty($eventful_days[$event_eventful_date][$event_ts_marker]) ){
+							$event_ts_marker++; //add a second
 						}
+						$eventful_days[$event_eventful_date][$event_ts_marker] = $EM_Event;
 					}
 					//count events for that day
 					$eventful_days_count[$event['event_start_date']] = empty($eventful_days_count[$event['event_start_date']]) ? 1 : $eventful_days_count[$event['event_start_date']]+1;

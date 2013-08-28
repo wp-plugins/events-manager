@@ -218,7 +218,7 @@ class EM_Events extends EM_Object {
 	 */
 	function output_grouped( $args = array() ){
 		//Reset some args to include pagination for if pagination is requested.
-		$args['limit'] = !empty($args['limit']) && is_numeric($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
+		$args['limit'] = isset($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
 		$args['page'] = (!empty($args['page']) && is_numeric($args['page']) )? $args['page'] : 1;
 		$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : $args['page'];
 		$args['offset'] = ($args['page']-1) * $args['limit'];

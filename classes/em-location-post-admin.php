@@ -99,7 +99,7 @@ class EM_Location_Post_Admin{
 				$EM_Location = new EM_Location($post_id, 'post_id');
 				do_action('em_location_save_pre', $EM_Location);
 				//check for existence of index
-				$loc_truly_exists = $wpdb->get_var('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$EM_Location->location_id}") == $EM_Location->location_id;
+				$loc_truly_exists = $EM_Location->location_id > 0 && $wpdb->get_var('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_id={$EM_Location->location_id}") == $EM_Location->location_id;
 				if(empty($EM_Location->location_id) || !$loc_truly_exists){ $EM_Location->save_meta(); }
 				//continue
 				$EM_Location->get_previous_status(); //before we save anything

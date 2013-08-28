@@ -866,6 +866,17 @@ class EM_Object {
 		return apply_filters('em_get_post_search', $args);
 	}
 	
+	/**
+	 * Generates pagination for classes like EM_Events based on supplied arguments and whether AJAX is enabled.
+	 * 
+	 * @param array $args The arguments being searched for
+	 * @param integer $count The number of total items to paginate through
+	 * @param string $search_action The name of the action query var used to trigger a search - used in AJAX requests and normal searches
+	 * @param array $default_args The default arguments and values this object accepts, used to compare against $args to create a querystring
+	 * @param array $accepted_args Variables that can be passed on via a querystring and should be added to pagination links
+	 * @return string
+	 * @uses em_paginate()
+	 */
 	public static function get_pagination_links($args, $count, $search_action, $default_args = array(), $accepted_args = array()){
 		$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 		$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
@@ -874,7 +885,10 @@ class EM_Object {
 		//if we're dealing with searches, then we need to add to the pagination querystring template
 		$default_args = !empty($default_args) && is_array($default_args) ? $default_args : self::get_default_search();
 		$unique_args = array();
-		$accepted_args = !empty($accepted_args) && is_array($accepted_args) ? $accepted_args : self::get_post_search($args, true, $args);
+		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == $search_action && empty($accepted_args) ){
+			//$accepted_args are values that are force-added to the querystring, we only assign default object post search values if we're actually doing a searcy (AJAX or via REQUEST)
+			$accepted_args = self::get_post_search($args, true, $args);
+		}
 		foreach( $accepted_args as $arg_key => $arg_val){
 			//carful with comparisons here, we need to typecast stuff into the right types
 			//we don't care about the actual default value, only if it's the same rough 'type'

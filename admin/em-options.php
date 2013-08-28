@@ -1189,7 +1189,7 @@ function em_admin_options_page() {
 				<div  class="postbox " id="em-opt-search-form" >
 				<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3><span><?php _e ( 'Search Form', 'dbem' ); ?> </span></h3>
 				<div class="inside">
-					<h4><?php _e('Main Search Fields'); ?></h4>
+					<h4><?php _e('Main Search Fields','dbem'); ?></h4>
 					<table class="form-table em-search-form-main">
 						<tr><td colspan="2"><strong><?php esc_html_e( 'Search', 'dbem' ); ?></strong></td></tr>
 						<?php
@@ -1204,7 +1204,7 @@ function em_admin_options_page() {
 						?>
 						</tbody>
 					</table>
-					<h4><?php _e('Advanced Search Fields'); ?></h4>
+					<h4><?php _e('Advanced Search Fields','dbem'); ?></h4>
 					<table class="form-table">
 						<?php
 						em_options_radio_binary ( __( 'Enable advanced fields?', 'dbem' ), 'dbem_search_form_advanced', __('Enables additional advanced search fields such as dates, country, etc.','dbem'), '', '.em-search-form-advanced' );

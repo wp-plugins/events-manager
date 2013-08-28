@@ -84,6 +84,7 @@ if( !class_exists('EM_Permalinks') ){
 
 		// Adding a new rule
 		function rewrite_rules_array($rules){
+			global $wpdb;
 			//get the slug of the event page
 			$events_page_id = get_option ( 'dbem_events_page' );
 			$events_page = get_post($events_page_id);
@@ -96,10 +97,10 @@ if( !class_exists('EM_Permalinks') ){
 				$em_rules[$events_slug.'feed$'] = 'index.php?pagename='.$events_slug.'&rss=1'; //compatible rss page
 				if( EM_POST_TYPE_EVENT_SLUG.'/' == $events_slug ){ //won't apply on homepage
 					//make sure we hard-code rewrites for child pages of events
-					$child_posts = get_posts(array('post_type'=>'page', 'post_parent'=>$events_page->ID, 'numberposts'=>0));
+					$child_posts = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$events_page->ID} AND post_type='page' AND post_status='publish'");
 					foreach($child_posts as $child_post){
 						$em_rules[$events_slug.$child_post->post_name.'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug    //check if child page has children
-					    $grandchildren = get_pages('child_of='.$child_post->ID);
+					    $grandchildren = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$child_post->ID} AND post_type='page' AND post_status='publish'");
 					    if( count( $grandchildren ) != 0 ) { 
 					        foreach($grandchildren as $grandchild) {
 					            $em_rules[$events_slug.$child_post->post_name.'/'.$grandchild->post_name.'/?$'] = 'index.php?page_id='.$grandchild->ID;
@@ -107,10 +108,10 @@ if( !class_exists('EM_Permalinks') ){
 					    }
 					}
 				}elseif( empty($events_slug) ){ //hard code homepage child pages
-					$child_posts = get_posts(array('post_type'=>'page', 'post_parent'=>$events_page->ID, 'numberposts'=>0));
+					$child_posts = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$events_page->ID} AND post_type='page' AND post_status='publish'");
 					foreach($child_posts as $child_post){
 						$em_rules[$events_page->post_name.'/'.$child_post->post_name.'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug    //check if child page has children
-					    $grandchildren = get_pages('child_of='.$child_post->ID);
+					    $grandchildren = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$child_post->ID} AND post_type='page' AND post_status='publish'");
 					    if( count( $grandchildren ) != 0 ) { 
 					        foreach($grandchildren as $grandchild) {
 					            $em_rules[$events_slug.$child_post->post_name.'/'.$grandchild->post_name.'/?$'] = 'index.php?page_id='.$grandchild->ID;

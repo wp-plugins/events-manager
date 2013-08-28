@@ -32,6 +32,9 @@ $col_max = count($calendar['row_headers']); //each time this collumn number is r
 				if(!empty($cell_data['type'])){
 					$class .= "-".$cell_data['type']; 
 				}
+				//In some cases (particularly when long events are set to show here) long events and all day events are not shown in the right order. In these cases, 
+				//if you want to sort events cronologically on each day, including all day events at top and long events within the right times, add define('EM_CALENDAR_SORTTIME', true); to your wp-config.php file 
+				if( defined('EM_CALENDAR_SORTTIME') && EM_CALENDAR_SORTTIME ) ksort($cell_data['events']); //indexes are timestamps
 				?>
 				<td class="<?php echo $class; ?>">
 					<?php if( !empty($cell_data['events']) && count($cell_data['events']) > 0 ): ?>

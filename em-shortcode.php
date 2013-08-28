@@ -56,7 +56,7 @@ function em_get_events_list_shortcode($args, $format='') {
 	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
 	$args['format'] = ($format != '' || empty($args['format'])) ? $format : $args['format']; 
 	$args['format'] = html_entity_decode($args['format']); //shortcode doesn't accept html
-	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
+	$args['limit'] = isset($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
 	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
 		ob_start();
 		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
@@ -111,7 +111,7 @@ function em_get_locations_list_shortcode( $args, $format='' ) {
 	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
 	$args['format'] = ($format != '' || empty($args['format'])) ? $format : $args['format']; 
 	$args['format'] = html_entity_decode($args['format']); //shorcode doesn't accept html
-	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_locations_default_limit');
+	$args['limit'] = isset($args['limit']) ? $args['limit'] : get_option('dbem_locations_default_limit');
 	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
 		ob_start();
 		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
@@ -162,8 +162,8 @@ function em_get_categories_shortcode($args, $format=''){
 	$args['format'] = html_entity_decode($args['format']); //shorcode doesn't accept html
 	$args['orderby'] = !empty($args['orderby']) ? $args['orderby'] : get_option('dbem_categories_default_orderby');
 	$args['order'] = !empty($args['order']) ? $args['order'] : get_option('dbem_categories_default_order');
-	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_categories_default_limit');
-	$args['pagination'] = !empty($args['pagination']) ? $args['pagination'] : 1;
+	$args['limit'] = isset($args['limit']) ? $args['limit'] : get_option('dbem_categories_default_limit');
+	$args['pagination'] = isset($args['pagination']) ? $args['pagination'] : 1;
 	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
 		ob_start();
 		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper

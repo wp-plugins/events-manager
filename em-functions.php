@@ -2,7 +2,7 @@
 
 if(!function_exists('em_paginate')){ //overridable e.g. in you mu-plugins folder.
 /**
- * Takes a few params and determins a pagination link structure
+ * Takes a few params and determines a pagination link structure
  * @param string $link
  * @param int $total
  * @param int $limit
