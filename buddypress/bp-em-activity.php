@@ -37,7 +37,7 @@ function bp_em_record_activity( $args = '' ) {
  * @return unknown
  */
 function bp_em_record_activity_event_save( $result, $EM_Event ){
-	if( $result && $EM_Event->event_status == 1 && empty($EM_Event->previous_status) ){
+	if( $result && $EM_Event->event_status == 1 && $EM_Event->get_previous_status() != 1 ){
 		$user = get_userdata($EM_Event->event_owner);
 		$member_link = bp_core_get_user_domain($user->ID);
 		if( empty($EM_Event->group_id) ){

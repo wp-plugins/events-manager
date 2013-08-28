@@ -10,13 +10,13 @@ if( !class_exists('EM_Permalinks') ){
 			'category_id', 'category_slug',
 			'ticket_id',
 			'calendar_day',
-			'rss', 'ical', 'bookings_page','event_categories','event_locations'
+			'rss', 'ical','event_categories','event_locations'
 		);
 		
 		function init(){
 			add_filter('pre_update_option_dbem_events_page', array('EM_Permalinks','option_update'));
 			if( get_option('dbem_flush_needed') ){
-				add_filter('init', array('EM_Permalinks','flush'));
+				add_filter('wp_loaded', array('EM_Permalinks','flush')); //flush after init, in case there are themes adding cpts etc.
 			}
 			add_filter('rewrite_rules_array',array('EM_Permalinks','rewrite_rules_array'));
 			add_filter('query_vars',array('EM_Permalinks','query_vars'));
@@ -84,6 +84,7 @@ if( !class_exists('EM_Permalinks') ){
 
 		// Adding a new rule
 		function rewrite_rules_array($rules){
+			global $wpdb;
 			//get the slug of the event page
 			$events_page_id = get_option ( 'dbem_events_page' );
 			$events_page = get_post($events_page_id);
@@ -96,10 +97,10 @@ if( !class_exists('EM_Permalinks') ){
 				$em_rules[$events_slug.'feed$'] = 'index.php?pagename='.$events_slug.'&rss=1'; //compatible rss page
 				if( EM_POST_TYPE_EVENT_SLUG.'/' == $events_slug ){ //won't apply on homepage
 					//make sure we hard-code rewrites for child pages of events
-					$child_posts = get_posts(array('post_type'=>'page', 'post_parent'=>$events_page->ID, 'numberposts'=>0));
+					$child_posts = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$events_page->ID} AND post_type='page' AND post_status='publish'");
 					foreach($child_posts as $child_post){
 						$em_rules[$events_slug.$child_post->post_name.'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug    //check if child page has children
-					    $grandchildren = get_pages('child_of='.$child_post->ID);
+					    $grandchildren = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$child_post->ID} AND post_type='page' AND post_status='publish'");
 					    if( count( $grandchildren ) != 0 ) { 
 					        foreach($grandchildren as $grandchild) {
 					            $em_rules[$events_slug.$child_post->post_name.'/'.$grandchild->post_name.'/?$'] = 'index.php?page_id='.$grandchild->ID;
@@ -107,10 +108,10 @@ if( !class_exists('EM_Permalinks') ){
 					    }
 					}
 				}elseif( empty($events_slug) ){ //hard code homepage child pages
-					$child_posts = get_posts(array('post_type'=>'page', 'post_parent'=>$events_page->ID, 'numberposts'=>0));
+					$child_posts = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$events_page->ID} AND post_type='page' AND post_status='publish'");
 					foreach($child_posts as $child_post){
 						$em_rules[$events_page->post_name.'/'.$child_post->post_name.'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug    //check if child page has children
-					    $grandchildren = get_pages('child_of='.$child_post->ID);
+					    $grandchildren = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$child_post->ID} AND post_type='page' AND post_status='publish'");
 					    if( count( $grandchildren ) != 0 ) { 
 					        foreach($grandchildren as $grandchild) {
 					            $em_rules[$events_slug.$child_post->post_name.'/'.$grandchild->post_name.'/?$'] = 'index.php?page_id='.$grandchild->ID;
@@ -254,7 +255,7 @@ if( !class_exists('EM_Permalinks') ){
  */
 function em_get_my_bookings_url(){
 	global $bp, $wp_rewrite;
-	if( is_object($bp) ){
+	if( !empty($bp->events->link) ){
 		//get member url
 		return $bp->events->link.'attending/';
 	}elseif( get_option('dbem_my_bookings_page') ){

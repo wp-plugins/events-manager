@@ -1,5 +1,5 @@
-var load_ui_css = false; //load jquery ui css?
 jQuery(document).ready( function($){
+	var load_ui_css = false; //load jquery ui css?
 	/* Time Entry */
 	$('#start-time').each(function(i, el){
 		$(el).addClass('em-time-input em-time-start').next('#end-time').addClass('em-time-input em-time-end').parent().addClass('em-time-range');
@@ -18,76 +18,130 @@ jQuery(document).ready( function($){
 	} );
 
 	//Events Search
-	$('.em-events-search-form select[name=country]').change( function(){
-		$('.em-events-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
-		$('.em-events-search select[name=region]').html('<option value="">'+EM.txt_loading+'</option>');
-		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+	$(document).delegate('.em-toggle', 'click change', function(e){
+		e.preventDefault();
+		//show or hide advanced tickets, hidden by default
+		var el = $(this);
+		var rel = el.attr('rel').split(':');
+		if( el.hasClass('show') ){
+			if( rel.length > 1 ){ el.closest(rel[1]).find(rel[0]).slideUp(); }
+			else{ $(rel[0]).slideUp(); }
+			el.find('.show').show();
+			el.find('.hide').hide();
+			el.addClass('hide').removeClass('show');
+		}else{
+			if( rel.length > 1 ){ el.closest(rel[1]).find(rel[0]).slideDown(); }
+			else{ $(rel[0]).slideDown(); }
+			el.find('.show').hide();
+			el.find('.hide').show();
+			el.addClass('show').removeClass('hide');
+		}
+		
+	});
+	$('.em-search-form select[name=country]').change( function(){
+		var el = $(this);
+		if( el.val() != '' ){
+			el.closest('.em-search-location').find('.em-search-location-meta').slideDown();
+		}else{
+			el.closest('.em-search-location').find('.em-search-location-meta').slideUp();
+		}
+		$('.em-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
+		$('.em-search select[name=region]').html('<option value="">'+EM.txt_loading+'</option>');
+		$('.em-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
 		var data = {
 			action : 'search_states',
-			country : $(this).val(),
+			country : el.val(),
 			return_html : true
 		};
-		$('.em-events-search select[name=state]').load( EM.ajaxurl, data );
+		$('.em-search select[name=state]').load( EM.ajaxurl, data );
 		data.action = 'search_regions';
-		$('.em-events-search select[name=region]').load( EM.ajaxurl, data );
+		$('.em-search select[name=region]').load( EM.ajaxurl, data );
 		data.action = 'search_towns';
-		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+		$('.em-search select[name=town]').load( EM.ajaxurl, data );
 	});
 
-	$('.em-events-search-form select[name=region]').change( function(){
-		$('.em-events-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
-		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+	$('.em-search-form select[name=region]').change( function(){
+		$('.em-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
+		$('.em-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
 		var data = {
 			action : 'search_states',
 			region : $(this).val(),
-			country : $('.em-events-search-form select[name=country]').val(),
+			country : $('.em-search-form select[name=country]').val(),
 			return_html : true
 		};
-		$('.em-events-search select[name=state]').load( EM.ajaxurl, data );
+		$('.em-search select[name=state]').load( EM.ajaxurl, data );
 		data.action = 'search_towns';
-		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+		$('.em-search select[name=town]').load( EM.ajaxurl, data );
 	});
 
-	$('.em-events-search-form select[name=state]').change( function(){
-		$('.em-events-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
+	$('.em-search-form select[name=state]').change( function(){
+		$('.em-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
 		var data = {
 			action : 'search_towns',
 			state : $(this).val(),
-			region : $('.em-events-search-form select[name=region]').val(),
-			country : $('.em-events-search-form select[name=country]').val(),
+			region : $('.em-search-form select[name=region]').val(),
+			country : $('.em-search-form select[name=country]').val(),
 			return_html : true
 		};
-		$('.em-events-search select[name=town]').load( EM.ajaxurl, data );
+		$('.em-search select[name=town]').load( EM.ajaxurl, data );
 	});
 	
 	//in order for this to work, you need the above classes to be present in your templates
-	$(document).delegate('.em-events-search-form', 'submit', function(e){
-    	if( this.search && this.search.value== EM.txt_search ){ this.search.value = ''; }
-    	if( this.em_search && this.em_search.value== EM.txt_search){ this.em_search.value = ''; }
-    	if( $('#em-wrapper .em-events-search-ajax').length == 1 ){
-    		e.preventDefault();
-			$('.em-events-search-form :submit').val(EM.txt_searching);
-			$.ajax( EM.ajaxurl, {
+	$(document).delegate('.em-search-form', 'submit', function(e){
+		var form = $(this);
+    	if( this.em_search && this.em_search.value == EM.txt_search){ this.em_search.value = ''; }
+    	var results_wrapper = form.closest('.em-search-wrapper').find('.em-search-ajax');
+    	if( results_wrapper.length == 0 ) results_wrapper = $('.em-search-ajax');
+    	if( results_wrapper.length > 0 ){
+    		results_wrapper.append('<div class="loading" id="em-loading"></div>');
+    		var submitButton = form.find('.em-search-submit');
+    		submitButton.data('buttonText', submitButton.val()).val(EM.txt_searching);
+    		var img = submitButton.children('img');
+    		if( img.length > 0 ) img.attr('src', img.attr('src').replace('search-mag.png', 'search-loading.gif'));
+    		var vars = form.serialize();
+    		$.ajax( EM.ajaxurl, {
+				type : 'POST',
 	    		dataType : 'html',
-	    		data : $(this).serialize(),
-			    success : function(responseText) {
-					$('.em-events-search-form :submit').val(EM.txt_search);
-					$('#em-wrapper .em-events-search-ajax').replaceWith(responseText);
+	    		data : vars,
+			    success : function(responseText){
+			    	submitButton.val(submitButton.data('buttonText'));
+			    	if( img.length > 0 ) img.attr('src', img.attr('src').replace('search-loading.gif', 'search-mag.png'));
+		    		results_wrapper.replaceWith(responseText);
+		        	if( form.find('input[name=em_search]').val() == '' ){ form.find('input[name=em_search]').val(EM.txt_search); }
+		        	//reload results_wrapper
+		        	results_wrapper = form.closest('.em-search-wrapper').find('.em-search-ajax');
+		        	if( results_wrapper.length == 0 ) results_wrapper = $('.em-search-ajax');
+			    	jQuery(document).triggerHandler('em_search_ajax', [vars, results_wrapper, e]); //ajax has loaded new results
 			    }
 	    	});
+    		e.preventDefault();
 			return false;
-    	} 
+    	}
 	});
-	if( $('#em-wrapper .em-events-search-ajax').length > 0 ){
-		$(document).delegate('#em-wrapper .em-events-search-ajax a.page-numbers', 'click', function(e){
+	if( $('.em-search-ajax').length > 0 ){
+		$(document).delegate('.em-search-ajax a.page-numbers', 'click', function(e){
+			var a = $(this);
+			var data = a.closest('.em-pagination').attr('data-em-ajax');
+			var wrapper = a.closest('.em-search-ajax');
+			var wrapper_parent = wrapper.parent();
+		    var qvars = a.attr('href').split('?');
+		    var vars = qvars[1];
+		    //add data-em-ajax att if it exists
+		    if( data != '' ){
+		    	vars = vars != '' ? vars+'&'+data : data;
+		    }
+		    wrapper.append('<div class="loading" id="em-loading"></div>');
+		    $.ajax( EM.ajaxurl, {
+				type : 'POST',
+	    		dataType : 'html',
+	    		data : vars,
+			    success : function(responseText) {
+			    	wrapper.replaceWith(responseText);
+			    	wrapper = wrapper_parent.find('.em-search-ajax');
+			    	jQuery(document).triggerHandler('em_search_ajax', [vars, wrapper, e]); //ajax has loaded new results
+			    }
+	    	});
 			e.preventDefault();
-			var pageNo = $(this).attr('title');
-			if( $('.em-events-search-form input[name="page"]').length > 0 ){
-				$('.em-events-search-form input[name="page"]').val(pageNo);
-			}else{
-				$('.em-events-search-form').append('<input type="hidden" name="page" value="'+pageNo+'" />');
-			}
-			$('.em-events-search-form').trigger('submit');
 			return false;
 		});
 	}
@@ -105,125 +159,140 @@ jQuery(document).ready( function($){
 			td.load( url );
 			return false;
 		});
-	//Tickets
+	//Tickets & Bookings
 	if( $("#em-tickets-form").length > 0 ){
-		load_ui_css = true;
-		//Dialog/Overlay
-		$("#em-tickets-form").dialog({
-			modal : true,
-			autoOpen: false,
-			minWidth: 350,
-			height: 'auto',
-			buttons: [{
-				text: EM.tickets_save,
-				click: function(e){
-					e.preventDefault();
-					//Submitting ticket (Add/Edit)
-					$('#em-tickets-intro').remove();
-					//first we get the template to insert this to
-					if( $('#em-tickets-form form input[name=prev_slot]').val() ){
-						//grab slot and populate
-						var slot = $('#'+$('#em-tickets-form form input[name=prev_slot]').val());
-						var rowNo = slot.attr('id').replace('em-tickets-row-','');
-						var edit = true;
-					}else{
-						//create copy of template slot, insert so ready for population
-						var rowNo = $('#em-tickets-body').children('tr').length+1;
-						var slot = $('#em-tickets-body tr').first().clone().attr('id','em-tickets-row-'+ rowNo).appendTo($('#em-tickets-body'));
-						var edit = false;
-						slot.show();
-					}
-					var postData = {};
-					var is_checked = false;
-					$.each($('#em-tickets-form form *[name]'), function(index,el){
-						el = $(el);
-						if( el.attr('type') == 'checkbox' ){
-							is_checked = el.is(':checked') ? 1:0;
-							slot.find('input.'+el.attr('name')).attr({
-								'value' : is_checked,
-								'name' : 'em_tickets['+rowNo+']['+el.attr('name')+']'
-							});
-						}else{
-							slot.find('input.'+el.attr('name')).attr({
-								'value' : el.attr('value'),
-								'name' : 'em_tickets['+rowNo+']['+el.attr('name')+']'
-							});
-						}
-						if( el.attr('name') == 'ticket_start_pub'){
-							slot.find('span.ticket_start').text(el.attr('value'));
-						}else if( el.attr('name') == 'ticket_end_pub' ){
-							slot.find('span.ticket_end').text(el.attr('value'));
-						}else if( el.attr('name') == 'ticket_members' ){
-							if( el.is(':checked') ){
-								slot.find('span.ticket_name').prepend('* ');
-							}
-						}else{
-							slot.find('span.'+el.attr('name')).text(el.attr('value'));
-						}
-					});
-					//allow for others to hook into this
-					$(document).triggerHandler('em_maps_tickets_edit', [slot, rowNo, edit]);
-					//sort out dates and localization masking
-					var start_pub = $("#em-tickets-form input[name=ticket_start_pub]").val();
-					var end_pub = $("#em-tickets-form input[name=ticket_end_pub]").val();
-					$('#em-tickets-form *[name]').attr('value','').removeAttr('checked');
-					$('#em-tickets-form .close').trigger('click');
-					$(this).dialog('close');
+		//Enable/Disable Bookings
+		$('#event-rsvp').click( function(event){
+			if( !this.checked ){
+				confirmation = confirm(EM.disable_bookings_warning);
+				if( confirmation == false ){
+					event.preventDefault();
+				}else{
+					$('#event-rsvp-options').hide();
 				}
-			}]
+			}else{
+				$('#event-rsvp-options').fadeIn();
+			}
 		});
-		$("#em-tickets-add").click(function(e){ e.preventDefault(); $('#em-tickets-form *[name]').attr('value','').removeAttr('checked'); $("#em-tickets-form").dialog('open'); });
+		if($('input#event-rsvp').is(":checked")) {
+			$("div#rsvp-data").fadeIn();
+		} else {
+			$("div#rsvp-data").hide();
+		}
+		//Ticket(s) UI
+		var reset_ticket_forms = function(){
+			$('#em-tickets-form table tbody tr.em-tickets-row').show();
+			$('#em-tickets-form table tbody tr.em-tickets-row-form').hide();
+		};
+		//Add a new ticket
+		$("#em-tickets-add").click(function(e){ 
+			e.preventDefault();
+			reset_ticket_forms();
+			//create copy of template slot, insert so ready for population
+			var tickets = $('#em-tickets-form table tbody');
+			var rowNo = tickets.length+1;
+			var slot = tickets.first().clone(true).attr('id','em-ticket-'+ rowNo).appendTo($('#em-tickets-form table'));
+			//change the index of the form element names
+			slot.find('*[name]').each( function(index,el){
+				el = $(el);
+				el.attr('name', el.attr('name').replace('em_tickets[0]','em_tickets['+rowNo+']'));
+			});
+			//show ticket and switch to editor
+			slot.show().find('.ticket-actions-edit').trigger('click');
+			//refresh datepicker and values
+			slot.find('.em-date-input-loc').datepicker('destroy').removeAttr('id'); //clear all datepickers
+			slot.find('.em-time-input').unbind().each(function(index, el){ this.timePicker = false; }); //clear all timepickers - consequently, also other click/blur/change events, recreate the further down
+			em_setup_datepicker(slot);
+			em_setup_timepicker(slot);
+		    $('html, body').animate({ scrollTop: slot.offset().top - 30 }); //sends user to form
+		});
 		//Edit a Ticket
 		$(document).delegate('.ticket-actions-edit', 'click', function(e){
-			//trigger click
 			e.preventDefault();
-			$('#em-tickets-add').trigger('click');
-			//populate form
-			var rowId = $(this).parents('tr').first().attr('id');
-			$('#em-tickets-form *[name]').attr('value','').removeAttr('checked');
-			$.each( $('#'+rowId+' *[name]'), function(index,el){
-				var el = $(el);
-				var selector = el.attr('class');
-				var input_field = $('#em-tickets-form *[name='+selector+']');
-				if( input_field.attr('type') == 'checkbox' ){
-					if( el.val() == 1 ){ input_field.attr('checked','checked'); }
-					else{ input_field.removeAttr('checked'); }
-				}else{
-					input_field.attr('value',el.attr('value'));	
-				}
-			});
-			$("#em-tickets-form input[name=prev_slot]").attr('value',rowId); //save the current slot number
-			//refresh datepicker and values
-			$("#em-tickets-form .em-date-input-loc").datepicker('refresh');
-			$('#em-tickets-form input.em-date-input-loc').each(function(i,el){
-				el = $(el);
-				date_value = el.next('.em-date-input').val();
-				if( date_value != '' ){
-					date_formatted = $.datepicker.formatDate( EM.dateFormat, $.datepicker.parseDate('yy-mm-dd', date_value) );
-					el.val(date_formatted);
-				}
-			});
+			reset_ticket_forms();
+			var tbody = $(this).closest('tbody');
+			tbody.find('tr.em-tickets-row').hide();
+			tbody.find('tr.em-tickets-row-form').fadeIn();
 			return false;
-		});	
+		});
+		$(document).delegate('.ticket-actions-edited', 'click', function(e){
+			e.preventDefault();
+			var tbody = $(this).closest('tbody');
+			var rowNo = tbody.attr('id').replace('em-ticket-','');
+			tbody.find('.em-tickets-row').fadeIn();
+			tbody.find('.em-tickets-row-form').hide();
+			tbody.find('*[name]').each(function(index,el){
+				el = $(el);
+				if( el.attr('name') == 'ticket_start_pub'){
+					tbody.find('span.ticket_start').text(el.attr('value'));
+				}else if( el.attr('name') == 'ticket_end_pub' ){
+					tbody.find('span.ticket_end').text(el.attr('value'));
+				}else if( el.attr('name') == 'em_tickets['+rowNo+'][ticket_type]' ){
+					if( el.find(':selected').val() == 'members' ){
+						tbody.find('span.ticket_name').prepend('* ');
+					}
+				}else{
+					tbody.find('.'+el.attr('name').replace('em_tickets['+rowNo+'][','').replace(']','').replace('[]','')).text(el.attr('value'));
+				}
+			});
+			//allow for others to hook into this
+			$(document).triggerHandler('em_maps_tickets_edit', [tbody, rowNo, true]);
+		    $('html, body').animate({ scrollTop: tbody.parent().offset().top - 30 }); //sends user back to top of form
+			return false;
+		});
+		$(document).delegate('.em-ticket-form select.ticket_type','change', function(e){
+			//check if ticket is for all users or members, if members, show roles to limit the ticket to
+			var el = $(this);
+			if( el.find('option:selected').val() == 'members' ){
+				el.closest('.em-ticket-form').find('.ticket-roles').fadeIn();
+			}else{
+				el.closest('.em-ticket-form').find('.ticket-roles').hide();
+			}
+		});
+		$(document).delegate('.em-ticket-form .ticket-options-advanced','click', function(e){
+			//show or hide advanced tickets, hidden by default
+			e.preventDefault();
+			var el = $(this);
+			if( el.hasClass('show') ){
+				el.closest('.em-ticket-form').find('.em-ticket-form-advanced').fadeIn();
+				el.find('.show').hide();
+				el.find('.hide').show();
+			}else{
+				el.closest('.em-ticket-form').find('.em-ticket-form-advanced').hide();
+				el.find('.show').show();
+				el.find('.hide').hide();
+			}
+			el.toggleClass('show').toggleClass('hide');
+		});
+		$('.em-ticket-form').each( function(){
+			//check whether to show advanced options or not by default for each ticket
+			var show_advanced = false;
+			var el = $(this); 
+			el.find('.em-ticket-form-advanced input[type="text"]').each(function(){ if(this.value != '') show_advanced = true; });
+			if( el.find('.em-ticket-form-advanced input[type="checkbox"]:checked').length > 0 ){ show_advanced = true; }
+			el.find('.em-ticket-form-advanced option:selected').each(function(){ if(this.value != '') show_advanced = true; });
+			if( show_advanced ) el.find('.ticket-options-advanced').trigger('click');
+		});
 		//Delete a ticket
 		$(document).delegate('.ticket-actions-delete', 'click', function(e){
 			e.preventDefault();
 			var el = $(this);
-			var rowId = $(this).parents('tr').first().attr('id');
-			if( $('#'+rowId+' input.ticket_id').attr('value') == '' ){
-				//not saved to db yet, so just remove
-				$('#'+rowId).remove();
-			}else{
+			var tbody = el.closest('tbody');
+			console.log(tbody.find('input.ticket_id').val());
+			if( tbody.find('input.ticket_id').val() > 0 ){
 				//only will happen if no bookings made
 				el.text('Deleting...');	
-				$.getJSON( $(this).attr('href'), {'em_ajax_action':'delete_ticket', 'id':$('#'+rowId+' input.ticket_id').attr('value')}, function(data){
+				$.getJSON( $(this).attr('href'), {'em_ajax_action':'delete_ticket', 'id':tbody.find('input.ticket_id').val()}, function(data){
 					if(data.result){
-						$('#'+rowId).remove();
+						tbody.remove();
 					}else{
 						el.text('Delete');
 						alert(data.error);
 					}
 				});
+			}else{
+				//not saved to db yet, so just remove
+				tbody.remove();
 			}
 			return false;
 		});
@@ -318,11 +387,11 @@ jQuery(document).ready( function($){
 			//Sortables
 			$( ".em-bookings-cols-sortable" ).sortable({
 				connectWith: ".em-bookings-cols-sortable",
-				over: function(event, ui) {
-					if( ui.item.hasClass('ui-state-highlight') ){
-						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);							
-					}else{
+				update: function(event, ui) {
+					if( ui.item.parents('ul#em-bookings-cols-active, ul#em-bookings-export-cols-active').length > 0 ){							
 						ui.item.addClass('ui-state-highlight').removeClass('ui-state-default').children('input').val(1);
+					}else{
+						ui.item.addClass('ui-state-default').removeClass('ui-state-highlight').children('input').val(0);
 					}
 				}
 			}).disableSelection();
@@ -340,6 +409,7 @@ jQuery(document).ready( function($){
 				//recreate overlays
 				$('#em-bookings-table-export input[name=scope]').val(root.find('select[name=scope]').val());
 				$('#em-bookings-table-export input[name=status]').val(root.find('select[name=status]').val());
+				jQuery(document).triggerHandler('em_bookings_filtered', [data, root, el]);
 			});
 			return false;
 		});
@@ -381,7 +451,8 @@ jQuery(document).ready( function($){
 	}
 	
 	//Manual Booking
-	$('a.em-booking-button').click(function(){
+	$('a.em-booking-button').click(function(e){
+		e.preventDefault();
 		var button = $(this);
 		if( button.text() != EM.bb_booked && $(this).text() != EM.bb_booking){
 			button.text(EM.bb_booking);
@@ -405,8 +476,10 @@ jQuery(document).ready( function($){
 				error : function(){ button.text(EM.bb_error); }
 			});
 		}
+		return false;
 	});	
-	$('a.em-cancel-button').click(function(){
+	$('a.em-cancel-button').click(function(e){
+		e.preventDefault();
 		var button = $(this);
 		if( button.text() != EM.bb_cancelled && button.text() != EM.bb_canceling){
 			button.text(EM.bb_canceling);
@@ -429,6 +502,7 @@ jQuery(document).ready( function($){
 				error : function(){ button.text(EM.bb_cancel_error); }
 			});
 		}
+		return false;
 	});  
 
 	//Datepicker
@@ -437,33 +511,9 @@ jQuery(document).ready( function($){
 			$.datepicker.setDefaults(EM.locale_data);
 		}
 		load_ui_css = true;
-		
-		//initialize legacy start/end dates, makes the following code compatible
-		if( $('#em-date-start').length > 0 ){
-			$('#em-date-start').addClass('em-date-input').parent().addClass('em-date-range');
-			$("#em-date-start-loc").addClass('em-date-input-loc em-date-start');
-			$('#em-date-end').addClass('em-date-input');
-			$("#em-date-end-loc").addClass('em-date-input-loc em-date-end');
-		}
-		if( $(".em-ticket-form, #em-tickets-form").length > 0 ){
-			$(".em-ticket-form, #em-tickets-form .start").addClass('em-date-input').parent().addClass('em-date-single');
-			$(".em-ticket-form, #em-tickets-form .start-loc").addClass('em-date-input-loc').each(
-				function(i,el){ $(el).prev('.start').insertAfter(el); 
-			}); //reverse elements for comapatability
-			$(".em-ticket-form, #em-tickets-form .end").addClass('em-date-input').parent().addClass('em-date-single');
-			$(".em-ticket-form, #em-tickets-form .end-loc").addClass('em-date-input-loc').each(
-				function(i,el){ $(el).prev('.end').insertAfter(el);
-			}); //reverse elements for comapatability
-		}
 		em_setup_datepicker('body');
 	}
-	if( load_ui_css ){
-		var script = document.createElement("link");
-		script.id = 'jquery-ui-css';
-		script.rel = "stylesheet";
-		script.href = EM.ui_css;
-		document.body.appendChild(script);
-	}
+	if( load_ui_css ) em_load_jquery_css();
 	
 	//previously in em-admin.php
 	function updateIntervalDescriptor () { 
@@ -479,7 +529,7 @@ jQuery(document).ready( function($){
 		$('p#'+ $('select#recurrence-frequency').val() + "-selector").show();
 	}
 	function updateShowHideRecurrence () {
-		if( $('input#event-recurrence').attr("checked")) {
+		if( $('input#event-recurrence').is(":checked")) {
 			$("#event_recurrence_pattern").fadeIn();
 			$("#event-date-explanation").hide();
 			$("#recurrence-dates-explanation").show();
@@ -502,11 +552,11 @@ jQuery(document).ready( function($){
 	
 	$('#em-wrapper input.select-all').change(function(){
 	 	if($(this).is(':checked')){
-			$('input.row-selector').attr('checked', true);
-			$('input.select-all').attr('checked', true);
+			$('input.row-selector').prop('checked', true);
+			$('input.select-all').prop('checked', true);
 	 	}else{
-			$('input.row-selector').attr('checked', false);
-			$('input.select-all').attr('checked', false);
+			$('input.row-selector').prop('checked', false);
+			$('input.select-all').prop('checked', false);
 		}
 	}); 
 	
@@ -521,17 +571,14 @@ jQuery(document).ready( function($){
 	$('select#recurrence-frequency').change(updateIntervalSelectors);
 
 	/* Load any maps */	
-	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 ){
-		var script = document.createElement("script");
-		script.type = "text/javascript";
-		script.src = (EM.is_ssl) ? 'https://maps.google.com/maps/api/js?v=3.8&sensor=false&callback=em_maps':'http://maps.google.com/maps/api/js?v=3.4&sensor=false&callback=em_maps';
-		document.body.appendChild(script);
+	if( $('.em-location-map').length > 0 || $('.em-locations-map').length > 0 || $('#em-map').length > 0 || $('.em-search-geo').length > 0 ){
+		em_maps_load();
 	}
 	
 	//Finally, add autocomplete here
 	//Autocomplete
-	if( jQuery( "#em-location-data input#location-name" ).length > 0 ){
-		jQuery( "#em-location-data input#location-name" ).autocomplete({
+	if( jQuery( "div.em-location-data input#location-name" ).length > 0 ){
+		jQuery( "div.em-location-data input#location-name" ).autocomplete({
 			source: EM.locationajaxurl,
 			minLength: 2,
 			focus: function( event, ui ){
@@ -551,21 +598,23 @@ jQuery(document).ready( function($){
 				}else{
 					jQuery('select#location-country option[value="'+ui.item.country+'"]').attr('selected', 'selected');
 				}
-				jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-				jQuery('#em-location-data input#location-name').css('background-color','#fff');
+				jQuery('div.em-location-data input, div.em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
 				jQuery('#em-location-reset').show();
+				jQuery('#em-location-search-tip').hide();
+				jQuery(document).triggerHandler('em_locations_autocomplete_selected', [event, ui]);
 				return false;
 			}
-		}).data( "autocomplete" )._renderItem = function( ul, item ) {
+		}).data( "ui-autocomplete" )._renderItem = function( ul, item ) {
 			html_val = "<a>" + item.label + '<br><span style="font-size:11px"><em>'+ item.address + ', ' + item.town+"</em></span></a>";
 			return jQuery( "<li></li>" ).data( "item.autocomplete", item ).append(html_val).appendTo( ul );
 		};
-		jQuery('#em-location-reset').click( function(){
-			jQuery('#em-location-data input').css('background-color','#fff').val('');
-			jQuery('#em-location-data select').css('background-color','#fff');
-			jQuery('#em-location-data option:selected').removeAttr('selected');
+		jQuery('#em-location-reset a').click( function(){
+			jQuery('div.em-location-data input').css('background-color','#fff').val('').removeAttr('readonly');
+			jQuery('div.em-location-data select').css('background-color','#fff');
+			jQuery('div.em-location-data option:selected').removeAttr('selected');
 			jQuery('input#location-id').val('');
 			jQuery('#em-location-reset').hide();
+			jQuery('#em-location-search-tip').show();
 			jQuery('#em-map').hide();
 			jQuery('#em-map-404').show();
 			if(typeof(marker) !== 'undefined'){
@@ -576,21 +625,30 @@ jQuery(document).ready( function($){
 			return false;
 		});
 		if( jQuery('input#location-id').val() != '0' && jQuery('input#location-id').val() != '' ){
-			jQuery('#em-location-data input, #em-location-data select').css('background-color','#ccc');
-			jQuery('#em-location-data input#location-name').css('background-color','#fff');
+			jQuery('div.em-location-data input, div.em-location-data select').css('background-color','#ccc').attr('readonly','readonly');
 			jQuery('#em-location-reset').show();
+			jQuery('#em-location-search-tip').hide();
 		}
 	}
 	
 });
 
+function em_load_jquery_css(){
+	if( EM.ui_css && jQuery('script#jquery-ui-css').length == 0 ){
+		var script = document.createElement("link");
+		script.id = 'jquery-ui-css';
+		script.rel = "stylesheet";
+		script.href = EM.ui_css;
+		document.body.appendChild(script);
+	}
+}
+
 function em_setup_datepicker(wrap){	
 	wrap = jQuery(wrap);
 	//default picker vals
-	var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay };
-	if( EM.dateFormat != ''){
-		datepicker_vals.dateFormat = EM.dateFormat;
-	}
+	var datepicker_vals = { altFormat: "yy-mm-dd", changeMonth: true, changeYear: true, firstDay : EM.firstDay, yearRange:'-100:+10' };
+	if( EM.dateFormat ) datepicker_vals.dateFormat = EM.dateFormat;
+	if( EM.yearRange ) datepicker_vals.yearRange = EM.yearRange;
 	jQuery(document).triggerHandler('em_datepicker', datepicker_vals);
 	
 	//apply datepickers
@@ -701,80 +759,124 @@ var em_ajaxify = function(url){
 /*
  * MAP FUNCTIONS
  */
+var em_maps_loaded = false;
 var maps = {};
-//Load single maps (each map is treated as a seperate map.
-function em_maps() {
-	//Find all the maps on this page
-	jQuery('.em-location-map').each( function(index){
-		el = jQuery(this);
-		var map_id = el.attr('id').replace('em-location-map-','');
-		em_LatLng = new google.maps.LatLng( jQuery('#em-location-map-coords-'+map_id+' .lat').text(), jQuery('#em-location-map-coords-'+map_id+' .lng').text());
-		maps[map_id] = new google.maps.Map( document.getElementById('em-location-map-'+map_id), {
-		    zoom: 14,
-		    center: em_LatLng,
-		    mapTypeId: google.maps.MapTypeId.ROADMAP,
-		    mapTypeControl: false
-		});
-		var marker = new google.maps.Marker({
-		    position: em_LatLng,
-		    map: maps[map_id]
-		});
-		var infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
-		infowindow.open(maps[map_id],marker);
-		maps[map_id].panBy(40,-70);
-		
-		//JS Hook for handling map after instantiation
-		//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
-		jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, marker]);
-	});
-	jQuery('.em-locations-map').each( function(index){
-		var el = jQuery(this);
-		var map_id = el.attr('id').replace('em-locations-map-','');
+var maps_markers = {};
+var infowindow;
+//loads maps script if not already loaded and executes EM maps script
+function em_maps_load(){
+	if( !em_maps_loaded ){
+		if ( jQuery('script#google-maps').length == 0 && ( typeof google !== 'object' || typeof google.maps !== 'object' ) ){ 
+			var script = document.createElement("script");
+			script.type = "text/javascript";
+			script.id = "google-maps";
+			var proto = (EM.is_ssl) ? 'https:' : 'http:';
+			script.src = proto + '//maps.google.com/maps/api/js?v=3.12&sensor=false&libraries=places&callback=em_maps';
+			document.body.appendChild(script);
+		}else if( typeof google === 'object' && typeof google.maps === 'object' && !em_maps_loaded ){
+			em_maps();
+		}else if( jQuery('script#google-maps').length > 0 ){
+			jQuery(window).load(function(){ if( !em_maps_loaded ) em_maps(); }); //google isn't loaded so wait for page to load resources
+		}
+	}
+}
+//re-usable function to load global location maps
+function em_maps_load_locations(el){
+	var el = jQuery(el);
+	var map_id = el.attr('id').replace('em-locations-map-','');
+	var em_data = jQuery.parseJSON( el.nextAll('.em-locations-map-coords').first().text() );
+	if( em_data == null ){
 		var em_data = jQuery.parseJSON( jQuery('#em-locations-map-coords-'+map_id).text() );
-		jQuery.getJSON(document.URL, em_data , function(data){
-			if(data.length > 0){
-				  var myOptions = {
-				    mapTypeId: google.maps.MapTypeId.ROADMAP
-				  };
-				  maps[map_id] = new google.maps.Map(document.getElementById("em-locations-map-"+map_id), myOptions);
-				  
-				  var minLatLngArr = [0,0];
-				  var maxLatLngArr = [0,0];
-				  
-				  for (var i = 0; i < data.length; i++) {
-					  if( !(data[i].location_latitude == 0 && data[i].location_longitude == 0) ){
-						var latitude = parseFloat( data[i].location_latitude );
-						var longitude = parseFloat( data[i].location_longitude );
-						var location = new google.maps.LatLng( latitude, longitude );
-						var marker = new google.maps.Marker({
-						    position: location, 
-						    map: maps[map_id]
-						});
-						marker.setTitle(data[i].location_name);
-						var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
-						em_map_infobox(marker, myContent, maps[map_id]);
-						
-						//Get min and max long/lats
-						minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
-						minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
-						maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
-						maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];
-					  }
+	}
+	jQuery.getJSON(document.URL, em_data , function(data){
+		if(data.length > 0){
+			  var myOptions = {
+			    mapTypeId: google.maps.MapTypeId.ROADMAP
+			  };
+			  maps[map_id] = new google.maps.Map(el[0], myOptions);
+			  maps_markers[map_id] = [];
+			  
+			  var minLatLngArr = [0,0];
+			  var maxLatLngArr = [0,0];
+			  
+			  for (var i = 0; i < data.length; i++) {
+				  if( !(data[i].location_latitude == 0 && data[i].location_longitude == 0) ){
+					var latitude = parseFloat( data[i].location_latitude );
+					var longitude = parseFloat( data[i].location_longitude );
+					var location = new google.maps.LatLng( latitude, longitude );
+					var marker = new google.maps.Marker({
+					    position: location, 
+					    map: maps[map_id]
+					});
+					maps_markers[map_id].push(marker);
+					marker.setTitle(data[i].location_name);
+					var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
+					em_map_infobox(marker, myContent, maps[map_id]);
+					
+					//Get min and max long/lats
+					minLatLngArr[0] = (latitude < minLatLngArr[0] || i == 0) ? latitude : minLatLngArr[0];
+					minLatLngArr[1] = (longitude < minLatLngArr[1] || i == 0) ? longitude : minLatLngArr[1];
+					maxLatLngArr[0] = (latitude > maxLatLngArr[0] || i == 0) ? latitude : maxLatLngArr[0];
+					maxLatLngArr[1] = (longitude > maxLatLngArr[1] || i == 0) ? longitude : maxLatLngArr[1];
 				  }
-				  // Zoom in to the bounds
-				  var minLatLng = new google.maps.LatLng(minLatLngArr[0],minLatLngArr[1]);
-				  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
-				  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
-				  maps[map_id].fitBounds(bounds);
-				//Call a hook if exists
-				jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id]]);
-			}else{
-				el.children().first().html('No locations found');
-			}
-		});
+			  }
+			  // Zoom in to the bounds
+			  var minLatLng = new google.maps.LatLng(minLatLngArr[0],minLatLngArr[1]);
+			  var maxLatLng = new google.maps.LatLng(maxLatLngArr[0],maxLatLngArr[1]);
+			  var bounds = new google.maps.LatLngBounds(minLatLng,maxLatLng);
+			  maps[map_id].fitBounds(bounds);
+			  
+			//Call a hook if exists
+			jQuery(document).triggerHandler('em_maps_locations_hook', [maps[map_id], data, map_id]);
+		}else{
+			el.children().first().html('No locations found');
+			jQuery(document).triggerHandler('em_maps_locations_hook_not_found', [el]);
+		}
 	});
+}
+function em_maps_load_location(el){
+	el = jQuery(el);
+	var map_id = el.attr('id').replace('em-location-map-','');
+	em_LatLng = new google.maps.LatLng( jQuery('#em-location-map-coords-'+map_id+' .lat').text(), jQuery('#em-location-map-coords-'+map_id+' .lng').text());
+	maps[map_id] = new google.maps.Map( document.getElementById('em-location-map-'+map_id), {
+	    zoom: 14,
+	    center: em_LatLng,
+	    mapTypeId: google.maps.MapTypeId.ROADMAP,
+	    mapTypeControl: false
+	});
+	maps_markers[map_id] = new google.maps.Marker({
+	    position: em_LatLng,
+	    map: maps[map_id]
+	});
+	infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
+	infowindow.open(maps[map_id],maps_markers[map_id]);
+	maps[map_id].panBy(40,-70);
+	
+	//JS Hook for handling map after instantiation
+	//Example hook, which you can add elsewhere in your theme's JS - jQuery(document).bind('em_maps_location_hook', function(){ alert('hi');} );
+	jQuery(document).triggerHandler('em_maps_location_hook', [maps[map_id], infowindow, maps_markers[map_id], map_id]);
+	//map resize listener
+	jQuery(window).on('resize', function(e) {
+		google.maps.event.trigger(maps[map_id], "resize");
+		maps[map_id].setCenter(maps_markers[map_id].getPosition());
+		maps[map_id].panBy(40,-70);
+	});
+}
+jQuery(document).bind('em_search_ajax', function(e, vars, wrapper){
+	if( em_maps_loaded ){
+		wrapper.find('.em-location-map').each( function(index, el){ em_maps_load_location(el); } );
+		wrapper.find('.em-locations-map').each( function(index, el){ em_maps_load_locations(el); });
+	}
+});
+//Load single maps (each map is treated as a seperate map).
+function em_maps() {
+	//Find all the maps on this page and load them
+	jQuery('.em-location-map').each( function(index, el){ em_maps_load_location(el); } );	
+	jQuery('.em-locations-map').each( function(index, el){ em_maps_load_locations(el); } );
+	
 	//Location stuff - only needed if inputs for location exist
 	if( jQuery('select#location-select-id, input#location-address').length > 0 ){
+		var map, marker;
 		//load map info
 		var refresh_map_location = function(){
 			var location_latitude = jQuery('#location-latitude').val();
@@ -798,11 +900,12 @@ function em_maps() {
 					'</div>'
 				);
 				infoWindow.open(map, marker);
+				jQuery(document).triggerHandler('em_maps_location_hook', [map, infowindow, marker, 0]);
 			} else {
     			jQuery('#em-map').hide();
     			jQuery('#em-map-404').show();
 			}
-		}
+		};
 		
 		//Add listeners for changes to address
 		var get_map_by_id = function(id){
@@ -820,15 +923,16 @@ function em_maps() {
 						infoWindow.setContent( '<div id="location-balloon-content">'+ data.location_balloon +'</div>');
 						infoWindow.open(map, marker);
 						google.maps.event.trigger(map, 'resize');
+						jQuery(document).triggerHandler('em_maps_location_hook', [map, infowindow, marker, 0]);
 					}else{
 						jQuery('#em-map').hide();
 						jQuery('#em-map-404').show();
 					}
 				});
 			}
-		}
-		jQuery('#location-select-id, input#location-id').change( function(){get_map_by_id(jQuery(this).val())} );
-		jQuery('#location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
+		};
+		jQuery('#location-select-id, input#location-id').change( function(){get_map_by_id(jQuery(this).val());} );
+		jQuery('#location-name, #location-town, #location-address, #location-state, #location-postcode, #location-country').change( function(){
 			//build address
 			var addresses = [ jQuery('#location-address').val(), jQuery('#location-town').val(), jQuery('#location-state').val(), jQuery('#location-postcode').val() ];
 			var address = '';
@@ -837,6 +941,11 @@ function em_maps() {
 					address = ( address == '' ) ? address+val:address+', '+val;
 				}
 			});
+			if( address == '' ){ //in case only name is entered, no address
+				jQuery('#em-map').hide();
+				jQuery('#em-map-404').show();
+				return false;
+			}
 			//do country last, as it's using the text version
 			if( jQuery('#location-country option:selected').val() != 0 ){
 				address = ( address == '' ) ? address+jQuery('#location-country option:selected').text():address+', '+jQuery('#location-country option:selected').text();
@@ -855,7 +964,7 @@ function em_maps() {
 		//Load map
 		if(jQuery('#em-map').length > 0){
 			var em_LatLng = new google.maps.LatLng(0, 0);
-			var map = new google.maps.Map( document.getElementById('em-map'), {
+			map = new google.maps.Map( document.getElementById('em-map'), {
 			    zoom: 14,
 			    center: em_LatLng,
 			    mapTypeId: google.maps.MapTypeId.ROADMAP,
@@ -866,7 +975,7 @@ function em_maps() {
 			    map: map,
 			    draggable: true
 			});
-			var infoWindow = new google.maps.InfoWindow({
+			infoWindow = new google.maps.InfoWindow({
 			    content: ''
 			});
 			var geocoder = new google.maps.Geocoder();
@@ -886,16 +995,27 @@ function em_maps() {
 			}else{
 				refresh_map_location();
 			}
+			jQuery(document).triggerHandler('em_map_loaded', [map, infowindow, marker]);
 		}
+		//map resize listener
+		jQuery(window).on('resize', function(e) {
+			google.maps.event.trigger(map, "resize");
+			map.setCenter(marker.getPosition());
+			map.panBy(40,-55);
+		});
 	}
+	em_maps_loaded = true; //maps have been loaded
+	jQuery(document).triggerHandler('em_maps_loaded');
 }
   
 function em_map_infobox(marker, message, map) {
-  var infowindow = new google.maps.InfoWindow({ content: message });
+  var iw = new google.maps.InfoWindow({ content: message });
   google.maps.event.addListener(marker, 'click', function() {
-    infowindow.open(map,marker);
+	if( infowindow ) infowindow.close();
+	infowindow = iw;
+    iw.open(map,marker);
   });
 }
 
 /* jQuery timePicker - http://labs.perifer.se/timedatepicker/ @ http://github.com/perifer/timePicker commit 100644 */
- (function(a){function g(a){a.setFullYear(2001),a.setMonth(0),a.setDate(0);return a}function f(a,b){if(a){var c=a.split(b.separator),d=parseFloat(c[0]),e=parseFloat(c[1]);b.show24Hours||(d===12&&a.indexOf("AM")!==-1?d=0:d!==12&&a.indexOf("PM")!==-1&&(d+=12));var f=new Date(0,0,0,d,e,0);return g(f)}return null}function e(a,b){return typeof a=="object"?g(a):f(a,b)}function d(a){return(a<10?"0":"")+a}function c(a,b){var c=a.getHours(),e=b.show24Hours?c:(c+11)%12+1,f=a.getMinutes();return d(e)+b.separator+d(f)+(b.show24Hours?"":c<12?" AM":" PM")}function b(b,c,d,e){b.value=a(c).text(),a(b).change(),a.browser.msie||b.focus(),d.hide()}a.fn.timePicker=function(b){var c=a.extend({},a.fn.timePicker.defaults,b);return this.each(function(){a.timePicker(this,c)})},a.timePicker=function(b,c){var d=a(b)[0];return d.timePicker||(d.timePicker=new jQuery._timePicker(d,c))},a.timePicker.version="0.3",a._timePicker=function(d,h){var i=!1,j=!1,k=e(h.startTime,h),l=e(h.endTime,h),m="selected",n="li."+m;a(d).attr("autocomplete","OFF");var o=[],p=new Date(k);while(p<=l)o[o.length]=c(p,h),p=new Date(p.setMinutes(p.getMinutes()+h.step));var q=a('<div class="time-picker'+(h.show24Hours?"":" time-picker-12hours")+'"></div>'),r=a("<ul></ul>");for(var s=0;s<o.length;s++)r.append("<li>"+o[s]+"</li>");q.append(r),q.appendTo("body").hide(),q.mouseover(function(){i=!0}).mouseout(function(){i=!1}),a("li",r).mouseover(function(){j||(a(n,q).removeClass(m),a(this).addClass(m))}).mousedown(function(){i=!0}).click(function(){b(d,this,q,h),i=!1});var t=function(){if(q.is(":visible"))return!1;a("li",q).removeClass(m);var b=a(d).offset();q.css({top:b.top+d.offsetHeight,left:b.left}),q.show();var e=d.value?f(d.value,h):k,i=k.getHours()*60+k.getMinutes(),j=e.getHours()*60+e.getMinutes()-i,n=Math.round(j/h.step),o=g(new Date(0,0,0,0,n*h.step+i,0));o=k<o&&o<=l?o:k;var p=a("li:contains("+c(o,h)+")",q);p.length&&(p.addClass(m),q[0].scrollTop=p[0].offsetTop);return!0};a(d).focus(t).click(t),a(d).blur(function(){i||q.hide()});var u=a.browser.opera||a.browser.mozilla?"keypress":"keydown";a(d)[u](function(c){var e;j=!0;var f=q[0].scrollTop;switch(c.keyCode){case 38:if(t())return!1;e=a(n,r);var g=e.prev().addClass(m)[0];g?(e.removeClass(m),g.offsetTop<f&&(q[0].scrollTop=f-g.offsetHeight)):(e.removeClass(m),g=a("li:last",r).addClass(m)[0],q[0].scrollTop=g.offsetTop-g.offsetHeight);return!1;case 40:if(t())return!1;e=a(n,r);var i=e.next().addClass(m)[0];i?(e.removeClass(m),i.offsetTop+i.offsetHeight>f+q[0].offsetHeight&&(q[0].scrollTop=f+i.offsetHeight)):(e.removeClass(m),i=a("li:first",r).addClass(m)[0],q[0].scrollTop=0);return!1;case 13:if(q.is(":visible")){var k=a(n,r)[0];b(d,k,q,h)}return!1;case 27:q.hide();return!1}return!0}),a(d).keyup(function(a){j=!1}),this.getTime=function(){return f(d.value,h)},this.setTime=function(b){d.value=c(e(b,h),h),a(d).change()}},a.fn.timePicker.defaults={step:30,startTime:new Date(0,0,0,0,0,0),endTime:new Date(0,0,0,23,30,0),separator:":",show24Hours:!0}})(jQuery)
+(function(e){function t(t,n,r,i){t.value=e(n).text();e(t).change();if(!navigator.userAgent.match(/msie/i)){t.focus()}r.hide()}function n(e,t){var n=e.getHours();var i=t.show24Hours?n:(n+11)%12+1;var s=e.getMinutes();return r(i)+t.separator+r(s)+(t.show24Hours?"":n<12?" AM":" PM")}function r(e){return(e<10?"0":"")+e}function i(e,t){return typeof e=="object"?o(e):s(e,t)}function s(e,t){if(e){var n=e.split(t.separator);var r=parseFloat(n[0]);var i=parseFloat(n[1]);if(!t.show24Hours){if(r===12&&e.indexOf("AM")!==-1){r=0}else if(r!==12&&e.indexOf("PM")!==-1){r+=12}}var s=new Date(0,0,0,r,i,0);return o(s)}return null}function o(e){e.setFullYear(2001);e.setMonth(0);e.setDate(0);return e}e.fn.timePicker=function(t){var n=e.extend({},e.fn.timePicker.defaults,t);return this.each(function(){e.timePicker(this,n)})};e.timePicker=function(t,n){var r=e(t)[0];return r.timePicker||(r.timePicker=new jQuery._timePicker(r,n))};e.timePicker.version="0.3";e._timePicker=function(r,u){var a=false;var f=false;var l=i(u.startTime,u);var c=i(u.endTime,u);var h="selected";var p="li."+h;e(r).attr("autocomplete","OFF");var d=[];var v=new Date(l);while(v<=c){d[d.length]=n(v,u);v=new Date(v.setMinutes(v.getMinutes()+u.step))}var m=e('<div class="time-picker'+(u.show24Hours?"":" time-picker-12hours")+'"></div>');var g=e("<ul></ul>");for(var y=0;y<d.length;y++){g.append("<li>"+d[y]+"</li>")}m.append(g);m.appendTo("body").hide();m.mouseover(function(){a=true}).mouseout(function(){a=false});e("li",g).mouseover(function(){if(!f){e(p,m).removeClass(h);e(this).addClass(h)}}).mousedown(function(){a=true}).click(function(){t(r,this,m,u);a=false});var b=function(){if(m.is(":visible")){return false}e("li",m).removeClass(h);var t=e(r).offset();m.css({top:t.top+r.offsetHeight,left:t.left});m.show();var i=r.value?s(r.value,u):l;var a=l.getHours()*60+l.getMinutes();var f=i.getHours()*60+i.getMinutes()-a;var p=Math.round(f/u.step);var d=o(new Date(0,0,0,0,p*u.step+a,0));d=l<d&&d<=c?d:l;var v=e("li:contains("+n(d,u)+")",m);if(v.length){v.addClass(h);m[0].scrollTop=v[0].offsetTop}return true};e(r).focus(b).click(b);e(r).blur(function(){if(!a){m.hide()}});e(r)["keydown"](function(n){var i;f=true;var s=m[0].scrollTop;switch(n.keyCode){case 38:if(b()){return false}i=e(p,g);var o=i.prev().addClass(h)[0];if(o){i.removeClass(h);if(o.offsetTop<s){m[0].scrollTop=s-o.offsetHeight}}else{i.removeClass(h);o=e("li:last",g).addClass(h)[0];m[0].scrollTop=o.offsetTop-o.offsetHeight}return false;break;case 40:if(b()){return false}i=e(p,g);var a=i.next().addClass(h)[0];if(a){i.removeClass(h);if(a.offsetTop+a.offsetHeight>s+m[0].offsetHeight){m[0].scrollTop=s+a.offsetHeight}}else{i.removeClass(h);a=e("li:first",g).addClass(h)[0];m[0].scrollTop=0}return false;break;case 13:if(m.is(":visible")){var l=e(p,g)[0];t(r,l,m,u)}return false;break;case 27:m.hide();return false;break}return true});e(r).keyup(function(e){f=false});this.getTime=function(){return s(r.value,u)};this.setTime=function(t){r.value=n(i(t,u),u);e(r).change()}};e.fn.timePicker.defaults={step:30,startTime:new Date(0,0,0,0,0,0),endTime:new Date(0,0,0,23,30,0),separator:":",show24Hours:true}})(jQuery)

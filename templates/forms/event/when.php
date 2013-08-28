@@ -1,7 +1,7 @@
 <?php
 global $EM_Event, $post;
 $hours_format = em_get_hour_format();
-$required = "<i>*</i>";
+$required = apply_filters('em_required_html','<i>*</i>');
 ?>
 <div class="event-form-when" id="em-form-when">
 	<p class="em-date-range">

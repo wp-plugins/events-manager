@@ -23,7 +23,7 @@ class EM_Person extends WP_User{
 		}else{
 			parent::__construct($person_id);
 		}
-		$this->phone = get_metadata('user', $this->ID, 'dbem_phone', true); //extra field for EM
+		$this->phone = wp_kses_data(get_metadata('user', $this->ID, 'dbem_phone', true)); //extra field for EM
 		do_action('em_person',$this, $person_id, $username);
 	}
 	
@@ -38,7 +38,7 @@ class EM_Person extends WP_User{
 				$blog_condition = "AND (e.blog_id=".get_current_blog_id().' OR e.blog_id IS NULL)';
 			}
 		}		
-		$EM_Booking = new EM_Booking(); //empty booking for fields
+		$EM_Booking = em_get_booking(); //empty booking for fields
 		$results = $wpdb->get_results("SELECT b.".implode(', b.', array_keys($EM_Booking->fields))." FROM ".EM_BOOKINGS_TABLE." b, ".EM_EVENTS_TABLE." e WHERE e.event_id=b.event_id AND person_id={$this->ID} {$blog_condition} ORDER BY ".get_option('dbem_bookings_default_orderby','event_start_date')." ".get_option('dbem_bookings_default_order','ASC'),ARRAY_A);
 		$bookings = array();
 		if($ids_only){
@@ -48,7 +48,7 @@ class EM_Person extends WP_User{
 			return apply_filters('em_person_get_bookings', $bookings, $this);
 		}else{
 			foreach($results as $booking_data){
-				$bookings[] = new EM_Booking($booking_data);
+				$bookings[] = em_get_booking($booking_data);
 			}
 			return apply_filters('em_person_get_bookings', new EM_Bookings($bookings), $this);
 		}
@@ -66,18 +66,29 @@ class EM_Person extends WP_User{
 		return apply_filters('em_person_get_events', $events);
 	}
 	
+	function get_bookings_url(){
+		if( get_option('dbem_edit_bookings_page') && (!is_admin() || !empty($_REQUEST['is_public'])) ){
+			$my_bookings_page = get_permalink(get_option('dbem_edit_bookings_page'));
+			$bookings_link = em_add_get_params($my_bookings_page, array('person_id'=>$this->ID, 'event_id'=>null, 'ticket_id'=>null, 'booking_id'=>null), false);
+		}else{
+			$bookings_link = EM_ADMIN_URL. "&page=events-manager-bookings&person_id=".$this->ID;
+		}
+		return apply_filters('em_person_get_bookings_url', $bookings_link, $this);
+	}
+	
 	function display_summary(){
 		ob_start();
+		$no_user = get_option('dbem_bookings_registration_disable') && $this->ID == get_option('dbem_bookings_registration_user');
 		?>
 		<table class="em-form-fields">
 			<tr>
 				<td><?php echo get_avatar($this->ID); ?></td>
 				<td style="padding-left:10px; vertical-align: top;">
 					<table>
-						<?php if( get_option('dbem_bookings_registration_disable') && $this->ID == get_option('dbem_bookings_registration_user') ): ?>
-						<tr><th><?php _e('Name','dbem'); ?> : </th><th><?php echo $this->get_name() ?></th></tr>
+						<?php if( $no_user ): ?>
+						<tr><th><?php _e('Name','dbem'); ?> : </th><th><?php echo $this->get_name(); ?></th></tr>
 						<?php else: ?>
-						<tr><th><?php _e('Name','dbem'); ?> : </th><th><a href="<?php echo EM_ADMIN_URL ?>&amp;page=events-manager-bookings&amp;person_id=<?php echo $this->ID; ?>"><?php echo $this->get_name() ?></a></th></tr>
+						<tr><th><?php _e('Name','dbem'); ?> : </th><th><a href="<?php echo $this->get_bookings_url(); ?>"><?php echo $this->get_name(); ?></a></th></tr>
 						<?php endif; ?>
 						<tr><th><?php _e('Email','dbem'); ?> : </th><td><?php echo $this->user_email; ?></td></tr>
 						<tr><th><?php _e('Phone','dbem'); ?> : </th><td><?php echo $this->phone; ?></td></tr>
@@ -91,7 +102,7 @@ class EM_Person extends WP_User{
 	
 	function get_name(){
 		$full_name = $this->first_name  . " " . $this->last_name ;
-		$full_name = trim($full_name);
+		$full_name = wp_kses_data(trim($full_name));
 		$name = !empty($full_name) ? $full_name : $this->display_name;
 		return apply_filters('em_person_get_name', $name, $this);
 	}
