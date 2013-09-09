@@ -11,7 +11,7 @@ if( !is_super_admin() ){
 	}
 	$group_count = count($user_groups);
 }else{
-    $groups = groups_get_groups(array('show_hidden'=>true));
+    $groups = groups_get_groups(array('show_hidden'=>true, 'per_page'=>0));
     $user_groups = $groups['groups'];
 	$group_count = $groups['total'];
 }

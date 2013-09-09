@@ -300,10 +300,10 @@ class EM_Event extends EM_Object{
 					}
 				}
 				//Start/End times should be available as timestamp
-				$this->start = strtotime($this->event_start_date." ".$this->event_start_time);
-				$this->end = strtotime($this->event_end_date." ".$this->event_end_time);
+				$this->start = strtotime($this->event_start_date." ".$this->event_start_time, current_time('timestamp'));
+				$this->end = strtotime($this->event_end_date." ".$this->event_end_time, current_time('timestamp'));
 				if( !empty($this->event_rsvp_date ) ){
-				    $this->rsvp_end = strtotime($this->event_rsvp_date." ".$this->event_rsvp_time); 
+				    $this->rsvp_end = strtotime($this->event_rsvp_date." ".$this->event_rsvp_time, current_time('timestamp')); 
 				}
 				//quick compatability fix in case _event_id isn't loaded or somehow got erased in post meta
 				if( empty($this->event_id) && !$this->is_recurring() ){
@@ -330,6 +330,9 @@ class EM_Event extends EM_Object{
 				$this->post_id = $this->ID = $event_array['post_id'] = null; //reset post_id because it doesn't really exist
 				$this->to_object($event_array);
 		    }
+			//Start/End times should be available as timestamp
+			$this->start = strtotime($this->event_start_date." ".$this->event_start_time, current_time('timestamp'));
+			$this->end = strtotime($this->event_end_date." ".$this->event_end_time, current_time('timestamp'));
 		}
 	}
 	
@@ -422,8 +425,18 @@ class EM_Event extends EM_Object{
 			$this->event_rsvp = 1;
 			//RSVP cuttoff TIME is set up above where start/end times are as well 
 			if( !$this->is_recurring() ){
-				$this->event_rsvp_date = ( isset($_POST['event_rsvp_date']) ) ? wp_kses_data($_POST['event_rsvp_date']) : $this->event_start_date;
+				if( get_option('dbem_bookings_tickets_single') && count($this->get_tickets()->tickets) == 1 ){
+			    	$EM_Ticket = $this->get_tickets()->get_first();
+			    	$this->event_rsvp_date = '';
+			    	if( !empty($EM_Ticket->end_timestamp) ){
+			    		$this->event_rsvp_date = date('Y-m-d', $EM_Ticket->end_timestamp);
+			    		$this->event_rsvp_time = date('H:i:00', $EM_Ticket->end_timestamp);
+			    	}
+			    }else{
+			    	$this->event_rsvp_date = ( isset($_POST['event_rsvp_date']) ) ? wp_kses_data($_POST['event_rsvp_date']) : $this->event_start_date;
+			    }
 				if( empty($this->event_rsvp_date) ){ $this->event_rsvp_time = '00:00:00'; }
+				$this->rsvp_end = strtotime($this->event_rsvp_date." ".$this->event_rsvp_time, current_time('timestamp'));
 			}
 			$this->event_spaces = ( isset($_POST['event_spaces']) ) ? absint($_POST['event_spaces']):0;
 			$this->event_rsvp_spaces = ( isset($_POST['event_rsvp_spaces']) ) ? absint($_POST['event_rsvp_spaces']):0;
@@ -777,10 +790,12 @@ class EM_Event extends EM_Object{
 			if( $EM_Event->save() ){
 				$EM_Event->feedback_message = sprintf(__("%s successfully duplicated.", 'dbem'), __('Event','dbem'));
 				//save tags here - eventually will be moved into part of $this->save();
-				$EM_Tags = new EM_Tags($this);
-				$EM_Tags->event_id = $EM_Event->event_id;
-				$EM_Tags->post_id = $EM_Event->post_id;
-				$EM_Tags->save();
+				if( get_option('dbem_tags_enabled') ){
+					$EM_Tags = new EM_Tags($this);
+					$EM_Tags->event_id = $EM_Event->event_id;
+					$EM_Tags->post_id = $EM_Event->post_id;
+					$EM_Tags->save();
+				}
 			 	//other non-EM post meta inc. featured image
 				$event_meta = $this->get_event_meta($this->blog_id);
 				$event_meta['_event_approvals_count'] = 0; //reset this counter for new event

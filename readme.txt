@@ -98,6 +98,16 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.5.1.1 (dev) =
+* fixed (rare) looping problem with calendar generation
+* fixed permalink rule problems for events page children with url-encoded slugs
+* changed country name 'Libyan Arab Jamahiriya' to just 'Libya'
+* fixed BP Group selection dropdown being limited to 20 groups
+* updated Hungarian and Polish
+* fixed event results bug for certain months in WP FullCalendar
+* fixed duplication error when tags are disabled
+* fixed single ticket mode cutting off event bookings on event start (requires resave of affected events)
+
 = 5.5.1 =
 * fixed init code not executing WP FullCalendar integration in time
 * changed generation of WP_Rewrite rules for children of event post type to query the database directly rather than use get_posts

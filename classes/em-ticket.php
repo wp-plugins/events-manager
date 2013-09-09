@@ -159,8 +159,8 @@ class EM_Ticket extends EM_Object{
 		$this->ticket_end = ( !empty($post['ticket_end']) ) ? wp_kses_data($post['ticket_end']):'';
 		if( !empty($post['ticket_start_time']) && !empty($this->ticket_start) ) $this->ticket_start .= ' '. $this->sanitize_time($post['ticket_start_time']);
 		if( !empty($post['ticket_end_time']) && !empty($this->ticket_end) ) $this->ticket_end .= ' '. $this->sanitize_time($post['ticket_end_time']);
-		$this->start_timestamp = ( !empty($post['ticket_start']) ) ? strtotime($post['ticket_start']):'';
-		$this->end_timestamp = ( !empty($post['ticket_end']) ) ? strtotime($post['ticket_end']):'';
+		$this->start_timestamp = ( !empty($post['ticket_start']) ) ? strtotime($this->ticket_start):'';
+		$this->end_timestamp = ( !empty($post['ticket_end']) ) ? strtotime($this->ticket_end):'';
 		//sort out user availability restrictions
 		$this->ticket_members = ( !empty($post['ticket_type']) && $post['ticket_type'] == 'members' ) ? 1:0;
 		$this->ticket_guests = ( !empty($post['ticket_type']) && $post['ticket_type'] == 'guests' ) ? 1:0;

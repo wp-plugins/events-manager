@@ -90,7 +90,7 @@ if( !class_exists('EM_Permalinks') ){
 			$events_page = get_post($events_page_id);
 			$em_rules = array();
 			if( is_object($events_page) ){
-				$events_slug = preg_replace('/\/$/', '', str_replace( trailingslashit(home_url()), '', get_permalink($events_page_id)) );
+				$events_slug = urldecode(preg_replace('/\/$/', '', str_replace( trailingslashit(home_url()), '', get_permalink($events_page_id)) ));
 				$events_slug = ( !empty($events_slug) ) ? trailingslashit($events_slug) : $events_slug;
 				$em_rules[$events_slug.'(\d{4}-\d{2}-\d{2})$'] = 'index.php?pagename='.$events_slug.'&calendar_day=$matches[1]'; //event calendar date search
 				$em_rules[$events_slug.'rss$'] = 'index.php?pagename='.$events_slug.'&rss=1'; //rss page
@@ -99,22 +99,22 @@ if( !class_exists('EM_Permalinks') ){
 					//make sure we hard-code rewrites for child pages of events
 					$child_posts = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$events_page->ID} AND post_type='page' AND post_status='publish'");
 					foreach($child_posts as $child_post){
-						$em_rules[$events_slug.$child_post->post_name.'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug    //check if child page has children
+						$em_rules[$events_slug.urldecode($child_post->post_name).'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug    //check if child page has children
 					    $grandchildren = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$child_post->ID} AND post_type='page' AND post_status='publish'");
 					    if( count( $grandchildren ) != 0 ) { 
 					        foreach($grandchildren as $grandchild) {
-					            $em_rules[$events_slug.$child_post->post_name.'/'.$grandchild->post_name.'/?$'] = 'index.php?page_id='.$grandchild->ID;
+					            $em_rules[$events_slug.urldecode($child_post->post_name).'/'.urldecode($grandchild->post_name).'/?$'] = 'index.php?page_id='.$grandchild->ID;
 					        }
 					    }
 					}
 				}elseif( empty($events_slug) ){ //hard code homepage child pages
 					$child_posts = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$events_page->ID} AND post_type='page' AND post_status='publish'");
 					foreach($child_posts as $child_post){
-						$em_rules[$events_page->post_name.'/'.$child_post->post_name.'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug    //check if child page has children
+						$em_rules[$events_page->post_name.'/'.urldecode($child_post->post_name).'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug    //check if child page has children
 					    $grandchildren = $wpdb->get_results("SELECT ID, post_name FROM {$wpdb->posts} WHERE post_parent={$child_post->ID} AND post_type='page' AND post_status='publish'");
 					    if( count( $grandchildren ) != 0 ) { 
 					        foreach($grandchildren as $grandchild) {
-					            $em_rules[$events_slug.$child_post->post_name.'/'.$grandchild->post_name.'/?$'] = 'index.php?page_id='.$grandchild->ID;
+					            $em_rules[$events_slug.urldecode($child_post->post_name).'/'.urldecode($grandchild->post_name).'/?$'] = 'index.php?page_id='.$grandchild->ID;
 					        }
 					    }
 					}
@@ -145,12 +145,12 @@ if( !class_exists('EM_Permalinks') ){
 						//make sure we hard-code rewrites for child pages of events
 						$child_posts = get_posts(array('post_type'=>'any', 'post_parent'=>$conflicting_post->ID, 'numberposts'=>0));
 						foreach($child_posts as $child_post){
-							$em_rules[EM_POST_TYPE_EVENT_SLUG.'/'.$child_post->post_name.'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug
+							$em_rules[EM_POST_TYPE_EVENT_SLUG.'/'.urldecode($child_post->post_name).'/?$'] = 'index.php?page_id='.$child_post->ID; //single event booking form with slug
 							//check if child page has children
 							$grandchildren = get_pages('child_of='.$child_post->ID);
 							if( count( $grandchildren ) != 0 ) {
 								foreach($grandchildren as $grandchild) {
-									$em_rules[$events_slug.$child_post->post_name.'/'.$grandchild->post_name.'/?$'] = 'index.php?page_id='.$grandchild->ID;
+									$em_rules[$events_slug.urldecode($child_post->post_name).'/'.urldecode($grandchild->post_name).'/?$'] = 'index.php?page_id='.$grandchild->ID;
 								}
 							}
 						}

@@ -131,13 +131,14 @@ function wpfc_em_calendar_search($args){
  * Replaces the normal WPFC ajax and uses the EM query system to provide event specific results. 
  */
 function wpfc_em_ajax() {
-    $_REQUEST['month'] = false; //no need for these two
+    $_REQUEST['month'] = false; //no need for these two, they are the original month and year requested
     $_REQUEST['year'] = false;
-	$year = date ( "Y", $_REQUEST['start'] );
-	$temp = date("Y-m-d", $_REQUEST ['start']);
-	$tomorrow = mktime ( 0, 0, 0, date ( "m", strtotime ( $temp ) ) + 1, date ( "d", strtotime ( $temp ) ), date ( "Y", strtotime ( $temp ) ) );
-
-	$month = date ( "m", $tomorrow );
+    
+    //get the year and month to show, which would be the month/year between start and end request params
+    $month_diff =  $_REQUEST['end'] - $_REQUEST['start'];
+    $month_ts = $_REQUEST['start'] + ($month_diff/2); //get a 'mid-month' timestamp to get year and month
+    $year = (int) date ( "Y", $month_ts );
+    $month = (int) date ( "m", $month_ts );
 
 	$args = array ('month'=>$month, 'year'=>$year, 'owner'=>false, 'status'=>1, 'orderby'=>'event_start_date, event_start_time');
 	$args['long_events'] = 0; //since fullcalendar takes the start-end dates for long events, we don't need long events
@@ -147,7 +148,6 @@ function wpfc_em_ajax() {
 	if( isset($_REQUEST[EM_TAXONOMY_CATEGORY]) || empty($_REQUEST['category']) ) $_REQUEST['category'] = !empty($_REQUEST[EM_TAXONOMY_CATEGORY]) ? $_REQUEST[EM_TAXONOMY_CATEGORY]:false;
 	$_REQUEST['tag'] = !empty($_REQUEST[EM_TAXONOMY_TAG]) ? $_REQUEST[EM_TAXONOMY_TAG]:false;
 	$args = apply_filters('wpfc_fullcalendar_args', array_merge($_REQUEST, $args));
-	$EM_Events = EM_Events::get( $args );
 	$calendar_array = EM_Calendar::get($args);
 
 	$parentArray = array ();

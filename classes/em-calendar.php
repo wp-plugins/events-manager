@@ -25,10 +25,10 @@ class EM_Calendar extends EM_Object {
 	   	$start_of_week = get_option('start_of_week');
 		
 		if( !(is_numeric($month) && $month <= 12 && $month > 0) )   {
-			$month = date('m'); 
+			$month = date('m', current_time('timestamp')); 
 		}
 		if( !( is_numeric($year) ) ){
-			$year = date('Y');
+			$year = date('Y', current_time('timestamp'));
 		}  
 		  
 		// Get the first day of the month 
@@ -241,7 +241,7 @@ class EM_Calendar extends EM_Object {
 							$EM_Event = EM_MS_GLOBAL ? em_get_event($event['post_id'], $event['blog_id']) : $EM_Event = em_get_event($event['post_id'], 'post_id');
 							if( empty($eventful_days[$event_eventful_date]) || !is_array($eventful_days[$event_eventful_date]) ) $eventful_days[$event_eventful_date] = array();
 							//add event to array with a corresponding timestamp for sorting of times including long and all-day events
-							$event_ts_marker = ($EM_Event->event_all_day) ? 0 : strtotime($event_eventful_date.' '.$EM_Event->event_start_time);
+							$event_ts_marker = ($EM_Event->event_all_day) ? 0 : (int) strtotime($event_eventful_date.' '.$EM_Event->event_start_time);
 							while( !empty($eventful_days[$event_eventful_date][$event_ts_marker]) ){
 								$event_ts_marker++; //add a second
 							}
@@ -258,7 +258,7 @@ class EM_Calendar extends EM_Object {
 						$EM_Event = EM_MS_GLOBAL ? em_get_event($event['post_id'], $event['blog_id']) : em_get_event($event['post_id'], 'post_id');
 						if( empty($eventful_days[$event_eventful_date]) || !is_array($eventful_days[$event_eventful_date]) ) $eventful_days[$event_eventful_date] = array();
 						//add event to array with a corresponding timestamp for sorting of times including long and all-day events
-						$event_ts_marker = ($EM_Event->event_all_day) ? 0 : $EM_Event->start;
+						$event_ts_marker = ($EM_Event->event_all_day) ? 0 : (int) $EM_Event->start;
 						while( !empty($eventful_days[$event_eventful_date][$event_ts_marker]) ){
 							$event_ts_marker++; //add a second
 						}
