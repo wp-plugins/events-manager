@@ -139,7 +139,7 @@ class EM_Categories extends EM_Object implements Iterator{
 		global $EM_Category;
 		$EM_Category_old = $EM_Category; //When looping, we can replace EM_Category global with the current event in the loop
 		//get page number if passed on by request (still needs pagination enabled to have effect)
-		if( !array_key_exists('page',$args) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
+		if( !array_key_exists('page',$args) && !empty($args['pagination']) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
 			$page = $args['page'] = $_REQUEST['pno'];
 		}
 		//Can be either an array for the get search or an array of EM_Category objects
@@ -189,7 +189,7 @@ class EM_Categories extends EM_Object implements Iterator{
 			//Pagination (if needed/requested)
 			if( !empty($args['pagination']) && !empty($limit) && $categories_count >= $limit ){
 				//Show the pagination links (unless there's less than 10 events, or the custom limit)
-				$output .= apply_filters('em_categories_output_pagination', self::get_pagination_links($args, $categories_count, 'search_cats', self::get_default_search()), '', $categories_count, $limit, $page);
+				$output .= self::get_pagination_links($args, $categories_count, 'search_cats', self::get_default_search());
 			}
 		} else {
 			$output = get_option ( 'dbem_no_categories_message' );

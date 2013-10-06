@@ -40,24 +40,24 @@ jQuery(document).ready( function($){
 	});
 	$('.em-search-form select[name=country]').change( function(){
 		var el = $(this);
-		if( el.val() != '' ){
-			el.closest('.em-search-location').find('.em-search-location-meta').slideDown();
-		}else{
-			el.closest('.em-search-location').find('.em-search-location-meta').slideUp();
-		}
 		$('.em-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
 		$('.em-search select[name=region]').html('<option value="">'+EM.txt_loading+'</option>');
 		$('.em-search select[name=town]').html('<option value="">'+EM.txt_loading+'</option>');
-		var data = {
-			action : 'search_states',
-			country : el.val(),
-			return_html : true
-		};
-		$('.em-search select[name=state]').load( EM.ajaxurl, data );
-		data.action = 'search_regions';
-		$('.em-search select[name=region]').load( EM.ajaxurl, data );
-		data.action = 'search_towns';
-		$('.em-search select[name=town]').load( EM.ajaxurl, data );
+		if( el.val() != '' ){
+			el.closest('.em-search-location').find('.em-search-location-meta').slideDown();
+			var data = {
+				action : 'search_states',
+				country : el.val(),
+				return_html : true
+			};
+			$('.em-search select[name=state]').load( EM.ajaxurl, data );
+			data.action = 'search_regions';
+			$('.em-search select[name=region]').load( EM.ajaxurl, data );
+			data.action = 'search_towns';
+			$('.em-search select[name=town]').load( EM.ajaxurl, data );
+		}else{
+			el.closest('.em-search-location').find('.em-search-location-meta').slideUp();
+		}
 	});
 
 	$('.em-search-form select[name=region]').change( function(){
@@ -87,7 +87,7 @@ jQuery(document).ready( function($){
 	});
 	
 	//in order for this to work, you need the above classes to be present in your templates
-	$(document).delegate('.em-search-form', 'submit', function(e){
+	$(document).delegate('.em-search-form, .em-events-search-form', 'submit', function(e){
 		var form = $(this);
     	if( this.em_search && this.em_search.value == EM.txt_search){ this.em_search.value = ''; }
     	var results_wrapper = form.closest('.em-search-wrapper').find('.em-search-ajax');
@@ -159,6 +159,15 @@ jQuery(document).ready( function($){
 			td.load( url );
 			return false;
 		});
+	//Forms
+	$('#event-form #event-image-delete, #location-form #location-image-delete').on('click', function(){
+		var el = $(this);
+		if( el.is(':checked') ){
+			el.closest('.event-form-image, .location-form-image').find('#event-image-img, #location-image-img').hide();
+		}else{
+			el.closest('.event-form-image, .location-form-image').find('#event-image-img, #location-image-img').show();
+		}
+	});
 	//Tickets & Bookings
 	if( $("#em-tickets-form").length > 0 ){
 		//Enable/Disable Bookings

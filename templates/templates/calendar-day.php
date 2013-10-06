@@ -9,12 +9,9 @@
  * 
  */ 
 $args['scope'] = $_REQUEST['calendar_day'];
-$page = ( !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : 1;
 $events_count = EM_Events::count( apply_filters('em_content_calendar_day_args', $args) ); //Get events first, so we know how many there are in advance
-if ( $events_count > 1 || $page > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
-	$args['limit'] = get_option('dbem_events_default_limit');
-	$args['offset'] = $args['limit'] * ($page-1);
-	echo EM_Events::output(apply_filters('em_content_calendar_day_output_args', $args) );
+if ( $events_count > 1 || get_option('dbem_display_calendar_day_single') == 1 ) {
+	em_locate_template('templates/events-list.php', true, array('args' => apply_filters('em_content_calendar_day_output_args', $args)) );
 } elseif( $events_count == 1 ) {
     $args['format'] = get_option('dbem_single_event_format');
 	echo EM_Events::output(apply_filters('em_content_calendar_day_output_args', $args));

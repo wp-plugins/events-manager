@@ -5,7 +5,7 @@
 ?>
 <?php if(!is_admin()) echo $EM_Notices; ?>			  
 <form id='locations-filter' method='post' action=''>
-	<input type='hidden' name='pno' value='<?php echo $page ?>' />
+	<input type='hidden' name='pno' value='<?php echo esc_attr($page) ?>' />
 	<div class="subsubsub">
 		<a href='<?php echo em_add_get_params($_SERVER['REQUEST_URI'], array('view'=>null, 'pno'=>null)); ?>' <?php echo ( empty($_REQUEST['view']) ) ? 'class="current"':''; ?>><?php echo sprintf( __( 'My %s', 'dbem' ), __('Locations','dbem')); ?> <span class="count">(<?php echo $locations_mine_count; ?>)</span></a>
 		<?php if( current_user_can('read_others_locations') ): ?>
@@ -59,14 +59,14 @@
 					<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Location->location_id ?>' name='locations[]'/></td>
 					<td>
 						<?php if( $EM_Location->can_manage('edit_events','edit_others_events') ): ?>
-						<a href='<?php echo esc_url($EM_Location->get_edit_url()); ?>'><?php echo $EM_Location->location_name ?></a>
+						<a href='<?php echo esc_url($EM_Location->get_edit_url()); ?>'><?php echo esc_html($EM_Location->location_name); ?></a>
 						<?php else: ?>
-						<strong><?php echo $EM_Location->location_name ?></strong> - 
-						<a href='<?php echo $EM_Location->output('#_LOCATIONURL'); ?>'><?php _e('View') ?></a>
+						<strong><?php echo esc_html($EM_Location->location_name) ?></strong> - 
+						<a href='<?php echo $EM_Location->output('#_LOCATIONURL'); ?>'><?php esc_html_e('View') ?></a>
 						<?php endif; ?>
 					</td>
-					<td><?php echo implode(', ', array($EM_Location->location_address,$EM_Location->location_town,$EM_Location->location_postcode)); ?></td>
-					<td><?php echo $EM_Location->location_state ?></td>  
+					<td><?php echo esc_html(implode(', ', array($EM_Location->location_address,$EM_Location->location_town,$EM_Location->location_postcode))); ?></td>
+					<td><?php echo esc_html($EM_Location->location_state) ?></td>  
 					<td><?php echo $EM_Location->get_country() ?></td>                             
 				</tr>
 			<?php endforeach; ?>
@@ -74,7 +74,7 @@
 	</table>
 	<?php else: ?>
 	<br class="clear" />
-	<p><?php _e('No locations have been inserted yet!', 'dbem') ?></p>
+	<p><?php esc_html_e('No locations have been inserted yet!', 'dbem') ?></p>
 	<?php endif; ?>
 	
 	<?php if ( !empty($locations_nav) ) echo $locations_nav; ?>

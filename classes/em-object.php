@@ -353,7 +353,8 @@ class EM_Object {
 		//Location specific filters
 		//if we're searching near something, country etc. becomes irrelevant
 		if( !empty($args['near']) && self::array_is_numeric($args['near']) ){
-			$distance = !empty($args['near_distance']) && is_numeric($args['near_distance']) ? absint($args['near_distance']) : '25';
+			$distance = !empty($args['near_distance']) && is_numeric($args['near_distance']) ? absint($args['near_distance']) : get_option('dbem_search_form_geo_units',25);
+			if( !empty($args['near_unit']) ) $args['near_unit'] = get_option('dbem_search_form_geo_distance','mi');
 			$unit = ( !empty($args['near_unit']) && $args['near_unit'] == 'km' ) ? 6371 /* kilometers */ : 3959 /* miles */;
 			$conditions['near'] = "( $unit * acos( cos( radians({$args['near'][0]}) ) * cos( radians( location_latitude ) ) * cos( radians( location_longitude ) - radians({$args['near'][1]}) ) + sin( radians({$args['near'][0]}) ) * sin( radians( location_latitude ) ) ) ) < $distance";
 		}else{
@@ -474,23 +475,25 @@ class EM_Object {
 	    if( empty(self::$taxonomies_array) ){
 	        //default taxonomies
 	        $taxonomies_array = array(
-        		'category' => array( 'name' => EM_TAXONOMY_CATEGORY, 'ms' => 'event-category', 'context'=> array() ),
-        		'tag' => array( 'name'=> EM_TAXONOMY_TAG, 'context'=> array() )
+        		'category' => array( 'name' => EM_TAXONOMY_CATEGORY, 'slug'=>EM_TAXONOMY_CATEGORY_SLUG, 'ms' => 'event-category', 'context'=> array(), 'query_var'=>EM_TAXONOMY_CATEGORY ),
+        		'tag' => array( 'name'=> EM_TAXONOMY_TAG, 'slug'=>EM_TAXONOMY_TAG_SLUG, 'context'=> array(), 'query_var'=>EM_TAXONOMY_TAG )
 	        );
 	        //get additional taxonomies associated with locations and events and set context for default taxonomies
 	        foreach( get_taxonomies(array(),'objects') as $tax_name => $tax){
                 $event_tax = in_array(EM_POST_TYPE_EVENT, $tax->object_type);
                 $loc_tax = in_array(EM_POST_TYPE_LOCATION, $tax->object_type);
 	            if( $tax_name == EM_TAXONOMY_CATEGORY || $tax_name == EM_TAXONOMY_TAG ){
+	            	//set the context for the default taxonomies, as they're already in the array
 	                $tax_name = $tax_name == EM_TAXONOMY_CATEGORY ? 'category':'tag';
                     if( $event_tax ) $taxonomies_array[$tax_name]['context'][] = EM_POST_TYPE_EVENT;
                     if( $loc_tax ) $taxonomies_array[$tax_name]['context'][] = EM_POST_TYPE_LOCATION;
 	            }else{
+	            	//non default taxonomy, so create new item for the taxonomies array
 	                $tax_name = str_replace('-','_',$tax_name);
 					$prefix = !array_key_exists($tax_name, $taxonomies_array) ? '':'post_';
 	                if( is_array($tax->object_type) ){
 	                    if( $event_tax || $loc_tax ){
-		                    $taxonomies_array[$prefix.$tax_name] = array('name'=>$tax_name, 'context'=>array() );
+		                    $taxonomies_array[$prefix.$tax_name] = array('name'=>$tax_name, 'context'=>array(), 'slug'=> $tax->rewrite['slug'], 'query_var'=> $tax->query_var );
 	                    }
 	                    if( $event_tax ) $taxonomies_array[$prefix.$tax_name]['context'][] = EM_POST_TYPE_EVENT;
 	                    if( $loc_tax ) $taxonomies_array[$prefix.$tax_name]['context'][] = EM_POST_TYPE_LOCATION;
@@ -841,7 +844,7 @@ class EM_Object {
 		if( empty($request) ) $request = $_REQUEST;
 		if( !empty($request['em_search']) && empty($args['search']) ) $request['search'] = $request['em_search'];
 		if( !empty($request['category']) && $request['category'] == -1  ) $request['category'] = $args['category'] = 0;
-		$accepted_searches = array('scope','search','category','tag','country','state','region','town','near','em_search');
+		$accepted_searches = array('scope','search','category','tag','country','state','region','town','near','near_unit','near_distance','em_search');
 		if( !empty($args['ajax']) || defined('DOING_AJAX') ) $accepted_searches[] = 'limit'; //in ajax calls, we need to know how many to return
 		$accepted_searches = apply_filters('em_accepted_searches', $accepted_searches, $args); //em_search is included to circumvent wp search GET/POST clashes
 		foreach($request as $post_key => $post_value){
@@ -918,7 +921,12 @@ class EM_Object {
 		//finally, glue the url with querystring and pass onto pagination function
 		$page_link_template = em_add_get_params($page_url, $pag_args, false); //don't html encode, so em_paginate does its thing;
 		if( empty($args['ajax']) || defined('DOING_AJAX') ) $unique_args = array(); //don't use data method if ajax is disabled or if we're already in an ajax request (SERP irrelevenat)
-		return em_paginate( $page_link_template, $count, $limit, $page, $unique_args );
+		$return = apply_filters('em_object_get_pagination_links', em_paginate( $page_link_template, $count, $limit, $page, $unique_args ), $page_link_template, $count, $limit, $page);
+		//if PHP is 5.3 or later, you can specifically filter by class e.g. em_events_output_pagination - this replaces the old filter originally located in the actual child classes
+		if( function_exists('get_called_class') ){
+			$return = apply_filters(strtolower(get_called_class()).'_output_pagination', em_paginate( $page_link_template, $count, $limit, $page, $unique_args ), $page_link_template, $count, $limit, $page);
+		}
+		return $return;
 	}
 	
 	/**

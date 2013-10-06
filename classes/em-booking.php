@@ -125,7 +125,7 @@ class EM_Booking extends EM_Object{
 			$this->to_object($booking);
 			$this->previous_status = $this->booking_status;
 			$this->get_person();
-			$this->timestamp = !empty($booking['booking_date']) ? strtotime($booking['booking_date']):false;
+			$this->timestamp = !empty($booking['booking_date']) ? strtotime($booking['booking_date'], current_time('timestamp')):false;
 		}
 		//Do it here so things appear in the po file.
 		$this->status_array = array(
@@ -186,7 +186,10 @@ class EM_Booking extends EM_Object{
 				$this->feedback_message = __('Changes saved','dbem');
 			}else{
 				$update = false;
-				$result = $wpdb->insert($table, $data, $this->get_types($data));
+				$data_types = $this->get_types($data);
+				$data['booking_date'] = current_time('mysql');
+				$data_types[] = '%s';
+				$result = $wpdb->insert($table, $data, $data_types);
 			    $this->booking_id = $wpdb->insert_id;  
 				$this->feedback_message = __('Your booking has been recorded','dbem'); 
 			}
@@ -804,6 +807,9 @@ class EM_Booking extends EM_Object{
 		return apply_filters('em_booking_set_status', $result, $this);
 	}
 	
+	/**
+	 * Returns true if booking is reserving a space at this event, whether confirmed or not 
+	 */
 	function is_reserved(){
 	    $result = false;
 	    if( $this->booking_status == 0 && get_option('dbem_bookings_approval_reserved') ){
@@ -814,6 +820,14 @@ class EM_Booking extends EM_Object{
 	        $result = true;
 	    }
 	    return apply_filters('em_booking_is_reserved', $result, $this);
+	}
+	
+	/**
+	 * Returns true if booking is either pending or reserved but not confirmed (which is assumed pending) 
+	 */
+	function is_pending(){
+		$result = ($this->is_reserved() || $this->booking_status == 0) && $this->booking_status != 1;
+	    return apply_filters('em_booking_is_pending', $result, $this);
 	}
 	
 	/**

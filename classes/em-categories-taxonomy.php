@@ -61,11 +61,15 @@ class EM_Categories_Taxonomy{
 	        <th scope="row" valign="top"><label for="category-image">Image</label></th>
 	        <td>
 	        	<?php if( !empty($category_image) ): ?>
-	        	<p><img src="<?php echo $category_image; ?>" /></p>
+	        	<p id="category-image-img"><img src="<?php echo $category_image; ?>" /></p>
 	        	<?php endif; ?>
 	            <input type="text" name="category_image" id="category-image" value="<?php echo esc_attr($category_image); ?>" style="width:300px;" />
 	            <input type="hidden" name="category_image_id" id="category-image-id" value="<?php echo esc_attr($category_image); ?>" />
-	            <input id="upload_image_button" type="button" value="<?php _e('Choose/Upload Image','dbem'); ?>" class="button-secondary" style="width:auto;" /><br />
+	            <input id="upload_image_button" type="button" value="<?php _e('Choose/Upload Image','dbem'); ?>" class="button-secondary" style="width:auto;" />
+	            <?php if( !empty($category_image) ): ?>
+	        	<input id="delete_image_button" type="button" value="<?php _e('Remove Image','dbem'); ?>" class="button-secondary" style="width:auto;" />
+	        	<?php endif; ?>
+	            <br />
 	            <p class="description"><?php echo sprintf(__('Choose an image for your category, which can be displayed using the %s placeholder.','dbem'),'<code>#_CATEGORYIMAGE</code>'); ?></p>
 	        </td>
 	    </tr>
@@ -100,6 +104,13 @@ class EM_Categories_Taxonomy{
 				}else{
 					$wpdb->insert(EM_META_TABLE, array('object_id'=>$term_id,'meta_key'=>'category-image-id','meta_value'=>$_POST['category_image_id']));
 				}
+			}
+		}else{
+			//check if an image exists, if so remove association
+			$prev_settings = $wpdb->get_results('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$term_id}' AND meta_key='category-image'");
+			if( count($prev_settings) > 0 ){
+				$wpdb->delete(EM_META_TABLE, array('object_id'=>$term_id,'meta_key'=>'category-image'));
+				$wpdb->delete(EM_META_TABLE, array('object_id'=>$term_id,'meta_key'=>'category-image-id'));
 			}
 		}
 	}

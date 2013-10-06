@@ -21,13 +21,24 @@ class EM_ML{
 				'dbem_list_date_title',
 				'dbem_single_event_format',
 				//Search Form
-				'dbem_serach_form_submit',
+				'dbem_search_form_submit',
+				'dbem_search_form_advanced_hide',
+				'dbem_search_form_advanced_show',
 				'dbem_search_form_text_label',
 				'dbem_search_form_categories_label',
+				'dbem_search_form_category_label',
 				'dbem_search_form_countries_label',
+				'dbem_search_form_country_label',
 				'dbem_search_form_regions_label',
+				'dbem_search_form_region_label',
 				'dbem_search_form_states_label',
+				'dbem_search_form_state_label',
 				'dbem_search_form_towns_label',
+				'dbem_search_form_town_label',
+				'dbem_search_form_geo_label',
+				'dbem_search_form_geo_units_label',
+				'dbem_search_form_dates_label',
+				'dbem_search_form_dates_separator',
 				//Date/Time
 				'dbem_date_format',
 				'dbem_date_format_js',
@@ -36,11 +47,16 @@ class EM_ML{
 				'dbem_times_separator',
 				'dbem_event_all_day_message',
 				//Calendar
+				'dbem_small_calendar_month_format',
 				'dbem_small_calendar_event_title_format',
 				'dbem_small_calendar_event_title_separator',
+				'dbem_full_calendar_month_format',
 				'dbem_full_calendar_event_format',
 				'dbem_display_calendar_events_limit_msg',
+				//Ical
 				'dbem_ical_description_format',
+				'dbem_ical_real_description_format',
+				'dbem_ical_location_format',				
 				//Locations
 				'dbem_location_list_item_format_header',
 				'dbem_location_list_item_format',
@@ -52,6 +68,8 @@ class EM_ML{
 				'dbem_location_event_list_item_format',
 				'dbem_location_event_list_item_footer_format',
 				'dbem_location_no_events_message',
+				'dbem_location_event_single_format',
+				'dbem_location_no_event_message',
 				//Categories
 				'dbem_categories_list_item_format_header',
 				'dbem_categories_list_item_format',
@@ -63,13 +81,21 @@ class EM_ML{
 				'dbem_category_event_list_item_format',
 				'dbem_category_event_list_item_footer_format',
 				'dbem_category_no_events_message',
+				'dbem_category_no_event_message',
+				'dbem_category_event_single_format',
 				//Tags
+				'dbem_tags_list_item_format_header',
+				'dbem_tags_list_item_format',
+				'dbem_tags_list_item_format_footer',
+				'dbem_no_tags_message',
 				'dbem_tag_page_title_format',
 				'dbem_tag_page_format',
 				'dbem_tag_event_list_item_header_format',
 				'dbem_tag_event_list_item_format',
 				'dbem_tag_event_list_item_footer_format',
 				'dbem_tag_no_events_message',
+				'dbem_tag_event_single_format',
+				'dbem_tag_no_event_message',
 				//RSS
 				'dbem_rss_main_description',
 				'dbem_rss_main_title',
@@ -101,9 +127,11 @@ class EM_ML{
 				'dbem_booking_feedback_nomail',
 				'dbem_booking_feedback_already_booked',
 				'dbem_booking_feedback_min_space',
+				'dbem_booking_feedback_spaces_limit',
 				'dbem_booking_button_msg_book',
 				'dbem_booking_button_msg_booking',
 				'dbem_booking_button_msg_booked',
+				'dbem_booking_button_msg_already_booked',
 				'dbem_booking_button_msg_error',
 				'dbem_booking_button_msg_full',
 				'dbem_booking_button_msg_cancel',
@@ -112,6 +140,7 @@ class EM_ML{
 				'dbem_booking_button_msg_cancel_error',
 				//booking form options
 				'dbem_bookings_submit_button',
+			//Emails
 				//booking email templates
 				'dbem_bookings_contact_email_subject',
 				'dbem_bookings_contact_email_body',
@@ -131,9 +160,15 @@ class EM_ML{
 				'dbem_event_resubmitted_email_subject',
 				'dbem_event_resubmitted_email_body',
 				'dbem_event_published_email_subject',
+				'dbem_event_published_email_body',
+				'dbem_event_approved_email_subject',
 				'dbem_event_approved_email_body',
 				'dbem_event_reapproved_email_subject',
 				'dbem_event_reapproved_email_body',
+				//Registration Emails
+				'dbem_bookings_email_registration_subject',
+				'dbem_bookings_email_registration_body',
+			
 			//Pro Stuff
 				'em_booking_form_error_required',
 				//email reminders

@@ -152,7 +152,7 @@ class EM_Events extends EM_Object {
 		global $EM_Event;
 		$EM_Event_old = $EM_Event; //When looping, we can replace EM_Event global with the current event in the loop
 		//get page number if passed on by request (still needs pagination enabled to have effect)
-		if( !array_key_exists('page',$args) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
+		if( !empty($args['pagination']) && !array_key_exists('page',$args) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
 			$page = $args['page'] = $_REQUEST['pno'];
 		}
 		//Can be either an array for the get search or an array of EM_Event objects
@@ -198,7 +198,7 @@ class EM_Events extends EM_Object {
 			$output = $format_header .  $output . $format_footer;
 			//Pagination (if needed/requested)
 			if( !empty($args['pagination']) && !empty($limit) && $events_count > $limit ){
-				$output .= apply_filters('em_events_output_pagination', self::get_pagination_links($args, $events_count, 'search_events', self::get_default_search()), '', $events_count, $limit, $page);
+				$output .= self::get_pagination_links($args, $events_count, 'search_events', self::get_default_search());
 			}
 		} else {
 			$output = get_option ( 'dbem_no_events_message' );
@@ -220,7 +220,7 @@ class EM_Events extends EM_Object {
 		//Reset some args to include pagination for if pagination is requested.
 		$args['limit'] = isset($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
 		$args['page'] = (!empty($args['page']) && is_numeric($args['page']) )? $args['page'] : 1;
-		$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : $args['page'];
+		$args['page'] = (!empty($args['pagination']) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : $args['page'];
 		$args['offset'] = ($args['page']-1) * $args['limit'];
 		$args['orderby'] = 'event_start_date,event_start_time,event_name'; // must override this to display events in right cronology.
 
@@ -295,7 +295,7 @@ class EM_Events extends EM_Object {
 			}
 			if( !empty($args['limit']) && $events_count > $args['limit'] && (!empty($args['pagination']) || !isset($args['pagination'])) ){
 				//Show the pagination links (unless there's less than $limit events)
-				echo apply_filters('em_events_output_pagination', self::get_pagination_links($args, $events_count, 'search_events_grouped', self::get_default_search()), '', $events_count, $args['limit'], $args['page']);
+				echo self::get_pagination_links($args, $events_count, 'search_events_grouped', self::get_default_search());
 			}
 		}else{
 			echo get_option ( 'dbem_no_events_message' );
@@ -343,6 +343,10 @@ class EM_Events extends EM_Object {
 			    $conditions['status'] = "(`event_status` IS NULL )"; //show draft items
 			}elseif( $args['status'] == 'trash' ){
 			    $conditions['status'] = "(`event_status` = -1 )"; //show trashed items
+			}elseif( $args['status'] == 'all'){
+				$conditions['status'] = "(`event_status` >= 0 OR `event_status` IS NULL)"; //search all statuses that aren't trashed
+			}elseif( $args['status'] == 'everything'){
+				unset($conditions['status']); //search all statuses
 			}
 		}
 		//private events
@@ -419,7 +423,7 @@ class EM_Events extends EM_Object {
 			'private_only' => false,
 			'post_id' => false
 		);
-		if( EM_MS_GLOBAL && !is_admin() ){
+		if( EM_MS_GLOBAL && (!is_admin() || defined('DOING_AJAX')) ){
 			if( empty($array['blog']) && is_main_site() && get_site_option('dbem_ms_global_events') ){
 			    $array['blog'] = false;
 			}

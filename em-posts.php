@@ -7,7 +7,11 @@ if( !defined('EM_TAXONOMY_TAG') ) define('EM_TAXONOMY_TAG','event-tags');
 //Slugs
 define('EM_POST_TYPE_EVENT_SLUG',get_option('dbem_cp_events_slug', 'events'));
 define('EM_POST_TYPE_LOCATION_SLUG',get_option('dbem_cp_locations_slug', 'locations'));
-define('EM_TAXONOMY_CATEGORY_SLUG', get_site_option('dbem_taxonomy_category_slug', 'events/categories'));
+if( EM_MS_GLOBAL ){
+	define('EM_TAXONOMY_CATEGORY_SLUG', get_site_option('dbem_taxonomy_category_slug', 'events/categories'));
+}else{
+	define('EM_TAXONOMY_CATEGORY_SLUG', get_option('dbem_taxonomy_category_slug', 'events/categories'));
+}
 define('EM_TAXONOMY_TAG_SLUG', get_option('dbem_taxonomy_tag_slug', 'events/tags'));
 
 /*

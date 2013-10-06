@@ -64,7 +64,8 @@ class EM_Event_Post_Admin{
 	}
 	
 	public static function wp_insert_post_data( $data, $postarr ){
-		global $wpdb, $EM_Event, $EM_Location, $EM_Notices;
+		global $wpdb, $EM_Event, $EM_Location, $EM_Notices, $EM_SAVING_EVENT;
+		if( !empty($EM_SAVING_EVENT) ) return $data; //never proceed with this if using EM_Event::save();
 		$post_type = $data['post_type'];
 		$post_ID = !empty($postarr['ID']) ? $postarr['ID'] : false;
 		$is_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
@@ -84,14 +85,16 @@ class EM_Event_Post_Admin{
 	}
 	
 	public static function save_post($post_id){
-		global $wpdb, $EM_Event, $EM_Location, $EM_Notices;
+		global $wpdb, $EM_Event, $EM_Location, $EM_Notices, $EM_SAVING_EVENT, $EM_EVENT_SAVE_POST;
+		if( !empty($EM_SAVING_EVENT) ) return; //never proceed with this if using EM_Event::save();
 		$post_type = get_post_type($post_id);
 		$is_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
 		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
+		$EM_EVENT_SAVE_POST = true; //first filter for save_post in EM for events
 		if(!defined('UNTRASHING_'.$post_id) && $is_post_type && $saving_status ){
+			$EM_Event = em_get_event($post_id, 'post_id'); //grab event, via post info
 			if( !empty($_REQUEST['_emnonce']) && wp_verify_nonce($_REQUEST['_emnonce'], 'edit_event') ){ 
 				//this is only run if we know form data was submitted, hence the nonce
-				$EM_Event = em_get_event($post_id, 'post_id');
 				do_action('em_event_save_pre', $EM_Event); //technically, the event is saved... but the meta isn't. wp doesn't give an pre-intervention action for this (or does it?)
 				//Handle Errors by making post draft
 				$get_meta = $EM_Event->get_post_meta();
@@ -117,7 +120,6 @@ class EM_Event_Post_Admin{
 				}
 			}else{
 				//we're updating only the quick-edit style information, which is only post info saved into the index
-				$EM_Event = em_get_event($post_id, 'post_id'); //grab event, via post info
 				if( $EM_Event->validate() ){
 					do_action('em_event_save_pre', $EM_Event); //technically, the event is saved... but the meta isn't. wp doesn't give an pre-intervention action for this (or does it?)
 					//first things first, we must make sure we have an index, if not, reset it to a new one:
@@ -301,6 +303,7 @@ class EM_Event_Recurring_Post_Admin{
 			add_action('admin_notices',array('EM_Event_Post_Admin','admin_notices')); //shared with posts
 		}
 		//Save/Edit actions
+		add_action('save_post',array('EM_Event_Recurring_Post_Admin','save_post'),10000,1); //late priority for checking non-EM meta data added later
 		add_action('before_delete_post',array('EM_Event_Recurring_Post_Admin','before_delete_post'),10,1);
 		add_action('trashed_post',array('EM_Event_Recurring_Post_Admin','trashed_post'),10,1);
 		add_action('untrash_post',array('EM_Event_Recurring_Post_Admin','untrash_post'),10,1);
@@ -325,13 +328,34 @@ class EM_Event_Recurring_Post_Admin{
 			<?php
 		}
 	}
+	
+	/**
+	 * Beacuse in wp admin recurrences get saved early on during save_post, meta added by  other plugins to the recurring event template don't get copied over to recurrences
+	 * This re-saves meta late in save_post to correct this issue, in the future when recurrences refer to one post, this shouldn't be an issue 
+	 * @param int $post_id
+	 */
+	public static function save_post($post_id){
+		global $wpdb, $EM_Notices, $EM_SAVING_EVENT, $EM_EVENT_SAVE_POST;
+		if( !empty($EM_SAVING_EVENT) ) return; //never proceed with this if using EM_Event::save(); which only gets executed outside wp admin
+		$post_type = get_post_type($post_id);
+		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
+		if(!defined('UNTRASHING_'.$post_id) && $post_type == 'event-recurring' && $saving_status && !empty($EM_EVENT_SAVE_POST) ){
+			$EM_Event = em_get_event($post_id, 'post_id');
+			//get the list post IDs for recurrences this recurrence
+		 	if( !$EM_Event->save_events() ){
+				$EM_Event->set_status(null, true);
+				$EM_Notices->add_error(__ ( 'Something went wrong with the recurrence update...', 'dbem' ). __ ( 'There was a problem saving the recurring events.', 'dbem' ));
+		 	}
+		}
+		$EM_EVENT_SAVE_POST = false; //last filter of save_post in EM for events
+	}
 
 	public static function before_delete_post($post_id){
 		if(get_post_type($post_id) == 'event-recurring'){
 			$EM_Event = em_get_event($post_id,'post_id');
 			do_action('em_event_delete_pre ',$EM_Event);
 			//now delete recurrences
-			$events_array = EM_Events::get( array('recurrence'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'all' ) );
+			$events_array = EM_Events::get( array('recurrence'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'everything' ) );
 			foreach($events_array as $event){
 				/* @var $event EM_Event */
 				if($EM_Event->event_id == $event->recurrence_id && !empty($event->recurrence_id) ){ //double check the event is a recurrence of this event
@@ -349,7 +373,7 @@ class EM_Event_Recurring_Post_Admin{
 			$EM_Event = em_get_event($post_id,'post_id');
 			$EM_Event->set_status(null);
 			//now trash recurrences
-			$events_array = EM_Events::get( array('recurrence_id'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'all' ) );
+			$events_array = EM_Events::get( array('recurrence_id'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'everything' ) );
 			foreach($events_array as $event){
 				/* @var $event EM_Event */
 				if($EM_Event->event_id == $event->recurrence_id ){ //double check the event is a recurrence of this event
@@ -366,7 +390,7 @@ class EM_Event_Recurring_Post_Admin{
 			//set a constant so we know this event doesn't need 'saving'
 			if(!defined('UNTRASHING_'.$post_id)) define('UNTRASHING_'.$post_id, true);
 			$EM_Event = em_get_event($post_id,'post_id');
-			$events_array = EM_Events::get( array('recurrence_id'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'all' ) );
+			$events_array = EM_Events::get( array('recurrence_id'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'everything' ) );
 			foreach($events_array as $event){
 				/* @var $event EM_Event */
 				if($EM_Event->event_id == $event->recurrence_id){

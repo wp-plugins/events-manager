@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Events Manager package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2013-08-23 20:12+0100\n"
+"PO-Revision-Date: 2013-09-25 13:53+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -24,7 +24,7 @@ msgid ""
 "coordinate."
 msgstr ""
 "Geocoding est le processus pour convertir des adresses en coordonnées "
-"géographiques, qui peuvent être utilisées pour rechercher des évènements ou "
+"géographiques, qui peuvent être utilisées pour rechercher des événements ou "
 "des emplacements situés près de ces coordonnées."
 
 #: admin/em-options.php:390
@@ -68,7 +68,7 @@ msgstr "Formulaires de recherche"
 
 #: admin/em-options.php:496
 msgid "Event/Location admin pages"
-msgstr "Pages d'administration des évènements/emplacements"
+msgstr "Pages d'administration des événements/emplacements"
 
 #: admin/em-options.php:497
 msgid "Booking admin pages"
@@ -76,7 +76,7 @@ msgstr "Pages d'administration des réservations"
 
 #: admin/em-options.php:498
 msgid "Events list page"
-msgstr "Page de la liste des évènements"
+msgstr "Page de la liste des événements"
 
 #: admin/em-options.php:499
 msgid "Locations list page"
@@ -84,7 +84,7 @@ msgstr "Page de la liste des emplacements"
 
 #: admin/em-options.php:500
 msgid "Event booking forms"
-msgstr "Formulaire de réservation d'un évènement"
+msgstr "Formulaire de réservation d'un événement"
 
 #: admin/em-options.php:501
 msgid "Categories list page"
@@ -111,7 +111,7 @@ msgid ""
 "view their previous bookings."
 msgstr ""
 "Cette page est celle, où les utilisateurs ayant fait des réservations pour "
-"un évènement, peuvent aller pour consulter leurs réservations. "
+"un événement, peuvent aller pour consulter leurs réservations. "
 
 #: admin/em-options.php:1119
 msgid ""
@@ -119,7 +119,7 @@ msgid ""
 "to these events on the following pages."
 msgstr ""
 "Les utilisateurs ayant les permissions requises peuvent gérer leurs "
-"évènements et les réservations pour ces évènements sur les pages suivantes."
+"événements et les réservations pour ces événements sur les pages suivantes."
 
 #: admin/em-options.php:1190
 msgid "Main Search Fields"
@@ -242,7 +242,7 @@ msgstr "Proche de ..."
 
 #: em-install.php:630
 msgid "You cannot book more than %d spaces for this event."
-msgstr "Vous ne pouvez pas réserver plus de %d places pour cet évènement."
+msgstr "Vous ne pouvez pas réserver plus de %d places pour cet événement."
 
 #: templates/forms/event/bookings-ticket-form.php:27
 msgctxt "spaces per booking"
@@ -307,7 +307,7 @@ msgstr "Fermer l'éditeur de billet"
 
 #: templates/forms/event/bookings.php:118
 msgid "Event Options"
-msgstr "Options pour les évènements"
+msgstr "Options pour les événements"
 
 #: templates/forms/event/bookings.php:125
 msgid "Maximum Spaces Per Booking"
@@ -319,7 +319,7 @@ msgid ""
 "exceed this amount."
 msgstr ""
 "Si activer, le nombre total de places pour une seule réservation à cet "
-"évènement ne pourra pas dépasser ce nombre."
+"événement ne pourra pas dépasser ce nombre."
 
 #: templates/forms/event/bookings.php:127
 msgid "Leave blank for no limit."
@@ -356,7 +356,7 @@ msgstr ""
 
 #: em-install.php:478 em-install.php:498 em-install.php:517
 msgid "Upcoming Events"
-msgstr "Évènements à venir"
+msgstr "Événements à venir"
 
 #: admin/em-options.php:601
 msgid ""
@@ -499,7 +499,7 @@ msgstr "Remises (Après les taxes)"
 #: templates/forms/event/recurring-when.php:63
 #: templates/forms/event/when-with-recurring.php:69
 msgid "Each event spans %s day(s)"
-msgstr "Chaque évènement dure %s jour(s)"
+msgstr "Chaque événement dure %s jour(s)"
 
 #: classes/em-booking.php:791 em-actions.php:394 em-actions.php:417
 msgid "Email Sent."
@@ -532,7 +532,7 @@ msgstr ""
 
 #: admin/em-options.php:646
 msgid "Event archives scope"
-msgstr "Limite des archives d'évènements"
+msgstr "Limite des archives d'événements"
 
 #: admin/em-options.php:862 admin/em-options.php:964
 msgid ""
@@ -588,13 +588,13 @@ msgid ""
 "Controls how many events belonging to a tag are shown per page when using "
 "placeholders such as %s. Leave blank for no limit."
 msgstr ""
-"Permet de définir combien d'évènements appartenant à une catégorie sont "
+"Permet de définir combien d'événements appartenant à une catégorie sont "
 "montrés par page, quand on utilise les marqueurs comme %s. Laisser vide pour "
 "ne pas avoir de limite."
 
 #: admin/em-options.php:1351
 msgid "Choose to show events within a specific time range."
-msgstr "Choisir comment afficher les évènements dans un intervalle défini."
+msgstr "Choisir comment afficher les événements dans un intervalle défini."
 
 #: admin/em-options.php:1386 admin/em-options.php:1424
 #: admin/em-options.php:1462
@@ -609,12 +609,12 @@ msgstr "Les paramètres ci-dessous sont utilisés pour le marqueur %s"
 #: admin/em-options.php:1390 admin/em-options.php:1428
 #: admin/em-options.php:1466
 msgid "Next event format"
-msgstr "Format pour l'évènement suivant"
+msgstr "Format pour l'événement suivant"
 
 #: admin/em-options.php:1390 admin/em-options.php:1428
 #: admin/em-options.php:1466
 msgid "The format of the next upcoming event in this %s."
-msgstr "Le format de l'évènement suivant dans %s."
+msgstr "Le format de l'événement suivant dans %s."
 
 #: admin/em-options.php:1666
 msgid ""
@@ -651,18 +651,18 @@ msgstr ""
 
 #: em-install.php:480 em-install.php:486
 msgid "No events in this location"
-msgstr "Aucun évènement à cet emplacement"
+msgstr "Aucun événement à cet emplacement"
 
 #: em-install.php:518 em-install.php:523
 msgid "No events with this tag"
-msgstr "Aucun évènement dans cette catégorie"
+msgstr "Aucun événement dans cette catégorie"
 
 #: templates/forms/event/group.php:40
 msgid ""
 "Select a group you admin to attach this event to it. Note that all other "
 "admins of that group can modify the booking."
 msgstr ""
-"Sélectionnez un groupe que vous administrez pour y rattacher cet évènement. "
+"Sélectionnez un groupe que vous administrez pour y rattacher cet événement. "
 "Notez que tous les autres administrateurs de ce groupe peuvent modifier la "
 "réservation."
 
@@ -729,7 +729,7 @@ msgstr "Réservation déjà faite"
 
 #: admin/em-options.php:1705
 msgid "Event Admin/Owner Emails"
-msgstr "Administration des évènements/courriel du propriétaire"
+msgstr "Administration des événements/courriel du propriétaire"
 
 #: admin/em-options.php:1722
 msgid "Booked User Emails"
@@ -737,11 +737,11 @@ msgstr "Courriel de l'utilisateur de la réservation"
 
 #: admin/em-options.php:1787
 msgid "Event Admin Emails"
-msgstr "Courriel de l'administrateur des évènements"
+msgstr "Courriel de l'administrateur des événements"
 
 #: admin/em-options.php:1815
 msgid "Event Submitter Emails"
-msgstr "Courriel de l'émetteur des évènements"
+msgstr "Courriel de l'émetteur des événements"
 
 #: admin/em-options.php:1903
 msgid "A test email will be sent to your account email - %s"
@@ -804,11 +804,11 @@ msgstr ""
 
 #: widgets/em-calendar.php:17
 msgid "Display your events in a calendar widget."
-msgstr "Afficher vos évènements dans un widget calendrier."
+msgstr "Afficher vos événements dans un widget calendrier."
 
 #: widgets/em-calendar.php:18
 msgid "Events Calendar"
-msgstr "Calendrier des évènements"
+msgstr "Calendrier des événements"
 
 #: widgets/em-calendar.php:60 widgets/em-events.php:102
 #: widgets/em-locations.php:75
@@ -817,7 +817,7 @@ msgstr "Titre"
 
 #: widgets/em-calendar.php:64
 msgid "Show Long Events?"
-msgstr "Évènements longue durée ?"
+msgstr "Événements longue durée ?"
 
 #: widgets/em-calendar.php:68 widgets/em-events.php:150
 msgid "Category IDs"
@@ -829,35 +829,35 @@ msgstr "1,2,3 ou 2 (0 = tous)"
 
 #: widgets/em-events.php:22 widgets/em-events.php:78 widgets/em-events.php:164
 msgid "all events"
-msgstr "Tous les évènements"
+msgstr "Tous les événements"
 
 #: widgets/em-events.php:23 widgets/em-events.php:168
 msgid "No events"
-msgstr "Aucun évènement"
+msgstr "Aucun événement"
 
 #: widgets/em-events.php:26
 msgid "start date, start time, event name"
-msgstr "date de début, heure de début, nom de l'évènement"
+msgstr "date de début, heure de début, nom de l'événement"
 
 #: widgets/em-events.php:27
 msgid "name, start date, start time"
-msgstr "nom de l'évènement, date de début, heure de début"
+msgstr "nom de l'événement, date de début, heure de début"
 
 #: widgets/em-events.php:28
 msgid "name, end date, end time"
-msgstr "nom de l'évènement, date de fin, heure de fin"
+msgstr "nom de l'événement, date de fin, heure de fin"
 
 #: widgets/em-events.php:29
 msgid "end date, end time, event name"
-msgstr "date de fin, heure de fin, nom de l'évènement"
+msgstr "date de fin, heure de fin, nom de l'événement"
 
 #: widgets/em-events.php:31
 msgid "Display a list of events on Events Manager."
-msgstr "Afficher une liste des évènements sur Events Manager."
+msgstr "Afficher une liste des événements sur Events Manager."
 
 #: widgets/em-events.php:106
 msgid "Number of events"
-msgstr "Nombre d'évènements"
+msgstr "Nombre d'événements"
 
 #: widgets/em-events.php:111
 msgid "Scope"
@@ -877,11 +877,11 @@ msgstr "Format des éléments de la liste"
 
 #: widgets/em-events.php:159
 msgid "Show all events link at bottom?"
-msgstr "Afficher le lien vers tous les évènements en-dessous ?"
+msgstr "Afficher le lien vers tous les événements en-dessous ?"
 
 #: widgets/em-events.php:163
 msgid "All events link text?"
-msgstr "Le texte à afficher sur le lien vers tous les évènements ?"
+msgstr "Le texte à afficher sur le lien vers tous les événements ?"
 
 #: widgets/em-events.php:167
 msgid "No events text"
@@ -893,11 +893,11 @@ msgstr "Emplacements"
 
 #: widgets/em-locations.php:21
 msgid "Event start date/time, location name"
-msgstr "Date / heure de début de l'évènement, nom de l'emplacement"
+msgstr "Date / heure de début de l'événement, nom de l'emplacement"
 
 #: widgets/em-locations.php:24
 msgid "Display a list of event locations on Events Manager."
-msgstr "Afficher une liste d'emplacements sur le gestionnaire d'évènements."
+msgstr "Afficher une liste d'emplacements sur le gestionnaire d'événements."
 
 #: widgets/em-locations.php:52
 msgid "No locations"
@@ -1026,27 +1026,27 @@ msgstr "Aucune réservation n'a été confirmée."
 
 #: admin/bookings/em-events.php:13 em-functions.php:208
 msgid "Past events"
-msgstr "Évènements passés"
+msgstr "Événements passés"
 
 #: admin/bookings/em-events.php:14 em-functions.php:206
 msgid "All events"
-msgstr "Tous les évènements"
+msgstr "Tous les événements"
 
 #: admin/bookings/em-events.php:15 em-functions.php:207
 msgid "Future events"
-msgstr "Évènements futurs"
+msgstr "Événements futurs"
 
 #: admin/bookings/em-events.php:29 templates/tables/events.php:25
 msgid "Past Events"
-msgstr "Évènements passés"
+msgstr "Événements passés"
 
 #: admin/bookings/em-events.php:32
 msgid "All Events"
-msgstr "Tous les évènements"
+msgstr "Tous les événements"
 
 #: admin/bookings/em-events.php:35
 msgid "Future Events"
-msgstr "Évènements futurs"
+msgstr "Événements futurs"
 
 #: admin/bookings/em-events.php:55 templates/tables/locations.php:21
 msgid "Delete selected"
@@ -1062,7 +1062,7 @@ msgstr "Filtre"
 
 #: admin/bookings/em-events.php:87
 msgid "no events"
-msgstr "Aucun évènement"
+msgstr "Aucun événement"
 
 #: admin/bookings/em-events.php:97 admin/bookings/em-pending.php:101
 #: admin/bookings/em-person.php:86 admin/em-bookings.php:110
@@ -1081,7 +1081,7 @@ msgstr "Aucun évènement"
 #: em-actions.php:601 em-install.php:413 em-install.php:457 em-posts.php:141
 #: templates/forms/event-editor.php:12 templates/templates/my-bookings.php:39
 msgid "Event"
-msgstr "Évènement"
+msgstr "Événement"
 
 #: admin/bookings/em-events.php:98 templates/buddypress/group-events.php:45
 #: templates/buddypress/my-group-events.php:45 templates/tables/events.php:62
@@ -1132,7 +1132,7 @@ msgstr "Paramètres"
 
 #: admin/em-admin.php:41 admin/em-help.php:10
 msgid "Getting Help for Events Manager"
-msgstr "Aide de Events Manager, gestionnaire d'évènements"
+msgstr "Aide de Events Manager, gestionnaire d'événements"
 
 #: admin/em-admin.php:41
 msgid "Help"
@@ -1179,10 +1179,10 @@ msgid ""
 "what you are doing, you may have done this on purpose, if so <a href=\"%s"
 "\">ignore this message</a>"
 msgstr ""
-"Désoler ! Pour une raison inconnue, la page d'évènements n'a pas pu être "
+"Désoler ! Pour une raison inconnue, la page d'événements n'a pas pu être "
 "créée (peut-être que vous venez de l'effacer ?). Vous devrez la créer "
 "manuellement, en créant une page vide, du nom que vous voulez, puis en la "
-"sélectionnant en tant que page d'évènements depuis la <a href=\"%s\">page de "
+"sélectionnant en tant que page d'événements depuis la <a href=\"%s\">page de "
 "paramètres</a>. Désolé pour cette étape supplémentaire ! Si vous savez ce "
 "que vous faites, vous pouvez <a href=\"%s\">ignorer ce message</a>"
 
@@ -1211,7 +1211,7 @@ msgid ""
 "your edit forms and media library. <a href=\"%s\">Dismiss message</a>"
 msgstr ""
 "Bien qu'elles apparaissent encore via les marqueurs, vous devrez <a href=\"%s"
-"\">migrer vos images</a> pour les évènements et les emplacements, afin de "
+"\">migrer vos images</a> pour les événements et les emplacements, afin de "
 "les voir apparaitre dans vos formulaires d'édition, ainsi que votre "
 "bibliothèque de médias. <a href=\"%s\">Ignorer ce message</a>"
 
@@ -1249,7 +1249,7 @@ msgstr ""
 "contenu sera écrasé par Events Manager, quoique si vous incluez le mot "
 "CONTENTS (exactement et en capitales) en l'entourant avec du texte, seul "
 "CONTENTS sera remplacé et votre texte sera conservé. Si vous voulez changer "
-"la façon dont vos évènements s'affichent, aller à la <a href='%s'>page des "
+"la façon dont vos événements s'affichent, aller à la <a href='%s'>page des "
 "paramètres</a>. "
 
 #: admin/em-admin.php:197 admin/em-ms-options.php:158 admin/em-options.php:544
@@ -1263,7 +1263,7 @@ msgstr ""
 #: em-install.php:561 em-install.php:924 em-posts.php:137 em-posts.php:140
 #: em-posts.php:142 em-template-tags.php:140 widgets/em-events.php:13
 msgid "Events"
-msgstr "Évènements"
+msgstr "Événements"
 
 #: admin/em-admin.php:220 admin/em-options.php:2103
 msgid "Uninstall"
@@ -1271,7 +1271,7 @@ msgstr "Désinstaller"
 
 #: admin/em-bookings.php:61
 msgid "Event Bookings Dashboard"
-msgstr "Réservations d'évènement"
+msgstr "Réservations d'événement"
 
 #: admin/em-bookings.php:69
 msgid "Recent Bookings"
@@ -1279,7 +1279,7 @@ msgstr "Réservations récentes"
 
 #: admin/em-bookings.php:81
 msgid "Events With Bookings Enabled"
-msgstr "Évènements avec réservations"
+msgstr "Événements avec réservations"
 
 #: admin/em-bookings.php:97 admin/em-bookings.php:159
 #: admin/em-bookings.php:207 admin/em-bookings.php:511
@@ -1291,7 +1291,7 @@ msgstr "Accès non autorisé"
 #: admin/em-bookings.php:97 admin/em-bookings.php:207
 #: admin/em-bookings.php:511 admin/em-bookings.php:566
 msgid "You do not have the rights to manage this event."
-msgstr "Vous n'avez pas le droit de gérer cet évènement."
+msgstr "Vous n'avez pas le droit de gérer cet événement."
 
 #: admin/em-bookings.php:109
 msgid "Manage %s Bookings"
@@ -1312,7 +1312,7 @@ msgstr "Export CSV"
 #: admin/em-bookings.php:119 admin/em-options.php:1088
 #: templates/forms/event-editor.php:43
 msgid "Event Name"
-msgstr "Nom de l’évènement"
+msgstr "Nom de l’événement"
 
 #: admin/em-bookings.php:121
 msgid "Availability"
@@ -1354,11 +1354,11 @@ msgstr "Billet pour %s"
 
 #: admin/em-bookings.php:170
 msgid "View/Edit Event"
-msgstr "Voir / Éditer un évènement"
+msgstr "Voir / Éditer un événement"
 
 #: admin/em-bookings.php:171
 msgid "View Event Bookings"
-msgstr "Afficher les réservations pour l’évènement"
+msgstr "Afficher les réservations pour l’événement"
 
 #: admin/em-bookings.php:176 admin/em-bookings.php:232
 #: admin/em-options.php:772 admin/em-options.php:822 admin/em-options.php:920
@@ -1408,7 +1408,7 @@ msgstr "Éditer la réservation"
 
 #: admin/em-bookings.php:223
 msgid "Event Details"
-msgstr "Détails de l'évènement"
+msgstr "Détails de l'événement"
 
 #: admin/em-bookings.php:234 admin/em-options.php:1260 em-install.php:412
 #: em-install.php:431
@@ -1499,7 +1499,7 @@ msgid ""
 "managers will see."
 msgstr ""
 "Vous pouvez ajouter des notes privées ci-dessous pour référence interne que "
-"seuls les gestionnaires d'évènements verront."
+"seuls les gestionnaires d'événements verront."
 
 #: admin/em-bookings.php:475
 msgid "wrote"
@@ -1534,12 +1534,12 @@ msgid ""
 msgstr ""
 "A la <a href='%s'>page des paramètres</a>, vous trouverez diverses zones de "
 "texte où vous pourrez modifier la façon dont sont affichées les informations "
-"d'évènement, les listes d'évènements et d'emplacements. En utilisant ces "
+"d'événement, les listes d'événements et d'emplacements. En utilisant ces "
 "espaces dédiés, vous pouvez choisir quelle information doit y être affichée."
 
 #: admin/em-help.php:28 admin/em-ms-options.php:59 admin/em-options.php:237
 msgid "Event Related Placeholders"
-msgstr "Marqueurs relatifs aux évènements"
+msgstr "Marqueurs relatifs aux événements"
 
 #: admin/em-help.php:31 admin/em-ms-options.php:62 admin/em-options.php:240
 msgid "Category Related Placeholders"
@@ -1570,7 +1570,7 @@ msgid ""
 "To update your network blogs with the latest Events Manager automatically, "
 "click the update button below."
 msgstr ""
-"Pour mettre à jour votre réseau de sites avec les derniers évènements "
+"Pour mettre à jour votre réseau de sites avec les derniers événements "
 "automatiquement, appuyez sur le bouton de mise à jour ci-dessous."
 
 #: admin/em-ms-options.php:34
@@ -1615,7 +1615,7 @@ msgstr "Général"
 
 #: admin/em-ms-options.php:131 admin/em-options.php:262
 msgid "Event Manager Options"
-msgstr "Paramètres du gestionnaire d’évènements"
+msgstr "Paramètres du gestionnaire d’événements"
 
 #: admin/em-ms-options.php:141 admin/em-options.php:273
 #: admin/em-options.php:357 admin/em-options.php:385 admin/em-options.php:406
@@ -1655,14 +1655,14 @@ msgid ""
 "be accessible anymore, and if you switch back they will be but new events "
 "created during global events mode will only remain on the main site."
 msgstr ""
-"Sélectionnez oui pour enregistrer les évènements dans les tables du site "
+"Sélectionnez oui pour enregistrer les événements dans les tables du site "
 "principal (EM doit également y être activée). Ceci vous permet de partager "
-"des évènements à travers différents sites, comme par exemple pour montrer "
-"les évènements de votre réseau tout en permettant aux utilisateurs "
-"d'afficher et de gérer leurs propres évènements au sein de leur site. Gardez "
-"à l'esprit que l'activation de ceci signifie que les anciens évènements "
+"des événements à travers différents sites, comme par exemple pour montrer "
+"les événements de votre réseau tout en permettant aux utilisateurs "
+"d'afficher et de gérer leurs propres événements au sein de leur site. Gardez "
+"à l'esprit que l'activation de ceci signifie que les anciens événements "
 "créés sur les sous-blogs ne seront plus accessibles, ils le seront à nouveau "
-"si vous faites marche arrière, tandis que de nouveaux évènements créés en "
+"si vous faites marche arrière, tandis que de nouveaux événements créés en "
 "mode global resteront sur le site principal."
 
 #: admin/em-ms-options.php:150
@@ -1711,7 +1711,7 @@ msgstr "Options %s"
 
 #: admin/em-ms-options.php:156
 msgid "Display global events on main blog?"
-msgstr "Afficher les évènements globaux sur le site principal ?"
+msgstr "Afficher les événements globaux sur le site principal ?"
 
 #: admin/em-ms-options.php:156 admin/em-ms-options.php:157
 #: admin/em-ms-options.php:158 admin/em-options.php:566
@@ -1728,7 +1728,7 @@ msgstr "Afficher les évènements globaux sur le site principal ?"
 #: events-manager.php:432 events-manager.php:433 events-manager.php:434
 #: events-manager.php:435 events-manager.php:436
 msgid "events"
-msgstr "évènements"
+msgstr "événements"
 
 #: admin/em-ms-options.php:157 admin/em-ms-options.php:166
 msgid "Link sub-site %s directly to sub-site?"
@@ -1741,7 +1741,7 @@ msgstr "Lier le sous-site %s directement au site principal ?"
 #: classes/em-event-post-admin.php:86 classes/em-event.php:699
 #: classes/em-event.php:713
 msgid "event"
-msgstr "évènement"
+msgstr "événement"
 
 #: admin/em-ms-options.php:158 admin/em-ms-options.php:167
 msgid "Global %s slug"
@@ -1805,7 +1805,7 @@ msgid ""
 "Settings have been reset back to default. Your events, locations and "
 "categories have not been modified."
 msgstr ""
-"Les paramètres ont été remis aux valeurs par défaut. Vos évènements, "
+"Les paramètres ont été remis aux valeurs par défaut. Vos événements, "
 "emplacements et catégories n'ont pas été modifiées."
 
 #: admin/em-options.php:149 admin/em-options.php:159
@@ -1865,7 +1865,7 @@ msgid ""
 "All your settings and events will be permanently deleted. This cannot be "
 "undone."
 msgstr ""
-"Tous vos réglages et évènements seront définitivement effacés. Ceci ne peut "
+"Tous vos réglages et événements seront définitivement effacés. Ceci ne peut "
 "être annulé."
 
 #: admin/em-options.php:214
@@ -1921,7 +1921,7 @@ msgstr "Activer la périodicité ?"
 msgid "Select yes to enable the recurrence features feature"
 msgstr ""
 "Sélectionnez oui pour activer la fonctionnalité périodicité et permettre de "
-"définir des évènements périodiques."
+"définir des événements périodiques."
 
 #: admin/em-options.php:284
 msgid "Enable bookings?"
@@ -1931,7 +1931,7 @@ msgstr "Permettre les réservations ?"
 msgid "Select yes to allow bookings and tickets for events."
 msgstr ""
 "Sélectionnez oui pour permettre les réservations et les billets pour des "
-"évènements."
+"événements."
 
 #: admin/em-options.php:285
 msgid "Enable tags?"
@@ -1969,14 +1969,14 @@ msgid ""
 "This option allows you to select the default category when adding an event."
 msgstr ""
 "Cette option vous permet de sélectionner la catégorie par défaut lors de "
-"l'ajout d'un évènement."
+"l'ajout d'un événement."
 
 #: admin/em-options.php:298
 msgid ""
 "If an event does not have a category assigned when editing, this one will be "
 "assigned automatically."
 msgstr ""
-"Si un évènement n'est pas associé à une catégorie lors de sa création, celle-"
+"Si un événement n'est pas associé à une catégorie lors de sa création, celle-"
 "ci lui sera associée par défaut."
 
 #: admin/em-options.php:302 admin/em-options.php:331
@@ -2014,10 +2014,10 @@ msgid ""
 "information about an event for other uses. <a href='%s'>More information on "
 "placeholders.</a>"
 msgstr ""
-"Vous pouvez également ajouter des attributs d'évènement ici, un par ligne "
+"Vous pouvez également ajouter des attributs d'événement ici, un par ligne "
 "dans ce format <code>#_ATT{key}</code> . Ils n'apparaîtront pas sur les "
-"pages d'évènement, sauf si vous les insérez dans un autre modèle. Vous "
-"pourrez stocker des informations supplémentaires sur un évènement pour "
+"pages d'événement, sauf si vous les insérez dans un autre modèle. Vous "
+"pourrez stocker des informations supplémentaires sur un événement pour "
 "d'autres usages. <a href='%s'>Plus d'informations sur les marqueurs.</a>"
 
 #: admin/em-options.php:310
@@ -2033,12 +2033,12 @@ msgid ""
 "This option allows you to select the default location when adding an event."
 msgstr ""
 "Cette option vous permet de sélectionner l'emplacement par défaut lors de "
-"l'ajout d'un évènement."
+"l'ajout d'un événement."
 
 #: admin/em-options.php:315
 msgid "(not applicable with event ownership on presently, coming soon!)"
 msgstr ""
-"<br />(Non applicable à la propriété d'évènement telle qu'implémentée "
+"<br />(Non applicable à la propriété d'événement telle qu'implémentée "
 "actuellement, à venir bientôt !)"
 
 #: admin/em-options.php:318
@@ -2083,7 +2083,7 @@ msgid ""
 "{has_location}..{/has_location}</code> conditional placeholder to "
 "selectively display location information."
 msgstr ""
-"Sélectionnez non pour permettre de définir des évènements sans en spécifier "
+"Sélectionnez non pour permettre de définir des événements sans en spécifier "
 "l'emplacement. Vous pouvez utiliser les marqueurs conditionnels <code>"
 "{no_location}...{/no_location}</code> ou <code>{has_location}...{/"
 "has_location}</code> pour afficher les informations d'emplacements de façon "
@@ -2112,8 +2112,8 @@ msgid ""
 msgstr ""
 "Vous pouvez également ajouter des attributs d'emplacement ici, un par ligne "
 "dans ce format <code>#_LATT{key}</code> . Ils n'apparaîtront pas sur les "
-"pages d'évènement, sauf si vous les insérez dans un modèle ci-dessous. Vous "
-"pourrez stocker des informations supplémentaires sur un évènement pour "
+"pages d'événement, sauf si vous les insérez dans un modèle ci-dessous. Vous "
+"pourrez stocker des informations supplémentaires sur un événement pour "
 "d'autres usages. <a href='%s'>Plus d'informations sur les marqueurs.</a>"
 
 #: admin/em-options.php:340 admin/em-options.php:1060
@@ -2133,11 +2133,11 @@ msgid ""
 msgstr ""
 "Des centaines d'heures sont passées dans cette extension gratuite pour "
 "WordPress, montrez votre soutien et ajoutez un petit lien vers le site de "
-"l'extension au bas de vos pages évènement."
+"l'extension au bas de vos pages événement."
 
 #: admin/em-options.php:357
 msgid "Event Submission Forms"
-msgstr "Formulaire de soumission d’évènement"
+msgstr "Formulaire de soumission d’événement"
 
 #: admin/em-options.php:361
 msgid ""
@@ -2145,8 +2145,8 @@ msgid ""
 "shortcode, and enabling anonymous submissions below."
 msgstr ""
 "Vous pouvez permettre aux utilisateurs de soumettre publiquement des "
-"évènements sur votre blog en utilisant le code court %s, et autoriser la "
-"soumission anonyme d'évènements."
+"événements sur votre blog en utilisant le code court %s, et autoriser la "
+"soumission anonyme d'événements."
 
 #: admin/em-options.php:364
 msgid "Use Visual Editor?"
@@ -2168,8 +2168,8 @@ msgstr "Afficher à nouveau le formulaire ?"
 msgid ""
 "When a user submits their event, you can display a new event form again."
 msgstr ""
-"Lorsqu'un utilisateur soumet son évènement, vous pouvez réafficher le "
-"formulaire après soumission de l'évènement."
+"Lorsqu'un utilisateur soumet son événement, vous pouvez réafficher le "
+"formulaire après soumission de l'événement."
 
 #: admin/em-options.php:366 admin/em-options.php:375
 msgid "Success Message"
@@ -2179,7 +2179,7 @@ msgstr "Message Succès"
 msgid "Customize the message your user sees when they submitted their event."
 msgstr ""
 "Modifiez le message que verront vos utilisateurs lorsqu'ils soumettent leurs "
-"évènements."
+"événements."
 
 #: admin/em-options.php:367
 msgid "Successfully Updated Message"
@@ -2190,11 +2190,11 @@ msgid ""
 "Customize the message your user sees when they resubmit/update their event."
 msgstr ""
 "Modifiez le message que verront vos utilisateurs lorsqu'ils ressoumettront/"
-"modifieront leurs évènements."
+"modifieront leurs événements."
 
 #: admin/em-options.php:370
 msgid "Anonymous event submissions"
-msgstr "Soumission Anonyme d’Évènements"
+msgstr "Soumission Anonyme d’Événements"
 
 #: admin/em-options.php:373
 msgid "Allow anonymous event submissions?"
@@ -2221,12 +2221,12 @@ msgid ""
 "create a \"Anonymous\" subscriber with a very good password and use that. "
 "Guests will have the same event permissions as this user when submitting."
 msgstr ""
-"Les évènements doivent avoir un propriétaire. Afin de permettre aux "
-"évènements d'être soumis de façon anonyme, vous devez spécifier un "
+"Les événements doivent avoir un propriétaire. Afin de permettre aux "
+"événements d'être soumis de façon anonyme, vous devez spécifier un "
 "utilisateur particulier. Nous vous recommandons de créer un compte abonné "
 "\"Anonyme\" avec un excellent mot de passe et de l'utiliser pour cela. Les "
 "visiteurs auront les mêmes droits que ce compte, lors de la soumission de "
-"l'évènement."
+"l'événement."
 
 #: admin/em-options.php:375
 msgid ""
@@ -2298,7 +2298,7 @@ msgstr ""
 "l'extension <a href=\"%s\" target=\"_blank\">Google Libraries</a>, parce que "
 "sans options d'optimisations supplémentaires, il réduira de manière "
 "significative le nombre de fichiers nécessaires à l'affichage de vos pages "
-"d'évènements et de manière générale améliorera le chargement des pages de "
+"d'événements et de manière générale améliorera le chargement des pages de "
 "votre site."
 
 #: admin/em-options.php:419
@@ -2351,11 +2351,11 @@ msgid ""
 "forms."
 msgstr ""
 "Inclure les pages où vous utilisez les codes courts ou des widgets pour "
-"afficher le formulaire de recherche d'évènements."
+"afficher le formulaire de recherche d'événements."
 
 #: admin/em-options.php:431
 msgid "Event Edit and Submission Forms"
-msgstr "Formulaire de modification/soumission d’évènement"
+msgstr "Formulaire de modification/soumission d’événement"
 
 #: admin/em-options.php:431 admin/em-options.php:432
 msgid ""
@@ -2363,7 +2363,7 @@ msgid ""
 "forms."
 msgstr ""
 "Inclure les pages où vous utilisez le code court ou du PHP pour afficher le "
-"formulaire de soumission d'évènement."
+"formulaire de soumission d'événement."
 
 #: admin/em-options.php:432
 msgid "Booking Management Pages"
@@ -2467,7 +2467,7 @@ msgid ""
 "and tags here. Be aware that you may want to set up redirects if you change "
 "your permalink structures to maintain SEO rankings."
 msgstr ""
-"Vous pouvez changer la structure des permaliens pour vos évènements, "
+"Vous pouvez changer la structure des permaliens pour vos événements, "
 "emplacements, catégories et mots-clef. Méfiez-vous : il s'agit là des "
 "adresses de pages, aussi si vous modifiez ceci sur un site déjà en ligne, "
 "vous devrez mettre en place des redirections afin de conserver les "
@@ -2488,7 +2488,7 @@ msgstr "Catégories"
 #: admin/em-options.php:965 admin/em-options.php:1439 em-posts.php:50
 #: em-posts.php:53
 msgid "Event Tags"
-msgstr "Mots-clef d'évènement"
+msgstr "Mots-clef d'événement"
 
 #: admin/em-options.php:561 admin/em-options.php:719 admin/em-options.php:1060
 msgid "%s Pages"
@@ -2528,7 +2528,7 @@ msgstr "Liste / Archives d'%s"
 
 #: admin/em-options.php:582
 msgid "Events page"
-msgstr "Page Évènements"
+msgstr "Page Événements"
 
 #: admin/em-options.php:584 admin/em-options.php:743 admin/em-options.php:873
 #: admin/em-options.php:975
@@ -2542,8 +2542,8 @@ msgid ""
 "archives or use the appropriate shortcodes and/or template tags."
 msgstr ""
 "Cette option vous permet de sélectionner une page en tant que page "
-"d'évènements. Si vous ne sélectionnez pas de page d'évènements, vous pourrez "
-"afficher une liste d'évènements via les archives d'évènements, ou utiliser "
+"d'événements. Si vous ne sélectionnez pas de page d'événements, vous pourrez "
+"afficher une liste d'événements via les archives d'événements, ou utiliser "
 "les codes courts appropriés et/ou les mots-clef."
 
 #: admin/em-options.php:591
@@ -2555,11 +2555,11 @@ msgid ""
 "If set to yes, a search form will appear just above your list of events."
 msgstr ""
 "Si oui, un formulaire de recherche apparaîtra juste au-dessus de votre liste "
-"d'évènements."
+"d'événements."
 
 #: admin/em-options.php:592
 msgid "Display calendar in events page?"
-msgstr "Afficher le calendrier à la page d'évènements ?"
+msgstr "Afficher le calendrier à la page d'événements ?"
 
 #: admin/em-options.php:592
 msgid ""
@@ -2567,7 +2567,7 @@ msgid ""
 "the default list. It is recommended not to display both the calendar widget "
 "and a calendar page."
 msgstr ""
-"Cette option vous permet d'afficher le calendrier à la page des évènements, "
+"Cette option vous permet d'afficher le calendrier à la page des événements, "
 "au lieu de la liste par défaut. Il est recommandé de ne pas afficher côte à "
 "côte ce calendrier et le widget calendrier."
 
@@ -2576,7 +2576,7 @@ msgid ""
 "If you would like to show events that span over more than one day, see the "
 "Calendar section on this page."
 msgstr ""
-"<br/>Si vous souhaitez afficher des évènements qui durent plus d'une "
+"<br/>Si vous souhaitez afficher des événements qui durent plus d'une "
 "journée, référez-vous à la section Calendrier de cette page."
 
 #: admin/em-options.php:593
@@ -2593,7 +2593,7 @@ msgstr ""
 "Certains thèmes WordPress ne suivent pas les règles de l'art dans la "
 "génération des menus, si bien que la réécriture automatique des titres peut "
 "poser des soucis. Si vos menus ne fonctionnent pas correctement à la page "
-"d'évènements, essayez de positionner ceci à Oui en fournissant le format de "
+"d'événements, essayez de positionner ceci à Oui en fournissant le format de "
 "titre en HTML, ci-dessous."
 
 #: admin/em-options.php:594
@@ -2610,7 +2610,7 @@ msgid ""
 "this title, see settings further down for page titles."
 msgstr ""
 "Ce paramètre n'est utilisé que si vous cochez 'Oui' ci-dessus. Vous "
-"constaterez que les titres des pages d'évènements ne sont plus réécrits, et "
+"constaterez que les titres des pages d'événements ne sont plus réécrits, et "
 "que vous avez un nouveau titre sous le titre par défaut. C'est ici que vous "
 "contrôlez l'HTML de ce titre : assurez-vous que le marqueur #_PAGETITLE est "
 "présent, car c'est celui qui est utilisé par Event Manager pour contrôler ce "
@@ -2640,7 +2640,7 @@ msgstr "Permettre les archives de type WordPress."
 
 #: admin/em-options.php:611
 msgid "Default event archive ordering"
-msgstr "Ordre par défaut des archives d'évènements"
+msgstr "Ordre par défaut des archives d'événements"
 
 #: admin/em-options.php:616
 msgid "Order by start date, start time"
@@ -2676,7 +2676,7 @@ msgid ""
 "ordering by start date in ascending order. To change this, modify the values "
 "above."
 msgstr ""
-"Lorsque le gestionnaire d'évènements affiche des listes d'évènements, le "
+"Lorsque le gestionnaire d'événements affiche des listes d'événements, le "
 "comportement par défaut est de les classer par date de début dans l'ordre "
 "croissant. Pour changer cela, modifiez les valeurs ci-dessus."
 
@@ -2688,7 +2688,7 @@ msgstr "Paramètres généraux"
 #: admin/em-options.php:656
 msgid "Are current events past events?"
 msgstr ""
-"Est-ce que les évènements d'ajourd'hui sont considérés comme des évènements "
+"Est-ce que les événements d'ajourd'hui sont considérés comme des événements "
 "passés ?"
 
 #: admin/em-options.php:656
@@ -2697,9 +2697,9 @@ msgid ""
 "included in searches, set this to yes to consider events that started "
 "'yesterday' as past."
 msgstr ""
-"Par défaut, les évènements qui ont une date de fin au-delà d'aujourd'hui "
+"Par défaut, les événements qui ont une date de fin au-delà d'aujourd'hui "
 "seront inclus dans les recherches, réglez ce paramètre à Oui pour considérer "
-"les évènements qui ont commencé 'hier' dans le passé."
+"les événements qui ont commencé 'hier' dans le passé."
 
 #: admin/em-options.php:657 admin/em-options.php:806
 msgid "Include in WordPress Searches?"
@@ -2721,23 +2721,23 @@ msgstr "Ceci peut être redéfini au travers de codes courts ou de mots-clef."
 
 #: admin/em-options.php:666 admin/em-options.php:1306
 msgid "Default event list ordering"
-msgstr "Ordre par défaut d'une liste d'évènements"
+msgstr "Ordre par défaut d'une liste d'événements"
 
 #: admin/em-options.php:671
 msgid "Order by start date, start time, then event name"
-msgstr "Date de début, heure de début, nom de l'évènement"
+msgstr "Date de début, heure de début, nom de l'événement"
 
 #: admin/em-options.php:672
 msgid "Order by name, start date, then start time"
-msgstr "Nom de l'évènement, date de début, heure de début"
+msgstr "Nom de l'événement, date de début, heure de début"
 
 #: admin/em-options.php:673
 msgid "Order by name, end date, then end time"
-msgstr "Nom de l'évènement, date de fin, heure de fin"
+msgstr "Nom de l'événement, date de fin, heure de fin"
 
 #: admin/em-options.php:674
 msgid "Order by end date, end time, then event name"
-msgstr "Date de fin, heure de fin, nom de l'évènement"
+msgstr "Date de fin, heure de fin, nom de l'événement"
 
 #: admin/em-options.php:688 admin/em-options.php:1326
 msgid "All Ascending"
@@ -2749,26 +2749,26 @@ msgstr "Descendant"
 
 #: admin/em-options.php:709
 msgid "Event list scope"
-msgstr "Contenu d'une liste d'évènements"
+msgstr "Contenu d'une liste d'événements"
 
 #: admin/em-options.php:709
 msgid ""
 "Only show events starting within a certain time limit on the events page. "
 "Default is future events with no end time limit."
 msgstr ""
-"Afficher uniquement les évènements qui ont débuté dans une certaine plage de "
-"temps sur la page des évènements. Par défaut, les évènements futurs sans "
+"Afficher uniquement les événements qui ont débuté dans une certaine plage de "
+"temps sur la page des événements. Par défaut, les événements futurs sans "
 "limite de fin."
 
 #: admin/em-options.php:710 admin/em-options.php:729 admin/em-options.php:951
 #: admin/em-options.php:1052
 msgid "Event List Limits"
-msgstr "Longueur de la liste d'évènements"
+msgstr "Longueur de la liste d'événements"
 
 #: admin/em-options.php:710
 msgid "This will control how many events are shown on one list by default."
 msgstr ""
-"Cette option vous permet de définir combien d'évènements doivent être "
+"Cette option vous permet de définir combien d'événements doivent être "
 "affichés dans une liste."
 
 #: admin/em-options.php:729
@@ -2776,7 +2776,7 @@ msgid ""
 "Controls how many events being held at a location are shown per page when "
 "using placeholders such as %s. Leave blank for no limit."
 msgstr ""
-"Contrôle combien d'évènements pour un lieu sont affichés par page quand vous "
+"Contrôle combien d'événements pour un lieu sont affichés par page quand vous "
 "utilisez les marqueurs comme %s. Laisser vide pour aucune limite."
 
 #: admin/em-options.php:741 admin/em-options.php:871 admin/em-options.php:973
@@ -2868,7 +2868,7 @@ msgstr ""
 #: admin/em-options.php:903
 msgid "When listing events for a category, this order is applied."
 msgstr ""
-"Quand une liste d'évènements pour une catégorie est affichée, c'est cet "
+"Quand une liste d'événements pour une catégorie est affichée, c'est cet "
 "ordre de tri qui s'applique."
 
 #: admin/em-options.php:908 admin/em-options.php:1413
@@ -2898,7 +2898,7 @@ msgid ""
 "Controls how many events belonging to a category are shown per page when "
 "using placeholders such as %s. Leave blank for no limit."
 msgstr ""
-"Permet de définir combien d'évènements appartenant à une catégorie sont "
+"Permet de définir combien d'événements appartenant à une catégorie sont "
 "montrés par page, quand on utilise les marqueurs comme %s. Laisser vide pour "
 "ne pas avoir de limite."
 
@@ -2915,7 +2915,7 @@ msgid ""
 "admin area on whatever page you want on your website. Bear in mind that this "
 "is overriden by BuddyPress if activated."
 msgstr ""
-"Ces pages vous permettent de fournir une interface de gestion des évènements "
+"Ces pages vous permettent de fournir une interface de gestion des événements "
 "en dehors de l'administration, sur la page que vous souhaitez dans votre "
 "site. Gardez à l'esprit que cette option est annulée si BuddyPress est "
 "activé."
@@ -2954,7 +2954,7 @@ msgstr "Gestion des pages du Front-end"
 
 #: admin/em-options.php:1123
 msgid "Edit events"
-msgstr "Éditer les évènements"
+msgstr "Éditer les événements"
 
 #: admin/em-options.php:1127 admin/em-options.php:1135
 msgid "Users can view, add and edit their %s on this page."
@@ -2985,9 +2985,9 @@ msgid ""
 "you do not provide specified formats in other event lists, like in "
 "shortcodes."
 msgstr ""
-"Ces formats seront utilisés pour la page d'évènements. Ils seront aussi "
+"Ces formats seront utilisés pour la page d'événements. Ils seront aussi "
 "utilisés si vous ne donnez pas de format spécifique dans les autres listes "
-"d'évènements, comme dans les codes courts."
+"d'événements, comme dans les codes courts."
 
 #: admin/em-options.php:1166 templates/forms/event/recurring-when.php:13
 #: templates/forms/event/when-with-recurring.php:35
@@ -3011,15 +3011,15 @@ msgstr "Quotidiennement"
 
 #: admin/em-options.php:1167 admin/em-options.php:1168
 msgid "Events page grouping"
-msgstr "Page de regroupement d'évènements"
+msgstr "Page de regroupement d'événements"
 
 #: admin/em-options.php:1167
 msgid ""
 "If you choose a group by mode, your events page will display events in "
 "groups of your chosen time range."
 msgstr ""
-"Si vous choisissez un mode par regroupement, votre page d'évènements "
-"affichera les évènements groupés dans le créneau choisi."
+"Si vous choisissez un mode par regroupement, votre page d'événements "
+"affichera les événements groupés dans le créneau choisi."
 
 #: admin/em-options.php:1168
 msgid "Choose how to format your group headings. Leave blank for defaults."
@@ -3038,7 +3038,7 @@ msgstr ""
 #: admin/em-options.php:1169 admin/em-options.php:1380
 #: admin/em-options.php:1418 admin/em-options.php:1456
 msgid "Default event list format header"
-msgstr "Format par défaut de l'en-tête d'une liste d'évènements"
+msgstr "Format par défaut de l'en-tête d'une liste d'événements"
 
 #: admin/em-options.php:1169 admin/em-options.php:1380
 #: admin/em-options.php:1418 admin/em-options.php:1456
@@ -3047,20 +3047,20 @@ msgid ""
 "format. Default is blank"
 msgstr ""
 "Ce contenu apparaitra juste au-dessus de votre code pour le format d'une "
-"liste d'évènements. Valeur par défaut : vide."
+"liste d'événements. Valeur par défaut : vide."
 
 #: admin/em-options.php:1170
 msgid "Default event list format"
-msgstr "Format par défaut d'une liste d'évènements"
+msgstr "Format par défaut d'une liste d'événements"
 
 #: admin/em-options.php:1170
 msgid "The format of any events in a list."
-msgstr "Le format des évènements dans une liste."
+msgstr "Le format des événements dans une liste."
 
 #: admin/em-options.php:1171 admin/em-options.php:1382
 #: admin/em-options.php:1420 admin/em-options.php:1458
 msgid "Default event list format footer"
-msgstr "Format par défaut du pied de page d'une liste d'évènements"
+msgstr "Format par défaut du pied de page d'une liste d'événements"
 
 #: admin/em-options.php:1171 admin/em-options.php:1382
 #: admin/em-options.php:1420 admin/em-options.php:1458
@@ -3069,20 +3069,20 @@ msgid ""
 "format. Default is blank"
 msgstr ""
 "Ce contenu apparaitra juste sous votre code pour le format d'une liste "
-"d'évènements. Valeur par défaut : vide."
+"d'événements. Valeur par défaut : vide."
 
 #: admin/em-options.php:1172
 msgid "No events message"
-msgstr "Message 'Aucun évènement'"
+msgstr "Message 'Aucun événement'"
 
 #: admin/em-options.php:1172
 msgid "The message displayed when no events are available."
 msgstr ""
-"Le message qui s'affiche lorsque la page n'a pas d'évènements à afficher."
+"Le message qui s'affiche lorsque la page n'a pas d'événements à afficher."
 
 #: admin/em-options.php:1173
 msgid "List events by date title"
-msgstr "Titre de page d'évènements par date"
+msgstr "Titre de page d'événements par date"
 
 #: admin/em-options.php:1173
 msgid ""
@@ -3092,7 +3092,7 @@ msgid ""
 "<code>#</code> symbol before them, i.e. <code>#m</code>, <code>#M</code>, "
 "<code>#j</code>, etc.<br/>"
 msgstr ""
-"Ceci est le titre d'une page qui regroupe les évènements d'une date précise. "
+"Ceci est le titre d'une page qui regroupe les événements d'une date précise. "
 "Pour insérer des valeurs de date, utilisez la <a href=\"http://www.php.net/"
 "manual/fr/function.date.php\">syntaxe PHP pour les heures</a> précédés du "
 "symbole <code>#</code>, ainsi <code>#m</code>, <code>#M</code>, <code>#j</"
@@ -3105,19 +3105,19 @@ msgstr "Page %s seul"
 
 #: admin/em-options.php:1178
 msgid "Single event page title format"
-msgstr "Format du titre de page d'évènement seul"
+msgstr "Format du titre de page d'événement seul"
 
 #: admin/em-options.php:1178
 msgid "The format of a single event page title."
-msgstr "Le format du titre de page pour un évènement seul."
+msgstr "Le format du titre de page pour un événement seul."
 
 #: admin/em-options.php:1180
 msgid "Default single event format"
-msgstr "Format par défaut d'un évènement seul"
+msgstr "Format par défaut d'un événement seul"
 
 #: admin/em-options.php:1180
 msgid "The format of a single event page."
-msgstr "Le format de page pour un évènement seul."
+msgstr "Le format de page pour un événement seul."
 
 #: admin/em-options.php:1188
 msgid "Search Form"
@@ -3242,7 +3242,7 @@ msgstr "Message pour toute la journée"
 msgid ""
 "If an event lasts all day, this text will show if using the %s placeholder"
 msgstr ""
-"Si un évènement se déroule sur toute la journée, ce texte sera affiché si "
+"Si un événement se déroule sur toute la journée, ce texte sera affiché si "
 "vous utilisez le marqueur %s "
 
 #: admin/em-options.php:1274
@@ -3254,7 +3254,7 @@ msgid ""
 "When creating events, would you like your times to be shown in 24 hour "
 "format?"
 msgstr ""
-"Lors de la création d'évènements, voulez vous que les heures soient au "
+"Lors de la création d'événements, voulez vous que les heures soient au "
 "format 24h?"
 
 #: admin/em-options.php:1282 widgets/em-calendar.php:13
@@ -3263,20 +3263,20 @@ msgstr "Calendrier"
 
 #: admin/em-options.php:1286
 msgid "Link directly to event on day with single event?"
-msgstr "Faire un lien direct vers l'évènement pour les jours n'en ayant qu'un?"
+msgstr "Faire un lien direct vers l'événement pour les jours n'en ayant qu'un?"
 
 #: admin/em-options.php:1286
 msgid ""
 "If a calendar day has only one event, you can force a direct link to the "
 "event (recommended to avoid duplicate content)."
 msgstr ""
-"Si le jour dans le calendrier a un seul évènement, vous pouvez forcer un "
-"lien direct vers l'évènement (c'est recommandé pour éviter la duplication du "
+"Si le jour dans le calendrier a un seul événement, vous pouvez forcer un "
+"lien direct vers l'événement (c'est recommandé pour éviter la duplication du "
 "contenu)."
 
 #: admin/em-options.php:1287
 msgid "Show list on day with single event?"
-msgstr "Afficher une liste même s'il n'y a qu'un seul évènement ?"
+msgstr "Afficher une liste même s'il n'y a qu'un seul événement ?"
 
 #: admin/em-options.php:1287
 msgid ""
@@ -3284,9 +3284,9 @@ msgid ""
 "when clicking on the link of that calendar date. If you select Yes here, you "
 "will get always see a list of events."
 msgstr ""
-"Par défaut, si un jour civil a un seul évènement, sa page affiche un seul "
-"évènement lorsqu'on clique sur le lien de cette date dans le calendrier. Si "
-"vous sélectionnez Oui, vous obtiendrez toujours une liste d'évènements."
+"Par défaut, si un jour civil a un seul événement, sa page affiche un seul "
+"événement lorsqu'on clique sur le lien de cette date dans le calendrier. Si "
+"vous sélectionnez Oui, vous obtiendrez toujours une liste d'événements."
 
 #: admin/em-options.php:1289
 msgid "Small Calendar"
@@ -3294,7 +3294,7 @@ msgstr "Titre du petit calendrier"
 
 #: admin/em-options.php:1292
 msgid "Event titles"
-msgstr "Titres de l'évènement"
+msgstr "Titres de l'événement"
 
 #: admin/em-options.php:1292
 msgid ""
@@ -3314,7 +3314,7 @@ msgid ""
 "taking place on the same day."
 msgstr ""
 "Le séparateur apparaissant dans le titre ci-dessus lorsque plusieurs "
-"évènements se produisent le même jour."
+"événements se produisent le même jour."
 
 #: admin/em-options.php:1294
 msgid "Abbreviated weekdays"
@@ -3342,16 +3342,16 @@ msgstr "Calendrier"
 
 #: admin/em-options.php:1300
 msgid "Event format"
-msgstr "Format des Pages Évènements"
+msgstr "Format des Pages Événements"
 
 #: admin/em-options.php:1300
 msgid ""
 "The format of each event when displayed in the full calendar. Remember to "
 "include <code>li</code> tags before and after the event."
 msgstr ""
-"Le format de chaque évènement affiché dans le calendrier pleine page. "
+"Le format de chaque événement affiché dans le calendrier pleine page. "
 "Souvenez-vous d'inclure des balises <code>li</code> avant et <code>/li</"
-"code> après l'évènement."
+"code> après l'événement."
 
 #: admin/em-options.php:1301
 msgid "Abbreviated weekdays?"
@@ -3368,30 +3368,30 @@ msgstr ""
 #: admin/em-options.php:1304
 msgid "Calendar Day Event List Settings"
 msgstr ""
-"Paramètres pour la liste des évènements d'une journée dans le calendrier"
+"Paramètres pour la liste des événements d'une journée dans le calendrier"
 
 #: admin/em-options.php:1311
 msgid "Order by event name, then event start time"
-msgstr "Trier par le nom de l'évènement, puis l'heure de début"
+msgstr "Trier par le nom de l'événement, puis l'heure de début"
 
 #: admin/em-options.php:1312
 msgid "Order by event start time, then event name"
-msgstr "Trier par l'heure de début, puis le nom de l'évènement"
+msgstr "Trier par l'heure de début, puis le nom de l'événement"
 
 #: admin/em-options.php:1343
 msgid "Calendar events/day limit"
-msgstr "Calendrier limite du nombre d'évènement par jour"
+msgstr "Calendrier limite du nombre d'événement par jour"
 
 #: admin/em-options.php:1343
 msgid ""
 "Limits the number of events on each calendar day. Leave blank for no limit."
 msgstr ""
-"Limiter le nombre d'évènements qui doivent être affichés sur chaque jour du "
+"Limiter le nombre d'événements qui doivent être affichés sur chaque jour du "
 "calendrier. Laisser vide pour sans limite."
 
 #: admin/em-options.php:1344
 msgid "More Events message"
-msgstr "Message pour plus d'évènements"
+msgstr "Message pour plus d'événements"
 
 #: admin/em-options.php:1344
 msgid ""
@@ -3399,8 +3399,8 @@ msgid ""
 "are more events than the limit above, leave blank for no link as the day "
 "number is also a link."
 msgstr ""
-"Texte du lien vers la page du jour avec tous les évènements pour ce jour. Ce "
-"lien sera positionné si il y a plus d'évènements que le limite ci-dessus. A "
+"Texte du lien vers la page du jour avec tous les événements pour ce jour. Ce "
+"lien sera positionné si il y a plus d'événements que le limite ci-dessus. A "
 "laisser vide pour ne pas voir de lien (le numéro du jour est déjà un lien)."
 
 #: admin/em-options.php:1346
@@ -3422,7 +3422,7 @@ msgstr "Limite iCal"
 #: admin/em-options.php:1352 admin/em-options.php:1484
 msgid "Limits the number of future events shown (0 = unlimited)."
 msgstr ""
-"Limite le nombre d'évènements à venir qui doivent être affichés (0 = "
+"Limite le nombre d'événements à venir qui doivent être affichés (0 = "
 "illimité)."
 
 #: admin/em-options.php:1366 admin/em-options.php:1406
@@ -3483,7 +3483,7 @@ msgstr "Format titre %s seul"
 
 #: admin/em-options.php:1374
 msgid "The format of a single location page title."
-msgstr "Le format du titre de la page affichant un seul évènement."
+msgstr "Le format du titre de la page affichant un seul événement."
 
 #: admin/em-options.php:1376 admin/em-options.php:1414
 #: admin/em-options.php:1452
@@ -3492,7 +3492,7 @@ msgstr "Format page %s seul"
 
 #: admin/em-options.php:1376
 msgid "The format of a single location page."
-msgstr "Le format de la page affichant un seul évènement."
+msgstr "Le format de la page affichant un seul événement."
 
 #: admin/em-options.php:1378 admin/em-options.php:1416
 #: admin/em-options.php:1454
@@ -3509,7 +3509,7 @@ msgid ""
 "The format of the events the list inserted in the location page through the "
 "%s element."
 msgstr ""
-"Le format d'une liste d'évènements inséré à la page des emplacements via "
+"Le format d'une liste d'événements inséré à la page des emplacements via "
 "l'élément %s."
 
 #: admin/em-options.php:1383 admin/em-options.php:1391
@@ -3520,7 +3520,7 @@ msgid ""
 "available."
 msgstr ""
 "Le message qui s'affiche dans la liste générée par %s lorsqu'il n'y a pas "
-"d'évènements à afficher."
+"d'événements à afficher."
 
 #: admin/em-options.php:1223 admin/em-options.php:1411 em-install.php:369
 #: templates/buddypress/group-events.php:113
@@ -3541,7 +3541,7 @@ msgid ""
 "The format of the events the list inserted in the category page through the "
 "%s element."
 msgstr ""
-"Le format d'une liste d'évènements inséré à la page des catégories par "
+"Le format d'une liste d'événements inséré à la page des catégories par "
 "l'élément %s."
 
 #: admin/em-options.php:1449
@@ -3567,7 +3567,7 @@ msgid ""
 "<code>#_TAGNEXTEVENTS</code>, <code>#_TAGNEXTEVENTS</code> and "
 "<code>#_TAGALLEVENTS</code> element."
 msgstr ""
-"Le format d'une liste d'évènements inséré à la page des emplacements via les "
+"Le format d'une liste d'événements inséré à la page des emplacements via les "
 "éléments <code>#_TAGNEXTEVENTS</code>, <code>#_TAGNEXTEVENTS</code> et "
 "<code>#_TAGALLEVENTS</code>."
 
@@ -3579,7 +3579,7 @@ msgid ""
 msgstr ""
 "Le message à afficher dans une liste générée par les éléments "
 "<code>#_TAGNEXTEVENTS</code>, <code>#_TAGNEXTEVENTS</code> and "
-"<code>#_TAGALLEVENTS</code> lorsque aucun évènement n'est affiché."
+"<code>#_TAGALLEVENTS</code> lorsque aucun événement n'est affiché."
 
 #: admin/em-options.php:1476
 msgid "RSS"
@@ -3591,7 +3591,7 @@ msgstr "Titre du flux RSS"
 
 #: admin/em-options.php:1480
 msgid "The main title of your RSS events feed."
-msgstr "Le titre principal de votre flux RSS d'évènements."
+msgstr "Le titre principal de votre flux RSS d'événements."
 
 #: admin/em-options.php:1481
 msgid "RSS main description"
@@ -3599,7 +3599,7 @@ msgstr "Description du flux RSS"
 
 #: admin/em-options.php:1481
 msgid "The main description of your RSS events feed."
-msgstr "La description principale de votre flux RSS des évènements."
+msgstr "La description principale de votre flux RSS des événements."
 
 #: admin/em-options.php:1482
 msgid "RSS title format"
@@ -3607,7 +3607,7 @@ msgstr "Format du titre du flux RSS"
 
 #: admin/em-options.php:1482
 msgid "The format of the title of each item in the events RSS feed."
-msgstr "Le format du titre de chaque élément dans le flux RSS des évènements."
+msgstr "Le format du titre de chaque élément dans le flux RSS des événements."
 
 #: admin/em-options.php:1483
 msgid "RSS description format"
@@ -3617,7 +3617,7 @@ msgstr "Format de la description du flux RSS"
 msgid "The format of the description of each item in the events RSS feed."
 msgstr ""
 "Le format de la description de chaque élément de votre flux RSS des "
-"évènements."
+"événements."
 
 #: admin/em-options.php:1492
 msgid "Maps"
@@ -3629,7 +3629,7 @@ msgid ""
 "information on using maps, <a href=\"%s\">see our documentation</a>."
 msgstr ""
 "Vous pouvez utiliser Google Maps pour montrer où se déroulent vos "
-"évènements. Pour plus d'informations sur l'utilisation des cartes, <a href="
+"événements. Pour plus d'informations sur l'utilisation des cartes, <a href="
 "\"%s\">voir la documentation</a>."
 
 #: admin/em-options.php:1498
@@ -3658,7 +3658,7 @@ msgid ""
 "your locations and events, the settings below will be used."
 msgstr ""
 "Si vous utilisez %s comme <a href=\"%s\">code court</a>, vous pouvez "
-"afficher une carte de tous les lieux  et évènements, les paramètres ci-"
+"afficher une carte de tous les lieux  et événements, les paramètres ci-"
 "dessous seront utilisés."
 
 #: admin/em-options.php:1512 admin/em-options.php:1519
@@ -3672,11 +3672,11 @@ msgstr "Le format du texte figurant dans le ballon décrivant l'emplacement."
 
 #: admin/em-options.php:1512
 msgid "Event."
-msgstr "Évènement."
+msgstr "Événement."
 
 #: admin/em-options.php:1515
 msgid "Single Location/Event Map Format"
-msgstr "Format du titre de page d'évènement/emplacement seul"
+msgstr "Format du titre de page d'événement/emplacement seul"
 
 #: admin/em-options.php:1516
 msgid ""
@@ -3685,7 +3685,7 @@ msgid ""
 "below will be used."
 msgstr ""
 "Si vous utilisez le <code>#_LOCATIONMAP</code> comme <a href=\"%s"
-"\">marqueur</a> quand vous affichez un évènement ou les informations de "
+"\">marqueur</a> quand vous affichez un événement ou les informations de "
 "l'emplacement, les paramètres ci-dessous seront utilisés."
 
 #: admin/em-options.php:1539
@@ -3712,7 +3712,7 @@ msgid ""
 "Bookings will not be confirmed until the event administrator approves it."
 msgstr ""
 "Les réservations ne seront confirmées qu'après validation par le "
-"gestionnaire de l'évènement."
+"gestionnaire de l'événement."
 
 #: admin/em-options.php:1541
 msgid "Reserved unconfirmed spaces?"
@@ -3761,7 +3761,7 @@ msgstr "Autoriser les réservations en double ?"
 #: admin/em-options.php:1544
 msgid "If enabled, users can book an event more than once."
 msgstr ""
-"Si activé, les utilisateurs pourront réserver un évènement plus d'une fois."
+"Si activé, les utilisateurs pourront réserver un événement plus d'une fois."
 
 #: admin/em-options.php:1552
 msgid "Pricing"
@@ -3774,7 +3774,7 @@ msgstr "Monnaie"
 #: admin/em-options.php:1557
 msgid "Choose your currency for displaying event pricing."
 msgstr ""
-"Choisissez votre monnaie pour l'affichage des prix pour les évènements "
+"Choisissez votre monnaie pour l'affichage des prix pour les événements "
 "payants."
 
 #: admin/em-options.php:1558
@@ -3872,7 +3872,7 @@ msgstr "Pas de réservations"
 
 #: admin/em-options.php:1581
 msgid "An event with no bookings."
-msgstr "Pas de réservation pour cet évènement."
+msgstr "Pas de réservation pour cet événement."
 
 #: admin/em-options.php:1582
 msgid "Bookings closed"
@@ -3880,7 +3880,7 @@ msgstr "Les réservations sont fermées"
 
 #: admin/em-options.php:1582
 msgid "Bookings have closed (e.g. event has started)."
-msgstr "Les réservations sont closes pour cet évènement."
+msgstr "Les réservations sont closes pour cet événement."
 
 #: admin/em-options.php:1583
 msgid "Fully booked"
@@ -3888,7 +3888,7 @@ msgstr "Complet"
 
 #: admin/em-options.php:1583
 msgid "Event is fully booked."
-msgstr "Cet évènement est complet."
+msgstr "Cet événement est complet."
 
 #: admin/em-options.php:1584
 msgid "Already attending"
@@ -3899,7 +3899,7 @@ msgid ""
 "If already attending and double bookings are disabled, this message will be "
 "displayed, followed by a link to the users booking page."
 msgstr ""
-"Si l'évènement est déjà réservé et que la double réservation est désactivée, "
+"Si l'événement est déjà réservé et que la double réservation est désactivée, "
 "ce message sera affiché, suivi d'un lien vers la page de réservation de "
 "l'utilisateur."
 
@@ -4044,7 +4044,7 @@ msgstr "Erreur de réservation"
 
 #: admin/em-options.php:1609
 msgid "Event fully booked"
-msgstr "Cet évènement est complet."
+msgstr "Cet événement est complet."
 
 #: admin/em-options.php:1611
 msgid "Cancelation in progress"
@@ -4228,7 +4228,7 @@ msgstr "Vous pouvez supprimé ce message en laissant le sujet vide."
 
 #: admin/em-options.php:1702
 msgid "Email events admin?"
-msgstr "Adresse e-mail de l'admin de l'évènement ?"
+msgstr "Adresse e-mail de l'admin de l'événement ?"
 
 #: admin/em-options.php:1702
 msgid ""
@@ -4249,7 +4249,7 @@ msgstr ""
 
 #: admin/em-options.php:1703
 msgid "Email event owner?"
-msgstr "Adresse e-mail du propriétaire de l'évènement ?"
+msgstr "Adresse e-mail du propriétaire de l'événement ?"
 
 #: admin/em-options.php:1703
 msgid ""
@@ -4257,7 +4257,7 @@ msgid ""
 "someone books places. An email will be sent when a booking is first made "
 "(regardless if confirmed or pending)"
 msgstr ""
-"Cochez cette option si vous voulez que le point de contact de l'évènement "
+"Cochez cette option si vous voulez que le point de contact de l'événement "
 "reçoive un e-mail lorsque quelqu'un réserve des places. Un e-mail sera "
 "envoyé quand une réservation est effectuée (qu'elle soit confirmée ou en "
 "attente)"
@@ -4282,7 +4282,7 @@ msgstr "E-mail au point de contact - Réservation confirmée"
 msgid ""
 "An email will be sent to the event contact when a booking is first made."
 msgstr ""
-"Un e-mail sera envoyé au point de contact de l'évènement lorsqu'une "
+"Un e-mail sera envoyé au point de contact de l'événement lorsqu'une "
 "réservation est effectuée."
 
 #: admin/em-options.php:1711
@@ -4301,7 +4301,7 @@ msgstr "E-mail au point de contact - Réservation annulée"
 msgid ""
 "An email will be sent to the event contact if someone cancels their booking."
 msgstr ""
-"Un e-mail sera envoyé au point de contact de l'évènement lorsque quelqu'un "
+"Un e-mail sera envoyé au point de contact de l'événement lorsque quelqu'un "
 "annule sa réservation."
 
 #: admin/em-options.php:1719
@@ -4395,7 +4395,7 @@ msgstr "E-mail d'annulation de la réservation"
 
 #: admin/em-options.php:1784
 msgid "Event Submission Templates"
-msgstr "Formulaire de soumission d’évènement"
+msgstr "Formulaire de soumission d’événement"
 
 #: admin/em-options.php:1789
 msgid "Administrator Email"
@@ -4404,7 +4404,7 @@ msgstr "E-mail Administrateur"
 #: admin/em-options.php:1789
 msgid "Event submission notifications will be sent to emails added here."
 msgstr ""
-"Les notifications de soumissions d'évènements seront envoyées aux adresses "
+"Les notifications de soumissions d'événements seront envoyées aux adresses "
 "de messagerie ci-jointe."
 
 #: admin/em-options.php:1789
@@ -4417,19 +4417,19 @@ msgstr ""
 
 #: admin/em-options.php:1792
 msgid "Event Submitted"
-msgstr "Évènement Soumis"
+msgstr "Événement Soumis"
 
 #: admin/em-options.php:1793
 msgid ""
 "An email will be sent to your administrator emails when an event is "
 "submitted and pending approval."
 msgstr ""
-"Un e-mail sera envoyé à l'administrateur de votre choix lorsqu'un évènement "
+"Un e-mail sera envoyé à l'administrateur de votre choix lorsqu'un événement "
 "est soumis et en attente d'approbation."
 
 #: admin/em-options.php:1796
 msgid "Event submitted subject"
-msgstr "Sujet de l'évènement soumis"
+msgstr "Sujet de l'événement soumis"
 
 #: admin/em-options.php:1796 admin/em-options.php:1804
 #: admin/em-options.php:1812 admin/em-options.php:1821
@@ -4439,18 +4439,18 @@ msgstr "Si le champ est vide, le courriel ne sera pas envoyé."
 
 #: admin/em-options.php:1797
 msgid "Event submitted email"
-msgstr "Email pour l'évènement soumis"
+msgstr "Email pour l'événement soumis"
 
 #: admin/em-options.php:1800
 msgid "Event Re-Submitted"
-msgstr "Évènement resoumis"
+msgstr "Événement resoumis"
 
 #: admin/em-options.php:1801 admin/em-options.php:1824
 msgid ""
 "When a user modifies a previously published event, it will be put back into "
 "pending review status and will not be publisehd until you re-approve it."
 msgstr ""
-"Si un utilisateur modifie un évènement déjà publié, celui-ci sera remis en "
+"Si un utilisateur modifie un événement déjà publié, celui-ci sera remis en "
 "attente d'approbation et ne sera plus en ligne tant que vous ne "
 "l'approuverez pas."
 
@@ -4460,31 +4460,31 @@ msgstr "Sujet de l'e-mail de ressoumission"
 
 #: admin/em-options.php:1805
 msgid "Event resubmitted email"
-msgstr "Email pour l'évènement ressoumis"
+msgstr "Email pour l'événement ressoumis"
 
 #: admin/em-options.php:1808
 msgid "Event Published"
-msgstr "Évènement publié"
+msgstr "Événement publié"
 
 #: admin/em-options.php:1809
 msgid ""
 "An email will be sent to an administrator of your choice when an event is "
 "published by users who are not administrators."
 msgstr ""
-"Un e-mail sera envoyé à l'administrateur de votre choix lorsqu'un évènement "
+"Un e-mail sera envoyé à l'administrateur de votre choix lorsqu'un événement "
 "est soumis par des utilisateurs qui ne sont pas administrateurs."
 
 #: admin/em-options.php:1812
 msgid "Event published subject"
-msgstr "Sujet de l'e-mail pour une évènement publié"
+msgstr "Sujet de l'e-mail pour une événement publié"
 
 #: admin/em-options.php:1813
 msgid "Event published email"
-msgstr "Contenu de l'e-mail pour un évènement publié"
+msgstr "Contenu de l'e-mail pour un événement publié"
 
 #: admin/em-options.php:1817 em-install.php:401 em-install.php:403
 msgid "Event Approved"
-msgstr "Évènement approuvé"
+msgstr "Événement approuvé"
 
 #: admin/em-options.php:1818
 msgid ""
@@ -4492,8 +4492,8 @@ msgid ""
 "requiring event approval do not have the <code>publish_events</code> "
 "capability."
 msgstr ""
-"Un e-mail sera envoyé au propriétaire de l'évènement lorsque celui-ci est "
-"approuvé. Les utilisateurs dont les évènements nécessitent une approbation "
+"Un e-mail sera envoyé au propriétaire de l'événement lorsque celui-ci est "
+"approuvé. Les utilisateurs dont les événements nécessitent une approbation "
 "préalable n'ont pas la capacité <code>publish_events</code>."
 
 #: admin/em-options.php:1821
@@ -4502,15 +4502,15 @@ msgstr "Sujet de l'e-mail"
 
 #: admin/em-options.php:1822
 msgid "Event approved email"
-msgstr "Contenu de l'e-mail pour un évènement approuvé"
+msgstr "Contenu de l'e-mail pour un événement approuvé"
 
 #: admin/em-options.php:1826
 msgid "Event reapproved subject"
-msgstr "Sujet de l'e-mail pour un évènement ré-approuvé"
+msgstr "Sujet de l'e-mail pour un événement ré-approuvé"
 
 #: admin/em-options.php:1827
 msgid "Event reapproved email"
-msgstr "Contenu de l'e-mail pour un évènement ré-approuvé"
+msgstr "Contenu de l'e-mail pour un événement ré-approuvé"
 
 #: admin/em-options.php:1873
 msgid "Image Sizes"
@@ -4734,20 +4734,20 @@ msgstr "Peut visualiser des %s privés"
 
 #: admin/em-options.php:1991 em-posts.php:188
 msgid "Recurring Event"
-msgstr "Évènement récurrent"
+msgstr "Événement récurrent"
 
 #: admin/em-options.php:1993 admin/em-options.php:1994
 #: admin/em-options.php:1995 admin/em-options.php:1996
 #: admin/em-options.php:1997 events-manager.php:439 events-manager.php:440
 #: events-manager.php:441 events-manager.php:442 events-manager.php:443
 msgid "recurring events"
-msgstr "évènements récurrents"
+msgstr "événements récurrents"
 
 #: admin/em-options.php:2007
 msgid "User can use other user locations for their events."
 msgstr ""
 "Peut utiliser les emplacements définis par d'autres utilisateurs pour ses "
-"propres évènements"
+"propres événements"
 
 #: admin/em-options.php:2012
 msgid "User can delete %s categories and tags."
@@ -4762,16 +4762,16 @@ msgid ""
 "User can manage other users individual bookings and event booking settings."
 msgstr ""
 "Peut gérer les réservations individuelles des autres utilisateurs et les "
-"paramètres de réservation d'évènement"
+"paramètres de réservation d'événement"
 
 #: admin/em-options.php:2016
 msgid "User can use and manage bookings with their events."
-msgstr "Peut utiliser et gérer les réservations de ses propres évènements"
+msgstr "Peut utiliser et gérer les réservations de ses propres événements"
 
 #: admin/em-options.php:2017
 msgid "User can upload images along with their events and locations."
 msgstr ""
-"Peut télécharger des images pour joindre à leurs évènements et leurs "
+"Peut télécharger des images pour joindre à leurs événements et leurs "
 "emplacements"
 
 #: admin/em-options.php:2022
@@ -4780,7 +4780,7 @@ msgid ""
 "with events. Each user role can have perform different sets of actions."
 msgstr ""
 "Vous pouvez maintenant donner une bonne granularité à ce que vos "
-"utilisateurs peuvent faire avec les évènements. Chaque rôle peut effectuer "
+"utilisateurs peuvent faire avec les événements. Chaque rôle peut effectuer "
 "divers types d'actions."
 
 #: admin/em-options.php:2027
@@ -4870,7 +4870,7 @@ msgid ""
 msgstr ""
 "Utilisez les boutons ci-dessous pour désinstaller complètement Events "
 "Manager de votre système, ou pour réinitialiser les valeurs par défaut, tout "
-"en conservant vos données d'évènements."
+"en conservant vos données d'événements."
 
 #: admin/em-options.php:2104
 msgid "Reset"
@@ -4878,27 +4878,27 @@ msgstr "Remettre A Zéro"
 
 #: buddypress/bp-em-activity.php:46
 msgid "%s added the event %s"
-msgstr "%s a  ajouté l'évènement : %s"
+msgstr "%s a  ajouté l'événement : %s"
 
 #: buddypress/bp-em-activity.php:57
 msgid "%s added the event %s to %s."
-msgstr "%s a ajouté l'évènement %s à %s."
+msgstr "%s a ajouté l'événement %s à %s."
 
 #: buddypress/bp-em-activity.php:85
 msgid "%s is attending %s."
-msgstr "%s assistera à l'évènement : %s."
+msgstr "%s assistera à l'événement : %s."
 
 #: buddypress/bp-em-activity.php:87
 msgid "%s will not be attending %s anymore."
-msgstr "%s n'assistera plus à l'évènement : %s."
+msgstr "%s n'assistera plus à l'événement : %s."
 
 #: buddypress/bp-em-activity.php:93
 msgid "%s is attending %s of the group %s."
-msgstr "%s participera à l'évènement %s du groupe %s."
+msgstr "%s participera à l'événement %s du groupe %s."
 
 #: buddypress/bp-em-activity.php:95
 msgid "%s will not be attending %s of group %s anymore."
-msgstr "%s ne participera plus à l'évènement %s du groupe %s."
+msgstr "%s ne participera plus à l'événement %s du groupe %s."
 
 #: buddypress/bp-em-core.php:53
 msgid "Search %s..."
@@ -4911,12 +4911,12 @@ msgstr "Mon Profil"
 #: buddypress/bp-em-core.php:101 buddypress/bp-em-core.php:207
 #: buddypress/screens/attending.php:23 templates/buddypress/profile.php:29
 msgid "Events I'm Attending"
-msgstr "Évènements auxquels j'assisterai"
+msgstr "Événements auxquels j'assisterai"
 
 #: buddypress/bp-em-core.php:112 buddypress/bp-em-core.php:215
 #: buddypress/screens/my-events.php:32 templates/buddypress/profile.php:7
 msgid "My Events"
-msgstr "Mes Évènements"
+msgstr "Mes Événements"
 
 #: buddypress/bp-em-core.php:124 buddypress/bp-em-core.php:224
 #: buddypress/screens/my-locations.php:32
@@ -4959,21 +4959,21 @@ msgstr "%s utilisateurs ont annulé leur réservations"
 #: buddypress/screens/group-events.php:20
 #: buddypress/screens/my-group-events.php:20
 msgid "Group Events"
-msgstr "Évènements de Groupe"
+msgstr "Événements de Groupe"
 
 #: buddypress/screens/my-events.php:47 em-events.php:179
 msgid "Reschedule Events"
-msgstr "Re-planifier les évènements"
+msgstr "Re-planifier les événements"
 
 #: buddypress/screens/my-events.php:49 classes/em-event.php:1457
 #: em-events.php:181 em-posts.php:146
 msgid "Edit Event"
-msgstr "Éditer l'évènement"
+msgstr "Éditer l'événement"
 
 #: buddypress/screens/my-events.php:52 em-events.php:184 em-posts.php:143
 #: templates/buddypress/profile.php:22
 msgid "Add Event"
-msgstr "Ajouter un évènement"
+msgstr "Ajouter un événement"
 
 #: buddypress/screens/my-locations.php:46 em-events.php:190 em-posts.php:238
 msgid "Add Location"
@@ -5040,7 +5040,7 @@ msgstr "Réservation"
 
 #: classes/em-booking.php:270
 msgid "You are trying to book a non-existent ticket for this event."
-msgstr "Vous essayez de réserver un billet inexistant pour cet évènement."
+msgstr "Vous essayez de réserver un billet inexistant pour cet événement."
 
 #: classes/em-booking.php:619 classes/em-booking.php:627
 msgid "Guest User"
@@ -5080,7 +5080,7 @@ msgid ""
 "have gotten their email (only admin see this warning)."
 msgstr ""
 "L'e-mail de confirmation n'a pu être envoyé au point de contact de "
-"l'évènement. Le postulant devrait avoir reçu son e-mail (seul l'admin voit "
+"l'événement. Le postulant devrait avoir reçu son e-mail (seul l'admin voit "
 "ce message)."
 
 #: classes/em-booking.php:1002
@@ -5113,11 +5113,11 @@ msgstr "Nom"
 
 #: classes/em-bookings-table.php:80
 msgid "Event Date(s)"
-msgstr "Date(s) de l'évènement"
+msgstr "Date(s) de l'événement"
 
 #: classes/em-bookings-table.php:81
 msgid "Event Time(s)"
-msgstr "Heure(s) de l'évènement"
+msgstr "Heure(s) de l'événement"
 
 #: classes/em-bookings-table.php:83
 msgid "Phone Number"
@@ -5195,7 +5195,7 @@ msgid ""
 "If your events have multiple tickets, enabling this will show a seperate row "
 "for each ticket within a booking."
 msgstr ""
-"Si votre évènement a des billets multiples, activer cette option montrera "
+"Si votre événement a des billets multiples, activer cette option montrera "
 "une ligne différente pour chaque type de billet dans une réservation."
 
 #: classes/em-bookings-table.php:295
@@ -5212,7 +5212,7 @@ msgstr "%s Lignes"
 
 #: classes/em-bookings-table.php:406
 msgid "Displaying Event"
-msgstr "Affichage de l'évènement"
+msgstr "Affichage de l'événement"
 
 #: classes/em-bookings-table.php:408
 msgid "Displaying User"
@@ -5256,7 +5256,7 @@ msgstr ""
 
 #: classes/em-event-post-admin.php:37
 msgid "WARNING: This is a recurring event."
-msgstr "ATTENTION : il s'agit d'un évènement périodique."
+msgstr "ATTENTION : il s'agit d'un événement périodique."
 
 #: classes/em-event-post-admin.php:38
 msgid ""
@@ -5264,15 +5264,15 @@ msgid ""
 "deleted and recreated and previous bookings will be deleted! You can edit "
 "individual recurrences and disassociate them with this recurring event."
 msgstr ""
-"Toute modification apportée à cet évènement impliquera la suppression de "
+"Toute modification apportée à cet événement impliquera la suppression de "
 "toutes ses occurrences puis leur re-création, si bien que les réservations "
 "précédentes seront supprimées ! Vous pouvez modifier les occurrences "
-"individuellement, en les dissociant de cet évènement périodique."
+"individuellement, en les dissociant de cet événement périodique."
 
 #: classes/em-event-post-admin.php:41
 msgid "WARNING: This is a recurrence in a set of recurring events."
 msgstr ""
-"ATTENTION : il s'agit d'une occurrence dans un groupe d'évènements "
+"ATTENTION : il s'agit d'une occurrence dans un groupe d'événements "
 "périodiques."
 
 #: classes/em-event-post-admin.php:42
@@ -5281,8 +5281,8 @@ msgid ""
 "the recurring event template. To make it an independent, <a href=\"%s"
 "\">detach it</a>."
 msgstr ""
-"Si vous modifiez les données de cet évènement, celles-ci pourraient être "
-"écrasées si vous éditez l'évènement récurrent. Pour rendre cet évènement "
+"Si vous modifiez les données de cet événement, celles-ci pourraient être "
+"écrasées si vous éditez l'événement récurrent. Pour rendre cet événement "
 "indépendant, <a href=\"%s\">détachez-le</a>."
 
 #: classes/em-event-post-admin.php:43
@@ -5290,7 +5290,7 @@ msgid ""
 "To manage the whole set, <a href=\"%s\">edit the recurring event template</"
 "a>."
 msgstr ""
-"Pour gérer la série d'évènements, <a href=\"%s\">éditez l'évènement "
+"Pour gérer la série d'événements, <a href=\"%s\">éditez l'événement "
 "récurrent<a>."
 
 #: classes/em-event-post-admin.php:48
@@ -5298,15 +5298,15 @@ msgid ""
 "WARNING: This is a event belonging to the group \"%s\". Other group admins "
 "can also modify this event."
 msgstr ""
-"ATTENTION : Ceci est un évènement appartenant au groupe \"%s\". Les autres "
-"admins du groupe peuvent également modifier cet évènement."
+"ATTENTION : Ceci est un événement appartenant au groupe \"%s\". Les autres "
+"admins du groupe peuvent également modifier cet événement."
 
 #: classes/em-event-post-admin.php:84
 msgid ""
 "Your event details are incorrect and recurrences cannot be created, please "
 "correct these errors first:"
 msgstr ""
-"Les détails de l'évènement sont incorrects, et les occurrences ne peuvent "
+"Les détails de l'événement sont incorrects, et les occurrences ne peuvent "
 "être créées, veuillez corriger les erreurs suivantes :"
 
 #: classes/em-event-post-admin.php:86 classes/em-location-post-admin.php:59
@@ -5355,7 +5355,7 @@ msgid ""
 "This event was submitted by a guest. You will find their details in the "
 "<em>Anonymous Submitter Info</em> box"
 msgstr ""
-"Cet évènement a été proposé par un invité. Vous trouverez les détails de la "
+"Cet événement a été proposé par un invité. Vous trouverez les détails de la "
 "personne dans le cartouche <em>Information sur le soumissionaire</em>"
 
 #: classes/em-event-post-admin.php:260
@@ -5410,17 +5410,17 @@ msgid ""
 "information, go to the relevant single event and save it to detach it from "
 "this recurrence series."
 msgstr ""
-"ATTENTION! Vous allez supprimer TOUTES les occurrences de cet évènement, y "
+"ATTENTION! Vous allez supprimer TOUTES les occurrences de cet événement, y "
 "compris l'historique de réservations associé a chacune d'elles. Pour "
-"conserver les informations de réservation d'un évènement, rendez-vous à "
-"l'évènement concerné et détachez-le de cette série."
+"conserver les informations de réservation d'un événement, rendez-vous à "
+"l'événement concerné et détachez-le de cette série."
 
 #: classes/em-event-posts-admin.php:169
 #: templates/buddypress/group-events.php:133
 #: templates/buddypress/my-group-events.php:130
 #: templates/tables/events.php:142
 msgid "Edit Recurring Events"
-msgstr "Éditer les Évènements Périodiques"
+msgstr "Éditer les Événements Périodiques"
 
 #: classes/em-event-posts-admin.php:169
 msgid "Detach"
@@ -5441,11 +5441,11 @@ msgid ""
 "individual recurrences and detach them from recurring events by visiting the "
 "<a href=\"%s\">events page</a>."
 msgstr ""
-"Toute modification à ces évènements impliquera la suppression de toute les "
+"Toute modification à ces événements impliquera la suppression de toute les "
 "occurrences puis leur re-création, si bien que les réservations déjà "
 "effectuées seront effacées ! Vous pouvez modifier des occurrences "
 "individuellement, en les détachant de la série périodique, depuis la <a href="
-"\"%s\">page des évènements</a>."
+"\"%s\">page des événements</a>."
 
 #: classes/em-event.php:487 classes/em-event.php:492 classes/em-event.php:495
 msgid "%s is required."
@@ -5453,7 +5453,7 @@ msgstr " %s est nécessaire."
 
 #: classes/em-event.php:487
 msgid "Event name"
-msgstr "Nom de l'évènement"
+msgstr "Nom de l'événement"
 
 #: classes/em-event.php:492
 msgid "A valid email"
@@ -5465,14 +5465,14 @@ msgstr "Votre nom"
 
 #: classes/em-event.php:512 classes/em-event.php:514
 msgid "Events cannot start after they end."
-msgstr "Un évènement ne peut pas commencer après sa fin !"
+msgstr "Un événement ne peut pas commencer après sa fin !"
 
 #: classes/em-event.php:514
 msgid ""
 "For recurring events that end the following day, ensure you make your event "
 "last 1 or more days."
 msgstr ""
-"Pour les évènements récurrents qui se terminent le jour suivant, vérifier "
+"Pour les événements récurrents qui se terminent le jour suivant, vérifier "
 "que vous spécifiez au moins un jour ou plus."
 
 #: classes/em-event.php:519 classes/em-event.php:526
@@ -5492,8 +5492,8 @@ msgid ""
 "Since the event is repeated, you must specify an event end date greater than "
 "the start date."
 msgstr ""
-"Puisque l'évènement est répétitif, vous devez préciser une date de fin "
-"d'évènement postérieure à la date de début."
+"Puisque l'événement est répétitif, vous devez préciser une date de fin "
+"d'événement postérieure à la date de début."
 
 #: classes/em-event.php:639
 msgid "There were some errors saving your location."
@@ -5536,7 +5536,7 @@ msgstr "Quelque chose s'est mal passé lors de la mise à jour..."
 #: classes/em-event.php:738
 msgid "There was a problem saving the recurring events."
 msgstr ""
-"Un problème s'est produit lors de la sauvegarde des évènements périodiques."
+"Un problème s'est produit lors de la sauvegarde des événements périodiques."
 
 #: classes/em-event.php:776
 msgid "%s successfully duplicated."
@@ -5553,7 +5553,7 @@ msgstr "Profil"
 
 #: classes/em-event.php:1820
 msgid "Event detached."
-msgstr "Évènement détaché."
+msgstr "Événement détaché."
 
 #: classes/em-event.php:1820
 msgid "Undo"
@@ -5561,15 +5561,15 @@ msgstr "Annuler"
 
 #: classes/em-event.php:1824
 msgid "Event could not be detached."
-msgstr "L'évènement n'a pas pu être détaché."
+msgstr "L'événement n'a pas pu être détaché."
 
 #: classes/em-event.php:1838
 msgid "Event re-attached to recurrence."
-msgstr "Évènement ré-attaché à la série périodique d'évènements."
+msgstr "Événement ré-attaché à la série périodique d'événements."
 
 #: classes/em-event.php:1841
 msgid "Event could not be attached."
-msgstr "l'évènement n'a pas pu être attaché."
+msgstr "l'événement n'a pas pu être attaché."
 
 #: classes/em-event.php:2149
 msgid "Sunday"
@@ -5800,7 +5800,7 @@ msgstr "Exporter les réservations sur %s"
 
 #: em-debug.php:18
 msgid "<li>No events in this location</li>"
-msgstr "<li>Aucun évènement à cet emplacement</li>"
+msgstr "<li>Aucun événement à cet emplacement</li>"
 
 #: em-debug.php:44
 msgid ""
@@ -5820,39 +5820,39 @@ msgstr "Affichage de %s&#8211;%s de %s"
 
 #: em-functions.php:209
 msgid "Today's events"
-msgstr "Évènements pour aujourd'hui"
+msgstr "Événements pour aujourd'hui"
 
 #: em-functions.php:210
 msgid "Tomorrow's events"
-msgstr "Évènements pour demain"
+msgstr "Événements pour demain"
 
 #: em-functions.php:211
 msgid "Events this month"
-msgstr "Évènements pour ce mois-ci"
+msgstr "Événements pour ce mois-ci"
 
 #: em-functions.php:212
 msgid "Events next month"
-msgstr "Évènements pour le mois prochain"
+msgstr "Événements pour le mois prochain"
 
 #: em-functions.php:213
 msgid "Events current and next month"
-msgstr "Évènements pour le mois en cours et le mois suivant"
+msgstr "Événements pour le mois en cours et le mois suivant"
 
 #: em-functions.php:214
 msgid "Events within 2 months"
-msgstr "Évènements pour les deux prochains mois"
+msgstr "Événements pour les deux prochains mois"
 
 #: em-functions.php:215
 msgid "Events within 3 months"
-msgstr "Évènements pour les trois prochains mois"
+msgstr "Événements pour les trois prochains mois"
 
 #: em-functions.php:216
 msgid "Events within 6 months"
-msgstr "Évènements pour les six prochains mois"
+msgstr "Événements pour les six prochains mois"
 
 #: em-functions.php:217
 msgid "Events within 12 months"
-msgstr "Évènements pour les douze prochains mois"
+msgstr "Événements pour les douze prochains mois"
 
 #: em-functions.php:257
 msgid "Mon"
@@ -5969,7 +5969,7 @@ msgstr ""
 "souhaite réserver #_BOOKINGSPACES place(s).<br/>Il y a maintenant "
 "#_BOOKEDSPACES places réservées, #_AVAILABLESPACES places sont encore "
 "disponibles.<br/>Cordialement<br/>Propulsé par Events Manager, gestionnaire "
-"d'évènements pour WordPress - http://wp-events-plugin.com"
+"d'événements pour WordPress - http://wp-events-plugin.com"
 
 #: em-install.php:319
 msgid ""
@@ -5982,7 +5982,7 @@ msgstr ""
 "#_EVENTDATES de _BOOKINGSPACES place(s).<br/>Il y a maintenant "
 "#_BOOKEDSPACES places réservées, #_AVAILABLESPACES places sont encore "
 "disponibles.<br/>Cordialement<br/>Propulsé par Events Manager, gestionnaire "
-"d'évènements pour WordPress - http://wp-events-plugin.com"
+"d'événements pour WordPress - http://wp-events-plugin.com"
 
 #: em-install.php:320
 msgid ""
@@ -6035,8 +6035,8 @@ msgid ""
 "Dear #_CONTACTNAME, <br/>Your event #_EVENTNAME on #_EVENTDATES has been "
 "approved.<br/>You can view your event here: #_EVENTURL"
 msgstr ""
-"Cher/chère #_CONTACTNAME, <br/>Votre évènement #_EVENTNAME le #_EVENTDATES a "
-"été approuvé.<br/>Vous pouvez visualiser votre évènement ici : #_EVENTURL"
+"Cher/chère #_CONTACTNAME, <br/>Votre événement #_EVENTNAME le #_EVENTDATES a "
+"été approuvé.<br/>Vous pouvez visualiser votre événement ici : #_EVENTURL"
 
 #: em-install.php:325
 msgid ""
@@ -6044,9 +6044,9 @@ msgid ""
 ">Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Please visit "
 "#_EDITEVENTURL to review this event for approval."
 msgstr ""
-"Un nouvel évènement vient d'être soumis par #_CONTACTNAME.<br/>Nom : "
+"Un nouvel événement vient d'être soumis par #_CONTACTNAME.<br/>Nom : "
 "#_EVENTNAME <br/>Date : #_EVENTDATES <br/>Heure : #_EVENTTIMES <br/>Veuillez "
-"visiter la page #_EDITEVENTURL pour valider cet évènement."
+"visiter la page #_EDITEVENTURL pour valider cet événement."
 
 #: em-install.php:327
 msgid ""
@@ -6054,9 +6054,9 @@ msgid ""
 ">Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Edit this event - "
 "#_EDITEVENTURL <br/> View this event - #_EVENTURL"
 msgstr ""
-"Un nouvel évènement vient d'être publié par #_CONTACTNAME.<br/>Nom : "
+"Un nouvel événement vient d'être publié par #_CONTACTNAME.<br/>Nom : "
 "#_EVENTNAME <br/>Date : #_EVENTDATES <br/>Heure : #_EVENTTIMES <br/>Veuillez "
-"visiter la page #_EDITEVENTURL pour valider cet évènement."
+"visiter la page #_EDITEVENTURL pour valider cet événement."
 
 #: em-install.php:329
 msgid ""
@@ -6065,10 +6065,10 @@ msgid ""
 "<br/>Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Please visit "
 "#_EDITEVENTURL to review this event for approval."
 msgstr ""
-"Un évènement déjà publié vient d'être modifié par #_CONTACTNAME. et cet "
-"évènement n'est plus en ligne, il attend votre validation.<br /> Nom : "
+"Un événement déjà publié vient d'être modifié par #_CONTACTNAME. et cet "
+"événement n'est plus en ligne, il attend votre validation.<br /> Nom : "
 "#_EVENTNAME <br/>Date : #_EVENTDATES <br/>Heure : #_EVENTTIMES <br/>Veuillez "
-"visiter la page #_EDITEVENTURL pour valider cet évènement."
+"visiter la page #_EDITEVENTURL pour valider cet événement."
 
 #: em-install.php:368
 msgid "All Categories"
@@ -6095,23 +6095,23 @@ msgid ""
 "You have successfully submitted your event, which will be published pending "
 "approval."
 msgstr ""
-"Vous avez soumis votre évènement, celui-ci sera publié après approbation."
+"Vous avez soumis votre événement, celui-ci sera publié après approbation."
 
 #: em-install.php:389
 msgid ""
 "You have successfully updated your event, which will be republished pending "
 "approval."
 msgstr ""
-"Vous avez mis à jour votre évènement, celui-ci sera republié après "
+"Vous avez mis à jour votre événement, celui-ci sera republié après "
 "approbation."
 
 #: em-install.php:395
 msgid "Submitted Event Awaiting Approval"
-msgstr "Évènement en attente d'approbation"
+msgstr "Événement en attente d'approbation"
 
 #: em-install.php:397
 msgid "Re-Submitted Event Awaiting Approval"
-msgstr "Évènement resoumis en attente d'approbation"
+msgstr "Événement resoumis en attente d'approbation"
 
 #: em-install.php:399
 msgid "Published Event"
@@ -6127,7 +6127,7 @@ msgstr "Pas de %s"
 
 #: em-install.php:499 em-install.php:505
 msgid "No events in this category"
-msgstr "Aucun évènement dans cette catégorie"
+msgstr "Aucun événement dans cette catégorie"
 
 #: em-install.php:576
 msgid "more..."
@@ -6139,19 +6139,19 @@ msgstr "Envoyer votre demande de réservation"
 
 #: em-install.php:611
 msgid "Online bookings are not available for this event."
-msgstr "Les réservations en ligne ne sont pas disponibles pour cet évènement."
+msgstr "Les réservations en ligne ne sont pas disponibles pour cet événement."
 
 #: em-install.php:612
 msgid "Bookings are closed for this event."
-msgstr "Les réservations sont closes pour cet évènement."
+msgstr "Les réservations sont closes pour cet événement."
 
 #: em-install.php:613
 msgid "This event is fully booked."
-msgstr "Cet évènement est complet."
+msgstr "Cet événement est complet."
 
 #: em-install.php:614
 msgid "You are currently attending this event."
-msgstr "Vous avez déjà effectué une réservation pour cet évènement."
+msgstr "Vous avez déjà effectué une réservation pour cet événement."
 
 #: em-install.php:615
 msgid "Manage my bookings"
@@ -6193,7 +6193,7 @@ msgid ""
 "letting them know of this error."
 msgstr ""
 "Cependant, des problèmes se sont produits lors de l'envoi des e-mails de "
-"confirmation pour vous et / ou le point de contact de l'évènement. Vous "
+"confirmation pour vous et / ou le point de contact de l'événement. Vous "
 "pouvez le contacter directement."
 
 #: em-install.php:624
@@ -6226,7 +6226,7 @@ msgstr ""
 
 #: em-install.php:628
 msgid "You already have booked a seat at this event."
-msgstr "Vous avez déjà réservé une place à cet évènement."
+msgstr "Vous avez déjà réservé une place à cet événement."
 
 #: em-install.php:629
 msgid "You must request at least one space to book an event."
@@ -6276,7 +6276,7 @@ msgstr "Réservation confirmée"
 #: templates/buddypress/my-group-events.php:30
 #: templates/buddypress/profile.php:20
 msgid "No Events"
-msgstr "Aucun évènement"
+msgstr "Aucun événement"
 
 #: em-posts.php:51 em-posts.php:54
 msgid "Event Tag"
@@ -6320,11 +6320,11 @@ msgstr "Nom du nouveau mot-clef"
 
 #: em-posts.php:64
 msgid "Seperate event tags with commas"
-msgstr "Séparez les mots-clef des évènements par des virgules"
+msgstr "Séparez les mots-clef des événements par des virgules"
 
 #: em-posts.php:65 em-posts.php:102
 msgid "Add or remove events"
-msgstr "Ajouter ou enlever des évènements"
+msgstr "Ajouter ou enlever des événements"
 
 #: em-posts.php:66
 msgid "Choose from most used event tags"
@@ -6372,7 +6372,7 @@ msgstr "Nom de la nouvelle catégorie"
 
 #: em-posts.php:101
 msgid "Seperate event categories with commas"
-msgstr "Séparer les catégories d'évènements par des virgules"
+msgstr "Séparer les catégories d'événements par des virgules"
 
 #: em-posts.php:103
 msgid "Choose from most used event categories"
@@ -6380,11 +6380,11 @@ msgstr "Choisissez à partir des catégories les plus utilisées"
 
 #: em-posts.php:138
 msgid "Display events on your blog."
-msgstr "Afficher les évènements sur votre site."
+msgstr "Afficher les événements sur votre site."
 
 #: em-posts.php:144
 msgid "Add New Event"
-msgstr "Ajouter un nouvel évènement"
+msgstr "Ajouter un nouvel événement"
 
 #: em-posts.php:145 em-posts.php:192 em-posts.php:240
 #: templates/forms/event/bookings.php:64
@@ -6393,7 +6393,7 @@ msgstr "Éditer"
 
 #: em-posts.php:147
 msgid "New Event"
-msgstr "Nouvel évènement"
+msgstr "Nouvel événement"
 
 #: em-posts.php:148 em-posts.php:195 em-posts.php:243
 #: templates/tables/locations.php:65
@@ -6402,64 +6402,64 @@ msgstr "Afficher"
 
 #: em-posts.php:149
 msgid "View Event"
-msgstr "Afficher l'évènement"
+msgstr "Afficher l'événement"
 
 #: em-posts.php:150 templates/tables/events.php:28
 #: templates/tables/events.php:33
 msgid "Search Events"
-msgstr "Rechercher des évènements"
+msgstr "Rechercher des événements"
 
 #: em-posts.php:151
 msgid "No Events Found"
-msgstr "Aucun évènement trouvé"
+msgstr "Aucun événement trouvé"
 
 #: em-posts.php:152
 msgid "No Events Found in Trash"
-msgstr "Aucun évènement trouvé dans la poubelle"
+msgstr "Aucun événement trouvé dans la poubelle"
 
 #: em-posts.php:153
 msgid "Parent Event"
-msgstr "Évènement parent"
+msgstr "Événement parent"
 
 #: em-posts.php:184 em-posts.php:187 em-posts.php:189
 msgid "Recurring Events"
-msgstr "Évènements récurrents"
+msgstr "Événements récurrents"
 
 #: em-posts.php:185
 msgid "Recurring Events Template"
-msgstr "Modèle d'évènement récurrent"
+msgstr "Modèle d'événement récurrent"
 
 #: em-posts.php:190 em-posts.php:196
 msgid "Add Recurring Event"
-msgstr "Ajouter un évènement récurrent"
+msgstr "Ajouter un événement récurrent"
 
 #: em-posts.php:191
 msgid "Add New Recurring Event"
-msgstr "Ajouter un nouvel évènement récurrent"
+msgstr "Ajouter un nouvel événement récurrent"
 
 #: em-posts.php:193
 msgid "Edit Recurring Event"
-msgstr "Éditer l'évènement récurrent"
+msgstr "Éditer l'événement récurrent"
 
 #: em-posts.php:194
 msgid "New Recurring Event"
-msgstr "Nouvel évènement récurrent"
+msgstr "Nouvel événement récurrent"
 
 #: em-posts.php:197
 msgid "Search Recurring Events"
-msgstr "Rechercher un évènement récurrent"
+msgstr "Rechercher un événement récurrent"
 
 #: em-posts.php:198
 msgid "No Recurring Events Found"
-msgstr "Aucun évènement récurrent trouvé"
+msgstr "Aucun événement récurrent trouvé"
 
 #: em-posts.php:199
 msgid "No Recurring Events Found in Trash"
-msgstr "Aucun évènement écurrent trouvé dans la poubelle"
+msgstr "Aucun événement écurrent trouvé dans la poubelle"
 
 #: em-posts.php:200
 msgid "Parent Recurring Event"
-msgstr "Évènement récurrent parent"
+msgstr "Événement récurrent parent"
 
 #: em-posts.php:233
 msgid "Display locations on your blog."
@@ -6495,7 +6495,7 @@ msgstr "Emplacement parent"
 
 #: em-template-tags.php:283
 msgid "You must log in to view and manage your events."
-msgstr "Vous devez vous identifier pour afficher et gérer vos évènements."
+msgstr "Vous devez vous identifier pour afficher et gérer vos événements."
 
 #: em-template-tags.php:394
 msgid "You must log in to view and manage your locations."
@@ -6535,7 +6535,7 @@ msgid ""
 "you will lose all booking information and the old recurring events will be "
 "deleted."
 msgstr ""
-"Êtes-vous sûr que vous voulez reprogrammer cet évènement périodique ? Dans "
+"Êtes-vous sûr que vous voulez reprogrammer cet événement périodique ? Dans "
 "l'affirmative, toutes les réservations seront effacées, ainsi que les "
 "occurrences passées."
 
@@ -6544,8 +6544,8 @@ msgid ""
 "Are you sure you want to detach this event? By doing so, this event will be "
 "independent of the recurring set of events."
 msgstr ""
-"Êtes-vous sûr de vouloir détacher cet évènement ? Cet évènement sera alors "
-"indépendant de la série périodique d'évènements."
+"Êtes-vous sûr de vouloir détacher cet événement ? Cet événement sera alors "
+"indépendant de la série périodique d'événements."
 
 #: events-manager.php:351
 msgid "This cannot be undone."
@@ -6553,12 +6553,12 @@ msgstr "Ceci ne peut être annulé."
 
 #: events-manager.php:351
 msgid "All events will be moved to trash."
-msgstr "Tous les évènements seront déplacés vers la poubelle."
+msgstr "Tous les événements seront déplacés vers la poubelle."
 
 #: events-manager.php:352
 msgid "Are you sure you want to delete all recurrences of this event?"
 msgstr ""
-"Êtes-vous sûr de vouloir effacer toutes les occurrences de cet évènement ?"
+"Êtes-vous sûr de vouloir effacer toutes les occurrences de cet événement ?"
 
 #: events-manager.php:355
 msgid ""
@@ -6619,11 +6619,11 @@ msgstr "Vous ne pouvez télécharger d'images"
 #: templates/buddypress/my-group-events.php:100
 #: templates/tables/events.php:115
 msgid "Duplicate this event"
-msgstr "Dupliquer cet évènement"
+msgstr "Dupliquer cet événement"
 
 #: templates/buddypress/profile.php:42
 msgid "Not attending any events yet."
-msgstr "Ne participe à aucun évènement."
+msgstr "Ne participe à aucun événement."
 
 #: templates/forms/bookingform/login.php:8
 msgid "Log in if you already have an account with us."
@@ -6678,7 +6678,7 @@ msgid ""
 "attributes, give it a blank value and save."
 msgstr ""
 "Si vous voyez des attributs ci-dessous, cela signifie qu'ils ne sont pas "
-"utilisés dans les formats des évènements. Pour les ajouter, vous devez "
+"utilisés dans les formats des événements. Pour les ajouter, vous devez "
 "ajouter l'attribut de nouveau dans l'un des formats de la page des "
 "paramètres. Pour supprimer l'un de ces attributs, mettez une valeur vide et "
 "enregistrez."
@@ -6724,7 +6724,7 @@ msgstr "Aucune réponse !"
 
 #: templates/forms/event/bookings.php:7
 msgid "Enable registration for this event"
-msgstr "Permettre les réservations sur cet évènement"
+msgstr "Permettre les réservations sur cet événement"
 
 #: templates/forms/event/bookings.php:28
 msgid "Tickets"
@@ -6791,9 +6791,9 @@ msgid ""
 "event, regardless of individual ticket settings above. Default value will be "
 "the event start date."
 msgstr ""
-"Il s'agit de la date limite pour les réservations de cet évènement, quelques "
+"Il s'agit de la date limite pour les réservations de cet événement, quelques "
 "soient les réglages ci-dessus. La valeur par défaut est la date de "
-"l'évènement."
+"l'événement."
 
 #: templates/forms/event/categories-public.php:13
 msgid "Category:"
@@ -6801,7 +6801,7 @@ msgstr "Catégorie :"
 
 #: templates/forms/event/featured-image-public.php:12
 msgid "No image uploaded for this event yet"
-msgstr "aucune image n'a encore été téléchargée pour cet évènement"
+msgstr "aucune image n'a encore été téléchargée pour cet événement"
 
 #: templates/forms/event/featured-image-public.php:15
 #: templates/forms/location/featured-image-public.php:15
@@ -6815,14 +6815,14 @@ msgstr "Effacer l'image ?"
 
 #: templates/forms/event/group.php:22
 msgid "Not a Group Event"
-msgstr "Pas un groupe d'évènement"
+msgstr "Pas un groupe d'événement"
 
 #: templates/forms/event/group.php:43
 msgid ""
 "As a site admin, you see all group events, users will only be able to choose "
 "groups they are admins of."
 msgstr ""
-"En tant qu'administrateurs, vous voyez tous les groupes d'évènements, les "
+"En tant qu'administrateurs, vous voyez tous les groupes d'événements, les "
 "utilisateurs ne pourront choisir que les groupes dont ils sont "
 "administrateurs."
 
@@ -6832,7 +6832,7 @@ msgstr "Aucun groupe n'a encore été défini."
 
 #: templates/forms/event/location.php:9
 msgid "This event does not have a physical location."
-msgstr "Cet évènement n'a pas d'emplacement."
+msgstr "Cet événement n'a pas d'emplacement."
 
 #: templates/forms/event/location.php:32
 msgid "Location:"
@@ -6893,7 +6893,7 @@ msgstr "Emplacement non trouvé"
 #: templates/forms/event/recurring-when.php:10
 #: templates/forms/event/when-with-recurring.php:32
 msgid "This event repeats"
-msgstr "Cet évènement se répète"
+msgstr "Cet événement se répète"
 
 #: templates/forms/event/recurring-when.php:17
 #: templates/forms/event/when-with-recurring.php:39
@@ -6987,7 +6987,7 @@ msgstr "à"
 #: templates/forms/event/recurring-when.php:56
 #: templates/forms/event/when-with-recurring.php:23
 msgid "Events start from"
-msgstr "Les évènements démarrent le"
+msgstr "Les événements démarrent le"
 
 #: templates/forms/event/recurring-when.php:60
 #: templates/forms/event/when-with-recurring.php:28
@@ -7001,12 +7001,12 @@ msgid ""
 "For a recurring event, a one day event will be created on each recurring "
 "date within this date range."
 msgstr ""
-"Pour un évènement périodique, une occurrence sera créée à chaque date dans "
+"Pour un événement périodique, une occurrence sera créée à chaque date dans "
 "la plage de périodicité définie."
 
 #: templates/forms/event/when-with-recurring.php:11
 msgid "This is a recurring event."
-msgstr "Ceci est un évènement périodique."
+msgstr "Ceci est un événement périodique."
 
 #: templates/forms/event/when-with-recurring.php:14
 #: templates/forms/event/when.php:8
@@ -7023,7 +7023,7 @@ msgid ""
 "This event spans every day between the beginning and end date, with start/"
 "end times applying to each day."
 msgstr ""
-"Cet évènement est récurrent depuis le premier jour et jusqu'au dernier, les "
+"Cet événement est récurrent depuis le premier jour et jusqu'au dernier, les "
 "horaires s'appliquent chaque jour."
 
 #: templates/forms/event-editor.php:30
@@ -7032,7 +7032,7 @@ msgstr "Vos informations"
 
 #: templates/forms/event-editor.php:47
 msgid "The event name. Example: Birthday party"
-msgstr "Le nom de l'évènement. Exemple: Fête d'anniversaire"
+msgstr "Le nom de l'événement. Exemple: Fête d'anniversaire"
 
 #: templates/forms/event-editor.php:71 templates/forms/location-editor.php:38
 msgid "Details"
@@ -7040,7 +7040,7 @@ msgstr "Détails"
 
 #: templates/forms/event-editor.php:79
 msgid "Details about the event."
-msgstr "Détails à propos de l'évènement."
+msgstr "Détails à propos de l'événement."
 
 #: templates/forms/event-editor.php:79
 msgid "HTML allowed."
@@ -7048,7 +7048,7 @@ msgstr "HTML autorisé."
 
 #: templates/forms/event-editor.php:89
 msgid "Event Image"
-msgstr "Image de l'évènement"
+msgstr "Image de l'événement"
 
 #: templates/forms/event-editor.php:107
 msgid "Submit Event"

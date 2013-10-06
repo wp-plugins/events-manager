@@ -352,7 +352,7 @@ function em_add_options() {
 		'dbem_events_default_order' => 'ASC',
 		'dbem_events_default_limit' => 10,
 		//Event Search Options
-		'dbem_serach_form_submit' => __('Search','dbem'),
+		'dbem_search_form_submit' => __('Search','dbem'),
 		'dbem_search_form_advanced' => 1,
 		'dbem_search_form_advanced_hidden' => 1,
 		'dbem_search_form_advanced_show' => __('Show Advanced Search','dbem'),
@@ -361,6 +361,10 @@ function em_add_options() {
 		'dbem_search_form_text_label' => __('Search','dbem'),
 		'dbem_search_form_geo' => 1,
 		'dbem_search_form_geo_label' => __('Near...','dbem'),
+		'dbem_search_form_geo_units' => 1,
+		'dbem_search_form_geo_units_label' => __('Within','dbem'),
+		'dbem_search_form_geo_unit_default' => 'mi',
+		'dbem_search_form_geo_distance_default' => 25,
 		'dbem_search_form_dates' => 1,
 		'dbem_search_form_dates_label' => __('Dates','dbem'),
 		'dbem_search_form_dates_separator' => __('and','dbem'),
@@ -368,6 +372,7 @@ function em_add_options() {
 		'dbem_search_form_categories_label' => __('All Categories','dbem'),
 		'dbem_search_form_category_label' => __('Category','dbem'),
 		'dbem_search_form_countries' => 1,
+		'dbem_search_form_default_country' => get_option('dbem_location_default_country',''),
 		'dbem_search_form_countries_label' => __('All Countries','dbem'),
 		'dbem_search_form_country_label' => __('Country','dbem'),
 		'dbem_search_form_regions' => 1,
@@ -459,7 +464,7 @@ function em_add_options() {
 		'dbem_locations_page_title' => __('Event','dbem')." ".__('Locations','dbem'),
 		'dbem_locations_page_search_form' => 1,
 		'dbem_no_locations_message' => sprintf(__( 'No %s', 'dbem' ),__('Locations','dbem')),
-		'dbem_location_default_country' => 'US',
+		'dbem_location_default_country' => '',
 		'dbem_location_list_item_format_header' => '<ul class="em-locations-list">',
 		'dbem_location_list_item_format' => '<li>#_LOCATIONLINK<ul><li>#_LOCATIONFULLLINE</li></ul></li>',
 		'dbem_location_list_item_format_footer' => '</ul>',
@@ -838,6 +843,20 @@ function em_add_options() {
 	    delete_option('dbem_events_page_search'); //avoids the double search form on overriden templates
 	    update_option('dbem_locations_page_search_form',0); //upgrades shouldn't get extra surprises  
 	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.512 ){
+		update_option('dbem_search_form_geo_units',0); //don't display units search for previous installs
+		//correcting the typo
+		update_option('dbem_search_form_submit', get_option('dbem_serach_form_submit'));
+		//if template isn't overridden, assume it is still being used
+	    if( !locate_template('plugins/events-manager/templates/events-search.php') ){
+	    	delete_option('dbem_serach_form_submit', 0);
+	    }
+	    //ML translation
+		if( get_option('dbem_serach_form_submit_ml') ){
+			update_option('dbem_search_form_submit_ml', get_option('dbem_serach_form_submit_ml'));
+			delete_option('dbem_serach_form_submit_ml'); //we can assume this isn't used in templates
+		}
+	}		
 	//set time localization for first time depending on current settings
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless

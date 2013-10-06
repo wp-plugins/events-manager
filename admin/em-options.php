@@ -231,7 +231,12 @@ function em_admin_options_page() {
 	if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'reset' ){
 		em_admin_options_reset_page();
 		return;
-	}	
+	}
+	//substitute dropdowns with input boxes for some situations to improve speed, e.g. if there 1000s of locations or users
+	$total_users = $wpdb->get_var("SELECT COUNT(ID) FROM {$wpdb->users};");
+	if( $total_users > 100 && !defined('EM_OPTIMIZE_SETTINGS_PAGE_USERS') ){ define('EM_OPTIMIZE_SETTINGS_PAGE_USERS',true); }
+	$total_locations = EM_Locations::count();
+	if( $total_locations > 100 && !defined('EM_OPTIMIZE_SETTINGS_PAGE_LOCATIONS') ){ define('EM_OPTIMIZE_SETTINGS_PAGE_LOCATIONS',true); }
 	//TODO place all options into an array
 	global $events_placeholder_tip, $locations_placeholder_tip, $categories_placeholder_tip, $bookings_placeholder_tip;
 	$events_placeholders = '<a href="'.EM_ADMIN_URL .'&amp;page=events-manager-help#event-placeholders">'. __('Event Related Placeholders','dbem') .'</a>';
@@ -306,13 +311,17 @@ function em_admin_options_page() {
 						}
 						if( get_option('dbem_locations_enabled') ){
 							/*default location*/
-							$location_options = array();
-							$location_options[0] = __('no default location','dbem');
-							$EM_Locations = EM_Locations::get();
-							foreach($EM_Locations as $EM_Location){
-						 		$location_options[$EM_Location->location_id] = $EM_Location->location_name;
-						 	}
-							em_options_select ( __( 'Default Location', 'dbem' ), 'dbem_default_location', $location_options, __( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
+							if( defined('EM_OPTIMIZE_SETTINGS_PAGE_LOCATIONS') && EM_OPTIMIZE_SETTINGS_PAGE_LOCATIONS ){
+				            	em_options_input_text( __( 'Default Location', 'dbem' ), 'dbem_default_location', __('Please enter your Location ID, or leave blank for no location.','dbem').' '.__( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
+				            }else{
+								$location_options = array();
+								$location_options[0] = __('no default location','dbem');
+								$EM_Locations = EM_Locations::get();
+								foreach($EM_Locations as $EM_Location){
+							 		$location_options[$EM_Location->location_id] = $EM_Location->location_name;
+							 	}
+								em_options_select ( __( 'Default Location', 'dbem' ), 'dbem_default_location', $location_options, __('Please enter your Location ID.','dbem').' '.__( 'This option allows you to select the default location when adding an event.','dbem' )." ".__('(not applicable with event ownership on presently, coming soon!)','dbem') );
+							}
 							
 							/*default location country*/
 							em_options_select ( __( 'Default Location Country', 'dbem' ), 'dbem_location_default_country', em_get_countries(__('no default country', 'dbem')), __('If you select a default country, that will be pre-selected when creating a new location.','dbem') );
@@ -371,7 +380,11 @@ function em_admin_options_page() {
 						</td></tr>
 			            <?php
 							em_options_radio_binary ( __( 'Allow anonymous event submissions?', 'dbem' ), 'dbem_events_anonymous_submissions', __( 'Would you like to allow users to submit bookings anonymously? If so, you can use the new [event_form] shortcode or <code>em_event_form()</code> template tag with this enabled.', 'dbem' ) );
-			            	em_options_select ( __('Guest Default User', 'dbem'), 'dbem_events_anonymous_user', em_get_wp_users (), __( 'Events require a user to own them. In order to allow events to be submitted anonymously you need to assign that event a specific user. We recommend you create a "Anonymous" subscriber with a very good password and use that. Guests will have the same event permissions as this user when submitting.', 'dbem' ) );
+							if( defined('EM_OPTIMIZE_SETTINGS_PAGE_USERS') && EM_OPTIMIZE_SETTINGS_PAGE_USERS ){
+				            	em_options_input_text( __('Guest Default User', 'dbem'), 'dbem_events_anonymous_user', __('Please add a User ID.','dbem').' '.__( 'Events require a user to own them. In order to allow events to be submitted anonymously you need to assign that event a specific user. We recommend you create a "Anonymous" subscriber with a very good password and use that. Guests will have the same event permissions as this user when submitting.', 'dbem' ) );
+				            }else{
+				            	em_options_select ( __('Guest Default User', 'dbem'), 'dbem_events_anonymous_user', em_get_wp_users (), __( 'Events require a user to own them. In order to allow events to be submitted anonymously you need to assign that event a specific user. We recommend you create a "Anonymous" subscriber with a very good password and use that. Guests will have the same event permissions as this user when submitting.', 'dbem' ) );
+							}
 			            	em_options_textarea ( __( 'Success Message', 'dbem' ), 'dbem_events_anonymous_result_success', __( 'Anonymous submitters cannot see or modify their event once submitted. You can customize the success message they see here.', 'dbem' ).$events_placeholder_tip );
 						?>
 				        <?php echo $save_button; ?>
@@ -544,7 +557,7 @@ function em_admin_options_page() {
 	            	<table class="form-table">
 	            	<?php
 	            	em_options_input_text ( __( 'Events', 'dbem' ), 'dbem_cp_events_slug', sprintf(__('e.g. %s - you can use / Separators too', 'dbem' ), '<strong>'.home_url().'/<code>'.get_option('dbem_cp_events_slug',EM_POST_TYPE_EVENT_SLUG).'</code>/2012-olympics/</strong>'), EM_POST_TYPE_EVENT_SLUG );
-					if( get_option('dbem_locations_enabled') ){
+					if( get_option('dbem_locations_enabled')  && !(EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations') && !is_main_site()) ){
 		            	em_options_input_text ( __( 'Locations', 'dbem' ), 'dbem_cp_locations_slug', sprintf(__('e.g. %s - you can use / Separators too', 'dbem' ), '<strong>'.home_url().'/<code>'.get_option('dbem_cp_locations_slug',EM_POST_TYPE_LOCATION_SLUG).'</code>/wembley-stadium/</strong>'), EM_POST_TYPE_LOCATION_SLUG );
 					}
 	            	if( get_option('dbem_categories_enabled') && !(EM_MS_GLOBAL && !is_main_site()) ){
@@ -620,8 +633,8 @@ function em_admin_options_page() {
 										)); 
 									?>
 									<?php foreach($event_archive_orderby_options as $key => $value) : ?>   
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_default_archive_orderby')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_events_default_archive_orderby')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value); ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select> 
@@ -635,8 +648,8 @@ function em_admin_options_page() {
 									)); 
 									?>
 									<?php foreach( $event_archive_order_options as $key => $value) : ?>   
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_default_archive_order')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_events_default_archive_order')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value); ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select>
@@ -677,8 +690,8 @@ function em_admin_options_page() {
 									)); 
 								?>
 								<?php foreach($orderby_options as $key => $value) : ?>   
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_default_orderby')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_events_default_orderby')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value); ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select> 
@@ -698,8 +711,8 @@ function em_admin_options_page() {
 								)); 
 								?>
 								<?php foreach( $order_options as $key => $value) : ?>   
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_default_order')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_events_default_order')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value); ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select>
@@ -775,8 +788,8 @@ function em_admin_options_page() {
 										)); 
 									?>
 									<?php foreach($orderby_options as $key => $value) : ?>   
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_locations_default_archive_orderby')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_locations_default_archive_orderby')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value) ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select> 
@@ -790,8 +803,8 @@ function em_admin_options_page() {
 									)); 
 									?>
 									<?php foreach( $order_options as $key => $value) : ?>   
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_locations_default_archive_order')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_locations_default_archive_order')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value) ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select>
@@ -825,8 +838,8 @@ function em_admin_options_page() {
 									)); 
 								?>
 								<?php foreach($orderby_options as $key => $value) : ?>
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_locations_default_orderby')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_locations_default_orderby')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value) ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select> 
@@ -840,8 +853,8 @@ function em_admin_options_page() {
 								)); 
 								?>
 								<?php foreach( $order_options as $key => $value) : ?>   
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_locations_default_order')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_locations_default_order')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value) ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select>
@@ -890,15 +903,15 @@ function em_admin_options_page() {
 				   		<td>   
 							<select name="dbem_categories_default_archive_orderby" >
 								<?php foreach($event_archive_orderby_options as $key => $value) : ?>   
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_categories_default_archive_orderby')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_categories_default_archive_orderby')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value) ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select> 
 							<select name="dbem_categories_default_archive_order" >
 								<?php foreach( $event_archive_order_options as $key => $value) : ?>   
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_categories_default_archive_order')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_categories_default_archive_order')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value) ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select>
@@ -925,8 +938,8 @@ function em_admin_options_page() {
 									)); 
 								?>
 								<?php foreach($orderby_options as $key => $value) : ?>
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_categories_default_orderby')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_categories_default_orderby')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value) ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select> 
@@ -940,8 +953,8 @@ function em_admin_options_page() {
 								)); 
 								?>
 								<?php foreach( $order_options as $key => $value) : ?>   
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_categories_default_order')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_categories_default_order')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value) ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select>
@@ -992,15 +1005,15 @@ function em_admin_options_page() {
 					   		<td>   
 								<select name="dbem_tags_default_archive_orderby" >
 									<?php foreach($event_archive_orderby_options as $key => $value) : ?>   
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_tags_default_archive_orderby')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_tags_default_archive_orderby')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value) ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select> 
 								<select name="dbem_tags_default_archive_order" >
 									<?php foreach( $event_archive_order_options as $key => $value) : ?>   
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_tags_default_archive_order')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_tags_default_archive_order')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value) ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select>
@@ -1026,8 +1039,8 @@ function em_admin_options_page() {
 										)); 
 									?>
 									<?php foreach($orderby_options as $key => $value) : ?>
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_tags_default_orderby')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_tags_default_orderby')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value) ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select> 
@@ -1041,8 +1054,8 @@ function em_admin_options_page() {
 									)); 
 									?>
 									<?php foreach( $order_options as $key => $value) : ?>   
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_tags_default_order')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_tags_default_order')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value) ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select>
@@ -1093,8 +1106,8 @@ function em_admin_options_page() {
 									)); 
 								?>
 								<?php foreach($orderby_options as $key => $value) : ?>
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_bookings_default_orderby')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_bookings_default_orderby')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value) ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select> 
@@ -1108,8 +1121,8 @@ function em_admin_options_page() {
 								));
 								?>
 								<?php foreach( $order_options as $key => $value) : ?>   
-				 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_bookings_default_order')) ? "selected='selected'" : ''; ?>>
-				 					<?php echo $value; ?>
+				 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_bookings_default_order')) ? "selected='selected'" : ''; ?>>
+				 					<?php echo esc_html($value) ?>
 				 				</option>
 								<?php endforeach; ?>
 							</select>
@@ -1199,8 +1212,10 @@ function em_admin_options_page() {
 						<tbody class="em-settings-geocoding">
 						<tr><td colspan="2"><strong><?php esc_html_e( 'Geolocation Search', 'dbem' ); ?></strong></td></tr>
 						<?php
-						em_options_radio_binary ( __( 'Show geolocation search?', 'dbem' ), 'dbem_search_form_geo', '', '', '#dbem_search_form_geo_label_row' );
+						em_options_radio_binary ( __( 'Show geolocation search?', 'dbem' ), 'dbem_search_form_geo', '', '', '#dbem_search_form_geo_label_row, #dbem_search_form_geo_distance_default_row, #dbem_search_form_geo_unit_default_row' );
 						em_options_input_text ( __( 'Label', 'dbem' ), 'dbem_search_form_geo_label', __('Appears within the input box.','dbem') );
+						em_options_select ( __( 'Default distance', 'dbem' ), 'dbem_search_form_geo_distance_default', array(5=>5,10=>10,25=>25,100=>100), '');
+						em_options_select ( __( 'Default distance unit', 'dbem' ), 'dbem_search_form_geo_unit_default', array('km'=>'km','mi'=>'mi'), '');
 						?>
 						</tbody>
 					</table>
@@ -1211,7 +1226,7 @@ function em_admin_options_page() {
 						?>
 						<tbody class="em-search-form-advanced">
 						<?php 
-						em_options_input_text ( __( 'Search button text', 'dbem' ), 'dbem_serach_form_submit', __("If there's no fields to show in the main search section, this button will be used instead at the bottom of the advanced fields.",'dbem'));
+						em_options_input_text ( __( 'Search button text', 'dbem' ), 'dbem_search_form_submit', __("If there's no fields to show in the main search section, this button will be used instead at the bottom of the advanced fields.",'dbem'));
 						em_options_radio_binary ( __( 'Hidden by default?', 'dbem' ), 'dbem_search_form_advanced_hidden', __('If set to yes, advanced search fields will be hidden by default and can be revealed by clicking the "Advanced Search" link.','dbem'), '', '#dbem_search_form_advanced_show_row, #dbem_search_form_advanced_hide_row' );
 						em_options_input_text ( __( 'Show label', 'dbem' ), 'dbem_search_form_advanced_show', __('Appears as the label for this search option.','dbem') );
 						em_options_input_text ( __( 'Hide label', 'dbem' ), 'dbem_search_form_advanced_hide', __('Appears as the label for this search option.','dbem') );
@@ -1228,9 +1243,15 @@ function em_admin_options_page() {
 						em_options_input_text ( __( 'Label', 'dbem' ), 'dbem_search_form_category_label', __('Appears as the label for this search option.','dbem') );
 						em_options_input_text ( __( 'Categories dropdown label', 'dbem' ), 'dbem_search_form_categories_label', __('Appears as the first default search option.','dbem') );
 						?>
+						<tr><td colspan="2"><strong><?php esc_html_e( 'Geolocation Search', 'dbem' ); ?></strong></td></tr>
+						<?php
+						em_options_radio_binary ( __( 'Show distance options?', 'dbem' ), 'dbem_search_form_geo_units', '', '', '#dbem_search_form_geo_units_label_row' );
+						em_options_input_text ( __( 'Label', 'dbem' ), 'dbem_search_form_geo_units_label', __('Appears as the label for this search option.','dbem') );
+						?>
 						<tr><td colspan="2"><strong><?php esc_html_e( 'Country', 'dbem' ); ?></strong></td></tr>
 						<?php
 						em_options_radio_binary ( __( 'Show countries?', 'dbem' ), 'dbem_search_form_countries', '', '', '#dbem_search_form_country_label_row, #dbem_search_form_countries_label_row' );
+						em_options_select ( __( 'Default Country', 'dbem' ), 'dbem_search_form_default_country', em_get_countries(__('no default country', 'dbem')), __('Search form will be pre-selected with this country, if searching by country is disabled above, only search results from this country will be returned.','dbem') );
 						em_options_input_text ( __( 'Label', 'dbem' ), 'dbem_search_form_country_label', __('Appears as the label for this search option.','dbem') );
 						em_options_input_text ( __( 'All countries text', 'dbem' ), 'dbem_search_form_countries_label', __('Appears as the first default search option.','dbem') );
 						?>
@@ -1315,8 +1336,8 @@ function em_admin_options_page() {
 										)); 
 									?>
 									<?php foreach($orderby_options as $key => $value) : ?>   
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_display_calendar_orderby')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_display_calendar_orderby')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value) ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select> 
@@ -1332,8 +1353,8 @@ function em_admin_options_page() {
 									)); 
 									?>
 									<?php foreach( $order_options as $key => $value) : ?>   
-					 				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_display_calendar_order')) ? "selected='selected'" : ''; ?>>
-					 					<?php echo $value; ?>
+					 				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == get_option('dbem_display_calendar_order')) ? "selected='selected'" : ''; ?>>
+					 					<?php echo esc_html($value) ?>
 					 				</option>
 									<?php endforeach; ?>
 								</select>
@@ -1676,7 +1697,11 @@ function em_admin_options_page() {
 							$user = get_user_by('id',get_option('dbem_bookings_registration_user'));
 							$current_user[$user->ID] = $user->display_name;
 						}
-						em_options_select ( __( 'Assign bookings to', 'dbem' ), 'dbem_bookings_registration_user', em_get_wp_users(array('role' => 'subscriber'), $current_user), __( 'Choose a parent user to assign bookings to. People making their booking will be unaware of this and will never have access to those user details. This should be a subscriber user you do not use to log in with yourself.', 'dbem' ) );
+						if( defined('EM_OPTIMIZE_SETTINGS_PAGE_USERS') && EM_OPTIMIZE_SETTINGS_PAGE_USERS ){
+			            	em_options_input_text ( __( 'Assign bookings to', 'dbem' ), 'dbem_bookings_registration_user', __('Please add a User ID.','dbem').' '.__( 'Choose a parent user to assign bookings to. People making their booking will be unaware of this and will never have access to those user details. This should be a subscriber user you do not use to log in with yourself.', 'dbem' ) );
+			            }else{
+			            	em_options_select ( __( 'Assign bookings to', 'dbem' ), 'dbem_bookings_registration_user', em_get_wp_users(array('role' => 'subscriber'), $current_user), __( 'Choose a parent user to assign bookings to. People making their booking will be unaware of this and will never have access to those user details. This should be a subscriber user you do not use to log in with yourself.', 'dbem' ) );
+						}
 						echo $save_button; 
 						?>
 					</table>
@@ -1851,7 +1876,7 @@ function em_admin_options_page() {
 			*/ ?>
 
 			<p class="submit">
-				<input type="submit" id="dbem_options_submit" class="button-primary" name="Submit" value="<?php _e ( 'Save Changes' )?>" />
+				<input type="submit" id="dbem_options_submit" class="button-primary" name="Submit" value="<?php esc_attr_e( 'Save Changes', 'dbem' ); ?>" />
 				<input type="hidden" name="em-submitted" value="1" />
 				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('events-manager-options'); ?>" />
 			</p>  
@@ -1903,7 +1928,7 @@ function em_admin_option_box_email(){
 		<p class="em-email-settings-check">
 			<em><?php _e('Before you save your changes, you can quickly send yourself a test email by clicking this button.','dbem'); ?>
 			<?php echo sprintf(__('A test email will be sent to your account email - %s','dbem'), $current_user->user_email . ' <a href="'.admin_url( 'profile.php' ).'">'.__('edit','dbem').'</a>'); ?></em><br />
-			<input type="button" id="em-admin-check-email" class="secondary-button" value="<?php _e('Test Email Settings','dbem'); ?>" />
+			<input type="button" id="em-admin-check-email" class="secondary-button" value="<?php esc_attr_e('Test Email Settings','dbem'); ?>" />
 			<input type="hidden" name="_check_email_nonce" value="<?php echo wp_create_nonce('check_email'); ?>" />
 			<span id="em-email-settings-check-status"></span>
 		</p>

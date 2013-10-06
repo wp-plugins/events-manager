@@ -3,7 +3,7 @@ function em_ms_upgrade( $blog_id ){
 	?>
 	<div class="wrap">		
 		<div id='icon-options-general' class='icon32'><br /></div>
-		<h2><?php _e('Update Network','dbem'); ?></h2>
+		<h2><?php esc_html_e('Update Network','dbem'); ?></h2>
 		<?php
 		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == 'upgrade' && check_admin_referer('em_ms_ugrade_'.get_current_user_id()) ){
 			global $current_site,$wpdb;
@@ -28,10 +28,10 @@ function em_ms_upgrade( $blog_id ){
 		}else{
 			?>
 			 <form action="" method="post">
-			 	<p><?php _e('To update your network blogs with the latest Events Manager automatically, click the update button below.','dbem'); ?></p>
+			 	<p><?php esc_html_e('To update your network blogs with the latest Events Manager automatically, click the update button below.','dbem'); ?></p>
 			 	<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('em_ms_ugrade_'.get_current_user_id()); ?>" />
 			 	<input type="hidden" name="action" value="upgrade" />
-			 	<input type="submit" value="<?php _e('Update','dbem'); ?>" />
+			 	<input type="submit" value="<?php esc_attr_e('Update','dbem'); ?>" />
 			 </form>
 			<?php
 		}
@@ -126,7 +126,7 @@ function em_ms_admin_options_page() {
 	<div class="wrap">		
 		<div id='icon-options-general' class='icon32'><br /></div>
 		<h2 class="nav-tab-wrapper">
-			<a href="#" id="em-menu-general" class="nav-tab nav-tab-active"><?php _e('General','dbem'); ?></a>
+			<a href="#" id="em-menu-general" class="nav-tab nav-tab-active"><?php esc_html_e('General','dbem'); ?></a>
 		</h2>
 		<h3 id="em-options-title"><?php _e ( 'Event Manager Options', 'dbem' ); ?></h3>
 		<?php echo $EM_Notices; ?>
@@ -189,7 +189,7 @@ function em_ms_admin_options_page() {
 			</div> <!-- .em-menu-pages -->
 
 			<p class="submit">
-				<input type="submit" id="dbem_options_submit" name="Submit" value="<?php _e ( 'Save Changes' )?>" />
+				<input type="submit" id="dbem_options_submit" name="Submit" value="<?php esc_attr_e( 'Save Changes' )?>" />
 				<input type="hidden" name="em-submitted" value="1" />
 				<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('events-manager-options'); ?>" />
 			</p>  

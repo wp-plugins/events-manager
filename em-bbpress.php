@@ -7,6 +7,7 @@
  */
 function em_bbp_get_caps_for_role( $caps, $role ){
 	global $em_capabilities_array, $wpdb;
+	if( bbp_is_deactivation() ) return $caps;
 	//get the non-dynamic role from the wp_options table
 	$roles = maybe_unserialize($wpdb->get_var("SELECT option_value FROM {$wpdb->options} WHERE option_name='wp_user_roles'"));
 	//loop through the original role if it exists and add our em caps to the bp role

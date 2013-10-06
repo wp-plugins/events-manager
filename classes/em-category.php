@@ -105,6 +105,24 @@ class EM_Category extends EM_Object {
 		}
 		return $this->link;
 	}
+
+	function get_ical_url(){
+		global $wp_rewrite;
+		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
+			return trailingslashit($this->get_url()).'ical/';
+		}else{
+			return em_add_get_params($this->get_url(), array('ical'=>1));
+		}
+	}
+
+	function get_rss_url(){
+		global $wp_rewrite;
+		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
+			return trailingslashit($this->get_url()).'feed/';
+		}else{
+			return em_add_get_params($this->get_url(), array('feed'=>1));
+		}
+	}
 	
 	/**
 	 * Depreciated, don't use.
@@ -180,6 +198,20 @@ class EM_Category extends EM_Object {
 				case '#_CATEGORYURL':
 					$link = $this->get_url();
 					$replace = ($result == '#_CATEGORYURL') ? $link : '<a href="'.$link.'">'.esc_html($this->name).'</a>';
+					break;
+				case '#_CATEGORYICALURL':
+				case '#_CATEGORYICALLINK':
+					$replace = $this->get_ical_url();
+					if( $result == '#_CATEGORYICALLINK' ){
+						$replace = '<a href="'.esc_url($replace).'">iCal</a>';
+					}
+					break;
+				case '#_CATEGORYRSSURL':
+				case '#_CATEGORYRSSLINK':
+					$replace = $this->get_rss_url();
+					if( $result == '#_CATEGORYRSSLINK' ){
+						$replace = '<a href="'.esc_url($replace).'">RSS</a>';
+					}
 					break;
 				case '#_CATEGORYSLUG':
 					$replace = $this->slug;

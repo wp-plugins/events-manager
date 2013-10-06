@@ -1,20 +1,18 @@
-<?php
+<?php 
 //define and clean up formats for display
 $summary_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_description_format' ) ) );
 $description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_real_description_format') ) );
 $location_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_ical_location_format' ) ) );
 
+//figure out limits
+$ical_limit = get_option('dbem_ical_limit');
+$page_limit = $ical_limit > 50 || !$ical_limit ? 50:$ical_limit; //set a limit of 50 to output at a time, unless overall limit is lower
+//get passed on $args and merge with defaults
+$args = !empty($args) ? $args:array(); /* @var $args array */
+$args = array_merge(array('limit'=>$page_limit, 'page'=>'1', 'owner'=>false, 'orderby'=>'event_start_date', 'scope' => get_option('dbem_ical_scope') ), $args);
+$args = apply_filters('em_calendar_template_args',$args);
 //get first round of events to show, we'll start adding more via the while loop
-global $EM_Event;
-if( !empty($EM_Event) && get_class($EM_Event) == 'EM_Event' ){
-    $ical_limit = 1; //only showing one event
-	$EM_Events = array($EM_Event);
-}else{
-    $ical_limit = get_option('dbem_ical_limit');
-    $page_limit = $ical_limit > 50 || !$ical_limit ? 50:$ical_limit; //set a limit of 50 to output at a time, unless overall limit is lower
-	$args = apply_filters('em_calendar_template_args',array('limit'=>$page_limit, 'page'=>'1', 'owner'=>false, 'orderby'=>'event_start_date', 'scope' => get_option('dbem_ical_scope') ));
-	$EM_Events = EM_Events::get( $args );
-}
+$EM_Events = EM_Events::get( $args );
 
 //calendar header
 $output = "BEGIN:VCALENDAR

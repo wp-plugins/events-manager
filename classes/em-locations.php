@@ -109,7 +109,7 @@ class EM_Locations extends EM_Object {
 		global $EM_Location;
 		$EM_Location_old = $EM_Location; //When looping, we can replace EM_Location global with the current event in the loop
 		//Can be either an array for the get search or an array of EM_Location objects
-		if( !array_key_exists('page',$args) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
+		if( !empty($args['pagination']) && !array_key_exists('page',$args) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
 			$page = $args['page'] = $_REQUEST['pno'];
 		}
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
@@ -150,7 +150,7 @@ class EM_Locations extends EM_Object {
 			}
 			//Pagination (if needed/requested)
 			if( !empty($args['pagination']) && !empty($limit) && $locations_count >= $limit ){
-				$output .= apply_filters('em_locations_output_pagination', self::get_pagination_links($args, $locations_count, 'search_locations', self::get_default_search()), '', $locations_count, $limit, $page);
+				$output .= self::get_pagination_links($args, $locations_count, 'search_locations', self::get_default_search());
 			}
 		} else {
 			$output = get_option ( 'dbem_no_locations_message' );
@@ -243,6 +243,10 @@ class EM_Locations extends EM_Object {
 			    $conditions['status'] = "(`location_status` IS NULL )"; //show draft items
 			}elseif( $args['status'] == 'trash' ){
 			    $conditions['status'] = "(`location_status` = -1 )"; //show trashed items
+			}elseif( $args['status'] == 'all'){
+				$conditions['status'] = "(`location_status` >= 0 OR `location_status` IS NULL)"; //search all statuses that aren't trashed
+			}elseif( $args['status'] == 'everything'){
+				unset($conditions['status']); //search all statuses
 			}
 		}
 		//private locations
@@ -291,9 +295,14 @@ class EM_Locations extends EM_Object {
 			'private_only' => false,
 			'post_id' => false
 		);
-		if( EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations') ){
-		    //when searching in MS Global mode with all locations being stored on the main blog, blog_id becomes redundant as locations are stored in one blog table set
-		    $array['blog'] = false;
+		if( EM_MS_GLOBAL ){
+			if( get_site_option('dbem_ms_mainblog_locations') ){
+			    //when searching in MS Global mode with all locations being stored on the main blog, blog_id becomes redundant as locations are stored in one blog table set
+			    $array['blog'] = false;
+			}elseif( (!is_admin() || defined('DOING_AJAX')) && empty($array['blog']) && is_main_site() && get_site_option('dbem_ms_global_locations') ){
+				//if enabled, by default we display all blog locations on main site
+			    $array['blog'] = false;
+			}
 		}
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );

@@ -7,9 +7,12 @@ function em_geo_search_init(){
 
 		var geo_field_status = function( status ){
 			wrapper.data('status',status);
+			var em_search = wrapper.closest('.em-search');
 			if( status == 'on' ){
 				wrapper.css('background-image', wrapper.css('background-image').replace('search-geo.png', 'search-geo-on.png').replace('search-geo-off.png', 'search-geo-on.png'));
-				wrapper.closest('.em-search').find('select.em-search-country option:first-child').prop('selected','selected');
+				em_search.find('select.em-search-country option:first-child').prop('selected','selected').trigger('change');
+				em_search.find('.em-search-location').slideUp();
+				em_search.find('.em-search-geo-units').slideDown();
 			}else{
 				if( status == 'off' ){
 					wrapper.css('background-image', wrapper.css('background-image').replace('search-geo.png', 'search-geo-off.png').replace('search-geo-on.png', 'search-geo-off.png'));
@@ -17,6 +20,8 @@ function em_geo_search_init(){
 					wrapper.css('background-image', wrapper.css('background-image').replace('search-geo-off.png', 'search-geo.png').replace('search-geo-on.png', 'search-geo.png'));
 				}
 				geo_coords.val('');
+				em_search.find('.em-search-location').slideDown();
+				em_search.find('.em-search-geo-units').slideUp();
 			}
 		};
 

@@ -73,6 +73,24 @@ class EM_Tag extends EM_Object {
 		}
 		return $this->link;
 	}
+
+	function get_ical_url(){
+		global $wp_rewrite;
+		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
+			return trailingslashit($this->get_url()).'ical/';
+		}else{
+			return em_add_get_params($this->get_url(), array('ical'=>1));
+		}
+	}
+
+	function get_rss_url(){
+		global $wp_rewrite;
+		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
+			return trailingslashit($this->get_url()).'feed/';
+		}else{
+			return em_add_get_params($this->get_url(), array('feed'=>1));
+		}
+	}
 	
 	function output_single($target = 'html'){
 		$format = get_option ( 'dbem_tag_page_format' );
@@ -104,6 +122,20 @@ class EM_Tag extends EM_Object {
 				case '#_TAGURL':
 					$link = $this->get_url();
 					$replace = ($result == '#_TAGURL') ? $link : '<a href="'.$link.'">'.esc_html($this->name).'</a>';
+					break;
+				case '#_TAGICALURL':
+				case '#_TAGICALLINK':
+					$replace = $this->get_ical_url();
+					if( $result == '#_TAGICALLINK' ){
+						$replace = '<a href="'.esc_url($replace).'">iCal</a>';
+					}
+					break;
+				case '#_TAGRSSURL':
+				case '#_TAGRSSLINK':
+					$replace = $this->get_rss_url();
+					if( $result == '#_TAGRSSLINK' ){
+						$replace = '<a href="'.esc_url($replace).'">RSS</a>';
+					}
 					break;
 				case '#_TAGEVENTSPAST': //depreciated, erroneous documentation, left for compatability
 				case '#_TAGEVENTSNEXT': //depreciated, erroneous documentation, left for compatability

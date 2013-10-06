@@ -6,12 +6,13 @@
 global $EM_Location;
 /* @var $EM_Location EM_Location */
 ?>
+<p id="location-image-img">
 <?php if ($EM_Location->get_image_url() != '') : ?>
 	<img src='<?php echo $EM_Location->get_image_url('medium'); ?>' alt='<?php echo $EM_Location->location_name ?>'/>
 <?php else : ?> 
 	<?php _e('No image uploaded for this location yet', 'dbem') ?>
 <?php endif; ?>
-<br /><br />
+</p>
 <label for='location_image'><?php _e('Upload/change picture', 'dbem') ?></label> <input id='location-image' name='location_image' id='location_image' type='file' size='40' />
 <br />
 <?php if ($EM_Location->get_image_url() != '') : ?>

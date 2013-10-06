@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Events Manager package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2013-08-05 21:26+0100\n"
+"PO-Revision-Date: 2013-09-23 17:11+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -6981,7 +6981,7 @@ msgstr ""
 
 #: templates/forms/event/when-with-recurring.php:11
 msgid "This is a recurring event."
-msgstr "Dies ist keine wiederkehrende Veranstaltung."
+msgstr "Dies ist eine wiederkehrende Veranstaltung."
 
 #: templates/forms/event/when-with-recurring.php:14
 #: templates/forms/event/when.php:8

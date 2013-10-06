@@ -209,7 +209,7 @@ class EM_Ticket extends EM_Object{
 		$EM_Event = $this->get_event();
 		$available_spaces = $this->get_available_spaces();
 		$condition_1 = (empty($this->ticket_start) || $this->start_timestamp <= $timestamp);
-		$condition_2 = $this->end_timestamp + 86400 >= $timestamp || empty($this->ticket_end);
+		$condition_2 = $this->end_timestamp >= $timestamp || empty($this->ticket_end);
 		$condition_3 = $EM_Event->start > $timestamp || strtotime($EM_Event->event_rsvp_date. ' '. $EM_Event->event_rsvp_time) > $timestamp;
 		$condition_4 = !$this->ticket_members || ($this->ticket_members && is_user_logged_in()) || $include_members_only;
 		$condition_5 = true;
@@ -230,7 +230,8 @@ class EM_Ticket extends EM_Object{
 				$is_available = true;
 			}
 		}
-		return apply_filters('em_ticket_is_available', $is_available, $this);
+		$this->is_available = apply_filters('em_ticket_is_available', $is_available, $this);
+		return $this->is_available;
 	}
 	
 	/**

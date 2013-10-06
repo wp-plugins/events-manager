@@ -57,4 +57,10 @@ jQuery(document).ready(function($) {
 			window.original_send_to_editor(html);
 		}
 	};
+	
+	//detach/remove image from category for saving
+	$('#delete_image_button').on('click', function(){
+		$('#category-image-img').remove();
+		$('#category-image, #category-image-id').val('');
+	}); 
 });

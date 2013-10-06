@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
 Tested up to: 3.6
-Stable tag: 5.5.1
+Stable tag: 5.5.2
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.5.1.1 (dev) =
+= 5.5.2 =
 * fixed (rare) looping problem with calendar generation
 * fixed permalink rule problems for events page children with url-encoded slugs
 * changed country name 'Libyan Arab Jamahiriya' to just 'Libya'
@@ -107,6 +107,48 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed event results bug for certain months in WP FullCalendar
 * fixed duplication error when tags are disabled
 * fixed single ticket mode cutting off event bookings on event start (requires resave of affected events)
+* fixed duplicate location problem and potentially fixed duplicate/shadow event problem,
+* fixed booking cut-off times using submitted event time if no cut-off time submitted and all-day event is checked
+* fixed php warning on taxonomy pages on some installs when overriding with formatting
+* updated German and French language files
+* fixed location still appearing when trashed
+* fixed long page loads on settings page with many users or locations on blog (now requests location/user IDs instead of a dropdown)
+* fixed bug preventing pro manual bookings for new users when guest bookings disabled
+* fixed turkish datepicker not translating
+* fixed issues caused by 5.5 update breaking filters using *_output_pagination (now requires PHP 5.3 to work, otherwise use em_object_get_pagination_links)
+* fixed #_BOOKINGATTENDEES not working when 'reserve unconfirmed spaces' is set to no
+* added new default search arguments for search form
+* changed default country to 'none' by default,
+* moved location search form html into new templates/search/location.php template
+* changed location search fields to be shown if country search field is hidden
+* fixed typo of option dbem_seRAch_form_submit
+* added default country option specifically for search form
+* improved search form arguments which allows fine-grained control via shortcode as well
+* added events_search and locations_search shortcode names
+* improved search UX by hiding location options if geo search used
+* added geolocation unit and distance options to search form
+* fixed XSS vulnerability in booking form and preventitive measures taken in other areas (no template fixes necessary)
+* fixed feeds not working when no events page defined
+* fixed booking_date using mysql instead of blog timezone
+* fixed maps not showing on front-end edit locations page
+* fixed pagination querystring affecting other event/location/category/tag lists without pagination enabled
+* fixed events RSS feed taking over blog feed if events page is homepage
+* changed RSS feed url ending to feed/ to avoid unnecessary redirects
+* fixed bbPress deactivation erasing all EM capabilities for all roles
+* added removal button for category images
+* added JS for hiding event/location images when marked for deletion on public forms
+* fixed ticket cut-off time not being accurately respected
+* fixed 'all' status search not returning drafts
+* added 'everything' status which includes trashed events/locations
+* fixed BP CSS conflict with wp_editor (https://buddypress.trac.wordpress.org/ticket/5167)
+* changed order of when recurrences get saved if in admin area so other plugin post meta data gets properly copied over
+* added missing translatable strings for ML (WPML) mode in settings page
+* fixed MS Global location link problem when viewing location on different blog,
+* fixed AJAX searches not including subsite items in MS Global mode
+* improved RSS linking and overriding logic
+* added RSS feeds for individual locations/categories/tags
+* added iCal feeds for individual locations/categories/tags and any custom taxonomy attached to locations or events
+* fixed category base slug not being editable in MultiSite (kudos Maxime Lafontaine)
 
 = 5.5.1 =
 * fixed init code not executing WP FullCalendar integration in time

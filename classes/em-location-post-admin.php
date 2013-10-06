@@ -52,7 +52,8 @@ class EM_Location_Post_Admin{
 	 * @return array
 	 */
 	public static function wp_insert_post_data( $data, $postarr ){
-		global $wpdb, $EM_Event, $EM_Location, $EM_Notices;
+		global $wpdb, $EM_Event, $EM_Location, $EM_Notices, $EM_SAVING_LOCATION;
+		if( !empty($EM_SAVING_LOCATION) ) return $data; //If we're saving a location via EM_Location::save() we should never run the below
 		$post_type = $data['post_type'];
 		$post_ID = !empty($postarr['ID']) ? $postarr['ID'] : false;
 		$is_post_type = $post_type == EM_POST_TYPE_LOCATION;
@@ -76,7 +77,8 @@ class EM_Location_Post_Admin{
 	 * @param int $post_id
 	 */
 	function save_post($post_id){
-		global $wpdb, $EM_Location, $EM_Notices;
+		global $wpdb, $EM_Location, $EM_Notices, $EM_SAVING_LOCATION;
+		if( !empty($EM_SAVING_LOCATION) ) return; //If we're saving a location via EM_Location::save() we should never run the below
 		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
 		$is_post_type = get_post_type($post_id) == EM_POST_TYPE_LOCATION;
 		if(!defined('UNTRASHING_'.$post_id) && $is_post_type && $saving_status){

@@ -14,8 +14,7 @@ function em_paginate($link, $total, $limit, $page=1, $data=array()){
 	if($limit > 0){
 		$pagesToShow = defined('EM_PAGES_TO_SHOW') ? EM_PAGES_TO_SHOW : 10;
 		$url_parts = explode('?', $link);
-		$link = esc_attr($link);
-		$base_link = esc_attr($url_parts[0]);
+		$base_link = $url_parts[0];
 		$base_querystring = '';
 		$data_atts = '';
     	//Get querystring for first page without page
@@ -47,11 +46,11 @@ function em_paginate($link, $total, $limit, $page=1, $data=array()){
 		$maxPages = ceil($total/$limit); //Total number of pages
 		$startPage = ($page <= $pagesToShow) ? 1 : $pagesToShow * (floor($page/$pagesToShow)) ; //Which page to start the pagination links from (in case we're on say page 12 and $pagesToShow is 10 pages)
 		$placeholder = urlencode('%PAGE%');
-		$link = str_replace('%PAGE%', $placeholder, $link); //To avoid url encoded/non encoded placeholders
+		$link = str_replace('%PAGE%', $placeholder, esc_url($link)); //To avoid url encoded/non encoded placeholders
 	    //Add the back and first buttons
 		    $string = ($page>1 && $startPage != 1) ? '<a class="prev page-numbers" href="'.str_replace($placeholder,1,$link).'" title="1">&lt;&lt;</a> ' : '';
 		    if($page == 2){
-		    	$string .= ' <a class="prev page-numbers" href="'.$base_link.$base_querystring.'" title="2">&lt;</a> ';
+		    	$string .= ' <a class="prev page-numbers" href="'.esc_url($base_link.$base_querystring).'" title="2">&lt;</a> ';
 		    }elseif($page > 2){
 		    	$string .= ' <a class="prev page-numbers" href="'.str_replace($placeholder,$page-1,$link).'" title="'.($page-1).'">&lt;</a> ';
 		    }
@@ -60,7 +59,7 @@ function em_paginate($link, $total, $limit, $page=1, $data=array()){
 	            if($i == $page || (empty($page) && $startPage == $i)) {
 	                $string .= ' <strong><span class="page-numbers current">'.$i.'</span></strong>';
 	            }elseif($i=='1'){
-	                $string .= ' <a class="page-numbers" href="'.$base_link.$base_querystring.'" title="'.$i.'">'.$i.'</a> ';
+	                $string .= ' <a class="page-numbers" href="'.esc_url($base_link.$base_querystring).'" title="'.$i.'">'.$i.'</a> ';
 	            }else{
 	                $string .= ' <a class="page-numbers" href="'.str_replace($placeholder,$i,$link).'" title="'.$i.'">'.$i.'</a> ';
 	            }
@@ -155,7 +154,7 @@ function em_add_get_params($url, $params=array(), $html=true, $encode=true){
 			$count++;
 		}
 	}
-	return $url;
+	return $html ? esc_url($url):esc_url_raw($url);
 }
 
 /**
@@ -339,7 +338,7 @@ function em_booking_add_registration( $EM_Booking ){
     global $EM_Notices;
     //Does this user need to be registered first?
     $registration = true;
-    if( (!is_user_logged_in() || defined('EM_FORCE_REGISTRATION')) && get_option('dbem_bookings_anonymous') && !get_option('dbem_bookings_registration_disable') ){
+    if( ((!is_user_logged_in() && get_option('dbem_bookings_anonymous')) || defined('EM_FORCE_REGISTRATION')) && !get_option('dbem_bookings_registration_disable') ){
     	//find random username - less options for user, less things go wrong
     	$username_root = explode('@', wp_kses_data($_REQUEST['user_email']));
     	$username_root = $username_rand = sanitize_user($username_root[0], true);
@@ -502,20 +501,55 @@ function em_new_user_notification() {
  * Returns an array of flags that are used in search forms.
  * @return array
  */
-function em_get_search_form_defaults(){
+function em_get_search_form_defaults($args = array()){
+	if( !is_array($args) ) $args = array();
 	$search_args = array();
 	$search_args['css'] = get_option('dbem_css_search');
+	$search_args['search_action'] = 'search_events';
 	$search_args['search_text_show'] = get_option('dbem_search_form_advanced_show');
 	$search_args['search_text_hide'] = get_option('dbem_search_form_advanced_hide');
-	$search_args['search_button'] = get_option('dbem_serach_form_submit','Search');
+	$search_args['search_button'] = get_option('dbem_search_form_submit');
+	//search text
+	$search_args['search'] = ''; //default search term
 	$search_args['search_term'] = get_option('dbem_search_form_text');
+	$search_args['search_term_label'] = get_option('dbem_search_form_text_label'); //field label
+	//geo and units
+	$search_args['geo'] = '';  //default geo search term (requires 'near' as well for it to make sense)
+	$search_args['near'] = ''; //default near search params
 	$search_args['search_geo'] = get_option('dbem_search_form_geo');
+	$search_args['geo_label'] = get_option('dbem_search_form_geo_label'); //field label
+	$search_args['search_geo_units'] = get_option('dbem_search_form_geo_units'); //field label
+	$search_args['geo_units_label'] = get_option('dbem_search_form_geo_units_label'); //field label
+	$search_args['near_unit'] = get_option('dbem_search_form_geo_unit_default'); //default distance unit
+	$search_args['near_distance'] = get_option('dbem_search_form_geo_distance_default'); //default distance amount
+	//scope
+	$search_args['scope'] = array('',''); //default scope term
 	$search_args['search_scope'] = get_option('dbem_search_form_dates');
+	$search_args['scope_label'] = get_option('dbem_search_form_dates_label'); //field label
+	$search_args['scope_seperator'] = get_option('dbem_search_form_dates_separator'); //field label
+	//categories
+	$search_args['category'] = 0; //default search term
 	$search_args['search_categories'] = get_option('dbem_search_form_categories');
+	$search_args['category_label'] = get_option('dbem_search_form_category_label'); //field label
+	$search_args['categories_label'] = get_option('dbem_search_form_categories_label'); //select default
+	//countries
+	$search_args['country'] = get_option('dbem_search_form_default_country'); //default country
 	$search_args['search_countries'] = get_option('dbem_search_form_countries');
+	$search_args['country_label'] = get_option('dbem_search_form_country_label'); //field label
+	$search_args['countries_label'] = get_option('dbem_search_form_countries_label'); //select default
+	//regions
+	$search_args['region'] = ''; //default region
 	$search_args['search_regions'] = get_option('dbem_search_form_regions');
+	$search_args['region_label'] = get_option('dbem_search_form_region_label'); //field label
+	//states
+	$search_args['state'] = ''; //default state
 	$search_args['search_states'] = get_option('dbem_search_form_states');
+	$search_args['state_label'] = get_option('dbem_search_form_state_label'); //field label
+	//towns
+	$search_args['town'] = ''; //default state
 	$search_args['search_towns'] = get_option('dbem_search_form_towns');
+	$search_args['town_label'] = get_option('dbem_search_form_town_label'); //field label
+	//sections to show
 	$search_args['show_main'] = !empty($search_args['search_term']) || !empty($search_args['search_geo']); //decides whether or not to show main area and collapseable advanced search options
 	$search_args['show_advanced'] = get_option('dbem_search_form_advanced') && ($search_args['search_scope'] || $search_args['search_categories'] || $search_args['search_countries'] || $search_args['search_regions'] || $search_args['search_states'] || $search_args['search_towns']);
 	$search_args['advanced_hidden'] = $search_args['show_advanced'] && get_option('dbem_search_form_advanced_hidden');
@@ -527,8 +561,25 @@ function em_get_search_form_defaults(){
 	$search_args['main_classes'][] = $search_args['show_main'] ? 'has-search-main':'no-search-main';
 	$search_args['main_classes'][] = $search_args['show_advanced'] ? 'has-advanced':'no-advanced';
 	$search_args['main_classes'][] = $search_args['advanced_hidden'] ? 'advanced-hidden':'advanced-visible';
-	//return arguments
-	return $search_args;
+	//merge defaults with supplied arguments 
+	$args = array_merge($search_args, $args);
+	//overwrite with $_REQUEST defaults in event of a submitted search
+	if( isset($_REQUEST['geo']) ) $args['geo'] = $_REQUEST['geo']; //if geo search string requested, use that for search form
+	if( isset($_REQUEST['near']) ) $args['near'] = $_REQUEST['near']; //if geo search string requested, use that for search form
+	if( isset($_REQUEST['em_search']) ) $args['search'] = $_REQUEST['em_search']; //if geo search string requested, use that for search form
+	if( isset($_REQUEST['category']) ) $args['category'] = $_REQUEST['category']; //if state requested, use that for searching
+	if( isset($_REQUEST['country']) ) $args['country'] = $_REQUEST['country']; //if country requested, use that for searching
+	if( isset($_REQUEST['region']) ) $args['region'] = $_REQUEST['region']; //if region requested, use that for searching
+	if( isset($_REQUEST['state']) ) $args['state'] = $_REQUEST['state']; //if state requested, use that for searching
+	if( isset($_REQUEST['town']) ) $args['town'] = $_REQUEST['town']; //if state requested, use that for searching
+	if( isset($_REQUEST['near_unit']) ) $args['near_unit'] = $_REQUEST['near_unit']; //if state requested, use that for searching
+	if( isset($_REQUEST['near_distance']) ) $args['near_distance'] = $_REQUEST['near_distance']; //if state requested, use that for searching
+	if( !empty($_REQUEST['scope']) && !is_array($_REQUEST['scope'])){ 
+		$args['scope'] = explode(',',$_REQUEST['scope']); //convert scope to an array in event of pagination 
+	}elseif( !empty($_REQUEST['scope']) ){
+		$args['scope'] = $_REQUEST['scope'];
+	}
+	return $args;
 }
 
 /*

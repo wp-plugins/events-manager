@@ -20,8 +20,10 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
 		$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_rss_description_format' ) ) );
 		//$args = array('limit'=>5, 'owner'=>false);
         $rss_limit = get_option('dbem_rss_limit');
-        $page_limit = $rss_limit > 50 || !$rss_limit ? 50 : $rss_limit; //set a limit of 50 to output at a time, unless overall limit is lower
-		$args = array('scope'=>'future', 'owner'=>false, 'limit'=>$page_limit, 'page'=>1 );
+        $page_limit = $rss_limit > 50 || !$rss_limit ? 50 : $rss_limit; //set a limit of 50 to output at a time, unless overall limit is lower		
+		$args = !empty($args) ? $args:array(); /* @var $args array */
+		$args = array_merge(array('scope'=>'future', 'owner'=>false, 'limit'=>$page_limit, 'page'=>1), $args);
+		$args = apply_filters('em_rss_template_args',$args);
 		$EM_Events = EM_Events::get( $args );
 		$count = 0;
 		while( count($EM_Events) > 0 ){

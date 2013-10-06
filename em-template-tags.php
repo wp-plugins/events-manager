@@ -299,8 +299,7 @@ function em_get_events_admin( $args = array() ){
  * @param array $args
  */
 function em_event_search_form($args = array()){
-	$search_args = em_get_search_form_defaults();
-	$args = array_merge($search_args, $args);
+	$args = em_get_search_form_defaults($args);
 	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
 	em_locate_template('templates/events-search.php',true, array('args'=>$args));
 }
@@ -410,8 +409,7 @@ function em_get_locations_admin( $args = array() ){
  * @param array $args
  */
 function em_location_search_form($args = array()){
-	$search_args = em_get_search_form_defaults();
-	$args = array_merge($search_args, $args);
+	$args = em_get_search_form_defaults($args);
 	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
 	em_locate_template('templates/locations-search.php',true, array('args'=>$args));
 }
