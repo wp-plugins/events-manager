@@ -44,9 +44,9 @@ function bp_em_my_events_editor_title() {
 	global $EM_Event;
 	if( is_object($EM_Event) ){
 		if($EM_Event->is_recurring()){
-			_e( "Reschedule Events", 'dbem' )." '{$EM_Event->event_name}'";
+			echo __( "Reschedule Events", 'dbem' )." '{$EM_Event->event_name}'";
 		}else{
-			_e ( "Edit Event", 'dbem' ) . " '" . $EM_Event->event_name . "'";
+			echo __( "Edit Event", 'dbem' ) . " '" . $EM_Event->event_name . "'";
 		}
 	}else{
 		_e( 'Add Event', 'dbem' );

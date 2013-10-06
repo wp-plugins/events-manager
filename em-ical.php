@@ -2,55 +2,67 @@
 	/**
 	 * generates an ical feed on init if url is correct
 	 */
-	function em_ical( $regenerate = false ){
+	function em_ical( ){
 		//check if this is a calendar request for all events
-		$cal_file_request = preg_match('/events.ics$/', $_SERVER['REQUEST_URI']); //are we askig for the ics file directly but doesn't exist?
-		if ( $cal_file_request || $_SERVER['REQUEST_URI'] == '/?ical=1' || $regenerate ) {
-			$calendar = em_ical_events();
-			//let's create a cache file
-			/*
-			if( get_option('dbem_regenerate_ical') || !file_exists(ABSPATH . "/events.ics") ){
-				$file = fopen( ABSPATH . "/events.ics", 'w');
-				if($file){
-					fwrite($file, $calendar, strlen($calendar));
-					fclose($file);
-					update_option('dbem_regenerate_ical',false);
-				}
-			}
-			*/
-			echo $calendar;	
-			die ();
+		if ( preg_match('/events.ics$/', $_SERVER['REQUEST_URI']) || $_SERVER['REQUEST_URI'] == '/?ical=1' ) {
+			header('Content-type: text/calendar; charset=utf-8');
+			header('Content-Disposition: inline; filename="events.ics"');
+			//send headers
+			em_locate_template('templates/ical.php', true);
+			die();
 		}
 	}
 	add_action ( 'init', 'em_ical' );
 	
-	function em_ical_event(){
-		global $wpdb, $wp_query;
-		//add endpoints to events
-		if( !empty($wp_query) && $wp_query->get(EM_POST_TYPE_EVENT) && $wp_query->get('ical') ){
-			$event_id = $wpdb->get_var('SELECT event_id FROM '.EM_EVENTS_TABLE." WHERE event_slug='".$wp_query->get(EM_POST_TYPE_EVENT)."' AND event_status=1 LIMIT 1");
-			if( !empty($event_id) ){
-				global $EM_Event;
-				$EM_Event = em_get_event($event_id);
-				ob_start();
-				em_locate_template('templates/ical-event.php', true);
-				echo preg_replace("/([^\r])\n/", "$1\r\n", ob_get_clean());
+	/**
+	 * Generates an ics file for a single event 
+	 */
+	function em_ical_item(){
+		global $wpdb, $wp_query, $wp_rewrite;
+		//check if we're outputting an ical feed
+		if( !empty($wp_query) && $wp_query->get('ical') ){
+			$execute_ical = false;
+			$filename = 'events';
+			$args = array();
+			//single event
+			if( $wp_query->get(EM_POST_TYPE_EVENT) ){
+				$event_id = $wpdb->get_var('SELECT event_id FROM '.EM_EVENTS_TABLE." WHERE event_slug='".$wp_query->get(EM_POST_TYPE_EVENT)."' AND event_status=1 LIMIT 1");
+				if( !empty($event_id) ){
+					$filename = $wp_query->get(EM_POST_TYPE_EVENT);
+					$args['event'] = $event_id;
+				}
+			//single location
+			}elseif( $wp_query->get(EM_POST_TYPE_LOCATION) ){
+				$location_id = $wpdb->get_var('SELECT location_id FROM '.EM_LOCATIONS_TABLE." WHERE location_slug='".$wp_query->get(EM_POST_TYPE_LOCATION)."' AND location_status=1 LIMIT 1");
+				if( !empty($location_id) ){
+					$filename = $wp_query->get(EM_POST_TYPE_LOCATION);
+					$args['location'] = $location_id;
+				}
+			//taxonomies
+			}else{
+				$taxonomies = EM_Object::get_taxonomies();
+				foreach($taxonomies as $tax_arg => $taxonomy_info){
+					$taxonomy_term = $wp_query->get($taxonomy_info['query_var']); 
+					if( $taxonomy_term ){
+						$filename = $taxonomy_term;
+						$args[$tax_arg] = $taxonomy_term;
+					}
+				}
+			}
+			//only output the ical if we have a match from above
+			if( count($args) > 0 ){
+				//send headers and output ical
+				header('Content-type: text/calendar; charset=utf-8');
+				header('Content-Disposition: inline; filename="'.$filename.'.ics"');
+				em_locate_template('templates/ical.php', true, array('args'=>$args));
+				exit();
+			}else{
+				//no item exists, so redirect to original URL
+				$url_to_redirect = preg_replace("/ical\/$/",'', add_query_arg(array('ical'=>null)));				
+				wp_redirect($url_to_redirect, '302');
 				exit();
 			}
 		}
 	}
-	add_action ( 'parse_query', 'em_ical_event' );
-	
-	
-	function em_ical_events(){
-		ob_start();
-		em_locate_template('templates/ical.php', true);
-		return preg_replace("/([^\r])\n/", "$1\r\n", ob_get_clean());//get the contents to output and clean crlf issues
-	}
-	
-	function em_update_ical($result){
-		update_option('dbem_regenerate_ical',true);
-		return $result;
-	}
-	add_filter('em_event_save','em_update_ical', 1, 1);
+	add_action ( 'parse_query', 'em_ical_item' );
 ?>
