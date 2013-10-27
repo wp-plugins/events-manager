@@ -2,7 +2,7 @@
 # This file is distributed under the same license as the Events Manager package.
 msgid ""
 msgstr ""
-"PO-Revision-Date: 2013-08-05 21:28+0100\n"
+"PO-Revision-Date: 2013-10-11 14:05+0100\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -4728,7 +4728,7 @@ msgstr ""
 "Vi gör alltid förbättringar, lägger till funktioner och rättar till fel "
 "mellan releaserna. Vi gör dessa förändringar stegvis mellan uppdateringarna "
 "och göra dessa småsteg tillgängliga som utvecklingsversioner. Du kan ladda "
-"ner dessa manuellt, men vi har gjort det enkelt för dig. <strong>Varning:</ "
+"ner dessa manuellt, men vi har gjort det enkelt för dig. <strong>Varning:</"
 "strong>Utvecklingsversioner är inte alltid fullt testade innan de släpps, "
 "använd försiktigt!"
 

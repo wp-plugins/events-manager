@@ -657,17 +657,24 @@ class EM_Booking extends EM_Object{
 	    }
 	    //Check the user name
 	    if( !empty($_REQUEST['user_name']) ){
-	    	$name_string = explode(' ',wp_kses($_REQUEST['user_name'], array()));
+	    	//split full name up and save full, first and last names
+	    	$user_data['user_name'] = wp_kses($_REQUEST['user_name'], array());
+	    	$name_string = explode(' ',$user_data['user_name']);
 	    	$user_data['first_name'] = array_shift($name_string);
 	    	$user_data['last_name'] = implode(' ', $name_string);
+	    }else{
+		    //Check the first/last name
+		    $name_string = array();
+		    if( !empty($_REQUEST['first_name']) ){
+		    	$user_data['first_name'] = $name_string[] = wp_kses($_REQUEST['first_name'], array()); 
+		    }
+		    if( !empty($_REQUEST['last_name']) ){
+		    	$user_data['last_name'] = $name_string[] = wp_kses($_REQUEST['last_name'], array());
+		    }
+		    if( !empty($name_string) ) $user_data['user_name'] = implode(' ', $name_string);
 	    }
-	    //Check the first/last name
-	    if( !empty($_REQUEST['first_name']) ){
-	    	$user_data['first_name'] = wp_kses($_REQUEST['first_name'], array());
-	    }
-	    if( !empty($_REQUEST['last_name']) ){
-	    	$user_data['last_name'] = wp_kses($_REQUEST['last_name'], array());
-	    }
+	    //Save full name
+	    if( !empty($user_data['first_name']) || !empty($user_data['last_name']) )
 	    //Check the phone
 	    if( !empty($_REQUEST['dbem_phone']) ){
 	    	$user_data['dbem_phone'] = wp_kses($_REQUEST['dbem_phone'], array());

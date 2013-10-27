@@ -73,7 +73,7 @@ class EM_Category extends EM_Object {
 		if( empty($this->color) ){
 			global $wpdb;
 			$color = $wpdb->get_var('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$this->term_id}' AND meta_key='category-bgcolor' LIMIT 1");
-			$this->color = ($color != '') ? $color:'#FFFFFF';
+			$this->color = ($color != '') ? $color:get_option('dbem_category_default_color', '#FFFFFF');
 		}
 		return $this->color;
 	}

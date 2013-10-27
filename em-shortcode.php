@@ -74,12 +74,42 @@ function em_get_events_list_shortcode($args, $format='') {
 add_shortcode ( 'events_list', 'em_get_events_list_shortcode' );
 
 /**
+ * Creates a grouped list of events by year, month, week or day
+ * @since 4.213
+ * @param array $args
+ * @param string $format
+ * @return string
+ */
+function em_get_events_list_grouped_shortcode($args = array(), $format = ''){
+	$args = (array) $args;
+	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
+	$args['format'] = ($format != '' || empty($args['format'])) ? $format : $args['format']; 
+	$args['format'] = html_entity_decode($args['format']); //shortcode doesn't accept html
+	$args['limit'] = isset($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
+	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
+		ob_start();
+		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
+		em_locate_template('templates/events-list-grouped.php', true, array('args'=>$args));
+		if( !empty($args['ajax']) ) echo "</div>"; //close AJAX wrapper
+		$return = ob_get_clean();
+	}else{
+		$args['ajax'] = false;
+		$pno = ( !empty($args['pagination']) && !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : 1;
+		$args['page'] = ( !empty($args['pagination']) && !empty($args['page']) && is_numeric($args['page']) )? $args['page'] : $pno;
+		$return = EM_Events::output_grouped( $args );
+	}
+	return $return;
+}
+add_shortcode ( 'events_list_grouped', 'em_get_events_list_grouped_shortcode' );
+
+/**
  * Shows a list of events according to given specifications. Accepts any event query attribute.
  * @param array $atts
  * @return string
  */
 function em_get_event_shortcode($atts, $format='') {
     global $EM_Event, $post;
+	$return = '';
     $the_event = is_object($EM_Event) ? clone($EM_Event):null; //save global temporarily
 	$atts = (array) $atts;
 	$atts['format'] = ($format != '' || empty($atts['format'])) ? $format : $atts['format']; 
@@ -289,34 +319,6 @@ function em_get_location_search_form_shortcode( $args = array() ){
 }
 add_shortcode ( 'location_search_form', 'em_get_location_search_form_shortcode');
 add_shortcode ( 'locations_search', 'em_get_location_search_form_shortcode');
-
-/**
- * Creates a grouped list of events by year, month, week or day
- * @since 4.213
- * @param array $args
- * @param string $format
- * @return string
- */
-function em_get_events_list_grouped_shortcode($args = array(), $format = ''){
-	$args = (array) $args;
-	$args['ajax'] = isset($args['ajax']) ? $args['ajax']:(!defined('EM_AJAX') || EM_AJAX );
-	$args['format'] = ($format != '' || empty($args['format'])) ? $format : $args['format']; 
-	$args['format'] = html_entity_decode($args['format']); //shortcode doesn't accept html
-	if( empty($args['format']) && empty($args['format_header']) && empty($args['format_footer']) ){
-		ob_start();
-		if( !empty($args['ajax']) ){ echo '<div class="em-search-ajax">'; } //open AJAX wrapper
-		em_locate_template('templates/events-list-grouped.php', true, array('args'=>$args));
-		if( !empty($args['ajax']) ) echo "</div>"; //close AJAX wrapper
-		$return = ob_get_clean();
-	}else{
-		$args['ajax'] = false;
-		$pno = ( !empty($_GET['pno']) && is_numeric($_GET['pno']) )? $_GET['pno'] : 1;
-		$args['page'] = ( !empty($args['page']) && is_numeric($args['page']) )? $args['page'] : $pno;
-		$return = EM_Events::output_grouped( $args );
-	}
-	return $return;
-}
-add_shortcode ( 'events_list_grouped', 'em_get_events_list_grouped_shortcode' );
 
 /**
  * Shows the list of bookings the user has made. Whilst maybe useful to some, the preferred way is to create a page and assign it as a my bookings page in your settings > pages > other pages section

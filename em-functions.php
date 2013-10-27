@@ -781,15 +781,6 @@ function em_ascii_encode($e){
     return $output;
 }
 
-
-if( !function_exists('get_current_blog_id') ){
-	/**
-	 * Substitutes the original function in 3.1 onwards, for backwards compatability (only created if not previously defined)
-	 * @return int
-	 */
-	function get_current_blog_id(){ return 1; } //for < 3.1
-}
-
 if( !function_exists( 'is_main_query' ) ){
 	/**
 	 * Substitutes the original function in 3.3 onwards, for backwards compatability (only created if not previously defined)

@@ -77,7 +77,7 @@ function em_init_actions() {
 					$EM_Notices->add_confirm( $EM_Event->output(get_option('dbem_events_anonymous_result_success')), true);
 				}
 				$redirect = !empty($_REQUEST['redirect_to']) ? $_REQUEST['redirect_to'] : wp_get_referer();
-				$redirect = em_add_get_params($redirect, array('success'=>1));
+				$redirect = em_add_get_params($redirect, array('success'=>1), false, false);
 				wp_redirect( $redirect );
 				exit();
 			}else{

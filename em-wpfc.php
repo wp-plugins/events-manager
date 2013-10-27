@@ -178,10 +178,10 @@ function wpfc_em_ajax() {
 	foreach ( $calendar_array['cells'] as $date => $cell_data ) {
 		if( empty($event_day_counts[$date]) ) $event_day_counts[$date] = 0;
 		/* @var $EM_Event EM_Event */
-		$color = "#a8d144";
-		$textColor = '#fff';
-		$borderColor = '#a8d144';
+		$orig_color = get_option('dbem_category_default_color');
 		foreach( $cell_data['events'] as $EM_Event ){
+			$color = $borderColor = $orig_color;
+			$textColor = '#fff';
 			if ( !empty ( $EM_Event->get_categories()->categories )) {
 				foreach($EM_Event->get_categories()->categories as $EM_Category){
 					/* @var $EM_Category EM_Category */

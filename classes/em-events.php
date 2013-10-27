@@ -293,7 +293,7 @@ class EM_Events extends EM_Object {
 					}
 					break;
 			}
-			if( !empty($args['limit']) && $events_count > $args['limit'] && (!empty($args['pagination']) || !isset($args['pagination'])) ){
+			if( !empty($args['pagination']) && !empty($args['limit']) && $events_count > $args['limit'] ){
 				//Show the pagination links (unless there's less than $limit events)
 				echo self::get_pagination_links($args, $events_count, 'search_events_grouped', self::get_default_search());
 			}

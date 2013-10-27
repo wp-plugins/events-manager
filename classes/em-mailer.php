@@ -84,16 +84,17 @@ class EM_Mailer {
 			$mail->Body = $body;
 			$mail->Subject = $subject;
 			//add attachments
-			foreach($attachments as $attachment){
-			    $att = array('name'=> '', 'encoding' => 'base64', 'type' => 'application/octet-stream');
-			    if( is_array($attachment) ){
-			        $att = array_merge($att, $attachment);
-			    }else{
-			        $att['path'] = $attachment;
-			    }
-			    $mail->AddAttachment($att['path'], $att['name'], $att['encoding'], $att['type']);
-			}
-			
+			if( is_array($attachments) ){
+				foreach($attachments as $attachment){
+				    $att = array('name'=> '', 'encoding' => 'base64', 'type' => 'application/octet-stream');
+				    if( is_array($attachment) ){
+				        $att = array_merge($att, $attachment);
+				    }else{
+				        $att['path'] = $attachment;
+				    }
+				    $mail->AddAttachment($att['path'], $att['name'], $att['encoding'], $att['type']);
+				}
+			}			
 			do_action('em_mailer', $mail); //$mail will still be modified  
 			if(is_array($receiver)){
 				foreach($receiver as $receiver_email){

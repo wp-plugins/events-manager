@@ -123,15 +123,15 @@ class EM_Bookings extends EM_Object implements Iterator{
 			return $EM_Event;
 		}else{
 			if( is_numeric($this->event_id) && $this->event_id > 0 ){
-				return new EM_Event($this->event_id, 'event_id');
+				return em_get_event($this->event_id, 'event_id');
 			}elseif( count($this->bookings) > 0 ){
 				foreach($this->bookings as $EM_Booking){
 					/* @var $EM_Booking EM_Booking */
-					return new EM_Event($EM_Booking->event_id, 'event_id');
+					return em_get_event($EM_Booking->event_id, 'event_id');
 				}
 			}
 		}
-		return new EM_Event($this->event_id);
+		return em_get_event($this->event_id, 'event_id');
 	}
 	
 	/**
@@ -142,6 +142,12 @@ class EM_Bookings extends EM_Object implements Iterator{
 	function get_tickets( $force_reload = false ){
 		if( !is_object($this->tickets) || $force_reload ){
 			$this->tickets = new EM_Tickets($this->event_id);
+			if( get_option('dbem_bookings_tickets_single') && count($this->tickets->tickets) == 1 && !empty($this->get_event()->rsvp_end) ){
+		    	$EM_Ticket = $this->tickets->get_first();
+		    	$EM_Event = $this->get_event();
+				$EM_Ticket->ticket_end = $EM_Event->event_rsvp_date." ".$EM_Event->event_rsvp_time;
+				$EM_Ticket->end_timestamp = $EM_Event->rsvp_end;
+			}
 		}else{
 			$this->tickets->event_id = $this->event_id;
 		}

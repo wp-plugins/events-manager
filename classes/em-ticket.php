@@ -68,8 +68,8 @@ class EM_Ticket extends EM_Object{
 			$this->to_object($ticket);
 			$this->ticket_members_roles = maybe_unserialize($this->ticket_members_roles);
 			if( !is_array($this->ticket_members_roles) ) $this->ticket_members_roles = array();
-			$this->start_timestamp = (!empty($ticket['ticket_start'])) ? strtotime($ticket['ticket_start']):false;
-			$this->end_timestamp = (!empty($ticket['ticket_end'])) ? strtotime($ticket['ticket_end']):false;
+			$this->start_timestamp = (!empty($ticket['ticket_start'])) ? strtotime($ticket['ticket_start'], current_time('timestamp')):false;
+			$this->end_timestamp = (!empty($ticket['ticket_end'])) ? strtotime($ticket['ticket_end'], current_time('timestamp')):false;
 		}
 		$this->compat_keys();
 		do_action('em_ticket',$this, $ticket_data, $ticket);
@@ -210,7 +210,7 @@ class EM_Ticket extends EM_Object{
 		$available_spaces = $this->get_available_spaces();
 		$condition_1 = (empty($this->ticket_start) || $this->start_timestamp <= $timestamp);
 		$condition_2 = $this->end_timestamp >= $timestamp || empty($this->ticket_end);
-		$condition_3 = $EM_Event->start > $timestamp || strtotime($EM_Event->event_rsvp_date. ' '. $EM_Event->event_rsvp_time) > $timestamp;
+		$condition_3 = (empty($EM_Event->event_rsvp_date) && $EM_Event->start > $timestamp) || $EM_Event->rsvp_end > $timestamp;
 		$condition_4 = !$this->ticket_members || ($this->ticket_members && is_user_logged_in()) || $include_members_only;
 		$condition_5 = true;
 		if( $this->ticket_members && !empty($this->ticket_members_roles) ){
