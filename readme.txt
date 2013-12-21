@@ -3,7 +3,7 @@ Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
-Tested up to: 3.6
+Tested up to: 3.8
 Stable tag: 5.5.2
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
