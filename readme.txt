@@ -3,7 +3,7 @@ Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.3
-Tested up to: 3.6
+Tested up to: 3.8
 Stable tag: 5.5.2
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
@@ -98,6 +98,23 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.5.2.1 (dev) =
+* WP_Mail is now default mail transport method
+* updated Swedish
+* fixed issues with editing no-user name with pro custom forms
+* fixed bug preventing redirection back to current page from the booking form login form
+* fixed has_tag and has_category conditionals not being regognized when dashes are used
+* added default color for categories
+* fixed default color problem for FullCalendar
+* fixed submit form not showing success message in FireFox
+* fixed potential error in EM_Ticket::is_available() not checking event cut-off date,
+* fixed single ticket mode new admin UI not showing ticket end date if cut-off date already exists
+* fixed events_list_grouped shortcode always displaying pagination links even if disabled
+* fixed update from 5.4.1 not creating new user email template in settings
+* fixed "test email settings" button using saved settings rather than newly entered test settings
+* fixed minor php warning if no attachment info supplied to EM_Mailer
+* removed get_current_blog_id() function as this was for < WP 3.1 support
+
 = 5.5.2 =
 * fixed (rare) looping problem with calendar generation
 * fixed permalink rule problems for events page children with url-encoded slugs
