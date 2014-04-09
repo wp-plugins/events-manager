@@ -149,8 +149,9 @@ class EM_Locations extends EM_Object {
 				$output =  $single_event_format_header .  $output . $single_event_format_footer;
 			}
 			//Pagination (if needed/requested)
-			if( !empty($args['pagination']) && !empty($limit) && $locations_count >= $limit ){
-				$output .= self::get_pagination_links($args, $locations_count, 'search_locations', self::get_default_search());
+			if( !empty($args['pagination']) && !empty($limit) && $locations_count > $limit ){
+				//output pagination links
+				$output .= self::get_pagination_links($args, $locations_count);
 			}
 		} else {
 			$output = get_option ( 'dbem_no_locations_message' );
@@ -158,6 +159,15 @@ class EM_Locations extends EM_Object {
 		//FIXME check if reference is ok when restoring object, due to changes in php5 v 4
 		$EM_Location_old= $EM_Location;
 		return apply_filters('em_locations_output', $output, $locations, $args);		
+	}
+	
+	public static function get_pagination_links($args, $count, $search_action = 'search_locations', $default_args = array()){
+		//get default args if we're in a search, supply to parent since we can't depend on late static binding until WP requires PHP 5.3 or later
+		if( empty($default_args) && (!empty($args['ajax']) || !empty($_REQUEST['action']) && $_REQUEST['action'] == $search_action) ){
+			$default_args = self::get_default_search();
+			$default_args['limit'] = get_option('dbem_locations_default_limit'); //since we're paginating, get the default limit, which isn't obtained from get_default_search()
+		}
+		return parent::get_pagination_links($args, $count, $search_action, $default_args);
 	}
 	
 	function delete( $args = array() ){
@@ -176,8 +186,10 @@ class EM_Locations extends EM_Object {
 		return apply_filters('em_locations_delete', in_array(false, $results), $locations);
 	}
 	
-	public static function get_post_search($args = array(), $filter = false, $request = array()){
-		$return = parent::get_post_search($args, $filter, $request);
+	public static function get_post_search($args = array(), $filter = false, $request = array(), $accepted_args = array()){
+		//supply $accepted_args to parent argument since we can't depend on late static binding until WP requires PHP 5.3 or later
+		$accepted_args = !empty($accepted_args) ? $accepted_args : array_keys(self::get_default_search());
+		$return = parent::get_post_search($args, $filter, $request, $accepted_args);
 		//remove unwanted arguments or if not explicitly requested
 		if( empty($_REQUEST['scope']) && empty($request['scope']) && !empty($return['scope']) ){
 			unset($return['scope']);
@@ -207,12 +219,15 @@ class EM_Locations extends EM_Object {
 			$conditions['eventful'] = "{$events_table}.event_id IS NOT NULL AND event_status=1";
 		}elseif( true == $args['eventless'] ){
 			$conditions['eventless'] = "{$events_table}.event_id IS NULL";
+			if( !empty($conditions['scope']) ) unset($conditions['scope']); //scope condition would render all queries return no results
 		}
 		//owner lookup
 		if( !empty($args['owner']) && is_numeric($args['owner'])){
 			$conditions['owner'] = "location_owner=".$args['owner'];
 		}elseif( !empty($args['owner']) && $args['owner'] == 'me' && is_user_logged_in() ){
 			$conditions['owner'] = 'location_owner='.get_current_user_id();
+		}elseif( self::array_is_numeric($args['owner']) ){
+			$conditions['owner'] = 'location_owner IN ('.implode(',',$args['owner']).')';
 		}
 		//blog id in events table
 		if( EM_MS_GLOBAL && !empty($args['blog']) ){

@@ -207,7 +207,6 @@ function em_bookings_single(){
   		<h2>
   			<?php esc_html_e('Edit Booking', 'dbem'); ?>
   		</h2>
-  		<?php if( !is_admin() ) echo $EM_Notices; ?>
   		<div id="poststuff" class="metabox-holder">
 	  		<div id="post-body">
 				<div id="post-body-content">
@@ -418,7 +417,7 @@ function em_bookings_single(){
 									<input type="button" class="em-booking-submit-modify" id="em-booking-submit-modify" value="<?php esc_attr_e('Modify Booking', 'dbem'); ?>" />
 								</p>
 								<p class="em-booking-single-edit">
-									<em><?php esc_html_e('<strong>Notes:</strong> Ticket availability not taken into account (i.e. you can overbook). Emails are not resent automatically.','dbem'); ?></em>
+									<em><?php _e('<strong>Notes:</strong> Ticket availability not taken into account (i.e. you can overbook). Emails are not resent automatically.','dbem'); ?></em>
 									<br /><br />
 									<input type="submit" class="em-booking-submit" id="em-booking-submit" value="<?php esc_attr_e('Submit Changes', 'dbem'); ?>" />
 									<input type="button" class="em-booking-submit-cancel" id="em-booking-submit-cancel" value="<?php esc_attr_e('Cancel', 'dbem'); ?>" />

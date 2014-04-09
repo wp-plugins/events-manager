@@ -46,9 +46,10 @@ class EM_Object {
 			'rsvp'=>false, //depreciated for bookings
 			'bookings'=>false,
 			'search'=>false,
-			'near'=>false,
-			'near_unit'=>false, //lat,lng coordinates in array or comma-seperated format
-			'near_distance'=>false, //mi or km
+			'geo'=>false, //reserved for future searching via name
+			'near'=>false, //lat,lng coordinates in array or comma-seperated format
+			'near_unit'=>'mi', //mi or km
+			'near_distance'=>get_option('dbem_search_form_geo_distance_default'), //distance from near coordinates - currently the default is the same as for the search form
 			'ajax'=> (defined('EM_AJAX') && EM_AJAX) //considered during pagination
 		);
 		//Return default if nothing passed
@@ -65,7 +66,9 @@ class EM_Object {
 			if( array_key_exists('category_id', $array) && !array_key_exists('category', $array) ) { $array['category'] = $array['category_id']; }
 		
 			//Clean all id lists
-			$array = self::clean_id_atts($array, array('location', 'event', 'post_id'));
+			$clean_ids_array = array('location', 'event', 'post_id');
+			if( $defaults['owner'] != 'me') $clean_ids_array[] = 'owner'; //clean owner attribute if not 'me'
+			$array = self::clean_id_atts($array, $clean_ids_array);
 			
 			//Clean taxonomies
 			$taxonomies = self::get_taxonomies();
@@ -89,10 +92,8 @@ class EM_Object {
 					//assume it's a string to geocode, not supported yet
 					unset($array['near']);
 				}
-				$array['near_unit'] = !empty($array['near_unit']) && $array['near_unit'] == 'km' ? 'km':'mi'; //default is 'mi'
-				$array['near_distance'] = !empty($array['near_distance']) && is_numeric($array['near_distance']) ? absint($array['near_distance']) : '25'; //default is 25
-			}else{
-				$array['near'] = $array['near_unit'] = $array['near_distance'] = false; //none of these are useful
+				$array['near_unit'] = !empty($array['near_unit']) && in_array($array['near_unit'], array('km','mi')) ? $array['near_unit']:$defaults['near_unit']; //default is 'mi'
+				$array['near_distance'] = !empty($array['near_distance']) && is_numeric($array['near_distance']) ? absint($array['near_distance']) : $defaults['near_distance']; //default is 25
 			}
 			
 			//OrderBy - can be a comma-seperated array of field names to order by (field names of object, not db)
@@ -157,7 +158,6 @@ class EM_Object {
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
 		$defaults['recurring'] = ($defaults['recurring'] == true);
-		$defaults['owner'] = (is_numeric($defaults['owner']) || $defaults['owner'] == 'me') ? $defaults['owner']:$super_defaults['owner'];
 		$defaults['search'] = ($defaults['search']) ? trim(esc_sql(like_escape($defaults['search']))):false;
 		//Calculate offset if event page is set
 		if($defaults['page'] > 1){
@@ -464,6 +464,8 @@ class EM_Object {
 			$conditions['owner'] = 'event_owner='.get_current_user_id();
 		}elseif( $owner == 'me' && !is_user_logged_in() ){
 		    $conditions = array('owner'=>'1=2'); //no events to be shown
+		}elseif( self::array_is_numeric($owner) ){
+			$conditions['owner'] = 'event_owner IN ('.implode(',',$owner).')';
 		}
 		//reset the context
 		self::$context = EM_POST_TYPE_EVENT;
@@ -838,15 +840,16 @@ class EM_Object {
 	 * @param array $args Arguments to include in returned array
 	 * @param string $filter Filters out any unrecognized arguments already passed into $args
 	 * @param array $request defaults to $_REQUEST if empty but can be an array of items to go through instead
+	 * @param array $accepted_searches defaults to EM_Object::get_search_defaults(), objects should call self::get_search_defaults() to get around late static binding problems
 	 * @return array
 	 */
-	public static function get_post_search($args = array(), $filter = false, $request = array()){
+	public static function get_post_search($args = array(), $filter = false, $request = array(), $accepted_searches = array()){
 		if( empty($request) ) $request = $_REQUEST;
-		if( !empty($request['em_search']) && empty($args['search']) ) $request['search'] = $request['em_search'];
+		if( !empty($request['em_search']) && empty($args['search']) ) $request['search'] = $request['em_search']; //em_search is included to circumvent wp search GET/POST clashes
 		if( !empty($request['category']) && $request['category'] == -1  ) $request['category'] = $args['category'] = 0;
-		$accepted_searches = array('scope','search','category','tag','country','state','region','town','near','near_unit','near_distance','em_search');
-		if( !empty($args['ajax']) || defined('DOING_AJAX') ) $accepted_searches[] = 'limit'; //in ajax calls, we need to know how many to return
-		$accepted_searches = apply_filters('em_accepted_searches', $accepted_searches, $args); //em_search is included to circumvent wp search GET/POST clashes
+		$accepted_searches = !empty($accepted_searches) ? $accepted_searches : self::get_default_search();
+		$accepted_searches = apply_filters('em_accepted_searches', $accepted_searches, $args);
+		//merge variables from the $request into $args
 		foreach($request as $post_key => $post_value){
 			if( in_array($post_key, $accepted_searches) && !empty($post_value) ){
 				if(is_array($post_value)){
@@ -854,7 +857,8 @@ class EM_Object {
 				}
 				if($post_value != ',' ){
 					$args[$post_key] = $post_value;
-				}elseif( $post_value == ',' && $post_key == 'scope' ){
+				}elseif( $post_value == ',' && $post_key == 'scope' && empty($args['scope']) ){
+					//unset the scope if no value is provided - ',' is an empty value
 					unset($args['scope']);
 				}
 			}
@@ -876,33 +880,30 @@ class EM_Object {
 	 * @param integer $count The number of total items to paginate through
 	 * @param string $search_action The name of the action query var used to trigger a search - used in AJAX requests and normal searches
 	 * @param array $default_args The default arguments and values this object accepts, used to compare against $args to create a querystring
-	 * @param array $accepted_args Variables that can be passed on via a querystring and should be added to pagination links
+	 * @param array $accepted_args Variables that can be passed on via a querystring and should be added to pagination links, objects should make use of this since the default may be EM_Object::get_default_search() due to late static binding issues
 	 * @return string
 	 * @uses em_paginate()
 	 */
-	public static function get_pagination_links($args, $count, $search_action, $default_args = array(), $accepted_args = array()){
+	public static function get_pagination_links($args, $count, $search_action, $default_args = array()){
 		$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 		$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
 		$default_pag_args = array('pno'=>'%PAGE%', 'page'=>null, 'search'=>null, 'action'=>null, 'pagination'=>null); //clean out the bad stuff, set up page number template
 		$page_url = $_SERVER['REQUEST_URI'];
-		//if we're dealing with searches, then we need to add to the pagination querystring template
-		$default_args = !empty($default_args) && is_array($default_args) ? $default_args : self::get_default_search();
-		$unique_args = array();
-		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == $search_action && empty($accepted_args) ){
-			//$accepted_args are values that are force-added to the querystring, we only assign default object post search values if we're actually doing a searcy (AJAX or via REQUEST)
-			$accepted_args = self::get_post_search($args, true, $args);
+		//$default_args are values that can be added to the querystring for use in searching events in pagination either in searches or ajax pagination
+		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == $search_action && empty($default_args) ){
+			//due to late static binding issues in PHP, this'll always return EM_Object::get_default_search so this is a fall-back
+			$default_args = self::get_default_search();
 		}
-		foreach( $accepted_args as $arg_key => $arg_val){
-			//carful with comparisons here, we need to typecast stuff into the right types
-			//we don't care about the actual default value, only if it's the same rough 'type'
-			if( isset($default_args[$arg_key]) ){
-				if( !is_array($args) ){
-					$args = (string) $args;
-					$default_args[$arg_key] = (string) $default_args[$arg_key];
-				}
-				//anything other than above is either an object, array, or string which needs to be exactly the same
-				if( $arg_val != $default_args[$arg_key] ){
-					$unique_args[$arg_key] = $arg_val;	
+		//go through default arguments (if defined) and build a list of unique non-default arguments that should go into the querystring
+		$unique_args = array(); //this is the set of unique arguments we'll add to the querystring
+		$ignored_args = array('offset', 'ajax', 'array', 'pagination','format','format_header','format_footer'); 
+		foreach( $default_args as $arg_key => $arg_default_val){
+			if( array_key_exists($arg_key, $args) && !in_array($arg_key, $ignored_args) ){
+				//if array exists, implode it in case one value is already imploded for matching purposes
+				$arg_val = is_array($args[$arg_key]) ? implode(',', $args[$arg_key]) : $args[$arg_key];
+				$arg_default_val = is_array($arg_default_val) ? implode(',',$arg_default_val) : $arg_default_val;
+				if( $arg_val != $arg_default_val ){
+					$unique_args[$arg_key] = $arg_val;
 				}
 			}
 		}

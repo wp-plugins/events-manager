@@ -2,8 +2,7 @@
 class EM_Category_Taxonomy{
 	function init(){
 		if( !is_admin() ){
-			add_filter('archive_template', array('EM_Category_Taxonomy','template'));
-			add_filter('category_template', array('EM_Category_Taxonomy','template'));
+			add_filter('taxonomy_template', array('EM_Category_Taxonomy','template'), 99);
 			add_filter('parse_query', array('EM_Category_Taxonomy','parse_query'));
 		}
 	}

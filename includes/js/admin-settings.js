@@ -87,6 +87,14 @@ jQuery(document).ready(function($){
 		}
 	});
 	$('input:radio[name=dbem_disable_title_rewrites]').trigger('change');
+	//for event grouping
+	$('select[name="dbem_event_list_groupby"]').change(function(){
+		if( $('select[name="dbem_event_list_groupby"]').val() == 0 ){
+			$('tr#dbem_event_list_groupby_header_format_row, tr#dbem_event_list_groupby_format_row').hide();
+		}else{
+			$('tr#dbem_event_list_groupby_header_format_row, tr#dbem_event_list_groupby_format_row').show();
+		}
+	}).trigger('change');
 	//ML Stuff
 	$('.em-translatable').click(function(){
 		$(this).nextAll('.em-ml-options').toggle();

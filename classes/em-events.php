@@ -39,6 +39,7 @@ class EM_Events extends EM_Object {
 		$args = self::get_default_search($args);
 		$limit = ( $args['limit'] && is_numeric($args['limit'])) ? "LIMIT {$args['limit']}" : '';
 		$offset = ( $limit != "" && is_numeric($args['offset']) ) ? "OFFSET {$args['offset']}" : '';
+		$groupby_sql = '';
 		
 		//Get the default conditions
 		$conditions = self::build_sql_conditions($args);
@@ -61,22 +62,33 @@ class EM_Events extends EM_Object {
 			}
 			$selectors = implode(',', $selectors_array);
 		}elseif( EM_MS_GLOBAL ){
-			$selectors = ( $count ) ?  'COUNT(*)':$events_table.'.post_id, '.$events_table.'.blog_id';
+			$selectors = $events_table.'.post_id, '.$events_table.'.blog_id';
+			$groupby_sql[] = $events_table.'.post_id, '. $events_table.'.blog_id';
 		}else{
-			$selectors = ( $count ) ?  'COUNT(*)':$events_table.'.post_id';
+			$selectors = $events_table.'.post_id';
+			$groupby_sql[] = $events_table.'.post_id'; //prevent duplicates showing in lists
 		}
+		if( $count ){
+			$selectors = 'SQL_CALC_FOUND_ROWS *';
+			$limit = 'LIMIT 1';
+			$offset = 'OFFSET 0';
+		}
+		
+		//add group_by if needed
+		$groupby_sql = !empty($groupby_sql) && is_array($groupby_sql) ? 'GROUP BY '.implode(',', $groupby_sql):''; 
 		
 		$sql = apply_filters('em_events_get_sql',"
 			SELECT $selectors FROM $events_table
 			LEFT JOIN $locations_table ON {$locations_table}.location_id={$events_table}.location_id
 			$where
-			$orderby_sql
+			$groupby_sql $orderby_sql
 			$limit $offset
 		", $args);
-
+				
 		//If we're only counting results, return the number of results
 		if( $count ){
-			return apply_filters('em_events_get_count', $wpdb->get_var($sql), $args);		
+			$wpdb->query($sql);
+			return apply_filters('em_events_get_count', $wpdb->get_var('SELECT FOUND_ROWS()'), $args);		
 		}
 		$results = $wpdb->get_results( $sql, ARRAY_A);
 
@@ -198,7 +210,7 @@ class EM_Events extends EM_Object {
 			$output = $format_header .  $output . $format_footer;
 			//Pagination (if needed/requested)
 			if( !empty($args['pagination']) && !empty($limit) && $events_count > $limit ){
-				$output .= self::get_pagination_links($args, $events_count, 'search_events', self::get_default_search());
+				$output .= self::get_pagination_links($args, $events_count);
 			}
 		} else {
 			$output = get_option ( 'dbem_no_events_message' );
@@ -225,6 +237,7 @@ class EM_Events extends EM_Object {
 		$args['orderby'] = 'event_start_date,event_start_time,event_name'; // must override this to display events in right cronology.
 
 		$args['mode'] = !empty($args['mode']) ? $args['mode'] : get_option('dbem_event_list_groupby');
+		$args['header_format'] = !empty($args['header_format']) ? $args['header_format'] :  get_option('dbem_event_list_groupby_header_format', '<h2>#s</h2>');
 		$args['date_format'] = !empty($args['date_format']) ? $args['date_format'] :  get_option('dbem_event_list_groupby_format');
 		//Reset some vars for counting events and displaying set arrays of events
 		$atts = (array) $args;
@@ -246,7 +259,7 @@ class EM_Events extends EM_Object {
 						$events_dates[date_i18n($format,$EM_Event->start)][] = $EM_Event;
 					}
 					foreach ($events_dates as $year => $events){
-						echo '<h2>'.$year.'</h2>';
+						echo str_replace('#s', $year, $args['header_format']);
 						echo self::output($events, $atts);
 					}
 					break;
@@ -258,7 +271,7 @@ class EM_Events extends EM_Object {
 						$events_dates[date_i18n($format, $EM_Event->start)][] = $EM_Event;
 					}
 					foreach ($events_dates as $month => $events){
-						echo '<h2>'.$month.'</h2>';
+						echo str_replace('#s', $month, $args['header_format']);
 						echo self::output($events, $atts);
 					}
 					break;
@@ -276,7 +289,7 @@ class EM_Events extends EM_Object {
 						$events_dates[$start_day - $offset][] = $EM_Event;
 					}
 					foreach ($events_dates as $event_day_ts => $events){
-						echo '<h2>'.date_i18n($format,$event_day_ts).' - '.date_i18n($format,$event_day_ts+(60*60*24*6)).'</h2>';
+						echo str_replace('#s', date_i18n($format,$event_day_ts). get_option('dbem_dates_separator') .date_i18n($format,$event_day_ts+(60*60*24*6)), $args['header_format']);
 						echo self::output($events, $atts);
 					}
 					break;
@@ -288,19 +301,28 @@ class EM_Events extends EM_Object {
 						$events_dates[strtotime($EM_Event->start_date)][] = $EM_Event;
 					}
 					foreach ($events_dates as $event_day_ts => $events){
-						echo '<h2>'.date_i18n($format,$event_day_ts).'</h2>';
+						echo str_replace('#s', date_i18n($format,$event_day_ts), $args['header_format']);
 						echo self::output($events, $atts);
 					}
 					break;
 			}
+			//Show the pagination links (unless there's less than $limit events)
 			if( !empty($args['pagination']) && !empty($args['limit']) && $events_count > $args['limit'] ){
-				//Show the pagination links (unless there's less than $limit events)
-				echo self::get_pagination_links($args, $events_count, 'search_events_grouped', self::get_default_search());
+				echo self::get_pagination_links($args, $events_count, 'search_events_grouped');
 			}
 		}else{
 			echo get_option ( 'dbem_no_events_message' );
 		}
 		return ob_get_clean();
+	}
+	
+	public static function get_pagination_links($args, $count, $search_action = 'search_events', $default_args = array()){
+		//get default args if we're in a search, supply to parent since we can't depend on late static binding until WP requires PHP 5.3 or later
+		if( empty($default_args) && (!empty($args['ajax']) || !empty($_REQUEST['action']) && $_REQUEST['action'] == $search_action) ){
+			$default_args = self::get_default_search();
+			$default_args['limit'] = get_option('dbem_events_default_limit');
+		}
+		return parent::get_pagination_links($args, $count, $search_action, $default_args);
 	}
 	
 	function can_manage($event_ids){
@@ -317,8 +339,10 @@ class EM_Events extends EM_Object {
 		return apply_filters('em_events_can_manage', false, $event_ids);
 	}
 	
-	public static function get_post_search($args = array(), $filter = false){
-		return apply_filters('em_events_get_post_search', parent::get_post_search($args, $filter));
+	public static function get_post_search($args = array(), $filter = false, $request = array(), $accepted_args = array()){
+		//supply $accepted_args to parent argument since we can't depend on late static binding until WP requires PHP 5.3 or later
+		$accepted_args = !empty($accepted_args) ? $accepted_args : array_keys(self::get_default_search());
+		return apply_filters('em_events_get_post_search', parent::get_post_search($args, $filter, $request, $accepted_args));
 	}
 
 	/* Overrides EM_Object method to apply a filter to result

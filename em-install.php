@@ -432,6 +432,9 @@ function em_add_options() {
             </td>
         </tr>',
 		'dbem_event_list_item_format_footer' => '</tbody></table>',
+		'dbem_event_list_groupby' => 0,
+		'dbem_event_list_groupby_format' => '',
+		'dbem_event_list_groupby_header_format' => '<h2>#s</h2>',
 		'dbem_display_calendar_in_events_page' => 0,
 		'dbem_single_event_format' => '<div style="float:right; margin:0px 0px 15px 15px;">#_LOCATIONMAP</div>
 <p>
@@ -537,6 +540,9 @@ function em_add_options() {
 		'dbem_rss_main_description' => get_bloginfo('description')." - ".__('Events', 'dbem'),
 		'dbem_rss_description_format' => "#_EVENTDATES - #_EVENTTIMES <br/>#_LOCATIONNAME <br/>#_LOCATIONADDRESS <br/>#_LOCATIONTOWN",
 		'dbem_rss_title_format' => "#_EVENTNAME",
+		'dbem_rss_scope' =>'future',
+		'dbem_rss_order' => get_option('dbem_events_default_order', 'ASC'), //get event order and orderby or use same new installation defaults
+		'dbem_rss_orderby' => get_option('dbem_events_default_orderby', 'event_start_date,event_start_time,event_name'),
 		'em_rss_pubdate' => date('D, d M Y H:i:s +0000'),
 		//iCal Stuff
 		'dbem_ical_limit' => 0,

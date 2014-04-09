@@ -22,7 +22,7 @@ $show_tickets = true;
 if( !$is_open && !is_user_logged_in() && $EM_Event->get_bookings()->is_open(true) ){
     $is_open = true;
     $can_book = false;
-	$show_tickets = false;
+	$show_tickets = get_option('dbem_bookings_tickets_show_unavailable') && get_option('dbem_bookings_tickets_show_member_tickets');
 }
 ?>
 <div id="em-booking" class="em-booking <?php if( get_option('dbem_css_rsvp') ) echo 'css-booking'; ?>">

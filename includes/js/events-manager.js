@@ -38,6 +38,17 @@ jQuery(document).ready( function($){
 		}
 		
 	});
+	if( EM.search_term_placeholder ){
+		if( 'placeholder' in document.createElement('input') ){
+			$('input.em-events-search-text, input.em-search-text').attr('placeholder', EM.search_term_placeholder);
+		}else{
+			$('input.em-events-search-text, input.em-search-text').blur(function(){
+				if( this.value=='' ) this.value = EM.search_term_placeholder;
+			}).focus(function(){
+				if( this.value == EM.search_term_placeholder ) this.value='';
+			}).trigger('blur');
+		}
+	}
 	$('.em-search-form select[name=country]').change( function(){
 		var el = $(this);
 		$('.em-search select[name=state]').html('<option value="">'+EM.txt_loading+'</option>');
@@ -151,13 +162,9 @@ jQuery(document).ready( function($){
 	 */
 	//Events List
 		//Approve/Reject Links
-		$(document).delegate('.em-event-delete', 'click', function(){
+		$('.events-table').on('click', '.em-event-delete', function(){
 			if( !confirm("Are you sure you want to delete?") ){ return false; }
-			var url = em_ajaxify( el.attr('href'));		
-			var td = el.parents('td').first();
-			td.html("Loading...");
-			td.load( url );
-			return false;
+			window.location.href = this.href;
 		});
 	//Forms
 	$('#event-form #event-image-delete, #location-form #location-image-delete').on('click', function(){
@@ -695,6 +702,7 @@ function em_setup_datepicker(wrap){
 					var endDate = startDate.parents('.em-date-range').find('.em-date-end').first();
 					if( startDate.val() > endDate.val() && endDate.val() != '' ){
 						endDate.datepicker( "setDate" , selectedDate );
+						endDate.trigger('change');
 					}
 					endDate.datepicker( "option", 'minDate', selectedDate );
 				});

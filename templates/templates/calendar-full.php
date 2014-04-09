@@ -1,6 +1,6 @@
 <?php 
 /*
- * This file contains the HTML generated for full calendars. You can copy this file to yourthemefolder/plugins/events/templates and modify it in an upgrade-safe manner.
+ * This file contains the HTML generated for full calendars. You can copy this file to yourthemefolder/plugins/events-manager/templates and modify it in an upgrade-safe manner.
  * 
  * There are two variables made available to you: 
  * 

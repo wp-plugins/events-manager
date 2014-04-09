@@ -106,8 +106,8 @@ class EM_Location_Post_Admin{
 				//continue
 				$EM_Location->get_previous_status(); //before we save anything
 				$location_status = $EM_Location->get_status(true);
-				$where_array = array($EM_Location->location_name, $EM_Location->location_slug, $EM_Location->location_private, $EM_Location->location_id);
-				$sql = $wpdb->prepare("UPDATE ".EM_LOCATIONS_TABLE." SET location_name=%s, location_slug=%s, location_private=%d, location_status={$location_status} WHERE location_id=%d", $where_array);
+				$where_array = array($EM_Location->location_name, $EM_Location->location_owner, $EM_Location->location_slug, $EM_Location->location_private, $EM_Location->location_id);
+				$sql = $wpdb->prepare("UPDATE ".EM_LOCATIONS_TABLE." SET location_name=%s, location_owner=%s, location_slug=%s, location_private=%d, location_status={$location_status} WHERE location_id=%d", $where_array);
 				$wpdb->query($sql);
 				apply_filters('em_location_save', true , $EM_Location);
 			}

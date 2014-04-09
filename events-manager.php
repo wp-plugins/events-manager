@@ -27,7 +27,7 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 // Setting constants
-define('EM_VERSION', 5.521); //self expanatory
+define('EM_VERSION', 5.5212); //self expanatory
 define('EM_PRO_MIN_VERSION', 2.221); //self expanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 define('EM_DIR_URI', trailingslashit(plugins_url('',__FILE__))); //an absolute path to this directory
@@ -101,9 +101,7 @@ include('classes/em-person.php');
 include('classes/em-permalinks.php');
 include('classes/em-tag.php');
 include('classes/em-tag-taxonomy.php');
-if( get_option('dbem_tags_enabled') ){
-    include('classes/em-tags.php');
-}
+include('classes/em-tags.php');
 include('classes/em-ticket-booking.php');
 include('classes/em-ticket.php');
 include('classes/em-tickets-bookings.php');
