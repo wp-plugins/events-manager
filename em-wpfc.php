@@ -141,7 +141,7 @@ function wpfc_em_ajax() {
     $month = (int) date ( "m", $month_ts );
 
 	$args = array ('month'=>$month, 'year'=>$year, 'owner'=>false, 'status'=>1, 'orderby'=>'event_start_date, event_start_time');
-	$args['long_events'] = 0; //since fullcalendar takes the start-end dates for long events, we don't need long events
+	$args['number_of_weeks'] = 6; //WPFC always has 6 weeks
 	$limit = $args['limit'] = get_option('wpfc_limit',3);
 	
 	//do some corrections for EM query
@@ -150,10 +150,7 @@ function wpfc_em_ajax() {
 	$args = apply_filters('wpfc_fullcalendar_args', array_merge($_REQUEST, $args));
 	$calendar_array = EM_Calendar::get($args);
 
-	$parentArray = array ();
-	$events = array ();
-	$event_date_counts = array();
-	$event_dates_more = array();
+	$parentArray = $events = $event_ids = $event_date_counts = $event_dates_more = $event_day_counts = array();
 
 	//get day link template
 	global $wp_rewrite;
@@ -174,7 +171,6 @@ function wpfc_em_ajax() {
 		$event_page_link .= $joiner."calendar_day=%s";
 	}
 
-	$event_day_counts = array();
 	foreach ( $calendar_array['cells'] as $date => $cell_data ) {
 		if( empty($event_day_counts[$date]) ) $event_day_counts[$date] = 0;
 		/* @var $EM_Event EM_Event */
@@ -195,19 +191,22 @@ function wpfc_em_ajax() {
 					}
 				}
 			}
-			//count events for all days this event may span
-			if( $EM_Event->event_start_date != $EM_Event->event_end_date ){
-				for( $i = $EM_Event->start; $i <= $EM_Event->end; $i = $i + 86400 ){
-					$idate = date('Y-m-d',$i);
-					empty($event_day_counts[$idate]) ? $event_day_counts[$idate] = 1 : $event_day_counts[$idate]++;
+			if( !in_array($EM_Event->event_id, $event_ids) ){
+				//count events for all days this event may span
+				if( $EM_Event->event_start_date != $EM_Event->event_end_date ){
+					for( $i = $EM_Event->start; $i <= $EM_Event->end; $i = $i + 86400 ){
+						$idate = date('Y-m-d',$i);
+						empty($event_day_counts[$idate]) ? $event_day_counts[$idate] = 1 : $event_day_counts[$idate]++;
+					}
+				}else{
+					$event_day_counts[$date]++;
 				}
-			}else{
-				$event_day_counts[$date]++;
-			}
-			if( $event_day_counts[$date] <= $limit ){
-				$title = $EM_Event->output(get_option('dbem_emfc_full_calendar_event_format', '#_EVENTNAME'), 'raw');
-				$event_array = array ("title" => $title, "color" => $color, 'textColor'=>$textColor, 'borderColor'=>$borderColor, "start" => date('Y-m-d\TH:i:s', $EM_Event->start), "end" => date('Y-m-d\TH:i:s', $EM_Event->end), "url" => $EM_Event->get_permalink(), 'post_id' => $EM_Event->post_id, 'event_id' => $EM_Event->event_id, 'allDay' => $EM_Event->event_all_day == true );
-				$events[] = apply_filters('wpfc_events_event', $event_array, $EM_Event);
+				if( $event_day_counts[$date] <= $limit ){
+					$title = $EM_Event->output(get_option('dbem_emfc_full_calendar_event_format', '#_EVENTNAME'), 'raw');
+					$event_array = array ("title" => $title, "color" => $color, 'textColor'=>$textColor, 'borderColor'=>$borderColor, "start" => date('Y-m-d\TH:i:s', $EM_Event->start), "end" => date('Y-m-d\TH:i:s', $EM_Event->end), "url" => $EM_Event->get_permalink(), 'post_id' => $EM_Event->post_id, 'event_id' => $EM_Event->event_id, 'allDay' => $EM_Event->event_all_day == true );
+					$events[] = apply_filters('wpfc_events_event', $event_array, $EM_Event);
+					$event_ids[] = $EM_Event->event_id;
+				}
 			}
 		}
 		if( $cell_data['events_count'] > $limit ){
@@ -262,14 +261,8 @@ class WPFC_EM_Categories_Walker extends Walker {
 
 	/**
 	 * @see Walker::start_el()
-	 * @since 2.1.0
-	 *
-	 * @param string $output Passed by reference. Used to append additional content.
-	 * @param object $category Category data object.
-	 * @param int $depth Depth of category. Used for padding.
-	 * @param array $args Uses 'selected', 'show_count', and 'show_last_update' keys, if they exist.
 	 */
-	function start_el(&$output, $category, $depth, $args) {
+	function start_el(&$output, $object, $depth = 0, $args = array(), $current_object_id = 0){
 		global $wpdb;
 		$pad = str_repeat('&nbsp;', $depth * 3);
 

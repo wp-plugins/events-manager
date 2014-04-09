@@ -1,11 +1,11 @@
 <?php
 class EM_Calendar extends EM_Object {
 	
-	function init(){
+	public static function init(){
 		//nothing to init anymore
 	}
 	
-	function get( $args ){
+	public static function get( $args ){
 	
 	 	global $wpdb; 
 	 	
@@ -109,17 +109,14 @@ class EM_Calendar extends EM_Object {
 		// so, we will have to figure out 
 		// how many days to appened to the end 
 		// of the final array to make it 35 days. 	
-		if($current_num > 35){ 
-		   $num_weeks = 6; 
-		   $outset = (42 - $current_num); 
-		} elseif($current_num < 35){ 
-		   $num_weeks = 5; 
-		   $outset = (35 - $current_num); 
-		} 
-		if($current_num == 35){ 
-		   $num_weeks = 5; 
-		   $outset = 0; 
-		} 
+		if( !empty($args['number_of_weeks']) && is_numeric($args['number_of_weeks']) ){
+			$num_weeks = $args['number_of_weeks'];
+		}elseif($current_num > 35){ 
+			$num_weeks = 6;
+		}else{ 
+			$num_weeks = 5; 
+		}
+		$outset = ($num_weeks * 7) - $current_num;
 		// Outset Correction 
 		for($i = 1; $i <= $outset; $i++){ 
 		   $new_count[] = mktime(0,0,0,$month_next, $i, $year_next);  
@@ -185,11 +182,11 @@ class EM_Calendar extends EM_Object {
 			$week_count++;
 		}
 		
-		//query the database for events in this time span with 7 days before and after this month to account for these cells in the calendar
+		//query the database for events in this time span with $offset days before and $outset days after this month to account for these cells in the calendar
 		$scope_datetime_start = new DateTime("{$year}-{$month}-1");
 		$scope_datetime_end = new DateTime($scope_datetime_start->format('Y-m-t'));
-		$scope_datetime_start->modify('-7 days');
-		$scope_datetime_end->modify('+7 days');
+		$scope_datetime_start->modify("-$offset days");
+		$scope_datetime_end->modify("+$outset days");
 		//we have two methods here, one for high-volume event sites i.e. many thousands of events per month, and another for thousands or less per month.
 		$args['array'] = true; //we're getting an array first to avoid extra queries during object creation
 		unset($args['month']);
@@ -322,7 +319,7 @@ class EM_Calendar extends EM_Object {
 		return apply_filters('em_calendar_get',$calendar_array, $args);
 	}
 	
-	function output($args = array(), $wrapper = true) {
+	public static function output($args = array(), $wrapper = true) {
 		//Let month and year REQUEST override for non-JS users
 		$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_display_calendar_events_limit'); //limit arg will be used per day and not for events search
 		if( !empty($_REQUEST['mo']) || !empty($args['mo']) ){
@@ -344,11 +341,11 @@ class EM_Calendar extends EM_Object {
 	}
 
 
-	function days_in_month($month, $year) {
+	public static function days_in_month($month, $year) {
 		return date('t', mktime(0,0,0,$month,1,$year));
 	}
 	 
-	function translate_and_trim($string, $length = 1) {
+	public static function translate_and_trim($string, $length = 1) {
 	    if( $length > 0 ){
 			if(function_exists('mb_substr')){ //fix for diacritic calendar names
 			    return mb_substr(__($string,'dbem'), 0, $length, 'UTF-8');
@@ -362,7 +359,7 @@ class EM_Calendar extends EM_Object {
 	/**
 	 * Helper function to create a link querystring from array which contains arguments with only values that aren't defuaults. 
 	 */
-	function get_link_args($args = array(), $html_entities=true){
+	public static function get_link_args($args = array(), $html_entities=true){
 		unset($args['month']); unset($args['year']);
 		$default_args = self::get_default_search(array());
 		foreach($default_args as $arg_key => $arg_value){
@@ -381,7 +378,14 @@ class EM_Calendar extends EM_Object {
 	}
 		
 	
-	function get_default_search($array=array()){
+	/* 
+	 * Adds custom calendar search defaults
+	 * @param array $array_or_defaults may be the array to override defaults
+	 * @param array $array
+	 * @return array
+	 * @uses EM_Object#get_default_search()
+	 */
+	public static function get_default_search( $array_or_defaults = array(), $array = array() ){
 		//These defaults aren't for db queries, but flags for what to display in calendar output
 		$defaults = array( 
 			'full' => 0, //Will display a full calendar with event names
@@ -394,8 +398,16 @@ class EM_Calendar extends EM_Object {
 			'region' => false,
 			'blog' => get_current_blog_id(),
 			'orderby' => get_option('dbem_display_calendar_orderby'),
-			'order' => get_option('dbem_display_calendar_order')
+			'order' => get_option('dbem_display_calendar_order'),
+			'number_of_weeks' => false //number of weeks to be displayed in the calendar
 		);
+		//sort out whether defaults were supplied or just the array of search values
+		if( empty($array) ){
+			$array = $array_or_defaults;
+		}else{
+			$defaults = array_merge($defaults, $array_or_defaults);
+		}
+		//specific functionality
 		if(is_multisite()){
 			global $bp;
 			if( !is_main_site() && !array_key_exists('blog',$array) ){

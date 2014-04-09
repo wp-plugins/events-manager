@@ -1435,7 +1435,7 @@ class EM_Event extends EM_Object{
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
 								$image_src = $this->image_url;
-								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
+								if( self::array_is_numeric($image_size) && count($image_size) > 1 ){
 								    //get a thumbnail
 								    if( get_option('dbem_disable_timthumb') ){
 									    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){

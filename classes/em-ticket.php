@@ -464,7 +464,7 @@ class EM_Ticket extends EM_Object{
 	/**
 	 * Can the user manage this event? 
 	 */
-	function can_manage(){
+	function can_manage( $owner_capability = false, $admin_capability = false, $user_to_check = false ){
 		return $this->get_event()->can_manage('manage_bookings','manage_others_bookings');
 	}
 	

@@ -180,7 +180,7 @@ if( file_exists($upload_dir['basedir'].'/locations-pics' ) ){
  * Contains functions for loading styles on both admin and public sides.
  */
 class EM_Scripts_and_Styles {
-	function init(){
+	public static function init(){
 		if( is_admin() ){
 			//Scripts and Styles
 			if( (!empty($_GET['page']) && substr($_GET['page'],0,14) == 'events-manager') || (!empty($_GET['post_type']) && in_array($_GET['post_type'], array(EM_POST_TYPE_EVENT,EM_POST_TYPE_LOCATION,'event-recurring'))) ){
@@ -196,7 +196,7 @@ class EM_Scripts_and_Styles {
 	/**
 	 * Enqueuing public scripts and styles
 	 */
-	function public_enqueue() {
+	public static function public_enqueue() {
 	    global $wp_query;
 		$pages = array( //pages which EM needs CSS or JS
            	'events' => get_option('dbem_events_page'),
@@ -292,7 +292,7 @@ class EM_Scripts_and_Styles {
 		}
 	}
 	
-	function admin_enqueue(){
+	public static function admin_enqueue(){
 	    do_action('em_enqueue_admin_scripts');
 		wp_enqueue_script('events-manager', plugins_url('includes/js/events-manager.js',__FILE__), array('jquery', 'jquery-ui-core','jquery-ui-widget','jquery-ui-position','jquery-ui-sortable','jquery-ui-datepicker','jquery-ui-autocomplete','jquery-ui-dialog'), EM_VERSION);
 		wp_enqueue_style('events-manager-admin', plugins_url('includes/css/events_manager_admin.css',__FILE__), array(), EM_VERSION);
@@ -302,7 +302,7 @@ class EM_Scripts_and_Styles {
 	/**
 	 * Localize the script vars that require PHP intervention, removing the need for inline JS.
 	 */
-	function localize_script(){
+	public static function localize_script(){
 		global $em_localized_js;
 		$locale_code = substr ( get_locale(), 0, 2 );
 		$date_format = get_option('dbem_date_format_js') ? get_option('dbem_date_format_js'):'yy-mm-dd'; //prevents blank datepickers if no option set

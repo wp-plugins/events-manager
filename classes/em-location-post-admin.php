@@ -1,6 +1,6 @@
 <?php
 class EM_Location_Post_Admin{
-	function init(){
+	public static function init(){
 		global $pagenow;
 		if($pagenow == 'post.php' || $pagenow == 'post-new.php' ){ //only needed if editing post
 			add_action('admin_head', array('EM_Location_Post_Admin','admin_head'));
@@ -19,21 +19,21 @@ class EM_Location_Post_Admin{
 		add_action('post_updated_messages',array('EM_Location_Post_Admin','admin_notices_filter'),1,1);
 	}
 	
-	function admin_head(){
+	public static function admin_head(){
 		global $post, $EM_Location;
 		if( !empty($post) && $post->post_type == EM_POST_TYPE_LOCATION ){
 			$EM_Location = em_get_location($post);
 		}
 	}
 	
-	function admin_notices(){
+	public static function admin_notices(){
 		//When editing
 		global $post, $EM_Notices;
 		if( !empty($post) && $post->post_type == EM_POST_TYPE_LOCATION){
 		}
 	}
 	
-	function admin_notices_filter($messages){
+	public static function admin_notices_filter($messages){
 		//When editing
 		global $post, $EM_Notices;
 		if( $post->post_type == EM_POST_TYPE_LOCATION ){
@@ -76,7 +76,7 @@ class EM_Location_Post_Admin{
 	 * Once the post is saved, saves EM meta data
 	 * @param int $post_id
 	 */
-	function save_post($post_id){
+	public static function save_post($post_id){
 		global $wpdb, $EM_Location, $EM_Notices, $EM_SAVING_LOCATION;
 		if( !empty($EM_SAVING_LOCATION) ) return; //If we're saving a location via EM_Location::save() we should never run the below
 		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
@@ -114,14 +114,14 @@ class EM_Location_Post_Admin{
 		}
 	}
 
-	function before_delete_post($post_id){
+	public static function before_delete_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_LOCATION){
 			$EM_Location = em_get_location($post_id,'post_id');
 			$EM_Location->delete_meta();
 		}
 	}
 	
-	function trashed_post($post_id){
+	public static function trashed_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_LOCATION){
 			global $EM_Notices;
 			$EM_Location = em_get_location($post_id,'post_id');
@@ -130,14 +130,14 @@ class EM_Location_Post_Admin{
 		}
 	}
 	
-	function untrash_post($post_id){
+	public static function untrash_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_LOCATION){
 			//set a constant so we know this event doesn't need 'saving'
 			if(!defined('UNTRASHING_'.$post_id)) define('UNTRASHING_'.$post_id, true);
 		}
 	}
 	
-	function untrashed_post($post_id){
+	public static function untrashed_post($post_id){
 		if(get_post_type($post_id) == EM_POST_TYPE_LOCATION){
 			global $EM_Notices;
 			$EM_Location = new EM_Location($post_id,'post_id');
@@ -146,7 +146,7 @@ class EM_Location_Post_Admin{
 		}
 	}
 	
-	function meta_boxes(){
+	public static function meta_boxes(){
 		add_meta_box('em-location-where', __('Where','dbem'), array('EM_Location_Post_Admin','meta_box_where'),EM_POST_TYPE_LOCATION, 'normal','high');
 		//add_meta_box('em-location-metadump', __('EM_Location Meta Dump','dbem'), array('EM_Location_Post_Admin','meta_box_metadump'),EM_POST_TYPE_LOCATION, 'normal','high');
 		if( get_option('dbem_location_attributes_enabled') ){
@@ -154,17 +154,17 @@ class EM_Location_Post_Admin{
 		}
 	}
 	
-	function meta_box_metadump(){
+	public static function meta_box_metadump(){
 		global $post,$EM_Location;
 		echo "<pre>"; print_r(get_post_custom($post->ID)); echo "</pre>";
 		echo "<pre>"; print_r($EM_Location); echo "</pre>";
 	}
-	function meta_box_where(){
+	public static function meta_box_where(){
 		?><input type="hidden" name="_emnonce" value="<?php echo wp_create_nonce('edit_location'); ?>" /><?php
 		em_locate_template('forms/location/where.php',true);		
 	}
 	
-	function meta_box_attributes(){
+	public static function meta_box_attributes(){
 		em_locate_template('forms/location/attributes.php',true);
 	}
 }

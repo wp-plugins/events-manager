@@ -66,30 +66,32 @@ class EM_Tag extends EM_Object {
 	
 	function get_url(){
 		if( empty($this->link) ){
-			$this->ms_global_switch();
+			self::ms_global_switch();
 			$this->link = get_term_link($this->slug, EM_TAXONOMY_TAG);
-			$this->ms_global_switch_back();
+			self::ms_global_switch_back();
 			if ( is_wp_error($this->link) ) $this->link = '';
 		}
-		return $this->link;
+		return apply_filters('em_tag_get_url', $this->link);
 	}
 
 	function get_ical_url(){
 		global $wp_rewrite;
 		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
-			return trailingslashit($this->get_url()).'ical/';
+			$return = trailingslashit($this->get_url()).'ical/';
 		}else{
-			return em_add_get_params($this->get_url(), array('ical'=>1));
+			$return = em_add_get_params($this->get_url(), array('ical'=>1));
 		}
+		return apply_filters('em_tag_get_ical_url', $return);
 	}
 
 	function get_rss_url(){
 		global $wp_rewrite;
 		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
-			return trailingslashit($this->get_url()).'feed/';
+			$return = trailingslashit($this->get_url()).'feed/';
 		}else{
-			return em_add_get_params($this->get_url(), array('feed'=>1));
+			$return = em_add_get_params($this->get_url(), array('feed'=>1));
 		}
+		return apply_filters('em_tag_get_rss_url', $return);
 	}
 	
 	function output_single($target = 'html'){

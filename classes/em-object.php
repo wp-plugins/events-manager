@@ -19,7 +19,7 @@ class EM_Object {
 	 * @param array $array
 	 * @return array
 	 */
-	function get_default_search($defaults=array(), $array = array()){
+	public static function get_default_search($defaults=array(), $array = array()){
 		global $wpdb;
 		//TODO accept all objects as search options as well as ids (e.g. location vs. location_id, person vs. person_id)
 		//Create minimal defaults array, merge it with supplied defaults array
@@ -176,7 +176,7 @@ class EM_Object {
 	 * @param array $args
 	 * @return array
 	 */
-	function build_sql_conditions( $args = array() ){
+	public static function build_sql_conditions( $args = array() ){
 		global $wpdb;
 		$events_table = EM_EVENTS_TABLE;
 		$locations_table = EM_LOCATIONS_TABLE;
@@ -514,7 +514,7 @@ class EM_Object {
 	 * @param array $args
 	 * @return array
 	 */
-	function build_wpquery_conditions( $args = array(), $wp_query ){
+	public static function build_wpquery_conditions( $args = array(), $wp_query ){
 		global $wpdb;
 		
 		$args = apply_filters('em_object_build_sql_conditions_args',$args);
@@ -797,7 +797,7 @@ class EM_Object {
 		return apply_filters('em_object_build_wp_query_conditions', $wp_query);
 	}
 	
-	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+	public static function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
 		//First, ORDER BY
 		$args = apply_filters('em_object_build_sql_orderby_args', $args);
 		$orderby = array();
@@ -971,7 +971,7 @@ class EM_Object {
 	}
 
 	
-	function ms_global_switch(){
+	public static function ms_global_switch(){
 		if( EM_MS_GLOBAL ){
 			//If in multisite global, then get the main blog
 			global $current_site;
@@ -979,7 +979,7 @@ class EM_Object {
 		}
 	}
 	
-	function ms_global_switch_back(){
+	public static function ms_global_switch_back(){
 		if( EM_MS_GLOBAL ){
 			restore_current_blog();
 		}
@@ -1096,7 +1096,7 @@ class EM_Object {
 	 * @param array $array
 	 * @param array $id_atts
 	 */
-	function clean_id_atts( $array = array(), $id_atts = array() ){
+	public static function clean_id_atts( $array = array(), $id_atts = array() ){
 		if( is_array($array) && is_array($id_atts) ){
 			foreach( $array as $key => $string ){
 				if( in_array($key, $id_atts) ){
@@ -1149,7 +1149,7 @@ class EM_Object {
 	 * @param mixed $array
 	 * @return boolean
 	 */
-	function array_is_numeric($array){
+	public static function array_is_numeric($array){
 		$results = array();
 		if(is_array($array)){
 			foreach($array as $key => $item){
@@ -1193,7 +1193,7 @@ class EM_Object {
 	 * @param array $array
 	 * @return string
 	 */
-	function json_encode($array){
+	public static function json_encode($array){
 	    $array = apply_filters('em_object_json_encode_pre',$array);
 		if( function_exists("json_encode") ){
 			$return = json_encode($array);
@@ -1229,7 +1229,7 @@ class EM_Object {
 	            $key = "'".addslashes($key)."'";
 	            // Format the value:
 	            if( is_array( $value )){
-	                $value = $this->array_to_json( $value );
+	                $value = self::array_to_json( $value );
 	            }else if( is_bool($value) ) {
 	            	$value = ($value) ? "true" : "false";
 	            }else if( !is_numeric( $value ) || is_string( $value ) ){
@@ -1245,7 +1245,7 @@ class EM_Object {
 	        foreach( $array as $value ){
 	            // Format the value:
 	            if( is_array( $value )){
-	                $value = $this->array_to_json( $value );
+	                $value = self::array_to_json( $value );
 	            } else if( !is_numeric( $value ) || is_string( $value ) ){
 	                $value = "'".addslashes($value)."'";
 	            }

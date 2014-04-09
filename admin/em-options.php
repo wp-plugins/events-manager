@@ -196,7 +196,7 @@ function em_admin_email_test_ajax(){
             	'message' => __('Email not sent.','dbem')." <ul><li>".implode('</li><li>',$EM_Event->get_errors()).'</li></ul>'
             );
         }
-        echo json_encode($result);
+        echo EM_Object::json_encode($result);
     }
     exit();
 }

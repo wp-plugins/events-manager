@@ -1,6 +1,6 @@
 <?php
 class EM_Location_Posts_Admin{
-	function init(){
+	public static function init(){
 		global $pagenow;
 		if($pagenow == 'edit.php' && !empty($_REQUEST['post_type']) && $_REQUEST['post_type'] == EM_POST_TYPE_LOCATION ){ //only needed if editing post
 			//hide some cols by default:
@@ -16,11 +16,11 @@ class EM_Location_Posts_Admin{
 		add_filter('manage_'.EM_POST_TYPE_LOCATION.'_posts_custom_column' , array('EM_Location_Posts_Admin','columns_output'),10,2 );
 	}
 	
-	function admin_head(){
+	public static function admin_head(){
 		//quick hacks to make event admin table make more sense for events
 		?>
 		<script type="text/javascript">
-			jQuery(document).ready( function($){
+			jQuery(document).ready( public static function($){
 				$('.inline-edit-date').prev().css('display','none').next().css('display','none').next().css('display','none');
 			});
 		</script>
@@ -31,7 +31,7 @@ class EM_Location_Posts_Admin{
 		<?php
 	}
 	
-	function admin_menu(){
+	public static function admin_menu(){
 		global $menu, $submenu;
 	  	// Add a submenu to the custom top-level menu:
    		$plugin_pages = array(); 
@@ -39,7 +39,7 @@ class EM_Location_Posts_Admin{
 		$plugin_pages = apply_filters('em_create_locationss_submenu',$plugin_pages);
 	}
 	
-	function columns_add($columns) {
+	public static function columns_add($columns) {
 		//prepend ID after checkbox
 		if( array_key_exists('cb', $columns) ){
 			$cb = $columns['cb'];
@@ -59,7 +59,7 @@ class EM_Location_Posts_Admin{
 	    ));
 	}
 	
-	function columns_output( $column ) {
+	public static function columns_output( $column ) {
 		global $post;
 		$post = em_get_location($post); 
 		switch ( $column ) {

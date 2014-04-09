@@ -15,7 +15,7 @@ class BP_EM_Component extends BP_Component {
 		$bp->active_components[$this->id] = '1';
 	}
 
-	function includes() {
+	function includes( $includes = array() ) {
 		// Files to include
 		$includes = array(
 			'buddypress/bp-em-activity.php',
@@ -39,7 +39,7 @@ class BP_EM_Component extends BP_Component {
 	/**
 	 * Sets up the global Events Manager BuddyPress Components
 	 */
-	function setup_globals() {
+	function setup_globals( $args = array() ) {
 		global $bp, $wpdb;
 		// Define a slug constant that will be used to view this components pages
 		if ( !defined( 'BP_EM_SLUG' ) )
@@ -60,7 +60,7 @@ class BP_EM_Component extends BP_Component {
 		$bp->{$this->id}->link = trailingslashit($bp->loggedin_user->domain).BP_EM_SLUG.'/';
 	}
 	
-	function setup_nav() {
+	public function setup_nav( $main_nav = array(), $sub_nav = array() ) {
 		global $blog_id; 
 		//check multisite or normal mode for correct permission checking
 		if(is_multisite() && $blog_id != BP_ROOT_BLOG){
@@ -85,7 +85,7 @@ class BP_EM_Component extends BP_Component {
 			'default_subnav_slug' => 'profile'
 		);
 
-		$em_link = trailingslashit( bp_loggedin_user_domain() . em_bp_get_slug() );
+		$em_link = trailingslashit( bp_displayed_user_domain() . em_bp_get_slug() );
 		
 		/* Create SubNav Items */
 		$sub_nav[] = array(
@@ -149,7 +149,7 @@ class BP_EM_Component extends BP_Component {
 				'name' => __( 'Events', 'dbem' ),
 				'slug' => 'group-events',
 				'parent_slug' => bp_get_groups_slug(),
-				'parent_url' =>trailingslashit( bp_loggedin_user_domain() . bp_get_groups_slug() ),
+				'parent_url' =>trailingslashit( bp_displayed_user_domain() . bp_get_groups_slug() ),
 				'screen_function' => 'bp_em_my_group_events',
 				'position' => 60,
 				'user_has_access' => bp_is_my_profile() // Only the logged in user can access this on his/her profile
@@ -160,7 +160,7 @@ class BP_EM_Component extends BP_Component {
 		add_action( 'bp_init', array(&$this, 'setup_group_nav') );
 	}
 	
-	function setup_admin_bar() {
+	public function setup_admin_bar( $wp_admin_nav = array() ) {
 		global $bp, $blog_id;
 	
 		// Prevent debug notices

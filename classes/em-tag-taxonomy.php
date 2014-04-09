@@ -1,6 +1,6 @@
 <?php
 class EM_Tag_Taxonomy{
-	function init(){
+	public static function init(){
 		if( !is_admin() ){
 			add_filter('taxonomy_template', array('EM_Tag_Taxonomy','template'), 99);
 			add_filter('parse_query', array('EM_Tag_Taxonomy','parse_query'));
@@ -11,7 +11,7 @@ class EM_Tag_Taxonomy{
 	 * @param string $template
 	 * @return string
 	 */
-	function template($template){
+	public static function template($template){
 		global $wp_query, $EM_Tag, $em_tag_id, $post;
 		if( is_tax(EM_TAXONOMY_TAG) && get_option('dbem_cp_tags_formats', true)){
 			$EM_Tag = em_get_tag($wp_query->queried_object->term_id);
@@ -54,7 +54,7 @@ class EM_Tag_Taxonomy{
 		return $template;
 	}
 	
-	function the_content($content){
+	public static function the_content($content){
 		global $wp_query, $EM_Tag, $post, $em_tag_id;
 		$is_tags_page = $post->ID == get_option('dbem_tags_page');
 		$tag_flag = (!empty($wp_query->em_tag_id) || !empty($em_tag_id));
@@ -67,7 +67,7 @@ class EM_Tag_Taxonomy{
 		return $content;
 	}
 	
-	function parse_query(){
+	public static function parse_query(){
 	    global $wp_query, $post;
 		if( is_tax(EM_TAXONOMY_TAG) ){
 			//Scope is future
@@ -89,7 +89,7 @@ class EM_Tag_Taxonomy{
 		}
 	}
 	
-	function wpseo_breadcrumb_links( $links ){
+	public static function wpseo_breadcrumb_links( $links ){
 	    global $wp_query;
 	    array_pop($links);
 	    if( get_option('dbem_tags_page') ){

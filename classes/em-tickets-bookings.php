@@ -231,7 +231,7 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	/* Overrides EM_Object method to apply a filter to result
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */
-	function build_sql_conditions( $args = array() ){
+	public static function build_sql_conditions( $args = array() ){
 		$conditions = apply_filters( 'em_tickets_build_sql_conditions', parent::build_sql_conditions($args), $args );
 		if( is_numeric($args['status']) ){
 			$conditions['status'] = 'ticket_status='.$args['status'];
@@ -242,21 +242,29 @@ class EM_Tickets_Bookings extends EM_Object implements Iterator{
 	/* Overrides EM_Object method to apply a filter to result
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
 	 */
-	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+	public static function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
 		return apply_filters( 'em_tickets_bookings_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_events_default_order')), $args, $accepted_fields, $default_order );
 	}
 	
 	/* 
 	 * Adds custom Events search defaults
+	 * @param array $array_or_defaults may be the array to override defaults
 	 * @param array $array
 	 * @return array
 	 * @uses EM_Object#get_default_search()
 	 */
-	function get_default_search( $array = array() ){
+	public static function get_default_search( $array_or_defaults = array(), $array = array() ){
 		$defaults = array(
 			'status' => false,
 			'person' => true //to add later, search by person's tickets...
 		);	
+		//sort out whether defaults were supplied or just the array of search values
+		if( empty($array) ){
+			$array = $array_or_defaults;
+		}else{
+			$defaults = array_merge($defaults, $array_or_defaults);
+		}
+		//specific functionality
 		$defaults['owner'] = !current_user_can('manage_others_bookings') ? get_current_user_id():false;
 		return apply_filters('em_tickets_bookings_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}

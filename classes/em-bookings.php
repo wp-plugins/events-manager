@@ -274,7 +274,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 */
 	function set_status($status, $booking_ids){
 		//FIXME status should work with instantiated object
-		if( $this->array_is_numeric($booking_ids) ){
+		if( self::array_is_numeric($booking_ids) ){
 			//Get all the bookings
 			$results = array();
 			$mails = array();
@@ -468,7 +468,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 * @return array 
 	 * @static
 	 */
-	function get( $args = array(), $count = false ){
+	public static function get( $args = array(), $count = false ){
 		global $wpdb,$current_user;
 		$bookings_table = EM_BOOKINGS_TABLE;
 		$events_table = EM_EVENTS_TABLE;
@@ -590,7 +590,7 @@ class EM_Bookings extends EM_Object implements Iterator{
 	/* Overrides EM_Object method to apply a filter to result
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_conditions()
 	 */
-	function build_sql_conditions( $args = array() ){
+	public static function build_sql_conditions( $args = array() ){
 		$conditions = apply_filters( 'em_bookings_build_sql_conditions', parent::build_sql_conditions($args), $args );
 		if( is_numeric($args['status']) ){
 			$conditions['status'] = 'booking_status='.$args['status'];
@@ -624,23 +624,31 @@ class EM_Bookings extends EM_Object implements Iterator{
 	/* Overrides EM_Object method to apply a filter to result
 	 * @see wp-content/plugins/events-manager/classes/EM_Object#build_sql_orderby()
 	 */
-	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
+	public static function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
 		return apply_filters( 'em_bookings_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_bookings_default_order','booking_date')), $args, $accepted_fields, $default_order );
 	}
 	
 	/* 
 	 * Adds custom Events search defaults
+	 * @param array $array_or_defaults may be the array to override defaults
 	 * @param array $array
 	 * @return array
 	 * @uses EM_Object#get_default_search()
 	 */
-	function get_default_search( $array = array() ){
+	public static function get_default_search( $array_or_defaults = array(), $array = array() ){
 		$defaults = array(
 			'status' => false,
 			'person' => true, //to add later, search by person's bookings...
 			'blog' => get_current_blog_id(),
 			'ticket_id' => false
-		);	
+		);
+		//sort out whether defaults were supplied or just the array of search values
+		if( empty($array) ){
+			$array = $array_or_defaults;
+		}else{
+			$defaults = array_merge($defaults, $array_or_defaults);
+		}
+		//specific functionality
 		if( true || is_admin() ){
 			//figure out default owning permissions
 			if( !current_user_can('edit_others_events') ){

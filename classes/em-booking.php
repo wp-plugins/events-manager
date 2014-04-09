@@ -437,8 +437,8 @@ class EM_Booking extends EM_Object{
 	    //reset price and taxes calculations
 	    $this->booking_price = $this->booking_taxes = null;
 	    //get post-tax price and save it to booking_price
-	    $this->booking_price = $this->get_price_post_taxes();
-	    return apply_filters('em_booking_calculate_price', $this->booking_price, $this);
+	    $this->booking_price = apply_filters('em_booking_calculate_price', $this->get_price_post_taxes(), $this);
+	    return $this->booking_price; 
 	}
 	
 	/* 
@@ -1070,7 +1070,7 @@ class EM_Booking extends EM_Object{
 	/**
 	 * Can the user manage this event? 
 	 */
-	function can_manage(){
+	function can_manage( $owner_capability = false, $admin_capability = false, $user_to_check = false ){
 		return $this->get_event()->can_manage('manage_bookings','manage_others_bookings') || empty($this->booking_id) || !empty($this->manage_override);
 	}
 	

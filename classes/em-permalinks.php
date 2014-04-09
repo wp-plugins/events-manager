@@ -13,7 +13,7 @@ if( !class_exists('EM_Permalinks') ){
 			'rss', 'ical','event_categories','event_locations'
 		);
 		
-		function init(){
+		public static function init(){
 			add_filter('pre_update_option_dbem_events_page', array('EM_Permalinks','option_update'));
 			if( get_option('dbem_flush_needed') ){
 				add_filter('wp_loaded', array('EM_Permalinks','flush')); //flush after init, in case there are themes adding cpts etc.
@@ -30,13 +30,13 @@ if( !class_exists('EM_Permalinks') ){
 			add_filter('post_type_archive_link',array('EM_Permalinks','post_type_archive_link'),10,2);
 		}
 		
-		function flush(){
+		public static function flush(){
 			global $wp_rewrite;
 			$wp_rewrite->flush_rules();
 			delete_option('dbem_flush_needed');
 		}
 		
-		function post_type_archive_link($link, $post_type){
+		public static function post_type_archive_link($link, $post_type){
 			if( $post_type == EM_POST_TYPE_EVENT ){
 				if( get_option('dbem_events_page') ){
 					$new_link = get_permalink(get_option('dbem_events_page'));
@@ -56,7 +56,7 @@ if( !class_exists('EM_Permalinks') ){
 		/**
 		 * will redirect old links to new link structures.
 		 */
-		function redirection(){
+		public static function redirection(){
 			global $wpdb, $wp_query;
 			if( is_object($wp_query) && $wp_query->get('em_redirect') ){
 				//is this a querystring url?
@@ -83,7 +83,7 @@ if( !class_exists('EM_Permalinks') ){
 		}
 
 		// Adding a new rule
-		function rewrite_rules_array($rules){
+		public static function rewrite_rules_array($rules){
 			global $wpdb;
 			//get the slug of the event page
 			$events_page_id = get_option ( 'dbem_events_page' );
@@ -204,7 +204,7 @@ if( !class_exists('EM_Permalinks') ){
 		 * Generate a URL. Pass each section of a link as a parameter, e.g. EM_Permalinks::url('event',$event_id); will create an event link.
 		 * @return string 
 		 */
-		function url(){
+		public static function url(){
 			global $wp_rewrite;
 			$args = func_get_args();
 			$em_uri = get_permalink(get_option("dbem_events_page")); //PAGE URI OF EM
@@ -219,7 +219,7 @@ if( !class_exists('EM_Permalinks') ){
 		 * @param mixed $val
 		 * @return mixed
 		 */
-		function option_update( $val ){
+		public static function option_update( $val ){
 			if( get_option('dbem_events_page') != $val ){
 				update_option('dbem_flush_needed',1);
 			}
@@ -227,7 +227,7 @@ if( !class_exists('EM_Permalinks') ){
 		}
 		
 		// Adding the id var so that WP recognizes it
-		function query_vars($vars){
+		public static function query_vars($vars){
 			foreach(self::$em_queryvars as $em_queryvar){
 				array_push($vars, $em_queryvar);
 			}
@@ -237,7 +237,7 @@ if( !class_exists('EM_Permalinks') ){
 		/**
 		 * Not the "WP way" but for now this'll do!
 		 */
-		function init_objects(){
+		public static function init_objects(){
 			global $wp_rewrite, $wp_query;
 			//check some homepage conditions
 			$events_page_id = get_option ( 'dbem_events_page' );

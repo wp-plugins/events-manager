@@ -1,6 +1,6 @@
 <?php
 class EM_Event_Posts_Admin{
-	function init(){
+	public static function init(){
 		global $pagenow;
 		if( $pagenow == 'edit.php' && !empty($_REQUEST['post_type']) && $_REQUEST['post_type'] == EM_POST_TYPE_EVENT ){ //only needed for events list
 			if( !empty($_REQUEST['category_id']) && is_numeric($_REQUEST['category_id']) ){
@@ -23,13 +23,11 @@ class EM_Event_Posts_Admin{
 			//collumns
 			add_filter('manage_edit-'.EM_POST_TYPE_EVENT.'_columns' , array('EM_Event_Posts_Admin','columns_add'));
 			add_filter('manage_'.EM_POST_TYPE_EVENT.'_posts_custom_column' , array('EM_Event_Posts_Admin','columns_output'),10,2 );
-			//TODO alter views of locations, events and recurrences, specifically find a good way to alter the wp_count_posts method to force user owned posts only
-			//add_filter('views_edit-'.EM_POST_TYPE_EVENT, array('EM_Event_Posts_Admin','views'),10,1);
 		}
 		add_action('restrict_manage_posts', array('EM_Event_Posts_Admin','restrict_manage_posts'));
 	}
 	
-	function admin_head(){
+	public static function admin_head(){
 		//quick hacks to make event admin table make more sense for events
 		?>
 		<script type="text/javascript">
@@ -56,7 +54,7 @@ class EM_Event_Posts_Admin{
 		<?php
 	}
 	
-	function restrict_manage_posts(){
+	public static function restrict_manage_posts(){
 		global $wp_query;
 		if( $wp_query->query_vars['post_type'] == EM_POST_TYPE_EVENT || $wp_query->query_vars['post_type'] == 'event-recurring' ){
 			?>
@@ -88,7 +86,7 @@ class EM_Event_Posts_Admin{
 		}
 	}
 	
-	function views($views){
+	public static function views($views){
 		if( !current_user_can('edit_others_events') ){
 			//alter the views to reflect correct numbering
 			 
@@ -96,7 +94,7 @@ class EM_Event_Posts_Admin{
 		return $views;
 	}
 	
-	function columns_add($columns) {
+	public static function columns_add($columns) {
 		if( array_key_exists('cb', $columns) ){
 			$cb = $columns['cb'];
 	    	unset($columns['cb']);
@@ -119,7 +117,7 @@ class EM_Event_Posts_Admin{
 	    return $columns;
 	}
 	
-	function columns_output( $column ) {
+	public static function columns_output( $column ) {
 		global $post, $EM_Event;
 		$EM_Event = em_get_event($post, 'post_id');
 		/* @var $post EM_Event */
@@ -175,7 +173,7 @@ class EM_Event_Posts_Admin{
 		}
 	}
 	
-	function row_actions($actions, $post){
+	public static function row_actions($actions, $post){
 		if($post->post_type == EM_POST_TYPE_EVENT){
 			global $post, $EM_Event;
 			$EM_Event = em_get_event($post, 'post_id');
@@ -190,7 +188,7 @@ add_action('admin_init', array('EM_Event_Posts_Admin','init'));
  * Recurring Events
  */
 class EM_Event_Recurring_Posts_Admin{
-	function init(){
+	public static function init(){
 		global $pagenow;
 		if( $pagenow == 'edit.php' && !empty($_REQUEST['post_type']) && $_REQUEST['post_type'] == 'event-recurring' ){
 			//hide some cols by default:
@@ -210,12 +208,12 @@ class EM_Event_Recurring_Posts_Admin{
 		}
 	}
 	
-	function admin_notices(){
+	public static function admin_notices(){
 		$warning = sprintf(__( 'Modifications to these events will cause all recurrences of each event to be deleted and recreated and previous bookings will be deleted! You can edit individual recurrences and detach them from recurring events by visiting the <a href="%s">events page</a>.', 'dbem' ), admin_url().'edit.php?post_type='.EM_POST_TYPE_EVENT);
 		?><div class="updated"><p><?php echo $warning; ?></p></div><?php
 	}
 	
-	function admin_head(){
+	public static function admin_head(){
 		//quick hacks to make event admin table make more sense for events
 		?>
 		<script type="text/javascript">
@@ -233,7 +231,7 @@ class EM_Event_Recurring_Posts_Admin{
 		<?php
 	}
 	
-	function columns_add($columns) {
+	public static function columns_add($columns) {
 		if( array_key_exists('cb', $columns) ){
 			$cb = $columns['cb'];
 	    	unset($columns['cb']);
@@ -252,7 +250,7 @@ class EM_Event_Recurring_Posts_Admin{
 	}
 
 	
-	function columns_output( $column ) {
+	public static function columns_output( $column ) {
 		global $post, $EM_Event;
 		if( $post->post_type == 'event-recurring' ){
 			$post = $EM_Event = em_get_event($post);

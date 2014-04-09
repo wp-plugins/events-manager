@@ -5,7 +5,7 @@ class EM_People extends EM_Object {
 	 * Handles the action of someone being deleted on WordPress
 	 * @param int $id
 	 */
-	function delete_user( $id ){
+	public static function delete_user( $id ){
 		global $wpdb;
 		if( $_REQUEST['delete_option'] == 'reassign' && is_numeric($_REQUEST['reassign_user']) ){
 			$wpdb->update(EM_EVENTS_TABLE, array('event_owner'=>$_REQUEST['reassign_user']), array('event_owner'=>$id));
@@ -31,7 +31,7 @@ class EM_People extends EM_Object {
 	 * @param $array
 	 * @return array
 	 */
-	function user_contactmethods($array){
+	public static function user_contactmethods($array){
 		$array['dbem_phone'] = __('Phone','dbem') . ' <span class="description">('. __('Events Manager','dbem') .')</span>';
 		return $array;
 	}	

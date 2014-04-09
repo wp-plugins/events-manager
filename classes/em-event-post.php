@@ -5,13 +5,15 @@
  *
  */
 class EM_Event_Post {
-	function init(){
+	
+	public static function init(){
 		global $wp_query;
 		//Front Side Modifiers
 		if( !is_admin() ){
 			//override single page with formats? 
 			add_filter('the_content', array('EM_Event_Post','the_content'));
 			add_filter('the_excerpt_rss', array('EM_Event_Post','the_excerpt_rss'));
+			//add_filter('the_excerpt', array('EM_Event_Post','the_excerpt'));
 			//display as page template?
 			if( get_option('dbem_cp_events_template') ){
 				add_filter('single_template',array('EM_Event_Post','single_template'));
@@ -34,7 +36,7 @@ class EM_Event_Post {
 		add_action('publish_future_post',array('EM_Event_Post','publish_future_post'),10,1);
 	}
 	
-	function publish_future_post($post_id){
+	public static function publish_future_post($post_id){
 		global $wpdb, $EM_Event, $EM_Location, $EM_Notices;
 		$post_type = get_post_type($post_id);
 		$is_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
@@ -50,7 +52,7 @@ class EM_Event_Post {
 	 * @param string $template
 	 * @return string
 	 */
-	function single_template($template){
+	public static function single_template($template){
 		global $post;
 		if( !locate_template('single-'.EM_POST_TYPE_EVENT.'.php') && $post->post_type == EM_POST_TYPE_EVENT ){
 			//do we have a default template to choose for events?
@@ -67,7 +69,7 @@ class EM_Event_Post {
 		return $template;
 	}
 	
-	function post_class( $classes, $class, $post_id ){
+	public static function post_class( $classes, $class, $post_id ){
 	    $post = get_post($post_id);
 	    if( $post->post_type == EM_POST_TYPE_EVENT ){
 	        foreach( explode(' ', get_option('dbem_cp_events_post_class')) as $class ){
@@ -77,7 +79,7 @@ class EM_Event_Post {
 	    return $classes;
 	}
 	
-	function body_class( $classes ){
+	public static function body_class( $classes ){
 	    if( em_is_event_page() ){
 	        foreach( explode(' ', get_option('dbem_cp_events_body_class')) as $class ){
 	            $classes[] = esc_attr($class);
@@ -86,8 +88,8 @@ class EM_Event_Post {
 	    return $classes;
 	}
 	
-	function the_excerpt_rss( $content ){
-		global $post, $EM_Event;
+	public static function the_excerpt_rss( $content ){
+		global $post;
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			if( get_option('dbem_cp_events_formats') ){
 				$EM_Event = em_get_event($post);
@@ -98,7 +100,7 @@ class EM_Event_Post {
 		return $content;
 	}
 	
-	function the_content( $content ){
+	public static function the_content( $content ){
 		global $post, $EM_Event;
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			if( is_archive() || is_search() ){
@@ -123,7 +125,7 @@ class EM_Event_Post {
 		return $content;
 	}
 	
-	function the_date( $the_date, $d = '' ){
+	public static function the_date( $the_date, $d = '' ){
 		global $post;
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post);
@@ -136,7 +138,7 @@ class EM_Event_Post {
 		return $the_date;
 	}
 	
-	function the_time( $the_time, $f = '' ){
+	public static function the_time( $the_time, $f = '' ){
 		global $post;
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post);
@@ -149,7 +151,7 @@ class EM_Event_Post {
 		return $the_time;
 	}
 	
-	function the_category( $thelist, $separator = '', $parents='' ){
+	public static function the_category( $thelist, $separator = '', $parents='' ){
 		global $post, $wp_rewrite;
 		if( $post->post_type == EM_POST_TYPE_EVENT ){
 			$EM_Event = em_get_event($post);
@@ -203,7 +205,7 @@ class EM_Event_Post {
 		return $thelist;
 	}
 	
-	function parse_query(){
+	public static function parse_query(){
 	    global $wp_query;
 		//Search Query Filtering
 		if( is_admin() ){

@@ -281,7 +281,7 @@ class EM_Location extends EM_Object {
 		global $wpdb, $current_user, $blog_id, $EM_SAVING_LOCATION;
 		$EM_SAVING_LOCATION = true;
 		//TODO shuffle filters into right place
-		if( get_site_option('dbem_ms_mainblog_locations') ){ $this->ms_global_switch(); }
+		if( get_site_option('dbem_ms_mainblog_locations') ){ self::ms_global_switch(); }
 		if( !$this->can_manage('edit_locations', 'edit_others_locations') && !( get_option('dbem_events_anonymous_submissions') && empty($this->location_id)) ){
 			return apply_filters('em_location_save', false, $this);
 		}
@@ -345,7 +345,7 @@ class EM_Location extends EM_Object {
 			//location not saved, add an error
 			$this->add_error($post_id->get_error_message());
 		}
-		if( get_site_option('dbem_ms_mainblog_locations') ){ $this->ms_global_switch_back(); }
+		if( get_site_option('dbem_ms_mainblog_locations') ){ self::ms_global_switch_back(); }
 		$return = apply_filters('em_location_save', $post_save && $meta_save && $image_save, $this);
 		$EM_SAVING_LOCATION = false;
 		return $return;
@@ -565,9 +565,9 @@ class EM_Location extends EM_Object {
 		}
 		if( $admin_capability && EM_MS_GLOBAL && get_site_option('dbem_ms_mainblog_locations') ){
 			//if in global mode with locations restricted to main blog, we check capabilities against the main blog
-		    $this->ms_global_switch();
+		    self::ms_global_switch();
 		    $return = parent::can_manage($owner_capability, $admin_capability, $user_to_check);
-		    $this->ms_global_switch_back();
+		    self::ms_global_switch_back();
 		}else{
 		    $return = parent::can_manage($owner_capability, $admin_capability, $user_to_check);
 		}
@@ -606,19 +606,21 @@ class EM_Location extends EM_Object {
 	function get_ical_url(){
 		global $wp_rewrite;
 		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
-			return trailingslashit($this->get_permalink()).'ical/';
+			$return = trailingslashit($this->get_permalink()).'ical/';
 		}else{
-			return em_add_get_params($this->get_permalink(), array('ical'=>1));
+			$return = em_add_get_params($this->get_permalink(), array('ical'=>1));
 		}
+		return apply_filters('em_location_get_ical_url', $return);
 	}
 	
 	function get_rss_url(){
 		global $wp_rewrite;
 		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
-			return trailingslashit($this->get_permalink()).'feed/';
+			$return = trailingslashit($this->get_permalink()).'feed/';
 		}else{
-			return em_add_get_params($this->get_permalink(), array('feed'=>1));
+			$return = em_add_get_params($this->get_permalink(), array('feed'=>1));
 		}
+		return apply_filters('em_location_get_rss_url', $return);
 	}
 	
 	function get_edit_url(){
@@ -819,7 +821,7 @@ class EM_Location extends EM_Object {
 								$replace = "<img src='".$image_url."' alt='".esc_attr($this->location_name)."'/>";
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
-								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
+								if( self::array_is_numeric($image_size) && count($image_size) > 1 ){
 								    if( get_option('dbem_disable_timthumb') ){
 									    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
 									        //location belongs to another blog, so switch blog then call the default wp fucntion
