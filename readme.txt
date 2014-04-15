@@ -2,8 +2,8 @@
 Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
-Requires at least: 3.3
-Tested up to: 3.8
+Requires at least: 3.5
+Tested up to: 3.9
 Stable tag: 5.5.2
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
@@ -98,7 +98,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.5.2.1 (dev) =
+= 5.5.2.3 (dev) =
+* changed scopes of various functions to static and various other related adjustments to fix PHP Strict errors
+* increaded minimum required WP version to 3.5
 * WP_Mail is now default mail transport method
 * updated Swedish
 * fixed issues with editing no-user name with pro custom forms
@@ -114,6 +116,39 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed "test email settings" button using saved settings rather than newly entered test settings
 * fixed minor php warning if no attachment info supplied to EM_Mailer
 * removed get_current_blog_id() function as this was for < WP 3.1 support
+* fixed buddypress subnav menu items showing logged-in user links rather than displayed user (props to Maxime Lafontaine)
+* added *_get_url*_get_ical_url and _get_rss_url for em_category em_tag em_location and em_event object functions
+* fixed filter em_booking_calculate_price not assigning filtered value to booking_price property
+* fixed problems due to lack of late static binding in get_post_search and get_pagination_links functions
+* changed object get_post_search functions to accept all values from get_search_defaults
+* fixed pagination problems when searching grouped events lists and ajax disabled
+* changed - temporarily silenced 'scope' when 'eventless' is used on location list arguments as no results appear with both used at once
+* changed search html input field to use placeholder attribute if available in browser like with Geo search
+* added number_of_weeks argument to EM_Calendar to allow fixed week tables
+* fixed WP FullCalendar not showing long events in following months
+* fixed WP FullCalendar not showing all events in 6th week if current month ends 5th week
+* added RSS feed ordering and scope options in settings page
+* added #_BOOKINGSCUTOFF #_BOOKINGSCUTOFFDATE and #_BOOKINGSCUTOFFTIME placeholders
+* fixed no cut-off date assigned to event when in single ticket mode and no end date/time defined
+* fixed JS/BuddyPress bug when clicking to delete an event within the BP profile area
+* fixed default events AJAX search not using default event list scope if no scope search supplied
+* updated POT file along with Swedish and Polish translations
+* fixed saving recurrence tempate not saving ticket role restrictions to recurrences
+* fixed PHP error when tags are deactivated
+* added functionality for searching multiple event/location owners in search attribute 'owner',
+* fixed bug with pagination showing
+* fixed quick edit not updating location author index table
+* fixed closed message showing instead of login message to guests if registered-user tickets exist for event,
+* fixed ticket availability calculation issue with member or guest only tickets when displaying tickets to user
+* replaced usage of archive_template and category_template filters with taxonomy_template for both taxonomies, props to @avir673 and @greenshady
+* added option on settings page and a search attribute 'header_format' for formatting groupby headers
+* changed checkboxes html so text and box is wrapped in a label field
+* fixed js date picker so change now triggered for end date fields when selected start date changes the end date value
+* fixed display of duplicate events and incorrect cross-site events when in MS Global mode
+* fixed incorrect page counts in some MultiSite Global instances by making use of SQL_CALC_FOUND_ROWS instead of COUNT()
+* fixed rogue closing div on front-end events and locations admin table
+* fixed "no location" dropdown problem in editor when using ddms with a default location
+* added fail-safe compatibility check with Pro version to prevent known fatal errors on upgrades
 
 = 5.5.2 =
 * fixed (rare) looping problem with calendar generation
