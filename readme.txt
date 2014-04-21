@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.5.2.3 (dev) =
+= 5.5.2.4 (dev) =
 * changed scopes of various functions to static and various other related adjustments to fix PHP Strict errors
 * increaded minimum required WP version to 3.5
 * WP_Mail is now default mail transport method

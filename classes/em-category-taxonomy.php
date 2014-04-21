@@ -133,11 +133,11 @@ class EM_Walker_Category extends Walker {
 	 */
 	function start_el( &$output, $object, $depth = 0, $args = array(), $current_object_id = 0 ) {
 		$pad = str_repeat('&nbsp;', $depth * 3);
-		$cat_name = $category->name;
+		$cat_name = $object->name;
 		$name = !empty($args['name']) ? $args['name']:'event_categories[]';
 		$output .= !empty($args['before']) ? $args['after']:'';
-		$output .= $pad."<input type=\"checkbox\" name=\"$name\" class=\"level-$depth\" value=\"".$category->term_id."\"";
-		if ( (is_array($args['selected']) && in_array($category->term_id, $args['selected'])) || ($category->term_id == $args['selected']) )
+		$output .= $pad."<input type=\"checkbox\" name=\"$name\" class=\"level-$depth\" value=\"".$object->term_id."\"";
+		if ( (is_array($args['selected']) && in_array($object->term_id, $args['selected'])) || ($object->term_id == $args['selected']) )
 			$output .= ' checked="checked"';
 		$output .= ' /> ';
 		$output .= $cat_name;
@@ -158,9 +158,9 @@ class EM_Walker_CategoryMultiselect extends EM_Walker_Category {
 	 */
 	function start_el( &$output, $object, $depth = 0, $args = array(), $current_object_id = 0 ) {
 		$pad = str_repeat('&nbsp;', $depth * 3);
-		$cat_name = $category->name;
-		$output .= "\t<option class=\"level-$depth\" value=\"".$category->term_id."\"";
-		if ( (is_array($args['selected']) && in_array($category->term_id, $args['selected'])) || ($category->term_id == $args['selected']) )
+		$cat_name = $object->name;
+		$output .= "\t<option class=\"level-$depth\" value=\"".$object->term_id."\"";
+		if ( (is_array($args['selected']) && in_array($object->term_id, $args['selected'])) || ($object->term_id == $args['selected']) )
 			$output .= ' selected="selected"';
 		$output .= '>';
 		$output .= $pad.$cat_name;
