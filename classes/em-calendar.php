@@ -284,7 +284,7 @@ class EM_Calendar extends EM_Object {
 							
 				//Get the link to this calendar day
 				global $wp_rewrite;
-				if( count($events) > 1 || !get_option('dbem_calendar_direct_links') ){
+				if( $eventful_days_count[$day_key] > 1 || !get_option('dbem_calendar_direct_links')  ){
 					if( get_option("dbem_events_page") > 0 ){
 						$event_page_link = get_permalink(get_option("dbem_events_page")); //PAGE URI OF EM
 					}else{

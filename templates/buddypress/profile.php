@@ -6,15 +6,17 @@ if( user_can($bp->displayed_user->id,'edit_events') ){
 	?>
 	<h4><?php _e('My Events', 'dbem'); ?></h4>
 	<?php
-	$events = EM_Events::get(array('owner'=>$bp->displayed_user->id));
-	if( count($events) > 0 ){
-		$args = array(
-			'format_header' => get_option('dbem_bp_events_list_format_header'),
-			'format' => get_option('dbem_bp_events_list_format'),
-			'format_footer' => get_option('dbem_bp_events_list_format_footer'),
-			'owner' => $bp->displayed_user->id
-		);
-		echo EM_Events::output($events, $args);
+	$args = array(
+		'owner'=>$bp->displayed_user->id, 
+		'format_header' => get_option('dbem_bp_events_list_format_header'),
+		'format' => get_option('dbem_bp_events_list_format'),
+		'format_footer' => get_option('dbem_bp_events_list_format_footer'),
+		'owner' => $bp->displayed_user->id,
+		'pagination'=>1
+	);
+	$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');
+	if( EM_Events::count($args) > 0 ){
+		echo EM_Events::output($args);
 	}else{
 		?>
 		<p><?php _e('No Events', 'dbem'); ?>.
@@ -29,7 +31,7 @@ if( user_can($bp->displayed_user->id,'edit_events') ){
 <h4><?php _e("Events I'm Attending", 'dbem'); ?></h4>
 <?php
 $EM_Person = new EM_Person( $bp->displayed_user->id );
-$EM_Bookings = $EM_Person->get_bookings();
+$EM_Bookings = $EM_Person->get_bookings( false, apply_filters('em_bp_attending_status',1) );
 if(count($EM_Bookings->bookings) > 0){
 	//Get events here in one query to speed things up
 	$event_ids = array();

@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.5.2.4 (dev) =
+= 5.5.2.5 (dev) =
 * changed scopes of various functions to static and various other related adjustments to fix PHP Strict errors
 * increaded minimum required WP version to 3.5
 * WP_Mail is now default mail transport method
@@ -149,6 +149,13 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed rogue closing div on front-end events and locations admin table
 * fixed "no location" dropdown problem in editor when using ddms with a default location
 * added fail-safe compatibility check with Pro version to prevent known fatal errors on upgrades
+* fixed BP 1.9+ warning for using bp_core_delete_notifications_by_type
+* added status search parameter to EM_Person->get_bookings()
+* changed BP events profile page to paginate events list and only show confirmed upcoming event bookings
+* fixed language localization domain of migrated WP FullCalendar admin options to dbem
+* fixed calendar more links linking to event if limit is set to 1 and direct links are enabled
+* fixed recurring events not showing as pending or draft in front-end editor
+* fixed saving of recurring events to pending from published status resulting in draft status
 
 = 5.5.2 =
 * fixed (rare) looping problem with calendar generation

@@ -8,9 +8,15 @@ function bp_em_my_bookings() {
 	global $bp, $EM_Event;
 	
 	//assume any notifications here are considered viewed via this page
-	bp_core_delete_notifications_by_type(get_current_user_id(), 'events','pending_booking');
-	bp_core_delete_notifications_by_type(get_current_user_id(), 'events','confirmed_booking');
-	bp_core_delete_notifications_by_type(get_current_user_id(), 'events','cancelled_booking');
+	if( function_exists('bp_notifications_delete_notifications_by_type') ){
+		bp_notifications_delete_notifications_by_type(get_current_user_id(), 'events','pending_booking');
+		bp_notifications_delete_notifications_by_type(get_current_user_id(), 'events','confirmed_booking');
+		bp_notifications_delete_notifications_by_type(get_current_user_id(), 'events','cancelled_booking');
+	}else{
+		bp_core_delete_notifications_by_type(get_current_user_id(), 'events','pending_booking');
+		bp_core_delete_notifications_by_type(get_current_user_id(), 'events','confirmed_booking');
+		bp_core_delete_notifications_by_type(get_current_user_id(), 'events','cancelled_booking');
+	}
 	
 	em_load_event();
 	/**

@@ -27,12 +27,13 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 			div.css-search div.em-search-field { padding:5px 0px; }
 			div.css-search input.em-search-text, div.css-search input.em-search-geo { width:90%; font-size:16px; line-height:16px; padding:8px; border:none; outline:none !important; color:#666; text-overflow: ellipsis; }
 			div.css-search div.em-search-geo { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-geo.png) 0px 3px no-repeat; }
-			div.css-search div.em-search-text { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-mag-ico.png) 0px 4px no-repeat; }	
+			div.css-search div.em-search-text { margin:0px 0px 0px 5px; padding-left:20px; background:url(../images/search-mag-ico.png) 0px 4px no-repeat; }
+			/* Placeholder text in main section */ 
+				div.css-search div.em-search-main div.em-search-field input::-webkit-input-placeholder { /* WebKit browsers */ font-size:16px; line-height:16px; padding:3px 0px; border:none; outline:none; color:#666; }
+				div.css-search div.em-search-main div.em-search-field input:-moz-placeholder { /* Mozilla Firefox 4 to 18 */ font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
+				div.css-search div.em-search-main div.em-search-field input::-moz-placeholder { /* Mozilla Firefox 19+ */ font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
+				div.css-search div.em-search-main div.em-search-field input:-ms-input-placeholder { /* Internet Explorer 10+ */ font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }			
 			/* Geo field specifics */
-				div.css-search input.em-search-geo::-webkit-input-placeholder { /* WebKit browsers */ font-size:16px; line-height:16px; padding:3px 0px; border:none; outline:none; color:#666; }
-				div.css-search input.em-search-geo:-moz-placeholder { /* Mozilla Firefox 4 to 18 */ font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
-				div.css-search input.em-search-geo::-moz-placeholder { /* Mozilla Firefox 19+ */ font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
-				div.css-search input.em-search-geo:-ms-input-placeholder { /* Internet Explorer 10+ */ font-size:16px; line-height:16px; padding:8px; border:none; outline:none; color:#666; }
 				div.css-search.has-search-geo.has-search-term input.em-search-text, div.css-search.has-search-geo.has-search-term input.em-search-geo { width:40%; }
 				.pac-container .pac-item { padding:4px 4px !important; }
 			/* Main Search Button */

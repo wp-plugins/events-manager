@@ -18,11 +18,10 @@ echo '<?xml version="1.0" encoding="UTF-8" ?>'."\n";
 		<atom:link href="<?php echo esc_attr(EM_RSS_URI); ?>" rel="self" type="application/rss+xml" />
 		<?php
 		$description_format = str_replace ( ">", "&gt;", str_replace ( "<", "&lt;", get_option ( 'dbem_rss_description_format' ) ) );
-		//$args = array('limit'=>5, 'owner'=>false);
         $rss_limit = get_option('dbem_rss_limit');
         $page_limit = $rss_limit > 50 || !$rss_limit ? 50 : $rss_limit; //set a limit of 50 to output at a time, unless overall limit is lower		
 		$args = !empty($args) ? $args:array(); /* @var $args array */
-		$args = array_merge(array('scope'=>'future', 'owner'=>false, 'limit'=>$page_limit, 'page'=>1), $args);
+		$args = array_merge(array('scope'=>get_option('dbem_rss_scope'), 'owner'=>false, 'limit'=>$page_limit, 'page'=>1, 'order'=>get_option('dbem_rss_order'), 'orderby'=>get_option('dbem_rss_orderby')), $args);
 		$args = apply_filters('em_rss_template_args',$args);
 		$EM_Events = EM_Events::get( $args );
 		$count = 0;

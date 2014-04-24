@@ -157,7 +157,7 @@ class EM_Object {
 		$defaults['pagination'] = ($defaults['pagination'] == true);
 		$defaults['limit'] = (is_numeric($defaults['limit'])) ? $defaults['limit']:$super_defaults['limit'];
 		$defaults['offset'] = (is_numeric($defaults['offset'])) ? $defaults['offset']:$super_defaults['offset'];
-		$defaults['recurring'] = ($defaults['recurring'] == true);
+		$defaults['recurring'] = $defaults['recurring'] == 'include' ?  $defaults['recurring']:($defaults['recurring'] == true);
 		$defaults['search'] = ($defaults['search']) ? trim(esc_sql(like_escape($defaults['search']))):false;
 		//Calculate offset if event page is set
 		if($defaults['page'] > 1){
@@ -203,7 +203,10 @@ class EM_Object {
 		//Recurrences
 		$conditions = array();
 		if( $recurring ){
-			$conditions['recurring'] = "`recurrence`=1";
+			//we show recurring event templates here, if 'recurring' is 'include' then we show both recurring and normal events.
+			if( $recurring != 'include' ){
+				$conditions['recurring'] = "`recurrence`=1";
+			}
 		}elseif( $recurrence > 0 ){
 			$conditions['recurrence'] = "`recurrence_id`=$recurrence";
 		}else{

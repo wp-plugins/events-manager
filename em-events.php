@@ -54,7 +54,6 @@ function em_content($page_content) {
 						if( get_option('dbem_events_page_search_form') ){
 							//load the search form and pass on custom arguments (from settings page)
 							$search_args = em_get_search_form_defaults();
-							$search_args['search_action'] = get_option('dbem_event_list_groupby') && !empty($args['ajax']) ? 'search_events_grouped':'search_events';
 							em_locate_template('templates/events-search.php', true, array('args'=>$search_args));
 						}
 						$args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_events_default_limit');

@@ -342,7 +342,7 @@ class EM_Event_Recurring_Post_Admin{
 		if(!defined('UNTRASHING_'.$post_id) && $post_type == 'event-recurring' && $saving_status && !empty($EM_EVENT_SAVE_POST) ){
 			$EM_Event = em_get_event($post_id, 'post_id');
 			//get the list post IDs for recurrences this recurrence
-		 	if( !$EM_Event->save_events() ){
+		 	if( !$EM_Event->save_events() && $EM_Event->is_published() ){
 				$EM_Event->set_status(null, true);
 				$EM_Notices->add_error(__ ( 'Something went wrong with the recurrence update...', 'dbem' ). __ ( 'There was a problem saving the recurring events.', 'dbem' ));
 		 	}

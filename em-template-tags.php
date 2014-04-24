@@ -228,8 +228,8 @@ function em_events_admin($args = array()){
 		}else{
 			if( get_option('dbem_css_editors') ) echo '<div class="css-events-admin">';
 			//template $args for different views
-		    $args_views['pending'] = array('status'=>0, 'owner' =>get_current_user_id(), 'scope' => 'all');
-		    $args_views['draft'] = array('status'=>null, 'owner' =>get_current_user_id(), 'scope' => 'all');
+		    $args_views['pending'] = array('status'=>0, 'owner' =>get_current_user_id(), 'scope' => 'all', 'recurring'=>'include');
+		    $args_views['draft'] = array('status'=>null, 'owner' =>get_current_user_id(), 'scope' => 'all', 'recurring'=>'include');
 		    $args_views['past'] = array('status'=>'all', 'owner' =>get_current_user_id(), 'scope' => 'past');
 		    $args_views['future'] = array('status'=>'1', 'owner' =>get_current_user_id(), 'scope' => 'future');
 		    //get listing options for $args
@@ -242,8 +242,7 @@ function em_events_admin($args = array()){
 			$show_add_new = isset($args['show_add_new']) ? $args['show_add_new']:true;
 			$args = array('order' => $order, 'search' => $search, 'owner' => get_current_user_id());
 			if( !empty($_REQUEST['view']) && in_array($_REQUEST['view'], array('future','draft','past','pending')) ){
-	    	    $args['status'] = $args_views[$_REQUEST['view']]['status'];
-	    	    $args['scope'] = $args_views[$_REQUEST['view']]['scope'];
+	    	    $args = array_merge($args, $args_views[$_REQUEST['view']]);
 			}else{
 				$scope_names = em_get_scopes();
 				$args['scope'] = ( !empty($_REQUEST ['scope']) && array_key_exists($_REQUEST ['scope'], $scope_names) ) ? $_REQUEST ['scope']:'future';
