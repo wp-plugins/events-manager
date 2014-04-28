@@ -1923,6 +1923,7 @@ class EM_Event extends EM_Object{
 	 */
 	function save_events() {
 		global $wpdb;
+		$event_ids = $post_ids = array();
 		if( $this->can_manage('edit_events','edit_others_events') && $this->is_published() ){
 			do_action('em_event_save_events_pre', $this); //actions/filters only run if event is recurring
 			//Make template event index, post, and meta (and we just change event dates)
@@ -1953,8 +1954,6 @@ class EM_Event extends EM_Object{
 			//Let's start saving!
 			$this->delete_events(); //Delete old events beforehand, this will change soon
 			$event_saves = array();
-			$event_ids = array();
-			$post_ids = array();
 			$matching_days = $this->get_recurrence_days(); //Get days where events recur
 			if( count($matching_days) > 0 ){
 				//first save event post data

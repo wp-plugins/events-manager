@@ -465,7 +465,10 @@ class EM_Ticket extends EM_Object{
 	 * Can the user manage this event? 
 	 */
 	function can_manage( $owner_capability = false, $admin_capability = false, $user_to_check = false ){
-		return $this->get_event()->can_manage('manage_bookings','manage_others_bookings');
+		if( $this->ticket_id == '' && !is_user_logged_in() && get_option('dbem_events_anonymous_submissions') ){
+			$user_to_check = get_option('dbem_events_anonymous_user');
+		}
+		return $this->get_event()->can_manage('manage_bookings','manage_others_bookings', $user_to_check);
 	}
 	
 	/**

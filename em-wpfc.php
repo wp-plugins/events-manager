@@ -266,20 +266,20 @@ class WPFC_EM_Categories_Walker extends Walker {
 		global $wpdb;
 		$pad = str_repeat('&nbsp;', $depth * 3);
 
-		$cat_name = apply_filters('list_cats', $category->name, $category);
-		$color = $wpdb->get_var('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$category->term_id}' AND meta_key='category-bgcolor' LIMIT 1");
+		$cat_name = apply_filters('list_cats', $object->name, $object);
+		$color = $wpdb->get_var('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$object->term_id}' AND meta_key='category-bgcolor' LIMIT 1");
 		$color = ($color != '') ? $color:'#a8d144';
-		$output .= "<option class=\"level-$depth\" value=\"".$category->term_id."\"";
-		if ( $category->term_id == $args['selected'] )
+		$output .= "<option class=\"level-$depth\" value=\"".$object->term_id."\"";
+		if ( $object->term_id == $args['selected'] )
 			$output .= ' selected="selected"';
 		$output .= '>';
 		$output .= $pad.$color.' - '.$cat_name;
 		if ( !empty($args['show_count']) )
-			$output .= '&nbsp;&nbsp;('. $category->count .')';
+			$output .= '&nbsp;&nbsp;('. $object->count .')';
 		if ( !empty($args['show_last_update']) ) {
 			$format = 'Y-m-d';
-			if( !empty($category->last_update_timestamp) ){
-				$output .= '&nbsp;&nbsp;' . gmdate($format, $category->last_update_timestamp);
+			if( !empty($object->last_update_timestamp) ){
+				$output .= '&nbsp;&nbsp;' . gmdate($format, $object->last_update_timestamp);
 			}
 		}
 		$output .= "</option>";

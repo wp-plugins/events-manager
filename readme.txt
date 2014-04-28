@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.5.2.5 (dev) =
+= 5.5.2.6 (dev) =
 * changed scopes of various functions to static and various other related adjustments to fix PHP Strict errors
 * increaded minimum required WP version to 3.5
 * WP_Mail is now default mail transport method
@@ -156,6 +156,8 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed calendar more links linking to event if limit is set to 1 and direct links are enabled
 * fixed recurring events not showing as pending or draft in front-end editor
 * fixed saving of recurring events to pending from published status resulting in draft status
+* fixed various PHP warnings
+* fixed tickets not saving when submitting event anonymously
 
 = 5.5.2 =
 * fixed (rare) looping problem with calendar generation

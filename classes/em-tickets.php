@@ -167,13 +167,16 @@ class EM_Tickets extends EM_Object implements Iterator{
 	 * Save tickets into DB 
 	 */
 	function save(){
-		$errors = array();
+		$result = true;
 		foreach( $this->tickets as $EM_Ticket ){
 			/* @var $EM_Ticket EM_Ticket */
 			$EM_Ticket->event_id = $this->event_id; //pass on saved event_data
-			$errors[] = $EM_Ticket->save();
+			if( !$EM_Ticket->save() ){
+				$result = false;
+				$this->add_error($EM_Ticket->get_errors());
+			}
 		}
-		return apply_filters('em_tickets_save', !in_array(false, $errors), $this);
+		return apply_filters('em_tickets_save', $result, $this);
 	}
 	
 	/**
