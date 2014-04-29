@@ -2,7 +2,7 @@
 // TODO make person details more secure and integrate with WP user data 
 class EM_Person extends WP_User{
 	
-	function EM_Person( $person_id = false, $username = false ){
+	function __construct( $person_id = 0, $username = '', $blog_id='' ){
 		if( is_array($person_id) ){
 			if( array_key_exists('person_id',$person_id) ){
 				$person_id = $person_id['person_id'];
@@ -17,9 +17,10 @@ class EM_Person extends WP_User{
 		if($username){
 			parent::__construct($person_id, $username);
 		}elseif( is_numeric($person_id) && $person_id == 0 ){
+			$this->data = new stdClass();
 			$this->ID = 0;
 			$this->display_name = 'Non-Registered User';
-			$this->user_email = 'n/a';
+			$this->user_email = '';
 		}else{
 			parent::__construct($person_id);
 		}

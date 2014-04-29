@@ -3,7 +3,7 @@ Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.5
-Tested up to: 3.9
+Tested up to: 3.9.1
 Stable tag: 5.5.2
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.5.2.6 (dev) =
+= 5.5.2.7 (dev) =
 * changed scopes of various functions to static and various other related adjustments to fix PHP Strict errors
 * increaded minimum required WP version to 3.5
 * WP_Mail is now default mail transport method
@@ -158,6 +158,8 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed saving of recurring events to pending from published status resulting in draft status
 * fixed various PHP warnings
 * fixed tickets not saving when submitting event anonymously
+* fixed all-day events resetting booking cut-off time to midnight when saved
+* fixed some warnings triggered by bookings with no real event (such as Pro MB bookings)
 
 = 5.5.2 =
 * fixed (rare) looping problem with calendar generation

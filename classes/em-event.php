@@ -54,6 +54,7 @@ class EM_Event extends EM_Object{
 	var $event_rsvp_time = "00:00:00";
 	var $event_rsvp_spaces;
 	var $event_spaces;
+	var $event_private;
 	var $location_id;
 	var $recurrence_id;
 	var $event_status;
@@ -440,12 +441,12 @@ class EM_Event extends EM_Object{
 			    	}else{
 			    		//no default ticket end time, so make it default to event start date/time
 			    		$this->event_rsvp_date = $this->event_start_date;
-			    		if( $this->event_all_day ){ $this->event_rsvp_time = '00:00:00'; } //all-day events start at 0 hour
+			    		if( $this->event_all_day && empty($_POST['event_rsvp_date']) ){ $this->event_rsvp_time = '00:00:00'; } //all-day events start at 0 hour
 			    	}
 			    }else{
 			    	//if no rsvp cut-off date supplied, make it the event start date
 			    	$this->event_rsvp_date = ( !empty($_POST['event_rsvp_date']) ) ? wp_kses_data($_POST['event_rsvp_date']) : $this->event_start_date;
-			    	if( $this->event_all_day ){ $this->event_rsvp_time = '00:00:00'; } //all-day events start at 0 hour
+			    	if( $this->event_all_day && empty($_POST['event_rsvp_date']) ){ $this->event_rsvp_time = '00:00:00'; } //all-day events start at 0 hour
 			    }
 			    //create timestamp
 				if( empty($this->event_rsvp_date) ){ 
