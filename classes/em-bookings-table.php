@@ -115,11 +115,6 @@ class EM_Bookings_Table{
 		}elseif( $this->get_event() !== false ){
 			$this->cols_view = $this->get_event();
 		}
-		foreach($this->cols as $col_key){
-			if( !array_key_exists($col_key, $this->cols_template)){
-				unset($this->cols[$col_key]);
-			}
-		}
 		//save collumns depending on context and user preferences
 		if( empty($_REQUEST['cols']) ){
 			if(!empty($this->cols_view) && is_object($this->cols_view)){
@@ -136,6 +131,12 @@ class EM_Bookings_Table{
 				update_user_meta(get_current_user_id(), 'em_bookings_view-'.get_class($this->cols_view), $this->cols );
 			}else{
 				update_user_meta(get_current_user_id(), 'em_bookings_view', $this->cols );
+			}
+		}
+		//clean any columns from saved views that no longer exist
+		foreach($this->cols as $col_key => $col_name){
+			if( !array_key_exists($col_name, $this->cols_template)){
+				unset($this->cols[$col_key]);
 			}
 		}
 		do_action('em_bookings_table', $this);

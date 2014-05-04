@@ -35,7 +35,7 @@ if( !$is_open && !is_user_logged_in() && $EM_Event->get_bookings()->is_open(true
 			<?php echo get_option('dbem_bookings_form_msg_attending'); ?>
 			<a href="<?php echo em_get_my_bookings_url(); ?>"><?php echo get_option('dbem_bookings_form_msg_bookings_link'); ?></a>
 		</p>
-	<?php elseif( !$EM_Event->rsvp ): //bookings not enabled ?>
+	<?php elseif( !$EM_Event->event_rsvp ): //bookings not enabled ?>
 		<p><?php echo get_option('dbem_bookings_form_msg_disabled'); ?></p>
 	<?php elseif( $EM_Event->get_bookings()->get_available_spaces() <= 0 ): ?>
 		<p><?php echo get_option('dbem_bookings_form_msg_full'); ?></p>

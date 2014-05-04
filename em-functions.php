@@ -338,7 +338,7 @@ function em_booking_add_registration( $EM_Booking ){
     global $EM_Notices;
     //Does this user need to be registered first?
     $registration = true;
-    if( ((!is_user_logged_in() && get_option('dbem_bookings_anonymous')) || defined('EM_FORCE_REGISTRATION')) && !get_option('dbem_bookings_registration_disable') ){
+    if( ((!is_user_logged_in() && get_option('dbem_bookings_anonymous')) || EM_Bookings::is_registration_forced()) && !get_option('dbem_bookings_registration_disable') ){
     	//find random username - less options for user, less things go wrong
     	$username_root = explode('@', wp_kses_data($_REQUEST['user_email']));
     	$username_root = $username_rand = sanitize_user($username_root[0], true);
@@ -368,7 +368,7 @@ function em_booking_add_registration( $EM_Booking ){
     			$EM_Notices->add_error( get_option('dbem_booking_feedback_reg_error') );
     		}
     	}
-    }elseif( (!is_user_logged_in() || defined('EM_FORCE_REGISTRATION')) && get_option('dbem_bookings_registration_disable') ){
+    }elseif( (!is_user_logged_in() || EM_Bookings::is_registration_forced()) && get_option('dbem_bookings_registration_disable') ){
     	//Validate name, phone and email
     	if( $EM_Booking->get_person_post() ){
 	    	//Save default person to booking

@@ -5,16 +5,20 @@
      *
      */
     class EM_Notices implements Iterator {
+    	var $set_cookies = true;
         var $notices = array('errors'=>array(), 'infos'=>array(), 'alerts'=>array(), 'confirms'=>array());
         
-        function __construct(){
+        function __construct( $set_cookies = true ){
         	//Grab from cookie, if it exists
-        	if( !empty($_COOKIE['em_notices']) ) {
-        	    $notices = base64_decode($_COOKIE['em_notices']);
-        	    if( is_serialized( $notices ) ){
-	        		$this->notices = unserialize($notices);
-	        		setcookie('em_notices', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true); //unset the cookie
-        	    }
+        	$this->set_cookies = $set_cookies == true;
+        	if( $this->set_cookies ){
+	        	if( !empty($_COOKIE['em_notices']) ) {
+	        	    $notices = base64_decode($_COOKIE['em_notices']);
+	        	    if( is_serialized( $notices ) ){
+		        		$this->notices = unserialize($notices);
+		        		setcookie('em_notices', '', time() - 3600, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true); //unset the cookie
+	        	    }
+	        	}
         	}
             add_filter('wp_redirect', array(&$this,'destruct'), 1,1);
         }
@@ -31,9 +35,11 @@
         			}
         		}
         	}
-            if(count($this->notices['errors']) > 0 || count($this->notices['alerts']) > 0 || count($this->notices['infos']) > 0 || count($this->notices['confirms']) > 0){
-            	setcookie('em_notices', base64_encode(serialize($this->notices)), time() + 30, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true); //sets cookie for 30 seconds, which may be too much
-            }
+        	if( $this->set_cookies ){
+	            if(count($this->notices['errors']) > 0 || count($this->notices['alerts']) > 0 || count($this->notices['infos']) > 0 || count($this->notices['confirms']) > 0){
+	            	setcookie('em_notices', base64_encode(serialize($this->notices)), time() + 30, COOKIEPATH, COOKIE_DOMAIN, is_ssl(), true); //sets cookie for 30 seconds, which may be too much
+	            }
+        	}
         	return $redirect;
         }
         

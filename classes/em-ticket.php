@@ -213,7 +213,7 @@ class EM_Ticket extends EM_Object{
 		$condition_3 = (empty($EM_Event->event_rsvp_date) && $EM_Event->start > $timestamp) || $EM_Event->rsvp_end > $timestamp;
 		$condition_4 = !$this->ticket_members || ($this->ticket_members && is_user_logged_in()) || $include_members_only;
 		$condition_5 = true;
-		if( $this->ticket_members && !empty($this->ticket_members_roles) ){
+		if( !EM_Bookings::$disable_restrictions && $this->ticket_members && !empty($this->ticket_members_roles) ){
 			//check if user has the right role to use this ticket
 			$condition_5 = false;
 			if( is_user_logged_in() ){

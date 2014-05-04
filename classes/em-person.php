@@ -16,7 +16,7 @@ class EM_Person extends WP_User{
 		}
 		if($username){
 			parent::__construct($person_id, $username);
-		}elseif( is_numeric($person_id) && $person_id == 0 ){
+		}elseif( is_numeric($person_id) && ($person_id <= 0) ){
 			$this->data = new stdClass();
 			$this->ID = 0;
 			$this->display_name = 'Non-Registered User';

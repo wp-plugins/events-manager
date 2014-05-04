@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.5.2.7 (dev) =
+= 5.5.2.8 (dev) =
 * changed scopes of various functions to static and various other related adjustments to fix PHP Strict errors
 * increaded minimum required WP version to 3.5
 * WP_Mail is now default mail transport method
@@ -160,6 +160,11 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed tickets not saving when submitting event anonymously
 * fixed all-day events resetting booking cut-off time to midnight when saved
 * fixed some warnings triggered by bookings with no real event (such as Pro MB bookings)
+* (minor) added parameter to EM_Notices so that instances don't try to set/use cookie data
+* changed use constant EM_FORCE_REGISTRATION in favour of EM_Bookings::$force_registration flag and EM_Bookings::is_registration_forced (backwards compatible)
+* fixed PHP capability warning deriving from creating EM_Person instances with invalid user IDs
+* fixed bug where extra admin emails added via hooks don't get sent if admin emails on settings page is blank
+* fixed potential non-existent custom booking columns offsetting booking admin table pages and exports data by one cell
 
 = 5.5.2 =
 * fixed (rare) looping problem with calendar generation

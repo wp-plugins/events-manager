@@ -24,6 +24,16 @@ class EM_Bookings extends EM_Object implements Iterator{
 	 * @var int
 	 */
 	var $spaces;
+	/**
+	 * If flag is true, a registration will be attempted when booking whether the user is logged in or not. Used in cases such as manual bookings (a Pro feature) and should only be enabled during manipulation by an event admin.
+	 * @var unknown
+	 */
+	public static $force_registration;
+	/**
+	 * If flag is true, bookings and forms will not impose restrictions for roles. Future iterations will remove restrictions on dates, space capacity, etc. This is mainly for use by event admins such as for a manual booking (a Pro feature). 
+	 * @var bool
+	 */
+	public static $disable_restrictions = false;
 	
 	/**
 	 * Creates an EM_Bookings instance, currently accepts an EM_Event object (gets all bookings for that event) or array of any EM_Booking objects, which can be manipulated in bulk with helper functions.
@@ -585,6 +595,14 @@ class EM_Bookings extends EM_Object implements Iterator{
 			?>
 		</script>
 		<?php
+	}
+	
+	/**
+	 * Checks whether a booking being made should register user information as a booking from another user whilst an admin is logged in
+	 * @return boolean
+	 */
+	public static function is_registration_forced(){
+		return ( defined('EM_FORCE_REGISTRATION') || self::$force_registration );
 	}
 	
 	/* Overrides EM_Object method to apply a filter to result

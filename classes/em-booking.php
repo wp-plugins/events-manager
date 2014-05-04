@@ -1001,7 +1001,12 @@ class EM_Booking extends EM_Object{
 			
 			//Send admin/contact emails if this isn't the event owner or an events admin
 			if( $email_admin && !empty($msg['admin']['subject']) && (!$this->can_manage() || (!empty($_REQUEST['action']) && $_REQUEST['action'] == 'booking_add') || $this->manage_override) ){ //emails won't be sent if admin is logged in unless they book themselves
-				if( get_option('dbem_bookings_contact_email') == 1 || get_option('dbem_bookings_notify_admin') ){
+				//get admin emails that need to be notified, hook here to add extra admin emails
+				$admin_emails = str_replace(' ','',get_option('dbem_bookings_notify_admin'));
+				$admin_emails = apply_filters('em_booking_admin_emails', explode(',', $admin_emails), $this); //supply emails as array
+				foreach($admin_emails as $key => $email){ if( !is_email($email) ) unset($admin_emails[$key]); } //remove bad emails
+				//proceed to email admins if need be
+				if( get_option('dbem_bookings_contact_email') == 1 || !empty($admin_emails) ){
 					//Only gets sent if this is a pending booking, unless approvals are disabled.
 					$msg['admin']['subject'] = $this->output($msg['admin']['subject'],'raw');
 					$msg['admin']['body'] = $this->output($msg['admin']['body'], $output_type);
@@ -1015,11 +1020,8 @@ class EM_Booking extends EM_Object{
 						}
 					}
 					//email admin
-					if( get_option('dbem_bookings_notify_admin') != '' && preg_match('/^([_\.0-9a-z-]+@([0-9a-z][0-9a-z-]+\.)+[a-z]{2,3},?)+$/', str_replace(' ', '', get_option('dbem_bookings_notify_admin'))) ){
-						$admin_emails = get_option('dbem_bookings_notify_admin');
-						$admin_emails = apply_filters('em_booking_admin_emails', explode(',', $admin_emails), $this); //supply emails as array
-						foreach($admin_emails as $key => $email){ $admin_emails[$key] = trim($email); } //strip whitespace
-						if( !$this->email_send( $msg['admin']['subject'], $msg['admin']['body'], $admin_emails) ){
+					if( !empty($admin_emails) ){
+						if( !$this->email_send( $msg['admin']['subject'], $msg['admin']['body'], $admin_emails) && current_user_can('list_users') ){
 							$this->errors[] = __('Confirmation email could not be sent to admin. Registrant should have gotten their email (only admin see this warning).','dbem');
 							$result = false;
 						}else{
