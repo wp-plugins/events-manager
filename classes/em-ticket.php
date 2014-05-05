@@ -204,7 +204,7 @@ class EM_Ticket extends EM_Object{
 	
 	function is_available( $include_members_only = false, $include_guests_only = false ){
 		$timestamp = current_time('timestamp');
-		if( isset($this->is_available) && !$include_members_only && !$include_guests_only ) return $this->is_available; //save extra queries if doing a standard check
+		if( isset($this->is_available) && !$include_members_only && !$include_guests_only ) return apply_filters('em_ticket_is_available',  $this->is_available, $this); //save extra queries if doing a standard check
 		$is_available = false;
 		$EM_Event = $this->get_event();
 		$available_spaces = $this->get_available_spaces();

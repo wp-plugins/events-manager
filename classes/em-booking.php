@@ -600,10 +600,12 @@ class EM_Booking extends EM_Object{
 			//This person is already included, so don't do anything
 		}elseif( is_object($EM_Person) && ($EM_Person->ID === $this->person_id || $this->booking_id == '') ){
 			$this->person = $EM_Person;
+			$this->person_id = $this->person->ID;
 		}elseif( is_numeric($this->person_id) ){
 			$this->person = new EM_Person($this->person_id);
 		}else{
 			$this->person = new EM_Person(0);
+			$this->person_id = $this->person->ID;
 		}
 		//if this user is the parent user of disabled registrations, replace user details here:
 		if( get_option('dbem_bookings_registration_disable') && $this->person->ID == get_option('dbem_bookings_registration_user') && (empty($this->person->loaded_no_user) || $this->person->loaded_no_user != $this->booking_id) ){
