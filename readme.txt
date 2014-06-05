@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.5
 Tested up to: 3.9.1
-Stable tag: 5.5.3
+Stable tag: 5.5.3.1
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,7 +98,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.5.3.1 (dev) =
+= 5.5.3.1 =
 * added #_TAGNOTES
 * fixed forced owner event/location searches when logged in as subscribers and in AJAX requests where owner attribute is false
 * fixed minor php warning
