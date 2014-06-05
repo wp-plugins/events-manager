@@ -24,7 +24,7 @@ class EM_Categories extends EM_Object implements Iterator{
 	 */
 	function EM_Categories( $data = false ){
 		global $wpdb;
-		$this->ms_global_switch();
+		self::ms_global_switch();
 		if( is_object($data) && get_class($data) == "EM_Event" && !empty($data->post_id) ){ //Creates a blank categories object if needed
 			$this->event_id = $data->event_id;
 			$this->post_id = $data->post_id;
@@ -41,7 +41,7 @@ class EM_Categories extends EM_Object implements Iterator{
 					}
 				}
 			}
-		}elseif( is_array($data) && $this->array_is_numeric($data) ){
+		}elseif( is_array($data) && self::array_is_numeric($data) ){
 			foreach($data as $category_id){
 				$this->categories[$category_id] =  new EM_Category($category_id);
 			}
@@ -52,19 +52,19 @@ class EM_Categories extends EM_Object implements Iterator{
 				}
 			}
 		}
-		$this->ms_global_switch_back();
+		self::ms_global_switch_back();
 		do_action('em_categories', $this);
 	}
 	
 	function get_post(){
-		$this->ms_global_switch();
+		self::ms_global_switch();
 		$this->categories = array();
-		if(!empty($_POST['event_categories']) && $this->array_is_numeric($_POST['event_categories'])){
+		if(!empty($_POST['event_categories']) && self::array_is_numeric($_POST['event_categories'])){
 			foreach( $_POST['event_categories'] as $term ){
 				$this->categories[$term] = new EM_Category($term);
 			}
 		}
-		$this->ms_global_switch_back();
+		self::ms_global_switch_back();
 		do_action('em_categories_get_post', $this);
 	}
 	
@@ -103,7 +103,7 @@ class EM_Categories extends EM_Object implements Iterator{
 		}
 	}
 		
-	function get( $args = array() ) {		
+	public static function get( $args = array() ) {		
 		//Quick version, we can accept an array of IDs, which is easy to retrieve
 		self::ms_global_switch();
 		if( self::array_is_numeric($args) ){ //Array of numbers, assume they are event IDs to retreive
@@ -135,9 +135,13 @@ class EM_Categories extends EM_Object implements Iterator{
 		return apply_filters('em_categories_get', $categories, $args);
 	}
 
-	function output( $args ){
+	public static function output( $args ){
 		global $EM_Category;
 		$EM_Category_old = $EM_Category; //When looping, we can replace EM_Category global with the current event in the loop
+		//get page number if passed on by request (still needs pagination enabled to have effect)
+		if( !array_key_exists('page',$args) && !empty($args['pagination']) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
+			$page = $args['page'] = $_REQUEST['pno'];
+		}
 		//Can be either an array for the get search or an array of EM_Category objects
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Category' ){
 			$func_args = func_get_args();
@@ -152,10 +156,11 @@ class EM_Categories extends EM_Object implements Iterator{
 			$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 			$offset = ( !empty($args['offset']) && is_numeric($args['offset']) ) ? $args['offset']:0;
 			$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
-			$args['limit'] = false;
-			$args['offset'] = false;
-			$args['page'] = false;
+			$args['limit'] = $args['offset'] = $args['page'] = false; //we count overall categories here
 			$categories = self::get( $args );
+			$args['limit'] = $limit;
+			$args['offset'] = $offset;
+			$args['page'] = $page;
 		}
 		//What format shall we output this to, or use default
 		$format = ( $args['format'] == '' ) ? get_option( 'dbem_categories_list_item_format' ) : $args['format'] ;
@@ -184,9 +189,7 @@ class EM_Categories extends EM_Object implements Iterator{
 			//Pagination (if needed/requested)
 			if( !empty($args['pagination']) && !empty($limit) && $categories_count >= $limit ){
 				//Show the pagination links (unless there's less than 10 events, or the custom limit)
-				$page_link_template = preg_replace('/(&|\?)pno=\d+/i','',$_SERVER['REQUEST_URI']);
-				$page_link_template = em_add_get_params($page_link_template, array('pno'=>'%PAGE%'), false); //don't html encode, so em_paginate does its thing
-				$output .= apply_filters('em_events_output_pagination', em_paginate( $page_link_template, $categories_count, $limit, $page), $page_link_template, $categories_count, $limit, $page);
+				$output .= self::get_pagination_links($args, $categories_count);
 			}
 		} else {
 			$output = get_option ( 'dbem_no_categories_message' );
@@ -196,6 +199,21 @@ class EM_Categories extends EM_Object implements Iterator{
 		return apply_filters('em_categories_output', $output, $categories, $args);		
 	}
 	
+	public static function get_pagination_links($args, $count, $search_action = 'search_cats', $default_args = array()){
+		//get default args if we're in a search, supply to parent since we can't depend on late static binding until WP requires PHP 5.3 or later
+		if( empty($default_args) && (!empty($args['ajax']) || !empty($_REQUEST['action']) && $_REQUEST['action'] == $search_action) ){
+			$default_args = self::get_default_search();
+			$default_args['limit'] = get_option('dbem_categories_default_limit');
+		}
+		return parent::get_pagination_links($args, $count, $search_action, $default_args);
+	}
+
+	public static function get_post_search($args = array(), $filter = false, $request = array(), $accepted_args = array()){
+		//supply $accepted_args to parent argument since we can't depend on late static binding until WP requires PHP 5.3 or later
+		$accepted_args = !empty($accepted_args) ? $accepted_args : array_keys(self::get_default_search());
+		return apply_filters('em_tags_get_post_search', parent::get_post_search($args, $filter, $request, $accepted_args));
+	}
+	
 	function has( $search ){
 		if( is_numeric($search) ){
 			foreach($this->categories as $EM_Category){
@@ -203,7 +221,7 @@ class EM_Categories extends EM_Object implements Iterator{
 			}
 		}else{
 			foreach($this->categories as $EM_Category){
-				if($EM_Category->slug == $search) return apply_filters('em_categories_has', true, $search, $this);
+				if($EM_Category->slug == $search || $EM_Category->name == $search ) return apply_filters('em_categories_has', true, $search, $this);
 			}			
 		}
 		return apply_filters('em_categories_has', false, $search, $this);
@@ -237,64 +255,30 @@ class EM_Categories extends EM_Object implements Iterator{
 			return new EM_Event();
 		}
 	}
-
-	/* Overrides EM_Object method to apply a filter to result. Categories won't accept many arguments as you tend to search with events for much else.
-	 * @see wp-content/plugins/categories-manager/classes/EM_Object#build_sql_conditions()
-	 */
-	function build_sql_conditions( $args = array() ){
-		global $wpdb;
-		$events_table = EM_EVENTS_TABLE;
-		$locations_table = EM_LOCATIONS_TABLE;
-		
-		$temp_conditions = parent::build_sql_conditions($args);
-		$conditions = array();
-		if( !empty($temp_conditions['category']) ){
-			$conditions['category'] = $temp_conditions['category'];
-		}
-		return apply_filters( 'em_categories_build_sql_conditions', $conditions, $args );
-	}
-	
-	/* Overrides EM_Object method to apply a filter to result
-	 * @see wp-content/plugins/categories-manager/classes/EM_Object#build_sql_orderby()
-	 */
-	function build_sql_orderby( $args, $accepted_fields, $default_order = 'ASC' ){
-		return apply_filters( 'em_categories_build_sql_orderby', parent::build_sql_orderby($args, $accepted_fields, get_option('dbem_categories_default_order')), $args, $accepted_fields, $default_order );
-	}
 	
 	/* 
-	 * Adds custom categories search defaults
+	 * Adds custom calendar search defaults
+	 * @param array $array_or_defaults may be the array to override defaults
 	 * @param array $array
 	 * @return array
 	 * @uses EM_Object#get_default_search()
 	 */
-	function get_default_search( $array = array() ){
+	public static function get_default_search( $array_or_defaults = array(), $array = array() ){
 		$defaults = array(
 			//added from get_terms, so they don't get filtered out
-			'orderby' => 'name', 'order' => 'ASC',
+			'orderby' => get_option('dbem_categories_default_orderby'), 'order' => get_option('dbem_categories_default_order'),
 			'hide_empty' => false, 'exclude' => array(), 'exclude_tree' => array(), 'include' => array(),
 			'number' => '', 'fields' => 'all', 'slug' => '', 'parent' => '',
 			'hierarchical' => true, 'child_of' => 0, 'get' => '', 'name__like' => '',
 			'pad_counts' => false, 'offset' => '', 'search' => '', 'cache_domain' => 'core'		
 		);
-		return apply_filters('em_categories_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
-	}	
-	
-	/**
-	 * will return the default search parameter to use according to permission settings
-	 * @return string
-	 */
-	function get_default_search_owner(){
-		//by default, we only get categories the owner can manage
-		$defaults = array('owner'=>false);
-		//by default, we only get categories the owner can manage
-		if( !current_user_can('edit_categories') ){
-			$defaults['owner'] = get_current_user_id();
-			break;
+		//sort out whether defaults were supplied or just the array of search values
+		if( empty($array) ){
+			$array = $array_or_defaults;
 		}else{
-			$defaults['owner'] = false;
-			break;
+			$defaults = array_merge($defaults, $array_or_defaults);
 		}
-		return $defaults['owner'];
+		return apply_filters('em_categories_get_default_search', parent::get_default_search($defaults,$array), $array, $defaults);
 	}
 
 	//Iterator Implementation

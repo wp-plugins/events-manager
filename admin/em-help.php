@@ -30,6 +30,8 @@ function em_admin_help_page(){
 			<a name="category-placeholders"></a>
 			<h3><?php _e('Category Related Placeholders','dbem'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'categories') ); ?>
+			<h3><?php _e('Tag Related Placeholders','dbem'); ?></h3>
+			<?php echo em_docs_placeholders( array('type'=>'tags') ); ?>
 			<a name="location-placeholders"></a>
 			<h3><?php _e('Location Related Placeholders','dbem'); ?></h3>
 			<?php echo em_docs_placeholders( array('type'=>'locations') ); ?>

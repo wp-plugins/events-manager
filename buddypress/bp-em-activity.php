@@ -37,7 +37,7 @@ function bp_em_record_activity( $args = '' ) {
  * @return unknown
  */
 function bp_em_record_activity_event_save( $result, $EM_Event ){
-	if( $result && $EM_Event->event_status == 1 && empty($EM_Event->previous_status) ){
+	if( $result && $EM_Event->event_status == 1 && $EM_Event->get_previous_status() != 1 ){
 		$user = get_userdata($EM_Event->event_owner);
 		$member_link = bp_core_get_user_domain($user->ID);
 		if( empty($EM_Event->group_id) ){
@@ -72,7 +72,7 @@ add_filter('em_event_save','bp_em_record_activity_event_save', 10, 2);
  * @return boolean
  */
 function bp_em_record_activity_booking_save( $result, $EM_Booking ){
-	if( $result ){
+	if( !empty($EM_Booking->event_id) && $result ){
 		$rejected_statuses = array(0,2,3); //these statuses apply to rejected/cancelled bookings
 		$user = $EM_Booking->get_person();
 		$member_link = bp_core_get_user_domain($user->ID);

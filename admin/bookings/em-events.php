@@ -51,10 +51,10 @@ function em_bookings_events_table() {
 				<div class="alignleft actions">
 					<!--
 					<select name="action">
-						<option value="-1" selected="selected"><?php _e ( 'Bulk Actions' ); ?></option>
-						<option value="deleteEvents"><?php _e ( 'Delete selected','dbem' ); ?></option>
+						<option value="-1" selected="selected"><?php esc_html_e( 'Bulk Actions' ); ?></option>
+						<option value="deleteEvents"><?php esc_html_e( 'Delete selected','dbem' ); ?></option>
 					</select> 
-					<input type="submit" value="<?php _e ( 'Apply' ); ?>" name="doaction2" id="doaction2" class="button-secondary action" />
+					<input type="submit" value="<?php esc_html_e( 'Apply' ); ?>" name="doaction2" id="doaction2" class="button-secondary action" />
 					 --> 
 					<select name="scope">
 						<?php
@@ -66,7 +66,7 @@ function em_bookings_events_table() {
 						}
 						?>
 					</select>
-					<input id="post-query-submit" class="button-secondary" type="submit" value="<?php _e ( 'Filter' )?>" />
+					<input id="post-query-submit" class="button-secondary" type="submit" value="<?php esc_html_e( 'Filter' )?>" />
 				</div>
 				<!--
 				<div class="view-switch">
@@ -91,11 +91,8 @@ function em_bookings_events_table() {
 			<table class="widefat">
 				<thead>
 					<tr>
-						<th class='manage-column column-cb check-column' scope='col'>
-							<input class='select-all' type="checkbox" value='1' />
-						</th>
-						<th><?php _e ( 'Event', 'dbem' ); ?></th>
-						<th><?php _e ( 'Date and time', 'dbem' ); ?></th>
+						<th><?php esc_html_e( 'Event', 'dbem' ); ?></th>
+						<th><?php esc_html_e( 'Date and time', 'dbem' ); ?></th>
 					</tr>
 				</thead>
 				<tbody>
@@ -116,18 +113,14 @@ function em_bookings_events_table() {
 						}							
 						?>
 						<tr <?php echo "$class $style"; ?>>
-			
-							<td>
-								<input type='checkbox' class='row-selector' value='<?php echo $event->event_id; ?>' name='events[]' />
-							</td>
 							<td>
 								<strong>
 									<?php echo $event->output('#_BOOKINGSLINK'); ?>
 								</strong>
 								&ndash; 
-								<?php _e("Booked Spaces",'dbem') ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces() ?>
+								<?php esc_html_e("Booked Spaces",'dbem') ?>: <?php echo $event->get_bookings()->get_booked_spaces()."/".$event->get_spaces() ?>
 								<?php if( get_option('dbem_bookings_approval') == 1 ) : ?>
-									| <?php _e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
+									| <?php esc_html_e("Pending",'dbem') ?>: <?php echo $event->get_bookings()->get_pending_spaces(); ?>
 								<?php endif; ?>
 							</td>
 					

@@ -43,7 +43,7 @@ class EM_Category extends EM_Object {
 	 */
 	function EM_Category( $category_data = false ) {
 		global $wpdb;
-		$this->ms_global_switch();
+		self::ms_global_switch();
 		//Initialize
 		$category = array();
 		if( !empty($category_data) ){
@@ -52,6 +52,9 @@ class EM_Category extends EM_Object {
 				$category = $category_data;
 			}elseif( !is_numeric($category_data) ){
 				$category = get_term_by('slug', $category_data, EM_TAXONOMY_CATEGORY);
+				if( !$category ){
+					$category = get_term_by('name', $category_data, EM_TAXONOMY_CATEGORY);				    
+				}
 			}else{		
 				$category = get_term_by('id', $category_data, EM_TAXONOMY_CATEGORY);
 			}
@@ -62,7 +65,7 @@ class EM_Category extends EM_Object {
 			}
 		}
 		$this->id = $this->term_id; //backward compatability
-		$this->ms_global_switch_back();
+		self::ms_global_switch_back();
 		do_action('em_category',$this, $category_data);
 	}
 	
@@ -70,12 +73,12 @@ class EM_Category extends EM_Object {
 		if( empty($this->color) ){
 			global $wpdb;
 			$color = $wpdb->get_var('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$this->term_id}' AND meta_key='category-bgcolor' LIMIT 1");
-			$this->color = ($color != '') ? $color:'#FFFFFF';
+			$this->color = ($color != '') ? $color:get_option('dbem_category_default_color', '#FFFFFF');
 		}
 		return $this->color;
 	}
 	
-	function get_image_url(){
+	function get_image_url( $size = 'full' ){
 		if( empty($this->image_url) ){
 			global $wpdb;
 			$image_url = $wpdb->get_var('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$this->term_id}' AND meta_key='category-image' LIMIT 1");
@@ -84,14 +87,43 @@ class EM_Category extends EM_Object {
 		return $this->image_url;
 	}
 	
+	function get_image_id(){
+		if( empty($this->image_id) ){
+			global $wpdb;
+			$image_id = $wpdb->get_var('SELECT meta_value FROM '.EM_META_TABLE." WHERE object_id='{$this->term_id}' AND meta_key='category-image-id' LIMIT 1");
+			$this->image_id = ($image_id != '') ? $image_id:'';
+		}
+		return $this->image_id;
+	}
+	
 	function get_url(){
 		if( empty($this->link) ){
-			$this->ms_global_switch();
+			self::ms_global_switch();
 			$this->link = get_term_link($this->slug, EM_TAXONOMY_CATEGORY);
-			$this->ms_global_switch_back();
+			self::ms_global_switch_back();
 			if ( is_wp_error($this->link) ) $this->link = '';
 		}
-		return $this->link;
+		return apply_filters('em_category_get_url', $this->link);
+	}
+
+	function get_ical_url(){
+		global $wp_rewrite;
+		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
+			$return = trailingslashit($this->get_url()).'ical/';
+		}else{
+			$return = em_add_get_params($this->get_url(), array('ical'=>1));
+		}
+		return apply_filters('em_category_get_ical_url', $return);
+	}
+
+	function get_rss_url(){
+		global $wp_rewrite;
+		if( !empty($wp_rewrite) && $wp_rewrite->using_permalinks() ){
+			$return = trailingslashit($this->get_url()).'feed/';
+		}else{
+			$return = em_add_get_params($this->get_url(), array('feed'=>1));
+		}
+		return apply_filters('em_category_get_rss_url', $return);
 	}
 	
 	/**
@@ -118,6 +150,7 @@ class EM_Category extends EM_Object {
 		}
 		$category_string = $format;		 
 	 	preg_match_all("/(#@?_?[A-Za-z0-9]+)({([a-zA-Z0-9,]+)})?/", $format, $placeholders);
+	 	$replaces = array();
 		foreach($placeholders[1] as $key => $result) {
 			$replace = '';
 			$full_result = $placeholders[0][$key];
@@ -142,8 +175,17 @@ class EM_Category extends EM_Object {
 								$replace = "<img src='".esc_url($this->get_image_url())."' alt='".esc_attr($this->name)."'/>";
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
-								if( $this->array_is_numeric($image_size) && count($image_size) > 1 ){
-									$replace = "<img src='".em_get_thumbnail_url($this->get_image_url(), $image_size[0], $image_size[1])."' alt='".esc_attr($this->name)."' width='{$image_size[0]}' height='{$image_size[1]}'/>";
+								if( self::array_is_numeric($image_size) && count($image_size) > 1 ){
+								    if( get_option('dbem_disable_timthumb') && $this->get_image_id() ){
+								        //since we previously didn't store image ids along with the url to the image (since taxonomies don't allow normal featured images), sometimes we won't be able to do this, which is why we check there's a valid image id first
+								    	self::ms_global_switch();
+								    	$replace = wp_get_attachment_image($this->get_image_id(), $image_size);
+								    	self::ms_global_switch_back();
+								    }else{
+										$width = ($image_size[0]) ? 'width="'.esc_attr($image_size[0]).'"':'';
+										$height = ($image_size[1]) ? 'height="'.esc_attr($image_size[1]).'"':'';
+										$replace = "<img src='".esc_url(em_get_thumbnail_url($this->get_image_url(), $image_size[0], $image_size[1]))."' alt='".esc_attr($this->name)."' $width $height />";
+								    }
 								}else{
 									$replace = "<img src='".esc_url($this->get_image_url())."' alt='".esc_attr($this->name)."'/>";
 								}
@@ -159,6 +201,23 @@ class EM_Category extends EM_Object {
 					$link = $this->get_url();
 					$replace = ($result == '#_CATEGORYURL') ? $link : '<a href="'.$link.'">'.esc_html($this->name).'</a>';
 					break;
+				case '#_CATEGORYICALURL':
+				case '#_CATEGORYICALLINK':
+					$replace = $this->get_ical_url();
+					if( $result == '#_CATEGORYICALLINK' ){
+						$replace = '<a href="'.esc_url($replace).'">iCal</a>';
+					}
+					break;
+				case '#_CATEGORYRSSURL':
+				case '#_CATEGORYRSSLINK':
+					$replace = $this->get_rss_url();
+					if( $result == '#_CATEGORYRSSLINK' ){
+						$replace = '<a href="'.esc_url($replace).'">RSS</a>';
+					}
+					break;
+				case '#_CATEGORYSLUG':
+					$replace = $this->slug;
+					break;
 				case '#_CATEGORYEVENTSPAST': //depreciated, erroneous documentation, left for compatability
 				case '#_CATEGORYEVENTSNEXT': //depreciated, erroneous documentation, left for compatability
 				case '#_CATEGORYEVENTSALL': //depreciated, erroneous documentation, left for compatability
@@ -173,30 +232,40 @@ class EM_Category extends EM_Object {
 					if ($result == '#_CATEGORYPASTEVENTS'){ $scope = 'past'; }
 					elseif ( $result == '#_CATEGORYNEXTEVENTS' ){ $scope = 'future'; }
 					else{ $scope = 'all'; }					
-					$events = EM_Events::get( array('category'=>$this->term_id, 'scope'=>$scope) );
-					if ( count($events) > 0 ){
-						$replace .= get_option('dbem_category_event_list_item_header_format','<ul>');
-						foreach($events as $EM_Event){
-							$replace .= $EM_Event->output(get_option('dbem_category_event_list_item_format'));
-						}
-						$replace .= get_option('dbem_category_event_list_item_footer_format');
+					$events_count = EM_Events::count( array('category'=>$this->term_id, 'scope'=>$scope) );
+					if ( $events_count > 0 ){
+					    $args = array('category'=>$this->term_id, 'scope'=>$scope, 'pagination'=>1, 'ajax'=>0);
+					    $args['format_header'] = get_option('dbem_category_event_list_item_header_format');
+					    $args['format_footer'] = get_option('dbem_category_event_list_item_footer_format');
+					    $args['format'] = get_option('dbem_category_event_list_item_format');
+						$args['limit'] = get_option('dbem_category_event_list_limit');
+						$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : 1;
+					    $replace = EM_Events::output($args);
 					} else {
 						$replace = get_option('dbem_category_no_events_message','</ul>');
+					}
+					break;
+				case '#_CATEGORYNEXTEVENT':
+					$events = EM_Events::get( array('category'=>$this->term_id, 'scope'=>'future', 'limit'=>1, 'orderby'=>'event_start_date,event_start_time') );
+					$replace = get_option('dbem_category_no_event_message');
+					foreach($events as $EM_Event){
+						$replace = $EM_Event->output(get_option('dbem_category_event_single_format'));
 					}
 					break;
 				default:
 					$replace = $full_result;
 					break;
 			}
-			$replace = apply_filters('em_category_output_placeholder', $replace, $this, $full_result, $target); //USE WITH CAUTION! THIS MIGHT GET RENAMED
-			$category_string = str_replace($full_result, $replace , $category_string );
+			$replaces[$full_result] = apply_filters('em_category_output_placeholder', $replace, $this, $full_result, $target);
 		}
-		$name_filter = ($target == "html") ? 'dbem_general':'dbem_general_rss'; //TODO remove dbem_ filters
-		$category_string = str_replace('#_CATEGORY', apply_filters($name_filter, $this->name) , $category_string ); //Depreciated
+		krsort($replaces);
+		foreach($replaces as $full_result => $replacement){
+			$category_string = str_replace($full_result, $replacement , $category_string );
+		}
 		return apply_filters('em_category_output', $category_string, $this, $format, $target);	
 	}
 	
-	function can_manage( $capability_owner = 'edit_categories', $capability_admin = false ){
+	function can_manage( $capability_owner = 'edit_categories', $capability_admin = false, $user_to_check = false ){
 		global $em_capabilities_array;
 		//Figure out if this is multisite and require an extra bit of validation
 		$multisite_check = true;

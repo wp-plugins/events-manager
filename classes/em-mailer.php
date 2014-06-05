@@ -19,6 +19,7 @@ class EM_Mailer {
 	function send($subject="no title",$body="No message specified", $receiver='', $attachments = array() ) {
 		//TODO add an EM_Error global object, for this sort of error reporting. (@marcus like StatusNotice)
 		global $smtpsettings, $phpmailer, $cformsSettings;
+		$subject = html_entity_decode(wp_kses_data($subject)); //decode entities, but run kses first just in case users use placeholders containing html
 		if( is_array($receiver) ){
 			$receiver_emails = array();
 			foreach($receiver as $receiver_email){
@@ -58,7 +59,7 @@ class EM_Mailer {
 			$headers .= get_option('dbem_mail_sender_name') ? 'From: '.get_option('dbem_mail_sender_name').' <'.$from.'>':'From: '.$from;
 			$send = mail($receiver, $subject, $body, $headers);
 			if(!$send){
-				$this->errors = __('Could not send email.', 'dbem');
+				$this->errors[] = __('Could not send email.', 'dbem');
 			}
 			return $send;
 		}elseif( $emails_ok ){
@@ -83,16 +84,17 @@ class EM_Mailer {
 			$mail->Body = $body;
 			$mail->Subject = $subject;
 			//add attachments
-			foreach($attachments as $attachment){
-			    $att = array('name'=> '', 'encoding' => 'base64', 'type' => 'application/octet-stream');
-			    if( is_array($attachment) ){
-			        $att = array_merge($att, $attachment);
-			    }else{
-			        $att['path'] = $attachment;
-			    }
-			    $mail->AddAttachment($att['path'], $att['name'], $att['encoding'], $att['type']);
-			}
-			
+			if( is_array($attachments) ){
+				foreach($attachments as $attachment){
+				    $att = array('name'=> '', 'encoding' => 'base64', 'type' => 'application/octet-stream');
+				    if( is_array($attachment) ){
+				        $att = array_merge($att, $attachment);
+				    }else{
+				        $att['path'] = $attachment;
+				    }
+				    $mail->AddAttachment($att['path'], $att['name'], $att['encoding'], $att['type']);
+				}
+			}			
 			do_action('em_mailer', $mail); //$mail will still be modified  
 			if(is_array($receiver)){
 				foreach($receiver as $receiver_email){
@@ -118,7 +120,7 @@ class EM_Mailer {
 			do_action('em_mailer_sent', $mail, $send); //$mail can still be modified
 			return $send;
 		}else{
-			$this->errors = __('Please supply a valid email format.', 'dbem');
+			$this->errors[] = __('Please supply a valid email format.', 'dbem');
 			return false;
 		}
 	}

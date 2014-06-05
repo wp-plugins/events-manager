@@ -1,6 +1,6 @@
 <?php 
 /*
- * This file contains the HTML generated for small calendars. You can copy this file to yourthemefolder/plugins/events/templates and modify it in an upgrade-safe manner.
+ * This file contains the HTML generated for small calendars. You can copy this file to yourthemefolder/plugins/events-manager/templates and modify it in an upgrade-safe manner.
  * 
  * There are two variables made available to you: 
  * 
@@ -14,7 +14,7 @@
 	<thead>
 		<tr>
 			<td><a class="em-calnav em-calnav-prev" href="<?php echo $calendar['links']['previous_url']; ?>" rel="nofollow">&lt;&lt;</a></td>
-			<td class="month_name" colspan="5"><?php echo ucfirst(date_i18n('M Y', $calendar['month_start'])); ?></td>
+			<td class="month_name" colspan="5"><?php echo ucfirst(date_i18n(get_option('dbem_small_calendar_month_format'), $calendar['month_start'])); ?></td>
 			<td><a class="em-calnav em-calnav-next" href="<?php echo $calendar['links']['next_url']; ?>" rel="nofollow">&gt;&gt;</a></td>
 		</tr>
 	</thead>
