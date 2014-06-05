@@ -227,7 +227,7 @@ function em_bookings_single(){
 									<td>
 										<?php echo $localised_start_date; ?>
 										<?php echo ($localised_end_date != $localised_start_date) ? " - $localised_end_date":'' ?>
-										<?php echo substr ( $EM_Event->start_time, 0, 5 ) . " - " . substr ( $EM_Event->end_time, 0, 5 ); ?>
+										<?php echo substr ( $EM_Event->event_start_time, 0, 5 ) . " - " . substr ( $EM_Event->event_end_time, 0, 5 ); ?>
 									</td>
 								</tr>
 							</table>

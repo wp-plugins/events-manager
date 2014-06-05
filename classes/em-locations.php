@@ -331,7 +331,7 @@ class EM_Locations extends EM_Object {
 		}
 		$array['eventful'] = ( !empty($array['eventful']) && $array['eventful'] == true );
 		$array['eventless'] = ( !empty($array['eventless']) && $array['eventless'] == true );
-		if( is_admin() ){
+		if( is_admin() && !defined('DOING_AJAX') ){
 			$defaults['owner'] = !current_user_can('read_others_locations') ? get_current_user_id():false;
 		}
 		return apply_filters('em_locations_get_default_search', parent::get_default_search($defaults, $array), $array, $defaults);

@@ -67,7 +67,7 @@ class EM_Object {
 		
 			//Clean all id lists
 			$clean_ids_array = array('location', 'event', 'post_id');
-			if( $defaults['owner'] != 'me') $clean_ids_array[] = 'owner'; //clean owner attribute if not 'me'
+			if( !empty($array['owner']) && $array['owner'] != 'me') $clean_ids_array[] = 'owner'; //clean owner attribute if not 'me'
 			$array = self::clean_id_atts($array, $clean_ids_array);
 			
 			//Clean taxonomies

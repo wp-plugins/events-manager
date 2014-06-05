@@ -464,7 +464,7 @@ class EM_Events extends EM_Object {
 			    $array['blog'] = false;
 			}
 		}
-		if( is_admin() ){
+		if( is_admin() && !defined('DOING_AJAX') ){
 			//figure out default owning permissions
 			$defaults['owner'] = !current_user_can('edit_others_events') ? get_current_user_id() : false;
 			if( !array_key_exists('status', $array) && current_user_can('edit_others_events') ){

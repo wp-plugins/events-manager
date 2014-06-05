@@ -139,6 +139,9 @@ class EM_Tag extends EM_Object {
 						$replace = '<a href="'.esc_url($replace).'">RSS</a>';
 					}
 					break;
+				case '#_TAGNOTES':
+					$replace = $this->description;
+					break;
 				case '#_TAGEVENTSPAST': //depreciated, erroneous documentation, left for compatability
 				case '#_TAGEVENTSNEXT': //depreciated, erroneous documentation, left for compatability
 				case '#_TAGEVENTSALL': //depreciated, erroneous documentation, left for compatability

@@ -666,14 +666,11 @@ class EM_Bookings extends EM_Object implements Iterator{
 		}else{
 			$defaults = array_merge($defaults, $array_or_defaults);
 		}
-		//specific functionality
-		if( true || is_admin() ){
-			//figure out default owning permissions
-			if( !current_user_can('edit_others_events') ){
-				$defaults['owner'] = get_current_user_id();
-			}else{
-				$defaults['owner'] = false;
-			}
+		//figure out default owning permissions
+		if( !current_user_can('edit_others_events') ){
+			$defaults['owner'] = get_current_user_id();
+		}else{
+			$defaults['owner'] = false;
 		}
 		if( EM_MS_GLOBAL && !is_admin() ){
 			if( empty($array['blog']) && is_main_site() && get_site_option('dbem_ms_global_events') ){
