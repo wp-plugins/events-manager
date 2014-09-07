@@ -200,6 +200,23 @@ jQuery(document).ready( function($){
 			$('#em-tickets-form table tbody tr.em-tickets-row').show();
 			$('#em-tickets-form table tbody tr.em-tickets-row-form').hide();
 		};
+		//recurrences and cut-off logic for ticket availability
+		if( $('#em-recurrence-checkbox').length > 0 ){
+			$('#em-recurrence-checkbox').change(function(){
+				if( $('#em-recurrence-checkbox').is(':checked') ){
+					$('#em-tickets-form .ticket-dates-from-recurring, #em-tickets-form .ticket-dates-to-recurring, #event-rsvp-options .em-booking-date-recurring').show();
+					$('#em-tickets-form .ticket-dates-from-normal, #em-tickets-form .ticket-dates-to-normal, #event-rsvp-options .em-booking-date-normal, #em-tickets-form .hidden').hide();
+				}else{
+					$('#em-tickets-form .ticket-dates-from-normal, #em-tickets-form .ticket-dates-to-normal, #event-rsvp-options .em-booking-date-normal').show();
+					$('#em-tickets-form .ticket-dates-from-recurring, #em-tickets-form .ticket-dates-to-recurring, #event-rsvp-options .em-booking-date-recurring, #em-tickets-form .hidden').hide();
+				}
+			}).trigger('change');
+		}else if( $('#em-form-recurrence').length > 0 ){
+			$('#em-tickets-form .ticket-dates-from-recurring, #em-tickets-form .ticket-dates-to-recurring, #event-rsvp-options .em-booking-date-recurring').show();
+			$('#em-tickets-form .ticket-dates-from-normal, #em-tickets-form .ticket-dates-to-normal, #event-rsvp-options .em-booking-date-normal, #em-tickets-form .hidden').hide();
+		}else{
+			$('#em-tickets-form .ticket-dates-from-recurring, #em-tickets-form .ticket-dates-to-recurring, #event-rsvp-options .em-booking-date-recurring, #em-tickets-form .hidden').hide();
+		}
 		//Add a new ticket
 		$("#em-tickets-add").click(function(e){ 
 			e.preventDefault();
@@ -246,6 +263,24 @@ jQuery(document).ready( function($){
 				}else if( el.attr('name') == 'em_tickets['+rowNo+'][ticket_type]' ){
 					if( el.find(':selected').val() == 'members' ){
 						tbody.find('span.ticket_name').prepend('* ');
+					}
+				}else if( el.attr('name') == 'em_tickets['+rowNo+'][ticket_start_recurring_days]' ){
+					var text = tbody.find('select.ticket-dates-from-recurring-when').val() == 'before' ? '-'+el.attr('value'):el.attr('value');
+					if( el.attr('value') != '' ){
+						tbody.find('span.ticket_start_recurring_days').text(text);
+						tbody.find('span.ticket_start_recurring_days_text, span.ticket_start_time').removeClass('hidden').show();
+					}else{
+						tbody.find('span.ticket_start_recurring_days').text(' - ');
+						tbody.find('span.ticket_start_recurring_days_text, span.ticket_start_time').removeClass('hidden').hide();
+					}
+				}else if( el.attr('name') == 'em_tickets['+rowNo+'][ticket_end_recurring_days]' ){
+					var text = tbody.find('select.ticket-dates-to-recurring-when').val() == 'before' ? '-'+el.attr('value'):el.attr('value');
+					if( el.attr('value') != '' ){
+						tbody.find('span.ticket_end_recurring_days').text(text);
+						tbody.find('span.ticket_end_recurring_days_text, span.ticket_end_time').removeClass('hidden').show();
+					}else{
+						tbody.find('span.ticket_end_recurring_days').text(' - ');
+						tbody.find('span.ticket_end_recurring_days_text, span.ticket_end_time').removeClass('hidden').hide();
 					}
 				}else{
 					tbody.find('.'+el.attr('name').replace('em_tickets['+rowNo+'][','').replace(']','').replace('[]','')).text(el.attr('value'));
@@ -807,10 +842,13 @@ function em_maps_load_locations(el){
 	}
 	jQuery.getJSON(document.URL, em_data , function(data){
 		if(data.length > 0){
-			  var myOptions = {
-			    mapTypeId: google.maps.MapTypeId.ROADMAP
-			  };
-			  maps[map_id] = new google.maps.Map(el[0], myOptions);
+			//define default options and allow option for extension via event triggers
+			  var map_options = { mapTypeId: google.maps.MapTypeId.ROADMAP };
+			  jQuery(document).triggerHandler('em_maps_locations_map_options', map_options);
+			  var marker_options = {};
+			  jQuery(document).triggerHandler('em_maps_location_marker_options', marker_options);
+			  
+			  maps[map_id] = new google.maps.Map(el[0], map_options);
 			  maps_markers[map_id] = [];
 			  
 			  var minLatLngArr = [0,0];
@@ -821,10 +859,12 @@ function em_maps_load_locations(el){
 					var latitude = parseFloat( data[i].location_latitude );
 					var longitude = parseFloat( data[i].location_longitude );
 					var location = new google.maps.LatLng( latitude, longitude );
-					var marker = new google.maps.Marker({
+					//extend the default marker options
+					jQuery.extend(marker_options, {
 					    position: location, 
 					    map: maps[map_id]
-					});
+					})
+					var marker = new google.maps.Marker(marker_options);
 					maps_markers[map_id].push(marker);
 					marker.setTitle(data[i].location_name);
 					var myContent = '<div class="em-map-balloon"><div id="em-map-balloon-'+map_id+'" class="em-map-balloon-content">'+ data[i].location_balloon +'</div></div>';
@@ -855,16 +895,21 @@ function em_maps_load_location(el){
 	el = jQuery(el);
 	var map_id = el.attr('id').replace('em-location-map-','');
 	em_LatLng = new google.maps.LatLng( jQuery('#em-location-map-coords-'+map_id+' .lat').text(), jQuery('#em-location-map-coords-'+map_id+' .lng').text());
-	maps[map_id] = new google.maps.Map( document.getElementById('em-location-map-'+map_id), {
+	//extend map and markers via event triggers
+	var map_options = {
 	    zoom: 14,
 	    center: em_LatLng,
 	    mapTypeId: google.maps.MapTypeId.ROADMAP,
 	    mapTypeControl: false
-	});
-	maps_markers[map_id] = new google.maps.Marker({
+	};
+	jQuery(document).triggerHandler('em_maps_location_map_options', map_options);
+	maps[map_id] = new google.maps.Map( document.getElementById('em-location-map-'+map_id), map_options);
+	var marker_options = {
 	    position: em_LatLng,
 	    map: maps[map_id]
-	});
+	};
+	jQuery(document).triggerHandler('em_maps_location_marker_options', marker_options);
+	maps_markers[map_id] = new google.maps.Marker(marker_options);
 	infowindow = new google.maps.InfoWindow({ content: jQuery('#em-location-map-info-'+map_id+' .em-map-balloon').get(0) });
 	infowindow.open(maps[map_id],maps_markers[map_id]);
 	maps[map_id].panBy(40,-70);

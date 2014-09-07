@@ -450,10 +450,12 @@ function em_init_actions() {
 		}
 		if( $result && defined('DOING_AJAX') ){
 			$return = array('result'=>true, 'message'=>$feedback);
+			header( 'Content-Type: application/javascript; charset=UTF-8', true ); //add this for HTTP -> HTTPS requests which assume it's a cross-site request
 			echo EM_Object::json_encode(apply_filters('em_action_'.$_REQUEST['action'], $return, $EM_Booking));
 			die();
 		}elseif( !$result && defined('DOING_AJAX') ){
 			$return = array('result'=>false, 'message'=>$feedback, 'errors'=>$EM_Notices->get_errors());
+			header( 'Content-Type: application/javascript; charset=UTF-8', true ); //add this for HTTP -> HTTPS requests which assume it's a cross-site request
 			echo EM_Object::json_encode(apply_filters('em_action_'.$_REQUEST['action'], $return, $EM_Booking));
 			die();
 		}
@@ -561,13 +563,19 @@ function em_init_actions() {
 		if( !empty($_REQUEST['em_obj']) ){
 			switch( $_REQUEST['em_obj'] ){
 				case 'em_bookings_events_table':
+					include_once('admin/bookings/em-events.php');
+					em_bookings_events_table();
+					exit();
+					break;
 				case 'em_bookings_pending_table':
+					include_once('admin/bookings/em-pending.php');
+					em_bookings_pending_table();
+					exit();
+					break;
 				case 'em_bookings_confirmed_table':
 					//add some admin files just in case
 					include_once('admin/bookings/em-confirmed.php');
-					include_once('admin/bookings/em-events.php');
-					include_once('admin/bookings/em-pending.php');
-					call_user_func($_REQUEST['em_obj']);
+					em_bookings_confirmed_table();
 					exit();
 					break;
 			}

@@ -123,13 +123,15 @@ div#em-loading { position:absolute; width:100%; height:100%; background:#FFFFFF 
 			#em-tickets-form th { width:auto; }
 			#em-tickets-form th.ticket-status { width:20px; }
 			/* Ticket Forms */
-				.em-ticket-form .ticket-options { margin-top:10px; }
+				.em-ticket-form .ticket-options { margin-top:10px; }	
 				.em-ticket-form > div > div, #em-tickets-form .ticket-dates > div { clear:both; padding-top:4px; }
 				.em-ticket-form label { display:block; float:left; min-width:105px; padding-right:5px; }
 				#em-tickets-form .ticket-name input, #em-tickets-form .ticket-description textarea { width:50%} 
 				#em-tickets-form .em-ticket-form-actions { clear:both; }
 				#em-tickets-form .ticket-spaces input, #em-tickets-form .ticket-price input { width:80px; }
  				#em-tickets-form .ticket-dates input.em-date-input-loc { width:90px; }
+				#em-tickets-form .ticket-dates-from-normal, #em-tickets-form .ticket-dates-from-recurring, 
+				#em-tickets-form .ticket-dates-to-normal, #em-tickets-form .ticket-dates-to-recurring { display:inline; }
  				#em-tickets-form .ticket-required input, #em-tickets-form .ticket-roles input { width:auto; }
  				#em-tickets-form .ticket-roles div { margin-left:110px; }
 	/* The editor */

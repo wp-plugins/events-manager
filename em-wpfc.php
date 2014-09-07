@@ -140,7 +140,7 @@ function wpfc_em_ajax() {
     $year = (int) date ( "Y", $month_ts );
     $month = (int) date ( "m", $month_ts );
 
-	$args = array ('month'=>$month, 'year'=>$year, 'owner'=>false, 'status'=>1, 'orderby'=>'event_start_date, event_start_time');
+	$args = array ('month'=>$month, 'year'=>$year, 'owner'=>false, 'status'=>1, 'orderby'=>'event_start_time, event_name'); //since wpfc handles date sorting we only care about time and name ordering here
 	$args['number_of_weeks'] = 6; //WPFC always has 6 weeks
 	$limit = $args['limit'] = get_option('wpfc_limit',3);
 	
@@ -149,7 +149,7 @@ function wpfc_em_ajax() {
 	$_REQUEST['tag'] = !empty($_REQUEST[EM_TAXONOMY_TAG]) ? $_REQUEST[EM_TAXONOMY_TAG]:false;
 	$args = apply_filters('wpfc_fullcalendar_args', array_merge($_REQUEST, $args));
 	$calendar_array = EM_Calendar::get($args);
-
+	
 	$parentArray = $events = $event_ids = $event_date_counts = $event_dates_more = $event_day_counts = array();
 
 	//get day link template
@@ -170,7 +170,7 @@ function wpfc_em_ajax() {
 		$joiner = (stristr($event_page_link, "?")) ? "&" : "?";
 		$event_page_link .= $joiner."calendar_day=%s";
 	}
-
+	
 	foreach ( $calendar_array['cells'] as $date => $cell_data ) {
 		if( empty($event_day_counts[$date]) ) $event_day_counts[$date] = 0;
 		/* @var $EM_Event EM_Event */

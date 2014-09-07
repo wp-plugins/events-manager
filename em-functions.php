@@ -533,7 +533,7 @@ function em_get_search_form_defaults($args = array()){
 	$search_args['category_label'] = get_option('dbem_search_form_category_label'); //field label
 	$search_args['categories_label'] = get_option('dbem_search_form_categories_label'); //select default
 	//countries
-	$search_args['country'] = get_option('dbem_search_form_default_country'); //default country
+	$search_args['country'] = get_option('dbem_search_form_advanced') ? get_option('dbem_search_form_default_country'):''; //default country
 	$search_args['search_countries'] = get_option('dbem_search_form_countries');
 	$search_args['country_label'] = get_option('dbem_search_form_country_label'); //field label
 	$search_args['countries_label'] = get_option('dbem_search_form_countries_label'); //select default

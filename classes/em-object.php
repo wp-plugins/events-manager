@@ -35,6 +35,7 @@ class EM_Object {
 			'event' => false, 
 			'offset'=>0,
 			'page'=>1,//basically, if greater than 0, calculates offset at end
+			'page_queryvar'=>null,
 			'recurrence'=>0,
 			'recurrences'=>null,
 			'recurring'=>false,
@@ -74,9 +75,14 @@ class EM_Object {
 			$taxonomies = self::get_taxonomies();
 			foreach( $taxonomies as $item => $item_data ){ //tags and cats turned into an array regardless
 			    if( !empty($array[$item]) && !is_array($array[$item]) ){
-					if( strstr($array[$item],',') !== false ){ //accepts numbers or words
-						$array[$item] = explode(',',$array[$item]);
-						foreach($array[$item] as $k=>$v) $array[$item][$k] = trim($v);
+			    	$array[$item] = str_replace(array('&amp;','&#038;'), '&', $array[$item]); //clean & modifiers
+					if( preg_match('/[,&]/', $array[$item]) !== false ){ //accepts numbers or words
+						$array[$item] = explode('&', $array[$item]);
+						foreach($array[$item] as $k=>$v){
+							$array[$item][$k] = trim($v);
+							$array[$item][$k] = explode(',', $v);
+							foreach($array[$item][$k] as $k_x=>$v_x) $array[$item][$k][$k_x] = trim($v_x);
+						}
 					}else{
 					    $array[$item] = array(trim($array[$item]));
 					}
@@ -392,66 +398,74 @@ class EM_Object {
 		foreach($taxonomies as $tax_name => $tax_data){
 			if( !empty($args[$tax_name]) && is_array($args[$tax_name]) ){
 			    if( !empty($tax_data['ms']) ) self::ms_global_switch(); //if in ms global mode, switch here rather than on each EM_Category instance
-				//build array of term ids and negative ids from supplied argument
-				$term_tax_ids = $term_ids = array();
-				$term_tax_not_ids = $term_not_ids = array();
-				foreach($args[$tax_name] as $tax_id){
-				    $tax_id_clean = preg_replace('/^-/', '', $tax_id);
-					if( !is_numeric($tax_id_clean) ){
-						$term = get_term_by('slug', $tax_id_clean, $tax_data['name']);
-						if( empty($term) ){
-							$term = get_term_by('name', $tax_id_clean, $tax_data['name']);
-						}
-					}else{
-						$term = get_term_by('id', $tax_id_clean, $tax_data['name']);
-					}
-					if( !empty($term->term_taxonomy_id) ){
-						if( !preg_match('/^-/', $tax_id) ){
-							$term_tax_ids[] = $term->term_taxonomy_id;
-							if( EM_MS_GLOBAL && !empty($tax_data['ms']) ) $term_ids[] = $term->term_id;
+			    $tax_conds = array();
+			    //if a single array is supplied then we treat it as an OR type of query, if an array of arrays is supplied we condsider it to be many ANDs of ORs
+			    //so here we wrap a single array into another array and there is only one 'AND' condition (therefore no AND within this tax search) 
+			    foreach($args[$tax_name] as $k=>$v) if( is_array($v) ) $contains_array = true;
+			    if( empty($contains_array) ) $args[$tax_name] = array($args[$tax_name]);
+			    //go through taxonomy arg and generate relevant SQL
+			    foreach($args[$tax_name] as $tax_id_set){
+					//build array of term ids and negative ids from supplied argument
+					$term_tax_ids = $term_ids = array();
+					$term_tax_not_ids = $term_not_ids = array();
+					foreach($tax_id_set as $tax_id){
+					    $tax_id_clean = preg_replace('/^-/', '', $tax_id);
+						if( !is_numeric($tax_id_clean) ){
+							$term = get_term_by('slug', $tax_id_clean, $tax_data['name']);
+							if( empty($term) ){
+								$term = get_term_by('name', $tax_id_clean, $tax_data['name']);
+							}
 						}else{
-							$term_tax_not_ids[] = $term->term_taxonomy_id;
-							if( EM_MS_GLOBAL && !empty($tax_data['ms']) ) $term_not_ids[] = $term->term_id;
+							$term = get_term_by('id', $tax_id_clean, $tax_data['name']);
+						}
+						if( !empty($term->term_taxonomy_id) ){
+							if( !preg_match('/^-/', $tax_id) ){
+								$term_tax_ids[] = $term->term_taxonomy_id;
+								if( EM_MS_GLOBAL && !empty($tax_data['ms']) ) $term_ids[] = $term->term_id;
+							}else{
+								$term_tax_not_ids[] = $term->term_taxonomy_id;
+								if( EM_MS_GLOBAL && !empty($tax_data['ms']) ) $term_not_ids[] = $term->term_id;
+							}
 						}
 					}
-				}
-			    if( !empty($tax_data['ms']) ) self::ms_global_switch_back(); //switch back if ms global mode
-				//create sql conditions
-				if( count($term_tax_ids) > 0 || count($term_tax_not_ids) > 0 ){
-				    //figure out context - what table/field to search
-				    $post_context = EM_EVENTS_TABLE.".post_id";
-				    $ms_context = EM_EVENTS_TABLE.".event_id";
-				    if( !empty($tax_data['context']) && self::$context == EM_POST_TYPE_LOCATION && in_array( self::$context, $tax_data['context']) ){
-				        //context can be either locations or events, since those are the only two CPTs we deal with
-					    $post_context = EM_LOCATIONS_TABLE.".post_id";
-					    $ms_context = EM_LOCATIONS_TABLE.".event_id";
-				    }
-				    //build conditions
-					$tax_conds = array();
-					if( EM_MS_GLOBAL && !empty($tax_data['ms']) ){ //by default only applies to categories
-					    //we're directly looking for tax ids from within the em_meta table
-						if( count($term_ids) > 0 ){
-							$tax_conds[] = "$ms_context IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_key='{$tax_data['ms']}' )";
+				    if( !empty($tax_data['ms']) ) self::ms_global_switch_back(); //switch back if ms global mode
+					//create sql conditions
+					if( count($term_tax_ids) > 0 || count($term_tax_not_ids) > 0 ){
+					    //figure out context - what table/field to search
+					    $post_context = EM_EVENTS_TABLE.".post_id";
+					    $ms_context = EM_EVENTS_TABLE.".event_id";
+					    if( !empty($tax_data['context']) && self::$context == EM_POST_TYPE_LOCATION && in_array( self::$context, $tax_data['context']) ){
+					        //context can be either locations or events, since those are the only two CPTs we deal with
+						    $post_context = EM_LOCATIONS_TABLE.".post_id";
+						    $ms_context = EM_LOCATIONS_TABLE.".event_id";
+					    }
+					    //build conditions
+						if( EM_MS_GLOBAL && !empty($tax_data['ms']) ){ //by default only applies to categories
+						    //we're directly looking for tax ids from within the em_meta table
+							if( count($term_ids) > 0 ){
+								$tax_conds[] = "$ms_context IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_ids).") AND meta_key='{$tax_data['ms']}' )";
+							}
+							if( count($term_not_ids) > 0 ){
+								$tax_conds[] = "$ms_context NOT IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_not_ids).") AND meta_key='{$tax_data['ms']}' )";			
+							} 
+						}else{
+					    	//normal taxonomy filtering
+							if( count($term_tax_ids) > 0 ){
+								$tax_conds[] = "$post_context IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_tax_ids).") )";
+							}
+							if( count($term_tax_not_ids) > 0 ){
+								$tax_conds[] = "$post_context NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_tax_not_ids).") )";			
+							}
 						}
-						if( count($term_not_ids) > 0 ){
-							$tax_conds[] = "$ms_context NOT IN ( SELECT object_id FROM ".EM_META_TABLE." WHERE meta_value IN (".implode(',',$term_not_ids).") AND meta_key='{$tax_data['ms']}' )";			
-						} 
 					}else{
-				    	//normal taxonomy filtering
-						if( count($term_tax_ids) > 0 ){
-							$tax_conds[] = "$post_context IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_tax_ids).") )";
-						}
-						if( count($term_tax_not_ids) > 0 ){
-							$tax_conds[] = "$post_context NOT IN ( SELECT object_id FROM ".$wpdb->term_relationships." WHERE term_taxonomy_id IN (".implode(',',$term_tax_not_ids).") )";			
-						}
+					    $tax_conds[] = array('taxonomy'=>'2=1'); //force a false, supplied taxonomies don't exist
+					    break; //no point continuing this loop
 					}
-					if( count($tax_conds) > 0 ){
-						$conditions[$tax_name] = '('. implode(' AND ', $tax_conds) .')';
-					}
-				}else{
-				    $conditions = array('taxonomy'=>'2=1'); //force a false, supplied taxonomies don't exist
-				    break; //no point continuing this loop
+			    }
+				if( count($tax_conds) > 0 ){
+					$conditions[$tax_name] = '('. implode(' AND ', $tax_conds) .')';
 				}
+			    if( !empty($tax_data['ms']) ) self::ms_global_switch_back(); //if in ms global mode, switch back from previous switch
 			}
 		}
 		//END TAXONOMY FILTERS
@@ -890,7 +904,8 @@ class EM_Object {
 	public static function get_pagination_links($args, $count, $search_action, $default_args = array()){
 		$limit = ( !empty($args['limit']) && is_numeric($args['limit']) ) ? $args['limit']:false;
 		$page = ( !empty($args['page']) && is_numeric($args['page']) ) ? $args['page']:1;
-		$default_pag_args = array('pno'=>'%PAGE%', 'page'=>null, 'search'=>null, 'action'=>null, 'pagination'=>null); //clean out the bad stuff, set up page number template
+		$pno = !empty($args['page_queryvar']) ? $args['page_queryvar'] : 'pno';
+		$default_pag_args = array($pno=>'%PAGE%', 'page'=>null, 'search'=>null, 'action'=>null, 'pagination'=>null); //clean out the bad stuff, set up page number template
 		$page_url = $_SERVER['REQUEST_URI'];
 		//$default_args are values that can be added to the querystring for use in searching events in pagination either in searches or ajax pagination
 		if( !empty($_REQUEST['action']) && $_REQUEST['action'] == $search_action && empty($default_args) ){

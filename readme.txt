@@ -3,7 +3,7 @@ Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.5
-Tested up to: 4.0
+Tested up to: 3.9.1
 Stable tag: 5.5.3.1
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
@@ -98,6 +98,29 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.5.3.2 (dev) =
+* added partial (17%) Estonian translation file
+* fixed no events message for #_LOCATIONNEXTEVENTS and similar showing header/footer formats for an events list
+* updated Czech and German
+* fixed/improved pricing to include 4 decimal precision for better tax rounding with large numbers,
+* fixed/changed incorrect filter em_event_validate to em_ticket_booking_validate in classes/em-ticket-booking.php
+* added new jQuery hooks for altering map and marker options
+* fixed search form using default country even if advanced search settings are disabled
+* fixed code to prevent vaultpress false-positive security warning
+* fixed duplicate event meta on duplication of event
+* increased pricing to 6 decimal precision,
+* added get_price_with_taxes function to EM_Ticket_Booking
+* fixed multisite issues when creating events with conflicting post IDs on other sites [t:1037 s:r]
+* fixed MS Global Mode permalink issues with cross-site locations and optimized cross-site event permalink creation
+* fixed preview mode duplicating tickets whilst in draft status
+* added event and ticket cut-off date support to recurring events
+* fixed SSL/JS MIME related issues when cross-AJAX calls are made between HTTP/HTTPS
+* fixed same-day event ordering issues in WP FullCalendar integration
+* added admin menu EM dashicon
+* added multi-level taxonomy condition searching so seperating ids/slugs by & will force an AND search as well as the traditional comma for OR searches
+* fixed custom taxonomies not being saved from recurring events to recurrences
+* added page_queryvar search attribute which allows for independent paginated shortcode lists via a custom page number id
+
 = 5.5.3.1 =
 * added #_TAGNOTES
 * fixed forced owner event/location searches when logged in as subscribers and in AJAX requests where owner attribute is false

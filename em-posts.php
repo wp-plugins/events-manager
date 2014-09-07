@@ -156,7 +156,7 @@ function wp_events_plugin_init(){
 			'not_found_in_trash' => __('No Events Found in Trash','dbem'),
 			'parent' => __('Parent Event','dbem'),
 		),
-		'menu_icon' => plugins_url('includes/images/calendar-16.png', __FILE__),
+		'menu_icon' => 'dashicons-calendar',
 		'yarpp_support'=>true
 	);
 	if ( get_option('dbem_recurrence_enabled') ){

@@ -129,6 +129,7 @@ function em_create_events_table() {
 		recurrence_byday tinytext NULL DEFAULT NULL,
 		recurrence_byweekno int(4) NULL DEFAULT NULL,
 		recurrence_days int(4) NULL DEFAULT NULL,
+		recurrence_rsvp_days int(3) NULL DEFAULT NULL,
 		blog_id bigint(20) unsigned NULL DEFAULT NULL,
 		group_id bigint(20) unsigned NULL DEFAULT NULL,
 		PRIMARY KEY  (event_id)
@@ -248,9 +249,9 @@ function em_create_bookings_table() {
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		booking_status bool NOT NULL DEFAULT 1,
- 		booking_price decimal(10,2) unsigned NOT NULL DEFAULT 0,
- 		booking_tax_rate decimal(5,2) NULL DEFAULT NULL,
- 		booking_taxes decimal(10,2) NULL DEFAULT NULL,
+ 		booking_price decimal(14,6) unsigned NOT NULL DEFAULT 0,
+ 		booking_tax_rate decimal(7,4) NULL DEFAULT NULL,
+ 		booking_taxes decimal(14,6) NULL DEFAULT NULL,
 		booking_meta LONGTEXT NULL,
 		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -272,7 +273,7 @@ function em_create_tickets_table() {
 		event_id BIGINT( 20 ) UNSIGNED NOT NULL ,
 		ticket_name TINYTEXT NOT NULL ,
 		ticket_description TEXT NULL ,
-		ticket_price DECIMAL( 10 , 2 ) NULL ,
+		ticket_price DECIMAL( 14 , 6 ) NULL ,
 		ticket_start DATETIME NULL ,
 		ticket_end DATETIME NULL ,
 		ticket_min INT( 10 ) NULL ,
@@ -282,6 +283,7 @@ function em_create_tickets_table() {
 		ticket_members_roles LONGTEXT NULL,
 		ticket_guests INT( 1 ) NULL ,
 		ticket_required INT( 1 ) NULL ,
+		ticket_meta LONGTEXT NULL,
 		PRIMARY KEY  (ticket_id)
 		) DEFAULT CHARSET=utf8 ;";
 
@@ -301,7 +303,7 @@ function em_create_tickets_bookings_table() {
 		  booking_id bigint(20) unsigned NOT NULL,
 		  ticket_id bigint(20) unsigned NOT NULL,
 		  ticket_booking_spaces int(6) NOT NULL,
-		  ticket_booking_price decimal(10,2) NOT NULL,
+		  ticket_booking_price decimal(14,6) NOT NULL,
 		  PRIMARY KEY  (ticket_booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 

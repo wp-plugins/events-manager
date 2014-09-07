@@ -304,7 +304,7 @@ class EM_Booking extends EM_Object{
 		//step 2, tickets bookings info
 		if( count($this->get_tickets_bookings()) > 0 ){
 			$ticket_validation = array();
-			foreach($this->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){
+			foreach($this->get_tickets_bookings()->tickets_bookings as $EM_Ticket_Booking){ /* @var $EM_Ticket_Booking EM_Ticket_Booking */
 				if ( !$EM_Ticket_Booking->validate() ){
 					$ticket_validation[] = false;
 					$result = $basic && !in_array(false,$ticket_validation);
@@ -395,7 +395,7 @@ class EM_Booking extends EM_Object{
 	    $price = $this->get_price_pre_taxes();
 	    //add taxes to price
 	    if( $this->get_tax_rate() > 0 ){
-	        $this->booking_taxes = round($price * ($this->get_tax_rate()/100), 2); //calculate and save tax amount
+	        $this->booking_taxes = $price * ($this->get_tax_rate()/100); //calculate and save tax amount
 		    $price += $this->booking_taxes; //add taxes
 		    $this->taxes_applied = true;
 	    }

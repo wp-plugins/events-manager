@@ -109,8 +109,9 @@ class EM_Locations extends EM_Object {
 		global $EM_Location;
 		$EM_Location_old = $EM_Location; //When looping, we can replace EM_Location global with the current event in the loop
 		//Can be either an array for the get search or an array of EM_Location objects
-		if( !empty($args['pagination']) && !array_key_exists('page',$args) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
-			$page = $args['page'] = $_REQUEST['pno'];
+		$page_queryvar = !empty($args['page_queryvar']) ? $args['page_queryvar'] : 'pno';
+		if( !empty($args['pagination']) && !array_key_exists('page',$args) && !empty($_REQUEST[$page_queryvar]) && is_numeric($_REQUEST[$page_queryvar]) ){
+			$page = $args['page'] = $_REQUEST[$page_queryvar];
 		}
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Location' ){
 			$func_args = func_get_args();

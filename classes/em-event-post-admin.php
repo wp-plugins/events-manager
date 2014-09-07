@@ -75,6 +75,7 @@ class EM_Event_Post_Admin{
 			if( !empty($_REQUEST['_emnonce']) && wp_verify_nonce($_REQUEST['_emnonce'], 'edit_event') ){ 
 				//this is only run if we know form data was submitted, hence the nonce
 				$EM_Event = em_get_event();
+				$EM_Event->post_type = $post_type;
 				//Handle Errors by making post draft
 				$get_meta = $EM_Event->get_post_meta();
 				$validate_meta = $EM_Event->validate_meta();
@@ -87,12 +88,14 @@ class EM_Event_Post_Admin{
 	public static function save_post($post_id){
 		global $wpdb, $EM_Event, $EM_Location, $EM_Notices, $EM_SAVING_EVENT, $EM_EVENT_SAVE_POST;
 		if( !empty($EM_SAVING_EVENT) ) return; //never proceed with this if using EM_Event::save();
+		if ( isset($_GET['preview_id']) && isset($_GET['preview_nonce']) && wp_verify_nonce( $_GET['preview_nonce'], 'post_preview_' . $post_id ) ) return; //don't proceed with saving when previewing, may cause issues
 		$post_type = get_post_type($post_id);
 		$is_post_type = $post_type == EM_POST_TYPE_EVENT || $post_type == 'event-recurring';
 		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
 		$EM_EVENT_SAVE_POST = true; //first filter for save_post in EM for events
 		if(!defined('UNTRASHING_'.$post_id) && $is_post_type && $saving_status ){
 			$EM_Event = em_get_event($post_id, 'post_id'); //grab event, via post info
+			$EM_Event->post_type = $post_type;
 			if( !empty($_REQUEST['_emnonce']) && wp_verify_nonce($_REQUEST['_emnonce'], 'edit_event') ){ 
 				//this is only run if we know form data was submitted, hence the nonce
 				do_action('em_event_save_pre', $EM_Event); //technically, the event is saved... but the meta isn't. wp doesn't give an pre-intervention action for this (or does it?)
@@ -341,6 +344,7 @@ class EM_Event_Recurring_Post_Admin{
 		$saving_status = !in_array(get_post_status($post_id), array('trash','auto-draft')) && !defined('DOING_AUTOSAVE');
 		if(!defined('UNTRASHING_'.$post_id) && $post_type == 'event-recurring' && $saving_status && !empty($EM_EVENT_SAVE_POST) ){
 			$EM_Event = em_get_event($post_id, 'post_id');
+			$EM_Event->post_type = $post_type;
 			//get the list post IDs for recurrences this recurrence
 		 	if( !$EM_Event->save_events() && $EM_Event->is_published() ){
 				$EM_Event->set_status(null, true);

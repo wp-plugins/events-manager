@@ -112,7 +112,7 @@ class EM_Ticket_Booking extends EM_Object{
 			// TODO Create friendly equivelant names for missing fields notice in validation 
 			$this->errors[] = __ ( 'Missing fields: ' ) . implode ( ", ", $missing_fields ) . ". ";
 		}
-		return apply_filters('em_event_validate', count($this->errors) == 0, $this );
+		return apply_filters('em_ticket_booking_validate', count($this->errors) == 0, $this );
 	}
 	
 	/**
@@ -131,7 +131,7 @@ class EM_Ticket_Booking extends EM_Object{
 	function get_price( $format = false ){
 		if( $this->ticket_booking_price == 0 ){
 			//get the ticket, calculate price on spaces
-			$this->ticket_booking_price = round($this->get_ticket()->get_price_without_tax() * $this->ticket_booking_spaces, 2);
+			$this->ticket_booking_price = $this->get_ticket()->get_price_without_tax() * $this->ticket_booking_spaces;
 			$this->ticket_booking_price = apply_filters('em_ticket_booking_get_price', $this->ticket_booking_price, $this);
 		}
 		$price = $this->ticket_booking_price;
@@ -159,6 +159,12 @@ class EM_Ticket_Booking extends EM_Object{
 			return $this->format_price($price);
 		}
 		return $price;
+	}
+	
+	function get_price_with_taxes( $format = false ){
+		$price = $this->get_price() * (1 + $this->get_booking()->get_event()->get_tax_rate()/100);
+	    if( $format ) return $this->format_price($price);
+	    return $price; 
 	}
 	
 	/**

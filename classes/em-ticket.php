@@ -15,6 +15,7 @@ class EM_Ticket extends EM_Object{
 	var $ticket_members_roles = array();
 	var $ticket_guests = false;
 	var $ticket_required = false;
+	var $ticket_meta = array();
 	var $fields = array(
 		'ticket_id' => array('name'=>'id','type'=>'%d'),
 		'event_id' => array('name'=>'event_id','type'=>'%d'),
@@ -29,7 +30,8 @@ class EM_Ticket extends EM_Object{
 		'ticket_members' => array('name'=>'members','type'=>'%d','null'=>1),
 		'ticket_members_roles' => array('name'=>'ticket_members_roles','type'=>'%s','null'=>1),
 		'ticket_guests' => array('name'=>'guests','type'=>'%d','null'=>1),
-		'ticket_required' => array('name'=>'required','type'=>'%d','null'=>1)
+		'ticket_required' => array('name'=>'required','type'=>'%d','null'=>1),
+		'ticket_meta' => array('name'=>'ticket_meta','type'=>'%s','null'=>1)			
 	);
 	//Other Vars
 	/**
@@ -66,10 +68,20 @@ class EM_Ticket extends EM_Object{
 			}
 			//Save into the object
 			$this->to_object($ticket);
+			//serialized arrays
+			$this->ticket_meta = (!empty($ticket['ticket_meta'])) ? maybe_unserialize($ticket['ticket_meta']):array();
 			$this->ticket_members_roles = maybe_unserialize($this->ticket_members_roles);
 			if( !is_array($this->ticket_members_roles) ) $this->ticket_members_roles = array();
+			//timestamps
 			$this->start_timestamp = (!empty($ticket['ticket_start'])) ? strtotime($ticket['ticket_start'], current_time('timestamp')):false;
 			$this->end_timestamp = (!empty($ticket['ticket_end'])) ? strtotime($ticket['ticket_end'], current_time('timestamp')):false;
+			//sort out recurrence meta to save extra empty() checks, the 'true' cut-off info is here for the ticket if part of a recurring event
+			if( !empty($this->ticket_meta['recurrences']) ){
+				if( !array_key_exists('start_days', $this->ticket_meta['recurrences']) ) $this->ticket_meta['recurrences']['start_days'] = false;
+				if( !array_key_exists('start_time', $this->ticket_meta['recurrences']) ) $this->ticket_meta['recurrences']['start_time'] = false;
+				if( !array_key_exists('end_days', $this->ticket_meta['recurrences']) ) $this->ticket_meta['recurrences']['end_days'] = false;
+				if( !array_key_exists('end_time', $this->ticket_meta['recurrences']) ) $this->ticket_meta['recurrences']['end_time'] = false;
+			}
 		}
 		$this->compat_keys();
 		do_action('em_ticket',$this, $ticket_data, $ticket);
@@ -100,6 +112,7 @@ class EM_Ticket extends EM_Object{
 		if($this->validate() && $this->can_manage() ){			
 			//Now we save the ticket
 			$data = $this->to_array(true); //add the true to remove the nulls
+			if( !empty($data['ticket_meta']) ) $data['ticket_meta'] = serialize($data['ticket_meta']);
 			if( !empty($data['ticket_members_roles']) ) $data['ticket_members_roles'] = serialize($data['ticket_members_roles']);
 			if($this->ticket_id != ''){
 				//since currently wpdb calls don't accept null, let's build the sql ourselves.
@@ -174,9 +187,44 @@ class EM_Ticket extends EM_Object{
 			}
 		}
 		$this->ticket_required = ( !empty($post['ticket_required']) ) ? 1:0;
+		//if event is recurring, store start/end restrictions of this ticket, which are determined by number of days before (negative number) or after (positive number) the event start date
+		if($this->get_event()->is_recurring()){
+			//start of ticket cut-off
+			if( array_key_exists('ticket_start_recurring_days', $post) && is_numeric($post['ticket_start_recurring_days']) ){
+				if( !empty($post['ticket_start_recurring_when']) && $post['ticket_start_recurring_when'] == 'after' ){
+					$this->ticket_meta['recurrences']['start_days'] = absint($post['ticket_start_recurring_days']);
+					$this->ticket_start = date('Y-m-d', strtotime('+' . $this->ticket_meta['recurrences']['start_days'] . ' days', $this->get_event()->start));
+				}else{ //by default the start date is the point of reference
+					$this->ticket_meta['recurrences']['start_days'] = absint($post['ticket_start_recurring_days']) * -1;
+					$this->ticket_start = date('Y-m-d', strtotime($this->ticket_meta['recurrences']['start_days'] . ' days', $this->get_event()->start));
+				}
+				$this->ticket_meta['recurrences']['start_time'] = ( !empty($post['ticket_start_time']) ) ? $this->sanitize_time($post['ticket_start_time']) : '00:00:00'; 
+				$this->ticket_start .= ' '. $this->ticket_meta['recurrences']['start_time'];
+				//timestamp - calculated only for purposes of not screwing up interfaces that use timestamps for outputting cut-off times such as booking settings for event
+				$this->start_timestamp  = strtotime($this->ticket_start, current_time('timestamp'));
+			}else{
+				$this->ticket_start = $this->start_timestamp = '';
+			}
+			//end of ticket cut-off
+			if( array_key_exists('ticket_end_recurring_days', $post) && is_numeric($post['ticket_end_recurring_days']) ){
+				if( !empty($post['ticket_end_recurring_when']) && $post['ticket_end_recurring_when'] == 'after' ){
+					$this->ticket_meta['recurrences']['end_days'] = absint($post['ticket_end_recurring_days']);
+					$this->ticket_end = date('Y-m-d', strtotime('+' . $this->ticket_meta['recurrences']['end_days'] . ' days', $this->get_event()->end));
+				}else{ //by default the end date is the point of reference
+					$this->ticket_meta['recurrences']['end_days'] = absint($post['ticket_end_recurring_days']) * -1;
+					$this->ticket_end = date('Y-m-d', strtotime($this->ticket_meta['recurrences']['end_days'] . ' days', $this->get_event()->end));
+				}
+				$this->ticket_meta['recurrences']['end_time'] = ( !empty($post['ticket_end_time']) ) ? $this->sanitize_time($post['ticket_end_time']) : '00:00:00'; 
+				$this->ticket_end .= ' '. $this->ticket_meta['recurrences']['end_time'];
+				//timestamp - calculated only for purposes of not screwing up interfaces that use timestamps for outputting cut-off times such as booking settings for event
+				$this->end_timestamp  = strtotime($this->ticket_end, current_time('timestamp')); //we save these timestamps for quicker loading on construct
+			}else{
+				$this->ticket_end = $this->end_timestamp = '';
+			}
+		}
 		$this->compat_keys();
 		do_action('em_ticket_get_post', $this);
-	}	
+	}
 	
 
 	/**
@@ -278,8 +326,8 @@ class EM_Ticket extends EM_Object{
 	 * @param boolean $format
 	 */
 	function get_price_with_tax( $format = false ){
-	    $price = round($this->get_price_without_tax() * (1 + $this->get_event()->get_tax_rate()/100),2);
-	    if( $format ) return $price;
+	    $price = $this->get_price_without_tax() * (1 + $this->get_event()->get_tax_rate()/100);
+	    if( $format ) return $this->format_price($price);
 	    return $price; 
 	}
 	
@@ -292,6 +340,16 @@ class EM_Ticket extends EM_Object{
 	    return $this->ticket_price; 
 	}
 	
+	/**
+	 * Shows the ticket price which can contain long decimals but will show up to 2 decimal places and remove trailing 0s
+	 * For example: 10.010230 => 10.01023 and 10 => 10.00 
+	 */
+	function get_price_precise(){
+		$price = $this->ticket_price * 1;
+		if( floor($price) == (float) $price ) $price = number_format($price, 2);
+		return $price;
+	}
+		
 	/**
 	 * Get the total number of tickets (spaces) available, bearing in mind event-wide maxiumums and ticket priority settings.
 	 * @return int

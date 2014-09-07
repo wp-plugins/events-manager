@@ -7,7 +7,7 @@ $admin_recurring = is_admin() && $EM_Event->is_recurring();
 ?>
 <?php if( is_admin() ): ?><input type="hidden" name="_emnonce" value="<?php echo wp_create_nonce('edit_event'); ?>" /><?php endif; ?>
 <!-- START recurrence postbox -->
-<div id="em-form-recurrence" class="event-form-recurrence event-form-when">
+<div id="em-form-with-recurrence" class="event-form-with-recurrence event-form-when">
 	<p><?php _e('This is a recurring event.', 'dbem'); ?> <input type="checkbox" id="em-recurrence-checkbox" name="recurring" value="1" <?php if($EM_Event->is_recurring()) echo 'checked' ?> /></p>
 	<p class="em-date-range">
 		<span class="em-recurring-text"><?php _e ( 'Recurrences span from ', 'dbem' ); ?></span>

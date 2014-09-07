@@ -139,8 +139,9 @@ class EM_Categories extends EM_Object implements Iterator{
 		global $EM_Category;
 		$EM_Category_old = $EM_Category; //When looping, we can replace EM_Category global with the current event in the loop
 		//get page number if passed on by request (still needs pagination enabled to have effect)
-		if( !array_key_exists('page',$args) && !empty($args['pagination']) && !empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) ){
-			$page = $args['page'] = $_REQUEST['pno'];
+		$page_queryvar = !empty($args['page_queryvar']) ? $args['page_queryvar'] : 'pno';
+		if( !array_key_exists('page',$args) && !empty($args['pagination']) && !empty($_REQUEST[$page_queryvar]) && is_numeric($_REQUEST[$page_queryvar]) ){
+			$page = $args['page'] = $_REQUEST[$page_queryvar];
 		}
 		//Can be either an array for the get search or an array of EM_Category objects
 		if( is_object(current($args)) && get_class((current($args))) == 'EM_Category' ){

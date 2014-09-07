@@ -153,10 +153,23 @@ class EM_Bookings extends EM_Object implements Iterator{
 		if( !is_object($this->tickets) || $force_reload ){
 			$this->tickets = new EM_Tickets($this->event_id);
 			if( get_option('dbem_bookings_tickets_single') && count($this->tickets->tickets) == 1 && !empty($this->get_event()->rsvp_end) ){
+				//if in single ticket mode, then the event booking cut-off is the ticket end date
 		    	$EM_Ticket = $this->tickets->get_first();
 		    	$EM_Event = $this->get_event();
-				$EM_Ticket->ticket_end = $EM_Event->event_rsvp_date." ".$EM_Event->event_rsvp_time;
-				$EM_Ticket->end_timestamp = $EM_Event->rsvp_end;
+		    	//if ticket has cut-off date, that should take precedence as we save the ticket cut-off date/time to the event in single ticket mode
+		    	if( !empty($EM_Ticket->ticket_end) ){
+		    		//if ticket end dates are set, move to event
+		    		$EM_Event->event_rsvp_date = date('Y-m-d', $EM_Ticket->end_timestamp);
+		    		$EM_Event->event_rsvp_time = date('H:i:00', $EM_Ticket->end_timestamp);
+		    		$EM_Event->rsvp_end = $EM_Ticket->end_timestamp;
+		    		if( $EM_Event->is_recurring() && !empty($EM_Ticket->ticket_meta['recurrences']) ){
+		    			$EM_Event->recurrence_rsvp_days = $EM_Ticket->ticket_meta['recurrences']['end_days'];		    			
+		    		}	    		
+		    	}else{
+		    		//if no end date is set, use event end date (which will have defaulted to the event start date 
+		    		$EM_Ticket->ticket_end = $EM_Event->event_rsvp_date." ".$EM_Event->event_rsvp_time;
+		    		$EM_Ticket->end_timestamp = $EM_Event->rsvp_end;
+		    	}
 			}
 		}else{
 			$this->tickets->event_id = $this->event_id;

@@ -51,6 +51,8 @@ table.events-table .category { color:#888; }
 				#em-tickets-form .em-ticket-form-actions { clear:both; }
 				#em-tickets-form .ticket-spaces input, #em-tickets-form .ticket-price input { width:80px; }
  				#em-tickets-form .ticket-dates input.em-date-input-loc { width:90px; }
+				#em-tickets-form .ticket-dates-from-normal, #em-tickets-form .ticket-dates-from-recurring, 
+				#em-tickets-form .ticket-dates-to-normal, #em-tickets-form .ticket-dates-to-recurring { display:inline; }		
  				#em-tickets-form .ticket-required input, #em-tickets-form .ticket-roles input { width:auto; }
  				#em-tickets-form .ticket-roles div { margin-left:110px; }
 

@@ -70,7 +70,7 @@ global $EM_Event, $post, $allowedposttags, $EM_Ticket, $col_count;
 								</div>
 							</td>
 							<td class="ticket-price">
-								<span class="ticket_price"><?php echo ($EM_Ticket->ticket_price) ? esc_html($EM_Ticket->ticket_price) : esc_html__('Free','dbem'); ?></span>
+								<span class="ticket_price"><?php echo ($EM_Ticket->ticket_price) ? esc_html($EM_Ticket->get_price_precise()) : esc_html__('Free','dbem'); ?></span>
 							</td>
 							<td class="ticket-limit">
 								<span class="ticket_min">
@@ -79,10 +79,14 @@ global $EM_Event, $post, $allowedposttags, $EM_Ticket, $col_count;
 								<span class="ticket_max"><?php echo ( !empty($EM_Ticket->ticket_max) ) ? esc_html($EM_Ticket->ticket_max):'-'; ?></span>
 							</td>
 							<td class="ticket-time">
-								<span class="ticket_start"><?php echo ( !empty($EM_Ticket->ticket_start) ) ? date(get_option('dbem_date_format'), $EM_Ticket->start_timestamp):''; ?></span>
+								<span class="ticket_start ticket-dates-from-normal"><?php echo ( !empty($EM_Ticket->ticket_start) ) ? date(get_option('dbem_date_format'), $EM_Ticket->start_timestamp):''; ?></span>
+								<span class="ticket_start_recurring_days ticket-dates-from-recurring"><?php if( !empty($EM_Ticket->ticket_meta['recurrences']) ) echo $EM_Ticket->ticket_meta['recurrences']['start_days']; ?></span>
+								<span class="ticket_start_recurring_days_text ticket-dates-from-recurring <?php if( !empty($EM_Ticket->ticket_meta['recurrences']) && !is_numeric($EM_Ticket->ticket_meta['recurrences']['start_days']) ) echo 'hidden'; ?>"><?php _e('day(s)','dbem'); ?></span>
 								<span class="ticket_start_time"><?php echo ( !empty($EM_Ticket->ticket_start) ) ? date( em_get_hour_format(), $EM_Ticket->start_timestamp):''; ?></span>
 								<br />
-								<span class="ticket_end"><?php echo ( !empty($EM_Ticket->ticket_end) ) ? date(get_option('dbem_date_format'), $EM_Ticket->end_timestamp):''; ?></span>
+								<span class="ticket_end ticket-dates-from-normal"><?php echo ( !empty($EM_Ticket->ticket_end) ) ? date(get_option('dbem_date_format'), $EM_Ticket->end_timestamp):''; ?></span>
+								<span class="ticket_end_recurring_days ticket-dates-from-recurring"><?php if( !empty($EM_Ticket->ticket_meta['recurrences']) ) echo $EM_Ticket->ticket_meta['recurrences']['end_days']; ?></span>
+								<span class="ticket_end_recurring_days_text ticket-dates-from-recurring <?php if( !empty($EM_Ticket->ticket_meta['recurrences']) && !is_numeric($EM_Ticket->ticket_meta['recurrences']['end_days']) ) echo 'hidden'; ?>"><?php _e('day(s)','dbem'); ?></span>
 								<span class="ticket_end_time"><?php echo ( !empty($EM_Ticket->ticket_end) ) ? date( em_get_hour_format(), $EM_Ticket->end_timestamp):''; ?></span>
 							</td>
 							<td class="ticket-qty">
@@ -126,18 +130,27 @@ global $EM_Event, $post, $allowedposttags, $EM_Ticket, $col_count;
 		<input type="text" name="event_rsvp_spaces" value="<?php if( $EM_Event->event_rsvp_spaces > 0 ){ echo $EM_Event->event_rsvp_spaces; } ?>" /><br />
 		<em><?php esc_html_e('If set, the total number of spaces for a single booking to this event cannot exceed this amount.','dbem'); ?><?php esc_html_e('Leave blank for no limit.','dbem'); ?></em>
 	</p>
-	<?php if( !$EM_Event->is_recurring() ): ?>
 	<p>
 		<label><?php esc_html_e('Booking Cut-Off Date','dbem'); ?></label>
-		<span class="em-date-single">
-			<input id="em-bookings-date-loc" class="em-date-input-loc" type="text" />
-			<input id="em-bookings-date" class="em-date-input" type="hidden" name="event_rsvp_date" value="<?php echo $EM_Event->event_rsvp_date; ?>" />
+		<span class="em-booking-date-normal">
+			<span class="em-date-single">
+				<input id="em-bookings-date-loc" class="em-date-input-loc" type="text" />
+				<input id="em-bookings-date" class="em-date-input" type="hidden" name="event_rsvp_date" value="<?php echo $EM_Event->event_rsvp_date; ?>" />
+			</span>
 		</span>
-		<input type="text" name="event_rsvp_time" class="em-time-input" maxlength="8" size="8" value="<?php echo date( em_get_hour_format(), $EM_Event->rsvp_end ); ?>">
+		<span class="em-booking-date-recurring">
+			<input type="text" name="recurrence_rsvp_days" size="3" value="<?php if( !empty($EM_Event->recurrence_rsvp_days) ) echo absint($EM_Event->recurrence_rsvp_days); ?>" />
+			<?php _e('day(s)','dbem'); ?>
+			<select name="recurrence_rsvp_days_when">
+				<option value="before" <?php if( !empty($EM_Event->recurrence_rsvp_days) && $EM_Event->recurrence_rsvp_days <= 0) echo 'selected="selected"'; ?>><?php echo sprintf(_x('%s the event starts','before or after','dbem'),__('Before','dbem')); ?></option>
+				<option value="after" <?php if( !empty($EM_Event->recurrence_rsvp_days) && $EM_Event->recurrence_rsvp_days > 0) echo 'selected="selected"'; ?>><?php echo sprintf(_x('%s the event starts','before or after','dbem'),__('After','dbem')); ?></option>
+			</select>
+			<?php _e('at','dbem'); ?>
+		</span>
+		<input type="text" name="event_rsvp_time" class="em-time-input" maxlength="8" size="8" value="<?php echo date( em_get_hour_format(), $EM_Event->rsvp_end ); ?>" />
 		<br />
 		<em><?php esc_html_e('This is the definite date after which bookings will be closed for this event, regardless of individual ticket settings above. Default value will be the event start date.','dbem'); ?></em>
 	</p>
-	<?php endif; ?>
 	<?php endif; ?>
 	</div>
 	<?php

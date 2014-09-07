@@ -576,24 +576,19 @@ class EM_Location extends EM_Object {
 	
 	function get_permalink(){	
 		if( EM_MS_GLOBAL ){
+			//if no blog id defined, assume it belongs to the main blog
+			$blog_id = empty($this->blog_id) ? get_current_site()->blog_id:$this->blog_id;
 			if( get_site_option('dbem_ms_mainblog_locations') ){
+				//all locations belong to the main blog
 				$link = get_blog_permalink( get_current_site()->blog_id, $this->post_id);
-			}else{
-				if( get_site_option('dbem_ms_global_locations_links') ){
-					//linking directly to the blog, we should be on the main blog here
-					if( !empty($this->blog_id) && $this->blog_id != get_current_blog_id() ){
-						$link = get_blog_permalink( $this->blog_id, $this->post_id);
-					}else{
-						//if no blog_id is given, we assume it's the main site
-						$link = get_blog_permalink( get_current_site()->blog_id, $this->post_id);
-					}
-				}elseif( !empty($this->blog_id) && is_main_site() && $this->blog_id != get_current_blog_id() ){
+			}elseif( $blog_id != get_current_blog_id() ){
+				//decide whether to give a link to the blog the location originates from or to show it on the main site
+				if( !get_site_option('dbem_ms_global_locations_links') && is_main_site() && get_option('dbem_locations_page') ){
 					//showing subsite locations on main site, create a custom link
-					if( get_option('dbem_locations_page') ){
-						$link = trailingslashit(get_permalink(get_option('dbem_locations_page')).get_site_option('dbem_ms_locations_slug',EM_LOCATION_SLUG).'/'.$this->location_slug.'-'.$this->location_id);
-					}else{
-						$link = trailingslashit(home_url()).EM_POST_TYPE_LOCATION_SLUG.'/'.get_site_option('dbem_ms_events_slug',EM_LOCATION_SLUG).'/'.$this->location_slug.'-'.$this->location_id;
-					}
+					$link = trailingslashit(get_permalink(get_option('dbem_locations_page')).get_site_option('dbem_ms_locations_slug',EM_LOCATION_SLUG).'/'.$this->location_slug.'-'.$this->location_id);
+				}else{
+					//if location doesn't belong to current blog and/or if main blog doesn't have a locations page, link directly to the blog it belongs to
+					$link = get_blog_permalink( $blog_id, $this->post_id);					
 				}
 			}
 		}
@@ -902,7 +897,7 @@ class EM_Location extends EM_Object {
 						$args['page'] = (!empty($_REQUEST['pno']) && is_numeric($_REQUEST['pno']) )? $_REQUEST['pno'] : 1;
 					    $replace = EM_Events::output($args);
 					} else {
-						$replace = get_option('dbem_location_event_list_item_header_format').get_option('dbem_location_no_events_message').get_option('dbem_location_event_list_item_footer_format');
+						$replace = get_option('dbem_location_no_events_message');
 					}
 					break;
 				case '#_LOCATIONNEXTEVENT':
