@@ -13,7 +13,9 @@ class EM_Event_Post {
 			//override single page with formats? 
 			add_filter('the_content', array('EM_Event_Post','the_content'));
 			add_filter('the_excerpt_rss', array('EM_Event_Post','the_excerpt_rss'));
-			//add_filter('the_excerpt', array('EM_Event_Post','the_excerpt'));
+			if( get_option('dbem_cp_events_excerpt_formats') ){
+			    add_filter('the_excerpt', array('EM_Event_Post','the_excerpt'));
+			}
 			//display as page template?
 			if( get_option('dbem_cp_events_template') ){
 				add_filter('single_template',array('EM_Event_Post','single_template'));
@@ -86,6 +88,19 @@ class EM_Event_Post {
 	        }
 	    }
 	    return $classes;
+	}
+	
+	/**
+	 * Overrides the_excerpt if this is an event post type
+	 */
+	public static function the_excerpt($content){
+		global $post;
+		if( $post->post_type == EM_POST_TYPE_EVENT ){
+			$EM_Event = em_get_event($post);
+			$output = !empty($EM_Event->post_excerpt) ? get_option('dbem_event_excerpt_format'):get_option('dbem_event_excerpt_alt_format');
+			$content = $EM_Event->output($output);
+		}
+		return $content;
 	}
 	
 	public static function the_excerpt_rss( $content ){

@@ -346,7 +346,7 @@ class EM_Ticket extends EM_Object{
 	 */
 	function get_price_precise(){
 		$price = $this->ticket_price * 1;
-		if( floor($price) == (float) $price ) $price = number_format($price, 2);
+		if( floor($price) == (float) $price ) $price = number_format($price, 2, '.', '');
 		return $price;
 	}
 		

@@ -37,7 +37,7 @@ function em_geo_search_init(){
 						return; 
 					}
 	              	//do a nearest match suggestion as last resort
-					if( input.val().length > 2 ){
+					if( input.val().length >= 2 ){
 						geo_field_status(false);
 						autocompleteService = new google.maps.places.AutocompleteService();
 				        autocompleteService.getPlacePredictions( {'input': input.val(), 'offset': input.val().length }, function listentoresult(list, status) {
@@ -70,15 +70,15 @@ function em_geo_search_init(){
 			wrapper.data('last-coords', geo_coords.val());
 		};
 		google.maps.event.addListener(autocomplete, 'place_changed', ac_listener);
-		
-		var supports_placeholders = ('placeholder' in document.createElement('input'));
+				
 		if( geo_coords.val() != '' ){
 			geo_field_status('on');
 			wrapper.data('last-search', input.val() );
 			wrapper.data('last-coords', geo_coords.val() );
 		}
-		input.keypress(function(e) {
-			if(e.which == 13 ) {
+		input.keypress( function(e) {
+			//if enter is pressed once during 'near' input, don't do anything so Google can select location, otherwise let behaviour (form submittal) proceed 
+			if( e.which == 13 ) {
 				if( input.data('last-key') != 13 || wrapper.data('status') != 'on' ){
 					e.preventDefault();
 				}
@@ -89,10 +89,10 @@ function em_geo_search_init(){
 			if( this.value == '' ){ geo_field_status(false); }
 			else if( wrapper.data('last-search') != this.value ){ geo_field_status('off'); }
 			input.data('last-key', e.which);
-		}).blur(function(e){
-			if(this.value == '' && !supports_placeholders) this.value = EM.geo_placeholder;
-		}).focus(function(e){
-			if(this.value == EM.geo_placeholder ) this.value='';
+		}).blur( function(e){ //create HTML 5 placeholder effect if not HTML 5
+			if( this.value == '' && !('placeholder' in document.createElement('input')) ) this.value = EM.geo_placeholder;
+		}).focus( function(e){
+			if( this.value == EM.geo_placeholder ) this.value='';
 			input.data('last-key', 13);
 		}).attr('placeholder', EM.geo_placeholder);
 	});

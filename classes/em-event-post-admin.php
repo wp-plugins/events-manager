@@ -359,12 +359,15 @@ class EM_Event_Recurring_Post_Admin{
 			$EM_Event = em_get_event($post_id,'post_id');
 			do_action('em_event_delete_pre ',$EM_Event);
 			//now delete recurrences
-			$events_array = EM_Events::get( array('recurrence'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'everything' ) );
-			foreach($events_array as $event){
-				/* @var $event EM_Event */
-				if($EM_Event->event_id == $event->recurrence_id && !empty($event->recurrence_id) ){ //double check the event is a recurrence of this event
-					wp_delete_post($event->post_id, true);
-				}
+			//only delete other events if this isn't a draft-never-published event
+			if( !empty($EM_Event->event_id) ){
+    			$events_array = EM_Events::get( array('recurrence'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'everything' ) );
+    			foreach($events_array as $event){
+    				/* @var $event EM_Event */
+    				if($EM_Event->event_id == $event->recurrence_id && !empty($event->recurrence_id) ){ //double check the event is a recurrence of this event
+    					wp_delete_post($event->post_id, true);
+    				}
+    			}
 			}
 			$EM_Event->post_type = EM_POST_TYPE_EVENT; //trick it into thinking it's one event.
 			$EM_Event->delete_meta();
@@ -376,13 +379,16 @@ class EM_Event_Recurring_Post_Admin{
 			global $EM_Notices, $wpdb;
 			$EM_Event = em_get_event($post_id,'post_id');
 			$EM_Event->set_status(null);
-			//now trash recurrences
-			$events_array = EM_Events::get( array('recurrence_id'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'everything' ) );
-			foreach($events_array as $event){
-				/* @var $event EM_Event */
-				if($EM_Event->event_id == $event->recurrence_id ){ //double check the event is a recurrence of this event
-					wp_trash_post($event->post_id);
-				}
+			//only trash other events if this isn't a draft-never-published event
+			if( !empty($EM_Event->event_id) ){
+    			//now trash recurrences
+    			$events_array = EM_Events::get( array('recurrence_id'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'everything' ) );
+    			foreach($events_array as $event){
+    				/* @var $event EM_Event */
+    				if($EM_Event->event_id == $event->recurrence_id ){ //double check the event is a recurrence of this event
+    					wp_trash_post($event->post_id);
+    				}
+    			}
 			}
 			$EM_Notices->remove_all(); //no validation/notices needed
 		}
@@ -394,12 +400,15 @@ class EM_Event_Recurring_Post_Admin{
 			//set a constant so we know this event doesn't need 'saving'
 			if(!defined('UNTRASHING_'.$post_id)) define('UNTRASHING_'.$post_id, true);
 			$EM_Event = em_get_event($post_id,'post_id');
-			$events_array = EM_Events::get( array('recurrence_id'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'everything' ) );
-			foreach($events_array as $event){
-				/* @var $event EM_Event */
-				if($EM_Event->event_id == $event->recurrence_id){
-					wp_untrash_post($event->post_id);
-				}
+			//only untrash other events if this isn't a draft-never-published event, because if so it never had other events to untrash
+			if( !empty($EM_Event->event_id) ){
+    			$events_array = EM_Events::get( array('recurrence_id'=>$EM_Event->event_id, 'scope'=>'all', 'status'=>'everything' ) );
+    			foreach($events_array as $event){
+    				/* @var $event EM_Event */
+    				if($EM_Event->event_id == $event->recurrence_id){
+    					wp_untrash_post($event->post_id);
+    				}
+    			}
 			}
 		}
 	}

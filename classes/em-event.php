@@ -417,13 +417,15 @@ class EM_Event extends EM_Object{
 		}
 		foreach( array('event_start_time','event_end_time', 'event_rsvp_time') as $timeName ){
 			$match = array();
-			if( !empty($_POST[$timeName]) && preg_match ( '/^([01]\d|2[0-3]):([0-5]\d) ?(AM|PM)?$/', $_POST[$timeName], $match ) ){
-				if( !empty($match[3]) && $match[3] == 'PM' && $match[1] != 12 ){
+			if( !empty($_POST[$timeName]) && preg_match ( '/^([01]\d|[0-9]|2[0-3])(:([0-5]\d))? ?(AM|PM)?$/', $_POST[$timeName], $match ) ){
+				if( empty($match[3]) ) $match[3] = '00';
+				if( strlen($match[1]) == 1 ) $match[1] = '0'.$match[1];
+			    if( !empty($match[4]) && $match[4] == 'PM' && $match[1] != 12 ){
 					$match[1] = 12+$match[1];
-				}elseif( !empty($match[3]) && $match[3] == 'AM' && $match[1] == 12 ){
+				}elseif( !empty($match[4]) && $match[4] == 'AM' && $match[1] == 12 ){
 					$match[1] = '00';
-				} 
-				$this->$timeName = $match[1].":".$match[2].":00";
+				}
+				$this->$timeName = $match[1].":".$match[3].":00";
 			}else{
 				$this->$timeName = ($timeName == 'event_start_time') ? "00:00:00":$this->event_start_time;
 			}
@@ -608,8 +610,13 @@ class EM_Event extends EM_Object{
 			// TODO Create friendly equivelant names for missing fields notice in validation
 			$this->add_error( __( 'Missing fields: ', 'dbem') . implode ( ", ", $missing_fields ) . ". " );
 		}
-		if ( $this->is_recurring() && ($this->event_end_date == "" || $this->event_end_date == $this->event_start_date) ){
-			$this->add_error( __( 'Since the event is repeated, you must specify an event end date greater than the start date.', 'dbem' ));
+		if ( $this->is_recurring() ){
+		    if( $this->event_end_date == "" || $this->event_end_date == $this->event_start_date){
+		        $this->add_error( __( 'Since the event is repeated, you must specify an event end date greater than the start date.', 'dbem' ));
+		    }
+		    if( $this->recurrence_freq == 'weekly' && empty($this->recurrence_byday) ){
+		        $this->add_error( __( 'Please speficy what days of the week this event should occur on.', 'dbem' ));
+		    }
 		}
 		return apply_filters('em_event_validate_meta', count($this->errors) == 0, $this );
 	}
@@ -880,6 +887,8 @@ class EM_Event extends EM_Object{
 			 		$wpdb->query('INSERT INTO '.$wpdb->postmeta." (post_id, meta_key, meta_value) VALUES ".implode(', ', $event_meta_inserts));
 			 	}
 				if( array_key_exists('_event_approvals_count', $event_meta) ) update_post_meta($EM_Event->post_id, '_event_approvals_count', 0);
+				//copy anything from the em_meta table too
+				$wpdb->query('INSERT INTO '.EM_META_TABLE." (object_id, meta_key, meta_value) SELECT '{$EM_Event->event_id}', meta_key, meta_value FROM ".EM_META_TABLE." WHERE object_id='{$this->event_id}'");
 			 	//set event to draft status
 				return apply_filters('em_event_duplicate', $EM_Event, $this);
 			}
@@ -1476,30 +1485,33 @@ class EM_Event extends EM_Object{
 								$replace = "<img src='".esc_url($this->image_url)."' alt='".esc_attr($this->event_name)."'/>";
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
-								$image_src = $this->image_url;
+								$image_url = $this->image_url;
 								if( self::array_is_numeric($image_size) && count($image_size) > 1 ){
 								    //get a thumbnail
-								    if( get_option('dbem_disable_timthumb') ){
-									    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
-									        switch_to_blog($this->blog_id);
-									        $switch_back = true;
-									    }
-										$replace = get_the_post_thumbnail($this->ID, $image_size);
-										if( !empty($switch_back) ){ restore_current_blog(); }
+								    if( get_option('dbem_disable_thumbnails') ){
+    								    $image_attr = '';
+    								    $image_args = array();
+    								    if( empty($image_size[1]) && !empty($image_size[0]) ){    
+    								        $image_attr = 'width="'.$image_size[0].'"';
+    								        $image_args['w'] = $image_size[0];
+    								    }elseif( empty($image_size[0]) && !empty($image_size[1]) ){
+    								        $image_attr = 'height="'.$image_size[1].'"';
+    								        $image_args['h'] = $image_size[1];
+    								    }elseif( !empty($image_size[0]) && !empty($image_size[1]) ){
+    								        $image_attr = 'width="'.$image_size[0].'" height="'.$image_size[1].'"';
+    								        $image_args = array('w'=>$image_size[0], 'h'=>$image_size[1]);
+    								    }
+								        $replace = "<img src='".esc_url(em_add_get_params($image_url, $image_args))."' alt='".esc_attr($this->event_name)."' $image_attr />";
 								    }else{
-										if ( is_multisite() ) { //get the direct url as timthumb doesn't support redirect urls
-											global $blog_id;
-											$imageParts = explode('/blogs.dir/', $image_src);
-											if (isset($imageParts[1])) {
-												$image_src = network_site_url('/wp-content/blogs.dir/'. $imageParts[1]);
-											}
-										}
-										$width = ($image_size[0]) ? 'width="'.esc_attr($image_size[0]).'"':'';
-										$height = ($image_size[1]) ? 'height="'.esc_attr($image_size[1]).'"':'';
-									    $replace = "<img src='".esc_url(em_get_thumbnail_url($image_src, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->event_name)."' $width $height />";
+    								    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
+    								        switch_to_blog($this->blog_id);
+    								        $switch_back = true;
+    								    }
+								        $replace = get_the_post_thumbnail($this->ID, $image_size);
+								        if( !empty($switch_back) ){ restore_current_blog(); }
 								    }
 								}else{
-									$replace = "<img src='".esc_url($image_src)."' alt='".esc_attr($this->event_name)."'/>";
+									$replace = "<img src='".esc_url($image_url)."' alt='".esc_attr($this->event_name)."'/>";
 								}
 							}
 						}
@@ -1770,13 +1782,13 @@ class EM_Event extends EM_Object{
 					break;
 				case '#_EVENTGCALURL':
 				case '#_EVENTGCALLINK':
-					//get dates
+					//get dates in UTC/GMT time
 					if($this->event_all_day && $this->event_start_date == $this->event_end_date){
-						$dateStart	= date('Ymd',$this->start - (60*60*get_option('gmt_offset')));
-						$dateEnd	= date('Ymd',$this->start + 60*60*24 - (60*60*get_option('gmt_offset')));
+						$dateStart	= get_gmt_from_date(date('Y-m-d H:i:s', $this->start), 'Ymd');
+						$dateEnd	= get_gmt_from_date(date('Y-m-d H:i:s', $this->start + 60*60*24), 'Ymd');
 					}else{
-						$dateStart	= date('Ymd\THis\Z',$this->start - (60*60*get_option('gmt_offset')));
-						$dateEnd = date('Ymd\THis\Z',$this->end - (60*60*get_option('gmt_offset')));
+						$dateStart	= get_gmt_from_date(date('Y-m-d H:i:s', $this->start), 'Ymd\THis\Z');
+						$dateEnd = get_gmt_from_date(date('Y-m-d H:i:s', $this->end), 'Ymd\THis\Z');
 					}
 					//build url
 					$gcal_url = 'http://www.google.com/calendar/event?action=TEMPLATE&text=event_name&dates=start_date/end_date&details=post_content&location=location_name&trp=false&sprop=event_url&sprop=name:blog_name';
@@ -1870,10 +1882,10 @@ class EM_Event extends EM_Object{
 		    $event_string = str_replace(';','\;',$event_string);
 		    $event_string = str_replace(',','\,',$event_string);
 		    //remove and define line breaks in ical format
+		    $event_string = str_replace('\\\\n','\n',$event_string);
 		    $event_string = str_replace("\r\n",'\n',$event_string);
 		    $event_string = str_replace("\n",'\n',$event_string);
 		}
-		
 		return apply_filters('em_event_output', $event_string, $this, $format, $target);
 	}	
 	

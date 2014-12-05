@@ -214,6 +214,17 @@ function em_admin_warnings() {
 				<?php
 			}
 		}
+		if( array_key_exists('dbem_disable_timthumb', wp_load_alloptions()) ){
+			if( !empty($_REQUEST['dbem_disable_timthumb']) ){
+				delete_option('dbem_disable_timthumb',1);
+			}else{
+				?>
+				<div id="message" class="updated">
+					<p>We have stopped using TimThumb for thumbnails in Events Manager, <a href="http://wp-events-plugin.com/blog/2014/12/05/bye-timthumb/">please see this post</a> for more information on how this may affect you and what options are available to you. <a href="<?php echo add_query_arg(array('dbem_disable_timthumb'=>1)); ?>">Dismiss</a></p>
+				</div>
+				<?php
+			}		    
+		}
 	}
 	//Warn about EM page edit
 	if ( preg_match( '/(post|page).php/', $_SERVER ['SCRIPT_NAME']) && isset ( $_GET ['action'] ) && $_GET ['action'] == 'edit' && isset ( $_GET ['post'] ) && $_GET ['post'] == "$events_page_id") {

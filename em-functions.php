@@ -522,6 +522,7 @@ function em_get_search_form_defaults($args = array()){
 	$search_args['geo_units_label'] = get_option('dbem_search_form_geo_units_label'); //field label
 	$search_args['near_unit'] = get_option('dbem_search_form_geo_unit_default'); //default distance unit
 	$search_args['near_distance'] = get_option('dbem_search_form_geo_distance_default'); //default distance amount
+	$search_args['geo_distance_values'] =  explode(',', get_option('dbem_search_form_geo_distance_options')); //possible distance values
 	//scope
 	$search_args['scope'] = array('',''); //default scope term
 	$search_args['search_scope'] = get_option('dbem_search_form_dates');
@@ -565,13 +566,13 @@ function em_get_search_form_defaults($args = array()){
 	$args = array_merge($search_args, $args);
 	//overwrite with $_REQUEST defaults in event of a submitted search
 	if( isset($_REQUEST['geo']) ) $args['geo'] = $_REQUEST['geo']; //if geo search string requested, use that for search form
-	if( isset($_REQUEST['near']) ) $args['near'] = $_REQUEST['near']; //if geo search string requested, use that for search form
-	if( isset($_REQUEST['em_search']) ) $args['search'] = $_REQUEST['em_search']; //if geo search string requested, use that for search form
+	if( isset($_REQUEST['near']) ) $args['near'] = stripslashes($_REQUEST['near']); //if geo search string requested, use that for search form
+	if( isset($_REQUEST['em_search']) ) $args['search'] = stripslashes($_REQUEST['em_search']); //if geo search string requested, use that for search form
 	if( isset($_REQUEST['category']) ) $args['category'] = $_REQUEST['category']; //if state requested, use that for searching
-	if( isset($_REQUEST['country']) ) $args['country'] = $_REQUEST['country']; //if country requested, use that for searching
-	if( isset($_REQUEST['region']) ) $args['region'] = $_REQUEST['region']; //if region requested, use that for searching
-	if( isset($_REQUEST['state']) ) $args['state'] = $_REQUEST['state']; //if state requested, use that for searching
-	if( isset($_REQUEST['town']) ) $args['town'] = $_REQUEST['town']; //if state requested, use that for searching
+	if( isset($_REQUEST['country']) ) $args['country'] = stripslashes($_REQUEST['country']); //if country requested, use that for searching
+	if( isset($_REQUEST['region']) ) $args['region'] = stripslashes($_REQUEST['region']); //if region requested, use that for searching
+	if( isset($_REQUEST['state']) ) $args['state'] = stripslashes($_REQUEST['state']); //if state requested, use that for searching
+	if( isset($_REQUEST['town']) ) $args['town'] = stripslashes($_REQUEST['town']); //if state requested, use that for searching
 	if( isset($_REQUEST['near_unit']) ) $args['near_unit'] = $_REQUEST['near_unit']; //if state requested, use that for searching
 	if( isset($_REQUEST['near_distance']) ) $args['near_distance'] = $_REQUEST['near_distance']; //if state requested, use that for searching
 	if( !empty($_REQUEST['scope']) && !is_array($_REQUEST['scope'])){ 
@@ -786,10 +787,6 @@ if( !function_exists( 'is_main_query' ) ){
 	 * @return bool
 	 */
 	function is_main_query(){ global $wp_query; return $wp_query->in_the_loop == true; }
-}
-
-function em_get_thumbnail_url($image_url, $width, $height){
-	return plugins_url('includes/thumbnails/timthumb.php', __FILE__).'?src='.$image_url.'&amp;h='. $height .'&amp;w='. $width;
 }
 
 /**

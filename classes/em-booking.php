@@ -116,7 +116,7 @@ class EM_Booking extends EM_Object{
 				$booking = $booking_data;
 			}elseif( is_numeric($booking_data) ){
 				//Retreiving from the database
-				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." LEFT JOIN ". EM_META_TABLE ." ON object_id=booking_id WHERE booking_id ='$booking_data'";
+				$sql = "SELECT * FROM ". EM_BOOKINGS_TABLE ." WHERE booking_id ='$booking_data'";
 				$booking = $wpdb->get_row($sql, ARRAY_A);
 			}
 			//booking meta
@@ -741,6 +741,7 @@ class EM_Booking extends EM_Object{
 				$this->previous_status = $this->booking_status;
 				$this->booking_status = false;
 				$this->feedback_message = sprintf(__('%s deleted', 'dbem'), __('Booking','dbem'));
+				$wpdb->delete( EM_META_TABLE, array('meta_key'=>'booking-note', 'object_id' => $this->booking_id), array('%s','%d'));
 			}else{
 				$this->add_error(sprintf(__('%s could not be deleted', 'dbem'), __('Booking','dbem')));
 			}
@@ -1002,7 +1003,7 @@ class EM_Booking extends EM_Object{
 			}
 			
 			//Send admin/contact emails if this isn't the event owner or an events admin
-			if( $email_admin && !empty($msg['admin']['subject']) && (!$this->can_manage() || (!empty($_REQUEST['action']) && $_REQUEST['action'] == 'booking_add') || $this->manage_override) ){ //emails won't be sent if admin is logged in unless they book themselves
+			if( $email_admin && !empty($msg['admin']['subject']) ){ //emails won't be sent if admin is logged in unless they book themselves
 				//get admin emails that need to be notified, hook here to add extra admin emails
 				$admin_emails = str_replace(' ','',get_option('dbem_bookings_notify_admin'));
 				$admin_emails = apply_filters('em_booking_admin_emails', explode(',', $admin_emails), $this); //supply emails as array
