@@ -15,12 +15,12 @@ class EM_Widget extends WP_Widget {
     		'order' => 'ASC',
     		'limit' => 5,
     		'category' => 0,
-    		'format' => '#_EVENTLINK<ul><li>#_EVENTDATES</li><li>#_LOCATIONTOWN</li></ul>',
+    		'format' => '<li>#_EVENTLINK<ul><li>#_EVENTDATES</li><li>#_LOCATIONTOWN</li></ul></li>',
     		'nolistwrap' => false,
     		'orderby' => 'event_start_date,event_start_time,event_name',
 			'all_events' => 0,
 			'all_events_text' => __('all events', 'dbem'),
-			'no_events_text' => __('No events', 'dbem')
+			'no_events_text' => '<li>'.__('No events', 'dbem').'</li>'
     	);
 		$this->em_orderby_options = apply_filters('em_settings_events_default_orderby_ddm', array(
 			'event_start_date,event_start_time,event_name' => __('start date, start time, event name','dbem'),
@@ -43,8 +43,13 @@ class EM_Widget extends WP_Widget {
 		    echo apply_filters('widget_title',$instance['title'], $instance, $this->id_base);
 		    echo $args['after_title'];
     	}
-    	
+    	//remove owner searches
 		$instance['owner'] = false;
+		
+		//legacy stuff
+		//add li tags to old widgets that have no forced li wrappers
+		if ( !preg_match('/^<li/i', trim($instance['format'])) ) $instance['format'] = '<li>'. $instance['format'] .'</li>';
+		if (!preg_match('/^<li/i', trim($instance['no_events_text'])) ) $instance['no_events_text'] = '<li>'.$instance['no_events_text'].'</li>';
 		//orderby fix for previous versions with old orderby values
 		if( !array_key_exists($instance['orderby'], $this->em_orderby_options) ){
 			//replace old values
@@ -60,19 +65,17 @@ class EM_Widget extends WP_Widget {
 			}
 		}
 		
+		//get events
 		$events = EM_Events::get(apply_filters('em_widget_events_get_args',$instance));
+		
+		//output events
 		echo "<ul>";
-		$li_wrap = !preg_match('/^<li>/i', trim($instance['format']));
 		if ( count($events) > 0 ){
 			foreach($events as $event){				
-				if( $li_wrap ){
-					echo '<li>'. $event->output($instance['format']) .'</li>';
-				}else{
-					echo $event->output($instance['format']);
-				}
+				echo $event->output( $instance['format'] );
 			}
 		}else{
-			echo '<li>'.$instance['no_events_text'].'</li>';
+		    echo $instance['no_events_text'];
 		}
 		if ( !empty($instance['all_events']) ){
 			$events_link = (!empty($instance['all_events_text'])) ? em_get_link($instance['all_events_text']) : em_get_link(__('all events','dbem'));
@@ -89,6 +92,14 @@ class EM_Widget extends WP_Widget {
     		if( !isset($new_instance[$key]) ){
     			$new_instance[$key] = $value;
     		}
+    		//make sure formats and the no locations text are wrapped with li tags
+		    if( ($key == 'format' || $key == 'no_events_text') && !preg_match('/^<li/i', trim($new_instance[$key])) ){
+            	$new_instance[$key] = '<li>'.force_balance_tags($new_instance[$key]).'</li>';
+		    }
+		    //balance tags and sanitize output formats
+		    if( in_array($key, array('format', 'no_events_text', 'all_events_text')) ){
+		        $new_instance[$key] = force_balance_tags(wp_kses_post($new_instance[$key]));
+		    }
     	}
     	return $new_instance;
     }
@@ -99,40 +110,37 @@ class EM_Widget extends WP_Widget {
     	$instance = $this->fix_scope($instance); // depcreciate
         ?>
 		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'dbem'); ?>: </label>
-			<input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($instance['title']); ?>" />
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php esc_html_e('Title', 'dbem'); ?>: </label>
+			<input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($instance['title']); ?>" class="widefat" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php _e('Number of events','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php esc_html_e('Number of events','dbem'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" size="3" value="<?php echo esc_attr($instance['limit']); ?>" />
 		</p>
 		<p>
 			
-			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope','dbem'); ?>: </label><br/>
-			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >
+			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php esc_html_e('Scope','dbem'); ?>: </label><br/>
+			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" class="widefat" >
 				<?php foreach( em_get_scopes() as $key => $value) : ?>   
-				<option value='<?php echo $key ?>' <?php echo ($key == $instance['scope']) ? "selected='selected'" : ''; ?>>
-					<?php echo $value; ?>
+				<option value='<?php echo esc_attr($key); ?>' <?php echo ($key == $instance['scope']) ? "selected='selected'" : ''; ?>>
+					<?php echo esc_html($value); ?>
 				</option>
 				<?php endforeach; ?>
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Order By','dbem'); ?>: </label>
-			<select  id="<?php echo $this->get_field_id('orderby'); ?>" name="<?php echo $this->get_field_name('orderby'); ?>">
-				<?php  
-					echo $this->em_orderby_options;
-				?>
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order By','dbem'); ?>: </label>
+			<select  id="<?php echo $this->get_field_id('orderby'); ?>" name="<?php echo $this->get_field_name('orderby'); ?>" class="widefat">
 				<?php foreach($this->em_orderby_options as $key => $value) : ?>   
-	 			<option value='<?php echo $key ?>' <?php echo ( !empty($instance['orderby']) && $key == $instance['orderby']) ? "selected='selected'" : ''; ?>>
-	 				<?php echo $value; ?>
+	 			<option value='<?php echo esc_attr($key); ?>' <?php echo ( !empty($instance['orderby']) && $key == $instance['orderby']) ? "selected='selected'" : ''; ?>>
+	 				<?php echo esc_html($value); ?>
 	 			</option>
 				<?php endforeach; ?>
 			</select> 
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Order','dbem'); ?>: </label>
-			<select id="<?php echo $this->get_field_id('order'); ?>" name="<?php echo $this->get_field_name('order'); ?>">
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order','dbem'); ?>: </label>
+			<select id="<?php echo $this->get_field_id('order'); ?>" name="<?php echo $this->get_field_name('order'); ?>" class="widefat">
 				<?php 
 				$order_options = apply_filters('em_widget_order_ddm', array(
 					'ASC' => __('Ascending','dbem'),
@@ -140,32 +148,42 @@ class EM_Widget extends WP_Widget {
 				)); 
 				?>
 				<?php foreach( $order_options as $key => $value) : ?>   
-	 			<option value='<?php echo $key ?>' <?php echo ($key == $instance['order']) ? "selected='selected'" : ''; ?>>
-	 				<?php echo $value; ?>
+	 			<option value='<?php echo esc_attr($key); ?>' <?php echo ($key == $instance['order']) ? "selected='selected'" : ''; ?>>
+	 				<?php echo esc_html($value); ?>
 	 			</option>
 				<?php endforeach; ?>
 			</select>
 		</p>
 		<p>
-            <label for="<?php echo $this->get_field_id('category'); ?>"><?php _e('Category IDs','dbem'); ?>: </label>
-            <input type="text" id="<?php echo $this->get_field_id('category'); ?>" name="<?php echo $this->get_field_name('category'); ?>" size="3" value="<?php echo esc_attr($instance['category']); ?>" /><br />
-            <em><?php _e('1,2,3 or 2 (0 = all)','dbem'); ?> </em>
+            <label for="<?php echo $this->get_field_id('category'); ?>"><?php esc_html_e('Category IDs','dbem'); ?>: </label>
+            <input type="text" id="<?php echo $this->get_field_id('category'); ?>" class="widefat" name="<?php echo $this->get_field_name('category'); ?>" size="3" value="<?php echo esc_attr($instance['category']); ?>" /><br />
+            <em><?php esc_html_e('1,2,3 or 2 (0 = all)','dbem'); ?> </em>
         </p>
-		<p>
-			<label for="<?php echo $this->get_field_id('format'); ?>"><?php _e('List item format','dbem'); ?>: </label>
-			<textarea rows="5" cols="24" id="<?php echo $this->get_field_id('format'); ?>" name="<?php echo $this->get_field_name('format'); ?>"><?php echo $instance['format']; ?></textarea>
+        <p>
+			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php esc_html_e('Show all events link at bottom?','dbem'); ?>: </label>
+			<input type="checkbox" id="<?php echo $this->get_field_id('all_events'); ?>" name="<?php echo $this->get_field_name('all_events'); ?>" <?php echo (!empty($instance['all_events']) && $instance['all_events']) ? 'checked':''; ?>  class="widefat">
+		</p>
+		<p id="<?php echo $this->get_field_id('all_events'); ?>-section">
+			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php esc_html_e('All events link text?','dbem'); ?>: </label>
+			<input type="text" id="<?php echo $this->get_field_id('all_events_text'); ?>" name="<?php echo $this->get_field_name('all_events_text'); ?>" value="<?php echo esc_attr( $instance['all_events_text'] ); ?>" >
+		</p>
+		<script type="text/javascript">
+		jQuery('#<?php echo $this->get_field_id('all_events'); ?>').change( function(){
+			if( this.checked ){
+			    jQuery(this).parent().next().show();
+			}else{
+				jQuery(this).parent().next().hide();
+			} 
+		}).trigger('change');
+		</script>
+		<em><?php echo sprintf( esc_html__('The list is wrapped in a %s tag, so if an %s tag is not wrapping the formats below it will be added automatically.','dbem'), '<code>&lt;ul&gt;</code>', '<code>&lt;li&gt;</code>'); ?></em>
+        <p>
+			<label for="<?php echo $this->get_field_id('format'); ?>"><?php esc_html_e('List item format','dbem'); ?>: </label>
+			<textarea rows="5" cols="24" id="<?php echo $this->get_field_id('format'); ?>" name="<?php echo $this->get_field_name('format'); ?>" class="widefat"><?php echo esc_textarea($instance['format']); ?></textarea>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php _e('Show all events link at bottom?','dbem'); ?>: </label>
-			<input type="checkbox" id="<?php echo $this->get_field_id('all_events'); ?>" name="<?php echo $this->get_field_name('all_events'); ?>" <?php echo (!empty($instance['all_events']) && $instance['all_events']) ? 'checked':''; ?> >
-		</p>
-		<p>
-			<label for="<?php echo $this->get_field_id('all_events'); ?>"><?php _e('All events link text?','dbem'); ?>: </label>
-			<input type="text" id="<?php echo $this->get_field_id('all_events_text'); ?>" name="<?php echo $this->get_field_name('all_events_text'); ?>" value="<?php echo (!empty($instance['all_events_text'])) ? $instance['all_events_text']:__('all events','dbem'); ?>" >
-		</p>
-		<p>
-			<label for="<?php echo $this->get_field_id('no_events_text'); ?>"><?php _e('No events text','dbem'); ?>: </label>
-			<input type="text" id="<?php echo $this->get_field_id('no_events_text'); ?>" name="<?php echo $this->get_field_name('no_events_text'); ?>" value="<?php echo (!empty($instance['no_events_text'])) ? $instance['no_events_text']:__('No events', 'dbem'); ?>" >
+			<label for="<?php echo $this->get_field_id('no_events_text'); ?>"><?php _e('No events message','dbem'); ?>: </label>
+			<input type="text" id="<?php echo $this->get_field_id('no_events_text'); ?>" name="<?php echo $this->get_field_name('no_events_text'); ?>" value="<?php echo esc_attr( $instance['no_events_text'] ); ?>" >
 		</p>
         <?php 
     }

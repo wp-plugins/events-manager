@@ -5,6 +5,10 @@ class EM_Location_Post {
 		if( !is_admin() ){
 			//override single page with formats? 
 			add_filter('the_content', array('EM_Location_Post','the_content'));
+			//override excerpts?
+			if( get_option('dbem_cp_locations_excerpt_formats') ){
+			    add_filter('the_excerpt', array('EM_Location_Post','the_excerpt'));
+			}
 			//display as page or other template?
 			if( get_option('dbem_cp_locations_template') ){
 				add_filter('single_template',array('EM_Location_Post','single_template'));
@@ -59,6 +63,19 @@ class EM_Location_Post {
 	        }
 	    }
 	    return $classes;
+	}
+	
+	/**
+	 * Overrides the_excerpt if this is an location post type
+	 */
+	public static function the_excerpt($content){
+		global $post;
+		if( $post->post_type == EM_POST_TYPE_LOCATION ){
+			$EM_Location = em_get_location($post);
+			$output = !empty($EM_Location->post_excerpt) ? get_option('dbem_location_excerpt_format'):get_option('dbem_location_excerpt_alt_format');
+			$content = $EM_Location->output($output);
+		}
+		return $content;
 	}
 	
 	public static function the_content( $content ){

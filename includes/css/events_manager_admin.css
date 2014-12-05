@@ -109,7 +109,16 @@ table.events-table .category { color:#888; }
 #location-balloon-content h3 { background:none; text-shadow:none; }
 
 /* Options Page */
-#dbem_options_form td, #dbem_options_form th { vertical-align:top; }
+#em-options-form .inside { border-top: 1px solid #dedede; margin-top:0px; padding-top:10px; }
+#em-options-form h3 { font-size:16px; }	
+#em-options-form td, #em-options-form th { vertical-align:top; }
+#em-options-form th { padding: 15px 20px; margin:0 !important; font-size:0.97em; }
+#em-options-form .em-boxheader { font-style:italic; margin:0; padding:10px 5px; }
+#em-options-form tr.em-header td { font-style:italic; padding:10px 5px; margin:0; }
+#em-options-form tr.em-header h4 { font-weight:bold; font-size:15px; font-style:normal; border-bottom: 1px solid #dedede; margin:0 0 10px; padding:0 0 10px; }
+#em-options-form tr.em-subheader td { font-style:italic; margin:0; padding:5px 20px 2px; }
+#em-options-form tr.em-subheader h5 { font-style:normal; margin:10px 0; padding:0 0 5px; font-weight:bold; font-size:15px; border-bottom: 1px solid #efefef; color:#000; }
+#em-options-form tbody.em-subsection th { padding-left:35px; }
 table.em-caps-table th, table.em-caps-table td { width:auto !important; }
 .em-translatable { display:inline-block; width:16px; height:16px; background:url(../images/globe.png) 0px 0px no-repeat; padding:0px 5px 0px 0px; cursor:pointer; }
 .em-ml-options { display:none; }

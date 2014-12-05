@@ -104,7 +104,11 @@ if( !empty($_REQUEST['success']) ){
 		<?php do_action('em_front_event_form_footer'); ?>
 	</div>
 	<p class="submit">
-		<input type="submit" name="events_update" value="<?php esc_attr_e( 'Submit Event', 'dbem' ); ?> &raquo;" />
+	    <?php if( empty($EM_Event->event_id) ): ?>
+	    <input type='submit' class='button-primary' name='submit' value='<?php echo esc_attr(sprintf( __('Submit %s','dbem'), __('Event','dbem') )); ?>' />
+	    <?php else: ?>
+	    <input type='submit' class='button-primary' name='submit' value='<?php echo esc_attr(sprintf( __('Update %s','dbem'), __('Event','dbem') )); ?>' />
+	    <?php endif; ?>
 	</p>
 	<input type="hidden" name="event_id" value="<?php echo $EM_Event->event_id; ?>" />
 	<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('wpnonce_event_save'); ?>" />

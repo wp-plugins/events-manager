@@ -3,8 +3,8 @@ Contributors: netweblogic, nutsmuggler
 Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.5
-Tested up to: 3.9.1
-Stable tag: 5.5.3.1
+Tested up to: 4.1
+Stable tag: 5.5.4
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,10 +98,9 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
-= 5.5.3.2 (dev) =
-* added partial (17%) Estonian translation file
+= 5.5.4 =
 * fixed no events message for #_LOCATIONNEXTEVENTS and similar showing header/footer formats for an events list
-* updated Czech and German
+* updated all language files including POT file, added Norwegian, Persian and Turkish
 * fixed/improved pricing to include 4 decimal precision for better tax rounding with large numbers,
 * fixed/changed incorrect filter em_event_validate to em_ticket_booking_validate in classes/em-ticket-booking.php
 * added new jQuery hooks for altering map and marker options
@@ -110,7 +109,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * fixed duplicate event meta on duplication of event
 * increased pricing to 6 decimal precision,
 * added get_price_with_taxes function to EM_Ticket_Booking
-* fixed multisite issues when creating events with conflicting post IDs on other sites [t:1037 s:r]
+* fixed multisite issues when creating events with conflicting post IDs on other sites
 * fixed MS Global Mode permalink issues with cross-site locations and optimized cross-site event permalink creation
 * fixed preview mode duplicating tickets whilst in draft status
 * added event and ticket cut-off date support to recurring events
@@ -120,6 +119,38 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * added multi-level taxonomy condition searching so seperating ids/slugs by & will force an AND search as well as the traditional comma for OR searches
 * fixed custom taxonomies not being saved from recurring events to recurrences
 * added page_queryvar search attribute which allows for independent paginated shortcode lists via a custom page number id
+* fixed HTML entities breaking CSV output in booking exports
+* fixed recurrences validation when no days are supplied in weekly pattern
+* improved event time validation to catch variations without help from the timepicker
+* fixed taxonomy theme templates not overriding pages due to our formats
+* fixed some typos on settings page
+* improved styling of options page to make option sets clearer to distinguish
+* added excerpt formats to events and locations and appropriate settings
+* fixed BP private group admins being able to directly publish private group events whether or not they have publish caps
+* changed minimum characters to autosuggest location from auto-completer on 'near' search to 2 characters
+* removed usage of TimThumb
+* changed thumbnail generation to optionally allow for full-sized images scaled by HTML attributes and adding querystring arguments for use with Photon by JetPack image scaling
+* fixed typo for single ticket mode setting explanation
+* fixed em_events_list_grouped not returning a string for output
+* fixed order attribute not accepting lowercase asc/desc options
+* fixed pagination issues when changing row limits on bookings table
+* added distance options to search form on settings page,
+* fixed distance not searching in km
+* fixed DST miscalculations with google add-to-calendar link
+* fixed ical descriptions not accepting \n characters
+* improved translation text for event and location form submit buttons
+* improved events and locations widgets so li wrapping tags can contain classes as well as adding sanitization, cleaning up etc.
+* fixed 'awaiting payment' statuses not showing edit/approve links in EM Free
+* fixed trashing blank recurrence creating unexpected results
+* fixed escaping issues on punctuations for text searches on some servers
+* fixed template templates/tables/locations.php to not show delete options if user doesn't have the capability
+* improved country search attribute by adding ability to search multiple countries at once by using comma-delimited strings
+* fixed ticket price formatting resulting in thousand separator triggering validation errors when updating event
+* fixed private events showing up on global locations map
+* improved loading of EM_Booking SQL to initially exclude em_meta and join the table
+* fixed booking notes not being deleted in em_meta table along with booking
+* changed booking email notifications so admins get an email for every action performed
+* fixed duplication of event not copying over data stored in the em_meta table
 
 = 5.5.3.1 =
 * added #_TAGNOTES
@@ -335,7 +366,7 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 * changed location forms to have consistent id and class structure (id to be deprecated)
 * changed CSS for location forms to uses classes not ids
 * added templates/forms/map-container.php
-* changed location form templates to call a seperate/single map template
+* changed location form templates to call a separate/single map template
 * fixed inconsistencies with set_status functions in EM_Events and EM_Location objects
 * added deregistration of em script on BP messages page to avoid autocompleter clashes
 * fixed WPDB::escape() usage and replaced with esc_sql()

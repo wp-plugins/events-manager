@@ -817,26 +817,33 @@ class EM_Location extends EM_Object {
 							}else{
 								$image_size = explode(',', $placeholders[3][$key]);
 								if( self::array_is_numeric($image_size) && count($image_size) > 1 ){
-								    if( get_option('dbem_disable_timthumb') ){
-									    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
-									        //location belongs to another blog, so switch blog then call the default wp fucntion
-									        switch_to_blog($this->blog_id);
-								    		$replace = get_the_post_thumbnail($this->ID, $image_size);
-								    		restore_current_blog();
-									    }else{
-									    	$replace = get_the_post_thumbnail($this->ID, $image_size);
-									    }
+								    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
+    								    //get a thumbnail
+    								    if( get_option('dbem_disable_thumbnails') ){
+        								    $image_attr = '';
+        								    $image_args = array();
+        								    if( empty($image_size[1]) && !empty($image_size[0]) ){    
+        								        $image_attr = 'width="'.$image_size[0].'"';
+        								        $image_args['w'] = $image_size[0];
+        								    }elseif( empty($image_size[0]) && !empty($image_size[1]) ){
+        								        $image_attr = 'height="'.$image_size[1].'"';
+        								        $image_args['h'] = $image_size[1];
+        								    }elseif( !empty($image_size[0]) && !empty($image_size[1]) ){
+        								        $image_attr = 'width="'.$image_size[0].'" height="'.$image_size[1].'"';
+        								        $image_args = array('w'=>$image_size[0], 'h'=>$image_size[1]);
+        								    }
+    								        $replace = "<img src='".esc_url(em_add_get_params($image_url, $image_args))."' alt='".esc_attr($this->location_name)."' $image_attr />";
+    								    }else{
+    								        //location belongs to another blog, so switch blog then call the default wp fucntion
+        								    if( EM_MS_GLOBAL && get_current_blog_id() != $this->blog_id ){
+        								        switch_to_blog($this->blog_id);
+        								        $switch_back = true;
+        								    }
+    								        $replace = get_the_post_thumbnail($this->ID, $image_size);
+    								        if( !empty($switch_back) ){ restore_current_blog(); }
+    								    }
 								    }else{
-										global $blog_id;
-										if ( is_multisite() && $blog_id > 0) {
-											$imageParts = explode('/blogs.dir/', $image_url);
-											if (isset($imageParts[1])) {
-												$image_url = network_site_url('/wp-content/blogs.dir/'. $blog_id. '/' . $imageParts[1]);
-											}
-										}
-										$width = ($image_size[0]) ? 'width="'.esc_attr($image_size[0]).'"':'';
-										$height = ($image_size[1]) ? 'height="'.esc_attr($image_size[1]).'"':'';
-									    $replace = "<img src='".esc_url(em_get_thumbnail_url($image_url, $image_size[0], $image_size[1]))."' alt='".esc_attr($this->location_name)."' $width $height />";
+								    	$replace = get_the_post_thumbnail($this->ID, $image_size);
 								    }
 								}else{
 									$replace = "<img src='".$image_url."' alt='".esc_attr($this->location_name)."'/>";

@@ -59,6 +59,10 @@ $args = !empty($args) ? $args:array(); /* @var $args array */
 		<?php if( (empty($args['show_advanced']) || empty($args['search_countries'])) && !empty($args['country']) ): //show country in hidden field for geo searching ?>
 		<input type="hidden" name="country" value="<?php echo esc_attr($args['country']) ?>" />
 		<?php endif; ?>
+		<?php if( empty($args['show_advanced']) || empty($args['search_geo_units']) ): //show country in hidden field for geo searching ?>
+		    <?php if( !empty($args['near_distance']) ) : ?><input name="near_distance" type="hidden" value="<?php echo $args['near_distance']; ?>" /><?php endif; ?>
+		    <?php if( !empty($args['near_unit']) ) : ?><input name="near_unit" type="hidden" value="<?php echo $args['near_unit']; ?>" /><?php endif; ?>
+		<?php endif; ?>
 	</form>
 </div>
 <?php if( !empty($args['ajax']) ): ?><div class='em-search-ajax'></div><?php endif; ?>

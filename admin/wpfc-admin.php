@@ -21,7 +21,7 @@ function wpfc_em_admin_options(){
 	<div  class="postbox " >
 		<div class="handlediv" title="<?php __('Click to toggle', 'dbem'); ?>"><br /></div><h3 class='hndle'><span><?php _e ( 'Full Calendar Options', 'dbem' ); ?> </span></h3>
 		<div class="inside">
-			<p><?php echo sprintf(__('Looking for the rest of the FullCalendar Options? They\'ve moved <a href="%s">here</a>, the options below are for overriding specific bits relevant to Events Manager.','dbem'), admin_url('options-general.php?page=wp-fullcalendar')); ?></p>
+			<p  class="em-boxheader"><?php echo sprintf(__('Looking for the rest of the FullCalendar Options? They\'ve moved <a href="%s">here</a>, the options below are for overriding specific bits relevant to Events Manager.','dbem'), admin_url('options-general.php?page=wp-fullcalendar')); ?></p>
 			<table class='form-table'>
 				<?php
 				global $events_placeholder_tip, $save_button;

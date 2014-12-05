@@ -24,6 +24,10 @@ class EM_Event_Posts_Admin{
 			add_filter('manage_edit-'.EM_POST_TYPE_EVENT.'_columns' , array('EM_Event_Posts_Admin','columns_add'));
 			add_filter('manage_'.EM_POST_TYPE_EVENT.'_posts_custom_column' , array('EM_Event_Posts_Admin','columns_output'),10,2 );
 		}
+		//clean up the views in the admin selection area - WIP
+		//add_filter('views_edit-'.EM_POST_TYPE_EVENT, array('EM_Event_Posts_Admin','restrict_views'),10,2);
+		//add_filter('views_edit-event-recurring', array('EM_Event_Posts_Admin','restrict_views'),10,2);
+		//add filters to event post list tables
 		add_action('restrict_manage_posts', array('EM_Event_Posts_Admin','restrict_manage_posts'));
 	}
 	
@@ -52,6 +56,67 @@ class EM_Event_Posts_Admin{
 			.tablenav select[name="m"] { display:none; }
 		</style>
 		<?php
+	}
+	
+	/**
+	 * Handles WP_Query filter option in the admin area, which gets executed before EM_Event_Post::parse_query
+	 * Not yet in use 
+	 */
+	public static function parse_query(){
+		global $wp_query;
+		//Search Query Filtering
+	    if( !empty($wp_query->query_vars[EM_TAXONOMY_CATEGORY]) && is_numeric($wp_query->query_vars[EM_TAXONOMY_CATEGORY]) ){
+	        //sorts out filtering admin-side as it searches by id
+	        $term = get_term_by('id', $wp_query->query_vars[EM_TAXONOMY_CATEGORY], EM_TAXONOMY_CATEGORY);
+	        $wp_query->query_vars[EM_TAXONOMY_CATEGORY] = ( $term !== false && !is_wp_error($term) )? $term->slug:0;
+	    }
+		if( !empty($wp_query->query_vars['post_type']) && ($wp_query->query_vars['post_type'] == EM_POST_TYPE_EVENT || $wp_query->query_vars['post_type'] == 'event-recurring') && (empty($wp_query->query_vars['post_status']) || !in_array($wp_query->query_vars['post_status'],array('trash','pending','draft'))) ) {
+		    //Set up Scope for EM_Event_Post
+			$scope = $wp_query->query_vars['scope'] = (!empty($_REQUEST['scope'])) ? $_REQUEST['scope']:'future';
+		}
+	}
+	
+	/**
+	 * Adds Future view to make things simpler, and also changes counts if user doesn't have edit_others_events permission
+	 * @param array $views
+	 * @return array
+	 */
+	public static function restrict_views( $views ){
+		global $wp_query;
+		//TODO alter views of locations, events and recurrences, specifically find a good way to alter the wp_count_posts method to force user owned posts only
+		$post_type = get_current_screen()->post_type;
+		if( in_array($post_type, array(EM_POST_TYPE_EVENT, 'event-recurring')) ){
+			//get counts for future events
+			$num_posts = wp_count_posts( $post_type, 'readable' );
+			//prepare to alter cache if neccessary
+			if( !isset($num_posts->em_future) ){
+				$cache_key = $post_type;
+				$user = wp_get_current_user();
+				if ( is_user_logged_in() && !current_user_can('read_private_events') ) {
+					$cache_key .= '_readable_' . $user->ID; //as seen on wp_count_posts
+				}
+				$args = array('scope'=>'future', 'status'=>'all');
+				if( $post_type == 'event-recurring' ) $args['recurring'] = 1;
+				$num_posts->em_future = EM_Events::count($args);
+				wp_cache_set($cache_key, $num_posts, 'counts');
+			}
+			$class = '';
+			//highlight the 'Future' status if necessary
+			if( empty($_REQUEST['post_status']) && !empty($wp_query->query_vars['scope']) && $wp_query->query_vars['scope'] == 'future'){
+				$class = ' class="current"';
+				foreach($views as $key => $view){
+					$views[$key] = str_replace(' class="current"','', $view);
+				}
+			}
+			//change the 'All' status to have scope=all
+			$views['all'] = str_replace('edit.php?', 'edit.php?scope=all&', $views['all'] );
+			//merge new custom status into views
+			$old_views = $views;
+			$views = array('em_future' => "<a href='edit.php?post_type=$post_type'$class>" . sprintf( _nx( 'Future <span class="count">(%s)</span>', 'Future <span class="count">(%s)</span>', $num_posts->em_future, 'events', 'dbem' ), number_format_i18n( $num_posts->em_future ) ) . '</a>');
+			$views = array_merge($views, $old_views);
+		}
+		
+		return $views;
 	}
 	
 	public static function restrict_manage_posts(){

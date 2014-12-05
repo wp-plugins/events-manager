@@ -4,9 +4,9 @@
 echo $EM_Ticket_Booking->get_ticket()->name; 
 ?>
 
-Quantity: <?php echo $EM_Ticket_Booking->get_spaces(); ?>
+<?php _e('Quantity','dbem'); ?>: <?php echo $EM_Ticket_Booking->get_spaces(); ?>
 
-Price: <?php echo em_get_currency_symbol(!get_option('dbem_smtp_html'))." ". number_format($EM_Ticket_Booking->get_price(),2); ?>
+<?php _e('Price','dbem'); ?>: <?php echo em_get_currency_symbol(!get_option('dbem_smtp_html'))." ". number_format($EM_Ticket_Booking->get_price(),2); ?>
 
 
 <?php endforeach; ?>

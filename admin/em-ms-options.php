@@ -72,15 +72,6 @@ function em_ms_admin_options_page() {
 	<script type="text/javascript" charset="utf-8"><?php include(EM_DIR.'/includes/js/admin-settings.js'); ?></script>
 	<script type="text/javascript" charset="utf-8">
 		jQuery(document).ready(function($){
-			//MS Mode selection hiders 
-			$('input[name="dbem_ms_global_table"]').change(function(){ //global
-				if( $('input:radio[name="dbem_ms_global_table"]:checked').val() == 1 ){
-					$("tbody.em-global-options").show();
-					$('input:radio[name="dbem_ms_mainblog_locations"]:checked').trigger('change');
-				}else{
-					$("tbody.em-global-options").hide();					
-				}
-			}).first().trigger('change');
 			//events
 			$('input[name="dbem_ms_global_events"]').change(function(){
 				if( $('input:radio[name="dbem_ms_global_events"]:checked').val() == 1 ){
@@ -119,7 +110,16 @@ function em_ms_admin_options_page() {
 				}else{
 					$("tr#dbem_ms_locations_slug_row").show();				
 				}
-			});			
+			});		
+			//MS Mode selection hiders 
+			$('input[name="dbem_ms_global_table"]').change(function(){ //global
+				if( $('input:radio[name="dbem_ms_global_table"]:checked').val() == 1 ){
+					$("tbody.em-global-options").show();
+					$('input:radio[name="dbem_ms_mainblog_locations"]:checked').trigger('change');
+				}else{
+					$("tbody.em-global-options").hide();					
+				}
+			}).first().trigger('change');	
 		});
 	</script>
 	<style type="text/css">.postbox h3 { cursor:pointer; }</style>
@@ -152,11 +152,11 @@ function em_ms_admin_options_page() {
 							$global_post_tip = __( 'Displays %s from all sites on the network by default. You can still restrict %s by blog using shortcodes and template tags coupled with the <code>blog</code> attribute. Requires global tables to be turned on.','dbem');
 							$global_link_tip2 = __('You <strong>must</strong> have assigned a %s page in your <a href="%s">main blog settings</a> for this to work.','dbem');
 							$options_page_link = get_admin_url($current_site->blog_id, 'edit.php?post_type=event&page=events-manager-options#pages');
-							?><tr><td><strong><?php echo sprintf(__('%s Options','dbem'),__('Event','dbem')); ?></strong></td></tr><?php
+							?><tr class="em-header"><td><h4><?php echo sprintf(__('%s Options','dbem'),__('Event','dbem')); ?></h4></td></tr><?php
 							em_options_radio_binary ( sprintf(__( 'Display global events on main blog?', 'dbem'), __('events','dbem')), 'dbem_ms_global_events', sprintf($global_post_tip, __('events','dbem'), __('events','dbem')) );
 							em_options_radio_binary ( sprintf(__( 'Link sub-site %s directly to sub-site?', 'dbem'), __('events','dbem')), 'dbem_ms_global_events_links', sprintf($global_link_tip, __('events','dbem'), __('event','dbem')).sprintf($global_link_tip2, __('event','dbem'), $options_page_link) );
 							em_options_input_text ( sprintf(__( 'Global %s slug', 'dbem' ),__('event','dbem')), 'dbem_ms_events_slug', sprintf($global_slug_tip, __('Events','dbem'), __('events','dbem')).__('Example:','dbem').'<code>http://yoursite.com/events/<strong>event</strong>/subsite-event-slug/', EM_EVENT_SLUG );
-							?><tr><td><strong><?php echo sprintf(__('%s Options','dbem'),__('Location','dbem')); ?></strong></td></tr><?php
+							?><tr class="em-header"><td><h4><?php echo sprintf(__('%s Options','dbem'),__('Location','dbem')); ?></h4></td></tr><?php
 							em_options_radio_binary ( sprintf(__( 'Locations on main blog?', 'dbem'), __('locations','dbem')), 'dbem_ms_mainblog_locations', __('If you would prefer all your locations to belong to your main blog, users in sub-sites will still be able to create locations, but the actual locations are created and reside in the main blog.','dbem') );
 							?>
 							</tbody>

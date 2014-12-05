@@ -13,7 +13,7 @@ class EM_Category_Taxonomy{
 	 */
 	public static function template($template){
 		global $wp_query, $EM_Category, $em_category_id, $post;
-		if( is_tax(EM_TAXONOMY_CATEGORY) && get_option('dbem_cp_categories_formats', true) ){
+		if( is_tax(EM_TAXONOMY_CATEGORY) && !locate_template('taxonomy-'.EM_TAXONOMY_CATEGORY.'.php') && get_option('dbem_cp_categories_formats', true) ){
 			$EM_Category = em_get_category($wp_query->queried_object->term_id);
 			if( get_option('dbem_categories_page') ){
 			    //less chance for things to go wrong with themes etc. so just reset the WP_Query to think it's a page rather than taxonomy

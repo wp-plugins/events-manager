@@ -60,5 +60,11 @@ if(!is_admin()) echo $EM_Notices;
 	<?php if( !empty($_REQUEST['redirect_to']) ): ?>
 	<input type="hidden" name="redirect_to" value="<?php echo esc_attr($_REQUEST['redirect_to']); ?>" />
 	<?php endif; ?>
-	<p class='submit'><input type='submit' class='button-primary' name='submit' value='<?php esc_attr_e('Update location', 'dbem') ?>' /></p>
+	<p class='submit'>
+	    <?php if( empty($EM_Location->location_id) ): ?>
+	    <input type='submit' class='button-primary' name='submit' value='<?php echo esc_attr(sprintf( __('Submit %s','dbem'), __('Location','dbem') )); ?>' />
+	    <?php else: ?>
+	    <input type='submit' class='button-primary' name='submit' value='<?php echo esc_attr(sprintf( __('Update %s','dbem'), __('Location','dbem') )); ?>' />
+	    <?php endif; ?>
+	</p>
 </form>

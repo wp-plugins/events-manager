@@ -249,9 +249,9 @@ function em_create_bookings_table() {
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		booking_status bool NOT NULL DEFAULT 1,
- 		booking_price decimal(14,6) unsigned NOT NULL DEFAULT 0,
+ 		booking_price decimal(14,4) unsigned NOT NULL DEFAULT 0,
  		booking_tax_rate decimal(7,4) NULL DEFAULT NULL,
- 		booking_taxes decimal(14,6) NULL DEFAULT NULL,
+ 		booking_taxes decimal(14,4) NULL DEFAULT NULL,
 		booking_meta LONGTEXT NULL,
 		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -273,7 +273,7 @@ function em_create_tickets_table() {
 		event_id BIGINT( 20 ) UNSIGNED NOT NULL ,
 		ticket_name TINYTEXT NOT NULL ,
 		ticket_description TEXT NULL ,
-		ticket_price DECIMAL( 14 , 6 ) NULL ,
+		ticket_price DECIMAL( 14 , 4 ) NULL ,
 		ticket_start DATETIME NULL ,
 		ticket_end DATETIME NULL ,
 		ticket_min INT( 10 ) NULL ,
@@ -303,7 +303,7 @@ function em_create_tickets_bookings_table() {
 		  booking_id bigint(20) unsigned NOT NULL,
 		  ticket_id bigint(20) unsigned NOT NULL,
 		  ticket_booking_spaces int(6) NOT NULL,
-		  ticket_booking_price decimal(14,6) NOT NULL,
+		  ticket_booking_price decimal(14,4) NOT NULL,
 		  PRIMARY KEY  (ticket_booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 
@@ -367,6 +367,7 @@ function em_add_options() {
 		'dbem_search_form_geo_units_label' => __('Within','dbem'),
 		'dbem_search_form_geo_unit_default' => 'mi',
 		'dbem_search_form_geo_distance_default' => 25,
+	    'dbem_search_form_geo_distance_options' => '5,10,25,50,100',
 		'dbem_search_form_dates' => 1,
 		'dbem_search_form_dates_label' => __('Dates','dbem'),
 		'dbem_search_form_dates_separator' => __('and','dbem'),
@@ -459,6 +460,8 @@ function em_add_options() {
 <h3>Bookings</h3>
 #_BOOKINGFORM
 {/has_bookings}',
+	    'dbem_event_excerpt_format' => '#_EVENTDATES @ #_EVENTTIMES - #_EVENTEXCERPT',
+	    'dbem_event_excerpt_alt_format' => '#_EVENTDATES @ #_EVENTTIMES - #_EVENTEXCERPT{55}',
 		'dbem_event_page_title_format' => '#_EVENTNAME',
 		'dbem_event_all_day_message' => __('All Day','dbem'),
 		'dbem_no_events_message' => sprintf(__( 'No %s', 'dbem' ),__('Events','dbem')),
@@ -489,6 +492,8 @@ function em_add_options() {
 
 <h3>'.__('Upcoming Events','dbem').'</h3>
 <p>#_LOCATIONNEXTEVENTS</p>',
+	    'dbem_location_excerpt_format' => '#_LOCATIONEXCERPT',
+	    'dbem_location_excerpt_alt_format' => '#_LOCATIONEXCERPT{55}',
 		'dbem_location_no_events_message' => '<li>'.__('No events in this location', 'dbem').'</li>',
 		'dbem_location_event_list_item_header_format' => "<ul>",
 		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
@@ -717,6 +722,7 @@ function em_add_options() {
 		'dbem_events_default_archive_order' => 'ASC',
 		'dbem_events_archive_scope' => 'past',
 		'dbem_cp_events_archive_formats' => 1,
+	    'dbem_cp_events_excerpt_formats' => 1,
 		'dbem_cp_events_search_results' => 0,
 		'dbem_cp_events_custom_fields' => 0,
 		'dbem_cp_events_comments' => 1,
@@ -730,6 +736,7 @@ function em_add_options() {
 		'dbem_locations_default_archive_orderby' => 'title',
 		'dbem_locations_default_archive_order' => 'ASC',
 		'dbem_cp_locations_archive_formats' => 1,
+	    'dbem_cp_locations_excerpt_formats' => 1,
 		'dbem_cp_locations_search_results' => 0,
 		'dbem_cp_locations_custom_fields' => 0,
 		'dbem_cp_locations_comments' => 1,
@@ -741,6 +748,10 @@ function em_add_options() {
 		'dbem_cp_tags_formats' => 1,
 		'dbem_tags_default_archive_orderby' => 'event_start_date,event_start_time,event_name',
 		'dbem_tags_default_archive_order' => 'ASC',
+	    //optimization options
+	    'dbem_disable_thumbnails'=> false,
+	    //feedback reminder
+	    'dbem_feedback_reminder' => time()
 	);
 	
 	//do date js according to locale:
@@ -859,7 +870,11 @@ function em_add_options() {
 			update_option('dbem_search_form_submit_ml', get_option('dbem_serach_form_submit_ml'));
 			delete_option('dbem_serach_form_submit_ml'); //we can assume this isn't used in templates
 		}
-	}		
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.54 ){
+		update_option('dbem_cp_events_excerpt_formats',0); //don't override excerpts in previous installs
+		update_option('dbem_cp_locations_excerpt_formats',0);
+	}
 	//set time localization for first time depending on current settings
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless
