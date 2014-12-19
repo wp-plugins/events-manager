@@ -4,7 +4,7 @@ Donate link: http://wp-events-plugin.com
 Tags: events, event, event registration, event calendar, events calendar, event management, paypal, registration, ticket, tickets, ticketing, tickets, theme, widget, locations, maps, booking, attendance, attendee, buddypress, calendar, gigs, payment, payments, sports,
 Requires at least: 3.5
 Tested up to: 4.1
-Stable tag: 5.5.4
+Stable tag: 5.5.5
 
 Fully featured event registration management including recurring events, locations management, calendar, Google map integration, booking management
 
@@ -98,6 +98,17 @@ See our [FAQ](http://wp-events-plugin.com/documentation/faq/) page, which is upd
 6. Manage attendees with various booking reports
 
 == Changelog ==
+= 5.5.5 =
+* fixed booking cut-off time not being editable after event is saved
+* fixed taxonomy search arguments not being applied on calendars and ajax lists,
+* changed taxonomy search argument - not cleaned or converted to array during get_default_search() to prevent pagination link errors,
+* fixed calendar pagination link argument comparison issues due to loose type comparison,
+* changed calendar default arguments so scope=false and limit=settings_value (should have no effect - mainly future feature-proofing)
+* fixed issue with weekly sunday only recurrences not validating
+* fixed BP unregistered actions in admin area
+* added new admin booking status emails to prevent confusion when pending/confirmed statuses are changed 
+* updated POT file
+
 = 5.5.4 =
 * fixed no events message for #_LOCATIONNEXTEVENTS and similar showing header/footer formats for an events list
 * updated all language files including POT file, added Norwegian, Persian and Turkish

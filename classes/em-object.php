@@ -70,24 +70,16 @@ class EM_Object {
 			$clean_ids_array = array('location', 'event', 'post_id');
 			if( !empty($array['owner']) && $array['owner'] != 'me') $clean_ids_array[] = 'owner'; //clean owner attribute if not 'me'
 			$array = self::clean_id_atts($array, $clean_ids_array);
-			
+
 			//Clean taxonomies
 			$taxonomies = self::get_taxonomies();
 			foreach( $taxonomies as $item => $item_data ){ //tags and cats turned into an array regardless
 			    if( !empty($array[$item]) && !is_array($array[$item]) ){
 			    	$array[$item] = str_replace(array('&amp;','&#038;'), '&', $array[$item]); //clean & modifiers
-					if( preg_match('/[,&]/', $array[$item]) !== false ){ //accepts numbers or words
-						$array[$item] = explode('&', $array[$item]);
-						foreach($array[$item] as $k=>$v){
-							$array[$item][$k] = trim($v);
-							$array[$item][$k] = explode(',', $v);
-							foreach($array[$item][$k] as $k_x=>$v_x) $array[$item][$k][$k_x] = trim($v_x);
-						}
-					}else{
-					    $array[$item] = array(trim($array[$item]));
-					}
+					$array[$item] = preg_replace(array('/^[&,]/','/[&,]$/'),'', $array[$item]); //trim , and & from ends
 			    }
 			}
+					    
 			//Near
 			if( !empty($array['near']) ){
 				if( is_array($array['near']) ){
@@ -408,7 +400,22 @@ class EM_Object {
 		}
 		
 		//START TAXONOMY FILTERS - can be id, slug, name or comma seperated ids/slugs/names, if negative or prepended with a - then considered a negative filter
+		//convert taxonomies to arrays
 		$taxonomies = self::get_taxonomies();
+		foreach( $taxonomies as $item => $item_data ){ //tags and cats turned into an array regardless
+		    if( !empty($args[$item]) && !is_array($args[$item]) ){
+				if( preg_match('/[,&]/', $args[$item]) !== false ){ //accepts numbers or words
+					$args[$item] = explode('&', $args[$item]);
+					foreach($args[$item] as $k=>$v){
+						$args[$item][$k] = trim($v);
+						$args[$item][$k] = explode(',', $v);
+						foreach($args[$item][$k] as $k_x=>$v_x) $args[$item][$k][$k_x] = trim($v_x);
+					}
+				}else{
+				    $args[$item] = array(trim($args[$item]));
+				}
+		    }
+		}
 		foreach($taxonomies as $tax_name => $tax_data){
 			if( !empty($args[$tax_name]) && is_array($args[$tax_name]) ){
 			    if( !empty($tax_data['ms']) ) self::ms_global_switch(); //if in ms global mode, switch here rather than on each EM_Category instance

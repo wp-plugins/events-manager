@@ -455,7 +455,7 @@ class EM_Event extends EM_Object{
 			    }else{
 			    	//if no rsvp cut-off date supplied, make it the event start date
 			    	$this->event_rsvp_date = ( !empty($_POST['event_rsvp_date']) ) ? wp_kses_data($_POST['event_rsvp_date']) : $this->event_start_date;
-			    	if ( !empty($_POST['event_rsvp_date']) ) $this->event_rsvp_time = $this->event_start_time;
+			    	if ( empty($_POST['event_rsvp_date']) ) $this->event_rsvp_time = $this->event_start_time;
 			    	if( $this->event_all_day && empty($_POST['event_rsvp_date']) ){ $this->event_rsvp_time = '00:00:00'; } //all-day events start at 0 hour
 			    }
 			    //create timestamp
@@ -535,7 +535,7 @@ class EM_Event extends EM_Object{
 			$this->recurrence = 1; //just in case
 			$this->recurrence_freq = ( !empty($_POST['recurrence_freq']) && in_array($_POST['recurrence_freq'], array('daily','weekly','monthly','yearly')) ) ? $_POST['recurrence_freq']:'daily';
 			if( !empty($_POST['recurrence_bydays']) && $this->recurrence_freq == 'weekly' && self::array_is_numeric($_POST['recurrence_bydays']) ){
-				$this->recurrence_byday = implode( ",", $_POST['recurrence_bydays'] );
+				$this->recurrence_byday = str_replace(' ', '', implode( ",", $_POST['recurrence_bydays'] ));
 			}elseif( !empty($_POST['recurrence_byday']) && $this->recurrence_freq == 'monthly' ){
 				$this->recurrence_byday = wp_kses_data($_POST['recurrence_byday']);
 			}
@@ -614,7 +614,7 @@ class EM_Event extends EM_Object{
 		    if( $this->event_end_date == "" || $this->event_end_date == $this->event_start_date){
 		        $this->add_error( __( 'Since the event is repeated, you must specify an event end date greater than the start date.', 'dbem' ));
 		    }
-		    if( $this->recurrence_freq == 'weekly' && empty($this->recurrence_byday) ){
+		    if( $this->recurrence_freq == 'weekly' && !preg_match('/^[0-9](,[0-9])*$/',$this->recurrence_byday) ){
 		        $this->add_error( __( 'Please speficy what days of the week this event should occur on.', 'dbem' ));
 		    }
 		}

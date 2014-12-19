@@ -1047,26 +1047,29 @@ class EM_Booking extends EM_Object{
 	    		$msg['user']['subject'] = get_option('dbem_bookings_email_pending_subject');
 	    		$msg['user']['body'] = get_option('dbem_bookings_email_pending_body');
 	    		//admins should get something (if set to)
-	    		$msg['admin']['subject'] = get_option('dbem_bookings_contact_email_subject');
-	    		$msg['admin']['body'] = get_option('dbem_bookings_contact_email_body');
+	    		$msg['admin']['subject'] = get_option('dbem_bookings_contact_email_pending_subject');
+	    		$msg['admin']['body'] = get_option('dbem_bookings_contact_email_pending_body');
 	    		break;
 	    	case 1:
 	    		$msg['user']['subject'] = get_option('dbem_bookings_email_confirmed_subject');
 	    		$msg['user']['body'] = get_option('dbem_bookings_email_confirmed_body');
 	    		//admins should get something (if set to)
-	    		$msg['admin']['subject'] = get_option('dbem_bookings_contact_email_subject');
-	    		$msg['admin']['body'] = get_option('dbem_bookings_contact_email_body');
+	    		$msg['admin']['subject'] = get_option('dbem_bookings_contact_email_confirmed_subject');
+	    		$msg['admin']['body'] = get_option('dbem_bookings_contact_email_confirmed_body');
 	    		break;
 	    	case 2:
 	    		$msg['user']['subject'] = get_option('dbem_bookings_email_rejected_subject');
 	    		$msg['user']['body'] = get_option('dbem_bookings_email_rejected_body');
+	    		//admins should get something (if set to)
+	    		$msg['admin']['subject'] = get_option('dbem_bookings_contact_email_rejected_subject');
+	    		$msg['admin']['body'] = get_option('dbem_bookings_contact_email_rejected_body');
 	    		break;
 	    	case 3:
 	    		$msg['user']['subject'] = get_option('dbem_bookings_email_cancelled_subject');
 	    		$msg['user']['body'] = get_option('dbem_bookings_email_cancelled_body');
 	    		//admins should get something (if set to)
-	    		$msg['admin']['subject'] = get_option('dbem_contactperson_email_cancelled_subject');
-	    		$msg['admin']['body'] = get_option('dbem_contactperson_email_cancelled_body');
+	    		$msg['admin']['subject'] = get_option('dbem_bookings_contact_email_cancelled_subject');
+	    		$msg['admin']['body'] = get_option('dbem_bookings_contact_email_cancelled_body');
 	    		break;
 	    }
 	    return apply_filters('em_booking_email_messages', $msg, $this);

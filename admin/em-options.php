@@ -1838,20 +1838,36 @@ function em_admin_options_page() {
 						<tr class="em-header"><td colspan='2'><h4><?php _e('Event Admin/Owner Emails', 'dbem'); ?></h4></td></tr>
 						<tbody class="em-subsection">
 						<tr class="em-subheader"><td colspan='2'>
-							<h5><?php _e('Contact person booking confirmed','dbem') ?></h5>
-							<em><?php echo __('An email will be sent to the event contact when a booking is first made.','dbem').$bookings_placeholder_tip ?></em>
+							<h5><?php _e('Confirmed booking email','dbem') ?></h5>
+							<em><?php echo __('This is sent when a person\'s booking is confirmed. This will be sent automatically if approvals are required and the booking is approved. If approvals are disabled, this is sent out when a user first submits their booking.','dbem').$bookings_placeholder_tip ?></em>
 						</td></tr>
 						<?php
-						em_options_input_text ( __( 'Contact person email subject', 'dbem' ), 'dbem_bookings_contact_email_subject', $email_subject_tip );
-						em_options_textarea ( __( 'Contact person email', 'dbem' ), 'dbem_bookings_contact_email_body', '' );
+						em_options_input_text ( __( 'Booking confirmed email subject', 'dbem' ), 'dbem_bookings_contact_email_confirmed_subject', $email_subject_tip );
+						em_options_textarea ( __( 'Booking confirmed email', 'dbem' ), 'dbem_bookings_contact_email_confirmed_body', '' );
 						?>
 						<tr class="em-subheader"><td colspan='2'>
-							<h5><?php _e('Contact person booking cancelled','dbem') ?></h5>
+							<h5><?php _e('Pending booking email','dbem') ?></h5>
+							<em><?php echo __('This is sent when a person\'s booking is pending. If approvals are enabled, this is sent out when a user first submits their booking.','dbem').$bookings_placeholder_tip ?></em>
+						</td></tr>
+						<?php
+						em_options_input_text ( __( 'Booking pending email subject', 'dbem' ), 'dbem_bookings_contact_email_pending_subject', $email_subject_tip );
+						em_options_textarea ( __( 'Booking pending email', 'dbem' ), 'dbem_bookings_contact_email_pending_body', '' );
+						?>
+						<tr class="em-subheader"><td colspan='2'>
+							<h5><?php _e('Booking cancelled','dbem') ?></h5>
 							<em><?php echo __('An email will be sent to the event contact if someone cancels their booking.','dbem').$bookings_placeholder_tip ?></em>
 						</td></tr>
 						<?php
-						em_options_input_text ( __( 'Contact person cancellation subject', 'dbem' ), 'dbem_contactperson_email_cancelled_subject', $email_subject_tip );
-						em_options_textarea ( __( 'Contact person cancellation email', 'dbem' ), 'dbem_contactperson_email_cancelled_body', '' );
+						em_options_input_text ( __( 'Booking cancelled email subject', 'dbem' ), 'dbem_bookings_contact_email_cancelled_subject', $email_subject_tip );
+						em_options_textarea ( __( 'Booking cancelled email', 'dbem' ), 'dbem_bookings_contact_email_cancelled_body', '' );
+						?>
+						<tr class="em-subheader"><td colspan='2'>
+							<h5><?php _e('Rejected booking email','dbem') ?></h5>
+							<em><?php echo __( 'This will be sent to event admins when a booking is rejected.', 'dbem' ).$bookings_placeholder_tip ?></em>
+						</td></tr>
+						<?php
+						em_options_input_text ( __( 'Booking rejected email subject', 'dbem' ), 'dbem_bookings_contact_email_rejected_subject', $email_subject_tip );
+						em_options_textarea ( __( 'Booking rejected email', 'dbem' ), 'dbem_bookings_contact_email_rejected_body', '' );
 						?>
 						</tbody>
 						<tr class="em-header"><td colspan='2'><h4><?php _e('Booked User Emails', 'dbem'); ?></h4></td></tr>
