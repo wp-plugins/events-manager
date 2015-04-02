@@ -283,7 +283,7 @@ class EM_Object {
 		}
 		//state lookup
 		if( !empty($args['state']) ){
-			$conditions['state'] = "location_state='".$args['state']."'";
+			$conditions['state'] = $wpdb->prepare('location_state=%s', $args['state']);
 		}
 				
 		//Add conditions for category selection
