@@ -49,7 +49,7 @@ class EM_Object {
 			'search'=>false,
 			'geo'=>false, //reserved for future searching via name
 			'near'=>false, //lat,lng coordinates in array or comma-seperated format
-			'near_unit'=>'mi', //mi or km
+			'near_unit'=>get_option('dbem_search_form_geo_unit_default'), //mi or km
 			'near_distance'=>get_option('dbem_search_form_geo_distance_default'), //distance from near coordinates - currently the default is the same as for the search form
 			'ajax'=> (defined('EM_AJAX') && EM_AJAX) //considered during pagination
 		);
@@ -70,24 +70,16 @@ class EM_Object {
 			$clean_ids_array = array('location', 'event', 'post_id');
 			if( !empty($array['owner']) && $array['owner'] != 'me') $clean_ids_array[] = 'owner'; //clean owner attribute if not 'me'
 			$array = self::clean_id_atts($array, $clean_ids_array);
-			
+
 			//Clean taxonomies
 			$taxonomies = self::get_taxonomies();
 			foreach( $taxonomies as $item => $item_data ){ //tags and cats turned into an array regardless
 			    if( !empty($array[$item]) && !is_array($array[$item]) ){
 			    	$array[$item] = str_replace(array('&amp;','&#038;'), '&', $array[$item]); //clean & modifiers
-					if( preg_match('/[,&]/', $array[$item]) !== false ){ //accepts numbers or words
-						$array[$item] = explode('&', $array[$item]);
-						foreach($array[$item] as $k=>$v){
-							$array[$item][$k] = trim($v);
-							$array[$item][$k] = explode(',', $v);
-							foreach($array[$item][$k] as $k_x=>$v_x) $array[$item][$k][$k_x] = trim($v_x);
-						}
-					}else{
-					    $array[$item] = array(trim($array[$item]));
-					}
+					$array[$item] = preg_replace(array('/^[&,]/','/[&,]$/'),'', $array[$item]); //trim , and & from ends
 			    }
 			}
+					    
 			//Near
 			if( !empty($array['near']) ){
 				if( is_array($array['near']) ){
@@ -100,6 +92,10 @@ class EM_Object {
 				}
 				$array['near_unit'] = !empty($array['near_unit']) && in_array($array['near_unit'], array('km','mi')) ? $array['near_unit']:$defaults['near_unit']; //default is 'mi'
 				$array['near_distance'] = !empty($array['near_distance']) && is_numeric($array['near_distance']) ? absint($array['near_distance']) : $defaults['near_distance']; //default is 25
+			}
+			//Country - Turn into array for multiple search if comma-seperated 
+			if( !empty($array['country']) && is_string($array['country']) && preg_match('/^( ?.+ ?,?)+$/', $array['country']) ){
+			    $array['country'] = explode(',',$array['country']);
 			}
 			
 			//OrderBy - can be a comma-seperated array of field names to order by (field names of object, not db)
@@ -151,7 +147,7 @@ class EM_Object {
 		//Order - it's either ASC or DESC, so let's just validate
 		if( !is_array($defaults['order']) && preg_match('/,/', $defaults['order']) ) {
 			$defaults['order'] = explode(',', $defaults['order']);
-		}elseif( !in_array($defaults['order'], array('ASC','DESC')) ){
+		}elseif( !in_array($defaults['order'], array('ASC','DESC','asc','desc')) ){
 			$defaults['order'] = $super_defaults['order'];
 		}
 		//ORDER BY, split if an array
@@ -363,38 +359,63 @@ class EM_Object {
 		//if we're searching near something, country etc. becomes irrelevant
 		if( !empty($args['near']) && self::array_is_numeric($args['near']) ){
 			$distance = !empty($args['near_distance']) && is_numeric($args['near_distance']) ? absint($args['near_distance']) : get_option('dbem_search_form_geo_units',25);
-			if( !empty($args['near_unit']) ) $args['near_unit'] = get_option('dbem_search_form_geo_distance','mi');
+			if( empty($args['near_unit']) ) $args['near_unit'] = get_option('dbem_search_form_geo_distance','mi');
 			$unit = ( !empty($args['near_unit']) && $args['near_unit'] == 'km' ) ? 6371 /* kilometers */ : 3959 /* miles */;
 			$conditions['near'] = "( $unit * acos( cos( radians({$args['near'][0]}) ) * cos( radians( location_latitude ) ) * cos( radians( location_longitude ) - radians({$args['near'][1]}) ) + sin( radians({$args['near'][0]}) ) * sin( radians( location_latitude ) ) ) ) < $distance";
 		}else{
 			//country lookup
 			if( !empty($args['country']) ){
 				$countries = em_get_countries();
-				//we can accept country codes or names
-				if( in_array($args['country'], $countries) ){
-					//we have a country name, 
-					$conditions['country'] = "location_country='".array_search($args['country'], $countries)."'";	
-				}elseif( array_key_exists($args['country'], $countries) ){
-					//we have a country code
-					$conditions['country'] = "location_country='".$args['country']."'";					
-				}
+				//we can accept country codes or names so we need to change names to country codes
+				$country_arg = !is_array($args['country']) ? array($args['country']) : $args['country'];
+			    foreach( $country_arg as $country ){
+    			    if( array_key_exists($country, $countries) ){
+        					//we have a country code
+        				$countries_search[] = $country;					
+        			}elseif( in_array($country, $countries) ){
+        				//we have a country name, 
+        				$countries_search[] = array_search($country, $countries);
+    			    }
+			    }
+			    if( !empty($countries_search) ){
+			        if( count($countries_search) > 1 ){
+			            $conditions['country'] = "location_country IN ('".implode("','",$countries_search)."')";
+			        }else{
+			            $conditions['country'] = "location_country='".array_pop($countries_search)."'";
+			        }
+			    }
 			}
 			//state lookup
 			if( !empty($args['state']) ){
-				$conditions['state'] = "location_state='".$args['state']."'";
+				$conditions['state'] = $wpdb->prepare('location_state=%s', $args['state']);
 			}
 			//state lookup
 			if( !empty($args['town']) ){
-				$conditions['town'] = "location_town='".$args['town']."'";
+				$conditions['town'] = $wpdb->prepare('location_town=%s', $args['town']);
 			}
 			//region lookup
 			if( !empty($args['region']) ){
-				$conditions['region'] = "location_region='".$args['region']."'";
+				$conditions['region'] = $wpdb->prepare('location_region=%s', $args['region']);
 			}
 		}
 		
 		//START TAXONOMY FILTERS - can be id, slug, name or comma seperated ids/slugs/names, if negative or prepended with a - then considered a negative filter
+		//convert taxonomies to arrays
 		$taxonomies = self::get_taxonomies();
+		foreach( $taxonomies as $item => $item_data ){ //tags and cats turned into an array regardless
+		    if( !empty($args[$item]) && !is_array($args[$item]) ){
+				if( preg_match('/[,&]/', $args[$item]) !== false ){ //accepts numbers or words
+					$args[$item] = explode('&', $args[$item]);
+					foreach($args[$item] as $k=>$v){
+						$args[$item][$k] = trim($v);
+						$args[$item][$k] = explode(',', $v);
+						foreach($args[$item][$k] as $k_x=>$v_x) $args[$item][$k][$k_x] = trim($v_x);
+					}
+				}else{
+				    $args[$item] = array(trim($args[$item]));
+				}
+		    }
+		}
 		foreach($taxonomies as $tax_name => $tax_data){
 			if( !empty($args[$tax_name]) && is_array($args[$tax_name]) ){
 			    if( !empty($tax_data['ms']) ) self::ms_global_switch(); //if in ms global mode, switch here rather than on each EM_Category instance
@@ -840,13 +861,13 @@ class EM_Object {
 		foreach($orderby as $i => $field){
 			$orderby[$i] .= ' ';
 			if(is_array($args['order'])){
-				if( in_array($args['order'][$i], array('ASC','DESC')) ){
+				if( in_array($args['order'][$i], array('ASC','DESC','asc','desc')) ){
 					$orderby[$i] .= $args['order'][$i];
 				}else{
 					$orderby[$i] .= $default_order;
 				}
 			}else{
-				$orderby[$i] .= ( in_array($args['order'], array('ASC','DESC')) ) ? $args['order'] : $default_order;
+				$orderby[$i] .= ( in_array($args['order'], array('ASC','DESC','asc','desc')) ) ? $args['order'] : $default_order;
 			}
 		}
 		return apply_filters('em_object_build_sql_orderby', $orderby);
@@ -871,6 +892,8 @@ class EM_Object {
 			if( in_array($post_key, $accepted_searches) && !empty($post_value) ){
 				if(is_array($post_value)){
 					$post_value = implode(',',$post_value);
+				}else{
+				    $post_value =  stripslashes($post_value);
 				}
 				if($post_value != ',' ){
 					$args[$post_key] = $post_value;
@@ -1380,7 +1403,7 @@ class EM_Object {
 				$this->add_error('Image Error: ' . $attachment['error'] );
 			}
 			
-			/* Attach file to ticket */
+			/* Attach file to item */
 			if ( count($this->errors) == 0 && $attachment ){
 				$attachment_data = array(
 					'post_mime_type' => $attachment['type'],

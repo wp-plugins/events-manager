@@ -119,6 +119,7 @@ function em_get_events_list_grouped( $args = array() ){
 	}else{
 		$return = EM_Events::output_grouped( $args );
 	}
+	return $return;
 }
 
 /**

@@ -15,24 +15,31 @@
 	</div>						
 	<?php if ( $locations_count > 0 ) : ?>
 	<div class='tablenav'>					
+		<?php if( (empty($_REQUEST['view']) && current_user_can('delete_events')) || (!empty($_REQUEST['view']) && $_REQUEST['view'] == 'others' && current_user_can('delete_others_events')) ): ?>
 		<div class="alignleft actions">
 			<select name="action">
 				<option value="" selected="selected"><?php _e ( 'Bulk Actions', 'dbem' ); ?></option>
+				<?php if( empty($_REQUEST['view']) && current_user_can('delete_events') ) : ?>
 				<option value="location_delete"><?php _e ( 'Delete selected','dbem' ); ?></option>
+				<?php endif; ?>
 			</select> 
 			<input type="submit" value="<?php _e ( 'Apply' ); ?>" id="doaction2" class="button-secondary action" /> 
 		</div>
-			<?php
-			if ( $locations_count >= $limit ) {
-				$locations_nav = em_admin_paginate( $locations_count, $limit, $page );
-				echo $locations_nav;
-			}
-			?>
+		<?php else: $hide_checkboxes = true; /* @todo this and the first condition of this if statement will need to change when other bulk actions are added */ ?>
+		<?php endif; ?>
+		<?php
+		if ( $locations_count >= $limit ) {
+			$locations_nav = em_admin_paginate( $locations_count, $limit, $page );
+			echo $locations_nav;
+		}
+		?>
 	</div>
 	<table class='widefat'>
 		<thead>
 			<tr>
+				<?php if(empty($hide_checkboxes)): ?>
 				<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
+				<?php endif; ?>
 				<th><?php _e('Name', 'dbem') ?></th>
 				<th><?php _e('Address', 'dbem') ?></th>
 				<th><?php _e('State', 'dbem') ?></th>  
@@ -41,7 +48,9 @@
 		</thead>
 		<tfoot>
 			<tr>
+				<?php if(empty($hide_checkboxes)): ?>
 				<th class='manage-column column-cb check-column' scope='col'><input type='checkbox' class='select-all' value='1'/></th>
+				<?php endif; ?>
 				<th><?php _e('Name', 'dbem') ?></th>
 				<th><?php _e('Address', 'dbem') ?></th>
 				<th><?php _e('State', 'dbem') ?></th> 
@@ -56,7 +65,9 @@
 					$rowno++;
 				?>
 				<tr class="<?php echo $class; ?>">
+				    <?php if(empty($hide_checkboxes)): ?>
 					<td><input type='checkbox' class ='row-selector' value='<?php echo $EM_Location->location_id ?>' name='locations[]'/></td>
+					<?php endif; ?>
 					<td>
 						<?php if( $EM_Location->can_manage('edit_events','edit_others_events') ): ?>
 						<a href='<?php echo esc_url($EM_Location->get_edit_url()); ?>'><?php echo esc_html($EM_Location->location_name); ?></a>

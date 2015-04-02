@@ -267,9 +267,9 @@ class EM_Locations extends EM_Object {
 		}
 		//private locations
 		if( empty($args['private']) ){
-			$conditions['private'] = "(`location_private`=0)";
+			$conditions['private'] = "(`location_private`=0 AND `event_private`=0)";
 		}elseif( !empty($args['private_only']) ){
-			$conditions['private_only'] = "(`location_private`=1)";
+			$conditions['private_only'] = "(`location_private`=1 OR `event_private`=1)";
 		}
 		//post search
 		if( !empty($args['post_id'])){

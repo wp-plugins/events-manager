@@ -311,7 +311,7 @@ function em_bookings_single(){
 								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
 								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_set_status_'.$EM_Booking->booking_id); ?>'/>
-									<br /><em><?php esc_html_e('<strong>Notes:</strong> Ticket availability not taken into account when approving new bookings (i.e. you can overbook).','dbem'); ?></em>
+									<br /><em><?php wp_kses_data(_e('<strong>Notes:</strong> Ticket availability not taken into account when approving new bookings (i.e. you can overbook).','dbem')); ?></em>
 								</form>
 							</div>
 							<form action="" method="post" class="em-booking-form">
@@ -464,7 +464,7 @@ function em_bookings_single(){
 								$user = new EM_Person($note['author']);
 							?>
 							<div>
-								<?php echo date(get_option('date_format'), $note['timestamp']) .' - '. $user->get_name(); ?> <?php esc_html_e('wrote','dbem'); ?>: 
+								<?php echo sprintf(esc_html_x('%1$s - %2$s wrote','[Date] - [Name] wrote','dbem'), date(get_option('date_format'), $note['timestamp']), $user->get_name()); ?>: 
 								<p style="background:#efefef; padding:5px;"><?php echo nl2br($note['note']); ?></p> 
 							</div>
 							<?php endforeach; ?>

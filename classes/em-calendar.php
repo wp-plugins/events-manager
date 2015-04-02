@@ -19,7 +19,7 @@ class EM_Calendar extends EM_Object {
 		$month = $args['month']; 
 		$year = $args['year'];
 		$long_events = $args['long_events'];
-		$limit = $args['limit'] = !empty($args['limit']) ? $args['limit'] : get_option('dbem_display_calendar_events_limit'); //limit arg will be used per day and not for events search
+		$limit = $args['limit']; //limit arg will be used per day and not for events search
 		
 		$week_starts_on_sunday = get_option('dbem_week_starts_sunday');
 	   	$start_of_week = get_option('start_of_week');
@@ -363,8 +363,23 @@ class EM_Calendar extends EM_Object {
 		unset($args['month']); unset($args['year']);
 		$default_args = self::get_default_search(array());
 		foreach($default_args as $arg_key => $arg_value){
-			if( !isset($args[$arg_key]) || $args[$arg_key] == $arg_value ){
+			if( !isset($args[$arg_key]) ){
 				unset($args[$arg_key]);				
+			}else{
+			    //check that argument doesn't match default
+    		    $arg = array($args[$arg_key], $arg_value);
+    		    foreach($arg as $k => $v){
+        		    if( is_string($v) || is_numeric($v) ){
+        		        //strings must be typecast to avoid false positive for something like 'string' == 0
+        		        $arg[$k] = (string) $v;
+        		    }elseif( is_bool($v) ){
+        		        $arg[$k] = $v ? '1':'0';
+        		    }
+    		    }
+			    if( $arg[0] == $arg[1] ){
+			        //argument same as default so it's not needed in link
+    				unset($args[$arg_key]);	
+    		    }
 			}
 		}
 		$qs_array = array();
@@ -390,7 +405,7 @@ class EM_Calendar extends EM_Object {
 		$defaults = array( 
 			'full' => 0, //Will display a full calendar with event names
 			'long_events' => 0, //Events that last longer than a day
-			'scope' => 'future',
+			'scope' => false,
 			'status' => 1, //approved events only
 			'town' => false,
 			'state' => false,
@@ -399,7 +414,8 @@ class EM_Calendar extends EM_Object {
 			'blog' => get_current_blog_id(),
 			'orderby' => get_option('dbem_display_calendar_orderby'),
 			'order' => get_option('dbem_display_calendar_order'),
-			'number_of_weeks' => false //number of weeks to be displayed in the calendar
+			'number_of_weeks' => false, //number of weeks to be displayed in the calendar
+		    'limit' => get_option('dbem_display_calendar_events_limit')
 		);
 		//sort out whether defaults were supplied or just the array of search values
 		if( empty($array) ){

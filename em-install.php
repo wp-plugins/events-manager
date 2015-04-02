@@ -249,9 +249,9 @@ function em_create_bookings_table() {
 		booking_comment text DEFAULT NULL,
 		booking_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
 		booking_status bool NOT NULL DEFAULT 1,
- 		booking_price decimal(14,6) unsigned NOT NULL DEFAULT 0,
+ 		booking_price decimal(14,4) unsigned NOT NULL DEFAULT 0,
  		booking_tax_rate decimal(7,4) NULL DEFAULT NULL,
- 		booking_taxes decimal(14,6) NULL DEFAULT NULL,
+ 		booking_taxes decimal(14,4) NULL DEFAULT NULL,
 		booking_meta LONGTEXT NULL,
 		PRIMARY KEY  (booking_id)
 		) DEFAULT CHARSET=utf8 ;";
@@ -273,7 +273,7 @@ function em_create_tickets_table() {
 		event_id BIGINT( 20 ) UNSIGNED NOT NULL ,
 		ticket_name TINYTEXT NOT NULL ,
 		ticket_description TEXT NULL ,
-		ticket_price DECIMAL( 14 , 6 ) NULL ,
+		ticket_price DECIMAL( 14 , 4 ) NULL ,
 		ticket_start DATETIME NULL ,
 		ticket_end DATETIME NULL ,
 		ticket_min INT( 10 ) NULL ,
@@ -303,7 +303,7 @@ function em_create_tickets_bookings_table() {
 		  booking_id bigint(20) unsigned NOT NULL,
 		  ticket_id bigint(20) unsigned NOT NULL,
 		  ticket_booking_spaces int(6) NOT NULL,
-		  ticket_booking_price decimal(14,6) NOT NULL,
+		  ticket_booking_price decimal(14,4) NOT NULL,
 		  PRIMARY KEY  (ticket_booking_id)
 		) DEFAULT CHARSET=utf8 ;";
 
@@ -317,8 +317,6 @@ function em_add_options() {
 	$decimal_point = !empty($wp_locale->number_format['decimal_point']) ? $wp_locale->number_format['decimal_point']:'.';
 	$thousands_sep = !empty($wp_locale->number_format['thousands_sep']) ? $wp_locale->number_format['thousands_sep']:',';
 	$email_footer = '<br/><br/>-------------------------------<br/>Powered by Events Manager - http://wp-events-plugin.com';
-	$contact_person_email_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) will attend #_EVENTNAME on #_EVENTDATES. He wants to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com",'dbem').$email_footer;
-	$contact_person_email_cancelled_body_localizable = __("#_BOOKINGNAME (#_BOOKINGEMAIL) cancelled his booking at #_EVENTNAME on #_EVENTDATES. He wanted to reserve #_BOOKINGSPACES spaces.<br/> Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.<br/>Yours faithfully,<br/>Events Manager - http://wp-events-plugin.com",'dbem').$email_footer;
 	$respondent_email_body_localizable = __("Dear #_BOOKINGNAME, <br/>You have successfully reserved #_BOOKINGSPACES space/spaces for #_EVENTNAME.<br/>When : #_EVENTDATES @ #_EVENTTIMES<br/>Where : #_LOCATIONNAME - #_LOCATIONFULLLINE<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').$email_footer;
 	$respondent_email_pending_body_localizable = __("Dear #_BOOKINGNAME, <br/>You have requested #_BOOKINGSPACES space/spaces for #_EVENTNAME.<br/>When : #_EVENTDATES @ #_EVENTTIMES<br/>Where : #_LOCATIONNAME - #_LOCATIONFULLLINE<br/>Your booking is currently pending approval by our administrators. Once approved you will receive an automatic confirmation.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').$email_footer;
 	$respondent_email_rejected_body_localizable = __("Dear #_BOOKINGNAME, <br/>Your requested booking for #_BOOKINGSPACES spaces at #_EVENTNAME on #_EVENTDATES has been rejected.<br/>Yours faithfully,<br/>#_CONTACTNAME",'dbem').$email_footer;
@@ -330,6 +328,19 @@ function em_add_options() {
 	$event_published_email_body = str_replace('#_EDITEVENTURL', admin_url().'post.php?action=edit&post=#_EVENTPOSTID', $event_published_email_body);
 	$event_resubmitted_email_body = __("A previously published event has been modified by #_CONTACTNAME, and this event is now unpublished and pending your approval.<br/>Name : #_EVENTNAME <br/>Date : #_EVENTDATES <br/>Time : #_EVENTTIMES <br/>Please visit #_EDITEVENTURL to review this event for approval.",'dbem').$email_footer;
 	$event_resubmitted_email_body = str_replace('#_EDITEVENTURL', admin_url().'post.php?action=edit&post=#_EVENTPOSTID', $event_resubmitted_email_body);
+
+	//event admin emails - new format to the above, standard format plus one unique line per booking status at the top of the body and subject line
+	$contact_person_email_body_template = '#_EVENTNAME - #_EVENTDATES @ #_EVENTTIMES'.'<br/>'
+ 		    .__('Now there are #_BOOKEDSPACES spaces reserved, #_AVAILABLESPACES are still available.','dbem').'<br/>'.
+ 		    strtoupper(__('Booking Details','dbem')).'<br/>'.
+ 		    __('Name','dbem').' : #_BOOKINGNAME'."\n".
+ 		    __('Email','dbem').' : #_BOOKINGEMAIL'.'<br/>'.
+ 		    '#_BOOKINGSUMMARY'.'<br/>'.
+ 		    '<br/>Powered by Events Manager - http://wp-events-plugin.com';
+	$contact_person_emails['confirmed'] = sprintf(__('The following booking is %s :','dbem'),strtolower(__('Confirmed','dbem'))).'<br/>'.$contact_person_email_body_template;
+	$contact_person_emails['pending'] = sprintf(__('The following booking is %s :','dbem'),strtolower(__('Pending','dbem'))).'<br/>'.$contact_person_email_body_template;
+	$contact_person_emails['cancelled'] = sprintf(__('The following booking is %s :','dbem'),strtolower(__('Cancelled','dbem'))).'<br/>'.$contact_person_email_body_template;
+	$contact_person_emails['rejected'] = sprintf(__('The following booking is %s :','dbem'),strtolower(__('Rejected','dbem'))).'<br/>'.$contact_person_email_body_template;
 	//registration email content
 	$blogname = wp_specialchars_decode(get_option('blogname'), ENT_QUOTES);
 	$booking_registration_email_subject = sprintf(__('[%s] Your username and password', 'dbem'), $blogname);
@@ -367,6 +378,7 @@ function em_add_options() {
 		'dbem_search_form_geo_units_label' => __('Within','dbem'),
 		'dbem_search_form_geo_unit_default' => 'mi',
 		'dbem_search_form_geo_distance_default' => 25,
+	    'dbem_search_form_geo_distance_options' => '5,10,25,50,100',
 		'dbem_search_form_dates' => 1,
 		'dbem_search_form_dates_label' => __('Dates','dbem'),
 		'dbem_search_form_dates_separator' => __('and','dbem'),
@@ -459,6 +471,8 @@ function em_add_options() {
 <h3>Bookings</h3>
 #_BOOKINGFORM
 {/has_bookings}',
+	    'dbem_event_excerpt_format' => '#_EVENTDATES @ #_EVENTTIMES - #_EVENTEXCERPT',
+	    'dbem_event_excerpt_alt_format' => '#_EVENTDATES @ #_EVENTTIMES - #_EVENTEXCERPT{55}',
 		'dbem_event_page_title_format' => '#_EVENTNAME',
 		'dbem_event_all_day_message' => __('All Day','dbem'),
 		'dbem_no_events_message' => sprintf(__( 'No %s', 'dbem' ),__('Events','dbem')),
@@ -489,6 +503,8 @@ function em_add_options() {
 
 <h3>'.__('Upcoming Events','dbem').'</h3>
 <p>#_LOCATIONNEXTEVENTS</p>',
+	    'dbem_location_excerpt_format' => '#_LOCATIONEXCERPT',
+	    'dbem_location_excerpt_alt_format' => '#_LOCATIONEXCERPT{55}',
 		'dbem_location_no_events_message' => '<li>'.__('No events in this location', 'dbem').'</li>',
 		'dbem_location_event_list_item_header_format' => "<ul>",
 		'dbem_location_event_list_item_format' => "<li>#_EVENTLINK - #_EVENTDATES - #_EVENTTIMES</li>",
@@ -658,10 +674,14 @@ function em_add_options() {
 			//Emails
 			'dbem_bookings_notify_admin' => 0,
 			'dbem_bookings_contact_email' => 1,
-			'dbem_bookings_contact_email_subject' => __("New Booking",'dbem'),
-			'dbem_bookings_contact_email_body' => str_replace("<br/>", "\n\r", $contact_person_email_body_localizable),
-			'dbem_contactperson_email_cancelled_subject' => __("Booking Cancelled",'dbem'),
-			'dbem_contactperson_email_cancelled_body' => str_replace("<br/>", "\n\r", $contact_person_email_cancelled_body_localizable),
+			'dbem_bookings_contact_email_pending_subject' => __("Booking Pending",'dbem'),
+			'dbem_bookings_contact_email_pending_body' => str_replace("<br/>", "\n\r", $contact_person_emails['pending']),
+			'dbem_bookings_contact_email_confirmed_subject' => __('Booking Confirmed','dbem'),
+			'dbem_bookings_contact_email_confirmed_body' => str_replace("<br/>", "\n\r", $contact_person_emails['confirmed']),
+			'dbem_bookings_contact_email_rejected_subject' => __("Booking Rejected",'dbem'),
+			'dbem_bookings_contact_email_rejected_body' => str_replace("<br/>", "\n\r", $contact_person_emails['rejected']),
+			'dbem_bookings_contact_email_cancelled_subject' => __("Booking Cancelled",'dbem'),
+			'dbem_bookings_contact_email_cancelled_body' => str_replace("<br/>", "\n\r", $contact_person_emails['cancelled']),
 			'dbem_bookings_email_pending_subject' => __("Booking Pending",'dbem'),
 			'dbem_bookings_email_pending_body' => str_replace("<br/>", "\n\r", $respondent_email_pending_body_localizable),
 			'dbem_bookings_email_rejected_subject' => __("Booking Rejected",'dbem'),
@@ -717,6 +737,7 @@ function em_add_options() {
 		'dbem_events_default_archive_order' => 'ASC',
 		'dbem_events_archive_scope' => 'past',
 		'dbem_cp_events_archive_formats' => 1,
+	    'dbem_cp_events_excerpt_formats' => 1,
 		'dbem_cp_events_search_results' => 0,
 		'dbem_cp_events_custom_fields' => 0,
 		'dbem_cp_events_comments' => 1,
@@ -730,6 +751,7 @@ function em_add_options() {
 		'dbem_locations_default_archive_orderby' => 'title',
 		'dbem_locations_default_archive_order' => 'ASC',
 		'dbem_cp_locations_archive_formats' => 1,
+	    'dbem_cp_locations_excerpt_formats' => 1,
 		'dbem_cp_locations_search_results' => 0,
 		'dbem_cp_locations_custom_fields' => 0,
 		'dbem_cp_locations_comments' => 1,
@@ -741,6 +763,10 @@ function em_add_options() {
 		'dbem_cp_tags_formats' => 1,
 		'dbem_tags_default_archive_orderby' => 'event_start_date,event_start_time,event_name',
 		'dbem_tags_default_archive_order' => 'ASC',
+	    //optimization options
+	    'dbem_disable_thumbnails'=> false,
+	    //feedback reminder
+	    'dbem_feedback_reminder' => time()
 	);
 	
 	//do date js according to locale:
@@ -859,7 +885,29 @@ function em_add_options() {
 			update_option('dbem_search_form_submit_ml', get_option('dbem_serach_form_submit_ml'));
 			delete_option('dbem_serach_form_submit_ml'); //we can assume this isn't used in templates
 		}
-	}		
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.54 ){
+		update_option('dbem_cp_events_excerpt_formats',0); //don't override excerpts in previous installs
+		update_option('dbem_cp_locations_excerpt_formats',0);
+	}
+	if( get_option('dbem_version') != '' && get_option('dbem_version') < 5.55 ){
+	    //rename email templates sent to admins on new bookings
+	    update_option('dbem_bookings_contact_email_cancelled_subject',get_option('dbem_contactperson_email_cancelled_subject'));
+	    update_option('dbem_bookings_contact_email_cancelled_body',get_option('dbem_contactperson_email_cancelled_body'));
+	    if( get_option('dbem_bookings_approval') ){
+	        //if approvals ENABLED, we should make the old 'New Booking' email the one for a pending booking
+    	    update_option('dbem_bookings_contact_email_pending_subject',get_option('dbem_bookings_contact_email_subject'));
+    	    update_option('dbem_bookings_contact_email_pending_body',get_option('dbem_bookings_contact_email_body'));
+	    }else{
+	        //if approvals DISABLED, we should make the old 'New Booking' email the one for a confirmed booking
+    	    update_option('dbem_bookings_contact_email_confirmed_subject',get_option('dbem_bookings_contact_email_subject'));
+    	    update_option('dbem_bookings_contact_email_confirmed_body',get_option('dbem_bookings_contact_email_body'));	        
+	    }
+	    delete_option('dbem_contactperson_email_cancelled_subject');
+	    delete_option('dbem_contactperson_email_cancelled_body');
+	    delete_option('dbem_bookings_contact_email_subject');
+	    delete_option('dbem_bookings_contact_email_body');
+	}
 	//set time localization for first time depending on current settings
 	if( get_option('dbem_time_24h','not set') == 'not set'){
 		//Localise vars regardless

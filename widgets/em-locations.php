@@ -14,7 +14,8 @@ class EM_Locations_Widget extends WP_Widget {
     		'scope' => 'future',
     		'order' => 'ASC',
     		'limit' => 5,
-    		'format' => '#_LOCATIONLINK<ul><li>#_LOCATIONADDRESS</li><li>#_LOCATIONTOWN</li></ul>',
+    		'format' => '<li>#_LOCATIONLINK<ul><li>#_LOCATIONADDRESS</li><li>#_LOCATIONTOWN</li></ul></li>',
+    	    'no_locations_text' => '<li>'.__('No locations', 'dbem').'</li>',
     		'orderby' => 'event_start_date,event_start_time,location_name'
     	);
     	$this->em_orderby_options = array(
@@ -35,21 +36,21 @@ class EM_Locations_Widget extends WP_Widget {
 		    echo apply_filters('widget_title',$instance['title'], $instance, $this->id_base);
 		    echo $args['after_title'];
     	}
-	    
+    	
+	    //make sure no owner searches are being run
 		$instance['owner'] = false;
+		//legacy sanitization
+		if( !preg_match('/^<li/i', trim($instance['format'])) ) $instance['format'] = '<li>'. $instance['format'] .'</li>';
+		//get locations
 		$locations = EM_Locations::get(apply_filters('em_widget_locations_get_args',$instance));
+		//output locations
 		echo "<ul>";
-		$li_wrap = !preg_match('/^<li>/i', trim($instance['format']));
 		if ( count($locations) > 0 ){
 			foreach($locations as $location){
-				if( $li_wrap ){
-					echo '<li>'. $location->output($instance['format']) .'</li>';
-				}else{
-					echo $location->output($instance['format']);
-				}
+				echo $location->output($instance['format']);
 			}
 		}else{
-			echo '<li>'.__('No locations', 'dbem').'</li>';
+		    echo $instance['no_locations_text'];
 		}
 		echo "</ul>";               
 		
@@ -63,6 +64,14 @@ class EM_Locations_Widget extends WP_Widget {
     		if( !isset($new_instance[$key]) ){
     			$new_instance[$key] = $value;
     		}
+    		//make sure formats and the no locations text are wrapped with li tags
+		    if( ($key == 'format' || $key == 'no_locations_text') && !preg_match('/^<li/i', trim($new_instance[$key])) ){
+            	$new_instance[$key] = '<li>'.$new_instance[$key].'</li>';
+		    }
+		    //balance tags and sanitize output formats
+		    if( in_array($key, array('format', 'no_locations_text')) ){
+		        $new_instance[$key] = force_balance_tags(wp_kses_post($new_instance[$key]));
+		    }
     	}
     	return $new_instance;
     }
@@ -72,46 +81,48 @@ class EM_Locations_Widget extends WP_Widget {
     	$instance = array_merge($this->defaults, $instance);
         ?>
 		<p>
-			<label for="<?php echo $this->get_field_id('title'); ?>"><?php _e('Title', 'dbem'); ?>: </label>
-			<input type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($instance['title']); ?>" />
+			<label for="<?php echo $this->get_field_id('title'); ?>"><?php esc_html_e('Title', 'dbem'); ?>: </label>
+			<input class="widefat" type="text" id="<?php echo $this->get_field_id('title'); ?>" name="<?php echo $this->get_field_name('title'); ?>" value="<?php echo esc_attr($instance['title']); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php _e('Show number of locations','dbem'); ?>: </label>
+			<label for="<?php echo $this->get_field_id('limit'); ?>"><?php esc_html_e('Show number of locations','dbem'); ?>: </label>
 			<input type="text" id="<?php echo $this->get_field_id('limit'); ?>" name="<?php echo $this->get_field_name('limit'); ?>" value="<?php echo esc_attr($instance['limit']); ?>" />
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php _e('Scope of the locations','dbem'); ?>:</label><br/>
-			<select id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >
+			<label for="<?php echo $this->get_field_id('scope'); ?>"><?php esc_html_e('Scope of the locations','dbem'); ?>:</label><br/>
+			<select class="widefat" id="<?php echo $this->get_field_id('scope'); ?>" name="<?php echo $this->get_field_name('scope'); ?>" >
 				<?php foreach( em_get_scopes() as $key => $value) : ?>   
-				<option value='<?php echo $key ?>' <?php echo ($key == get_option('dbem_events_page_scope')) ? "selected='selected'" : ''; ?>>
-					<?php echo $value; ?>
+				<option value='<?php echo esc_attr($key) ?>' <?php echo ($key == $instance['scope']) ? "selected='selected'" : ''; ?>>
+					<?php echo esc_html($value); ?>
 				</option>
 				<?php endforeach; ?>
 			</select>
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Order By','dbem'); ?>: </label>
-			<select  id="<?php echo $this->get_field_id('orderby'); ?>" name="<?php echo $this->get_field_name('orderby'); ?>">
-				<?php  
-					echo $this->em_orderby_options;
-				?>
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order By','dbem'); ?>: </label>
+			<select class="widefat" id="<?php echo $this->get_field_id('orderby'); ?>" name="<?php echo $this->get_field_name('orderby'); ?>">
 				<?php foreach($this->em_orderby_options as $key => $value) : ?>   
-	 			<option value='<?php echo $key ?>' <?php echo ( !empty($instance['orderby']) && $key == $instance['orderby']) ? "selected='selected'" : ''; ?>>
-	 				<?php echo $value; ?>
+	 			<option value='<?php echo esc_attr($key); ?>' <?php echo ( !empty($instance['orderby']) && $key == $instance['orderby']) ? "selected='selected'" : ''; ?>>
+	 				<?php echo esc_html($value); ?>
 	 			</option>
 				<?php endforeach; ?>
 			</select> 
 		</p>
 		<p>
-			<label for="<?php echo $this->get_field_id('order'); ?>"><?php _e('Order of the locations','dbem'); ?>:</label><br/>
-			<select id="<?php echo $this->get_field_id('order'); ?>" name="<?php echo $this->get_field_name('order'); ?>" >
-				<option value="ASC" <?php echo ($instance['order'] == 'ASC') ? 'selected="selected"':''; ?>><?php _e('Ascending','dbem'); ?></option>
-				<option value="DESC" <?php echo ($instance['order'] == 'DESC') ? 'selected="selected"':''; ?>><?php _e('Descending','dbem'); ?></option>
+			<label for="<?php echo $this->get_field_id('order'); ?>"><?php esc_html_e('Order of the locations','dbem'); ?>:</label><br/>
+			<select class="widefat" id="<?php echo $this->get_field_id('order'); ?>" name="<?php echo $this->get_field_name('order'); ?>" >
+				<option value="ASC" <?php echo ($instance['order'] == 'ASC') ? 'selected="selected"':''; ?>><?php esc_html_e('Ascending','dbem'); ?></option>
+				<option value="DESC" <?php echo ($instance['order'] == 'DESC') ? 'selected="selected"':''; ?>><?php esc_html_e('Descending','dbem'); ?></option>
 			</select>
 		</p>
+		<em><?php echo sprintf( esc_html__('The list is wrapped in a %s tag, so if an %s tag is not wrapping the formats below it will be added automatically.','dbem'), '<code>&lt;ul&gt;</code>', '<code>&lt;li&gt;</code>'); ?></em>
 		<p>
-			<label for="<?php echo $this->get_field_id('format'); ?>"><?php _e('List item format','dbem'); ?>: </label>
-			<textarea rows="5" cols="24" id="<?php echo $this->get_field_id('format'); ?>" name="<?php echo $this->get_field_name('format'); ?>"><?php echo $instance['format']; ?></textarea>
+			<label for="<?php echo $this->get_field_id('format'); ?>"><?php esc_html_e('List item format','dbem'); ?>: </label>
+			<textarea rows="10" cols="20" class="widefat" id="<?php echo $this->get_field_id('format'); ?>" name="<?php echo $this->get_field_name('format'); ?>"><?php echo esc_textarea($instance['format']); ?></textarea>
+		</p>
+		<p>
+			<label for="<?php echo $this->get_field_id('no_locations_text'); ?>"><?php esc_html_e('No Locations message','dbem'); ?>: </label>
+			<input type="text" id="<?php echo $this->get_field_id('no_locations_text'); ?>" name="<?php echo $this->get_field_name('no_locations_text'); ?>" value="<?php echo esc_attr( $instance['no_locations_text'] ); ?>" >
 		</p>
         <?php 
     }

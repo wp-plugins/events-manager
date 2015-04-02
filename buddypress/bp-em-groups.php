@@ -1,26 +1,30 @@
 <?php
 /**
+ * Turns an event private if the event belongs to a private BP Group
  * @param EM_Event $EM_Event
  */
 function bp_em_group_event_save($result, $EM_Event){
 	if( is_object($EM_Event) && !empty($EM_Event->event_id) ){
 		if( !empty($_REQUEST['group_id']) && is_numeric($_REQUEST['group_id']) && bp_is_active('groups') ){
-			//we have been requested an event creation tied to a group, so does this group exist, and does this person have admin rights to it?
-			if( groups_is_user_admin(get_current_user_id(), $_REQUEST['group_id']) ){
-				$EM_Event->group_id = $_REQUEST['group_id'];
-			}
-			if( !empty($EM_Event->group_id) ){	
-				//if group is private, make it private
-				$group = groups_get_group(array('group_id'=>$EM_Event->group_id));
-				$is_member = groups_is_user_member(get_current_user_id(), $EM_Event->group_id) || groups_is_user_admin(get_current_user_id(), $EM_Event->group_id) || groups_is_user_mod(get_current_user_id(), $EM_Event->group_id);
-				if( $group->status != 'public' && $is_member ){
-					//Make sure event status is private and set post status to private
-					global $wpdb;
-					$EM_Event->event_private = 1;
-					$wpdb->update($wpdb->posts, array('post_status'=>'private'), array('ID'=>$EM_Event->post_id));
-					$wpdb->update(EM_EVENTS_TABLE, array('event_private'=>1), array('event_id'=>$EM_Event->event_id));
-				}
-			}
+		    //firstly, we check that the event has been published, otherwise users without publish rights can submit an event at a private group and event is marked private/published immediately
+		    if( $EM_Event->event_status == 1 ){
+    			//we have been requested an event creation tied to a group, so does this group exist, and does this person have admin rights to it?
+    			if( groups_is_user_admin(get_current_user_id(), $_REQUEST['group_id']) ){
+    				$EM_Event->group_id = $_REQUEST['group_id'];
+    			}
+    			if( !empty($EM_Event->group_id) ){
+    				//if group is private, make it private
+    				$group = groups_get_group(array('group_id'=>$EM_Event->group_id));
+    				$is_member = groups_is_user_member(get_current_user_id(), $EM_Event->group_id) || groups_is_user_admin(get_current_user_id(), $EM_Event->group_id) || groups_is_user_mod(get_current_user_id(), $EM_Event->group_id);
+    				if( $group->status != 'public' && $is_member ){
+    					//Make sure event status is private and set post status to private
+    					global $wpdb;
+    					$EM_Event->event_private = 1;
+    					$wpdb->update($wpdb->posts, array('post_status'=>'private'), array('ID'=>$EM_Event->post_id));
+    					$wpdb->update(EM_EVENTS_TABLE, array('event_private'=>1), array('event_id'=>$EM_Event->event_id));
+    				}
+    			}
+		    }
 		}else{
 			$EM_Event->group_id = null;
 		}
@@ -30,19 +34,25 @@ function bp_em_group_event_save($result, $EM_Event){
 add_action('em_event_save','bp_em_group_event_save',1,2);
 
 /**
+ * Overrides the default capability of the user for another owner's event if the user is a group admin and the event belongs to a group. 
+ * User must have the relevant permissions globally in order to inherit that capability for this event as well.
  * @param boolean $result
  * @param EM_Event $EM_Event
  */
-function bp_em_group_event_can_manage( $result, $EM_Event){
-	if( !$result && !empty($EM_Event->group_id) && bp_is_active('groups') ){ //only override if already false, incase it's true
-		if( groups_is_user_admin(get_current_user_id(),$EM_Event->group_id) && current_user_can('edit_events') ){
+function bp_em_group_event_can_manage( $result, $EM_Event, $owner_capability, $admin_capability, $user_to_check){
+	if( !$result && $EM_Event->event_owner != get_current_user_id() && !empty($EM_Event->group_id) && bp_is_active('groups') ){ //only override if already false, incase it's true
+	    //if the user is an admin of this group, and actually has the relevant permissions globally, they can manage this event
+	    $EM_Object = new EM_Object(); //create new object to prevent infinite loop should we call $EM_Event->can_manage();
+		if( groups_is_user_admin(get_current_user_id(),$EM_Event->group_id) && $EM_Object->can_manage($owner_capability, $admin_capability, $user_to_check) ){
 			//This user is an admin of the owner's group, so they can edit this event.
 			return true;
+		}else{
+		    $EM_Event->add_error($EM_Object->get_errors()); //add any applicable errors
 		}
 	}
 	return $result;
 }
-add_filter('em_event_can_manage','bp_em_group_event_can_manage',1,2);
+add_filter('em_event_can_manage','bp_em_group_event_can_manage',1,5);
 
 
 function bp_em_group_events_accepted_searches($searches){
@@ -97,7 +107,7 @@ add_filter('em_events_build_sql_conditions','bp_em_group_events_build_sql_condit
 
 	
 /**
- * Overrides the default post format of an event and can display an event as a page, which uses the page.php template.
+ * Checks if the event is private and either belongs to a group or private group, as members of that group should be able to see the post even if not able to see private events. 
  * @param string $template
  * @return string
  */

@@ -10,9 +10,9 @@
 <?php echo $EM_Ticket_Booking->get_ticket()->ticket_name; ?>
 
 --------------------------------------
-Quantity: <?php echo $EM_Ticket_Booking->get_spaces(); ?>
+<?php _e('Quantity','dbem'); ?>: <?php echo $EM_Ticket_Booking->get_spaces(); ?>
 
-Price: <?php echo $EM_Ticket_Booking->get_price(true); ?>
+<?php _e('Price','dbem'); ?>: <?php echo $EM_Ticket_Booking->get_price(true); ?>
 
 <?php endforeach; ?>
 

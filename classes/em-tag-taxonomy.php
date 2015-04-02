@@ -13,7 +13,7 @@ class EM_Tag_Taxonomy{
 	 */
 	public static function template($template){
 		global $wp_query, $EM_Tag, $em_tag_id, $post;
-		if( is_tax(EM_TAXONOMY_TAG) && get_option('dbem_cp_tags_formats', true)){
+		if( is_tax(EM_TAXONOMY_TAG) && !locate_template('taxonomy-'.EM_TAXONOMY_TAG.'.php') &&  get_option('dbem_cp_tags_formats', true)){
 			$EM_Tag = em_get_tag($wp_query->queried_object->term_id);
 			if( get_option('dbem_tags_page') ){
 			    //less chance for things to go wrong with themes etc. so just reset the WP_Query to think it's a page rather than taxonomy

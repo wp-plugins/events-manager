@@ -389,7 +389,7 @@ function em_init_actions() {
 			if( $EM_Booking->can_manage('manage_bookings','manage_others_bookings') && $_REQUEST['booking_status'] != $EM_Booking->booking_status ){
 				if ( $EM_Booking->set_status($_REQUEST['booking_status'], false, true) ){
 					if( !empty($_REQUEST['send_email']) ){
-						if( $EM_Booking->email(false) ){
+						if( $EM_Booking->email() ){
 						    if( $EM_Booking->mails_sent > 0 ) {
 						        $EM_Booking->feedback_message .= " ".__('Email Sent.','dbem');
 						    }else{
