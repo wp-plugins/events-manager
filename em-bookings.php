@@ -155,7 +155,7 @@ class EM_Bookings_Form_Core extends EM_Object {
 						</tr>
 						<?php endif; ?>
 						<?php do_action('em_booking_form_before_user_details'); ?>
-						<tr><th scope='row'><?php _e('Comment', 'dbem') ?>:</th><td><textarea name='booking_comment'><?php echo !empty($_POST['booking_comment']) ? $_POST['booking_comment']:'' ?></textarea></td></tr>
+						<tr><th scope='row'><?php _e('Comment', 'dbem') ?>:</th><td><textarea name='booking_comment'><?php echo !empty($_REQUEST['booking_comment']) ? esc_html($_REQUEST['booking_comment']):'' ?></textarea></td></tr>
 						<?php do_action('em_booking_form_footer'); ?>
 				</table>
 				<div class="em-booking-buttons">

@@ -36,7 +36,7 @@ function em_bookings_rejected_table(){
 				</ul>
 				<p class="search-box">
 					<label class="screen-reader-text" for="post-search-input"><?php _e('Search', 'dbem'); ?>:</label>
-					<input type="text" id="post-search-input" name="em_search" value="<?php echo (!empty($_GET['em_search'])) ? $_GET['em_search']:''; ?>" />
+					<input type="text" id="post-search-input" name="em_search" value="<?php echo (!empty($_GET['em_search'])) ? esc_attr($_GET['em_search']):''; ?>" />
 					<input type="submit" value="<?php _e('Search', 'dbem'); ?>" class="button" />
 				</p>
 				-->

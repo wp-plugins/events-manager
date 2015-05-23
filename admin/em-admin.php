@@ -209,7 +209,7 @@ function em_admin_warnings() {
 			}else{
 				?>
 				<div id="message" class="updated">
-					<p><?php echo sprintf(__('It looks like you have WPML enabled on your site. We advise you also install our extra <a href="%s">Events Manager WPML Connector</a> plugin which helps the two work better together. <a href="%s">Dismiss message</a>','dbem'),'http://wordpress.org/extend/plugins/events-manager-wpml/', add_query_arg(array('disable_em_wpml_warning'=>1))); ?></p>
+					<p><?php echo sprintf(__('It looks like you have WPML enabled on your site. We advise you also install our extra <a href="%s">Events Manager WPML Connector</a> plugin which helps the two work better together. <a href="%s">Dismiss message</a>','dbem'),'http://wordpress.org/extend/plugins/events-manager-wpml/', esc_url(add_query_arg(array('disable_em_wpml_warning'=>1)))); ?></p>
 				</div>
 				<?php
 			}
@@ -220,7 +220,7 @@ function em_admin_warnings() {
 			}else{
 				?>
 				<div id="message" class="updated">
-					<p>We have stopped using TimThumb for thumbnails in Events Manager, <a href="http://wp-events-plugin.com/blog/2014/12/05/bye-timthumb/">please see this post</a> for more information on how this may affect you and what options are available to you. <a href="<?php echo add_query_arg(array('dbem_disable_timthumb'=>1)); ?>">Dismiss</a></p>
+					<p>We have stopped using TimThumb for thumbnails in Events Manager, <a href="http://wp-events-plugin.com/blog/2014/12/05/bye-timthumb/">please see this post</a> for more information on how this may affect you and what options are available to you. <a href="<?php echo esc_url(add_query_arg(array('dbem_disable_timthumb'=>1))); ?>">Dismiss</a></p>
 				</div>
 				<?php
 			}		    

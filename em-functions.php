@@ -86,7 +86,7 @@ function em_paginate($link, $total, $limit, $page=1, $data=array()){
  */
 function em_admin_paginate($total, $limit, $page=1, $vars=false, $base = false, $format = ''){
 	$return = '<div class="tablenav-pages em-tablenav-pagination">';
-	$base = !empty($base) ? $base:add_query_arg( 'pno', '%#%' );
+	$base = !empty($base) ? $base:esc_url_raw(add_query_arg( 'pno', '%#%' ));
 	$events_nav = paginate_links( array(
 		'base' => $base,
 		'format' => $format,

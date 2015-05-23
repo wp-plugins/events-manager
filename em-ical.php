@@ -58,7 +58,7 @@
 				exit();
 			}else{
 				//no item exists, so redirect to original URL
-				$url_to_redirect = preg_replace("/ical\/$/",'', add_query_arg(array('ical'=>null)));				
+				$url_to_redirect = preg_replace("/ical\/$/",'', esc_url_raw(add_query_arg(array('ical'=>null))));				
 				wp_redirect($url_to_redirect, '302');
 				exit();
 			}
