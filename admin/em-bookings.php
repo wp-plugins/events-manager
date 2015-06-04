@@ -9,7 +9,7 @@ function em_admin_actions_bookings() {
 	global $wpdb, $EM_Booking, $EM_Event, $EM_Notices;
 	
 	if( is_object($EM_Booking) && !empty($_REQUEST['action']) && $EM_Booking->can_manage('manage_bookings','manage_others_bookings') ) {
-		if( $_REQUEST['action'] == 'bookings_add_note' ){
+		if( $_REQUEST['action'] == 'bookings_add_note' && wp_verify_nonce($_REQUEST['_wpnonce'],'bookings_add_note') ){
 			$EM_Booking->add_note($_REQUEST['booking_note']);
 			function em_booking_save_notification(){ global $EM_Booking; ?><div class="updated"><p><strong><?php echo $EM_Booking->feedback_message; ?></strong></p></div><?php }
 			add_action ( 'admin_notices', 'em_booking_save_notification' );
@@ -311,7 +311,7 @@ function em_bookings_single(){
 								 	<input type='hidden' name='booking_id' value='<?php echo $EM_Booking->booking_id; ?>'/>
 								 	<input type='hidden' name='event_id' value='<?php echo $EM_Event->event_id; ?>'/>
 								 	<input type='hidden' name='_wpnonce' value='<?php echo wp_create_nonce('booking_set_status_'.$EM_Booking->booking_id); ?>'/>
-									<br /><em><?php wp_kses_data(_e('<strong>Notes:</strong> Ticket availability not taken into account when approving new bookings (i.e. you can overbook).','dbem')); ?></em>
+									<br /><em><?php echo wp_kses_data(__('<strong>Notes:</strong> Ticket availability not taken into account when approving new bookings (i.e. you can overbook).','dbem')); ?></em>
 								</form>
 							</div>
 							<form action="" method="post" class="em-booking-form">
@@ -471,6 +471,7 @@ function em_bookings_single(){
 							<form method="post" action="" style="padding:5px;">
 								<textarea class="widefat" rows="5" name="booking_note"></textarea>
 								<input type="hidden" name="action" value="bookings_add_note" />
+								<input type="hidden" name="_wpnonce" value="<?php echo wp_create_nonce('bookings_add_note'); ?>" />
 								<input type="submit" value="Add Note" />
 							</form>
 						</div>

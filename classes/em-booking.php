@@ -850,7 +850,7 @@ class EM_Booking extends EM_Object{
 		if( $this->can_manage() ){
 			$this->get_notes();
 			$note = array('author'=>get_current_user_id(),'note'=>$note_text,'timestamp'=>current_time('timestamp'));
-			$this->notes[] = $note;
+			$this->notes[] = wp_kses_data($note);
 			$this->feedback_message = __('Booking note successfully added.','dbem');
 			return $wpdb->insert(EM_META_TABLE, array('object_id'=>$this->booking_id, 'meta_key'=>'booking-note', 'meta_value'=> serialize($note)),array('%d','%s','%s'));
 		}
