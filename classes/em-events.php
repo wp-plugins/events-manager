@@ -60,6 +60,7 @@ class EM_Events extends EM_Object {
 			$groupby_sql[] = $events_table.'.post_id, '. $events_table.'.blog_id';
 		}else{
 			$selectors = $events_table.'.post_id';
+			$groupby_sql = [];
 			$groupby_sql[] = $events_table.'.post_id'; //prevent duplicates showing in lists
 		}
 		if( $count ){
