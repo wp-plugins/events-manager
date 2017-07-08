@@ -27,9 +27,9 @@ Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA  02110-1301, USA.
 */
 
 // Setting constants
-define('EM_VERSION', 5.61); //self expanatory
-define('EM_PRO_MIN_VERSION', 2.392); //self expanatory
-define('EM_PRO_MIN_VERSION_CRITICAL', 2.377); //self expanatory
+define('EM_VERSION', 5.61); //self explanatory
+define('EM_PRO_MIN_VERSION', 2.392); //self explanatory
+define('EM_PRO_MIN_VERSION_CRITICAL', 2.377); //self explanatory
 define('EM_DIR', dirname( __FILE__ )); //an absolute path to this directory
 define('EM_DIR_URI', trailingslashit(plugins_url('',__FILE__))); //an absolute path to this directory
 define('EM_SLUG', plugin_basename( __FILE__ )); //for updates
