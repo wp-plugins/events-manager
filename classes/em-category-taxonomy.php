@@ -136,7 +136,7 @@ class EM_Walker_Category extends Walker {
 		$pad = str_repeat('&nbsp;', $depth * 3);
 		$cat_name = $object->name;
 		$name = !empty($args['name']) ? $args['name']:'event_categories[]';
-		$output .= !empty($args['before']) ? $args['after']:'';
+		$output .= !empty($args['before']) ? $args['before']:'';
 		$output .= $pad."<input type=\"checkbox\" name=\"$name\" class=\"level-$depth\" value=\"".$object->term_id."\"";
 		if ( (is_array($args['selected']) && in_array($object->term_id, $args['selected'])) || ($object->term_id == $args['selected']) )
 			$output .= ' checked="checked"';
